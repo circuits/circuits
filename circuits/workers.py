@@ -12,6 +12,7 @@ from threading import enumerate as threads
 
 from circuits.core import Component
 
+
 def workers():
 	"""workers() -> list of workers
 
