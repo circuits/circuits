@@ -137,13 +137,6 @@ class Manager(object):
 		h = len(self._handlers)
 		return "<Manager (q: %d h: %d)>" % (q, h)
 
-	def __iter__(self):
-		q = self._queue
-		self._queue = deque()
-		while q:
-			event = q.pop()
-			yield self.send(event, event.channel, event.target)
-
 	def __getitem__(self, x):
 		return self.channels[x]
 
