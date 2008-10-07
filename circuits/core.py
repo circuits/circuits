@@ -148,13 +148,8 @@ class Manager(object):
 		return self
 	
 	def __iadd__(self, y):
-		if isinstance(self, Manager):
-			y.register(self.manager)
-			return self
-		else:
-			raise TypeError(
-					"unsupported operand type(s) for +: '%s' and '%s'" % (
-						self, y))
+		y.register(self.manager)
+		return self
 
 	def __sub__(self, y):
 		y.unregister()
