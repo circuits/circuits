@@ -7,12 +7,11 @@
 Core components and managers.
 """
 
-from time import sleep
 from itertools import chain
 from collections import deque
 from inspect import getargspec
+from inspect import getmembers
 from collections import defaultdict
-from inspect import getmembers, ismethod
 
 
 class Error(Exception):
