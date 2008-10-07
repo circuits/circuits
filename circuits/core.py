@@ -166,14 +166,23 @@ class Manager(object):
 
 		globals = channels["*"]
 
-		if not channel == "*":
-			x = "%s:*" % target
-			all = channels[x]
+		if target == "*" and channel == "*":
+			return self._handlers
 		else:
-			x = [channels[k] for k in channels if k.endswith(":%s" % channel)]
-			all = [i for y in x for i in y]
+			if target == "*":
+				c = ":%s" % channel
+				x = [channels[k] for k in channels if k == channel or k.endswith(c)]
+				all = [i for y in x for i in y]
+				return chain(globals, all)
+			elif channel == "*":
+				c = "%s:" % target
+				x = [channels[k] for k in channels if k.startswith(c) or ":" not in k]
+				all = [i for y in x for i in y]
+				return chain(globals, all)
+			else:
+				all = channels["%s:*" % target]
+				return chain(globals, all, channels[s])
 
-		return chain(globals, all, channels[s])
 
 	def add(self, handler, channel=None):
 		"""E.add(handler, channel) -> None
