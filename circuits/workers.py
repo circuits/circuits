@@ -8,6 +8,7 @@ Worker components and managers.
 """
 
 from threading import Thread
+from threading import enumerate as threads
 
 from circuits.core import Component
 
