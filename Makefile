@@ -12,7 +12,7 @@ checks:
 	@find . -name "*.py" -exec pyflakes {} +
 
 tests:
-	@nosetests
+	@nosetests --with-coverage
 
 docs:
 	@sfood circuits -i -I tests -I lib -d -u 2> /dev/null | sfood-graph | dot -Tps | ps2pdf - > docs/graphs/circuits.pdf
