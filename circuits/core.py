@@ -284,33 +284,32 @@ class Manager(object):
 			ekwargs = event.kwargs
 			if target is not None:
 				channel = "%s:%s" % (target, channel)
+
+			filter = False
 			handler = None
 			for handler in self.handlers(channel):
 				args = handler.args
 				varargs = handler.varargs
 				varkw = handler.varkw
+
 				if args and args[0] == "event":
-					if handler(event, *eargs, **ekwargs):
-						break
+					filter = handler(event, *eargs, **ekwargs)
 				elif args:
-					if handler(*eargs, **ekwargs):
-						break
+					filter = handler(*eargs, **ekwargs)
 				else:
 					if varargs and varkw:
-						if handler(*eargs, **ekwargs):
-							break
+						filter = handler(*eargs, **ekwargs)
 					elif varkw:
-						if handler(**ekwargs):
-							break
+						filter = handler(**ekwargs)
 					elif varargs:
-						if handler(*eargs):
-							break
+						filter = handler(*eargs)
 					else:
-						if handler():
-							break
-			return handler is not None
+						filter = handler()
+
+				if filter and handler.type == "filter":
+					break
 		else:
-			return self.manager.send(event, channel, target)
+			self.manager.send(event, channel, target)
 
 
 class Component(Manager):
