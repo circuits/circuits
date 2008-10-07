@@ -282,9 +282,7 @@ class Manager(object):
 			event.target = target
 			eargs = event.args
 			ekwargs = event.kwargs
-			if channel == target == "*":
-				channel = "*"
-			elif target is not None:
+			if target is not None:
 				channel = "%s:%s" % (target, channel)
 			handler = None
 			for handler in self.handlers(channel):
@@ -348,8 +346,6 @@ class Component(Manager):
 		self.channel = kwargs.get("channel", self.channel)
 		self.register(self)
 
-	def __del__(self):
-		self.unregister()
 
 	def __repr__(self):
 		name = self.__class__.__name__

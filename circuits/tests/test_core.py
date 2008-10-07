@@ -44,18 +44,18 @@ class Foo(Component):
 	gotbar = False
 
 	@listener("foo")
-	def onFOO(self):
+	def onFOO(self, event):
 		return self.send(Test(), "bar")
 
 	@listener("gotbar")
-	def onGOTBAR(self):
+	def onGOTBAR(self, event, *args):
 		self.gotbar = True
 		return "gotbar"
 
 class Bar(Component):
 
 	@listener("bar")
-	def onBAR(self):
+	def onBAR(self, event, *args, **kwargs):
 		return self.send(Test(), "gotbar")
 
 class EventTestCase(unittest.TestCase):
@@ -124,6 +124,7 @@ class EventTestCase(unittest.TestCase):
 		listener.unregister()
 
 		self.assertEquals(len(circuits.manager._handlers), 0)
+
 
 	def testTargetsAndChannels(self):
 		"""Test Components, Targets and Channels
