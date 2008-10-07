@@ -41,22 +41,27 @@ class ListenerComponent(Component):
 
 class Foo(Component):
 
+	flag = False
 	gotbar = False
+
+	@listener("test")
+	def onTEST(self, event, *args, **kwargs):
+		self.flag = True
 
 	@listener("foo")
 	def onFOO(self, event):
-		return self.send(Test(), "bar")
+		self.send(Test(), "bar")
 
 	@listener("gotbar")
 	def onGOTBAR(self, event, *args):
 		self.gotbar = True
-		return "gotbar"
+
 
 class Bar(Component):
 
 	@listener("bar")
 	def onBAR(self, event, *args, **kwargs):
-		return self.send(Test(), "gotbar")
+		self.send(Test(), "gotbar")
 
 class EventTestCase(unittest.TestCase):
 
@@ -71,16 +76,16 @@ class EventTestCase(unittest.TestCase):
 
 		a = Foo()
 		x += a
-		self.assertEquals(repr(x), "<Manager (q: 1 h: 2)>")
+		self.assertEquals(repr(x), "<Manager (q: 1 h: 3)>")
 
 		x.flush()
-		self.assertEquals(repr(x), "<Manager (q: 0 h: 2)>")
+		self.assertEquals(repr(x), "<Manager (q: 0 h: 3)>")
 
 		x.push(Test(), "foo")
-		self.assertEquals(repr(x), "<Manager (q: 1 h: 2)>")
+		self.assertEquals(repr(x), "<Manager (q: 1 h: 3)>")
 
 		x.flush()
-		self.assertEquals(repr(x), "<Manager (q: 0 h: 2)>")
+		self.assertEquals(repr(x), "<Manager (q: 0 h: 3)>")
 
 		x -= a
 		self.assertEquals(repr(x), "<Manager (q: 0 h: 0)>")
@@ -93,13 +98,13 @@ class EventTestCase(unittest.TestCase):
 		"""
 
 		a = Foo()
-		self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 2)>")
+		self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 3)>")
 
 		a.push(Test(), "foo")
-		self.assertEquals(repr(a), "<Foo/ component (q: 1 h: 2)>")
+		self.assertEquals(repr(a), "<Foo/ component (q: 1 h: 3)>")
 
 		a.flush()
-		self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 2)>")
+		self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 3)>")
 
 
 	def testComponentSetup(self):
@@ -358,6 +363,59 @@ class EventTestCase(unittest.TestCase):
 		x -= a
 		x -= b
 		x -= c
+
+
+	def testComponentAsManager(self):
+		"""Test Component
+
+		Test that Components can manage their own events.
+		"""
+
+		x = Manager()
+		a = Foo()
+		x += a
+		a.push(Test(), "test")
+		a.flush()
+		self.assertTrue(a.flag)
+
+
+	def testHandlerArgs(self):
+		"""Test Handler Args
+
+		Test sending events to event handlers that accept positional arguments.
+		"""
+
+		class A(Component):
+
+			a = None
+			b = None
+			c = None
+
+			kwargs = None
+
+			@listener("args")
+			def onARGS(self, a, b, c):
+				self.a = a
+				self.b = b
+				self.c = c
+
+			@listener("kwargs")
+			def onKWARGS(self, **kwargs):
+				self.kwargs = kwargs
+
+		x = Manager()
+		a = A()
+		x += a
+
+		a.send(Test(1, 2, 3), "args")
+		self.assertEquals(a.a, 1)
+		self.assertEquals(a.b, 2)
+		self.assertEquals(a.c, 3)
+
+		a.send(Test(a=1, b=2, c=3), "kwargs")
+		self.assertEquals(a.kwargs["a"], 1)
+		self.assertEquals(a.kwargs["b"], 2)
+		self.assertEquals(a.kwargs["c"], 3)
 
 
 	def testComponentLinks(self):
