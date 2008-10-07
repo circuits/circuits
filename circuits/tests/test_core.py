@@ -11,10 +11,10 @@ import unittest
 
 import circuits
 from circuits import *
-from circuits.workers import Worker
 from circuits.core import InvalidHandler
 
-class Test(Event): pass
+class Test(Event):
+	"""Test(Event) -> Test Event"""
 
 class FilterComponent(Component):
 
@@ -45,25 +45,62 @@ class Foo(Component):
 
 	@listener("foo")
 	def onFOO(self):
-		self.send(Test(), "bar")
+		return self.send(Test(), "bar")
 
 	@listener("gotbar")
 	def onGOTBAR(self):
 		self.gotbar = True
+		return "gotbar"
 
 class Bar(Component):
 
 	@listener("bar")
 	def onBAR(self):
-		self.send(Test(), "gotbar")
-
-class FooWorker(Worker):
-
-	@listener("foo")
-	def onFOO(self):
-		return "foo"
+		return self.send(Test(), "gotbar")
 
 class EventTestCase(unittest.TestCase):
+
+	def testManagerRepr(self):
+		"""Test Manager.__repr__
+
+		Test Manager's representation string.
+		"""
+
+		x = Manager()
+		self.assertEquals(repr(x), "<Manager (q: 0 h: 0)>")
+
+		a = Foo()
+		x += a
+		self.assertEquals(repr(x), "<Manager (q: 1 h: 2)>")
+
+		x.flush()
+		self.assertEquals(repr(x), "<Manager (q: 0 h: 2)>")
+
+		x.push(Test(), "foo")
+		self.assertEquals(repr(x), "<Manager (q: 1 h: 2)>")
+
+		x.flush()
+		self.assertEquals(repr(x), "<Manager (q: 0 h: 2)>")
+
+		x -= a
+		self.assertEquals(repr(x), "<Manager (q: 0 h: 0)>")
+
+
+	def testComponentRepr(self):
+		"""Test Component.__repr__
+
+		Test Component's representation string.
+		"""
+
+		a = Foo()
+		self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 2)>")
+
+		a.push(Test(), "foo")
+		self.assertEquals(repr(a), "<Foo/ component (q: 1 h: 2)>")
+
+		a.flush()
+		self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 2)>")
+
 
 	def testComponentSetup(self):
 		"""Test Component Setup
@@ -162,6 +199,166 @@ class EventTestCase(unittest.TestCase):
 
 		foo.unregister()
 
+
+	def testAllChannels(self):
+		"""Test All Channels
+
+		Test that Events can be sent to all channels.
+		"""
+
+		class A(Component):
+
+			channel = "A"
+
+			flag = False
+
+			@listener("foo")
+			def onFOO(self, event, *args, **kwargs):
+				self.flag = True
+
+		class B(Component):
+
+			channel = "B"
+
+			flag = False
+
+			@listener("foo")
+			def onFOO(self, event, *args, **kwargs):
+				self.flag = True
+
+		class C(Component):
+
+			flag = False
+
+			@listener("foo")
+			def onFOO(self, event, *args, **kwargs):
+				self.flag = True
+
+		x = Manager()
+		a = A()
+		b = B()
+		c = C()
+
+		x += a
+		x += b
+		x += c
+
+		x.send(Event(), "*")
+		self.assertFalse(a.flag)
+		self.assertFalse(b.flag)
+		self.assertTrue(c.flag)
+
+		x -= a
+		x -= b
+		x -= c
+
+
+	def testAllTargets(self):
+		"""Test All Targets
+
+		Test that Events can be sent to all targets.
+		"""
+
+		class A(Component):
+
+			channel = "A"
+
+			flag = False
+
+			@listener("foo")
+			def onFOO(self, event, *args, **kwargs):
+				self.flag = True
+
+		class B(Component):
+
+			channel = "B"
+
+			flag = False
+
+			@listener("bar")
+			def onBAR(self, event, *args, **kwargs):
+				self.flag = True
+
+		class C(Component):
+
+			flag = False
+
+			@listener("foo")
+			def onFOO(self, event, *args, **kwargs):
+				self.flag = True
+
+		x = Manager()
+		a = A()
+		b = B()
+		c = C()
+
+		x += a
+		x += b
+		x += c
+
+		x.send(Event(), "foo", "*")
+		self.assertTrue(a.flag)
+		self.assertFalse(b.flag)
+		self.assertTrue(c.flag)
+
+		x -= a
+		x -= b
+		x -= c
+
+
+	def testAllTargetsAndChannels(self):
+		"""Test All Targets and Channels
+
+		Test that Events can be sent to all channels on all targets.
+		"""
+
+		class A(Component):
+
+			channel = "A"
+
+			flag = False
+
+			@listener("foo")
+			def onFOO(self, event, *args, **kwargs):
+				self.flag = True
+
+		class B(Component):
+
+			channel = "B"
+
+			flag = False
+
+			@listener("bar")
+			def onBAR(self, event, *args, **kwargs):
+				self.flag = True
+
+		class C(Component):
+
+			flag = False
+
+			@listener("foo")
+			def onFOO(self, event, *args, **kwargs):
+				self.flag = True
+
+		x = Manager()
+		a = A()
+		b = B()
+		c = C()
+
+		x += a
+		x += b
+		x += c
+
+		x.send(Event(), "*", "*")
+		self.assertTrue(a.flag)
+		self.assertTrue(b.flag)
+		self.assertTrue(c.flag)
+
+		x -= a
+		x -= b
+		x -= c
+
+
 	def testComponentLinks(self):
 		"""Test Component Links
 
@@ -206,8 +403,59 @@ class EventTestCase(unittest.TestCase):
 		self.assertEquals(e.kwargs["foo"], "1")
 		self.assertEquals(e.kwargs["bar"], "2")
 
-		self.assertEquals(str(e),
+	def testEventRepr(self):
+		"""Test Event.__repr__
+
+		Test Event's representation string.
+		"""
+
+		e = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
+
+		self.assertEquals(repr(e),
 				"<Test/ (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+
+		e.channel = "bar"
+		self.assertEquals(repr(e),
+				"<Test/bar (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+
+		e.target = "foo"
+		self.assertEquals(repr(e),
+				"<Test/foo:bar (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+
+	def testEventGetItem(self):
+		"""Test Event.__getitem__
+
+		Test Event's multi attribute accessor.
+		"""
+
+		e = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
+
+		self.assertEquals(e[0], 1)
+		self.assertEquals(e[3], "foo")
+		self.assertEquals(e["foo"], "1")
+
+		try:
+			e["???"]
+			self.fail("Expected KeyError exception")
+		except KeyError:
+			pass
+
+		try:
+			e[True]
+			self.fail("<type 'bool'> invalid for Event.__getitem__")
+		except TypeError:
+			pass
+
+
+	def testEventEquality(self):
+		"""Test Event.__eq__
+
+		Test Event equality.
+		"""
+
+		a = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
+		b = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
+		self.assertEquals(a, b)
 
 	def testManager(self):
 		"""Test Manager
