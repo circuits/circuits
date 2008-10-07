@@ -77,7 +77,7 @@ class Event(object):
 		elif type(x) == str:
 			return self.kwargs[x]
 		else:
-			raise KeyError(x)
+			raise TypeError("Expected int or str, got %r" % type(x))
 
 
 def listener(*args, **kwargs):
