@@ -391,6 +391,7 @@ class EventTestCase(unittest.TestCase):
 			b = None
 			c = None
 
+			varargs = None
 			kwargs = None
 
 			@listener("args")
@@ -398,6 +399,10 @@ class EventTestCase(unittest.TestCase):
 				self.a = a
 				self.b = b
 				self.c = c
+
+			@listener("varargs")
+			def onVARARGS(self, *varargs):
+				self.varargs = varargs
 
 			@listener("kwargs")
 			def onKWARGS(self, **kwargs):
@@ -411,6 +416,11 @@ class EventTestCase(unittest.TestCase):
 		self.assertEquals(a.a, 1)
 		self.assertEquals(a.b, 2)
 		self.assertEquals(a.c, 3)
+
+		a.send(Test(1, 2, 3), "varargs")
+		self.assertEquals(a.varargs[0], 1)
+		self.assertEquals(a.varargs[1], 2)
+		self.assertEquals(a.varargs[2], 3)
 
 		a.send(Test(a=1, b=2, c=3), "kwargs")
 		self.assertEquals(a.kwargs["a"], 1)
