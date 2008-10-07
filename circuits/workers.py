@@ -38,7 +38,3 @@ class Worker(Component, Thread):
 
 	def stop(self):
 		self.running = False
-
-	def run(self):
-		while self.running:
-			sleep(1)
