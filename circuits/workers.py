@@ -26,12 +26,6 @@ class Worker(Component, Thread):
 
 	running = False
 
-	def __init__(self, *args, **kwargs):
-		super(Worker, self).__init__(*args, **kwargs)
-
-		if kwargs.get("start", False):
-			self.start()
-
 	def start(self):
 		self.running = True
 		super(Worker, self).start()
