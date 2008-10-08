@@ -55,16 +55,3 @@ __extras_require__ = {
 
 __entry_points__ = """
 """
-
-from circuits.core import Manager, Component
-from circuits.core import filter, listener, Event
-
-manager = Manager()
-
-__all__ = (
-	"manager",
-	"filter",
-	"listener",
-	"Event",
-	"Manager",
-	"Component")
