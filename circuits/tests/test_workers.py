@@ -9,8 +9,8 @@ Test all functionality of the workers module.
 
 import unittest
 
-import circuits
-from circuits import *
+from circuits.core import listener
+from circuits.core import Manager, Event
 from circuits.workers import workers, Worker
 
 class Test(Event):

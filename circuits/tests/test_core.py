@@ -9,20 +9,19 @@ Test all functionality of the event library.
 
 import unittest
 
-import circuits
-from circuits import *
-from circuits.core import InvalidHandler
+from circuits.core import listener, InvalidHandler
+from circuits.core import Manager, Component, Event
 
 class Test(Event):
 	"""Test(Event) -> Test Event"""
 
 class FilterComponent(Component):
 
-	@filter("foo")
+	@listener("foo", type="filter")
 	def onFOO(self, msg=""):
 		return True
 
-	@filter("bar")
+	@listener("bar", type="filter")
 	def onBAR(self, msg=""):
 		if msg.lower() == "hello world":
 			return True
@@ -115,20 +114,22 @@ class EventTestCase(unittest.TestCase):
 		given.
 		"""
 
-		filter = FilterComponent()
-		circuits.manager += filter
-		listener = ListenerComponent()
-		circuits.manager += listener
+		manager = Manager()
 
-		self.assertTrue(filter.onFOO in circuits.manager["foo"])
-		self.assertTrue(listener.onFOO in circuits.manager["foo"])
-		self.assertTrue(filter.onBAR in circuits.manager["bar"])
-		self.assertTrue(listener.onBAR in circuits.manager["bar"])
+		filter = FilterComponent()
+		manager += filter
+		listener = ListenerComponent()
+		manager += listener
+
+		self.assertTrue(filter.onFOO in manager["foo"])
+		self.assertTrue(listener.onFOO in manager["foo"])
+		self.assertTrue(filter.onBAR in manager["bar"])
+		self.assertTrue(listener.onBAR in manager["bar"])
 
 		filter.unregister()
 		listener.unregister()
 
-		self.assertEquals(len(circuits.manager._handlers), 0)
+		self.assertEquals(len(manager._handlers), 0)
 
 
 	def testTargetsAndChannels(self):
@@ -147,7 +148,7 @@ class EventTestCase(unittest.TestCase):
 
 			flag = False
 
-			@filter()
+			@listener(type="filter")
 			def onALL(self, event, *args, **kwargs):
 				self.flag = True
 				return True
@@ -164,14 +165,15 @@ class EventTestCase(unittest.TestCase):
 			def onBAR(self):
 				self.flag = True
 
+		manager = Manager()
 		foo = Foo()
 		bar = Bar()
-		circuits.manager += foo
-		circuits.manager += bar
+		manager += foo
+		manager += bar
 
-		circuits.manager.send(Event(), "foo", foo.channel)
+		manager.send(Event(), "foo", foo.channel)
 		self.assertTrue(foo.flag)
-		circuits.manager.send(Event(), "bar")
+		manager.send(Event(), "bar")
 		self.assertTrue(bar.flag)
 
 		foo.unregister()
@@ -192,14 +194,15 @@ class EventTestCase(unittest.TestCase):
 			def onFOOBAR(self, event, *args, **kwargs):
 				self.flag = True
 
+		manager = Manager()
 		foo = Foo()
-		circuits.manager += foo
+		manager += foo
 
-		circuits.manager.send(Event(), "foo")
+		manager.send(Event(), "foo")
 		self.assertTrue(foo.flag)
 		foo.flag = False
 
-		circuits.manager.send(Event(), "bar")
+		manager.send(Event(), "bar")
 		self.assertTrue(foo.flag)
 		foo.flag = False
 
@@ -533,8 +536,9 @@ class EventTestCase(unittest.TestCase):
 		empty.
 		"""
 
-		self.assertEquals(len(circuits.manager), 2)
-		self.assertEquals(len(circuits.manager._handlers), 0)
+		manager = Manager()
+		self.assertEquals(len(manager), 0)
+		self.assertEquals(len(manager._handlers), 0)
 
 	def testManagerAddRemove(self):
 		"""Test Manager.add & Manager.remove
@@ -549,7 +553,7 @@ class EventTestCase(unittest.TestCase):
 		a specific channel.
 		"""
 
-		@filter("foo")
+		@listener("foo", type="filter")
 		def onFOO():
 			pass
 
@@ -560,33 +564,35 @@ class EventTestCase(unittest.TestCase):
 		def onTEST():
 			pass
 
-		circuits.manager.add(onFOO)
-		circuits.manager.add(onBAR)
-		self.assertTrue(onFOO in circuits.manager.channels["*"])
-		self.assertTrue(onBAR in circuits.manager.channels["*"])
+		manager = Manager()
 
-		circuits.manager.add(onFOO, "foo")
-		circuits.manager.add(onBAR, "bar")
-		self.assertTrue(onFOO in circuits.manager["foo"])
-		self.assertTrue(onBAR in circuits.manager["bar"])
+		manager.add(onFOO)
+		manager.add(onBAR)
+		self.assertTrue(onFOO in manager.channels["*"])
+		self.assertTrue(onBAR in manager.channels["*"])
+
+		manager.add(onFOO, "foo")
+		manager.add(onBAR, "bar")
+		self.assertTrue(onFOO in manager["foo"])
+		self.assertTrue(onBAR in manager["bar"])
 
 		try:
-			circuits.manager.add(onTEST)
+			manager.add(onTEST)
 		except InvalidHandler, error:
 			pass
 
-		self.assertFalse(onTEST in circuits.manager.channels["*"])
+		self.assertFalse(onTEST in manager.channels["*"])
 
-		circuits.manager.remove(onFOO)
-		self.assertTrue(onFOO not in circuits.manager._handlers)
+		manager.remove(onFOO)
+		self.assertTrue(onFOO not in manager._handlers)
 
-		circuits.manager.remove(onBAR, "bar")
-		self.assertTrue(onBAR not in circuits.manager["bar"])
-		self.assertTrue(onBAR in circuits.manager.channels["*"])
-		circuits.manager.remove(onBAR)
-		self.assertTrue(onBAR not in circuits.manager._handlers)
+		manager.remove(onBAR, "bar")
+		self.assertTrue(onBAR not in manager["bar"])
+		self.assertTrue(onBAR in manager.channels["*"])
+		manager.remove(onBAR)
+		self.assertTrue(onBAR not in manager._handlers)
 
-		self.assertEquals(len(circuits.manager._handlers), 0)
+		self.assertEquals(len(manager._handlers), 0)
 
 	def testManagerPushFlushSend(self):
 		"""Test Manager's push, flush and send
@@ -619,47 +625,49 @@ class EventTestCase(unittest.TestCase):
 		def onBAR(test, time):
 			pass
 
-		@filter()
+		@listener(type="filter")
 		def onSTOP(*args, **kwargs):
 			return kwargs.get("stop", False)
 
-		circuits.manager.add(onSTOP)
-		circuits.manager.add(onTEST, "test")
-		circuits.manager.add(onFOO, "test")
-		circuits.manager.add(onBAR, "bar")
+		manager = Manager()
 
-		self.assertTrue(onSTOP in circuits.manager.channels["*"])
-		self.assertTrue(onTEST in circuits.manager["test"])
-		self.assertTrue(onFOO in circuits.manager["test"])
-		self.assertTrue(onBAR in circuits.manager["bar"])
-		self.assertEquals(len(circuits.manager._handlers), 4)
+		manager.add(onSTOP)
+		manager.add(onTEST, "test")
+		manager.add(onFOO, "test")
+		manager.add(onBAR, "bar")
 
-		circuits.manager.push(Test(self, time.time()), "test")
-		circuits.manager.flush()
+		self.assertTrue(onSTOP in manager.channels["*"])
+		self.assertTrue(onTEST in manager["test"])
+		self.assertTrue(onFOO in manager["test"])
+		self.assertTrue(onBAR in manager["bar"])
+		self.assertEquals(len(manager._handlers), 4)
+
+		manager.push(Test(self, time.time()), "test")
+		manager.flush()
 		self.assertTrue(self.flag == True)
 		self.flag = False
 		self.assertTrue(self.foo == True)
 		self.foo = False
 
-		self.assertEquals(len(circuits.manager), 0)
+		self.assertEquals(len(manager), 0)
 
-		circuits.manager.send(Test(self, time.time()), "test")
+		manager.send(Test(self, time.time()), "test")
 		self.assertTrue(self.flag == True)
 		self.flag = False
 
-		circuits.manager.send(Test(self, time.time()), "test")
+		manager.send(Test(self, time.time()), "test")
 		self.assertTrue(self.flag == True)
 		self.flag = False
 
-		circuits.manager.send(Test(self, time.time(), stop=True), "test")
+		manager.send(Test(self, time.time(), stop=True), "test")
 		self.assertTrue(self.flag == False)
 
-		circuits.manager.remove(onSTOP)
-		circuits.manager.remove(onTEST, "test")
-		circuits.manager.remove(onFOO, "test")
-		circuits.manager.remove(onBAR, "bar")
+		manager.remove(onSTOP)
+		manager.remove(onTEST, "test")
+		manager.remove(onFOO, "test")
+		manager.remove(onBAR, "bar")
 
-		self.assertEquals(len(circuits.manager._handlers), 0)
+		self.assertEquals(len(manager._handlers), 0)
 
 def suite():
 	return unittest.makeSuite(EventTestCase, "test")
