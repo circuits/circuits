@@ -7,7 +7,7 @@
 Brige component to bridge one or more other nodes in a single system.
 That is, events in system A bridged to system B are shared. For exampe:
 
-A <-- Bridge --> B
+A <--> Bridge <--> B
 
 Events that propagate in A, will propagate to B across the Bridge.
 Events that propagate in B, will propagate to A across the Bridge.
