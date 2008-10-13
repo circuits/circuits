@@ -102,15 +102,6 @@ def listener(*args, **kwargs):
 		return f
 	return decorate
 
-def filter(*args, **kwargs):
-	"""filter(*args, **kwargs) -> new filter handler
-
-	Deprecated - Use listener(... type="filter")
-	"""
-
-	kwargs["type"] = "filter"
-	return listener(*args, **kwargs)
-
 
 class Registered(Event):
 	"""Registered(Event) -> Registered Event"""
