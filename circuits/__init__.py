@@ -4,7 +4,30 @@
 
 """Circuits
 
-...
+Circuits is an event-driven framework with a focus on Component Software
+Architectures. Circuits is based arounds two core concepts:
+	* Everything is a Component
+	* Everything is an Event
+
+Circuits has a clean architecture and has no external dependancies on any
+other library. It's simplistic design is unmatchable but yet deliversa
+powerful framework for building large, scalable, maintainable applications
+and systems. Circuits was a core integral part of the pymills library
+developed in 2006 and was partly inspired by the Trac architecture.
+
+Simple Example:
+
+>>> from circuits.core import listener, Component, Event, Manager
+
+>>> class Hello(Component):
+...	@listener("hello")
+...	def onHELLO(self):
+...		print "Hello World!"
+>>> manager = Manager()
+>>> manager += hello
+>>> manager.push(Event(), "hello")
+>>> manager.flush()
+Hello World!
 """
 
 __name__ = "circuits"
