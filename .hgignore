@@ -1,6 +1,8 @@
 syntax: glob
 
 *.pyc
+*.pyo
 build
 dist
+.coverage
 circuits.egg-info
