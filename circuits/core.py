@@ -4,7 +4,9 @@
 
 """Core
 
-Core components and managers.
+Core of the circuits library containing all of the essentials for a
+circuits based application or system. Normal usage of circuits:
+>>> from circuits import listener, Manager, Component, Event
 """
 
 from itertools import chain
@@ -16,28 +18,34 @@ from inspect import getargspec, getmembers
 class Error(Exception):
 	pass
 
+
 class InvalidHandler(Error):
 	"""InvalidHandler(handler) -> Invalid Handler Exception
 
-	Invalid Handler Exception raised when adding a function
-	to a manager that is neither a listener or filter.
+	Invalid Handler Exception raised when adding a callable
+	to a manager that does not specify a type, either a
+	"listener" or "filter".
 	"""
 
 	def __init__(self, handler):
 		super(InvalidHandler, self).__init__()
 		self.handler = handler
 
+
 class Event(object):
-	"""Event(*args, **kwargs) -> new event object
+	"""Event(*args, **kwargs) -> Event Object
 
 	Create a new event object populating it with the given
 	list of arguments and dictionary of keyword arguments.
+
+	args:   positional arguments to pass to the event handler.
+	kwargs: keyword arguments to pass to the event handler.
 	"""
 
 	channel = None
 	target = None
 
-	source = None # Used by Bridge
+	source = None  # Used by Bridge
 	ignore = False # Used by Bridge
 
 	def __new__(cls, *args, **kwargs):
@@ -48,7 +56,13 @@ class Event(object):
 		return self
 
 	def __eq__(self, y):
-		" x.__eq__(y) <==> x==y"
+		""" x.__eq__(y) <==> x==y
+
+		Tests the equality of event self against event y.
+		Two events are considered "equal" iif the name,
+		channel and target are identical as well as their
+		args and kwargs passed.
+		"""
 
 		attrs = ["name", "args", "kwargs", "channel", "target"]
 		r = [getattr(self, a) == getattr(y, a) for a in attrs]
@@ -69,7 +83,14 @@ class Event(object):
 		return "<%s/%s (%s, %s)>" % (self.name, channelStr, argsStr, kwargsStr)
 
 	def __getitem__(self, x):
-		"x.__getitem__(y) <==> x[y]"
+		"""x.__getitem__(y) <==> x[y]
+
+		Get and return data from the event object requested by "x".
+		If an int is passed to x, the requested argument from self.args
+		is returned index by x. If a str is passed to x, the requested
+		keyword argument from self.kwargs is returned keyed by x.
+		Otherwise a TypeError is raised as nothing else is valid.
+		"""
 
 		if type(x) == int:
 			return self.args[x]
@@ -80,13 +101,26 @@ class Event(object):
 
 
 def listener(*args, **kwargs):
-	"""listener(*args, **kwargs) -> new listener handler
+	"""listener(*args, **kwargs) -> Event Handler
 
-	Decorator to wrap a function into an event handler that
+	Decorator to wrap a callable into an event handler that
 	listens on a set of channels defined by args. The type
 	of the listener defaults to "listener" and is defined
 	by kwargs["type"]. To define a filter, pass type="filter"
 	to kwargs.
+	
+	Examples:
+
+	>>> from circuits.core import listener
+	>>> @listener("foo")
+	... def onFOO():
+	...	pass
+	>>> @listener("bar", type="filter")
+	... def onBAR():
+	...	pass
+	>>> @listener("foo", "bar")
+	... def onFOOBAR():
+	...	pass
 	"""
 
 	def decorate(f):
