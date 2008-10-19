@@ -78,3 +78,9 @@ __extras_require__ = {
 
 __entry_points__ = """
 """
+
+from core import *
+from timers import *
+from bridge import *
+from workers import *
+from debugger import *
