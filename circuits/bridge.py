@@ -50,7 +50,6 @@ class Bridge(Component):
 		self._write = []
 		self._buffers = {}
 		self._read = [self._sock]
-		self._socks = [self._sock]
 
 		self.address = address
 		self.port = port
@@ -119,9 +118,6 @@ class Bridge(Component):
 			for address, data in self._buffers.iteritems():
 				if data:
 					self.send(Write(address, data[0]), "write", self.channel)
-				else:
-					if self._close:
-						self.close()
 			self._write.remove(w[0])
 
 		if r:
@@ -147,8 +143,7 @@ class Bridge(Component):
 		self.write("<broadcast", data)
 
 	def close(self):
-		if self._socks:
-			self.push(Close(), "close", self.channel)
+		self.push(Close(), "close", self.channel)
 
 	@listener("close", type="filter")
 	def onCLOSE(self):
@@ -159,7 +154,6 @@ class Bridge(Component):
 		"""
 
 		try:
-			self._socks.remove(self._sock)
 			self._read.remove(self._sock)
 			self._write.remove(self._sock)
 			self._sock.shutdown(2)
@@ -177,7 +171,6 @@ class Bridge(Component):
 		"""
 
 		try:
-			print "Sending to %s" % repr(address)
 			self._sock.sendto(data, address)
 			del self._buffers[address][0]
 		except socket.error, e:
