@@ -16,32 +16,46 @@ When the Bridge is created, it will automatically attempt to send a
 Helo event to any configured nodes.
 """
 
+import socket
+import select
 from cPickle import dumps as pickle
 from cPickle import loads as unpickle
 from socket import gethostname, gethostbyname, gethostbyaddr
 
-from circuits.core import listener, Event
+from circuits.core import listener, Event, Component
 
 
-class Helo(Event):
-	pass
+POLL_INTERVAL = 0.00001
+BUFFER_SIZE = 131072
 
+class Read(Event): pass
+class Write(Event): pass
+class Close(Event): pass
+class Helo(Event): pass
 
-class DummyBridge(object):
-
-	def poll(self, *args, **kwargs):
-		pass
-
-
-class Bridge(UDPServer):
+class Bridge(Component):
 
 	IgnoreEvents = ["Read", "Write"]
 	IgnoreChannels = []
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, port, address="", nodes=[], *args, **kwargs):
 		super(Bridge, self).__init__(*args, **kwargs)
 
-		self.nodes = set(kwargs.get("nodes", []))
+		self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self._sock.setsockopt(socket.SOL_SOCKET,	socket.SO_BROADCAST, 1)
+		self._sock.setblocking(False)
+		self._sock.bind((address, port))
+
+		self._write = []
+		self._buffers = {}
+		self._read = [self._sock]
+		self._socks = [self._sock]
+
+		self.address = address
+		self.port = port
+
+		self.nodes = set(nodes)
 
 		if self.address in ["", "0.0.0.0"]:
 			address = gethostbyname(gethostname())
@@ -50,6 +64,8 @@ class Bridge(UDPServer):
 
 		self.ourself = (address, self.port)
 
+	@listener("registered")
+	def onREGISTERED(self):
 		self.push(Helo(*self.ourself), "helo")
 
 	@listener(type="filter")
@@ -71,11 +87,11 @@ class Bridge(UDPServer):
 		else:
 			self.write(("<broadcast>", self.port), s)
 
-	@filter("pong")
-	def onHELO(self, event, address, port, time):
+	@listener("pong", type="filter")
+	def onPONG(self, event, address, port, time):
 		print "PONG: %s" % event
 
-	@filter("helo")
+	@listener("helo", type="filter")
 	def onHELO(self, event, address, port):
 		source = event.source
 
@@ -86,7 +102,7 @@ class Bridge(UDPServer):
 			self.nodes.add((address, port))
 			self.push(Helo(*self.ourself), "helo")
 
-	@filter("read")
+	@listener("read", type="filter")
 	def onREAD(self, address, data):
 		event = unpickle(data)
 		channel = event.channel
@@ -95,3 +111,79 @@ class Bridge(UDPServer):
 		if not source:
 			event.source = address
 		self.send(event, channel, target)
+
+	def poll(self, wait=POLL_INTERVAL):
+		r, w, e = select.select(self._read, self._write, [], wait)
+
+		if w:
+			for address, data in self._buffers.iteritems():
+				if data:
+					self.send(Write(address, data[0]), "write", self.channel)
+				else:
+					if self._close:
+						self.close()
+			self._write.remove(w[0])
+
+		if r:
+			try:
+				data, address = self._sock.recvfrom(BUFFER_SIZE)
+
+				if not data:
+					self.close()
+				else:
+					self.push(Read(address, data), "read", self.channel)
+			except socket.error, e:
+				self.push(Error(self._sock, e), "error", self.channel)
+				self.close()
+
+	def write(self, address, data):
+		if not self._write:
+			self._write.append(self._sock)
+		if not self._buffers.has_key(address):
+			self._buffers[address] = []
+		self._buffers[address].append(data)
+
+	def broadcast(self, data):
+		self.write("<broadcast", data)
+
+	def close(self):
+		if self._socks:
+			self.push(Close(), "close", self.channel)
+
+	@listener("close", type="filter")
+	def onCLOSE(self):
+		"""Close Event
+
+		Typically this should NOT be overridden by sub-classes.
+		If it is, this should be called by the sub-class first.
+		"""
+
+		try:
+			self._socks.remove(self._sock)
+			self._read.remove(self._sock)
+			self._write.remove(self._sock)
+			self._sock.shutdown(2)
+			self._sock.close()
+		except socket.error, error:
+			self.push(Error(error), "error", self.channel)
+
+	@listener("write", type="filter")
+	def onWRITE(self, address, data):
+		"""Write Event
+
+
+		Typically this should NOT be overridden by sub-classes.
+		If it is, this should be called by the sub-class first.
+		"""
+
+		try:
+			print "Sending to %s" % repr(address)
+			self._sock.sendto(data, address)
+			del self._buffers[address][0]
+		except socket.error, e:
+			if e[0] in [32, 107]:
+				self.close()
+			else:
+				self.push(Error(e), "error", self.channel)
+				self.close()
+
