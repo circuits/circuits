@@ -16,11 +16,19 @@ class Timer(Component):
 	"""Timer(s, e, c, t, persist) -> new timer object
 
 	Creates a new timer object which when triggered
-	will return an event to be pushed onto the event
-	queue held by the Timers component.
+	will push the given event onto the event queue.
+
+	s := no. of seconds to delay
+	e := event to be fired
+	c := channel to fire event to
+	t := target to fire event to
+
+	persist := Sets this timer as persistent if True.
 	"""
 
 	def __init__(self, s, e, c="timer", t=None, persist=False):
+		"initializes x; see x.__class__.__doc__ for signature"
+
 		super(Timer, self).__init__()
 
 		self.s = s
@@ -43,8 +51,7 @@ class Timer(Component):
 		"""T.poll() -> done, (e, c, t)
 
 		Check if this timer is ready to be triggered.
-		If so, return True, (e, c, t), otherwise
-		return False, (None, None, None).
+		If so, push the event onto the event queue.
 
 		If timer is persistent, reset it after triggering.
 		"""
@@ -56,4 +63,3 @@ class Timer(Component):
 				self.reset()
 			else:
 				self.unregister()
-				return True
