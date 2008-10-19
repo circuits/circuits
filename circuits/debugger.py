@@ -9,7 +9,14 @@ Debugger component used to "debug"/"print" each event in a system.
 
 import sys
 
-from circuits.core import listener, Component
+from circuits.core import listener, Event, Component
+
+
+class Debug(Event):
+	"""Debug(Event) -> Debug Log Event
+
+	args: msg
+	"""
 
 
 class Debugger(Component):
@@ -18,6 +25,11 @@ class Debugger(Component):
 	IgnoreChannels = []
 
 	enabled = True
+
+	def __init__(self, *args, **kwargs):
+		super(Debugger, self).__init__(*args, **kwargs)
+
+		self.log = kwargs.get("log", None)
 
 	def disable(self):
 		self.enabled = False
@@ -46,4 +58,10 @@ class Debugger(Component):
 			elif channel in self.IgnoreChannels:
 				return
 			else:
-				print >> sys.stderr, event
+				if self.log:
+					if isinstance(self.log, logging.Logger)
+						self.log.debug(event)
+					else:
+						self.push(Debug(repr(event)), "debug", "log")
+				else:
+					print >> sys.stderr, event
