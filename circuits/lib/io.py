@@ -18,7 +18,15 @@ import select
 import inspect
 import readline
 
-from circuits.core import Component
+from circuits.core import Event, Component
+
+
+POLL_INTERVAL = 0.00001
+BUFFER_SIZE = 131072
+
+
+class Read(Event): pass
+
 
 class File(file):
 
