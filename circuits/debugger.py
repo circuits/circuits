@@ -59,7 +59,7 @@ class Debugger(Component):
 				return
 			else:
 				if self.log:
-					if isinstance(self.log, logging.Logger)
+					if isinstance(self.log, logging.Logger):
 						self.log.debug(event)
 					else:
 						self.push(Debug(repr(event)), "debug", "log")
