@@ -4,7 +4,7 @@
 
 """Bridge
 
-Brige component to bridge one or more other nodes in a single system.
+Brige component to bridge one or more components in a single system.
 That is, events in system A bridged to system B are shared. For exampe:
 
 A <--> Bridge <--> B
@@ -13,7 +13,9 @@ Events that propagate in A, will propagate to B across the Bridge.
 Events that propagate in B, will propagate to A across the Bridge.
 
 When the Bridge is created, it will automatically attempt to send a
-Helo event to any configured nodes.
+Helo event to any configured nodes. The default Bridge uses the UDP
+as it's transmission protocol. Events thus cannot be guaranteed of
+their order or delivery.
 """
 
 import socket
@@ -25,13 +27,20 @@ from socket import gethostname, gethostbyname, gethostbyaddr
 from circuits.core import listener, Event, Component
 
 
+__all__ = (
+		"Bridge",
+		)
+
+
 POLL_INTERVAL = 0.00001
 BUFFER_SIZE = 131072
 
+
 class Read(Event): pass
+class Helo(Event): pass
 class Write(Event): pass
 class Close(Event): pass
-class Helo(Event): pass
+
 
 class Bridge(Component):
 
