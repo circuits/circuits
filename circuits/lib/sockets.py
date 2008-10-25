@@ -24,7 +24,7 @@ try:
 except ImportError:
 	import select
 
-from circuits.core import filter, EVent, Component
+from circuits import listener, Event, Component
 
 POLL_INTERVAL = 0.00001
 CONNECT_TIMEOUT = 4
@@ -126,7 +126,7 @@ class Client(Component):
 	def write(self, data):
 		self._buffer.append(data)
 
-	@filter("close")
+	@listener("close", type="filter")
 	def onCLOSE(self):
 		"""Close Event
 
@@ -165,7 +165,7 @@ class TCPClient(Client):
 
 		super(TCPClient, self).open(host, port, ssl)
 
-	@filter("write")
+	@listener("write", type="filter")
 	def onWRITE(self, data):
 		"""Write Event
 
@@ -259,7 +259,7 @@ class Server(Component):
 		for sock in self._socks[1:]:
 			self.write(sock, data)
 
-	@filter("write")
+	@listener("write", type="filter")
 	def onWRITE(self, sock, data):
 		"""Write Event
 
@@ -281,7 +281,7 @@ class Server(Component):
 				self.push(Error(sock, e), "error", self.channel)
 				self.close()
 
-	@filter("close")
+	@listener("close", type="filter")
 	def onCLOSE(self, sock=None):
 		"""Close Event
 
@@ -398,7 +398,7 @@ class UDPServer(Server):
 		if self._socks:
 			self.push(Close(), "close", self.channel)
 
-	@filter("close")
+	@listener("close", type="filter")
 	def onCLOSE(self):
 		"""Close Event
 
@@ -415,7 +415,7 @@ class UDPServer(Server):
 		except socket.error, error:
 			self.push(Error(error), "error", self.channel)
 
-	@filter("write")
+	@listener("write", type="filter")
 	def onWRITE(self, address, data):
 		"""Write Event
 
