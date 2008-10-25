@@ -4,8 +4,9 @@
 
 """Environment Component
 
-An Environment Component that is used to create, load and manage
-system/application environments.
+An Environment Component that by default sets up a Config and Logger
+components and is used to create, load and manage system/application
+environments.
 """
 
 from __future__ import with_statement
@@ -13,6 +14,12 @@ from __future__ import with_statement
 import os
 
 from circuits.core import listener, Event, Component
+
+from log import Logger
+from config import (
+		Config,
+		Load as LoadConfig,
+		Save as SaveConfig)
 
 ###
 ### Constants
@@ -116,6 +123,8 @@ class Environment(Component):
 
 		# Create the directory structure
 		os.makedirs(self.path)
+		os.mkdir(os.path.join(self.path, "log"))
+		os.mkdir(os.path.join(self.path, "conf"))
 
 		# Create a few files
 		createFile(os.path.join(self.path, "VERSION"), "%d" % self.version)
@@ -123,11 +132,26 @@ class Environment(Component):
 				os.path.join(self.path, "README"),
 				"This directory contains a %s Environment." % self.name)
 
+		# Setup the default configuration
+		configfile = os.path.join(self.path, "conf", "%s.ini" % self.name)
+		createFile(configfile)
+		self.config = Config(configfile)
+		self.manager += self.config
+		self.send(LoadConfig(), "load", "config")
+		for section in CONFIG:
+			if not self.config.has_section(section):
+				self.config.add_section(section)
+			for option, value in CONFIG[section].iteritems():
+				if type(value) == str:
+					value = value % {"name": self.name}
+				self.config.set(section, option, value)
+		self.send(SaveConfig(), "save", "config")
+
 		self.send(Created(), "created", self.channel)
 
 	@listener("verify")
-	def onVERIFY(self, load=False):
-		"""E.onVERIFY(load=False)
+	def onVERIFY(self):
+		"""E.onVERIFY()
 
 		Verify the Environment by checking it's version against
 		the expected version.
@@ -135,31 +159,28 @@ class Environment(Component):
 		If the Environment's version does not match, send
 		an EnvNeedsUpgrade event. If the Environment is
 		invalid and cannot be read, send an Invalid
-		event. If load=True, send a Load event.
+		event.
 		"""
 
 		with open(os.path.join(self.path, "VERSION"), "r") as f:
 			version = f.read().strip()
 			if not version:
 				msg = "No Environment version information"
-				self.push(Invalid(self.env.path, msg), "invalid", self.channel)
+				self.send(Invalid(self.env.path, msg), "invalid", self.channel)
 			else:
 				try:
 					verion = int(version)
 					if self.version > version:
-						self.push(
+						self.send(
 								NeedsUpgrade(self.env.path),
 								"needsupgrade",
 								self.channel)
 				except ValueError:
 					msg = "Environment version information invalid"
-					self.push(
+					self.send(
 							Invalid(self.env.path, msg),
 							"invalid",
 							self.channel)
-
-		if load:
-			self.push(Load(), "load", self.channel)
 
 	@listener("load")
 	def onLOAD(self, verify=False):
@@ -170,6 +191,23 @@ class Environment(Component):
 		"""
 
 		if verify:
-			self.push(Verify(load=True), "verify", self.channel)
-		else:
-			self.push(Loaded(), "loaded", self.channel)
+			self.send(Verify(), "verify", self.channel)
+
+		# Create Config Component
+		configfile = os.path.join(self.path, "conf", "%s.ini" % self.name)
+		self.config = Config(configfile)
+		self.manager += self.config
+		self.send(LoadConfig(), "load", "config")
+
+		# Create Logger Component
+		logname = self.name
+		logtype = self.config.get("logging", "type", "file")
+		loglevel = self.config.get("logging", "level", "INFO")
+		logfile = self.config.get("logging", "file", "/dev/null")
+		logfile = logfile % {"name": self.name}
+		if not os.path.isabs(logfile):
+			logfile = os.path.join(self.path, logfile)
+		self.log = Logger(logfile, logname, logtype, loglevel)
+		self.manager += self.log
+
+		self.push(Loaded(), "loaded", self.channel)
