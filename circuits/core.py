@@ -394,7 +394,7 @@ class Component(Manager):
 				manager.add(handler, channel)
 
 		if not manager == self:
-			manager.push(Registered(), "registered", self.channel)
+			manager.send(Registered(), "registered", self.channel)
 
 		self.manager = manager
 
