@@ -5,15 +5,18 @@
 """Circuits
 
 Circuits is an event-driven framework with a focus on Component Software
-Architectures. Circuits is based arounds two core concepts:
-	* Everything is a Component
-	* Everything is an Event
+Architectures where System Functionality is defined in Components. Components
+communicate with one another by propagating events throughout the system. Each
+Component can react to events and expose events to other parts of the system
+Components are able to manage their own events and can also be linked to other
+Components.
 
-Circuits has a clean architecture and has no external dependancies on any
-other library. It's simplistic design is unmatchable but yet deliversa
+Circuits has a clean architecture and has no external dependencies on any
+other library. It's simplistic design is unmatchable but yet delivers a
 powerful framework for building large, scalable, maintainable applications
-and systems. Circuits was a core integral part of the pymills library
-developed in 2006 and was partly inspired by the Trac architecture.
+and systems. Circuits was a core integral part of the
+[http://trac.softcircuit.com.au/pymills pymills] library developed in 2006
+and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 
 Simple Example:
 
