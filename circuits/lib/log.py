@@ -104,22 +104,42 @@ class Logger(Component):
 	def onDEBUG(self, msg, *args, **kwargs):
 		self.logger.debug(msg, *args, **kwargs)
 
+	def debug(self, msg, *args, **kwargs):
+		self.push(Debug(msg, *args, **kwargs), "debug", self.channel)
+
 	@listener("info")
 	def onINFO(self, msg, *args, **kwargs):
 		self.logger.info(msg, *args, **kwargs)
+
+	def info(self, msg, *args, **kwargs):
+		self.push(Info(msg, *args, **kwargs), "info", self.channel)
 
 	@listener("warning")
 	def onWARNING(self, msg, *args, **kwargs):
 		self.logger.warning(msg, *args, **kwargs)
 
+	def warning(self, msg, *args, **kwargs):
+		self.push(Warning(msg, *args, **kwargs), "warning", self.channel)
+
+	warn = warning
+
 	@listener("error")
 	def onERROR(self, msg, *args, **kwargs):
 		self.logger.error(msg, *args, **kwargs)
+
+	def error(self, msg, *args, **kwargs):
+		self.push(Error(msg, *args, **kwargs), "error", self.channel)
 
 	@listener("exception")
 	def onEXCEPTION(self, msg, *args):
 		self.logger.exception(msg, *args)
 
+	def exception(self, msg, *args, **kwargs):
+		self.push(Exception(msg, *args, **kwargs), "exception", self.channel)
+
 	@listener("critical")
 	def onCRITICAL(self, msg, *args, **kwargs):
 		self.logger.critical(msg, *args, **kwargs)
+
+	def critical(self, msg, *args, **kwargs):
+		self.push(Critical(msg, *args, **kwargs), "critical", self.channel)
