@@ -210,4 +210,4 @@ class Environment(Component):
 		self.log = Logger(logfile, logname, logtype, loglevel)
 		self.manager += self.log
 
-		self.push(Loaded(), "loaded", self.channel)
+		self.send(Loaded(), "loaded", self.channel)
