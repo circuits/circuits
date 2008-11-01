@@ -21,7 +21,7 @@ from circuits.core import listener, Event, Component
 ### Supporting Functions
 ###
 
-linesep = re.compile("\r?\n")
+LINESEP = re.compile("\r?\n")
 
 def splitLines(s, buffer):
 	"""splitLines(s, buffer) -> lines, buffer
@@ -32,7 +32,7 @@ def splitLines(s, buffer):
 	buffer for further processing.
 	"""
 
-	lines = linesep.split(buffer + s)
+	lines = LINESEP.split(buffer + s)
 	return lines[:-1], lines[-1]
 
 def strip(s, color=False):
@@ -142,8 +142,9 @@ class IRC(Component):
 	 *	Kick, Motd
 	"""
 
-	_buffer = ""
-	_info = {}
+	def __init__(self, *args, **kwargs):
+		self._data = ""
+		self._info = {}
 
 	###
 	### Properties
@@ -367,8 +368,7 @@ class IRC(Component):
 		lines of text, leave in the buffer.
 		"""
 
-		lines, buffer = splitLines(data, self._buffer)
-		self._buffer = buffer
+		lines, self._data = splitLines(data, self._data)
 		for line in lines:
 			self.push(Raw(line), "raw", self.channel)
 
