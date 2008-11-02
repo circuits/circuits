@@ -12,7 +12,7 @@ import optparse
 from circuits.lib.sockets import TCPServer
 from circuits import __version__ as systemVersion
 from circuits.lib.http import HTTP, Response, Dispatcher
-from circuits import listener, Event, Component, Debugger, Manager
+from circuits import listener, Event, Component, Manager
 
 USAGE = "%prog [options] [path]"
 VERSION = "%prog v" + systemVersion
@@ -71,14 +71,9 @@ def main():
 		address, port = opts.bind, 80
 
 	manager = Manager()
-	debugger = Debugger()
 	server = WebServer(port, address)
 
-	debugger.enable()
-	#debugger.IgnoreEvents.extend(["Read", "Write", "Send", "Close"])
-
 	manager += server
-	manager += debugger
 	manager += HelloWorld()
 
 	while True:
