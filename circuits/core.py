@@ -2,10 +2,10 @@
 # Date:		2nd April 2006
 # Author:	James Mills, prologic at shortcircuit dot net dot au
 
-"""Core
-
+"""
 Core of the circuits library containing all of the essentials for a
 circuits based application or system. Normal usage of circuits:
+
 >>> from circuits import listener, Manager, Component, Event
 """
 
@@ -20,26 +20,31 @@ class Error(Exception):
 
 
 class InvalidHandler(Error):
-	"""InvalidHandler(handler) -> Invalid Handler Exception
+	"""Invalid Handler Exception
 
 	Invalid Handler Exception raised when adding a callable
-	to a manager that does not specify a type, either a
-	"listener" or "filter".
+	to a manager that was not decorated with the
+	:func:`listener decorator <circuits.core.listener>`.
 	"""
 
 	def __init__(self, handler):
+		"initializes x; see x.__class__.__doc__ for signature"
+
 		super(InvalidHandler, self).__init__()
+
 		self.handler = handler
 
 
 class Event(object):
-	"""Event(*args, **kwargs) -> Event Object
+	"""Create a new Event Object
 
 	Create a new event object populating it with the given
-	list of arguments and dictionary of keyword arguments.
+	list of arguments and keyword arguments.
 
-	args:   positional arguments to pass to the event handler.
-	kwargs: keyword arguments to pass to the event handler.
+	:param args: list of arguments for this event
+	:type args: list/tuple or iterable
+	:param kwargs: keyword arguments for this event
+	:type kwargs: dict
 	"""
 
 	channel = None
@@ -101,7 +106,7 @@ class Event(object):
 
 
 def listener(*args, **kwargs):
-	"""listener(*args, **kwargs) -> Event Handler
+	"""Creates an Event Handler of a callable object
 
 	Decorator to wrap a callable into an event handler that
 	listens on a set of channels defined by args. The type
@@ -141,12 +146,29 @@ class Registered(Event):
 
 
 class Manager(object):
-	"""Manager() -> new event manager
+	"""Creates a new Manager
 
-	Create a new event manager which manages events.
+	Create a new event manager which manages Components and Events.
+
+	Example:
+
+	.. code-block:: python
+		:linenos:
+
+		class Foo(Component):
+
+			@listener("hello")
+			def onHELLO(self):
+				print "Hello World"
+
+		manager = Manager()
+		foo = Foo()
+		manager += foo
 	"""
 
 	def __init__(self, *args, **kwargs):
+		"initializes x; see x.__class__.__doc__ for signature"
+
 		super(Manager, self).__init__()
 
 		self._queue = deque()
@@ -339,33 +361,34 @@ class Manager(object):
 
 
 class Component(Manager):
-	"""Component() -> new component object
+	"""Creates a new Component
 
-	This should be sub-classed with methods defined for filters
-	and listeners. Only one instance of any component can be
-	instantiated. Further instantiation of the same component
-	results in the same instance previously instantiated.
+	Subclasses of Component define Event Handlers by decorating
+	methods by using the listener decorator.
 
-	Any filter/listeners found in the class will automatically
-	be setup and added to the event manager. If a channel is
-	requireed one will be added.
+	Example:
 
-	Filters and Listeners are defined like so:
+	.. code-block:: python
+		:linenos:
 
-	C{
-	@filter()
-	def onFOO(self):
-		return True
+		class Foo(Component):
 
-	@listener()
-	def onBAR(self):
-		print event
-	}
+			@listener("hello")
+			def onHELLO(self):
+				print "Hello World"
+
+	All listeners found in the Component will automatically be
+	picked up when the Component is instantiated.
+
+	:param channel: channel this Component listens on (*default*: ``None``)
+	:type channel: str
 	"""
 
 	channel = None
 
 	def __init__(self, *args, **kwargs):
+		"initializes x; see x.__class__.__doc__ for signature"
+
 		super(Component, self).__init__(*args, **kwargs)
 
 		self.channel = kwargs.get("channel", self.channel)
@@ -399,11 +422,7 @@ class Component(Manager):
 
 
 	def unregister(self):
-		"""C.unregister() -> None
-
-		Unregister all listeners/filters associated with
-		this component
-		"""
+		"Unregister all registered event handlers from the manager."
 
 		for handler in self._handlers.copy():
 			self.manager.remove(handler)
