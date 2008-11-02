@@ -88,7 +88,7 @@ class Client(Component):
 		if w:
 			if self._buffer:
 				data = self._buffer[0]
-				self.send(Write(data), "write", self.channel)
+				self.send(Write(data), "send", self.channel)
 			else:
 				if self._close:
 					self.close()
@@ -119,16 +119,22 @@ class Client(Component):
 			self.push(Error(error), "error", self.channel)
 			self.close()
 
-	def close(self):
+	@listener("close")
+	def onCLOSE(self):
 		if self._socks:
-			self.push(Close(), "close", self.channel)
-	
-	def write(self, data):
+			self.push(Close(), "__close__", self.channel)
+
+	close = onCLOSE
+
+	@listener("write")
+	def onWRITE(self, data):
 		self._buffer.append(data)
 
-	@listener("close", type="filter")
-	def onCLOSE(self):
-		"""Close Event
+	write = onWRITE
+
+	@listener("__close__", type="filter")
+	def on__CLOSE__(self):
+		"""Close Event (Private)
 
 		Typically this should NOT be overridden by sub-classes.
 		If it is, this should be called by the sub-class first.
@@ -165,9 +171,9 @@ class TCPClient(Client):
 
 		super(TCPClient, self).open(host, port, ssl)
 
-	@listener("write", type="filter")
-	def onWRITE(self, data):
-		"""Write Event
+	@listener("send", type="filter")
+	def onSEND(self, data):
+		"""Send Event
 
 		Typically this should NOT be overridden by sub-classes.
 		If it is, this should be called by the sub-class first.
@@ -219,7 +225,7 @@ class Server(Component):
 		for sock in w:
 			if self._buffers[sock]:
 				data = self._buffers[sock][0]
-				self.send(Write(sock, data), "write", self.channel)
+				self.send(Write(sock, data), "send", self.channel)
 			else:
 				if sock in self._close:
 					self.close(sock)
@@ -246,22 +252,28 @@ class Server(Component):
 					self.push(Error(sock, e), "error", self.channel)
 					self.close(sock)
 
-	def close(self, sock=None):
+	@listener("close")
+	def onCLOSE(self, sock=None):
 		if sock in self:
-			self.push(Close(sock), "close", self.channel)
+			self.push(Close(sock), "__close__", self.channel)
 
-	def write(self, sock, data):
+	close = onCLOSE
+
+	@listener("write")
+	def onWRITE(self, sock, data):
 		if not sock in self._write:
 			self._write.append(sock)
 		self._buffers[sock].append(data)
+
+	write = onWRITE
 
 	def broadcast(self, data):
 		for sock in self._socks[1:]:
 			self.write(sock, data)
 
-	@listener("write", type="filter")
-	def onWRITE(self, sock, data):
-		"""Write Event
+	@listener("send", type="filter")
+	def onSEND(self, sock, data):
+		"""Send Event
 
 
 		Typically this should NOT be overridden by sub-classes.
@@ -281,9 +293,9 @@ class Server(Component):
 				self.push(Error(sock, e), "error", self.channel)
 				self.close()
 
-	@listener("close", type="filter")
-	def onCLOSE(self, sock=None):
-		"""Close Event
+	@listener("__close__", type="filter")
+	def on__CLOSE__(self, sock=None):
+		"""Close Event (Private)
 
 		Typically this should NOT be overridden by sub-classes.
 		If it is, this should be called by the sub-class first.
@@ -366,7 +378,7 @@ class UDPServer(Server):
 		if w:
 			for address, data in self._buffers.iteritems():
 				if data:
-					self.send(Write(address, data[0]), "write", self.channel)
+					self.send(Write(address, data[0]), "send", self.channel)
 				else:
 					if self._close:
 						self.close()
@@ -384,23 +396,29 @@ class UDPServer(Server):
 				self.push(Error(self._sock, e), "error", self.channel)
 				self.close()
 
-	def write(self, address, data):
+	@listener("write")
+	def onWRITE(self, address, data):
 		if not self._write:
 			self._write.append(self._sock)
 		if not self._buffers.has_key(address):
 			self._buffers[address] = []
 		self._buffers[address].append(data)
 
+	write = onWRITE
+
 	def broadcast(self, data):
 		self.write("<broadcast", data)
 
-	def close(self):
-		if self._socks:
-			self.push(Close(), "close", self.channel)
-
-	@listener("close", type="filter")
+	@listener("close")
 	def onCLOSE(self):
-		"""Close Event
+		if self._socks:
+			self.push(Close(), "__close__", self.channel)
+
+	close = onCLOSE
+
+	@listener("__close__", type="filter")
+	def on__CLOSE__(self):
+		"""Close Event (Private)
 
 		Typically this should NOT be overridden by sub-classes.
 		If it is, this should be called by the sub-class first.
@@ -415,9 +433,9 @@ class UDPServer(Server):
 		except socket.error, error:
 			self.push(Error(error), "error", self.channel)
 
-	@listener("write", type="filter")
-	def onWRITE(self, address, data):
-		"""Write Event
+	@listener("send", type="filter")
+	def onSEND(self, address, data):
+		"""Send Event
 
 
 		Typically this should NOT be overridden by sub-classes.

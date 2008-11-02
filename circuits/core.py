@@ -173,6 +173,8 @@ class Manager(object):
 	
 	def __iadd__(self, y):
 		y.register(self.manager)
+		if hasattr(y, "registered"):
+			y.registered()
 		return self
 
 	def __sub__(self, y):
@@ -392,9 +394,6 @@ class Component(Manager):
 					channel = "%s:%s" % (self.channel, channel)
 
 				manager.add(handler, channel)
-
-		if not manager == self:
-			manager.send(Registered(), "registered", self.channel)
 
 		self.manager = manager
 
