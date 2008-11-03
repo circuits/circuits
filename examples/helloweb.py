@@ -14,6 +14,11 @@ from circuits import __version__ as systemVersion
 from circuits.lib.http import HTTP, Response, Dispatcher
 from circuits import listener, Event, Component, Manager
 
+try:
+	import psyco
+except ImportError:
+	psyco = None
+
 USAGE = "%prog [options] [path]"
 VERSION = "%prog v" + systemVersion
 
@@ -33,6 +38,10 @@ def parse_options():
 	parser.add_option("-b", "--bind",
 			action="store", default="0.0.0.0:8000", dest="bind",
 			help="Bind to address:port")
+
+	parser.add_option("-s", "--speed",
+			action="store_true", default=False, dest="speed",
+			help="Enable psyco (circuits on speed!)")
 
 	opts, args = parser.parse_args()
 
@@ -63,6 +72,9 @@ class WebServer(TCPServer):
 
 def main():
 	opts, args = parse_options()
+
+	if opts.speed and psyco:
+		psyco.full()
 
 	if ":" in opts.bind:
 		address, port = opts.bind.split(":")
