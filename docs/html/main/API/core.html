@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>circuits.core &mdash; circuits v1.0a1 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../../',
+          VERSION:     '1.0a1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: ''
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/interface.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="../../contents.html" />
+    <link rel="index" title="Global index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="circuits v1.0a1 documentation" href="../../index.html" />
+    <link rel="next" title="circuits.bridge" href="../Standard/bridge.html" />
+    <link rel="prev" title="Circuits Documentation:" href="../../index.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="../Standard/bridge.html" title="circuits.bridge"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../../index.html" title="Circuits Documentation:"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-circuits.core">
+<h1 id="module-circuits.core">circuits.core<a class="headerlink" href="#module-circuits.core" title="Permalink to this headline">¶</a></h1>
+<p>Core of the circuits library containing all of the essentials for a
+circuits based application or system. Normal usage of circuits:</p>
+<div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">circuits</span> <span class="kn">import</span> <span class="n">listener</span><span class="p">,</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Event</span>
+</pre></div>
+<dl class="class">
+<dt id="circuits.core.Component">
+<!--[circuits.core.Component]-->class <tt class="descclassname">circuits.core.</tt><tt class="descname">Component</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#circuits.core.Component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Component</p>
+<p>Subclasses of Component define Event Handlers by decorating
+methods by using the listener decorator.</p>
+<p>Example:</p>
+<table class="highlighttable"><tr><td class="linenos"><pre>1
+2
+3
+4
+5</pre></td><td class="code"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+
+        <span class="nd">@listener</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">onHELLO</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s">&quot;Hello World&quot;</span>
+</pre></div>
+</td></tr></table><p>All listeners found in the Component will automatically be
+picked up when the Component is instantiated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>channel</em> (str) &#8211; channel this Component listens on (<em>default</em>: <tt class="xref docutils literal"><span class="pre">None</span></tt>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="circuits.core.Component.unregister">
+<!--[circuits.core.Component.unregister]--><tt class="descname">unregister</tt><big>(</big><big>)</big><a class="headerlink" href="#circuits.core.Component.unregister" title="Permalink to this definition">¶</a></dt>
+<dd>Unregister all registered event handlers from the manager.</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="circuits.core.Event">
+<!--[circuits.core.Event]-->class <tt class="descclassname">circuits.core.</tt><tt class="descname">Event</tt><a class="headerlink" href="#circuits.core.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new Event Object</p>
+<p>Create a new event object populating it with the given
+list of arguments and keyword arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>args</em> (list/tuple or iterable) &#8211; list of arguments for this event</li>
+<li><em>kwargs</em> (dict) &#8211; keyword arguments for this event</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="circuits.core.InvalidHandler">
+<!--[circuits.core.InvalidHandler]-->exception <tt class="descclassname">circuits.core.</tt><tt class="descname">InvalidHandler</tt><a class="headerlink" href="#circuits.core.InvalidHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invalid Handler Exception</p>
+<p>Invalid Handler Exception raised when adding a callable
+to a manager that was not decorated with the
+<a title="circuits.core.listener" class="reference internal" href="#circuits.core.listener"><tt class="xref docutils literal"><span class="pre">listener</span> <span class="pre">decorator</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="circuits.core.Manager">
+<!--[circuits.core.Manager]-->class <tt class="descclassname">circuits.core.</tt><tt class="descname">Manager</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#circuits.core.Manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Manager</p>
+<p>Create a new event manager which manages Components and Events.</p>
+<p>Example:</p>
+<table class="highlighttable"><tr><td class="linenos"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></td><td class="code"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+
+        <span class="nd">@listener</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">onHELLO</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s">&quot;Hello World&quot;</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">()</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+<span class="n">manager</span> <span class="o">+=</span> <span class="n">foo</span>
+</pre></div>
+</td></tr></table><dl class="method">
+<dt id="circuits.core.Manager.add">
+<!--[circuits.core.Manager.add]--><tt class="descname">add</tt><big>(</big><em>handler</em>, <em>channel=None</em><big>)</big><a class="headerlink" href="#circuits.core.Manager.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>E.add(handler, channel) -&gt; None</p>
+<p>Add a new filter or listener to the event manager
+adding it to the given channel. If no channel is
+given, add it to the global channel.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="circuits.core.Manager.flush">
+<!--[circuits.core.Manager.flush]--><tt class="descname">flush</tt><big>(</big><big>)</big><a class="headerlink" href="#circuits.core.Manager.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>E.flushEvents() -&gt; None</p>
+<p>Flush all events waiting in the queue.
+Any event waiting in the queue will be sent out
+to filters/listeners.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="circuits.core.Manager.push">
+<!--[circuits.core.Manager.push]--><tt class="descname">push</tt><big>(</big><em>event</em>, <em>channel</em>, <em>target=None</em><big>)</big><a class="headerlink" href="#circuits.core.Manager.push" title="Permalink to this definition">¶</a></dt>
+<dd><p>E.push(event, channel, target=None) -&gt; None</p>
+<p>Push the given event onto the given channel.
+This will queue the event up to be processed later
+by flushEvents. If target is given, the event will
+be queued for processing by the component given by
+target.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="circuits.core.Manager.remove">
+<!--[circuits.core.Manager.remove]--><tt class="descname">remove</tt><big>(</big><em>handler</em>, <em>channel=None</em><big>)</big><a class="headerlink" href="#circuits.core.Manager.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>E.remove(handler, channel=None) -&gt; None</p>
+<p>Remove the given filter or listener from the
+event manager removing it from the given channel.
+if channel is None, remove it from the global
+channel. This will succeed even if the specified
+handler has already been removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="circuits.core.Manager.send">
+<!--[circuits.core.Manager.send]--><tt class="descname">send</tt><big>(</big><em>event</em>, <em>channel</em>, <em>target=None</em><big>)</big><a class="headerlink" href="#circuits.core.Manager.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>E.send(event, channel, target=None) -&gt; None</p>
+<p>Send the given event to filters/listeners on the
+channel specified. If target is given, send this
+event to filters/listeners of the given target
+component.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="circuits.core.Registered">
+<!--[circuits.core.Registered]-->class <tt class="descclassname">circuits.core.</tt><tt class="descname">Registered</tt><a class="headerlink" href="#circuits.core.Registered" title="Permalink to this definition">¶</a></dt>
+<dd>Registered(Event) -&gt; Registered Event</dd></dl>
+
+<dl class="function">
+<dt id="circuits.core.listener">
+<!--[circuits.core.listener]--><tt class="descclassname">circuits.core.</tt><tt class="descname">listener</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#circuits.core.listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an Event Handler of a callable object</p>
+<p>Decorator to wrap a callable into an event handler that
+listens on a set of channels defined by args. The type
+of the listener defaults to &#8220;listener&#8221; and is defined
+by kwargs[&#8220;type&#8221;]. To define a filter, pass type=&#8221;filter&#8221;
+to kwargs.</p>
+<p>Examples:</p>
+<div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">circuits.core</span> <span class="kn">import</span> <span class="n">listener</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@listener</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">onFOO</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@listener</span><span class="p">(</span><span class="s">&quot;bar&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;filter&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">onBAR</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@listener</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="s">&quot;bar&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">onFOOBAR</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+</pre></div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="../../index.html" title="previous chapter">Circuits Documentation:</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../Standard/bridge.html" title="next chapter">circuits.bridge</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/main/API/core.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="../../search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="../Standard/bridge.html" title="circuits.bridge"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../../index.html" title="Circuits Documentation:"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2008, James Mills.
+      Last updated on Nov 03, 2008.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

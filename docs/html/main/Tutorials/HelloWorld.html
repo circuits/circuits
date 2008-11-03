@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Tutorial: Hello World! &mdash; circuits v1.0a1 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../../',
+          VERSION:     '1.0a1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: ''
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/interface.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="../../contents.html" />
+    <link rel="index" title="Global index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="circuits v1.0a1 documentation" href="../../index.html" />
+    <link rel="next" title="What&#8217;s new in TurboGears 2" href="../WhatsNew.html" />
+    <link rel="prev" title="Quickstarting a TurboGears 2 project" href="../QuickStart.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="../WhatsNew.html" title="What&#8217;s new in TurboGears 2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../QuickStart.html" title="Quickstarting a TurboGears 2 project"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="tutorial-hello-world">
+<h1 id="tutorial-hello-world">Tutorial: Hello World!<a class="headerlink" href="#tutorial-hello-world" title="Permalink to this headline">¶</a></h1>
+<table class="highlighttable"><tr><td class="linenos"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58</pre></td><td class="code"><div class="highlight"><pre><span class="c1">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># vim: set sw=3 sts=3 ts=3</span>
+
+<span class="s2">&quot;&quot;&quot;(Example) Hello World</span>
+
+<span class="s2">A trivial simple example of using circuits to print a simple</span>
+<span class="s2">message.</span>
+
+<span class="s2">This example demonstrates:</span>
+<span class="s2">	* Basic Component creation.</span>
+<span class="s2">	* Basic Event handling.</span>
+
+<span class="s2">This example makes use of:</span>
+<span class="s2">	* Component</span>
+<span class="s2">	* Event</span>
+<span class="s2">	* Manager</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">from</span> <span class="n">circuits</span><span class="o">.</span><span class="n">core</span> <span class="n">import</span> <span class="n">listener</span><span class="p">,</span> <span class="no">Event</span><span class="p">,</span> <span class="no">Component</span><span class="p">,</span> <span class="no">Manager</span>
+
+<span class="c1">###</span>
+<span class="c1">### Events</span>
+<span class="c1">###</span>
+
+<span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="no">Event</span><span class="p">):</span>
+	<span class="s2">&quot;&quot;&quot;Message(Event) -&gt; Message Event</span>
+
+<span class="s2">	args: message</span>
+<span class="s2">	&quot;&quot;&quot;</span>
+
+<span class="c1">###</span>
+<span class="c1">### Components</span>
+<span class="c1">###</span>
+
+<span class="k">class</span> <span class="nc">Printer</span><span class="p">(</span><span class="no">Component</span><span class="p">):</span>
+
+	<span class="vi">@listener</span><span class="p">(</span><span class="s2">&quot;print&quot;</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">onPRINT</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+		<span class="nb">print</span> <span class="n">message</span>
+
+<span class="c1">###</span>
+<span class="c1">### Main</span>
+<span class="c1">###</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+	<span class="n">manager</span> <span class="o">=</span> <span class="no">Manager</span><span class="p">()</span>
+	<span class="n">manager</span> <span class="o">+=</span> <span class="no">Printer</span><span class="p">()</span>
+
+	<span class="n">manager</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="no">Message</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">),</span> <span class="s2">&quot;print&quot;</span><span class="p">)</span>
+	<span class="n">manager</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+<span class="c1">###</span>
+<span class="c1">### Entry Point</span>
+<span class="c1">###</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+	<span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="../QuickStart.html" title="previous chapter">Quickstarting a TurboGears 2 project</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../WhatsNew.html" title="next chapter">What&#8217;s new in TurboGears 2</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/main/Tutorials/HelloWorld.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="../../search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="../WhatsNew.html" title="What&#8217;s new in TurboGears 2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../QuickStart.html" title="Quickstarting a TurboGears 2 project"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2008, James Mills.
+      Last updated on Nov 03, 2008.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
