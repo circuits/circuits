@@ -72,8 +72,7 @@ class Bridge(Component):
 
 		self.ourself = (address, self.port)
 
-	@listener("registered")
-	def onREGISTERED(self):
+	def registered(self):
 		self.push(Helo(*self.ourself), "helo")
 
 	@listener(type="filter")
@@ -88,7 +87,9 @@ class Bridge(Component):
 		else:
 			event.ignore = True
 
+		event.source = self.ourself
 		s = pickle(event, -1)
+
 		if self.nodes:
 			for node in self.nodes:
 				self.write(node, s)
@@ -113,11 +114,14 @@ class Bridge(Component):
 	@listener("read", type="filter")
 	def onREAD(self, address, data):
 		event = unpickle(data)
+
 		channel = event.channel
 		target = event.target
 		source = event.source
-		if not source:
-			event.source = address
+
+		if source == self.ourself:
+			return
+
 		self.send(event, channel, target)
 
 	def poll(self, wait=POLL_INTERVAL):
