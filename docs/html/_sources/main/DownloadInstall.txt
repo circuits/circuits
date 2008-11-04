@@ -21,18 +21,15 @@ From Source
 
 To install CIrcuits from source:
 
-# Download Circuits from
- * `PyPi <http://pypi.python.org/pypi/circuits/>_
- * `Circuits Website <http://trac.softcircuit.com.au/circuits/downloads>_
+Download Circuits from
+ * `PyPi <http://pypi.python.org/pypi/circuits/>`_
+ * `Circuits Website <http://trac.softcircuit.com.au/circuits/downloads>`_
 
-# Extract the archive
+Extract archive and Install:
+
 .. code-block:: bash
 
 	$ tar zxvf circuits--xxx.tar.gz
-
-# Install
-.. code-block:: bash
-
 	$ python setup.py install
 
 Installing System Wide
