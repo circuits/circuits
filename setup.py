@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#!/usr/bin/env python
 
 from distutils.filelist import findall
 from setuptools import setup, find_packages
