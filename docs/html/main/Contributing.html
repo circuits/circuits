@@ -2,7 +2,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Contributing to TurboGears 2 &mdash; circuits v1.0a1 documentation</title>
+    <title>Contributing to Circuits &mdash; circuits v1.0a1 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -21,6 +21,7 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="circuits v1.0a1 documentation" href="../index.html" />
     <link rel="next" title="Circuits Licenses" href="License.html" />
+    <link rel="prev" title="Philosophy" href="Philosophy.html" />
   </head>
   <body>
     <div class="related">
@@ -35,6 +36,9 @@
         <li class="right" >
           <a href="License.html" title="Circuits Licenses"
              accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Philosophy.html" title="Philosophy"
+             accesskey="P">previous</a> |</li>
         <li><a href="../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
       </ul>
     </div>
@@ -44,21 +48,21 @@
           <div class="body">
             
   
-  <div class="section" id="contributing-to-turbogears-2">
-<h1 id="contributing-to-turbogears-2">Contributing to TurboGears 2<a class="headerlink" href="#contributing-to-turbogears-2" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="contributing-to-circuits">
+<h1 id="contributing-to-circuits">Contributing to Circuits<a class="headerlink" href="#contributing-to-circuits" title="Permalink to this headline">¶</a></h1>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">status:</th><td class="field-body">Official</td>
+<tr class="field"><th class="field-name">status:</th><td class="field-body">Work in Progress</td>
 </tr>
 </tbody>
 </table>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#contributing-to-turbogears-2" id="id1">Contributing to TurboGears 2</a><ul>
-<li><a class="reference internal" href="#installing-the-development-version-of-turbogears-2-from-source" id="id2">Installing the Development Version of Turbogears 2 (from source)</a></li>
+<li><a class="reference internal" href="#contributing-to-circuits" id="id1">Contributing to Circuits</a><ul>
+<li><a class="reference internal" href="#installing-the-development-version-of-circuits-from-source" id="id2">Installing the Development Version of Circuits (from source)</a></li>
 <li><a class="reference internal" href="#coding-style" id="id3">Coding style</a></li>
 <li><a class="reference internal" href="#testing" id="id4">Testing</a></li>
 <li><a class="reference internal" href="#documentation" id="id5">Documentation</a></li>
@@ -70,196 +74,72 @@
 </div>
 <p>If you want to help out, we want to help you help out! The goal of
 this document is to help you get started and answer any questions you
-might have. The <a class="reference external" href="http://docs.turbogears.org/1.0/Philosophy">Project Philosophy</a> document has a more high-level
-view, whereas this document is nuts-and-bolts. The <a class="reference external" href="http://docs.turbogears.org/TurboGearsTeam">TurboGears team</a>
-page lists who is responsible for what.</p>
-<div class="section" id="installing-the-development-version-of-turbogears-2-from-source">
-<h2 id="installing-the-development-version-of-turbogears-2-from-source">Installing the Development Version of Turbogears 2 (from source)<a class="headerlink" href="#installing-the-development-version-of-turbogears-2-from-source" title="Permalink to this headline">¶</a></h2>
+might have.</p>
+<div class="section" id="installing-the-development-version-of-circuits-from-source">
+<h2 id="installing-the-development-version-of-circuits-from-source">Installing the Development Version of Circuits (from source)<a class="headerlink" href="#installing-the-development-version-of-circuits-from-source" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="pre-requisites">
 <h3 id="pre-requisites">Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h3>
-<ol class="arabic">
-<li><p class="first">Python 2.4 or 2.5 (<a class="reference external" href="http://python.org/download">http://python.org/download</a>)</p>
-<ul>
-<li><p class="first">Make sure that your Python installation includes the <cite>sqlite</cite>
-extension (some *BSDs keep it in a separate package).  If
-you&#8217;re running Python 2.5 you can test for <cite>sqlite</cite> with:</p>
-<pre>$ python -c "import sqlite3"</pre>
-<p>or try:</p>
-<pre>$ python -c "import pysqlite2"</pre>
-<p>with Python 2.4.</p>
-</li>
-<li><p class="first">For RPM-based systems you will also need <tt class="docutils literal"><span class="pre">python-devel</span></tt> and
-<tt class="docutils literal"><span class="pre">python-xml</span></tt> packages.</p>
-</li>
-<li><p class="first">On <cite>ubuntu</cite> you will need <tt class="docutils literal"><span class="pre">python-dev</span></tt> and <tt class="docutils literal"><span class="pre">python-setuptools</span></tt>.</p>
-</li>
-</ul>
-</li>
-<li><p class="first"><a class="reference external" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a> (run <a class="reference external" href="http://peak.telecommunity.com/dist/ez_setup.py">http://peak.telecommunity.com/dist/ez_setup.py</a> from
-any directory)</p>
-</li>
-<li><p class="first"><a class="reference external" href="http://subversion.tigris.org/getting.html">Subversion</a></p>
-</li>
-<li><p class="first"><a class="reference external" href="http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages">Mercurial</a></p>
-</li>
+<ol class="arabic simple">
+<li>Python 2.5 or better (<a class="reference external" href="http://python.org/download">http://python.org/download</a>)</li>
+<li><a class="reference external" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a></li>
+<li><a class="reference external" href="http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages">Mercurial</a></li>
 </ol>
-<p>We recommend working in a <a class="reference external" href="DownloadInstall.html#setting-up-a-virtual-environment">virtual environment</a> so that any existing
-packages will not interfere with your installation, and so that you
-don&#8217;t upgrade any Python libraries that your system needs.</p>
 </div>
-<div class="section" id="installing-pylons-from-source">
-<h3 id="installing-pylons-from-source">Installing Pylons from Source<a class="headerlink" href="#installing-pylons-from-source" title="Permalink to this headline">¶</a></h3>
-<p>Assuming that you&#8217;re going to work in a virtualenv called <cite>tg2dev</cite>,
-activate the virtualenv:</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>tg2dev
-<span class="nv">$ </span><span class="nb">source </span>bin/activate
-</pre></div>
-<p><cite>(tg2dev)</cite> will be prefixed to your prompt to indicate that the
-<cite>tg2dev</cite> virtualenv is activated.</p>
-<p>Clone the latest Pylons code:</p>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>hg clone http://pylonshq.com/hg/pylons-dev Pylons
+<div class="section" id="installing-circuits-from-source">
+<h3 id="installing-circuits-from-source">Installing Circuits from Source<a class="headerlink" href="#installing-circuits-from-source" title="Permalink to this headline">¶</a></h3>
+<p>Get the latest code from the Mercurial respository:</p>
+<div class="highlight"><pre><span class="nv">$ </span>hg clone http://hg.softcircuit.com.au/projects/circuits/
 </pre></div>
 <p>Tell setuptools to use this version:</p>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd </span>Pylons
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>python setup.py develop
+<div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>circuits
+<span class="nv">$ </span>python setup.py develop
 </pre></div>
-</div>
-<div class="section" id="installing-turbogears-2-from-source">
-<h3 id="installing-turbogears-2-from-source">Installing TurboGears 2 from Source<a class="headerlink" href="#installing-turbogears-2-from-source" title="Permalink to this headline">¶</a></h3>
-<p>TurboGears 2 is composed of 3 packages.</p>
-<p>Check out the latest code from the subversion respositories:</p>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd</span> ..
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>svn co http://svn.turbogears.org/projects/tg.devtools/trunk tgdev
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>svn co http://svn.turbogears.org/trunk tg2
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>svn co http://tgtools.googlecode.com/svn/projects/tg.ext.repoze.who/trunk tg.ext.repoze.who
-</pre></div>
-<ul class="simple">
-<li>tgdev is a set of tools, paster command plugins to create default
-template, admin interface, and migrations.</li>
-<li>tg2 package is TurboGears 2 core.</li>
-<li>tg.ext.repoze.who is an extension for tg2 that aims to provide an
-API compliant implementation of the old tg1 identity framework.</li>
-</ul>
-<p>Again, tell setuptools to use these versions.</p>
-<ul class="simple">
-<li>tg.ext.repoze.who:</li>
-</ul>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd </span>tg.ext.repoze.who
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>easy_install Paste
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>easy_install zope.interface
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>python setup.py develop
-</pre></div>
-<ul class="simple">
-<li>TurboGears 2 server:</li>
-</ul>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd</span> ..
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd </span>tg2
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>easy_install <span class="nv">PasteScript</span><span class="o">==</span>dev
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>easy_install genshi
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>python setup.py develop
-</pre></div>
-<ul class="simple">
-<li>TurboGears 2 developer tools:</li>
-</ul>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd</span> ..
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd </span>tgdev
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>python setup.py develop
-</pre></div>
-<p>Congratulations!  You now have a source installation of TurboGears 2.
+<p>Congratulations!  You now have a source installation of Circuits.
 Happy Hacking!</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">if you have installed old dependency packages, you could remove
-them from {python_path}/site-packages/easy-install.pth</p>
-</div>
 </div>
 <div class="section" id="troubleshooting">
 <h3 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h3>
-<p>It is possible (but not likely) you might see a few other error
-messages.  Here are the correct ways to fix the dependency problems so
-things will install properly.</p>
-<ul class="simple">
-<li>If you get an error about <tt class="docutils literal"><span class="pre">ObjectDispatchController</span></tt> this means
-your Pylons installation is out-of-date. Make sure it&#8217;s fresh (<tt class="docutils literal"><span class="pre">hg</span>
-<span class="pre">pull</span> <span class="pre">-u</span></tt> or <tt class="docutils literal"><span class="pre">hg</span> <span class="pre">pull</span></tt> followed by <tt class="docutils literal"><span class="pre">hg</span> <span class="pre">update</span></tt> &#8211; alternatively you
-can create a brand new Pylons branch in a new directory with <tt class="docutils literal"><span class="pre">hg</span>
-<span class="pre">clone</span></tt>).</li>
-<li>When installing on Mac OSX, if you get an error mentioning <tt class="docutils literal"><span class="pre">No</span> <span class="pre">local</span>
-<span class="pre">packages</span> <span class="pre">or</span> <span class="pre">download</span> <span class="pre">links</span> <span class="pre">found</span> <span class="pre">for</span> <span class="pre">RuleDispatch</span></tt>, you can try the
-solution posted to the <a class="reference external" href="http://groups.google.com/group/toscawidgets-discuss/browse_thread/thread/cb6778810e96585d">ToscaWidgets discussion list</a> which advises
-downloading it directly:</li>
-</ul>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>sudo easy_install -U -f http://toscawidgets.org/download/wo_speedups/ RuleDispatch
-</pre></div>
-<ul>
-<li><p class="first">If you get the following error when starting a project with <tt class="docutils literal"><span class="pre">paster</span>
-<span class="pre">serve</span></tt>:</p>
-<pre>AttributeError: 'WSGIRequest' object has no attribute 'accept_language'</pre>
-<p>update your Pylons checkout with <tt class="docutils literal"><span class="pre">hg</span> <span class="pre">update</span></tt> and try again.</p>
-</li>
-</ul>
+<p><em>No known issues</em></p>
 </div>
 </div>
 <div class="section" id="coding-style">
 <h2 id="coding-style">Coding style<a class="headerlink" href="#coding-style" title="Permalink to this headline">¶</a></h2>
 <p>Since it&#8217;s hard to argue with someone who&#8217;s already written a code style
-document, TurboGears 2 follows <a class="reference external" href="http://www.python.org/peps/pep-0008.html">PEP 8</a> conventions.</p>
-<p>To ensure that files in the TurboGears source code repository have proper
-line-endings, you must configure your Subversion client. Please see
-the <a class="reference external" href="http://docs.turbogears.org/patching_guidelines">patching guidelines</a> for details.</p>
+document, Circuits follows <a class="reference external" href="http://www.python.org/peps/pep-0008.html">PEP 8</a> conventions.</p>
 </div>
 <div class="section" id="testing">
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>Automated unit tests are better than good. They make future growth of the
 project possible.</p>
-<p>TurboGears 2 uses <a class="reference external" href="http://somethingaboutorange.com/mrl/projects/nose/">Nose</a>, which makes testing easy. You can run the
-tests in each of the source directories just by running <cite>nosetests</cite>.
-For example, to run the test on the TG2 server:</p>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd </span>tg2
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>nosetests
+<p>Circuits uses <a class="reference external" href="http://somethingaboutorange.com/mrl/projects/nose/">Nose</a>, which makes testing easy. You can run the
+tests just by running <cite>nosetests</cite> or <cite>make tests</cite>.</p>
+<div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>circuits
+<span class="nv">$ </span>make tests
 </pre></div>
-<p>Default options for <cite>nosetests</cite> can often be found in the
-<cite>[nosetests]</cite> section of <cite>setup.cfg</cite> and additional options can be
-passed on the command line.  See the <a class="reference external" href="http://somethingaboutorange.com/mrl/projects/nose/">Nose</a> documentation for details.</p>
-<p>For TG2 projects, the <tt class="docutils literal"><span class="pre">tg.testutil</span></tt> package includes some utility
-functions and classes that make you&#8217;re life easier as you&#8217;re trying to
-test.</p>
 </div>
 <div class="section" id="documentation">
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<p>As mentioned in the <a class="reference external" href="http://docs.turbogears.org/1.0/Philosophy">Project Philosophy</a> document, a feature doesn&#8217;t
+<p>As mentioned in the <a class="reference external" href="http://trac.softcircuit.com.au/circuits/chrome/site/docs/main/Philosophy.html">Project Philosophy</a> document, a feature doesn&#8217;t
 truly exist until it&#8217;s documented. Tests can serve as good documentation,
 because you at least know that they&#8217;re accurate. But, it&#8217;s also nice to
 have some information in English.</p>
-<p>There are two kinds of docs, and both have their useful place:</p>
-<p><strong>API reference</strong></p>
-<blockquote>
-A modified <a class="reference external" href="http://epydoc.sourceforge.net/">epydoc</a> (which includes links to the source) is used to
-generate API docs for the website. It&#8217;s not very taxing at all to add
-these doc strings as you work on the code. See the
-<a class="reference external" href="1.0/API">API reference for version 1.0</a> here.</blockquote>
-<p><strong>Manual</strong></p>
-<blockquote>
-The TurboGears 2 documentation is online at
-<a class="reference external" href="http://turbogears.org/2.0/docs/">http://turbogears.org/2.0/docs/</a></blockquote>
+<p>The Circuits Documentation is available at: <a class="reference external" href="http://trac.softcircuit.com.au/circuits/chrome/site/docs/index.html">http://trac.softcircuit.com.au/circuits/chrome/site/docs/index.html</a></p>
 <p>Please document your own work. It doesn&#8217;t have to be Shakespeare, but
 the editors don&#8217;t enjoy writing documentation any more than you do (we&#8217;d
 rather be coding) and it&#8217;s much easier to edit an existing doc than it is
 to figure out your code and write something from scratch.</p>
 <p>To contribute documentation you can either:</p>
 <ul class="simple">
-<li>Write a page in the <a class="reference external" href="http://docs.turbogears.org/2.0/RoughDocs">RoughDocs</a> section of the TurboGears
-documentation wiki and request a review of it on the
-<a class="reference external" href="http://groups.google.ca/group/turbogears-docs">turbogears-docs</a> discussion list.  One of the documentation
-editors will then pull your document into the official
-documentation, possibly doing a bit of editing in the process so
-that the style and tone match the rest of the official documents.
-Please see the TG1 <a class="reference external" href="http://docs.turbogears.org/DocHelp">guidelines for contributing documentation</a> for
-pointers on documentation format and style.</li>
+<li>Write a page in the <a class="reference external" href="http://trac.softcircuit.com.au/circuits/wiki/SandBox">SandBox</a> section of the Circuits
+wiki and request a review of it by submitting a <a class="reference external" href="http://trac.softcircuit.com.au/circuits/newticket">ticket</a>.
+One of the documentation editors will then pull your
+document into the official documentation, possibly doing
+a bit of editing in the process so that the style and tone
+match the rest of the official documents.</li>
 </ul>
 <ul class="simple">
-<li>Check out a copy of the documentation tree, edit the reStructured
-Text source files, and submit patches via tickets on the <a class="reference external" href="http://trac.turbogears.org/">TurboGears
+<li>Get a copy of the latest source tree, edit the reStructured
+Text source files, and submit patches via tickets on the <a class="reference external" href="http://trac.softcircuit.com.au/circuits/">Circuits
 Trac</a></li>
 </ul>
 <p>If you want to work on the docs sources and build the documentation
@@ -267,36 +147,27 @@ tree you will also need:</p>
 <blockquote>
 <ul class="simple">
 <li><a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a></li>
-<li><a class="reference external" href="http://pysvn.tigris.org/project_downloads.html">pysvn extension</a></li>
 </ul>
 </blockquote>
-<p><cite>pysvn</cite> is a Python extension that comes in source or binary kits to
-match your OS, Python version, and Subversion version.  Please see the
-<a class="reference external" href="http://pysvn.tigris.org/project_downloads.html">pysvn extension</a> downloads page for details and follow the
-instructions there to install the appropriate version.</p>
 <p>Assuming that you&#8217;re going to work in a virtualenv called <cite>tg2dev</cite>,
 activate the virtualenv:</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>tg2dev
-<span class="nv">$ </span><span class="nb">source </span>bin/activate
-</pre></div>
-<p><cite>(tg2dev)</cite> will be prefixed to your prompt to indicate that the
-<cite>tg2dev</cite> virtualenv is activated.</p>
-<p>Check out the latest version of the docs soruces from the subversion
-respositories:</p>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>svn co http://svn.turbogears.org/docs
+<p>Get the latest version of the Circuits soruces from the Mercurial
+respository:</p>
+<div class="highlight"><pre><span class="nv">$ </span>hg clone http://hg.softcircuit.com.au/projects/circuits/
+<span class="nv">$ </span><span class="nb">cd </span>circuits
 </pre></div>
 <p>Build the documentation tree with:</p>
-<div class="highlight"><pre><span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span><span class="nb">cd </span>docs/2.0/docs
-<span class="o">(</span>tg2dev<span class="o">)</span><span class="nv">$ </span>make html
+<div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>docs
+<span class="nv">$ </span>make html
 </pre></div>
 <p>You can view the docs by pointing your browser at the file:</p>
-<div class="highlight"><pre><span class="n">docs</span><span class="o">/</span><span class="mf">2.0</span><span class="o">/</span><span class="n">docs</span><span class="o">/</span><span class="n">_build</span><span class="o">/</span><span class="n">html</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">html</span>
+<div class="highlight"><pre><span class="n">docs</span><span class="o">/</span><span class="n">html</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">html</span>
 </pre></div>
 </div>
 <div class="section" id="documenting-changes">
 <h2 id="documenting-changes">Documenting Changes<a class="headerlink" href="#documenting-changes" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference external" href="http://trac.turbogears.org/">TurboGears Trac</a> is mostly used for tracking upcoming changes
-and tasks required before release of a new version. The <a class="reference external" href="http://trac.turbogears.org/wiki/2.0/changelog">changelog</a>
+<p>The <a class="reference external" href="http://trac.softcircuit.com.au/circuits/">Circuits Trac</a> is mostly used for tracking upcoming changes
+and tasks required before release of a new version. The <a class="reference external" href="http://trac.softcircuit.com.au/circuits/wiki/1.0/ChangeLog">changelog</a>
 provides the human readable list of changes.</p>
 <p>Updating the changelog right before a release just slows down the
 release. Please <strong>update the changelog as you make changes</strong>, and this
@@ -304,7 +175,7 @@ is <strong>especially</strong> critical for <strong>backwards incompatibilities<
 </div>
 <div class="section" id="how-to-submit-a-patch">
 <h2 id="how-to-submit-a-patch">How to Submit a Patch<a class="headerlink" href="#how-to-submit-a-patch" title="Permalink to this headline">¶</a></h2>
-<p>Please make sure that you read and follow the <a class="reference external" href="http://docs.turbogears.org/patching_guidelines">patching guidelines</a>.</p>
+<p>Please make sure that you read and follow the <a class="reference external" href="http://trac.softcircuit.com.au/circuits/wiki/docs/PatchingGuidelines">patching guidelines</a>.</p>
 </div>
 </div>
 
@@ -316,11 +187,10 @@ is <strong>especially</strong> critical for <strong>backwards incompatibilities<
         <div class="sphinxsidebarwrapper">
             <h3>Table Of Contents</h3>
             <ul>
-<li><a class="reference external" href="">Contributing to TurboGears 2</a><ul>
-<li><a class="reference external" href="#installing-the-development-version-of-turbogears-2-from-source">Installing the Development Version of Turbogears 2 (from source)</a><ul>
+<li><a class="reference external" href="">Contributing to Circuits</a><ul>
+<li><a class="reference external" href="#installing-the-development-version-of-circuits-from-source">Installing the Development Version of Circuits (from source)</a><ul>
 <li><a class="reference external" href="#pre-requisites">Pre-requisites</a></li>
-<li><a class="reference external" href="#installing-pylons-from-source">Installing Pylons from Source</a></li>
-<li><a class="reference external" href="#installing-turbogears-2-from-source">Installing TurboGears 2 from Source</a></li>
+<li><a class="reference external" href="#installing-circuits-from-source">Installing Circuits from Source</a></li>
 <li><a class="reference external" href="#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
@@ -333,6 +203,8 @@ is <strong>especially</strong> critical for <strong>backwards incompatibilities<
 </li>
 </ul>
 
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="Philosophy.html" title="previous chapter">Philosophy</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="License.html" title="next chapter">Circuits Licenses</a></p>
             <h3>This Page</h3>
@@ -361,12 +233,15 @@ is <strong>especially</strong> critical for <strong>backwards incompatibilities<
         <li class="right" >
           <a href="License.html" title="Circuits Licenses"
              accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Philosophy.html" title="Philosophy"
+             accesskey="P">previous</a> |</li>
         <li><a href="../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2008, James Mills.
-      Last updated on Nov 03, 2008.
+      Last updated on Nov 04, 2008.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>
