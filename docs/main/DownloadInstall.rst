@@ -3,13 +3,12 @@
 How to install Circuits
 =======================
 
-CIrcuits can by installed in any number of ways:
-* setuptools' easy_install
-* source
-* binary
+Circuits can by installed in any number of ways, using setuptools' easy_install
+from source or using a binary installer. It's highly recommended you try to
+install circuits using setuptools or from source.
 
-easy_install
-------------
+Using Setuptools
+----------------
 
 To instlal Circuits using setuptools' easy_install:
 
@@ -17,8 +16,8 @@ To instlal Circuits using setuptools' easy_install:
 
 	$ easy_install circuits
 
-Source
-------
+From Source
+-----------
 
 To install CIrcuits from source:
 
