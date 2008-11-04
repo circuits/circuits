@@ -1,43 +1,76 @@
 .. highlight:: bash
 
-How to install TurboGears 2
-===========================
+How to install Circuits
+=======================
 
-Installing TurboGears 2 has been made simple with the advent of the package 
-index.  We recommend installing TurboGears 2 into a virtual environment
-so that any existing packages will not interfere with your installation, and 
-so that you don't upgrade any python libraries that your system needs.  
+CIrcuits can by installed in any number of ways:
+* setuptools' easy_install
+* source
+* binary
 
-So, with a virtual environment the basic installation goes as follows:
+easy_install
+------------
 
-1. Install ``setuptools``
+To instlal Circuits using setuptools' easy_install:
 
-2. Install ``virtualenv``
+.. code-block:: bash
 
-3. Create a ``virtualenv`` for your project
+	$ easy_install circuits
 
-4. Switch to the ``virtualenv``
+Source
+------
 
-5. ``easy_install`` TurboGears development package
+To install CIrcuits from source:
 
-6. Profit
+# Download Circuits from
+ * `PyPi <http://pypi.python.org/pypi/circuits/>_
+ * `Circuits Website <http://trac.softcircuit.com.au/circuits/downloads>_
 
+# Extract the archive
+.. code-block:: bash
+
+	$ tar zxvf circuits--xxx.tar.gz
+
+# Install
+.. code-block:: bash
+
+	$ python setup.py install
+
+Installing System Wide
+~~~~~~~~~~~~~~~~~~~~~~
+
+The insturctions in the previous section describe how to install circuits in
+this way. If you want to change the location, use the ``--prefix`` option.
+
+Installing into your Home Directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To install circuits in your home directory, use the ``--home=/path/to/home``
+option to ``setup.py``. Example:
+.. code-block:: bash
+
+	$ python setup.py install --home=$HOME
+
+Installing in Development mode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To install circuits in development mode, use the ``develop`` command
+instead of ``install``. This allows you to easily update/upgrade circuits
+and not have to worry about re-installing.
 
 Prerequisites
 --------------
 
-* Python 2.4 or 2.5
-* Appropriate python development package (python*-devel python*-dev)
+* Python 2.5 or greater (''Also works with Python-3.x``)
 
 Setting up setuptools:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-On windows: 
+On Windows: 
 
 download http://peak.telecommunity.com/dist/ez_setup.py and then run it from 
 the command line.
 
-On unix: 
+On UNIX: 
 
 If you have curl or  wget installed you can do this with a single command: 
 
@@ -45,130 +78,20 @@ If you have curl or  wget installed you can do this with a single command:
 
 	$ curl http://peak.telecommunity.com/dist/ez_setup.py | sudo python
 
-Setting up a Virtual Environment
----------------------------------
-
-First, install ``virtualenv`` using this command:
-
-On Windows::
-
-    easy_install virtualenv
-
-On Unix: 
-
-You will likely need root permissions to install virtualenv in you your system's  
-site-packages directory: 
-
-.. code-block:: bash
-
-	$ sudo easy_install virtualenv
-
-will output something like:
-
-.. code-block:: text
-
-    Searching for virtualenv
-    Reading http://pypi.python.org/simple/virtualenv/
-    Best match: virtualenv 1.1
-    Downloading http://pypi.python.org/packages/2.5/v/virtualenv/virtualenv-1.1-py2.5.egg#md5=1db8cdd823739c79330a138327239551
-    Processing virtualenv-1.1-py2.5.egg
-    .....
-    Processing dependencies for virtualenv
-    Finished processing dependencies for virtualenv
-
-Create a virtual environment:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-	
-	$ virtualenv --no-site-packages tg2env
-
-that produces something like this::
-
-     Using real prefix '/usr/local'
-     New python executable in tg2env/bin/python
-     Installing setuptools............done.
-
-.. code-block:: bash
-
-	$ cd tg2env
-
-.. code-block:: bash
-	
-	$ source bin/activate
-
-and now your prompt should look something like this (if you're on unix)::
-
-	(tg2env)usrname@host:tgenv$
-
-Install Turbogears 2
----------------------
-
-We've included pre-compiled binaries for windows users, but if you're on unix
-you'll need a working version of the GCC compiler installed, as well as the 
-python headers.   On OSX this means installing Xcode (available on the OS X cd
-or at http://developer.apple.com/tools/xcode/), and on Debian derived linux 
-versions this requires python-dev (available via ``apt-get install python-dev``), 
-Fedora users will need the python-devel rpm, etc. 
-
-If you've got the compilers and python header files, you'll be able to install 
-the latest version of turbogears via:  
-
-.. code-block:: bash
-
-	$ easy_install -i http://www.turbogears.org/2.0/downloads/current/index tg.devtools
-
-A whole bunch of packages should download.  (This may take a several min.)
-
 Validate the installation:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To check if you installed TurboGears 2 correctly, type
+To check if you installed circuits, type:
 
 .. code-block:: bash
 	
-	$ paster --help
+	$ python -c "import circuits"
 
-should look something like::
+If everything worked, nothing should be displayed.
 
-    Usage: paster [paster_options] COMMAND [command_options]
+Installing the development version of Circuits (from source)
+------------------------------------------------------------
 
-    Options:
-      --version         show program's version number and exit
-      --plugin=PLUGINS  Add a plugin to the list of commands (plugins are Egg
-                        specs; will also require() the Egg)
-      -h, --help        Show this help message
+See `Contributing to Circuits`_
 
-    Commands:
-      create       Create the file layout for a Python distribution
-      help         Display help
-      make-config  Install a package and create a fresh config file/directory
-      points       Show information about entry points
-      post         Run a request for the described application
-      request      Run a request for the described application
-      serve        Serve the described application
-      setup-app    Setup an application, given a config file
-
-    TurboGears2:
-      quickstart   Create a new TurboGears 2 project.
-      tginfo       Show TurboGears 2 related projects and their versions
-
-
-and you'll see a new "TurboGears2" command section in paster help.
-
-Paster has replaced the old tg-admin command, and most of the tg-admin commands have now been reimplemented as paster commands. For example, "tg-admin quickstart" command has changed to "paster quickstart" command, and "tg-admin info" command has changed to "paster tginfo" command.
-
-Be sure to check out our `What's new in TurboGears 2.0 <WhatsNew.html>`_ page to get a picture of what's changed in TurboGears2 so far.
-
-Special Considerations:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Cygwin** does not include the necessary binary file **sqlite3.dll**; if you want to run cygwin you'll need to install a different database. If you have cygwin installed and you want to use the default setup described here, you must perform all operations, including setup operations, within DOS command windows, not cygwin command windows.
-
-
-Installing the development version of Turbogears 2 (from source)
--------------------------------------------------------------------
-
-See `Contributing to Turbogears 2`_
-
-.. _Contributing to Turbogears 2: Contributing.html#installing-the-development-version-of-turbogears-2-from-source
+.. _Contributing to Circuits: Contributing.html#installing-the-development-version-of-circuits-from-source
