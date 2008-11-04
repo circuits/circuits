@@ -1,10 +1,10 @@
-# Module:	test_workers
+# Module:	test_timers
 # Date:		7th October 2008
 # Author:	James Mills, prologic at shortcircuit dot net dot au
 
-"""Workers Test Suite
+"""Timers Test Suite
 
-Test all functionality of the workers module.
+Test all functionality of the wtimersorkers module.
 """
 
 import unittest
