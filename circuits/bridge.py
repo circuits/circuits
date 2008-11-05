@@ -38,6 +38,7 @@ BUFFER_SIZE = 131072
 
 class Read(Event): pass
 class Helo(Event): pass
+class Error(Event): pass
 class Write(Event): pass
 class Close(Event): pass
 
@@ -95,10 +96,6 @@ class Bridge(Component):
 				self.write(node, s)
 		else:
 			self.write(("<broadcast>", self.port), s)
-
-	@listener("pong", type="filter")
-	def onPONG(self, event, address, port, time):
-		print "PONG: %s" % event
 
 	@listener("helo", type="filter")
 	def onHELO(self, event, address, port):
