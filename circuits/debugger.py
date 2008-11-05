@@ -63,7 +63,7 @@ class Debugger(Component):
 
 		super(Debugger, self).__init__(*args, **kwargs)
 
-		self.log = kwargs.get("log", None)
+		self.logger = kwargs.get("logger", False)
 
 	def disable(self):
 		"Disable Debugger"
@@ -117,10 +117,8 @@ class Debugger(Component):
 			elif channel in self.IgnoreChannels:
 				return
 			else:
-				if self.log:
-					if isinstance(self.log, logging.Logger):
-						self.log.debug(event)
-					else:
-						self.push(Debug(repr(event)), "debug", "log")
+				print self.logger
+				if self.logger:
+					self.push(Debug(repr(event)), "debug", "log")
 				else:
 					print >> sys.stderr, event
