@@ -82,14 +82,10 @@ class EventTestCase(unittest.TestCase):
 		self.assertTrue(bar.flag)
 
 		b2.close()
-		for i in xrange(10):
-			m2.flush()
-			b2.poll()
+		m2.flush()
 
 		b1.close()
-		for i in xrange(10):
-			m1.flush()
-			b1.poll()
+		m1.flush()
 
 		bar.unregister()
 		b2.unregister()
