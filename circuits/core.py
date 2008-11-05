@@ -231,7 +231,7 @@ class Manager(object):
 				all = [i for y in x for i in y]
 				return chain(globals, all)
 			else:
-				all = channels["%s:*" % target]
+				all = chain(channels["%s:*" % target], channels["*:%s" % channel])
 				return chain(globals, all, channels[s])
 
 
