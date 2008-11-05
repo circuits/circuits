@@ -123,6 +123,7 @@ class Environment(Component):
 
 		# Create the directory structure
 		os.makedirs(self.path)
+		os.chdir(self.path)
 		os.mkdir(os.path.join(self.path, "log"))
 		os.mkdir(os.path.join(self.path, "conf"))
 
@@ -192,6 +193,8 @@ class Environment(Component):
 
 		if verify:
 			self.send(Verify(), "verify", self.channel)
+
+		os.chdir(self.path)
 
 		# Create Config Component
 		configfile = os.path.join(self.path, "conf", "%s.ini" % self.name)
