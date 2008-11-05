@@ -669,6 +669,72 @@ class EventTestCase(unittest.TestCase):
 
 		self.assertEquals(len(manager._handlers), 0)
 
+
+	def testIterEvents(self):
+		"""Test Manager's iter
+
+		Test that events can be interated over using the Manager's
+		iter method and that the expected return results are yielded.
+		"""
+
+		class Foo(Component):
+
+			@listener("foo")
+			def onFOO(self):
+				return "foo"
+
+		manager = Manager()
+		foo = Foo()
+		manager += foo
+
+		for i in foo.iter(Event(), "foo"):
+			self.assertEquals(i, "foo")
+
+		foo.unregister()
+
+	def testHandlerTarget(self):
+		"""Test Handler Targets
+
+		Test that event handlers can be registered with a custom
+		target and that the event handler recieves the event
+		even though it may be in a Component that defines a
+		channel.
+		"""
+
+		class Foo(Component):
+
+			flag = False
+			channel = "foo"
+
+			@listener("foo")
+			def onFOO(self):
+				self.flag = True
+
+		class Bar(Component):
+
+			flag = False
+			channel = "bar"
+
+			@listener("foo", target="*")
+			def onFOO2(self):
+				self.flag = True
+
+		manager = Manager()
+
+		foo = Foo()
+		bar = Bar()
+
+		manager += foo
+		manager += bar
+
+		manager.send(Event(), "foo", "foo")
+
+		self.assertTrue(foo.flag)
+		self.assertTrue(bar.flag)
+
+		foo.unregister()
+		bar.unregister()
+
 def suite():
 	return unittest.makeSuite(EventTestCase, "test")
 
