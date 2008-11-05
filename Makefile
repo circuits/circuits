@@ -12,4 +12,9 @@ checks:
 	@find . -name "*.py" -exec pyflakes {} +
 
 tests:
-	@nosetests --with-coverage
+	@nosetests \
+		--with-coverage \
+		--cover-package=circuits \
+		--cover-erase \
+		--cover-inclusive \
+		--with-doctest
