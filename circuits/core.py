@@ -112,7 +112,9 @@ def listener(*args, **kwargs):
 	listens on a set of channels defined by args. The type
 	of the listener defaults to "listener" and is defined
 	by kwargs["type"]. To define a filter, pass type="filter"
-	to kwargs.
+	to kwargs. If kwargs["target"] is not None, this event handler
+	will be registered and will ignore the channel of it's containing
+	Component.
 	
 	Examples:
 
@@ -130,6 +132,7 @@ def listener(*args, **kwargs):
 
 	def decorate(f):
 		f.type = kwargs.get("type", "listener")
+		f.target = kwargs.get("target", None)
 		f.channels = args
 		f.argspec = getargspec(f)
 		f.args = f.argspec[0]
@@ -461,7 +464,12 @@ class Component(Manager):
 
 			for channel in channels:
 				if self.channel is not None:
-					channel = "%s:%s" % (self.channel, channel)
+					if handler.target is not None:
+						target = handler.target
+					else:
+						target = self.channel
+
+					channel = "%s:%s" % (target, channel)
 
 				manager.add(handler, channel)
 
