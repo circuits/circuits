@@ -622,12 +622,11 @@ class Dispatcher(Component):
 		defaults = ["index", method]
 
 		if not names:
-			if "/:index" in self.manager.channels:
-				return "/:index", []
-			elif "/:%s" % method in self.manager.channels:
-				return "/:%s" % method, []
-			else:
-				return None, []
+			for default in defaults:
+				k = "/:%s" % default
+				if k in self.manager.channels:
+					return k, []
+			return None, []
 
 		targets = set([x.split(":")[0] for x in self.manager.channels if x and \
 				":" in x and x[0] == "/"])
