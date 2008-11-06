@@ -2,7 +2,7 @@
 # Date:		3rd October 2008
 # Author:	James Mills, prologic at shortcircuit dot net dot au
 
-"""Circuits
+"""Circuits - An event-driven framework with a Component focus.
 
 Circuits is an event-driven framework with a focus on Component Software
 Architectures where System Functionality is defined in Components.
