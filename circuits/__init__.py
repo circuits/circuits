@@ -5,11 +5,11 @@
 """Circuits
 
 Circuits is an event-driven framework with a focus on Component Software
-Architectures where System Functionality is defined in Components. Components
-communicate with one another by propagating events throughout the system. Each
-Component can react to events and expose events to other parts of the system
-Components are able to manage their own events and can also be linked to other
-Components.
+Architectures where System Functionality is defined in Components.
+Components communicate with one another by propagating events throughout
+the system. Each Component can react to events and expose events to other
+parts of the system Components are able to manage their own events and
+can also be linked to other Components.
 
 Circuits has a clean architecture and has no external dependencies on any
 other library. It's simplistic design is unmatchable but yet delivers a
@@ -23,9 +23,9 @@ Simple Example:
 >>> from circuits.core import listener, Component, Event, Manager
 
 >>> class Hello(Component):
-...	@listener("hello")
-...	def onHELLO(self):
-...		print "Hello World!"
+...   @listener("hello")
+...   def onHELLO(self):
+...      print "Hello World!"
 >>> manager = Manager()
 >>> manager += hello
 >>> manager.push(Event(), "hello")
@@ -66,24 +66,15 @@ __classifiers__ = [
 		"Topic :: Software Development :: Libraries :: Python Modules",
 		]
 __str__ = "%s-%s" % (__name__, __version__)
+__package_data__ = {}
+__install_requires__ = []
+__setup_requires__ = []
+__extras_require__ = {}
+__entry_points__ = ""
 
-__package_data__ = {
-		}
+from core import listener, Event, Component, Manager
 
-__install_requires__ = [
-		]
-
-__setup_requires__ = [
-		]
-
-__extras_require__ = {
-		}
-
-__entry_points__ = """
-"""
-
-from core import *
-from timers import *
-from bridge import *
-from workers import *
-from debugger import *
+from timers import Timer
+from bridge import Bridge
+from workers import Worker
+from debugger import Debugger
