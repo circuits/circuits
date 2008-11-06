@@ -10,21 +10,13 @@ using more higher abstracted web components from the web components
 library.
 """
 
-from circuits.lib.web import Server
-from circuits import listener, Component
+from circuits.lib.web import Server, Controller
 
-class HelloWorld(Component):
+class HelloWorld(Controller):
 
-	channel = "/"
-
-	@listener("index")
-	def onINDEX(self, request, response):
+	def index(self, request, response, *args, **kwargs):
 		return "Hello World!"
 
-def main():
-	server = Server(8000)
-	server += HelloWorld()
-	server.run()
-
-if __name__ == "__main__":
-	main()
+server = Server(8000)
+server += HelloWorld()
+server.run()
