@@ -315,7 +315,7 @@ class Headers(dict):
 ### Defaults/Constants
 ###
 
-SERVER_VERSION = "Unknown"
+SERVER_VERSION = "circuits"
 SERVER_PROTOCOL = "HTTP/1.1"
 BUFFER_SIZE = 131072
 
