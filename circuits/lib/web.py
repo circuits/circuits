@@ -54,7 +54,7 @@ class Server(TCPServer):
 			except KeyboardInterrupt:
 				break
 
-class AutoListener(type):
+class _AutoListener(type):
 
 	def __init__(cls, name, bases, dct):
 		for name, func in dct.iteritems():
@@ -63,7 +63,7 @@ class AutoListener(type):
 
 class Controller(Component):
 
-	__metaclass__ = AutoListener
+	__metaclass__ = _AutoListener
 
 	channel = "/"
 	request = None
