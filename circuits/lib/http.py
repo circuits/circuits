@@ -703,13 +703,13 @@ class Dispatcher(Component):
 				request.body = x
 			
 			req = Request(request, response, *vpath, **params)
-			res = self.iter(req, channel)
-			res = res.next()
-			if type(res) == str:
-				response.body = res
-				self.send(Response(response), "response")
-			else:
-				self.send(Response(response), "response")
+			res = False
+			for res in self.iter(req, channel):
+				if type(res) == str:
+					response.body = res
+					return self.send(Response(response), "response")
+			if not res:
+				return self.send(Response(response), "response")
 		else:
 			raise NotFound()
 
