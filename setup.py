@@ -5,6 +5,10 @@ from setuptools import setup, find_packages
 
 import circuits as pkg
 
+from circuits import version
+version.forget_version()
+version.remember_version()
+
 setup(
 		name=pkg.__name__,
 		version=pkg.__version__,

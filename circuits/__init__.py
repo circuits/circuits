@@ -33,15 +33,19 @@ Simple Example:
 Hello World!
 """
 
+try:
+	from __version__ import version as __version__
+except ImportError:
+	__version__ = "unknown"
+
 __name__ = "circuits"
 __description__ = "Circuits"
-__version__ = "1.0"
 __author__ = "James Mills"
 __author_email__ = "%s, prologic at shortcircuit dot net dot au" % __author__
 __maintainer__ = __author__
 __maintainer_email__ = __author_email__
 __url__ = "http://trac.shortcircuit.net.au/circuits/"
-__download_url__ = "http://shortcircuit.net.au/~prologic/downloads/software/%s-%s.tar.gz" % (__name__, __version__)
+__download_url__ = "http://trac.softcircuit.com.au/circuits/downloads/%s-%s.tar.gz" % (__name__, __version__)
 __copyright__ = "CopyRight (C) 2005-2008 by %s" % __author__
 __license__ = "GPL"
 __platforms__ = "POSIX"
