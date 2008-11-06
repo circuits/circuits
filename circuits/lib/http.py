@@ -709,7 +709,7 @@ class Dispatcher(Component):
 					response.body = res
 					return self.send(Response(response), "response")
 			if not res:
-				return self.send(Response(response), "response")
+				raise NotFound()
 		else:
 			raise NotFound()
 
