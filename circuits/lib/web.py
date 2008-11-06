@@ -11,9 +11,32 @@ server implementation with support for headers, cookies, positional
 and keyword arguments, filtering, url dispatching and more.
 """
 
-from circuits import listener, Component
+from inspect import getargspec
+
+from circuits import Component
 from circuits.lib.sockets import TCPServer
 from circuits.lib.http import HTTP, Dispatcher
+
+def expose(*args, **kwargs):
+	def decorate(f):
+		def wrapper(self, request, listener, *args_, **kwargs_):
+			self.request = request
+			self.listener = listener
+			ret = f(self, *args_, **kwargs_)
+			del self.request
+			del self.listener
+			return ret
+ 
+		wrapper.type = kwargs.get("type", "listener")
+		wrapper.target = kwargs.get("target", None)
+		wrapper.channels = args
+		wrapper.argspec = getargspec(f)
+		wrapper.args = wrapper.argspec[0][1:]
+		wrapper.varargs = (True if wrapper.argspec[1] else False)
+		wrapper.varkw = (True if wrapper.argspec[2] else False)
+		return wrapper
+
+	return decorate
 
 class Server(TCPServer):
 
@@ -31,15 +54,16 @@ class Server(TCPServer):
 			except KeyboardInterrupt:
 				break
 
+class AutoListener(type):
+
+	def __init__(cls, name, bases, dct):
+		for name, func in dct.iteritems():
+			if callable(func) and not name.startswith("__"):
+				setattr(cls, name, expose(name, type="listener")(func))
+
 class Controller(Component):
+
+	__metaclass__ = AutoListener
 
 	channel = "/"
 	request = None
-
-	@listener("index")
-	def onINDEX(self, request, response, *args, **kwargs):
-		self.request = request
-		return self.index(args, kwargs)
-
-	def index(self, *args, **kwargs):
-		return ""
