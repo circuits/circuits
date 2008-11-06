@@ -34,9 +34,11 @@ class Server(TCPServer):
 class Controller(Component):
 
 	channel = "/"
+	request = None
 
 	@listener("index")
 	def onINDEX(self, request, response, *args, **kwargs):
+		self.request = request
 		return self.index(args, kwargs)
 
 	def index(self, *args, **kwargs):
