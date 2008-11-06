@@ -11,6 +11,7 @@ server implementation with support for headers, cookies, positional
 and keyword arguments, filtering, url dispatching and more.
 """
 
+from circuits import listener, Component
 from circuits.lib.sockets import TCPServer
 from circuits.lib.http import HTTP, Dispatcher
 
@@ -29,3 +30,14 @@ class Server(TCPServer):
 				self.poll()
 			except KeyboardInterrupt:
 				break
+
+class Controller(Component):
+
+	channel = "/"
+
+	@listener("index")
+	def onINDEX(self, request, response, *args, **kwargs):
+		return self.index(args, kwargs)
+
+	def index(self, *args, **kwargs):
+		return ""
