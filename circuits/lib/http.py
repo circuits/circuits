@@ -691,20 +691,28 @@ class Dispatcher(Component):
 		if filename and os.path.exists(filename):
 			expires(3500*24*30)
 			serve_file(filename)
-			self.send(Response(response), "response")
-		else:
-			channel, vpath = self.findChannel(request)
-		
-			if channel:
-				params = parseQueryString(request.qs)
-				x = processBody(request.headers, request.body)
-				if type(x) == dict:
-					params.update(x)
-				else:
-					request.body = x
-				self.send(Request(request, response, *vpath, **params), channel)
+			return self.send(Response(response), "response")
+
+		channel, vpath = self.findChannel(request)
+	
+		if channel:
+			params = parseQueryString(request.qs)
+			x = processBody(request.headers, request.body)
+			if type(x) == dict:
+				params.update(x)
 			else:
-				raise NotFound()
+				request.body = x
+			
+			req = Request(request, response, *vpath, **params)
+			res = self.iter(req, channel)
+			res = res.next()
+			if type(res) == str:
+				response.body = res
+				self.send(Response(response), "response")
+			else:
+				self.send(Response(response), "response")
+		else:
+			raise NotFound()
 
 ###
 ### Protocol Component
