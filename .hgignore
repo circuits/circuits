@@ -7,3 +7,4 @@ dist
 .coverage
 docs/.build
 circuits.egg-info
+__version__.py
