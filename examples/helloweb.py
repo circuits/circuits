@@ -47,9 +47,10 @@ class HelloWorld(Component):
 	channel = "/"
 
 	@listener("index")
-	def onINDEX(self, request, response):
+	def onINDEX(self, request, response, *args, **kwargs):
 		response.body = "Hello World!"
 		self.send(Response(response), "response")
+		return True
 
 class WebServer(TCPServer):
 
