@@ -35,6 +35,7 @@ try:
 except ImportError:
 	cherrypy = None
 
+import circuits
 from circuits.core import listener, Event, Component
 
 ###
@@ -315,7 +316,7 @@ class Headers(dict):
 ### Defaults/Constants
 ###
 
-SERVER_VERSION = "circuits"
+SERVER_VERSION = "circuits/%s" % circuits.__version__
 SERVER_PROTOCOL = "HTTP/1.1"
 BUFFER_SIZE = 131072
 
