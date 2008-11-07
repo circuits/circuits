@@ -703,7 +703,10 @@ class Dispatcher(Component):
 				request.body = x
 			
 			req = Request(request, response, *vpath, **params)
-			res = [x for x in self.iter(req, channel) if type(x) == str]
+			try:
+				res = [x for x in self.iter(req, channel) if type(x) == str]
+			except Exception, error:
+				raise HTTPError(500)
 			if res:
 				response.body = res[0]
 				return self.send(Response(response), "response")
