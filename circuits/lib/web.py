@@ -12,10 +12,11 @@ and keyword arguments, filtering, url dispatching and more.
 """
 
 from inspect import getargspec
+from socket import gethostname
 
 from circuits import listener, Component
 from circuits.lib.sockets import TCPServer
-from circuits.lib.http import HTTP, Dispatcher
+from circuits.lib.http import SERVER_VERSION, HTTP, Dispatcher
 from circuits.lib.http import Request, Response, _Request, _Response, Headers
 
 def expose(*args, **kwargs):
@@ -44,8 +45,18 @@ class Server(TCPServer):
 	def __init__(self, *args, **kwargs):
 		super(Server, self).__init__(*args, **kwargs)
 
-		self.manager += HTTP()
-		self.manager += Dispatcher()
+		self.http = HTTP()
+		self.dispatcher = Dispatcher()
+
+		self.manager += self.http
+		self.manager += self.dispatcher
+
+		if self.address in ["", "0.0.0.0"]:
+			bound = "%s:%s" % (gethostname(), self.port)
+		else:
+			bound = "%s:%s" % (self.address, self.port)
+
+		print "%s listening on http://%s/" % (SERVER_VERSION, bound)
 
 	def run(self):
 		while True:
