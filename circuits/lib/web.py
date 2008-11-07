@@ -11,7 +11,6 @@ server implementation with support for headers, cookies, positional
 and keyword arguments, filtering, url dispatching and more.
 """
 
-import sys
 from inspect import getargspec
 
 from circuits import listener, Component
@@ -82,7 +81,7 @@ class Application(Component):
 	
 	def getRequestResponse(self, environ):
 		env = environ.get
-		
+
 		headers = Headers(list(self.translateHeaders(environ)))
 
 		request = _Request(
@@ -104,6 +103,8 @@ class Application(Component):
 
 	@listener("response")
 	def onRESPONSE(self, response):
+		for k, v in response.cookie.iteritems():
+			response.headers.add_header("Set-Cookie", v.OutputString())
 		response.start_response(response.status, response.headers.items())
 
 	def __call__(self, environ, start_response):
