@@ -55,6 +55,14 @@ class Server(TCPServer):
 			except KeyboardInterrupt:
 				break
 
+class Logger(Component):
+
+	channel = "*"
+
+	@listener("request", type="filter")
+	def onGET(self, request, response):
+		print request
+
 class Application(Component):
 
 	headerNames = {
