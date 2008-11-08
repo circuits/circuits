@@ -21,13 +21,13 @@ and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 Simple Example:
 
 >>> from circuits.core import listener, Component, Event, Manager
-
+>>>
 >>> class Hello(Component):
 ...   @listener("hello")
 ...   def onHELLO(self):
 ...      print "Hello World!"
 >>> manager = Manager()
->>> manager += hello
+>>> manager += Hello()
 >>> manager.push(Event(), "hello")
 >>> manager.flush()
 Hello World!
@@ -46,35 +46,58 @@ __maintainer__ = __author__
 __maintainer_email__ = __author_email__
 __url__ = "http://trac.shortcircuit.net.au/circuits/"
 __download_url__ = "http://trac.softcircuit.com.au/circuits/downloads/%s-%s.tar.gz" % (__name__, __version__)
-__copyright__ = "CopyRight (C) 2005-2008 by %s" % __author__
+__copyright__ = "CopyRight (C) 2004-2008 by %s" % __author__
 __license__ = "MIT"
 __platforms__ = "POSIX"
-__keywords__ = "Circuits"
+__keywords__ = "circuits event framework component"
 __classifiers__ = [
-		"Development Status :: 3 - Alpha",
-		"Development Status :: 4 - Beta",
-		"Development Status :: 5 - Production/Stable",
-		"Environment :: Other Environment",
-		"Intended Audience :: Developers",
-		"Intended Audience :: End Users/Desktop",
-		"License :: OSI Approved :: GNU General Public License (GPL)",
-		"Natural Language :: English",
-		"Operating System :: OS Independent",
-		"Programming Language :: Python",
-		"Topic :: Adaptive Technologies",
-		"Topic :: Communications :: Chat :: Internet Relay Chat",
-		"Topic :: Database :: Front-Ends",
-		"Topic :: Scientific/Engineering :: Artificial Intelligence",
-		"Topic :: Software Development :: Libraries",
-		"Topic :: Software Development :: Libraries :: Application Frameworks",
-		"Topic :: Software Development :: Libraries :: Python Modules",
-		]
+	"Classifier: Development Status :: 6 - Mature",
+	"Classifier: Environment :: Console",
+	"Classifier: Environment :: No Input/Output (Daemon)",
+	"Classifier: Environment :: Other Environment",
+	"Classifier: Environment :: Plugins",
+	"Classifier: Environment :: Web Environment",
+	"Classifier: Intended Audience :: Developers",
+	"Classifier: Intended Audience :: Information Technology",
+	"Classifier: Intended Audience :: Science/Research",
+	"Classifier: Intended Audience :: System Administrators",
+	"Classifier: Intended Audience :: Telecommunications Industry",
+	"Classifier: License :: OSI Approved",
+	"Classifier: License :: OSI Approved :: MIT License",
+	"Classifier: Natural Language :: English",
+	"Classifier: Operating System :: POSIX",
+	"Classifier: Operating System :: POSIX :: Linux",
+	"Classifier: Programming Language :: Python",
+	"Classifier: Programming Language :: Python :: 2.5",
+	"Classifier: Programming Language :: Python :: 2.6",
+	"Classifier: Programming Language :: Python :: 3.0",
+	"Classifier: Topic :: Adaptive Technologies",
+	"Classifier: Topic :: Communications :: Chat",
+	"Classifier: Topic :: Communications :: Chat :: Internet Relay Chat",
+	"Classifier: Topic :: Communications :: Email",
+	"Classifier: Topic :: Communications :: Email :: Mail Transport Agents",
+	"Classifier: Topic :: Database",
+	"Classifier: Topic :: Internet",
+	"Classifier: Topic :: Internet :: WWW/HTTP",
+	"Classifier: Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+	"Classifier: Topic :: Internet :: WWW/HTTP :: WSGI",
+	"Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+	"Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
+	"Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Server",
+	"Classifier: Topic :: Software Development :: Libraries",
+	"Classifier: Topic :: Software Development :: Libraries :: Application Frameworks",
+	"Classifier: Topic :: Software Development :: Libraries :: Python Modules",
+	"Classifier: Topic :: System :: Clustering",
+	"Classifier: Topic :: System :: Distributed Computing"]
 __str__ = "%s-%s" % (__name__, __version__)
 __package_data__ = {}
 __install_requires__ = []
 __setup_requires__ = []
 __extras_require__ = {}
-__entry_points__ = ""
+__entry_points__ = """\
+[console_scripts]
+circuits.bench = circuits.tools.bench:main
+"""
 
 from core import listener, Event, Component, Manager
 
