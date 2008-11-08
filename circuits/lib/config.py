@@ -47,13 +47,22 @@ class Config(Component, ConfigParser):
 			return default
 
 	def getint(self, section, option, default=0):
-		return int(self.get(section, option, default))
+		if self.has_option(section, option):
+			return super(Config, self).getint(section, option)
+		else:
+			return default
 
 	def getfloat(self, section, option, default=0.0):
-		return float(self.get(section, option, default))
+		if self.has_option(section, option):
+			return super(Config, self).getfloat(section, option)
+		else:
+			return default
 
 	def getboolean(self, section, option, default=False):
-		return bool(self.get(section, option, default))
+		if self.has_option(section, option):
+			return super(Config, self).getboolean(section, option)
+		else:
+			return default
 
 	@listener("load")
 	def onLOAD(self):
