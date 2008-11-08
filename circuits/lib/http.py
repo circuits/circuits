@@ -329,6 +329,7 @@ DEFAULT_ERROR_MESSAGE = """\
 <p>Error code %(code)d.
 <p>Message: %(message)s.
 <p>Error code explanation: %(code)s = %(explain)s.
+<pre>%(traceback)s</pre>
 </body>
 """
 
