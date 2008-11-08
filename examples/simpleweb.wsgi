@@ -13,7 +13,7 @@ from circuits.lib.web import Application, Controller
 
 class HelloWorld(Controller):
 
-	def index(self, *args, **kwargs):
+	def index(self):
 		return "Hello World!"
 
 application = Application()
