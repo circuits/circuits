@@ -873,10 +873,7 @@ class HTTP(Component):
 		except HTTPError, error:
 			self.sendError(sock, error[0], error[1], response)
 		except Exception, error:
-			print >> sys.stderr, "ERROR: %s" % error
-			print >> sys.stderr, format_exc()
-			self.sendError(sock, 500, "Internal Server Error", response)
-			raise
+			self.sendError(sock, 500, "Internal Server Error", format_exc(), response)
 		finally:
 			if sock in self._requests:
 				del self._requests[sock]
