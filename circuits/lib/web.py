@@ -11,6 +11,7 @@ server implementation with support for headers, cookies, positional
 and keyword arguments, filtering, url dispatching and more.
 """
 
+import os
 from inspect import getargspec
 from socket import gethostname
 
@@ -42,11 +43,14 @@ def expose(*args, **kwargs):
 
 class Server(TCPServer):
 
+	_docroot = os.getcwd()
+
 	def __init__(self, *args, **kwargs):
 		super(Server, self).__init__(*args, **kwargs)
 
 		self.http = HTTP()
 		self.dispatcher = Dispatcher()
+		self.dispatcher.docroot = self.docroot
 
 		self.manager += self.http
 		self.manager += self.dispatcher
@@ -57,6 +61,17 @@ class Server(TCPServer):
 			bound = "%s:%s" % (self.address, self.port)
 
 		print "%s listening on http://%s/" % (SERVER_VERSION, bound)
+
+	def _getDocRoot(self):
+		return self._docroot
+
+	def _setDocRoot(self, docroot):
+		if os.path.exists(docroot):
+			self._docroot = docroot
+		else:
+			raise IOError(2, "Invalid docroot path", docroot)
+
+	docroot = property(_getDocRoot, _setDocRoot, "Document Root")
 
 	def run(self):
 		while True:
