@@ -25,9 +25,10 @@ from circuits.lib.http import Request, Response, _Request, _Response, Headers
 def expose(*channels, **config):
 	def decorate(f):
 		def wrapper(self, request, response, *args, **kwargs):
-			self.request = request
-			self.response = response
+			self.request, self.response = request, response
+			self.cookie = self.request.cookie
 			ret = f(self, *args, **kwargs)
+			del self.cookie
 			del self.request
 			del self.response
 			return ret
@@ -37,6 +38,8 @@ def expose(*channels, **config):
 		wrapper.channels = channels
 		wrapper.argspec = getargspec(f)
 		wrapper.args = wrapper.argspec[0][1:]
+		wrapper.args.insert(0, "response")
+		wrapper.args.insert(0, "request")
 		wrapper.varargs = (True if wrapper.argspec[1] else False)
 		wrapper.varkw = (True if wrapper.argspec[2] else False)
 		return wrapper
