@@ -14,7 +14,7 @@ from circuits.lib.web import Server, Controller
 
 class HelloWorld(Controller):
 
-	def index(self, *args, **kwargs):
+	def index(self):
 		return "Hello World!"
 
 server = Server(8000)
