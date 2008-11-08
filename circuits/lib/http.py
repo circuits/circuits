@@ -910,8 +910,8 @@ class HTTP(Component):
 		if response.close:
 			self.send(Close(sock), "close")
 
-	def sendError(self, sock, code, message=None, response=None):
-		"""H.sendError(sock, code, message=None, response=None) -> None
+	def sendError(self, sock, code, message=None, traceback=None, response=None):
+		"""H.sendError(sock, code, message=None, traceback=None, response=None) -> None
 		
 		Send an error reply.
 
@@ -937,7 +937,8 @@ class HTTP(Component):
 		content = DEFAULT_ERROR_MESSAGE % {
 			"code": code,
 			"message": quoteHTML(message),
-			"explain": explain}
+			"explain": explain,
+			"traceback": traceback or ""}
 
 		if response is None:
 			response = _Response(sock)
