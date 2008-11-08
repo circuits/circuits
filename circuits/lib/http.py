@@ -708,7 +708,7 @@ class Dispatcher(Component):
 			try:
 				res = [x for x in self.iter(req, channel) if type(x) == str]
 			except Exception, error:
-				raise HTTPError(500)
+				raise
 			if res:
 				response.body = res[0]
 				return self.send(Response(response), "response")
