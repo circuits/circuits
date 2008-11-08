@@ -12,27 +12,29 @@ and keyword arguments, filtering, url dispatching and more.
 """
 
 import os
+from os import getcwd, listdir
 from inspect import getargspec
 from socket import gethostname
+from os.path import isdir, isfile
 
 from circuits import listener, Component
 from circuits.lib.sockets import TCPServer
 from circuits.lib.http import SERVER_VERSION, HTTP, Dispatcher
 from circuits.lib.http import Request, Response, _Request, _Response, Headers
 
-def expose(*args, **kwargs):
+def expose(*channels, **config):
 	def decorate(f):
-		def wrapper(self, request, response, *args_, **kwargs_):
+		def wrapper(self, request, response, *args, **kwargs):
 			self.request = request
 			self.response = response
-			ret = f(self, *args_, **kwargs_)
+			ret = f(self, *args, **kwargs)
 			del self.request
 			del self.response
 			return ret
  
-		wrapper.type = kwargs.get("type", "listener")
-		wrapper.target = kwargs.get("target", None)
-		wrapper.channels = args
+		wrapper.type = config.get("type", "listener")
+		wrapper.target = config.get("target", None)
+		wrapper.channels = channels
 		wrapper.argspec = getargspec(f)
 		wrapper.args = wrapper.argspec[0][1:]
 		wrapper.varargs = (True if wrapper.argspec[1] else False)
@@ -160,3 +162,53 @@ class Controller(Component):
 
 	channel = "/"
 	request = None
+
+class FileServer(Component):
+
+	template = """\
+<html>
+	<head>
+		<title>Index of %(path)s</title>
+	</head>
+	<body>
+		<h1>Index of %(path)s</h1>
+		%(files)s
+	</body>
+</html>"""
+
+	def __init__(self, *args, **kwargs):
+		super(FileServer, self).__init__(*args, **kwargs)
+
+		self.path = kwargs.get("path", getcwd())
+
+	@listener("index")
+	def onINDEX(self, request, response, *args, **kwargs):
+		if args:
+			path = os.path.join("/", *args)
+			real = os.path.join(self.path, *args)
+		else:
+			path = ""
+			real = self.path
+
+		if isfile(real):
+			response.body = open(real, "r")
+			return self.send(Response(response), "response")
+
+		data = {}
+		data["path"] = path or "/"
+
+		files = []
+
+		if path:
+			href = os.path.join(self.channel, path.lstrip("/"), "..")
+			files.append("<li class=\"dir\"><a href=\"%s\">..</a>" % href)
+
+		for file in listdir(real):
+			href = os.path.join(self.channel, path.lstrip("/"), file)
+			name = ("%s/" % file if isdir(file) else file)
+			files.append("<li class=\"dir\"><a href=\"%s\">%s</a>" % (href, name))
+
+		data["files"] = "<ul>%s</ul>" % "".join(files)
+
+		response.body = self.template % data
+		self.send(Response(response), "response")
