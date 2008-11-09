@@ -57,7 +57,7 @@ class Bot(Component):
 		Event Handler for "numeric" Events that implements:
 		 * When the Bot receives a numeric message:
 		  * If the numeric is a 433:
-		   * Send a NICK command and change our nick adding a _
+		   * Change our nick by appending a "_" to our current nick
 
 		Note: 433 is the IRC numeric for "Nickname in use"
 		"""
@@ -71,7 +71,7 @@ class Bot(Component):
 
 		Event Handler for "message" Events that implements:
 		 * When the Bot receives a message:
-		  * Send a PRIVMSG back to the source
+		  * Send the same message to the sender (source).
 		"""
 
 		self.irc.ircPRIVMSG(source, message)
