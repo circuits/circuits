@@ -95,6 +95,7 @@ class Bot(Component):
 				self.irc.ircQUIT()
 				self.flush()
 
-bot = Bot()
-bot.connect("irc.freenode.net")
-bot.run()
+if __name__ == "__main__":
+	bot = Bot()
+	bot.connect("irc.freenode.net")
+	bot.run()
