@@ -254,6 +254,7 @@ class IRC(Component):
 
 		else:
 			self.ircRAW("NICK %s" % nick)
+			self._info["nick"] = nick
 
 	def ircPING(self, server):
 		self.ircRAW("PING :%s" % server)
