@@ -5,127 +5,96 @@
 """(Example) IRC Bot
 
 A simple example of using circuits to build a simple IRC Bot.
-
-This example demonstrates:
-	* Basic Component creation.
-	* Basic Event handling.
-	* Basic Networking
-
-This example makes use of:
-	* Component
-	* Event
-	* Manager
-	* lib.sockets.TCPClient
+This example demonstrates basic networking with circuits.
 """
 
-import optparse
 from time import sleep
 from socket import gethostname
 
 from circuits.lib.irc import IRC
+from circuits import listener, Component
 from circuits.lib.sockets import TCPClient
-from circuits import __version__ as systemVersion
-from circuits import listener, Event, Component, Debugger, Manager
-
-USAGE = "%prog [options] host [port]"
-VERSION = "%prog v" + systemVersion
-
-###
-### Functions
-###
-
-def parse_options():
-	"""parse_options() -> opts, args
-
-	Parse any command-line options given returning both
-	the parsed options and arguments.
-	"""
-
-	parser = optparse.OptionParser(usage=USAGE, version=VERSION)
-
-	parser.add_option("-s", "--ssl",
-			action="store_true", default=False, dest="ssl",
-			help="Enable SSL mode")
-
-	parser.add_option("-d", "--debug",
-			action="store_true", default=False, dest="debug",
-			help="Enable debug mode")
-
-	opts, args = parser.parse_args()
-
-	if len(args) < 1:
-		parser.print_help()
-		raise SystemExit, 1
-
-	return opts, args
-
-###
-### Components
-###
 
 class Bot(Component):
 
 	def __init__(self, *args, **kwargs):
+		"""Initialize Bot Component
+
+		Create instances of the IRC and TCPClient Components and add them
+		to our Bot Component.
+		"""
+
+		# Important: Call the super constructors to initialize the Component.
+		super(Bot, self).__init__(*args, **kwargs)
+
 		self.irc = IRC()
 		self.client = TCPClient()
+		self += self.irc
+		self += self.client
 
-	def registered(self):
-		self.manager += self.irc
-		self.manager += self.client
+	def connect(self, host, port=6667, ssl=False):
+		"Connect to an IRC Server"
 
-	def connect(self, host, port, ssl=False):
 		self.client.open(host, port, ssl)
 
 	@listener("connect")
 	def onCONNECT(self, host, port):
+		"""Connect Event Handler
+
+		Event Handler for "connect" Events that implements:
+		 * When the Bot has connectd:
+		  * Send a USER command
+		  * Send a NICK command
+		"""
+
 		self.irc.ircUSER("test", gethostname(), host, "Test Bot")
 		self.irc.ircNICK("test")
 
 	@listener("numeric")
 	def onNUMERIC(self, source, target, numeric, args, message):
+		"""Numeric Event Handler
+
+		Event Handler for "numeric" Events that implements:
+		 * When the Bot receives a numeric message:
+		  * If the numeric is a 433:
+		   * Send a NICK command and change our nick adding a _
+
+		Note: 433 is the IRC numeric for "Nickname in use"
+		"""
+
 		if numeric == 433:
 			self.irc.ircNICK("%s_" % self.irc.getNick())
 
+	@listener("message")
+	def onMESSAGE(self, source, target, message):
+		"""Message Event Handler
+
+		Event Handler for "message" Events that implements:
+		 * When the Bot receives a message:
+		  * Send a PRIVMSG back to the source
+		"""
+
+		self.irc.ircPRIVMSG(source, message)
+
 	def run(self):
+		"""Run the Bot
+
+		Main Event Loop that runs the Bot. This flushes all Events waiting
+		to be processed, then polls for new Events from the TCPClient
+		Component. If a ^C is issued, send a QUIT command and flush any
+		remaining Events and terminate. Continue running whiel the TCPClient
+		is still connected to the Server.
+		"""
+
 		while self.client.connected:
 			try:
-				self.manager.flush()
+				self.flush()
 				self.client.poll()
 				sleep(0.01)
 			except KeyboardInterrupt:
 				self.irc.ircQUIT()
-				self.manager.flush()
+				self.flush()
 
-###
-### Main
-###
-
-def main():
-	opts, args = parse_options()
-
-	if ":" in args[0]:
-		host, port = args[0].split(":")
-		port = int(port)
-	else:
-		host = args[0]
-		port = 6667
-
-	manager = Manager()
-
-	if opts.debug:
-		debugger = Debugger()
-		manager += debugger
-		debugger.IgnoreEvents = ["Read", "Write", "Raw"]
-
-	bot = Bot()
-	manager += bot
-
-	bot.connect(host, port, opts.ssl)
-	bot.run()
-
-###
-### Entry Point
-###
-
-if __name__ == "__main__":
-	main()
+bot = Bot()
+bot.connect("irc.freenode.net")
+bot.run()
