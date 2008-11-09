@@ -117,7 +117,6 @@ class Debugger(Component):
 			elif channel in self.IgnoreChannels:
 				return
 			else:
-				print self.logger
 				if self.logger:
 					self.push(Debug(repr(event)), "debug", "log")
 				else:
