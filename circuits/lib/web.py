@@ -50,14 +50,11 @@ def expose(*channels, **config):
 
 class Server(TCPServer):
 
-	_docroot = os.getcwd()
-
 	def __init__(self, *args, **kwargs):
 		super(Server, self).__init__(*args, **kwargs)
 
 		self.http = HTTP()
 		self.dispatcher = Dispatcher()
-		self.dispatcher.docroot = self.docroot
 
 		self.manager += self.http
 		self.manager += self.dispatcher
@@ -70,11 +67,14 @@ class Server(TCPServer):
 		print "%s listening on http://%s/" % (SERVER_VERSION, bound)
 
 	def _getDocRoot(self):
-		return self._docroot
+		if hasattr(self, "dispatcher"):
+			return self.dispatcher.docroot
+		else:
+			return None
 
 	def _setDocRoot(self, docroot):
 		if os.path.exists(docroot):
-			self._docroot = docroot
+			self.dispatcher.docroot = docroot
 		else:
 			raise IOError(2, "Invalid docroot path", docroot)
 
