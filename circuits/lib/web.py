@@ -19,6 +19,8 @@ from os.path import isdir, isfile
 
 from circuits import listener, Component
 from circuits.lib.sockets import TCPServer
+from circuits.lib.http import HTTPError, HTTPRedirect
+from circuits.lib.http import RESPONSES, DEFAULT_ERROR_MESSAGE
 from circuits.lib.http import SERVER_VERSION, HTTP, Dispatcher
 from circuits.lib.http import Request, Response, _Request, _Response, Headers
 
@@ -140,6 +142,29 @@ class Application(Component):
 
 		return request, response
 
+	def setError(self, response, code, message=None, traceback=None):
+		try:
+			short, long = RESPONSES[code]
+		except KeyError:
+			short, long = "???", "???"
+
+		if message is None:
+			message = short
+
+		explain = long
+
+		content = DEFAULT_ERROR_MESSAGE % {
+			"code": code,
+			"message": quoteHTML(message),
+			"explain": explain,
+			"traceback": traceback or ""}
+
+		response.body = content
+		response.status = "%s %s" % (code, message)
+		response.headers.add_header("Connection", "close")
+
+		self.send(Response(response), "response")
+
 	@listener("response")
 	def onRESPONSE(self, response):
 		for k, v in response.cookie.iteritems():
@@ -149,8 +174,18 @@ class Application(Component):
 	def __call__(self, environ, start_response):
 		request, response = self.getRequestResponse(environ)
 		response.start_response = start_response
-		self.send(Request(request, response), "request")
-		return [response.body]
+
+		try:
+			self.send(Request(request, response), "request")
+		except HTTPRedirect, error:
+			error.set_response()
+			self.send(Response(response), "response")
+		except HTTPError, error:
+			self.setError(response, error[0], error[1])
+		except Exception, error:
+			self.setError(response, 500, "Internal Server Error", format_exc())
+		finally:
+			return [response.body]
 
 class _AutoListener(type):
 
