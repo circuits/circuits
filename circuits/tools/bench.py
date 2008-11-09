@@ -4,10 +4,7 @@
 
 """(Tool) Bench Marking Tool
 
-Bench marking tool. THis example does some simple
-benchmaking of the circuits library.
-
-See: ./bench.py --help
+THis tool does some simple benchmaking of the circuits library.
 """
 
 import sys
