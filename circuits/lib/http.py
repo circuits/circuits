@@ -555,13 +555,17 @@ class _Response(object):
 				self.stream = True
 			else:
 				body = self.body.read()
-		else:
+		elif type(self.body) == str:
 			body = self.body
 			if self.gzip:
 				body = compressBuf(body).getvalue()
 				self.headers["Content-Encoding"] = "gzip"
 			cLen = len(body)
 			cType = self.headers.get("Content-Type", "text/html")
+		else:
+			body = ""
+			cLen = 0
+			cType = "text/plain"
 
 		self.headers["Content-Type"] = cType
 		self.headers["Content-Length"] = cLen
