@@ -577,7 +577,7 @@ class _Response(object):
 class Dispatcher(Component):
 
 	defaults = ["index.html"]
-	docroot = os.path.join(os.getcwd(), "htdocs")
+	docroot = os.getcwd()
 
 	def findChannel(self, request):
 		"""findChannel(request) -> channel
