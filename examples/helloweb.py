@@ -4,89 +4,74 @@
 
 """(Example) Web Hello
 
-Web-based Hello World example.
+A simple example web server/application displaying "Hello World"
+to the user's browser. This example demonstrates how to build a
+simple but complete web server and application using circuits.
 """
-
-import optparse
 
 from circuits.lib.sockets import TCPServer
 from circuits import __version__ as systemVersion
 from circuits.lib.http import HTTP, Response, Dispatcher
 from circuits import listener, Event, Component, Manager
 
-USAGE = "%prog [options] [path]"
-VERSION = "%prog v" + systemVersion
+class HelloWorld(Component):
+	"""HelloWorld Component
 
-###
-### Functions
-###
-
-def parse_options():
-	"""parse_options() -> opts, args
-
-	Parse any command-line options given returning both
-	the parsed options and arguments.
+	A Component that will istener to "index' Events and return an appropiate
+	HTTP Response with the message "Hello Worl!".
 	"""
 
-	parser = optparse.OptionParser(usage=USAGE, version=VERSION)
-
-	parser.add_option("-b", "--bind",
-			action="store", default="0.0.0.0:8000", dest="bind",
-			help="Bind to address:port")
-
-	opts, args = parser.parse_args()
-
-	return opts, args
-
-###
-### Components
-###
-
-class HelloWorld(Component):
+	# Set channel to "/" which maps to http://localhost:8000/
 
 	channel = "/"
 
 	@listener("index")
 	def onINDEX(self, request, response, *args, **kwargs):
+		"""Index Event Handler
+
+		HTTP Request Handler that listens on the "index' channel which maps
+		to http://localhost:8000/ When a Request is received, send back an
+		appropiate HTTP Response with contens of the body being "Hello World!"
+		"""
+
 		response.body = "Hello World!"
 		self.send(Response(response), "response")
-		return True
 
 class WebServer(TCPServer):
+	"""Web Server Component
 
-	def registered(self):
-		self.manager += HTTP()
-		self.manager += Dispatcher()
+	A bsic Web Server Component that combines the HTTP and Dispatcher
+	Components into one. Other Components that are added/registered
+	to teh system can listen for Events that are matched and mapped
+	according to the requested path. For example, http://localhost:8000/foo
+	will map to a Component that listens on the "/" channel and contains an
+	Event handler that listens on the "foo" channel.
+	"""
 
-###
-### Main
-###
+	def __init__(self, *args, **kwargs):
+		"""Initialize Web Server Component
 
-def main():
-	opts, args = parse_options()
+		Create instances of the HTTP and TCPServer Components and add them
+		to our Web Server Component.
+		"""
 
-	if ":" in opts.bind:
-		address, port = opts.bind.split(":")
-		port = int(port)
-	else:
-		address, port = opts.bind, 80
+		# Important: Call the super constructors to initialize the Component.
+		super(WebServer, self).__init__(*args, **kwargs)
 
-	manager = Manager()
-	server = WebServer(port, address)
+		self.http = HTTP()
+		self.dispatcher = Dispatcher()
+		self += self.http
+		self += self.dispatcher
 
-	manager += server
-	manager += HelloWorld()
-
-	while True:
-		try:
-			manager.flush()
-			server.poll()
-		except KeyboardInterrupt:
-			break
-
-###
-### Entry Point
-###
+	def run(self):
+		while True:
+			try:
+				self.flush()
+				self.poll()
+			except KeyboardInterrupt:
+				break
 
 if __name__ == "__main__":
-	main()
+	server = WebServer(8000)
+	server += HelloWorld()
+	server.run()
