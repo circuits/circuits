@@ -71,7 +71,7 @@ class Bot(Component):
 
 		Event Handler for "message" Events that implements:
 		 * When the Bot receives a message:
-		  * Send the same message to the sender (source).
+		  * Echo the message back to the sender (source).
 		"""
 
 		self.irc.ircPRIVMSG(source, message)
