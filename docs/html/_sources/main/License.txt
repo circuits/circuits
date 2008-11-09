@@ -14,7 +14,7 @@ Circuits
 
 Circuits is covered by the MIT license::
 
-Copyright (C) 2005-2008 James Mills
+Copyright (C) 2004-2008 James Mills
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
