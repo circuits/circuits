@@ -248,5 +248,6 @@ class FileServer(Component):
 
 		data["files"] = "<ul>%s</ul>" % "".join(files)
 
+		response.headers["Content-Type"] = "text/html"
 		response.body = self.template % data
 		self.send(Response(response), "response")
