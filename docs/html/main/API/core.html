@@ -10,18 +10,17 @@
           URL_ROOT:    '../../',
           VERSION:     '1.0a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: ''
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/interface.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="../../contents.html" />
     <link rel="index" title="Global index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="top" title="circuits v1.0a1 documentation" href="../../index.html" />
     <link rel="next" title="circuits.bridge" href="../Standard/bridge.html" />
-    <link rel="prev" title="Circuits Documentation:" href="../../index.html" />
+    <link rel="prev" title="What&#8217;s new in TurboGears 2" href="../WhatsNew.html" />
   </head>
   <body>
     <div class="related">
@@ -37,7 +36,7 @@
           <a href="../Standard/bridge.html" title="circuits.bridge"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../../index.html" title="Circuits Documentation:"
+          <a href="../WhatsNew.html" title="What&#8217;s new in TurboGears 2"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
       </ul>
@@ -49,7 +48,7 @@
             
   
   <div class="section" id="module-circuits.core">
-<h1 id="module-circuits.core">circuits.core<a class="headerlink" href="#module-circuits.core" title="Permalink to this headline">¶</a></h1>
+<h1>circuits.core<a class="headerlink" href="#module-circuits.core" title="Permalink to this headline">¶</a></h1>
 <p>Core of the circuits library containing all of the essentials for a
 circuits based application or system. Normal usage of circuits:</p>
 <div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">circuits</span> <span class="kn">import</span> <span class="n">listener</span><span class="p">,</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Event</span>
@@ -163,6 +162,16 @@ to filters/listeners.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="circuits.core.Manager.iter">
+<!--[circuits.core.Manager.iter]--><tt class="descname">iter</tt><big>(</big><em>event</em>, <em>channel</em>, <em>target=None</em><big>)</big><a class="headerlink" href="#circuits.core.Manager.iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>E.iter(event, channel, target=None) -&gt; Generator</p>
+<p>Iterate and Send the given event to filters/listeners
+on the hannel specified. If target is given, send this
+event to filters/listeners of the given target component.
+For each event that is sent, yield it&#8217;s return result.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="circuits.core.Manager.push">
 <!--[circuits.core.Manager.push]--><tt class="descname">push</tt><big>(</big><em>event</em>, <em>channel</em>, <em>target=None</em><big>)</big><a class="headerlink" href="#circuits.core.Manager.push" title="Permalink to this definition">¶</a></dt>
 <dd><p>E.push(event, channel, target=None) -&gt; None</p>
@@ -209,7 +218,9 @@ component.</p>
 listens on a set of channels defined by args. The type
 of the listener defaults to &#8220;listener&#8221; and is defined
 by kwargs[&#8220;type&#8221;]. To define a filter, pass type=&#8221;filter&#8221;
-to kwargs.</p>
+to kwargs. If kwargs[&#8220;target&#8221;] is not None, this event handler
+will be registered and will ignore the channel of it&#8217;s containing
+Component.</p>
 <p>Examples:</p>
 <div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">circuits.core</span> <span class="kn">import</span> <span class="n">listener</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nd">@listener</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">)</span>
@@ -233,7 +244,7 @@ to kwargs.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h4>Previous topic</h4>
-            <p class="topless"><a href="../../index.html" title="previous chapter">Circuits Documentation:</a></p>
+            <p class="topless"><a href="../WhatsNew.html" title="previous chapter">What&#8217;s new in TurboGears 2</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="../Standard/bridge.html" title="next chapter">circuits.bridge</a></p>
             <h3>This Page</h3>
@@ -263,14 +274,14 @@ to kwargs.</p>
           <a href="../Standard/bridge.html" title="circuits.bridge"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../../index.html" title="Circuits Documentation:"
+          <a href="../WhatsNew.html" title="What&#8217;s new in TurboGears 2"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2008, James Mills.
-      Last updated on Nov 03, 2008.
+      Last updated on Nov 09, 2008.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

@@ -10,11 +10,10 @@
           URL_ROOT:    '../',
           VERSION:     '1.0a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: ''
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/interface.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="../contents.html" />
     <link rel="index" title="Global index" href="../genindex.html" />
@@ -49,7 +48,7 @@
             
   
   <div class="section" id="contributing-to-circuits">
-<h1 id="contributing-to-circuits">Contributing to Circuits<a class="headerlink" href="#contributing-to-circuits" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id1">Contributing to Circuits<a class="headerlink" href="#contributing-to-circuits" title="Permalink to this headline">¶</a></a></h1>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -76,9 +75,9 @@
 this document is to help you get started and answer any questions you
 might have.</p>
 <div class="section" id="installing-the-development-version-of-circuits-from-source">
-<h2 id="installing-the-development-version-of-circuits-from-source">Installing the Development Version of Circuits (from source)<a class="headerlink" href="#installing-the-development-version-of-circuits-from-source" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">Installing the Development Version of Circuits (from source)<a class="headerlink" href="#installing-the-development-version-of-circuits-from-source" title="Permalink to this headline">¶</a></a></h2>
 <div class="section" id="pre-requisites">
-<h3 id="pre-requisites">Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h3>
+<h3>Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
 <li>Python 2.5 or better (<a class="reference external" href="http://python.org/download">http://python.org/download</a>)</li>
 <li><a class="reference external" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a></li>
@@ -86,7 +85,7 @@ might have.</p>
 </ol>
 </div>
 <div class="section" id="installing-circuits-from-source">
-<h3 id="installing-circuits-from-source">Installing Circuits from Source<a class="headerlink" href="#installing-circuits-from-source" title="Permalink to this headline">¶</a></h3>
+<h3>Installing Circuits from Source<a class="headerlink" href="#installing-circuits-from-source" title="Permalink to this headline">¶</a></h3>
 <p>Get the latest code from the Mercurial respository:</p>
 <div class="highlight"><pre><span class="nv">$ </span>hg clone http://hg.softcircuit.com.au/projects/circuits/
 </pre></div>
@@ -98,17 +97,17 @@ might have.</p>
 Happy Hacking!</p>
 </div>
 <div class="section" id="troubleshooting">
-<h3 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h3>
+<h3>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h3>
 <p><em>No known issues</em></p>
 </div>
 </div>
 <div class="section" id="coding-style">
-<h2 id="coding-style">Coding style<a class="headerlink" href="#coding-style" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Coding style<a class="headerlink" href="#coding-style" title="Permalink to this headline">¶</a></a></h2>
 <p>Since it&#8217;s hard to argue with someone who&#8217;s already written a code style
 document, Circuits follows <a class="reference external" href="http://www.python.org/peps/pep-0008.html">PEP 8</a> conventions.</p>
 </div>
 <div class="section" id="testing">
-<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></a></h2>
 <p>Automated unit tests are better than good. They make future growth of the
 project possible.</p>
 <p>Circuits uses <a class="reference external" href="http://somethingaboutorange.com/mrl/projects/nose/">Nose</a>, which makes testing easy. You can run the
@@ -118,7 +117,7 @@ tests just by running <cite>nosetests</cite> or <cite>make tests</cite>.</p>
 </pre></div>
 </div>
 <div class="section" id="documentation">
-<h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></a></h2>
 <p>As mentioned in the <a class="reference external" href="http://trac.softcircuit.com.au/circuits/chrome/site/docs/main/Philosophy.html">Project Philosophy</a> document, a feature doesn&#8217;t
 truly exist until it&#8217;s documented. Tests can serve as good documentation,
 because you at least know that they&#8217;re accurate. But, it&#8217;s also nice to
@@ -165,7 +164,7 @@ respository:</p>
 </pre></div>
 </div>
 <div class="section" id="documenting-changes">
-<h2 id="documenting-changes">Documenting Changes<a class="headerlink" href="#documenting-changes" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Documenting Changes<a class="headerlink" href="#documenting-changes" title="Permalink to this headline">¶</a></a></h2>
 <p>The <a class="reference external" href="http://trac.softcircuit.com.au/circuits/">Circuits Trac</a> is mostly used for tracking upcoming changes
 and tasks required before release of a new version. The <a class="reference external" href="http://trac.softcircuit.com.au/circuits/wiki/1.0/ChangeLog">changelog</a>
 provides the human readable list of changes.</p>
@@ -174,7 +173,7 @@ release. Please <strong>update the changelog as you make changes</strong>, and t
 is <strong>especially</strong> critical for <strong>backwards incompatibilities</strong>.</p>
 </div>
 <div class="section" id="how-to-submit-a-patch">
-<h2 id="how-to-submit-a-patch">How to Submit a Patch<a class="headerlink" href="#how-to-submit-a-patch" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">How to Submit a Patch<a class="headerlink" href="#how-to-submit-a-patch" title="Permalink to this headline">¶</a></a></h2>
 <p>Please make sure that you read and follow the <a class="reference external" href="http://trac.softcircuit.com.au/circuits/wiki/docs/PatchingGuidelines">patching guidelines</a>.</p>
 </div>
 </div>
@@ -241,7 +240,7 @@ is <strong>especially</strong> critical for <strong>backwards incompatibilities<
     </div>
     <div class="footer">
       &copy; Copyright 2008, James Mills.
-      Last updated on Nov 04, 2008.
+      Last updated on Nov 09, 2008.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

@@ -10,18 +10,17 @@
           URL_ROOT:    '../',
           VERSION:     '1.0a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: ''
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/interface.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="../contents.html" />
     <link rel="index" title="Global index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="circuits v1.0a1 documentation" href="../index.html" />
     <link rel="next" title="circuits.core" href="API/core.html" />
-    <link rel="prev" title="Quickstarting a TurboGears 2 project" href="QuickStart.html" />
+    <link rel="prev" title="Tutorial: Hello World!" href="Tutorials/HelloWorld.html" />
   </head>
   <body>
     <div class="related">
@@ -37,7 +36,7 @@
           <a href="API/core.html" title="circuits.core"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="QuickStart.html" title="Quickstarting a TurboGears 2 project"
+          <a href="Tutorials/HelloWorld.html" title="Tutorial: Hello World!"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
       </ul>
@@ -49,37 +48,37 @@
             
   
   <div class="section" id="what-s-new-in-turbogears-2">
-<h1 id="what-s-new-in-turbogears-2">What&#8217;s new in TurboGears 2<a class="headerlink" href="#what-s-new-in-turbogears-2" title="Permalink to this headline">¶</a></h1>
+<h1>What&#8217;s new in TurboGears 2<a class="headerlink" href="#what-s-new-in-turbogears-2" title="Permalink to this headline">¶</a></h1>
 <p>The most significant change in TurboGears 2 is the decision to work very, very closely with Pylons.   We&#8217;ve basically built a copy of the TurboGears 1.x API on top of pylons/paste which allows our two communities to work together on everything from internationalization to database connection pooling.</p>
 <p>Another significant change is that we&#8217;ve removed the tg-admin wrapper and started explicitly using paster for administrative commands to match what Pylons was doing.   We&#8217;ve re-implemented the old tg-admin commands as  paster commands; for example, &#8220;tg-admin quickstart&#8221; is replaced by &#8220;paster quickstart&#8221;.</p>
 <div class="section" id="the-why-of-turbogears-2">
-<h2 id="the-why-of-turbogears-2">The &#8220;why&#8221; of TurboGears 2<a class="headerlink" href="#the-why-of-turbogears-2" title="Permalink to this headline">¶</a></h2>
+<h2>The &#8220;why&#8221; of TurboGears 2<a class="headerlink" href="#the-why-of-turbogears-2" title="Permalink to this headline">¶</a></h2>
 <p>Lots of questions have been asked about why we&#8217;ve decided to create TurboGears 2 the way we did,  so let&#8217;s try to answer them as best we can.</p>
 <div class="section" id="why-so-many-changes">
-<h3 id="why-so-many-changes">Why so many changes?<a class="headerlink" href="#why-so-many-changes" title="Permalink to this headline">¶</a></h3>
+<h3>Why so many changes?<a class="headerlink" href="#why-so-many-changes" title="Permalink to this headline">¶</a></h3>
 <p>Well, there are a lot of changes, but perhaps not as many as it looks like from the description.  We were able to keep the controller API very similar to TurboGears 1, and Genshi copied the Kid API, so while we chose new components, we didn&#8217;t really change the way Controllers and Templates look very much at all.  Sure, there are some minor changes here and there, but one member of the TurboGears 2 training class at PyCon said &#8220;I didn&#8217;t notice a lot that was new in terms of how you put a TurboGears application together.&#8221;</p>
 </div>
 <div class="section" id="why-not-just-merge-with-pylons">
-<h3 id="why-not-just-merge-with-pylons">Why not just merge with Pylons?<a class="headerlink" href="#why-not-just-merge-with-pylons" title="Permalink to this headline">¶</a></h3>
+<h3>Why not just merge with Pylons?<a class="headerlink" href="#why-not-just-merge-with-pylons" title="Permalink to this headline">¶</a></h3>
 <p>Well, pylons is committed to being officially template engine agnostic, ORM agnostic, etc.  On the other hand TurboGears is committed to providing a &#8220;Full-Stack&#8221; for web development.  So, the two communities have different, but compatible priorities.  If you think about it Pylons provides a great set of tools for building a full stack framework, and people had been asking for a full-stack pylons implementation for a long time.   And TurboGears 2 will provide that.</p>
 <p>There are a lot of benefits to having a full-stack.  You can build form helpers which do all sorts of interesting things (introspect model objects to make web-based forms, automatically display form errors, etc) because you can make some assumptions about what tools will be available and what will be used.    In particular, you can start building plugable website components much more easily, because you are building on a known set of tools.</p>
 </div>
 <div class="section" id="why-not-use-cherrypy-3">
-<h3 id="why-not-use-cherrypy-3">Why not use CherryPy 3?<a class="headerlink" href="#why-not-use-cherrypy-3" title="Permalink to this headline">¶</a></h3>
+<h3>Why not use CherryPy 3?<a class="headerlink" href="#why-not-use-cherrypy-3" title="Permalink to this headline">¶</a></h3>
 <p>This is something we really struggled with.  CherryPy 3 is a huge improvement over CherryPy 2, providing a much richer programming experience, and huge performance gains.  But TurboGears 1 was very tightly coupled to the config system of CherryPy 2, which was entirely rewritten in CherrPy 3.   We tried to make a backwards compatible TG based on CherryPy 3, but discovered that it was significantly more difficult than we had expected.</p>
 <p>At the same time there was a push to make TurboGears 2 more WSGI based, and to take advantage of things like Routes middleware, and to generally take advantage of the Pylon WSGI revolution.   We discovered that Pylons had a lot of the same code as TurboGears (both of us had buffet implementations both of us had SQLObject wrappers that did the same thing, etc)</p>
 </div>
 <div class="section" id="why-genshi">
-<h3 id="why-genshi">Why Genshi?<a class="headerlink" href="#why-genshi" title="Permalink to this headline">¶</a></h3>
+<h3>Why Genshi?<a class="headerlink" href="#why-genshi" title="Permalink to this headline">¶</a></h3>
 <p>Well, Genshi is an intentional re-implementation of Kid, with a almost identical API.   But internally it&#8217;s simpler, faster, and provides better error messages.   The inclusion of a couple of new features &#8211; includes and full x-path support &#8211; also make it significantly more flexible.</p>
 <p>Genshi has also developed a larger, more active community than Kid, and is being used in lots of places outside of TurboGears so, unlike Kid, it&#8217;s not at all likely to have to be taken over and maintained by the TG core developers.</p>
 </div>
 <div class="section" id="why-sqlalchemy">
-<h3 id="why-sqlalchemy">Why SQLAlchemy?<a class="headerlink" href="#why-sqlalchemy" title="Permalink to this headline">¶</a></h3>
+<h3>Why SQLAlchemy?<a class="headerlink" href="#why-sqlalchemy" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="new-features-to-turbogears-2">
-<h2 id="new-features-to-turbogears-2">New Features to TurboGears 2:<a class="headerlink" href="#new-features-to-turbogears-2" title="Permalink to this headline">¶</a></h2>
+<h2>New Features to TurboGears 2:<a class="headerlink" href="#new-features-to-turbogears-2" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <ul class="simple">
 <li>Cache system</li>
@@ -91,7 +90,7 @@
 </blockquote>
 </div>
 <div class="section" id="compatibility">
-<h2 id="compatibility">Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
 <p>Areas of compatibility:</p>
 <blockquote>
 <ul class="simple">
@@ -120,7 +119,7 @@ notation in &#64;expose decorators has been deprecated.</li>
 </dl>
 </div>
 <div class="section" id="command-changes">
-<h2 id="command-changes">Command changes<a class="headerlink" href="#command-changes" title="Permalink to this headline">¶</a></h2>
+<h2>Command changes<a class="headerlink" href="#command-changes" title="Permalink to this headline">¶</a></h2>
 <p>Use paster command instead of the old tg-admin command.</p>
 <p>For exampel you now type <tt class="docutils literal"><span class="pre">paster</span> <span class="pre">quickstart</span></tt> rather than <tt class="docutils literal"><span class="pre">tg-admin</span> <span class="pre">quickstart</span></tt> to start a project.</p>
 <p>Here&#8217;s a full list of the old command line tools and their new equivalents</p>
@@ -135,7 +134,7 @@ notation in &#64;expose decorators has been deprecated.</li>
 </blockquote>
 </div>
 <div class="section" id="project-layout-changes">
-<h2 id="project-layout-changes">Project layout changes<a class="headerlink" href="#project-layout-changes" title="Permalink to this headline">¶</a></h2>
+<h2>Project layout changes<a class="headerlink" href="#project-layout-changes" title="Permalink to this headline">¶</a></h2>
 <p>Both controllers.py and model.py have been replaced by the controllers and model folders.  In other words there are now Python packages, in just the way they were in TurboGears 1 if you used the &#8216;&#8211;template tgbig&#8217; option with quickstart.</p>
 <blockquote>
 <ul class="simple">
@@ -147,7 +146,7 @@ notation in &#64;expose decorators has been deprecated.</li>
 </blockquote>
 </div>
 <div class="section" id="new-imports">
-<h2 id="new-imports">New imports<a class="headerlink" href="#new-imports" title="Permalink to this headline">¶</a></h2>
+<h2>New imports<a class="headerlink" href="#new-imports" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <ul class="simple">
 <li>import turbogears -&gt; import tg</li>
@@ -187,7 +186,7 @@ notation in &#64;expose decorators has been deprecated.</li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="QuickStart.html" title="previous chapter">Quickstarting a TurboGears 2 project</a></p>
+            <p class="topless"><a href="Tutorials/HelloWorld.html" title="previous chapter">Tutorial: Hello World!</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="API/core.html" title="next chapter">circuits.core</a></p>
             <h3>This Page</h3>
@@ -217,14 +216,14 @@ notation in &#64;expose decorators has been deprecated.</li>
           <a href="API/core.html" title="circuits.core"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="QuickStart.html" title="Quickstarting a TurboGears 2 project"
+          <a href="Tutorials/HelloWorld.html" title="Tutorial: Hello World!"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">circuits v1.0a1 documentation</a> &raquo;</li>
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2008, James Mills.
-      Last updated on Nov 03, 2008.
+      Last updated on Nov 09, 2008.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>
