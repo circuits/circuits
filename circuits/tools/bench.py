@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim: set sw=3 sts=3 ts=3
 
-"""(Example) Bench Marking Tool
+"""(Tool) Bench Marking Tool
 
 Bench marking tool. THis example does some simple
 benchmaking of the circuits library.
