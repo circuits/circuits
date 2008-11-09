@@ -34,7 +34,15 @@ class Printer(Component):
 		print message
 
 if __name__ == "__main__":
+	# Create new Manager instance
 	manager = Manager()
+
+	# Create new Printer instance
+	# Add (register) with manager
 	manager += Printer()
+
+	# Push a Message Event to the "print" channel.
 	manager.push(Message("Hello World"), "print")
+
+	# Process Events
 	manager.flush()
