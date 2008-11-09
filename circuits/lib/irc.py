@@ -358,6 +358,12 @@ class IRC(Component):
 				channel))
 
 	###
+	### Properties
+	###
+
+	nick = property(getNick, ircNICK)
+
+	###
 	### Event Processing
 	###
 
