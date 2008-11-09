@@ -87,6 +87,8 @@ def sourceSplit(source):
 ### Evenets
 ###
 
+class Write(Event): pass
+
 class Raw(Event): pass
 class Numeric(Event): pass
 class NetInfo(Event): pass
@@ -223,7 +225,7 @@ class IRC(Component):
 		Send a raw message
 		"""
 
-		self.write("%s\r\n" % data)
+		self.push(Write("%s\r\n" % data), "write", self.channel)
 
 	def ircPASS(self, password):
 		self.ircRAW("PASS %s" % password)
