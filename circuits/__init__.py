@@ -2,19 +2,19 @@
 # Date:		3rd October 2008
 # Author:	James Mills, prologic at shortcircuit dot net dot au
 
-"""Circuits - An event-driven framework with a Component focus.
+"""Event framework with a Component architecture
 
-Circuits is an event-driven framework with a focus on Component Software
+circuits is an event-driven framework with a focus on Component Software
 Architectures where System Functionality is defined in Components.
 Components communicate with one another by propagating events throughout
 the system. Each Component can react to events and expose events to other
 parts of the system Components are able to manage their own events and
 can also be linked to other Components.
 
-Circuits has a clean architecture and has no external dependencies on any
+circuits has a clean architecture and has no external dependencies on any
 other library. It's simplistic design is unmatchable but yet delivers a
 powerful framework for building large, scalable, maintainable applications
-and systems. Circuits was a core integral part of the
+and systems. circuits was a core integral part of the
 [http://trac.softcircuit.com.au/pymills pymills] library developed in 2006
 and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 
@@ -39,7 +39,7 @@ except ImportError:
 	__version__ = "unknown"
 
 __name__ = "circuits"
-__description__ = "Circuits"
+__description__ = "Event framework with a Component architecture"
 __author__ = "James Mills"
 __author_email__ = "%s, prologic at shortcircuit dot net dot au" % __author__
 __maintainer__ = __author__
@@ -49,7 +49,7 @@ __download_url__ = "http://trac.softcircuit.com.au/circuits/downloads/%s-%s.tar.
 __copyright__ = "Copyright (C) 2004-2008 by %s" % __author__
 __license__ = "MIT"
 __platforms__ = "POSIX"
-__keywords__ = "circuits event framework component"
+__keywords__ = "circuits event library framework component architecture"
 __classifiers__ = [
 	"Classifier: Development Status :: 6 - Mature",
 	"Classifier: Environment :: Console",
