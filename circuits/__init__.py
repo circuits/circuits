@@ -97,6 +97,7 @@ __extras_require__ = {}
 __entry_points__ = """\
 [console_scripts]
 circuits.bench = circuits.tools.bench:main
+circuits.sniffer = circuits.tools.sniffer:main
 """
 
 from core import listener, Event, Component, Manager
