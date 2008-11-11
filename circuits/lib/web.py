@@ -204,7 +204,6 @@ class Controller(Component):
 	__metaclass__ = _AutoListener
 
 	channel = "/"
-	request = None
 
 class FileServer(Component):
 
