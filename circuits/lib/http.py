@@ -483,6 +483,7 @@ class _Request(object):
 	Request object that holds an incoming request.
 	"""
 
+	app = None
 	script_name = ""
 	protocol = (1, 1)
 
