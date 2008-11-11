@@ -26,14 +26,19 @@ from circuits.lib.http import Request, Response, _Request, _Response, Headers
 
 def expose(*channels, **config):
 	def decorate(f):
-		def wrapper(self, request, response, *args, **kwargs):
-			self.request, self.response = request, response
-			self.cookie = self.request.cookie
-			ret = f(self, *args, **kwargs)
-			del self.cookie
-			del self.request
-			del self.response
-			return ret
+		def wrapper(self, *args, **kwargs):
+			if not hasattr(self, "request"):
+				self.request, self.response = args[:2]
+				self.cookie = self.request.cookie
+				args = args[2:]
+
+			try:
+				return f(self, *args, **kwargs)
+			finally:
+				if hasattr(self, "request"):
+					del self.request
+					del self.response
+					del self.cookie
  
 		wrapper.type = config.get("type", "listener")
 		wrapper.target = config.get("target", None)
