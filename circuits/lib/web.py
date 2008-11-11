@@ -191,7 +191,7 @@ class _AutoListener(type):
 
 	def __init__(cls, name, bases, dct):
 		for name, func in dct.iteritems():
-			if callable(func) and not name.startswith("__"):
+			if callable(func) and not name.startswith("_"):
 				setattr(cls, name, expose(name, type="listener")(func))
 
 class Controller(Component):
