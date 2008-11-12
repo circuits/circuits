@@ -535,8 +535,14 @@ class _Response(object):
 				self.status,
 				self.headers["Content-Type"],
 				(len(self.body) if type(self.body) == str else 0))
+	
+	def __str__(self):
+		status = self.status
+		headers = self.headers
+		body = self.process()
+		return "%s %s\r\n%s%s" % (SERVER_PROTOCOL, status, headers, body or "")
 
-	def __call__(self):
+	def process(self):
 		for k, v in self.cookie.iteritems():
 			self.headers.add_header("Set-Cookie", v.OutputString())
 
@@ -571,9 +577,7 @@ class _Response(object):
 		self.headers["Content-Type"] = cType
 		self.headers["Content-Length"] = cLen
 
-		return "%s %s\r\n%s%s" % (
-				SERVER_PROTOCOL, self.status,
-				self.headers, body or "")
+		return body
 
 ###
 ### Dispatcher
