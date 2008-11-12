@@ -202,13 +202,13 @@ class FileServer(Component):
 
 	template = """\
 <html>
-	<head>
-		<title>Index of %(path)s</title>
-	</head>
-	<body>
-		<h1>Index of %(path)s</h1>
-		%(files)s
-	</body>
+ <head>
+  <title>Index of %(path)s</title>
+ </head>
+ <body>
+  <h1>Index of %(path)s</h1>
+%(files)s
+ </body>
 </html>"""
 
 	def __init__(self, *args, **kwargs):
@@ -241,9 +241,10 @@ class FileServer(Component):
 		for file in listdir(real):
 			href = os.path.join(self.channel, path.lstrip("/"), file)
 			name = ("%s/" % file if isdir(file) else file)
-			files.append("<li class=\"dir\"><a href=\"%s\">%s</a>" % (href, name))
+			files.append("   <li class=\"dir\"><a href=\"%s\">%s</a>" % (
+				href, name))
 
-		data["files"] = "<ul>%s</ul>" % "".join(files)
+		data["files"] = "  <ul>\n%s\n  </ul>" % "\n".join(files)
 
 		response.headers["Content-Type"] = "text/html"
 		response.body = self.template % data
