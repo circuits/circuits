@@ -778,7 +778,7 @@ class HTTP(Component):
 		
 	@listener("response")
 	def onRESPONSE(self, response):
-		self.send(Write(response.sock, response()), "write")
+		self.send(Write(response.sock, str(response)), "write")
 		if response.stream:
 			self.push(Stream(response), "stream")
 		elif response.close:
