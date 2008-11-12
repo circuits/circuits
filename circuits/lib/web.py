@@ -170,27 +170,20 @@ class Application(Component):
 
 		self.send(Response(response), "response")
 
-	@listener("response")
-	def onRESPONSE(self, response):
-		for k, v in response.cookie.iteritems():
-			response.headers.add_header("Set-Cookie", v.OutputString())
-		response.start_response(response.status, response.headers.items())
-
 	def __call__(self, environ, start_response):
 		request, response = self.getRequestResponse(environ)
-		response.start_response = start_response
 
 		try:
 			self.send(Request(request, response), "request")
 		except HTTPRedirect, error:
 			error.set_response()
-			self.send(Response(response), "response")
 		except HTTPError, error:
 			self.setError(response, error[0], error[1])
 		except Exception, error:
 			self.setError(response, 500, "Internal Server Error", format_exc())
 		finally:
-			return [response.body]
+			body = response.process()
+			return [body]
 
 class _AutoListener(type):
 
