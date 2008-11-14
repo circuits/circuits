@@ -575,7 +575,7 @@ class _Response(object):
 			cType = "text/plain"
 
 		self.headers["Content-Type"] = cType
-		self.headers["Content-Length"] = cLen
+		self.headers["Content-Length"] = str(cLen)
 
 		return body
 
