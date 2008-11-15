@@ -18,6 +18,7 @@ import datetime
 from os import getcwd, listdir
 from inspect import getargspec
 from socket import gethostname
+from traceback import format_exc
 from os.path import isdir, isfile
 
 from circuits import listener, Component
