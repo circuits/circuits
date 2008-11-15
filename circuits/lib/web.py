@@ -149,7 +149,7 @@ class Application(Component):
 
 		return request, response
 
-	def _setError(self, response, code, message=None, traceback=None):
+	def setError(self, response, code, message=None, traceback=None):
 		try:
 			short, long = RESPONSES[code]
 		except KeyError:
@@ -171,7 +171,7 @@ class Application(Component):
 		response.headers.add_header("Connection", "close")
 
 	def __call__(self, environ, start_response):
-		request, response = self._getRequestResponse(environ)
+		request, response = self.getRequestResponse(environ)
 
 		try:
 			self.send(Request(request, response), "request")
