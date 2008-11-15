@@ -230,11 +230,7 @@ class Filter(Component):
 		self.request = request
 		self.response = response
 
-		print request
-		print response
-
 		try:
-			print self.process()
 			response.body = self.process()
 		finally:
 			del self.request
