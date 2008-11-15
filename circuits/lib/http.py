@@ -477,6 +477,27 @@ class Close(Event):
 ### Supporting Classes
 ###
 
+class Host(object):
+	"""An internet address.
+
+	name should be the client's host name. If not available (because no DNS
+	lookup is performed), the IP address should be used instead.
+	"""
+
+	ip = "0.0.0.0"
+	port = 80
+	name = "unknown.tld"
+
+	def __init__(self, ip, port, name=None):
+		self.ip = ip
+		self.port = port
+		if name is None:
+			name = ip
+			self.name = name
+
+	def __repr__(self):
+		return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
+
 class _Request(object):
 	"""_Request(method, path, version, qa, headers) -> new HTTP Request object
 
@@ -485,22 +506,36 @@ class _Request(object):
 
 	app = None
 	script_name = ""
+	scheme = "http"
+	server_protocol = "HTTP/1.1"
+	request_line = ""
 	protocol = (1, 1)
+	login = None
+	local_host = Host("127.0.0.1", 80)
+	remote_host = Host("127.0.0.1", 1111)
 
-	def __init__(self, method, path, version, qs, headers):
+	def __init__(self, method, path, version, qs):
 		"initializes x; see x.__class__.__doc__ for signature"
+
+		self._headers = None
 
 		self.method = method
 		self.path = self.path_info = path
 		self.version = version
 		self.qs = self.query_string = qs
-		self.headers = headers
 		self.cookie = SimpleCookie()
 
+		self.body = StringIO()
+
+	def _getHeaders(self):
+		return self._headers
+
+	def _setHeaders(self, headers):
+		self._headers = headers
 		if "Cookie" in self.headers:
 			self.cookie.load(self.headers["Cookie"])
 
-		self.body = StringIO()
+	headers = property(_getHeaders, _setHeaders)
 
 	def __repr__(self):
 		return "<Request %s %s %s>" % (self.method, self.path, self.version)
@@ -630,7 +665,7 @@ class Dispatcher(Component):
 		path = request.path
 		method = request.method.upper()
 		names = [x for x in path.strip('/').split('/') if x]
-		defaults = ["index", method]
+		defaults = ["index", method, "request"]
 
 		if not names:
 			for default in defaults:
@@ -661,9 +696,9 @@ class Dispatcher(Component):
 		i, candidate = candidates.pop()
 
 		if i < len(names):
-			channels = [names[i], "index", method]
+			channels = [names[i], "index", method, "request"]
 		else:
-			channels = ["index", method]
+			channels = ["index", method, "request"]
 
 		vpath = []
 		channel = None
@@ -701,7 +736,7 @@ class Dispatcher(Component):
 		if filename and os.path.exists(filename):
 			expires(3500*24*30)
 			serve_file(filename)
-			return self.send(Response(response), "response")
+			return self.send(Response(request, response), "response")
 
 		channel, vpath = self.findChannel(request)
 	
@@ -712,15 +747,16 @@ class Dispatcher(Component):
 				params.update(x)
 			else:
 				request.body = x
-			
+
 			req = Request(request, response, *vpath, **params)
+
 			try:
 				res = [x for x in self.iter(req, channel) if type(x) == str]
 			except Exception, error:
 				raise
 			if res:
 				response.body = res[0]
-				return self.send(Response(response), "response")
+				return self.send(Response(request, response), "response")
 			else:
 				raise NotFound()
 		else:
@@ -777,7 +813,7 @@ class HTTP(Component):
 				self.send(Close(response.sock), "close")
 		
 	@listener("response")
-	def onRESPONSE(self, response):
+	def onRESPONSE(self, request, response):
 		self.send(Write(response.sock, str(response)), "write")
 		if response.stream:
 			self.push(Stream(response), "stream")
@@ -805,9 +841,16 @@ class HTTP(Component):
 			method, path, protocol = requestline.strip().split(" ", 2)
 			scheme, location, path, params, qs, frag = urlparse(path)
 
+			request = _Request(method, path, protocol, qs)
+			response = _Response(sock)
+
+			request.scheme = scheme
+			request.server_protocol = protocol
+			request.request_line = requestline
+
 			if frag:
-				return self.sendError(sock, 400,
-						"Illegal #fragment in Request-URI.")
+				return self.sendError(sock, 400, request,
+						"Illegal #fragment in Request-URI.", None, response)
 		
 			if params:
 				path = path + ";" + params
@@ -836,12 +879,12 @@ class HTTP(Component):
 			rp = int(protocol[5]), int(protocol[7])
 			sp = int(SERVER_PROTOCOL[5]), int(SERVER_PROTOCOL[7])
 			if sp[0] != rp[0]:
-				return self.sendError(sock, 505, "HTTP Version Not Supported")
+				return self.sendError(sock, 505, request, 
+						"HTTP Version Not Supported", None, response)
 
 			assert "\r\n\r\n" in data
 			headers, body = parseHeaders(StringIO(data))
-
-			request = _Request(method, path, protocol, qs, headers)
+			request.headers = headers
 			request.body.write(body)
 
 			if headers.get("Expect", "") == "100-continue":
@@ -853,8 +896,6 @@ class HTTP(Component):
 			if not request.body.tell() == contentLength:
 				self._requests[sock] = request
 				return
-
-		response = _Response(sock)
 
 		response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
@@ -878,11 +919,13 @@ class HTTP(Component):
 			self.send(Request(request, response), "request")
 		except HTTPRedirect, error:
 			error.set_response()
-			self.send(Response(response), "response")
+			self.send(Response(request, response), "response")
 		except HTTPError, error:
-			self.sendError(sock, error[0], error[1], response)
+			self.sendError(sock, error[0], request,
+					error[1], format_exc(), response)
 		except Exception, error:
-			self.sendError(sock, 500, "Internal Server Error", format_exc(), response)
+			self.sendError(sock, 500, request,
+					"Internal Server Error", format_exc(), response)
 		finally:
 			if sock in self._requests:
 				del self._requests[sock]
@@ -914,16 +957,14 @@ class HTTP(Component):
 			response.close = True
 			response.headers.add_header("Connection", "close")
 
-		self.send(Response(response), "response")
+		self.send(Response(request, response), "response")
 
 		if response.close:
 			self.send(Close(sock), "close")
 
-	def sendError(self, sock, code, message=None, traceback=None, response=None):
-		"""H.sendError(sock, code, message=None, traceback=None, response=None) -> None
+	def sendError(self, sock, code, req, msg=None, exc=None, res=None):
+		"""Send an error response.
 		
-		Send an error reply.
-
 		Arguments are the error code, and a detailed message.
 		The detailed message defaults to the short entry matching the
 		response code.
@@ -938,24 +979,25 @@ class HTTP(Component):
 		except KeyError:
 			short, long = "???", "???"
 
-		if message is None:
-			message = short
+		if msg is None:
+			msg = short
 
 		explain = long
 
-		content = DEFAULT_ERROR_MESSAGE % {
+		s = DEFAULT_ERROR_MESSAGE % {
 			"code": code,
-			"message": quoteHTML(message),
+			"message": quoteHTML(msg),
 			"explain": explain,
-			"traceback": traceback or ""}
+			"traceback": exc or ""}
 
-		if response is None:
-			response = _Response(sock)
-		response.body = content
-		response.status = "%s %s" % (code, message)
-		response.headers.add_header("Connection", "close")
+		if res is None:
+			res = _Response(sock)
 
-		self.send(Response(response), "response")
+		res.body = s
+		res.status = "%s %s" % (code, msg)
+		res.headers.add_header("Connection", "close")
+
+		self.send(Response(req, res), "response")
 
 		self.send(Close(sock), "close")
 

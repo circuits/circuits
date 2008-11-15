@@ -12,6 +12,9 @@ and keyword arguments, filtering, url dispatching and more.
 """
 
 import os
+import sys
+import rfc822
+import datetime
 from os import getcwd, listdir
 from inspect import getargspec
 from socket import gethostname
@@ -53,6 +56,13 @@ def expose(*channels, **config):
 
 	return decorate
 
+class _AutoListener(type):
+
+	def __init__(cls, name, bases, dct):
+		for name, func in dct.iteritems():
+			if callable(func) and not name.startswith("_"):
+				setattr(cls, name, expose(name, type="listener")(func))
+
 class Server(TCPServer):
 
 	def __init__(self, *args, **kwargs):
@@ -93,14 +103,6 @@ class Server(TCPServer):
 			except KeyboardInterrupt:
 				break
 
-class Logger(Component):
-
-	channel = "*"
-
-	@listener("request", type="filter")
-	def onGET(self, request, response):
-		print request
-
 class Application(Component):
 
 	headerNames = {
@@ -134,20 +136,19 @@ class Application(Component):
 				env("REQUEST_METHOD"),
 				env("PATH_INFO"),
 				env("SERVER_PROTOCOL"),
-				env("QUERY_STRING"),
-				headers)
+				env("QUERY_STRING"))
 
+		request.headers = headers
 		request.script_name = env("SCRIPT_NAME")
 		request.wsgi_environ = environ
-
 		request.body = env("wsgi.input")
-		response = _Response(None)
 
+		response = _Response(None)
 		response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
 		return request, response
 
-	def setError(self, response, code, message=None, traceback=None):
+	def _setError(self, response, code, message=None, traceback=None):
 		try:
 			short, long = RESPONSES[code]
 		except KeyError:
@@ -168,10 +169,8 @@ class Application(Component):
 		response.status = "%s %s" % (code, message)
 		response.headers.add_header("Connection", "close")
 
-		self.send(Response(response), "response")
-
 	def __call__(self, environ, start_response):
-		request, response = self.getRequestResponse(environ)
+		request, response = self._getRequestResponse(environ)
 
 		try:
 			self.send(Request(request, response), "request")
@@ -183,14 +182,63 @@ class Application(Component):
 			self.setError(response, 500, "Internal Server Error", format_exc())
 		finally:
 			body = response.process()
+			start_response(response.status, response.headers.items())
 			return [body]
 
-class _AutoListener(type):
+class Middleware(Component):
 
-	def __init__(cls, name, bases, dct):
-		for name, func in dct.iteritems():
-			if callable(func) and not name.startswith("_"):
-				setattr(cls, name, expose(name, type="listener")(func))
+	request = None
+	response = None
+
+	def __init__(self, app, path=None):
+		super(Middleware, self).__init__(channel=path)
+
+		self.app = app
+
+	def environ(self):
+		environ = {}
+		req = self.request
+		env = environ.__setitem__
+
+		env("REQUEST_METHOD", req.method)
+		env("PATH_INFO", req.path)
+		env("SERVER_PROTOCOL", req.server_protocol)
+		env("QUERY_STRING", req.qs)
+		env("SCRIPT_NAME", req.script_name)
+		env("wsgi.input", req.body)
+
+		return environ
+
+	def start_response(self, status, headers):
+		self.response.stats = status
+		for header in headers:
+			self.response.headers.add_header(*header)
+
+	@listener("request", type="filter")
+	def onREQUEST(self, request, response, *args, **kwargs):
+		self.request = request
+		self.response = response
+
+		response.body = "".join(self.app(self.environ(), self.start_response))
+
+		self.send(Response(request, response), "response")
+
+class Filter(Component):
+
+	@listener("response", type="filter")
+	def onRESPONSE(self, request, response):
+		self.request = request
+		self.response = response
+
+		print request
+		print response
+
+		try:
+			print self.process()
+			response.body = self.process()
+		finally:
+			del self.request
+			del self.response
 
 class Controller(Component):
 
@@ -198,6 +246,48 @@ class Controller(Component):
 
 	channel = "/"
 
+class Logger(Component):
+
+	format = "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
+
+	@listener("request")
+	def onREQUEST(self, request, response):
+		self.log(request, response)
+
+	def log(self, request, response):
+		remote = request.remote_host
+		outheaders = response.headers
+		inheaders = request.headers
+		
+		atoms = {"h": remote.name or remote.ip,
+				 "l": "-",
+				 "u": getattr(request, "login", None) or "-",
+				 "t": self.time(),
+				 "r": request.request_line,
+				 "s": response.status.split(" ", 1)[0],
+				 "b": outheaders.get("Content-Length", "") or "-",
+				 "f": inheaders.get("Referer", ""),
+				 "a": inheaders.get("User-Agent", ""),
+				 }
+		for k, v in atoms.items():
+			if isinstance(v, unicode):
+				v = v.encode("utf8")
+			elif not isinstance(v, str):
+				v = str(v)
+			# Fortunately, repr(str) escapes unprintable chars, \n, \t, etc
+			# and backslash for us. All we have to do is strip the quotes.
+			v = repr(v)[1:-1]
+			# Escape double-quote.
+			atoms[k] = v.replace("\"", "\\\"")
+		
+		print >> sys.stderr, self.format % atoms
+	
+	def time(self):
+		now = datetime.datetime.now()
+		month = rfc822._monthnames[now.month - 1].capitalize()
+		return ("[%02d/%s/%04d:%02d:%02d:%02d]" %
+				(now.day, month, now.year, now.hour, now.minute, now.second))
+	
 class FileServer(Component):
 
 	template = """\
@@ -227,7 +317,7 @@ class FileServer(Component):
 
 		if isfile(real):
 			response.body = open(real, "r")
-			return self.send(Response(response), "response")
+			return self.send(Response(request, response), "response")
 
 		data = {}
 		data["path"] = path or "/"
@@ -248,4 +338,4 @@ class FileServer(Component):
 
 		response.headers["Content-Type"] = "text/html"
 		response.body = self.template % data
-		self.send(Response(response), "response")
+		self.send(Response(request, response), "response")
