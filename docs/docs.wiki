@@ -1,0 +1,41 @@
+= Circuits Documentation: =
+
+[[TOC]]
+
+Circuits is an event-driven framework with a focus on Component Software
+Architectures where System Functionality is defined in Components. Components
+communicate with one another by propagating events throughout the system. Each
+Component can react to events and expose events to other parts of the system.
+Components are able to manage their own events and can also be linked to other
+Components.
+
+Circuits has a clean architecture and has no external dependencies on any
+other library. It's simplistic design is unmatchable but yet delivers a
+powerful framework for building large, scalable, maintainable applications
+and systems. Circuits was a core integral part of the
+`pymills <http://trac.softcircuit.com.au/pymills>`_ library developed in 2006
+and was partly inspired by the `Trac <http://trac.edgewall.org>`_ architecture.
+
+== Getting Started ==
+
+Download and Install the Circuits library. Learn how to write Components and
+be sure to check out the Examples and the classical Hello World.
+
+ * [./DownloadInstall Downloading and Installing Circuits]
+ * [./QuickStart Quick Start guide to Circuits]
+
+== Tutorials ==
+ * [./TutorialHelloWorld Hello World Tutorial]
+
+== References ==
+ * [./Reference Reference Manual]
+ * [./lib Component Library]
+
+== Miscellaneous ==
+ * [./tools Development Tools]
+ * [./GeneralPerformance General Performance]
+
+== Project Information ==
+ * [./Philosophy Project Philosophy]
+ * [./Contributing Contributing to Circuits]
+ * [./License License]

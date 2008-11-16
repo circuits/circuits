@@ -1,0 +1,53 @@
+= ChangeLog =
+
+[[TOC]]
+
+== 1.0a2 ==
+ Released:: ''unknown''
+ Revision:: ''unknown''
+
+=== Documentation ===
+ * Documentation Improvements: See: [wiki:docs Documentation]
+ * Documentation moved to Trac (''Dropped use of Sphinx''). #1
+
+=== NEW ===
+ * Basic WSGI Support:
+  * Added in [115]
+  * Improved in [174]
+ * In [143]: [source:circuits/tools/sniffer.py tools.sniffer]: Added sniffer tool used to debug/sniff Events of another system that has an instnace of the [source:circuits/bridge.py Bridge] Component.
+ * In [128]: [source:circuits/lib/web.py lib.web]: Addded very simple FileServer Component
+ * In [126]: [source:circuits/lib/http.py lib.http]: Added traceback support to sendError for more meaningful HTTP Errors.
+ * In [118]: [source:circuits/lib/web.py lib.web]: Added very very simple Logger to log requests (''prints to stderr'').
+
+=== Enhancements ===
+ * In [168]: [source:circuits/lib/http.py lib.http]: Removed _Request.__call__ in favor of {{{process()}}} followed by {{{str(response)}}}
+ * In [163]: [source:circuits/lib/web.py lib.web]: Better consistent docroot settings. docroot is __always__ the current path unless explicitly set.
+ * In [150], [151]: [source:circuits/lib/irc.py lib.irc]: Added nick property to IRC Component. Setting a new nick causes a new nick to be sent to the connected server. Also set our own record of our nick when ircNICK is called.
+
+=== Fixes ===
+ * In [175]: [source:circuits/lib/http.py lib.http]: Fixed bug on Content-Length header in HTTP Component ensuring the value is a str. Required by WSGI.
+ * In [164]: [source:circuits/lib/http.py lib.http]: Fixed a bug in HTTP Component where body could be None (''due to caching'').
+ * In [149]: [source:circuits/lib/irc.py lib.irc]: Fixed a bug in IRC Component where writing to client failed.
+ * In [131]: [source:circuits/lib/config.py lib.config]: Fixed getint, getfloat and getboolean functions to call their respective super counterparts.
+ * In [122]: [source:circuits/lib/web.py lib.web]: Print Server version and tell user where we're listening.
+ * In [117]: [source:circuits/lib/web.py lib.web]: Fixed cookie support.
+
+=== Examples ===
+
+==== New ====
+ * In [159]: [source:examples/primes.py examples/primes.py]: Added (Distributed) Prime Number finder example
+ * In [148]: [source:examples/ircbot.py examples/ircbot.py]: Added simple IRC Bot example
+ * In [116]: [source:examples/simpleweb.wsgi examples/simpleweb.wsgi]: Added simple WSGI example using the new WSGI support.
+ * In [146]: [source:examples/eventclient.py examples/eventclient.py]: Added simple event client example demonstrating the Bridge Component and basic request/reponse
+ * In [145]: [source:examples/eventserver.py examples/eventserver.py]: Added simple event server example demonstrating the Bridge Component and basic request/reponse
+ * In [140]: [source:examples/timers.py examples/timers.py]: Added simple timers example showing the use of the Timer Component
+
+==== Updated ====
+ * In [158]: [source:examples/helloweb.py examples/helloweb.py]: Greatly simplified and documented
+ * In [157], [156]: [source:examples/hello.py examples/hello.py]: Greatly simplified and documented
+
+== 1.0a1 ==
+ Released:: 2008-11-06
+ Revision:: [112]
+
+First official release.

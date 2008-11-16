@@ -1,0 +1,101 @@
+= Downloading and Installing Circuits =
+
+[[TOC]]
+
+Circuits can by installed in any number of ways, using setuptools' easy_install
+from source or using a binary installer. It's highly recommended you try to
+install circuits using setuptools or from source.
+
+== Setuptools ==
+
+To instlal Circuits using setuptools' easy_install:
+
+{{{
+#!sh
+$ easy_install circuits
+}}}
+
+== Source ==
+
+To install CIrcuits from source:
+
+Download Circuits from
+ * [http://pypi.python.org/pypi/circuits/> Python Package Index]
+ * [http://trac.softcircuit.com.au/circuits/downloads> CIrcuits Website]
+
+Extract archive and Install:
+
+{{{
+#!sh
+$ tar zxvf circuits--xxx.tar.gz
+$ python setup.py install
+}}}
+
+=== Installing System Wide ===
+
+The insturctions in the previous section describe how to install circuits in
+this way. If you want to change the location, use the {{{prefix}}} option.
+
+=== Installing into your Home Directory ===
+
+To install circuits in your home directory, use the {{{-home=/path/to/home}}}
+option to {{{setup.py}}}. Example:
+
+{{{
+#!sh
+$ python setup.py install --home=$HOME
+}}}
+
+=== Installing in Development mode ===
+
+To install circuits in development mode, use the {{{develop}}} command
+instead of {{{install}}} This allows you to easily update/upgrade circuits
+and not have to worry about re-installing.
+
+== Prerequisites ==
+
+* Python 2.5 or greater (''Also works with Python-3.x``)
+
+=== Setting up setuptools: ===
+On Windows: 
+
+download http://peak.telecommunity.com/dist/ez_setup.py and then run it from 
+the command line.
+
+On UNIX: 
+
+If you have curl or  wget installed you can do this with a single command: 
+
+{{{
+#!/sh
+$ curl http://peak.telecommunity.com/dist/ez_setup.py | sudo python
+}}}
+
+== Validate the installation: ==
+
+To check if you installed circuits, type:
+
+{{{
+#!sh
+$ python -c "import circuits"
+}}}
+
+If everything worked, nothing should be displayed.
+
+Also tryr and run the [source:examples/hello.py Hello World Example]:
+
+{{{
+#!sh
+cd examples
+python hello.py
+}}}
+
+You should get the following output:
+
+{{{
+~/circuits/examples
+$ python hello.py 
+Hello World
+}}}
+----
+[.. Up]

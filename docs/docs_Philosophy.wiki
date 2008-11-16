@@ -1,0 +1,10 @@
+= Philosophy =
+
+[[TOC]]
+
+||**Status**||Work in Progress||
+
+Circuits is a reinvention of the event library of pymills, a more coherent library.
+
+----
+[.. Up]
