@@ -1,4 +1,4 @@
-= Circuits Documentation: =
+= Circuits Documentation =
 
 [[TOC]]
 
@@ -13,16 +13,16 @@ Circuits has a clean architecture and has no external dependencies on any
 other library. It's simplistic design is unmatchable but yet delivers a
 powerful framework for building large, scalable, maintainable applications
 and systems. Circuits was a core integral part of the
-`pymills <http://trac.softcircuit.com.au/pymills>`_ library developed in 2006
-and was partly inspired by the `Trac <http://trac.edgewall.org>`_ architecture.
+[http://trac.softcircuit.com.au/pymills pymills] library developed in 2006
+and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 
 == Getting Started ==
-
 Download and Install the Circuits library. Learn how to write Components and
-be sure to check out the Examples and the classical Hello World.
+be sure to check out the Examples and the classical
+[source:examples/hello.py Hello World!]
 
- * [./DownloadInstall Downloading and Installing Circuits]
- * [./QuickStart Quick Start guide to Circuits]
+ * [./DownloadInstall Downloading and Installing]
+ * [./QuickStart Quick Start Guide]
 
 == Tutorials ==
  * [./TutorialHelloWorld Hello World Tutorial]
@@ -32,10 +32,10 @@ be sure to check out the Examples and the classical Hello World.
  * [./lib Component Library]
 
 == Miscellaneous ==
+ * [./Performance Performance]
  * [./tools Development Tools]
- * [./GeneralPerformance General Performance]
 
 == Project Information ==
  * [./Philosophy Project Philosophy]
- * [./Contributing Contributing to Circuits]
+ * [./Contributing How to Contribute]
  * [./License License]
