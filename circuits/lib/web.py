@@ -82,6 +82,10 @@ class Server(TCPServer):
 
 		print "%s listening on http://%s/" % (SERVER_VERSION, bound)
 
+	def registered(self):
+		self.manager += self.http
+		self.manager += self.dispatcher
+
 	def _getDocRoot(self):
 		if hasattr(self, "dispatcher"):
 			return self.dispatcher.docroot
