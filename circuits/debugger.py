@@ -81,6 +81,6 @@ class Debugger(Component):
 				return
 			else:
 				if self.logger:
-					self.push(Debug(repr(event)), "debug", "log")
+					self.logger.debug(repr(event))
 				else:
 					print >> sys.stderr, event
