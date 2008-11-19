@@ -5,8 +5,8 @@
 == 1.0a2 ==
  Released:: ''unknown''
  Revision:: ''unknown''
- Last Updated:: [[Wikinfo(changed_ts)]]
- Last Revisino:: [183]
+ Last Updated:: 19th November 2008
+ Last Revision:: [183]
 
 === Documentation ===
  * Documentation Improvements: See: [wiki:docs Documentation]
