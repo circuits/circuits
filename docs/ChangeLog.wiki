@@ -3,8 +3,8 @@
 [[TOC]]
 
 == 1.0a2 ==
- Released:: ''unknown''
- Revision:: ''unknown''
+Released:: ''unknown''
+Revision:: ''unknown''
 
 === Documentation ===
  * Documentation Improvements: See: [wiki:docs Documentation]
@@ -12,8 +12,8 @@
 
 === NEW ===
  * Basic WSGI Support:
-  * Added in [115]
-  * Improved in [174]
+ * Added in [115]
+ * Improved in [174]
  * In [143]: [source:circuits/tools/sniffer.py tools.sniffer]: Added sniffer tool used to debug/sniff Events of another system that has an instnace of the [source:circuits/bridge.py Bridge] Component.
  * In [128]: [source:circuits/lib/web.py lib.web]: Addded very simple FileServer Component
  * In [126]: [source:circuits/lib/http.py lib.http]: Added traceback support to sendError for more meaningful HTTP Errors.
@@ -51,3 +51,5 @@
  Revision:: [112]
 
 First official release.
+----
+[.. Up]
