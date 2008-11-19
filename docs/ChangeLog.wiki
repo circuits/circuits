@@ -3,8 +3,10 @@
 [[TOC]]
 
 == 1.0a2 ==
-Released:: ''unknown''
-Revision:: ''unknown''
+ Released:: ''unknown''
+ Revision:: ''unknown''
+ Last Updated:: [[Wikinfo(changed_ts)]]
+ Last Revisino:: [183]
 
 === Documentation ===
  * Documentation Improvements: See: [wiki:docs Documentation]
