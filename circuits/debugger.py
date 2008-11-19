@@ -17,7 +17,6 @@ Example:
 >>> manager = Manager()
 >>> foo = Foo()
 >>> debugger = Debugger()
->>> debugger.enable()
 >>> manager += foo
 >>> manager += debugger
 <Registered/registered (, )>
@@ -63,43 +62,7 @@ class Debugger(Component):
 
 		super(Debugger, self).__init__(*args, **kwargs)
 
-		self.logger = kwargs.get("logger", False)
-
-	def disable(self):
-		"Disable Debugger"
-
-		self.enabled = False
-
-	def enable(self):
-		"Enable Debugger"
-
-		self.enabled = True
-
-	def toggle(self):
-		"""Toggle Debugger
-
-		* If enabled, disable.
-		* If disabled, enable.
-		"""
-
-		if self.enabled:
-			self.disable()
-		else:
-			self.enable()
-
-	def set(self, flag):
-		"""Set Debugger's enabled flag$a
-
-		Set Debugger's enabled flag to flag.
-
-		:param flag: Status to set enabled flag to
-		:type flag: bool
-		"""
-
-		if (not self.enabled) and flag:
-			self.enable()
-		elif self.enabled and (not flag):
-			self.disable()
+		self.logger = kwargs.get("logger", None)
 
 	@listener(type="filter")
 	def onEVENTS(self, event, *args, **kwargs):
