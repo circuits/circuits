@@ -1,10 +1,10 @@
-= ChangeLog =
+﻿= ChangeLog =
 
 [[TOC]]
 
 == 1.0a2 ==
  Released:: 20081120 (''20th November 2008'')
- Revision:: [196]
+ Revision:: [200]
 
 === Documentation ===
  * Documentation Improvements: See: [wiki:docs Documentation]
