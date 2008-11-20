@@ -19,7 +19,6 @@ try:
 except ImportError:
 	psyco = None
 
-from pymills.misc import duration
 from circuits import listener, Event, Component, Bridge, Manager
 from circuits import __version__ as systemVersion
 
@@ -36,6 +35,15 @@ ERRORS = [
 ###
 ### Functions
 ###
+
+def duration(seconds):
+	days = int(seconds / 60 / 60 / 24)
+	seconds = (seconds) % (60 * 60 * 24)
+	hours = int((seconds / 60 / 60))
+	seconds = (seconds) % (60 * 60)
+	mins = int((seconds / 60))
+	seconds = int((seconds) % (60))
+	return (days, hours, mins, seconds)
 
 def parse_options():
 	"""parse_options() -> opts, args
