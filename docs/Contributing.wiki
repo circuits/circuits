@@ -44,7 +44,7 @@ Happy Hacking!
 ''No known issues''
 
 == Coding style ==
-Since it's hard to argue with someone who's already written a code style 
+Since it's hard to argue with someone who's already written a code style
 document, Circuits follows
 [http://www.python.org/peps/pep-0008.html PEP 8] conventions with some minor
 exceptions:
@@ -57,7 +57,7 @@ exceptions:
 Automated unit tests are better than good. They make future growth of the
 project possible.
 
-Circuits uses [http://somethingaboutorange.com/mrl/projects/nose/ Nose] 
+Circuits uses [http://somethingaboutorange.com/mrl/projects/nose/ Nose]
 which makes testing easy. You can run the tests just by running
 {{{nosetests}}} or {{{make tests}}} in the top-level of the source tree.
 
@@ -74,7 +74,7 @@ but, it's also nice to have some information in English.
 The Circuits Documentation is available at:
  * http://trac.softcircuit.com.au/circuits/wiki/docs
 
-Please document your own work. It doesn't have to be Shakespeare, but 
+Please document your own work. It doesn't have to be Shakespeare, but
 the editors don't enjoy writing documentation any more than you do
 (''we'd rather be coding'') and it's much easier to edit an existing
 document than it is to figure out your code and write something from scratch.
@@ -92,7 +92,7 @@ match the rest of the official documents.
 The [http://trac.softcircuit.com.au/circuits/ Circuits Trac] is mostly
 used for tracking upcoming changes and tasks required before release
 of a new version.
-The [http://trac.softcircuit.com.au/circuits/wiki/docs/ChangeLog ChangeLog] 
+The [http://trac.softcircuit.com.au/circuits/wiki/docs/ChangeLog ChangeLog]
 provides the human readable list of changes.
 
 Updating the [wiki:docs/ChangeLog ChangeLog] right before a release just slows

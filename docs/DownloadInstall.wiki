@@ -51,12 +51,12 @@ and not have to worry about re-installing.
  * Python 2.5 or greater (''Also works with Python 3.x``)
 
 === Setting up setuptools: ===
-On Windows: 
- download http://peak.telecommunity.com/dist/ez_setup.py and then run it from 
+On Windows:
+ download http://peak.telecommunity.com/dist/ez_setup.py and then run it from
  the command line.
 
-On UNIX: 
- If you have curl or  wget installed you can do this with a single command: 
+On UNIX:
+ If you have curl or  wget installed you can do this with a single command:
 
 {{{
 #!/sh
@@ -85,7 +85,7 @@ You should get the following output:
 
 {{{
 ~/circuits/examples
-$ python hello.py 
+$ python hello.py
 Hello World
 }}}
 ----
