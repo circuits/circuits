@@ -62,7 +62,6 @@ def main():
 	manager = Manager()
 
 	debugger = Debugger()
-	debugger.enable()
 	debugger.IgnoreEvents.extend(["Read", "Write"])
 	manager += debugger
 
