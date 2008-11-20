@@ -3,10 +3,8 @@
 [[TOC]]
 
 == 1.0a2 ==
- Released:: ''unknown''
- Revision:: ''unknown''
- Last Updated:: 19th November 2008
- Last Revision:: [183]
+ Released:: 20081120 (''20th November 2008'')
+ Revision:: [196]
 
 === Documentation ===
  * Documentation Improvements: See: [wiki:docs Documentation]
@@ -22,11 +20,14 @@
  * In [118]: [source:circuits/lib/web.py lib.web]: Added very very simple Logger to log requests (''prints to stderr'').
 
 === Enhancements ===
+ * In [184]: [source:circuits/debugger.py debugger]: If logger is not None, treat it as a logging.Logger instance and log incoming events as debug messages.
+ * In [183]: [source:circuits/debugger.py debugger]: Removed useless methods - Juset set enabled attribute appropiately.
  * In [168]: [source:circuits/lib/http.py lib.http]: Removed _Request.__call__ in favor of {{{process()}}} followed by {{{str(response)}}}
  * In [163]: [source:circuits/lib/web.py lib.web]: Better consistent docroot settings. docroot is __always__ the current path unless explicitly set.
  * In [150], [151]: [source:circuits/lib/irc.py lib.irc]: Added nick property to IRC Component. Setting a new nick causes a new nick to be sent to the connected server. Also set our own record of our nick when ircNICK is called.
 
 === Fixes ===
+ * In [192]: [source:circuits/lib/web.py lib.web]: Fix registration and polling to work independantly within other Systems and Components. ie: The run() method doesn't have to be utilized.
  * In [175]: [source:circuits/lib/http.py lib.http]: Fixed bug on Content-Length header in HTTP Component ensuring the value is a str. Required by WSGI.
  * In [164]: [source:circuits/lib/http.py lib.http]: Fixed a bug in HTTP Component where body could be None (''due to caching'').
  * In [149]: [source:circuits/lib/irc.py lib.irc]: Fixed a bug in IRC Component where writing to client failed.
