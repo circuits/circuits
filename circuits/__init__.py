@@ -100,7 +100,7 @@ circuits.bench = circuits.tools.bench:main
 circuits.sniffer = circuits.tools.sniffer:main
 """
 
-from core import listener, Event, Component, Manager
+from core import listener, Event, Component, SimpleComponent, Manager
 
 from timers import Timer
 from bridge import Bridge

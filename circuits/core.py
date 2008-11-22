@@ -483,3 +483,17 @@ class Component(Manager):
 			self.manager.remove(handler)
 
 		self.manager = self
+
+class MethodChannels(type):
+
+	def __init__(cls, name, bases, dct):
+		for name, func in dct.iteritems():
+			if callable(func) and name.startswith(cls.prefix):
+				channel = name[len(cls.prefix):]
+				setattr(cls, name, listener(channel, type="listener")(func))
+
+class SimpleComponent(Component):
+
+	__metaclass__ = MethodChannels
+
+	prefix = "on_"
