@@ -5,25 +5,6 @@
 """
 Debugger component used to debug each event in a system by printing
 each event to sys.stderr or to a Logger Component instnace.
-
-Example:
-
->>> from circuits import listener, Event, Component, Debugger, Manager
->>> class Foo(Component):
-	...     @listener("foo")
-...     def onFOO(self):
-	...             print "Hello World"
-... 
->>> manager = Manager()
->>> foo = Foo()
->>> debugger = Debugger()
->>> manager += foo
->>> manager += debugger
-<Registered/registered (, )>
->>> manager.push(Event(1, 2, 3, a=1, b=2, c=3), "foo")
->>> manager.flush()
-<Event/foo (1, 2, 3, a=1, c=3, b=2)>
-Hello World
 """
 
 import sys
