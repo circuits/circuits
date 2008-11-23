@@ -10,7 +10,7 @@
 import math
 from time import time, sleep
 
-from circuits.core import listener, Event, Worker
+from circuits import listener, Event, Worker
 
 
 class SignalEvent(Event):
