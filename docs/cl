@@ -1,5 +1,5 @@
 #!/bin/sh
 
-REV=183
+REV=${1}
 
 hg log -r $REV:tip --template=" * In [{rev}]: {desc}\n" > ChangeLog
