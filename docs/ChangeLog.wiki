@@ -1,6 +1,39 @@
-= !ChangeLog =
+﻿= !ChangeLog =
 
 [[TOC]]
+
+== 1.0a2 ==
+ Released:: 20081209 (''9th December 2008'')
+ Revision:: [208]
+
+=== Documentation ===
+ * In [208]: [source:circuits/debugger.py debugger]: Removed useless docstring examples/test
+
+=== NEW ===
+ * In [206]: [source:circuits/__init__.py circuits]: Added SimpleComponent - A simpler Component class that allows you to define Event Handlers by merely having prefixed methods.
+
+=== Enhancements ===
+...
+
+=== Fixes ===
+ * In [207]: [source:circuits/lib/ann.py lib.ann]: Fixed bad import of Worker
+
+=== Examples ===
+
+==== New ====
+...
+
+==== Updated ====
+...
+
+=== Tools ===
+
+==== New ====
+...
+
+==== Updated ====
+ * In [204]: [source:circuits/tools/bench.py tools.bench]: Removed pymills dependancy on misc.duration (imported this function)
+ * In [205]: [source:circuits/tools/sniffer.py tools.sniffer]: Fixed improper usage of {{{debugger.Debugger}}}. {{{Debugger.enable()}}} and friends are deprecated.
 
 == 1.0a2 ==
  Released:: 20081120 (''20th November 2008'')
