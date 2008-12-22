@@ -367,7 +367,7 @@ class Manager(object):
 		"""E.iter(event, channel, target=None) -> Generator
 
 		Iterate and Send the given event to filters/listeners
-		on the hannel specified. If target is given, send this
+		on the channel specified. If target is given, send this
 		event to filters/listeners of the given target component.
 		For each event that is sent, yield it's return result.
 		"""
