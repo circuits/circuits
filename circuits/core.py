@@ -121,13 +121,13 @@ def listener(*args, **kwargs):
     >>> from circuits.core import listener
     >>> @listener("foo")
     ... def onFOO():
-    ... pass
+    ...     pass
     >>> @listener("bar", type="filter")
     ... def onBAR():
-    ... pass
+    ...     pass
     >>> @listener("foo", "bar")
     ... def onFOOBAR():
-    ... pass
+    ...     pass
     """
 
     def decorate(f):
