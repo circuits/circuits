@@ -134,10 +134,10 @@ def listener(*args, **kwargs):
         f.type = kwargs.get("type", "listener")
         f.target = kwargs.get("target", None)
         f.channels = args
-        f.argspec = getargspec(f)
-        f.args = f.argspec[0]
-        f.varargs = (True if f.argspec[1] else False)
-        f.varkw = (True if f.argspec[2] else False)
+        argspec = getargspec(f)
+        f.args = argspec[0]
+        f.varargs = (True if argspec[1] else False)
+        f.varkw = (True if argspec[2] else False)
         if f.args and f.args[0] == "self":
             del f.args[0]
         return f
