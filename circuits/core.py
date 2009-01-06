@@ -346,7 +346,6 @@ class Manager(object):
                 channel = "%s:%s" % (target, channel)
 
             filter = False
-            handler = None
             for handler in self.handlers(channel):
                 args = handler.args
                 varargs = handler.varargs
@@ -390,7 +389,6 @@ class Manager(object):
                 channel = "%s:%s" % (target, channel)
 
             r = False
-            handler = None
             for handler in self.handlers(channel):
                 args = handler.args
                 varargs = handler.varargs
