@@ -238,7 +238,7 @@ class Manager(object):
                     handlers = chain(handlers, channels["%s:*" % target])
                 if "*:%s" % channel in channels:
                     handlers = chain(handlers, channels["*:%s" % channel])
-                if not s == channel:
+                if target:
                     handlers = chain(handlers, channels[s])
 
                 return handlers
