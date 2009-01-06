@@ -134,12 +134,28 @@ def listener(*args, **kwargs):
         f.type = kwargs.get("type", "listener")
         f.target = kwargs.get("target", None)
         f.channels = args
+
         argspec = getargspec(f)
-        f.args = argspec[0]
-        f.varargs = (True if argspec[1] else False)
-        f.varkw = (True if argspec[2] else False)
-        if f.args and f.args[0] == "self":
-            del f.args[0]
+        _args = argspec[0]
+        varargs = (True if argspec[1] else False)
+        varkw = (True if argspec[2] else False)
+        if _args and _args[0] == "self":
+            del _args[0]
+
+        if _args and _args[0] == "event":
+            f.br = 1
+        elif _args:
+            f.br = 2
+        else:
+            if varargs and varkw:
+                f.br = 3
+            elif varkw:
+                f.br = 4
+            elif varargs:
+                f.br = 5
+            else:
+                f.br = 6
+
         return f
     return decorate
 
@@ -343,23 +359,20 @@ class Manager(object):
 
             filter = False
             for handler in self.handlers(channel):
-                args = handler.args
-                varargs = handler.varargs
-                varkw = handler.varkw
+                br = handler.br
 
-                if args and args[0] == "event":
+                if br == 1:
                     filter = handler(event, *eargs, **ekwargs)
-                elif args:
+                elif br == 2:
                     filter = handler(*eargs, **ekwargs)
+                elif br == 3:
+                    filter = handler(*eargs, **ekwargs)
+                elif br == 4:
+                    filter = handler(**ekwargs)
+                elif br == 5:
+                    filter = handler(*eargs)
                 else:
-                    if varargs and varkw:
-                        filter = handler(*eargs, **ekwargs)
-                    elif varkw:
-                        filter = handler(**ekwargs)
-                    elif varargs:
-                        filter = handler(*eargs)
-                    else:
-                        filter = handler()
+                    filter = handler()
 
                 if filter and handler.type == "filter":
                     break
@@ -386,23 +399,20 @@ class Manager(object):
 
             r = False
             for handler in self.handlers(channel):
-                args = handler.args
-                varargs = handler.varargs
-                varkw = handler.varkw
+                br = handler.br
 
-                if args and args[0] == "event":
+                if br == 1:
                     r = handler(event, *eargs, **ekwargs)
-                elif args:
+                elif br == 2:
                     r = handler(*eargs, **ekwargs)
+                elif br == 3:
+                    r = handler(*eargs, **ekwargs)
+                elif br == 4:
+                    r = handler(**ekwargs)
+                elif br == 5:
+                    r = handler(*eargs)
                 else:
-                    if varargs and varkw:
-                        r = handler(*eargs, **ekwargs)
-                    elif varkw:
-                        r = handler(**ekwargs)
-                    elif varargs:
-                        r = handler(*eargs)
-                    else:
-                        r = handler()
+                    r = handler()
 
                 yield r
 
