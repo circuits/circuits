@@ -234,7 +234,7 @@ class Manager(object):
                 handlers = globals
                 if channel in channels:
                     handlers = chain(handlers, channels[channel])
-                if "%s:*" % target in channels:
+                if target and "%s:*" % target in channels:
                     handlers = chain(handlers, channels["%s:*" % target])
                 if "*:%s" % channel in channels:
                     handlers = chain(handlers, channels["*:%s" % channel])
