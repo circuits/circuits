@@ -66,8 +66,8 @@ class WebServer(TCPServer):
 	def run(self):
 		while True:
 			try:
-				self.flush()
 				self.poll()
+				self.flush()
 			except KeyboardInterrupt:
 				break
 

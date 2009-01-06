@@ -303,9 +303,7 @@ class Manager(object):
         """
 
         if self.manager == self:
-            event.channel = channel
-            event.target = target
-            self._queue.append(event)
+            self._queue.append((event, channel, target))
         else:
             self.manager.push(event, channel, target)
 
@@ -321,9 +319,7 @@ class Manager(object):
             q = self._queue
             self._queue = deque()
             while q:
-                event = q.pop()
-                channel = event.channel
-                target = event.target
+                event, channel, target = q.pop()
                 self.send(event, channel, target)
         else:
             self.manager.flush()
