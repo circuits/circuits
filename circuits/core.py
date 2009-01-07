@@ -148,13 +148,13 @@ def listener(*args, **kwargs):
             f.br = 2
         else:
             if varargs and varkw:
-                f.br = 3
+                f.br = 2
             elif varkw:
-                f.br = 4
+                f.br = 3
             elif varargs:
-                f.br = 5
+                f.br = 4
             else:
-                f.br = 6
+                f.br = 5
 
         return f
     return decorate
@@ -366,10 +366,8 @@ class Manager(object):
                 elif br == 2:
                     filter = handler(*eargs, **ekwargs)
                 elif br == 3:
-                    filter = handler(*eargs, **ekwargs)
-                elif br == 4:
                     filter = handler(**ekwargs)
-                elif br == 5:
+                elif br == 4:
                     filter = handler(*eargs)
                 else:
                     filter = handler()
@@ -406,10 +404,8 @@ class Manager(object):
                 elif br == 2:
                     r = handler(*eargs, **ekwargs)
                 elif br == 3:
-                    r = handler(*eargs, **ekwargs)
-                elif br == 4:
                     r = handler(**ekwargs)
-                elif br == 5:
+                elif br == 4:
                     r = handler(*eargs)
                 else:
                     r = handler()
