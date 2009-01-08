@@ -376,6 +376,13 @@ class IRC(Component):
             self.ircRAW(":%s INVITE %s %s" % (source, target,
                 channel))
 
+    @listener("NAMES")
+    def ircNAMES(self, channel=None):
+        if channel:
+            self.ircRAW("NAMES %s" % channel)
+        else:
+            self.ircRAW("NAMES")
+    
     ###
     ### Properties
     ###
