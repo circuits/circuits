@@ -104,5 +104,5 @@ from core import listener, Event, Component, SimpleComponent, Manager
 
 from timers import Timer
 from bridge import Bridge
-from workers import Worker
 from debugger import Debugger
+from workers import Thread, Process
