@@ -10,19 +10,16 @@
 import math
 from time import time, sleep
 
-from circuits import listener, Event, Worker
+from circuits import listener, Event, Thread
 
 
-class SignalEvent(Event):
-
-	def __init__(self, source, level):
-		Event.__init__(self, source=source, level=level)
+class SignalEvent(Event): pass
 
 
-class Node(Worker):
+class Node(Thread):
 
-	def __init__(self, event=None):
-		Worker.__init__(self, event)
+   def __init__(self, *args, **kwargs):
+      super(Node, self).__init__(*args, **kwargs)
 
 		self._inputs = []
 
@@ -56,9 +53,10 @@ def new_node(*args, **kwargs):
 
 class Connection(Node):
 
-	def __init__(self, event=None, weight=1.0):
-		Node.__init__(self)
-		self._weight = weight
+   def __init__(self, *args, **kwargs):
+		super(Connection, self).__init__(*args, **kwargs)
+
+		self._weight = kwargs.get("weight", 1.0)
 
 	def __repr__(self):
 		return "<Connection weight=%0.2f>" % self._weight
@@ -115,8 +113,8 @@ class _SigmoidNeuron(object):
 
 class Neuron(Node):
 
-	def __init__(self, event=None, threshold=1.0, type="step"):
-		Node.__init__(self)
+   def __init__(self, *args, **kwargs):
+		super(Neuron, self).__init__(*args, **kwargs)
 
 		self._threshold = threshold
 		self._level = 0.0
@@ -173,8 +171,8 @@ def new_neuron(*args, **kwargs):
 
 class Output(Node):
 
-	def __init__(self, event=None, f=lambda n: None):
-		Node.__init__(self)
+   def __init__(self, *args, **kwargs):
+		super(Output, self).__init__(*args, **kwargs)
 
 		self._f = f
 		self._output = None
