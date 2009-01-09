@@ -334,9 +334,8 @@ class Manager(object):
         if self.manager == self:
             q = self._queue
             self._queue = deque()
-            while q:
-                event, channel, target = q.pop()
-                self.send(event, channel, target)
+            for event in q:
+                self.send(*event)
         else:
             self.manager.flush()
 
