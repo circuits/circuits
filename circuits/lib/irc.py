@@ -1,4 +1,3 @@
-# Filename: irc.py
 # Module:   irc
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
@@ -15,6 +14,7 @@ implementations.
 import re
 import time
 
+from circuits.lib.sockets import Write
 from circuits.core import listener, Event, Component
 
 ###
@@ -87,25 +87,77 @@ def sourceSplit(source):
 ### Evenets
 ###
 
-class Write(Event): pass
+class Raw(Event):
+	"""Raw(Event) -> Raw Event
 
-class Raw(Event): pass
-class Numeric(Event): pass
-class NetInfo(Event): pass
-class NewNick(Event): pass
-class Nick(Event): pass
-class Quit(Event): pass
-class Message(Event): pass
-class Notice(Event): pass
-class Ping(Event): pass
-class Join(Event): pass
-class Part(Event): pass
-class Ctcp(Event): pass
-class Mode(Event): pass
-class Topic(Event): pass
-class Invite(Event): pass
-class Kick(Event): pass
-class Motd(Event): pass
+   args: line
+   """
+
+class Numeric(Event):
+	"""Numeric(Event) -> Numeric Event
+
+   args: source, target, numeric, arg, message
+   """
+
+class NewNick(Event):
+	"""NewNick(Event) -> NewNick Event
+
+   (Server mode only)
+   """
+
+class Nick(Event):
+	"""Nick(Event) -> Nick Event
+
+   args: source, newnick, ctime
+   """
+
+class Quit(Event):
+	"""Quit(Event) -> Quit Event
+
+   args: source, message
+   """
+
+class Message(Event):
+	"""Message(Event) -> Message Event
+
+   args: source, target, message
+   """
+
+class Notice(Event):
+	"""Notice(Event) -> Notice Event
+
+   args: source, target, message
+   """
+
+class Ping(Event):
+	"""Ping(Event) -> Ping Event
+
+   args: server
+   """
+
+class Join(Event):
+	"""Join(Event) -> Join Event
+
+   args: source, channel
+   """
+
+class Part(Event):
+	"""Part(Event) -> Part Event
+
+   args: source, channel, message
+   """
+
+class Ctcp(Event):
+	"""Ctcp(Event) -> Ctcp Event
+
+   args: source, target, type, message
+   """
+
+class Topic(Event):
+	"""Topic(Event) -> Topic Event
+
+   args: source, channel, ctime, topic
+   """
 
 ###
 ### Protocol Class
@@ -421,7 +473,7 @@ class IRC(Component):
         tokens = line.split(" ")
 
         if tokens[0] == "PING":
-            self.push(Ping(strip(tokens[1]).lower()),   "ping", self.channel)
+            self.push(Ping(strip(tokens[1]).lower()), "ping", self.channel)
 
         elif tokens[0] == "NICK":
             self.push(NewNick(
@@ -577,13 +629,6 @@ class IRC(Component):
             self.push(Nick(
                     source, newNick, ctime),
                     "nick", self.channel)
-
-        elif tokens[1] == "MOTD":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
-            server = strip(tokens[2]).lower()
-            self.push(Motd(
-                    source, server),
-                    "motd", self.channel)
 
     ###
     ### Default Events
