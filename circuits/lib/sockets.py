@@ -35,12 +35,67 @@ BACKLOG = 512
 ### Events
 ###
 
-class Error(Event): pass
-class Connect(Event): pass
-class Disconnect(Event): pass
-class Read(Event): pass
-class Write(Event): pass
-class Close(Event): pass
+class Connect(Event):
+	"""Connect(Event) -> Connect Event
+
+   if Client:
+      args: host, port
+
+   if Server:
+      args: sock, host, port
+   """
+
+class Disconnect(Event):
+	"""Disconnect(Event) -> Disconnect Event
+
+   if Client, no args.
+
+   If Server:
+      args: sock
+   """
+
+class Read(Event):
+	"""Read(Event) -> Read Event
+
+   if Client:
+      args: data
+
+   If Server:
+      args: sock, data
+
+   if UDP Client or Server:
+      args: address, data
+   """
+
+class Write(Event):
+	"""Write(Event) -> Write Event
+
+   If Client:
+      args: data
+
+   if Server:
+      args: sock, data
+
+   if UDP Client or Server:
+      args: address, data
+	"""
+
+class Error(Event):
+	"""Error(Event) -> Error Event
+
+   if Client: error
+
+   if Server: sock, error
+   """
+
+class Close(Event):
+	"""Close(Event) -> Close Event
+
+   If Client, no args.
+
+   if Server:
+      args: sock
+	"""
 
 class Client(Component):
 
