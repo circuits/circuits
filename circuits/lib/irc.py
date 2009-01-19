@@ -434,6 +434,10 @@ class IRC(Component):
             self.ircRAW("NAMES %s" % channel)
         else:
             self.ircRAW("NAMES")
+
+    @listener("WHOIS")
+    def ircNAMES(self, target):
+        self.ircRAW("WHOIS %s" % target)
     
     ###
     ### Properties
