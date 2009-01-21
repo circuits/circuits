@@ -79,7 +79,7 @@ def parse_options():
 			help="Enable execution profiling support")
 
 	parser.add_option("-m", "--mode",
-			action="store", type="choice", default="sync", dest="mode",
+			action="store", type="choice", default="speed", dest="mode",
 			choices=["sync", "speed", "latency"],
 			help="Operation mode")
 
@@ -241,15 +241,15 @@ def main():
 		bridge = None
 
 	if opts.mode.lower() == "speed":
-		print "Setting up speed Test..."
+		print "Setting up Speed Test..."
 		if opts.concurrency > 1:
 			for c in xrange(int(opts.concurrency)):
 				manager += SpeedTest(channel=c)
 		else:
 			manager += SpeedTest()
 		monitor.sTime = time.time()
-	if opts.mode.lower() == "latency":
-		print "Setting up latency Test..."
+	elif opts.mode.lower() == "latency":
+		print "Setting up Latency Test..."
 		manager += LatencyTest()
 		monitor.sTime = time.time()
 	elif opts.listen:
