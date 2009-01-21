@@ -210,6 +210,8 @@ class Manager(object):
 
     def __add__(self, y):
         y.register(self.manager)
+        if hasattr(y, "registered"):
+            y.registered()
         return self
     
     def __iadd__(self, y):
