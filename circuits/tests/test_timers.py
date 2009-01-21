@@ -49,8 +49,8 @@ class EventTestCase(unittest.TestCase):
 
         self.assertTrue(a.flag)
 
-		x -= a
-		x -= t
+        x -= a
+        x -= t
 
     def testPersistentTimer(self):
         """Test Persistent Timers
