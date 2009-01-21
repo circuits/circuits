@@ -1,6 +1,6 @@
-# Module:	timers
-# Date:		04th August 2004
-# Author:	James Mills <prologic@shortcircuit.net.au>
+# Module:   timers
+# Date:     04th August 2004
+# Author:   James Mills <prologic@shortcircuit.net.au>
 
 """Timers
 
@@ -11,55 +11,81 @@ from time import time
 
 from circuits.core import Component
 
+class Timers(Component):
+    """Timers() -> new timers component
 
+    ...
+    """
+
+    def __init__(self, *args, **kwargs):
+        "initializes x; see x.__class__.__doc__ for signature"
+
+        super(Timers, self).__init__(*args, **kwargs)
+
+        self.timers = []
+
+    def add(self, s, e, c="timer", t=None, persist=False):
+        timer = Timer(s, e, c, t, persist)
+        self.manager += timer
+        self.timers.append(timer)
+
+    def poll(self):
+        for timer in self.timers[:]:
+            if timer.poll():
+                self.timers.remove(timer)
+            
 class Timer(Component):
-	"""Timer(s, e, c, t, persist) -> new timer object
+    """Timer(s, e, c, t, persist) -> new timer component
 
-	Creates a new timer object which when triggered
-	will push the given event onto the event queue.
+    Creates a new timer object which when triggered
+    will push the given event onto the event queue.
 
-	s := no. of seconds to delay
-	e := event to be fired
-	c := channel to fire event to
-	t := target to fire event to
+    s := no. of seconds to delay
+    e := event to be fired
+    c := channel to fire event to
+    t := target to fire event to
 
-	persist := Sets this timer as persistent if True.
-	"""
+    persist := Sets this timer as persistent if True.
+    """
 
-	def __init__(self, s, e, c="timer", t=None, persist=False):
-		"initializes x; see x.__class__.__doc__ for signature"
+    def __init__(self, s, e, c="timer", t=None, persist=False):
+        "initializes x; see x.__class__.__doc__ for signature"
 
-		super(Timer, self).__init__()
+        super(Timer, self).__init__()
 
-		self.s = s
-		self.e = e
-		self.c = c
-		self.t = t
-		self.persist = persist
+        self.s = s
+        self.e = e
+        self.c = c
+        self.t = t
+        self.persist = persist
 
-		self.reset()
+        self.reset()
 
-	def reset(self):
-		"""T.reset() -> None
+    def reset(self):
+        """T.reset() -> None
 
-		Reset the timer.
-		"""
+        Reset the timer.
+        """
 
-		self._eTime = time() + self.s
+        self._eTime = time() + self.s
 
-	def poll(self):
-		"""T.poll() -> done, (e, c, t)
+    def poll(self):
+        """T.poll() -> state
 
-		Check if this timer is ready to be triggered.
-		If so, push the event onto the event queue.
+        Check if this timer is ready to be triggered.
+        If so, push the event onto the event queue.
 
-		If timer is persistent, reset it after triggering.
-		"""
+        If timer is persistent, reset it after triggering.
+        """
 
-		if time() > self._eTime:
-			self.push(self.e, self.c, self.t)
+        if time() > self._eTime:
+            self.push(self.e, self.c, self.t)
 
-			if self.persist:
-				self.reset()
-			else:
-				self.unregister()
+            if self.persist:
+                self.reset()
+                return False
+            else:
+                self.unregister()
+                return True
+
+        return None
