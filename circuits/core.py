@@ -221,8 +221,22 @@ class Manager(object):
         return self
 
     def __sub__(self, y):
-        y.unregister()
-        return self
+        if y.manager == self:
+            y.unregister()
+            if hasattr(y, "unregistered"):
+                y.unregistered()
+            return self
+        else:
+            raise Error("No registration found for %r" % y)
+
+    def __isub__(self, y):
+        if y.manager == self:
+            y.unregister()
+            if hasattr(y, "unregistered"):
+                y.unregistered()
+            return self
+        else:
+            raise Error("No registration found for %r" % y)
 
     def handlers(self, s):
         channels = self.channels
