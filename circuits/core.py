@@ -239,7 +239,8 @@ class Manager(object):
             raise Error("No registration found for %r" % y)
 
     def handlers(self, s):
-        channels = self.channels
+        if s == "*:*":
+            return self._handlers
 
         if ":" in s:
             target, channel = s.split(":", 1)
@@ -247,33 +248,32 @@ class Manager(object):
             channel = s
             target = None
 
+        channels = self.channels
         globals = channels["*"]
 
-        if target == "*" and channel == "*":
-            return self._handlers
-        else:
-            if target == "*":
-                c = ":%s" % channel
-                x = [channels[k] for k in channels if k == channel or k.endswith(c)]
-                all = [i for y in x for i in y]
-                return chain(globals, all)
-            elif channel == "*":
-                c = "%s:" % target
-                x = [channels[k] for k in channels if k.startswith(c) or ":" not in k]
-                all = [i for y in x for i in y]
-                return chain(globals, all)
-            else:
-                handlers = globals
-                if channel in channels:
-                    handlers = chain(handlers, channels[channel])
-                if target and "%s:*" % target in channels:
-                    handlers = chain(handlers, channels["%s:*" % target])
-                if "*:%s" % channel in channels:
-                    handlers = chain(handlers, channels["*:%s" % channel])
-                if target:
-                    handlers = chain(handlers, channels[s])
+        if target == "*":
+            c = ":%s" % channel
+            x = [channels[k] for k in channels if k == channel or k.endswith(c)]
+            all = [i for y in x for i in y]
+            return chain(globals, all)
 
-                return handlers
+        if channel == "*":
+            c = "%s:" % target
+            x = [channels[k] for k in channels if k.startswith(c) or ":" not in k]
+            all = [i for y in x for i in y]
+            return chain(globals, all)
+
+        handlers = globals
+        if channel in channels:
+            handlers = chain(handlers, channels[channel])
+        if target and "%s:*" % target in channels:
+            handlers = chain(handlers, channels["%s:*" % target])
+        if "*:%s" % channel in channels:
+            handlers = chain(handlers, channels["*:%s" % channel])
+        if target:
+            handlers = chain(handlers, channels[s])
+
+        return handlers
 
 
     def add(self, handler, channel=None):
