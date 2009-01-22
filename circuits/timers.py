@@ -24,7 +24,7 @@ class Timers(Component):
 
         self.timers = []
 
-    def add(self, s, e, c="timer", t=None, persist=False):
+    def addTimer(self, s, e, c="timer", t=None, persist=False):
         timer = Timer(s, e, c, t, persist)
         self.manager += timer
         self.timers.append(timer)
