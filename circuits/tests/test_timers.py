@@ -38,7 +38,7 @@ class EventTestCase(unittest.TestCase):
         x = Manager()
         a = Foo()
         t = Timers()
-        t.add(0.01, Test(), "timer")
+        t.addTimer(0.01, Test(), "timer")
 
         x += a
         x += t
@@ -61,7 +61,7 @@ class EventTestCase(unittest.TestCase):
         x = Manager()
         a = Foo()
         t = Timers()
-        t.add(0.01, Test(), "timer", persist=True)
+        t.addTimer(0.01, Test(), "timer", persist=True)
 
         x += a
         x += t
