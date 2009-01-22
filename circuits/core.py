@@ -164,25 +164,20 @@ class Registered(Event):
     """Registered(Event) -> Registered Event"""
 
 
+class HandlersType(type):
+
+    def __init__(cls, name, bases, dct):
+        super(HandlersType, cls).__init__(name, bases, dct)
+
+        for name, f in dct.iteritems():
+            if callable(f) and not (name[0] == "_" or hasattr(f, "type")):
+                setattr(cls, name, listener(name, type="listener")(f))
+
+
 class Manager(object):
     """Creates a new Manager
 
     Create a new event manager which manages Components and Events.
-
-    Example:
-
-    .. code-block:: python
-        :linenos:
-
-        class Foo(Component):
-
-            @listener("hello")
-            def onHELLO(self):
-                print "Hello World"
-
-        manager = Manager()
-        foo = Foo()
-        manager += foo
     """
 
     def __init__(self, *args, **kwargs):
@@ -435,22 +430,11 @@ class Manager(object):
                 yield i
 
 
-class Component(Manager):
+class BaseComponent(Manager):
     """Creates a new Component
 
     Subclasses of Component define Event Handlers by decorating
     methods by using the listener decorator.
-
-    Example:
-
-    .. code-block:: python
-        :linenos:
-
-        class Foo(Component):
-
-            @listener("hello")
-            def onHELLO(self):
-                print "Hello World"
 
     All listeners found in the Component will automatically be
     picked up when the Component is instantiated.
@@ -464,7 +448,7 @@ class Component(Manager):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(Component, self).__init__(*args, **kwargs)
+        super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel)
         self.register(self)
@@ -509,16 +493,6 @@ class Component(Manager):
 
         self.manager = self
 
-class MethodChannels(type):
+class Component(BaseComponent):
 
-    def __init__(cls, name, bases, dct):
-        for name, func in dct.iteritems():
-            if callable(func) and name.startswith(cls.prefix):
-                channel = name[len(cls.prefix):]
-                setattr(cls, name, listener(channel, type="listener")(func))
-
-class SimpleComponent(Component):
-
-    __metaclass__ = MethodChannels
-
-    prefix = "on_"
+    __metaclass__ = HandlersType
