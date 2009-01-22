@@ -73,12 +73,14 @@ def expose(*channels, **config):
 
    return decorate
 
-class _AutoListener(type):
+class ExposeType(type):
 
-   def __init__(cls, name, bases, dct):
-      for name, func in dct.iteritems():
-         if callable(func) and not name.startswith("_"):
-            setattr(cls, name, expose(name, type="listener")(func))
+    def __init__(cls, name, bases, dct):
+        super(ExposeType, cls).__init__(name, bases, dct)
+
+        for name, f in dct.iteritems():
+            if callable(f) and not (name[0] == "_" or hasattr(f, "type")):
+                setattr(cls, name, expose(name, type="listener")(f))
 
 class Server(TCPServer):
 
@@ -259,7 +261,7 @@ class Filter(Component):
 
 class Controller(Component):
 
-   __metaclass__ = _AutoListener
+   __metaclass__ = ExposeType
 
    channel = "/"
 
