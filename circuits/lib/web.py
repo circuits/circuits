@@ -21,6 +21,7 @@ from socket import gethostname
 from traceback import format_exc
 from os.path import isdir, isfile
 
+from circuits.core import BaseComponent
 from circuits import listener, Component
 from circuits.lib.sockets import TCPServer
 from circuits.lib.http import HTTPError, HTTPRedirect
@@ -259,11 +260,11 @@ class Filter(Component):
          del self.request
          del self.response
 
-class Controller(Component):
+class Controller(BaseComponent):
 
-   __metaclass__ = ExposeType
+    __metaclass__ = ExposeType
 
-   channel = "/"
+    channel = "/"
 
 class Logger(Component):
 
