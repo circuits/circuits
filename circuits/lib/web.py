@@ -51,6 +51,8 @@ def expose(*channels, **config):
 
       argspec = getargspec(f)
       _args = argspec[0]
+      _args.insert(0, "response")
+      _args.insert(0, "request")
       varargs = (True if argspec[1] else False)
       varkw = (True if argspec[2] else False)
       if _args and _args[0] == "self":
