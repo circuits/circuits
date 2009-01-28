@@ -20,7 +20,7 @@ class Thread(_Component):
         super(Thread, self).__init__(*args, **kwargs)
 
         self.running = False
-        self.thread = _Thread(target=self.run, name=self.__class__.__name__)
+        self.thread = _Thread(target=self.run)
 
     def start(self):
         self.running = True
@@ -41,12 +41,12 @@ class Process(_Component):
         super(Process, self).__init__(*args, **kwargs)
 
         self.running = _Value("b", False)
-        self.thread = _Thread(target=self.run)
-        self.process = _Process(target=self._run, args=(self.running,))
+        self.process = _Process(target=self._run, args=(self.run, self.running,))
         self.parent, self.child = _Pipe()
 
-    def _run(self, running):
-        self.thread.start()
+    def _run(self, fn, running):
+        thread = _Thread(target=fn)
+        thread.start()
 
         try:
             while running.value:
@@ -71,7 +71,7 @@ class Process(_Component):
             running.acquire()
             running.value = False
             running.release()
-            self.thread.join()
+            thread.join()
             self.flush()
 
     def start(self):
