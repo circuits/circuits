@@ -14,7 +14,7 @@ class A(Thread):
         self.push(Event("ok, got: %s" % message), "received")
 
     def run(self):
-        while self.running:
+        while self.isAlive():
             try:
                 self.push(Event("Hello from %s" % self), "hello")
                 sleep(1)
@@ -28,7 +28,7 @@ class B(Process):
         self.push(Event("ok, got: %s" % message), "received")
 
     def run(self):
-        while self.running:
+        while self.isAlive():
             try:
                 self.push(Event("Hello from %s" % self), "hello")
                 sleep(1)
