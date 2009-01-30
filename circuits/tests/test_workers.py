@@ -50,7 +50,8 @@ class EventTestCase(unittest.TestCase):
 
       x.send(Test(), "foo")
 
-      w.stop()
+      while w.isAlive():
+          pass
 
       self.assertEquals(w.count, 5)
       self.assertTrue(w.done)
