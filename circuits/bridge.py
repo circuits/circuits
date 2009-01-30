@@ -76,6 +76,37 @@ class Bridge(Component):
 	def registered(self):
 		self.push(Helo(*self.ourself), "helo")
 
+	def __write__(self, address, data):
+		if not self._write:
+			self._write.append(self._sock)
+		if not self._buffers.has_key(address):
+			self._buffers[address] = []
+		self._buffers[address].append(data)
+
+	def __close__(self):
+		self.push(Close(), "close", self.channel)
+
+	def poll(self, wait=POLL_INTERVAL):
+		r, w, e = select.select(self._read, self._write, [], wait)
+
+		if w:
+			for address, data in self._buffers.iteritems():
+				if data:
+					self.send(Write(address, data[0]), "write", self.channel)
+			self._write.remove(w[0])
+
+		if r:
+			try:
+				data, address = self._sock.recvfrom(BUFFER_SIZE)
+
+				if not data:
+					self.__close__()
+				else:
+					self.push(Read(address, data), "read", self.channel)
+			except socket.error, e:
+				self.push(Error(self._sock, e), "error", self.channel)
+				self.__close__()
+
 	@listener(type="filter")
 	def onEVENTS(self, event, *args, **kwargs):
 		channel = event.channel
@@ -93,9 +124,9 @@ class Bridge(Component):
 
 		if self.nodes:
 			for node in self.nodes:
-				self.write(node, s)
+				self.__write__(node, s)
 		else:
-			self.write(("<broadcast>", self.port), s)
+			self.__write__(("<broadcast>", self.port), s)
 
 	@listener("helo", type="filter")
 	def onHELO(self, event, address, port):
@@ -120,40 +151,6 @@ class Bridge(Component):
 			return
 
 		self.send(event, channel, target)
-
-	def poll(self, wait=POLL_INTERVAL):
-		r, w, e = select.select(self._read, self._write, [], wait)
-
-		if w:
-			for address, data in self._buffers.iteritems():
-				if data:
-					self.send(Write(address, data[0]), "write", self.channel)
-			self._write.remove(w[0])
-
-		if r:
-			try:
-				data, address = self._sock.recvfrom(BUFFER_SIZE)
-
-				if not data:
-					self.close()
-				else:
-					self.push(Read(address, data), "read", self.channel)
-			except socket.error, e:
-				self.push(Error(self._sock, e), "error", self.channel)
-				self.close()
-
-	def write(self, address, data):
-		if not self._write:
-			self._write.append(self._sock)
-		if not self._buffers.has_key(address):
-			self._buffers[address] = []
-		self._buffers[address].append(data)
-
-	def broadcast(self, data):
-		self.write("<broadcast", data)
-
-	def close(self):
-		self.push(Close(), "close", self.channel)
 
 	@listener("close", type="filter")
 	def onCLOSE(self):
@@ -185,8 +182,8 @@ class Bridge(Component):
 			del self._buffers[address][0]
 		except socket.error, e:
 			if e[0] in [32, 107]:
-				self.close()
+				self.__close__()
 			else:
 				self.push(Error(e), "error", self.channel)
-				self.close()
+				self.__close__()
 
