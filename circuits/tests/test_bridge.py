@@ -81,12 +81,6 @@ class EventTestCase(unittest.TestCase):
 		self.assertTrue(foo.flag)
 		self.assertTrue(bar.flag)
 
-		b2.close()
-		m2.flush()
-
-		b1.close()
-		m1.flush()
-
 		bar.unregister()
 		b2.unregister()
 
