@@ -35,8 +35,8 @@ BACKLOG = 512
 ### Events
 ###
 
-class Connect(Event):
-	"""Connect(Event) -> Connect Event
+class Connected(Event):
+	"""Connected(Event) -> Connected Event
 
    if Client:
       args: host, port
@@ -45,8 +45,8 @@ class Connect(Event):
       args: sock, host, port
    """
 
-class Disconnect(Event):
-	"""Disconnect(Event) -> Disconnect Event
+class Disconnected(Event):
+	"""Disconnected(Event) -> Disconnected Event
 
    if Client, no args.
 
@@ -90,6 +90,15 @@ class Error(Event):
 
 class Close(Event):
 	"""Close(Event) -> Close Event
+
+   If Client, no args.
+
+   if Server:
+      args: sock
+	"""
+
+class Shutdown(Event):
+	"""Shutdown(Event) -> Shutdown Event
 
    If Client, no args.
 
@@ -166,7 +175,7 @@ class Client(Component):
 			r, w, e = select.select([], self._socks, [], CONNECT_TIMEOUT)
 			if w:
 				self.connected = True
-				self.push(Connect(host, port), "connect", self.channel)
+				self.push(Connected(host, port), "connect", self.channel)
 			else:
 				self.push(Error("Connection timed out"), "error", self.channel)
 				self.close()
@@ -174,21 +183,15 @@ class Client(Component):
 			self.push(Error(error), "error", self.channel)
 			self.close()
 
-	@listener("close")
-	def onCLOSE(self):
+	def close(self):
 		if self._socks:
-			self.push(Close(), "__close__", self.channel)
+			self.push(Shutdown(), "shutdown", self.channel)
 
-	close = onCLOSE
-
-	@listener("write")
-	def onWRITE(self, data):
+	def write(self, data):
 		self._buffer.append(data)
 
-	write = onWRITE
-
-	@listener("__close__", type="filter")
-	def on__CLOSE__(self):
+	@listener("shutdown", type="filter")
+	def onSHUTDOWN(self):
 		"""Close Event (Private)
 
 		Typically this should NOT be overridden by sub-classes.
@@ -208,7 +211,7 @@ class Client(Component):
 
 		self.connected = False
 
-		self.push(Disconnect(), "disconnect", self.channel)
+		self.push(Disconnected(), "disconnected", self.channel)
 
 class TCPClient(Client):
 
@@ -295,7 +298,7 @@ class Server(Component):
 				self._socks.append(newsock)
 				self._read.append(newsock)
 				self._buffers[newsock] = []
-				self.push(Connect(newsock, *host), "connect", self.channel)
+				self.push(Connected(newsock, *host), "connect", self.channel)
 			else:
 				try:
 					data = sock.recv(BUFFER_SIZE)
@@ -307,20 +310,14 @@ class Server(Component):
 					self.push(Error(sock, e), "error", self.channel)
 					self.close(sock)
 
-	@listener("close")
-	def onCLOSE(self, sock=None):
+	def close(self, sock=None):
 		if sock in self:
-			self.push(Close(sock), "__close__", self.channel)
+			self.push(Shutdown(sock), "shutdown", self.channel)
 
-	close = onCLOSE
-
-	@listener("write")
-	def onWRITE(self, sock, data):
+	def write(self, sock, data):
 		if not sock in self._write:
 			self._write.append(sock)
 		self._buffers[sock].append(data)
-
-	write = onWRITE
 
 	def broadcast(self, data):
 		for sock in self._socks[1:]:
@@ -348,8 +345,8 @@ class Server(Component):
 				self.push(Error(sock, e), "error", self.channel)
 				self.close()
 
-	@listener("__close__", type="filter")
-	def on__CLOSE__(self, sock=None):
+	@listener("shutdown", type="filter")
+	def onSHUTDOWN(self, sock=None):
 		"""Close Event (Private)
 
 		Typically this should NOT be overridden by sub-classes.
@@ -369,7 +366,7 @@ class Server(Component):
 			try:
 				sock.shutdown(2)
 				sock.close()
-				self.push(Disconnect(sock), "disconnect", self.channel)
+				self.push(Disconnected(sock), "disconnect", self.channel)
 			except socket.error, e:
 				self.push(Error(sock, e), "error", self.channel)
 			finally:
@@ -451,28 +448,22 @@ class UDPServer(Server):
 				self.push(Error(self._sock, e), "error", self.channel)
 				self.close()
 
-	@listener("write")
-	def onWRITE(self, address, data):
+	def write(self, address, data):
 		if not self._write:
 			self._write.append(self._sock)
 		if not self._buffers.has_key(address):
 			self._buffers[address] = []
 		self._buffers[address].append(data)
 
-	write = onWRITE
-
 	def broadcast(self, data):
 		self.write("<broadcast", data)
 
-	@listener("close")
-	def onCLOSE(self):
+	def close(self):
 		if self._socks:
-			self.push(Close(), "__close__", self.channel)
+			self.push(Shutdown(), "shutdown", self.channel)
 
-	close = onCLOSE
-
-	@listener("__close__", type="filter")
-	def on__CLOSE__(self):
+	@listener("shutdown", type="filter")
+	def onSHUTDOWN(self):
 		"""Close Event (Private)
 
 		Typically this should NOT be overridden by sub-classes.
