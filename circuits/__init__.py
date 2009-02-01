@@ -20,11 +20,10 @@ and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 
 Simple Example:
 
->>> from circuits.core import listener, Component, Event, Manager
+>>> from circuits.core import Component, Event, Manager
 >>>
 >>> class Hello(Component):
-...   @listener("hello")
-...   def onHELLO(self):
+...   def hello(self):
 ...      print "Hello World!"
 >>> manager = Manager()
 >>> manager += Hello()
