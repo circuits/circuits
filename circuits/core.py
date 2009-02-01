@@ -160,10 +160,6 @@ def listener(*args, **kwargs):
     return decorate
 
 
-class Registered(Event):
-    """Registered(Event) -> Registered Event"""
-
-
 class HandlersType(type):
 
     def __init__(cls, name, bases, dct):
