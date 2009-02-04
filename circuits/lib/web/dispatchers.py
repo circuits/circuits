@@ -143,8 +143,7 @@ class DefaultDispatcher(Component):
 
         if channel is not None:
             if i < len(names):
-                vpath = names[i:]
-                vpath = [x.replace("%2F", "/") for x in vpath]
+                vpath = [x.replace("%2F", "/") for x in names[i:]]
             else:
                 vpath = []
 
