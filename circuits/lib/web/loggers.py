@@ -1,0 +1,55 @@
+# Module:   loggers
+# Date:     6th November 2008
+# Author:   James Mills, prologic at shortcircuit dot net dot au
+
+"""Logger Component
+
+This module implements Logger Components.
+"""
+
+import sys
+import rfc822
+import datetime
+
+from circuits import Component
+
+class Logger(Component):
+
+   format = "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
+
+   def request(self, request, response):
+      self.log(request, response)
+
+   def log(self, request, response):
+      remote = request.remote_host
+      outheaders = response.headers
+      inheaders = request.headers
+      
+      atoms = {"h": remote.name or remote.ip,
+             "l": "-",
+             "u": getattr(request, "login", None) or "-",
+             "t": self.time(),
+             "r": request.request_line,
+             "s": response.status.split(" ", 1)[0],
+             "b": outheaders.get("Content-Length", "") or "-",
+             "f": inheaders.get("Referer", ""),
+             "a": inheaders.get("User-Agent", ""),
+             }
+      for k, v in atoms.items():
+         if isinstance(v, unicode):
+            v = v.encode("utf8")
+         elif not isinstance(v, str):
+            v = str(v)
+         # Fortunately, repr(str) escapes unprintable chars, \n, \t, etc
+         # and backslash for us. All we have to do is strip the quotes.
+         v = repr(v)[1:-1]
+         # Escape double-quote.
+         atoms[k] = v.replace("\"", "\\\"")
+      
+      print >> sys.stderr, self.format % atoms
+   
+   def time(self):
+      now = datetime.datetime.now()
+      month = rfc822._monthnames[now.month - 1].capitalize()
+      return ("[%02d/%s/%04d:%02d:%02d:%02d]" %
+            (now.day, month, now.year, now.hour, now.minute, now.second))

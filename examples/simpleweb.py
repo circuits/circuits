@@ -10,13 +10,28 @@ using more higher abstracted web components from the web components
 library.
 """
 
-from circuits.lib.web import Server, Controller
+#import hotshot
+#import hotshot.stats
+
+import psyco; psyco.full()
+
+from circuits.web import Server, Controller
 
 class HelloWorld(Controller):
 
 	def index(self):
 		return "Hello World!"
 
+#profiler = hotshot.Profile("simpleweb.prof")
+#profiler.start()
+
 server = Server(8000)
 server += HelloWorld()
 server.run()
+
+#profiler.stop()
+#profiler.close()
+#stats = hotshot.stats.load("simpleweb.prof")
+#stats.strip_dirs()
+#stats.sort_stats("time", "calls")
+#stats.print_stats(20)
