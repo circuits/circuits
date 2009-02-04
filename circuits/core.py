@@ -364,25 +364,26 @@ class Manager(object):
             if target is not None:
                 channel = "%s:%s" % (target, channel)
 
-            filter = False
+            r = False
             for handler in self.handlers(channel):
                 br = handler.br
 
                 if br == 1:
-                    filter = handler(event, *eargs, **ekwargs)
+                    r = handler(event, *eargs, **ekwargs)
                 elif br == 2:
-                    filter = handler(*eargs, **ekwargs)
+                    r = handler(*eargs, **ekwargs)
                 elif br == 3:
-                    filter = handler(**ekwargs)
+                    r = handler(**ekwargs)
                 elif br == 4:
-                    filter = handler(*eargs)
+                    r = handler(*eargs)
                 else:
-                    filter = handler()
+                    r = handler()
 
-                if filter and handler.type == "filter":
+                if r is not None and r and handler.type == "filter":
                     break
+            return r
         else:
-            self.manager.send(event, channel, target)
+            return self.manager.send(event, channel, target)
 
 
     def iter(self, event, channel, target=None):
