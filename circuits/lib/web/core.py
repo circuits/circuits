@@ -11,19 +11,9 @@ server implementation with support for headers, cookies, positional
 and keyword arguments, filtering, url dispatching and more.
 """
 
-import os
-import sys
-import rfc822
-import datetime
-from os import getcwd, listdir
 from inspect import getargspec
-from socket import gethostname
-from traceback import format_exc
-from os.path import isdir, isfile
 
-from circuits.core import BaseComponent
-from circuits import listener, Component
-from circuits.lib.sockets import TCPServer
+from circuits.core import listener, BaseComponent
 
 def expose(*channels, **config):
    def decorate(f):
