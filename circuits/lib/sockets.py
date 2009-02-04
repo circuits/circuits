@@ -184,7 +184,7 @@ class Client(Component):
 
 	def close(self):
 		if self._socks:
-			self.push(Shutdown(), "shutdown", self.channel)
+			self.send(Shutdown(), "shutdown", self.channel)
 
 	def write(self, data):
 		self._buffer.append(data)
@@ -311,7 +311,7 @@ class Server(Component):
 
 	def close(self, sock=None):
 		if sock in self:
-			self.push(Shutdown(sock), "shutdown", self.channel)
+			self.send(Shutdown(sock), "shutdown", self.channel)
 
 	def write(self, sock, data):
 		if not sock in self._write:
@@ -459,7 +459,7 @@ class UDPServer(Server):
 
 	def close(self):
 		if self._socks:
-			self.push(Shutdown(), "shutdown", self.channel)
+			self.send(Shutdown(), "shutdown", self.channel)
 
 	@listener("shutdown", type="filter")
 	def onSHUTDOWN(self):
