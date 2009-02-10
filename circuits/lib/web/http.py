@@ -9,6 +9,7 @@ or commonly known as HTTP.
 """
 
 from re import split
+from cgi import escape
 from urllib import unquote
 from urlparse import urlparse
 from cStringIO import StringIO
@@ -179,13 +180,8 @@ class HTTP(Component):
         Send a simple response.
         """
 
-        try:
-            short, long = RESPONSES[code]
-        except KeyError:
-            short, long = "???", "???"
-
-        if not message:
-            message = short
+        short, long = RESPONSES.get(code, ("???", "???",))
+        message = message or short
 
         response = webob.Response(sock)
         response.body = message
@@ -197,9 +193,6 @@ class HTTP(Component):
             response.headers.add_header("Connection", "close")
 
         self.send(Response(response), "response")
-
-        if response.close:
-            self.send(Close(response.sock), "close")
 
     def httperror(self, request, response, code, msg=None, exc=None):
         """HTTP Error Event Handler
@@ -213,20 +206,13 @@ class HTTP(Component):
         the error to the user.
         """
 
-        try:
-            short, long = RESPONSES[code]
-        except KeyError:
-            short, long = "???", "???"
-
-        if msg is None:
-            msg = short
-
-        explain = long
+        short, long = RESPONSES.get(code, ("???", "???",))
+        msg = msg or short
 
         s = DEFAULT_ERROR_MESSAGE % {
             "code": code,
-            "message": quoteHTML(msg),
-            "explain": explain,
+            "message": escape(msg),
+            "explain": long,
             "traceback": exc or ""}
 
         response.clear()
