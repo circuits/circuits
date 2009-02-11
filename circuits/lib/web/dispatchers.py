@@ -182,11 +182,12 @@ class DefaultDispatcher(Component):
             req = Request(request, response, *vpath, **params)
 
             try:
-                v = [x for x in self.iter(req, channel) if type(x) == str]
+                v = [x for x in self.iter(req, channel) if x]
             except Exception, error:
                 raise
-            if v is not None:
-                response.body = v[0]
+            if v:
+                if isinstance(v[0], basestring):
+                    response.body = v[0]
                 res = Response(response)
                 return self.send(res, "response", self.channel)
             else:
