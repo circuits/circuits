@@ -258,6 +258,7 @@ class Server(Component):
 
 	address = ""
 	port = 0
+	ssl = False
 
 	_buffers = {}
 
