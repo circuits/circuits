@@ -7,7 +7,7 @@
 This module implements the Web Server Component.
 """
 
-from socket import gethostname
+from socket import gethostname as _gethostname
 
 from circuits.core import listener, Component
 
@@ -28,16 +28,32 @@ class BaseServer(Component):
         self.manager += self.server
         self.manager += self.http
 
-        if self.server.address in ["", "0.0.0.0"]:
-            bound = "%s:%s" % (gethostname(), self.server.port)
-        else:
-            bound = "%s:%s" % (self.address, self.server.port)
-
-        print "%s listening on http://%s/" % (SERVER_VERSION, bound)
+        print "%s listening on %s" % (SERVER_VERSION, self.base())
 
     def registered(self):
         self.manager += self.server
         self.manager += self.http
+
+    def base(self):
+        host = self.server.address
+        if host in ("0.0.0.0", "::", ""):
+            # 0.0.0.0 is INADDR_ANY and :: is IN6ADDR_ANY.
+            # Look up the host name, which should be the
+            # safest thing to spit out in a URL.
+            host = _gethostname()
+        
+        port = self.server.port
+        
+        if self.server.ssl:
+            scheme = "https"
+            if port != 443:
+                host += ":%s" % port
+        else:
+            scheme = "http"
+            if port != 80:
+                host += ":%s" % port
+        
+        return "%s://%s" % (scheme, host)
 
     def run(self):
         while True:
