@@ -169,10 +169,11 @@ class HTTP(Component):
 
         try:
             req = Request(request, response)
-            v = [x for x in self.iter(req, "request") if type(x) == str]
+            v = [x for x in self.iter(req, "request") if x]
 
             if v:
-                response.body = v[0]
+                if isinstance(v[0], basestring):
+                    response.body = v[0]
                 res = Response(response)
                 self.send(res, "response")
             else:
