@@ -46,6 +46,7 @@ class Request(object):
     """
 
     app = None
+    server = None
     script_name = ""
     scheme = "http"
     server_protocol = "HTTP/1.1"
