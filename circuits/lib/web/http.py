@@ -162,7 +162,16 @@ class HTTP(Component):
         request.body.seek(0)
 
         try:
-            self.send(Request(request, response), "request")
+            req = Request(request, response)
+            v = [x for x in self.iter(req, "request") if type(x) == str]
+
+            if v:
+                response.body = v[0]
+                res = Response(response)
+                self.send(res, "response")
+            else:
+                error = HTTPError(request, response, 404)
+                self.send(error, "httperror")
         except Exception, error:
             error = HTTPError(request, response, 500, exc=format_exc())
             self.send(error, "httperror")
