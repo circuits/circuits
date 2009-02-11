@@ -56,6 +56,11 @@ class HTTP(Component):
 
     _requests = {}
 
+    def __init__(self, server, *args, **kwargs):
+        super(HTTP, self).__init__(*args, **kwargs)
+
+        self.server = server
+
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
         if data:
@@ -94,6 +99,7 @@ class HTTP(Component):
             scheme, location, path, params, qs, frag = urlparse(path)
 
             request = webob.Request(method, path, protocol, qs)
+            request.server = self.server
             response = webob.Response(sock)
 
             request.scheme = scheme
