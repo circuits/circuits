@@ -23,7 +23,7 @@ class BaseServer(Component):
         super(BaseServer, self).__init__(**kwargs)
 
         self.server = TCPServer(port, address)
-        self.http = HTTP()
+        self.http = HTTP(self)
 
         self.manager += self.server
         self.manager += self.http
