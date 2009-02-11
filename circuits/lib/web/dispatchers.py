@@ -191,6 +191,7 @@ class DefaultDispatcher(Component):
                 return self.send(res, "response", self.channel)
             else:
                 error = HTTPError(request, response, 404)
-                self.send(error, "error", self.channel)
+                self.send(error, "httperror", self.channel)
         else:
-            self.send(HTTPError(request, response, 404), "error", self.channel)
+            error = HTTPError(request, response, 404)
+            self.send(error, "httperror", self.channel)
