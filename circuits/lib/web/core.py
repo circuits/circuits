@@ -15,6 +15,8 @@ from inspect import getargspec
 
 from circuits.core import listener, BaseComponent
 
+from errors import Redirect
+
 def expose(*channels, **config):
    def decorate(f):
       def wrapper(self, *args, **kwargs):
@@ -76,3 +78,6 @@ class Controller(BaseComponent):
     __metaclass__ = ExposeType
 
     channel = "/"
+
+    def redirect(self, urls, status=None):
+       return Redirect(self.request, self.response, urls, status)
