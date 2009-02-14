@@ -180,7 +180,7 @@ class HTTP(Component):
                 error = HTTPError(request, response, 404)
                 self.send(error, "httperror")
         except Exception, error:
-            error = HTTPError(request, response, 500, exc=format_exc())
+            error = HTTPError(request, response, 500, error=format_exc())
             self.send(error, "httperror")
         finally:
             if sock in self._requests:
@@ -210,30 +210,30 @@ class HTTP(Component):
 
         self.send(Response(response), "response")
 
-    def httperror(self, request, response, code, msg=None, exc=None):
+    def httperror(self, request, response, status, message=None, error=None):
         """HTTP Error Event Handler
         
-        Arguments are the error code, and a detailed message.
+        Arguments are the error code status, and a detailed message.
         The detailed message defaults to the short entry matching the
-        response code.
+        response status.
 
         This sends an error response (so it must be called before any
         output has been generated), and sends a piece of HTML explaining
         the error to the user.
         """
 
-        short, long = RESPONSES.get(code, ("???", "???",))
-        msg = msg or short
+        short, long = RESPONSES.get(status, ("???", "???",))
+        message = message or short
 
         s = DEFAULT_ERROR_MESSAGE % {
-            "code": code,
-            "message": escape(msg),
-            "explain": long,
-            "traceback": exc or ""}
+            "status": "%s %s" % (status, short),
+            "message": escape(message),
+            "traceback": error or "",
+            "version": SERVER_VERSION}
 
         response.clear()
         response.body = s
-        response.status = "%s %s" % (code, msg)
+        response.status = "%s %s" % (status, message)
         response.headers.add_header("Connection", "close")
 
         self.send(Response(response), "response")

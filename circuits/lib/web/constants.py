@@ -14,16 +14,33 @@ SERVER_PROTOCOL = "HTTP/1.1"
 SERVER_VERSION = "circuits/%s" % __version__
 
 DEFAULT_ERROR_MESSAGE = """\
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
 <head>
-<title>Error response</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <title>%(status)s</title>
+    <style type="text/css">
+    #powered_by {
+        margin-top: 20px;
+        border-top: 2px solid black;
+        font-style: italic;
+    }
+
+    #traceback {
+        color: red;
+    }
+    </style>
 </head>
-<body>
-<h1>Error response</h1>
-<p>Error code %(code)d.
-<p>Message: %(message)s.
-<p>Error code explanation: %(code)s = %(explain)s.
-<pre>%(traceback)s</pre>
-</body>
+    <body>
+        <h2>%(status)s</h2>
+        <p>%(message)s</p>
+        <pre id="traceback">%(traceback)s</pre>
+    <div id="powered_by">
+    <span>Powered by <a href="http://trac.softcircuit.com.au/circuits/">%(version)s</a></span>
+    </div>
+    </body>
+</html>
 """
 
 RESPONSES = {
