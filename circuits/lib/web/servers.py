@@ -15,7 +15,7 @@ from circuits.lib.sockets import TCPServer
 
 from http import HTTP
 from constants import SERVER_VERSION
-from dispatchers import DefaultDispatcher
+from dispatchers import Dispatcher
 
 class BaseServer(Component):
 
@@ -68,7 +68,7 @@ class Server(BaseServer):
     def __init__(self, port, address="", docroot=None, **kwargs):
         super(Server, self).__init__(port, address, **kwargs)
 
-        self.dispatcher = DefaultDispatcher()
+        self.dispatcher = Dispatcher()
         self.manager += self.dispatcher
 
     def registered(self):
