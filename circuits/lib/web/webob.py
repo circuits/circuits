@@ -16,7 +16,7 @@ import circuits
 
 from headers import Headers
 from utils import compressBuf
-from constants import SERVER_PROTOCOL, SERVER_VERSION
+from constants import BUFFER_SIZE, SERVER_PROTOCOL, SERVER_VERSION
 
 class Host(object):
     """An internet address.
