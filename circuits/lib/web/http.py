@@ -19,6 +19,7 @@ import circuits
 from circuits.core import listener, Component
 
 import webob
+import errors
 from headers import parseHeaders
 from utils import quoted_slash, quoteHTML
 from constants import DEFAULT_ERROR_MESSAGE, RESPONSES
@@ -224,18 +225,5 @@ class HTTP(Component):
         the error to the user.
         """
 
-        short, long = RESPONSES.get(status, ("???", "???",))
-        message = message or short
-
-        s = DEFAULT_ERROR_MESSAGE % {
-            "status": "%s %s" % (status, short),
-            "message": escape(message),
-            "traceback": error or "",
-            "version": SERVER_VERSION}
-
-        response.clear()
-        response.body = s
-        response.status = "%s %s" % (status, message)
-        response.headers.add_header("Connection", "close")
-
-        self.send(Response(response), "response")
+        error = errors.HTTPError(request, response, status, message, error)
+        self.send(Response(error.response), "response")
