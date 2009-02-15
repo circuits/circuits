@@ -55,11 +55,14 @@ class BaseServer(Component):
         
         return "%s://%s" % (scheme, host)
 
+    def poll(self):
+        self.server.poll()
+
     def run(self):
         while True:
             try:
                 self.flush()
-                self.server.poll()
+                self.poll()
             except KeyboardInterrupt:
                 break
 
