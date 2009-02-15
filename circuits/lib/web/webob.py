@@ -40,7 +40,7 @@ class Host(object):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
 
 class Request(object):
-    """Request(method, path, version, qa, headers) -> new HTTP Request object
+    """Request(method, path, protocol, qa, headers) -> new HTTP Request object
 
     Request object that holds an incoming request.
     """
@@ -49,21 +49,21 @@ class Request(object):
     server = None
     script_name = ""
     scheme = "http"
-    server_protocol = "HTTP/1.1"
+    server_protocol = (1, 1)
     request_line = ""
     protocol = (1, 1)
     login = None
     local_host = Host("127.0.0.1", 80)
     remote_host = Host("127.0.0.1", 1111)
 
-    def __init__(self, method, path, version, qs):
+    def __init__(self, method, path, protocol, qs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self._headers = None
 
         self.method = method
         self.path = self.path_info = path
-        self.version = version
+        self.protocol = protocol
         self.qs = self.query_string = qs
         self.cookie = SimpleCookie()
 
@@ -80,7 +80,8 @@ class Request(object):
     headers = property(_getHeaders, _setHeaders)
 
     def __repr__(self):
-        return "<Request %s %s %s>" % (self.method, self.path, self.version)
+        protocol = "HTTP/%d.%d" % self.protocol
+        return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
 class Response(object):
     """Response(sock) -> new Response object
