@@ -17,10 +17,11 @@ class Logger(Component):
 
    format = "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
 
-   def request(self, request, response):
-      self.log(request, response)
+   def response(self, response):
+      self.log(response)
 
-   def log(self, request, response):
+   def log(self, response):
+      request = response.request
       remote = request.remote_host
       outheaders = response.headers
       inheaders = request.headers
