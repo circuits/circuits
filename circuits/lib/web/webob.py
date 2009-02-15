@@ -16,7 +16,7 @@ import circuits
 
 from headers import Headers
 from utils import compressBuf
-from constants import BUFFER_SIZE, SERVER_PROTOCOL, SERVER_VERSION
+from constants import BUFFER_SIZE, SERVER_VERSION
 
 class Host(object):
     """An internet address.
@@ -108,7 +108,8 @@ class Response(object):
         status = self.status
         headers = self.headers
         body = self.process()
-        return "%s %s\r\n%s%s" % (SERVER_PROTOCOL, status, headers, body or "")
+        protocol = "HTTP/%d.%d" % self.request.server_protocol
+        return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
 
     def clear(self):
         self.close = False
