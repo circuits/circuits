@@ -31,6 +31,8 @@ class Thread(_Component):
 
     def stop(self):
         self.running = False
+
+    def join(self):
         return self.thread.join()
 
     def isAlive(self):
