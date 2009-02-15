@@ -12,8 +12,10 @@ import os
 from circuits.core import Component
 
 from cgifs import FieldStorage
+from tools import expires, serve_file
+from errors import HTTPError, NotFound
 from utils import parseQueryString, dictform
-from events import Request, Response, HTTPError
+from events import Request, Response
 
 class DefaultDispatcher(Component):
 
@@ -41,9 +43,7 @@ class DefaultDispatcher(Component):
         except Exception, e:
             if e.__class__.__name__ == 'MaxSizeExceeded':
                 # Post data is too big
-                error = HTTPError(request, response, 413)
-                self.send(error, "httperror", self.channel)
-                return None
+                return HTTPError(request, response, 413)
             else:
                 raise
 
@@ -162,10 +162,8 @@ class DefaultDispatcher(Component):
                     filename = None
 
         if filename and os.path.exists(filename):
-            expires(3500*24*30)
-            serve_file(filename)
-            res = Response(response)
-            return self.send(res, "response", self.channel)
+            expires(request, response, 3500*24*30)
+            return serve_file(request, response, filename)
 
         channel, vpath = self.__channel__(request)
 
@@ -187,12 +185,66 @@ class DefaultDispatcher(Component):
                 raise
             if v:
                 if isinstance(v[0], basestring):
-                    response.body = v[0]
-                res = Response(response)
-                return self.send(res, "response", self.channel)
+                    return v[0]
             else:
-                error = HTTPError(request, response, 404)
-                self.send(error, "httperror", self.channel)
+                return NotFound(request, response)
         else:
-            error = HTTPError(request, response, 404)
-            self.send(error, "httperror", self.channel)
+            return NotFound(request, response)
+
+class FileDispatcher(Component):
+
+   template = """\
+<html>
+ <head>
+  <title>Index of %(path)s</title>
+ </head>
+ <body>
+  <h1>Index of %(path)s</h1>
+%(files)s
+ </body>
+</html>"""
+
+   def __init__(self, path=None, **kwargs):
+      super(FileDispatcher, self).__init__(**kwargs)
+
+      if not path:
+         self.path = os.getcwd()
+
+   def request(self, request, response):
+      print request
+      path = request.path.strip("/")
+      print path
+
+      if args:
+         path = os.path.join("/", *args)
+         real = os.path.join(self.path, *args)
+      else:
+         path = ""
+         real = self.path
+
+      if isfile(real):
+         response.body = open(real, "r")
+         return self.send(Response(request, response), "response")
+
+      data = {}
+      data["path"] = path or "/"
+
+      files = []
+
+      if path:
+         href = os.path.join(self.channel, path.lstrip("/"), "..")
+         files.append("<li class=\"dir\"><a href=\"%s\">..</a>" % href)
+
+      for file in listdir(real):
+         href = os.path.join(self.channel, path.lstrip("/"), file)
+         name = ("%s/" % file if isdir(file) else file)
+         files.append("   <li class=\"dir\"><a href=\"%s\">%s</a>" % (
+            href, name))
+
+      data["files"] = "  <ul>\n%s\n  </ul>" % "\n".join(files)
+
+      response.headers["Content-Type"] = "text/html"
+      return self.template % data
+
+Dispatcher = DefaultDispatcher
+FileServer = FileDispatcher
