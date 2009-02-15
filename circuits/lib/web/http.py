@@ -27,32 +27,10 @@ from constants import BUFFER_SIZE, SERVER_PROTOCOL, SERVER_VERSION
 from events import Request, Response, Stream, Write, HTTPError, Close
 
 class HTTP(Component):
-    """HTTP() -> HTTP Component
+    """HTTP Protocol Component
 
-    Create a new HTTP object which implements the HTTP
-    protocol. Note this doesn"t actually do anything
-    usefull unless used in conjunction with either:
-     * circuits.parts.sockets.TCPClient or
-     * circuits.parts.sockets.TCPServer
-
-    Sub-classes that wish to do something usefull with
-    events that are processed and generated, must have
-    filters/listeners associated with them. For instance,
-    to do something with ... events:
-
-    {{{
-    #!python
-    class Client(HTTP):
-
-        @listener("...")
-        def on...(self, ...):
-            ...
-    }}}
-
-    The available events that are processed and generated
-    are pushed onto channels associated with that event.
-    They are:
-     * ...
+    Implements the HTTP server protocol and parses and processes incoming
+    HTTP messages then creates and sends appropiate responses.
     """
 
     _requests = {}
