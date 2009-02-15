@@ -90,6 +90,8 @@ class Response(object):
     is sent in the correct order.
     """
 
+    request = None
+
     def __init__(self, sock):
         "initializes x; see x.__class__.__doc__ for signature"
 
