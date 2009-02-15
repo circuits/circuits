@@ -9,6 +9,8 @@ This module implements WSGI Components.
 
 from circuits.core import listener, Component
 
+from dispatchers import Dispatcher
+
 class Application(Component):
 
    headerNames = {
