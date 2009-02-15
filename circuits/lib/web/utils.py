@@ -12,6 +12,8 @@ import cgi
 from gzip import GzipFile
 from cStringIO import StringIO
 
+from constants import RESPONSES
+
 quoted_slash = re.compile("(?i)%2F")
 
 def quoteHTML(html):
@@ -170,3 +172,96 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
         newurl = '/'.join(new)
     
     return newurl
+
+def valid_status(status):
+    """Return legal HTTP status Code, Reason-phrase and Message.
+    
+    The status arg must be an int, or a str that begins with an int.
+    
+    If status is an int, or a str and  no reason-phrase is supplied,
+    a default reason-phrase will be provided.
+    """
+    
+    if not status:
+        status = 200
+    
+    status = str(status)
+    parts = status.split(" ", 1)
+    if len(parts) == 1:
+        # No reason supplied.
+        code, = parts
+        reason = None
+    else:
+        code, reason = parts
+        reason = reason.strip()
+    
+    try:
+        code = int(code)
+    except ValueError:
+        raise ValueError("Illegal response status from server "
+                         "(%s is non-numeric)." % repr(code))
+    
+    if code < 100 or code > 599:
+        raise ValueError("Illegal response status from server "
+                         "(%s is out of range)." % repr(code))
+    
+    if code not in RESPONSES:
+        # code is unknown but not illegal
+        default_reason, message = "", ""
+    else:
+        default_reason, message = RESPONSES[code]
+    
+    if reason is None:
+        reason = default_reason
+    
+    return code, reason, message
+
+def get_ranges(headervalue, content_length):
+    """Return a list of (start, stop) indices from a Range header, or None.
+    
+    Each (start, stop) tuple will be composed of two ints, which are suitable
+    for use in a slicing operation. That is, the header "Range: bytes=3-6",
+    if applied against a Python string, is requesting resource[3:7]. This
+    function will return the list [(3, 7)].
+    
+    If this function returns an empty list, you should return HTTP 416.
+    """
+    
+    if not headervalue:
+        return None
+    
+    result = []
+    bytesunit, byteranges = headervalue.split("=", 1)
+    for brange in byteranges.split(","):
+        start, stop = [x.strip() for x in brange.split("-", 1)]
+        if start:
+            if not stop:
+                stop = content_length - 1
+            start, stop = map(int, (start, stop))
+            if start >= content_length:
+                # From rfc 2616 sec 14.16:
+                # "If the server receives a request (other than one
+                # including an If-Range request-header field) with an
+                # unsatisfiable Range request-header field (that is,
+                # all of whose byte-range-spec values have a first-byte-pos
+                # value greater than the current length of the selected
+                # resource), it SHOULD return a response code of 416
+                # (Requested range not satisfiable)."
+                continue
+            if stop < start:
+                # From rfc 2616 sec 14.16:
+                # "If the server ignores a byte-range-spec because it
+                # is syntactically invalid, the server SHOULD treat
+                # the request as if the invalid Range header field
+                # did not exist. (Normally, this means return a 200
+                # response containing the full entity)."
+                return None
+            result.append((start, stop + 1))
+        else:
+            if not stop:
+                # See rfc quote above.
+                return None
+            # Negative subscript (last N bytes)
+            result.append((content_length - int(stop), content_length))
+    
+    return result
