@@ -11,7 +11,7 @@ from cgi import escape as _escape
 from urlparse import urljoin as _urljoin
 
 import utils
-from constants import DEFAULT_ERROR_MESSAGE, RESPONSES
+from constants import DEFAULT_ERROR_MESSAGE, RESPONSES, SERVER_VERSION
 
 class BaseError(object):
 
@@ -26,21 +26,21 @@ class BaseError(object):
 
 class HTTPError(BaseError):
 
-    def __init__(self, request, response, code, msg=None, exc=None):
+    def __init__(self, request, response, status, message=None, error=None):
         super(HTTPError, self).__init__(request, response)
 
-        short, long = RESPONSES.get(code, ("???", "???",))
-        msg = msg or short
+        short, long = RESPONSES.get(status, ("???", "???",))
+        message = message or short
 
         s = DEFAULT_ERROR_MESSAGE % {
-            "code": code,
-            "message": _escape(msg),
-            "explain": long,
-            "traceback": exc or ""}
+            "status": status,
+            "message": _escape(message),
+            "traceback": error or "",
+            "version": SERVER_VERSION}
 
         response.clear()
         response.body = s
-        response.status = "%s %s" % (code, msg)
+        response.status = "%s %s" % (status, message)
         response.headers.add_header("Connection", "close")
 
 class NotFound(HTTPError):
