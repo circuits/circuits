@@ -21,6 +21,9 @@ class BaseError(object):
         self.request = request
         self.response = response
 
+    def __nonzero__(self):
+        return False
+
 class HTTPError(BaseError):
 
     def __init__(self, request, response, code, msg=None, exc=None):
