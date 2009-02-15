@@ -12,7 +12,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 from circuits import __version__
 
 BUFFER_SIZE = 131072
-SERVER_PROTOCOL = "HTTP/1.1"
+SERVER_PROTOCOL = (1, 1)
 SERVER_VERSION = "circuits/%s" % __version__
 
 DEFAULT_ERROR_MESSAGE = """\
