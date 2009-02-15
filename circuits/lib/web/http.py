@@ -77,6 +77,7 @@ class HTTP(Component):
             method, path, protocol = requestline.strip().split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
+            protocol = tuple([int(x) for x in protocol.split("/")[1].split(".")])
             request = webob.Request(method, path, protocol, qs)
             request.server = self.server
 
@@ -84,7 +85,7 @@ class HTTP(Component):
             response.request = request
 
             request.scheme = scheme
-            request.server_protocol = protocol
+            request.server_protocol = SERVER_PROTOCOL
             request.request_line = requestline
 
             if frag:
@@ -115,8 +116,8 @@ class HTTP(Component):
             # Notice that, in (b), the response will be "HTTP/1.1" even though
             # the client only understands 1.0. RFC 2616 10.5.6 says we should
             # only return 505 if the _major_ version is different.
-            rp = int(protocol[5]), int(protocol[7])
-            sp = int(SERVER_PROTOCOL[5]), int(SERVER_PROTOCOL[7])
+            rp = request.protocol
+            sp = request.server_protocol
             if sp[0] != rp[0]:
                 error = HTTPError(request, response, 505)
                 return self.send(error, "httperror")
@@ -137,7 +138,7 @@ class HTTP(Component):
         response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
         # Persistent connection support
-        if request.protocol == "HTTP/1.1":
+        if request.protocol == (1, 1):
             # Both server and client are HTTP/1.1
             if request.headers.get("HTTP_CONNECTION", "") == "close":
                 response.close = True
