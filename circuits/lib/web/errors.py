@@ -43,6 +43,11 @@ class HTTPError(BaseError):
         response.status = "%s %s" % (code, msg)
         response.headers.add_header("Connection", "close")
 
+class NotFound(HTTPError):
+
+    def __init__(self, request, response):
+        super(NotFound, self).__init__(request, response, 404)
+
 class Redirect(BaseError):
 
     def __init__(self, request, response, urls, status=None):
