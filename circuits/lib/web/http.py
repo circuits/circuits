@@ -100,7 +100,9 @@ class HTTP(Component):
 
             request = webob.Request(method, path, protocol, qs)
             request.server = self.server
+
             response = webob.Response(sock)
+            response.request = request
 
             request.scheme = scheme
             request.server_protocol = protocol
