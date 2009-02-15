@@ -1,0 +1,4 @@
+include docs/*.wiki
+include docs/graphs/*
+recursive-include examples
+include LICENSE Makefile ez_setup.py
