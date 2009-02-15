@@ -31,9 +31,10 @@ class Thread(_Component):
 
     def stop(self):
         self.running = False
+        return self.thread.join()
 
     def isAlive(self):
-        return self.running
+        return self.running and self.thread.isAlive()
 
 class Process(_Component):
 
