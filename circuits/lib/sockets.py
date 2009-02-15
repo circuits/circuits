@@ -174,7 +174,7 @@ class Client(Component):
 			r, w, e = select.select([], self._socks, [], CONNECT_TIMEOUT)
 			if w:
 				self.connected = True
-				self.push(Connected(host, port), "connect", self.channel)
+				self.push(Connected(host, port), "connected", self.channel)
 			else:
 				self.push(Error("Connection timed out"), "error", self.channel)
 				self.close()
@@ -298,7 +298,7 @@ class Server(Component):
 				self._socks.append(newsock)
 				self._read.append(newsock)
 				self._buffers[newsock] = []
-				self.push(Connected(newsock, *host), "connect", self.channel)
+				self.push(Connected(newsock, *host), "connected", self.channel)
 			else:
 				try:
 					data = sock.recv(BUFFER_SIZE)
