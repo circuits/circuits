@@ -80,6 +80,9 @@ class HTTP(Component):
             protocol = tuple([int(x) for x in protocol.split("/")[1].split(".")])
             request = webob.Request(method, path, protocol, qs)
             request.server = self.server
+            request.local_host = webob.Host(
+                    self.server.address, self.server.port)
+            request.remtoe_host = webob.Host(*sock.getpeername())
 
             response = webob.Response(sock)
             response.request = request
