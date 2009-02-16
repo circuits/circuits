@@ -20,10 +20,10 @@ from dispatchers import Dispatcher
 class BaseServer(Component):
 
     def __init__(self, port, address="", **kwargs):
-        super(BaseServer, self).__init__(**kwargs)
-
         self.server = TCPServer(port, address)
         self.http = HTTP(self)
+
+        super(BaseServer, self).__init__(**kwargs)
 
         self.manager += self.server
         self.manager += self.http
@@ -33,6 +33,14 @@ class BaseServer(Component):
     def registered(self):
         self.manager += self.server
         self.manager += self.http
+
+    @property
+    def address(self):
+        return self.server.address
+
+    @property
+    def port(self):
+        return self.server.port
 
     def base(self):
         host = self.server.address
