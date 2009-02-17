@@ -73,9 +73,7 @@ class ExposeType(type):
             if callable(f) and not (name[0] == "_" or hasattr(f, "type")):
                 setattr(cls, name, expose(name, type="listener")(f))
 
-class Controller(BaseComponent):
-
-    __metaclass__ = ExposeType
+class BaseController(BaseComponent):
 
     channel = "/"
 
@@ -87,3 +85,7 @@ class Controller(BaseComponent):
 
     def redirect(self, urls, status=None):
        return Redirect(self.request, self.response, urls, status)
+
+class Controller(BaseController):
+
+    __metaclass__ = ExposeType
