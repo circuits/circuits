@@ -180,7 +180,8 @@ class DefaultDispatcher(Component):
             req = Request(request, response, *vpath, **params)
 
             try:
-                v = [x for x in self.iter(req, channel) if x is not None]
+                responses = self.iter(req, channel, self.channel)
+                v = [x for x in responses if x is not None]
             except Exception, error:
                 raise
  
@@ -224,7 +225,7 @@ class FileDispatcher(Component):
 
       if isfile(real):
          response.body = open(real, "r")
-         return self.send(Response(request, response), "response")
+         return self.send(Response(request, response), "response", self.channel)
 
       data = {}
       data["path"] = path or "/"

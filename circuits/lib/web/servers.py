@@ -20,8 +20,8 @@ from dispatchers import Dispatcher
 class BaseServer(Component):
 
     def __init__(self, port, address="", **kwargs):
-        self.server = TCPServer(port, address)
-        self.http = HTTP(self)
+        self.server = TCPServer(port, address, **kwargs)
+        self.http = HTTP(self, **kwargs)
 
         super(BaseServer, self).__init__(**kwargs)
 
@@ -79,7 +79,7 @@ class Server(BaseServer):
     def __init__(self, port, address="", docroot=None, **kwargs):
         super(Server, self).__init__(port, address, **kwargs)
 
-        self.dispatcher = Dispatcher()
+        self.dispatcher = Dispatcher(**kwargs)
         self.manager += self.dispatcher
 
     def registered(self):

@@ -43,19 +43,19 @@ class HTTP(Component):
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
         if data:
-            self.send(Write(response.sock, data), "write")
-            self.push(Stream(response), "stream")
+            self.send(Write(response.sock, data), "write", self.channel)
+            self.push(Stream(response), "stream", self.channel)
         else:
             response.body.close()
             if response.close:
-                self.send(Close(response.sock), "close")
+                self.send(Close(response.sock), "close", self.channel)
         
     def response(self, response):
-        self.send(Write(response.sock, str(response)), "write")
+        self.send(Write(response.sock, str(response)), "write", self.channel)
         if response.stream:
-            self.push(Stream(response), "stream")
+            self.push(Stream(response), "stream", self.channel)
         elif response.close:
-            self.send(Close(response.sock), "close")
+            self.send(Close(response.sock), "close", self.channel)
 
     def read(self, sock, data):
         """H.read(sock, data) -> None
@@ -93,7 +93,7 @@ class HTTP(Component):
 
             if frag:
                 error = HTTPError(request, response, 400)
-                return self.send(error, "httperror")
+                return self.send(error, "httperror", self.channel)
         
             if params:
                 path = "%s;%s" % (path, params)
@@ -123,7 +123,7 @@ class HTTP(Component):
             sp = request.server_protocol
             if sp[0] != rp[0]:
                 error = HTTPError(request, response, 505)
-                return self.send(error, "httperror")
+                return self.send(error, "httperror", self.channel)
 
             headers, body = parseHeaders(StringIO(data))
             request.headers = headers
@@ -156,19 +156,20 @@ class HTTP(Component):
 
         try:
             req = Request(request, response)
-            v = [x for x in self.iter(req, "request") if x is not None]
+            responses = self.iter(req, "request", self.channel)
+            v = [x for x in responses if x is not None]
 
             if v:
                 if isinstance(v[0], basestring):
                     response.body = v[0]
                 res = Response(response)
-                self.send(res, "response")
+                self.send(res, "response", self.channel)
             else:
                 error = HTTPError(request, response, 404)
-                self.send(error, "httperror")
+                self.send(error, "httperror", self.channel)
         except Exception, error:
             error = HTTPError(request, response, 500, error=format_exc())
-            self.send(error, "httperror")
+            self.send(error, "httperror", self.channel)
         finally:
             if sock in self._requests:
                 del self._requests[sock]
@@ -195,7 +196,7 @@ class HTTP(Component):
             response.close = True
             response.headers.add_header("Connection", "close")
 
-        self.send(Response(response), "response")
+        self.send(Response(response), "response", self.channel)
 
     def httperror(self, request, response, status, message=None, error=None):
         """HTTP Error Event Handler
@@ -210,4 +211,4 @@ class HTTP(Component):
         """
 
         error = errors.HTTPError(request, response, status, message, error)
-        self.send(Response(error.response), "response")
+        self.send(Response(error.response), "response", self.channel)
