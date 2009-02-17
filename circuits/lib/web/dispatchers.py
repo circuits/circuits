@@ -180,12 +180,12 @@ class DefaultDispatcher(Component):
             req = Request(request, response, *vpath, **params)
 
             try:
-                v = [x for x in self.iter(req, channel) if x]
+                v = [x for x in self.iter(req, channel) if x is not None]
             except Exception, error:
                 raise
+ 
             if v:
-                if isinstance(v[0], basestring):
-                    return v[0]
+                return v[0]
             else:
                 return NotFound(request, response)
         else:
