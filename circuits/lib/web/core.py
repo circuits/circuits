@@ -15,7 +15,7 @@ from inspect import getargspec
 
 from circuits.core import listener, BaseComponent
 
-from errors import Redirect
+from errors import Forbidden, NotFound, Redirect
 
 def expose(*channels, **config):
    def decorate(f):
@@ -78,6 +78,12 @@ class Controller(BaseComponent):
     __metaclass__ = ExposeType
 
     channel = "/"
+
+    def forbidden(self, message=None):
+        return Forbidden(self.request, self.response, message)
+
+    def notfound(self):
+       return NotFound(self.request, self.response)
 
     def redirect(self, urls, status=None):
        return Redirect(self.request, self.response, urls, status)
