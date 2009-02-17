@@ -50,8 +50,8 @@ class Forbidden(HTTPError):
 
 class NotFound(HTTPError):
 
-    def __init__(self, request, response):
-        super(NotFound, self).__init__(request, response, 404)
+    def __init__(self, request, response, message=None):
+        super(NotFound, self).__init__(request, response, 404, message)
 
 class Redirect(BaseError):
 
