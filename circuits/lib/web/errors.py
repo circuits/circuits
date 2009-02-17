@@ -33,7 +33,7 @@ class HTTPError(BaseError):
         message = message or short
 
         s = DEFAULT_ERROR_MESSAGE % {
-            "status": status,
+            "status": "%s %s" % (status, short),
             "message": _escape(message),
             "traceback": error or "",
             "version": SERVER_VERSION}
