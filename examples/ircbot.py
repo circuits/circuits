@@ -11,6 +11,7 @@ This example demonstrates basic networking with circuits.
 from time import sleep
 from socket import gethostname
 
+from circuits import web
 from circuits import Debugger
 from circuits.lib.irc import IRC
 from circuits import listener, Component
@@ -28,8 +29,8 @@ class Bot(Component):
         # Important: Call the super constructors to initialize the Component.
         super(Bot, self).__init__(*args, **kwargs)
 
-        self.irc = IRC()
-        self.client = TCPClient()
+        self.irc = IRC(**kwargs)
+        self.client = TCPClient(**kwargs)
         self += self.irc
         self += self.client
 
@@ -74,27 +75,28 @@ class Bot(Component):
 
         self.irc.ircPRIVMSG(source, message)
 
-    def run(self):
-        """Run the Bot
+class Root(web.Controller):
 
-        Main Event Loop that runs the Bot. This flushes all Events waiting
-        to be processed, then polls for new Events from the TCPClient
-        Component. If a ^C is issued, send a QUIT command and flush any
-        remaining Events and terminate. Continue running whiel the TCPClient
-        is still connected to the Server.
-        """
-
-        while self.client.connected:
-            try:
-                self.flush()
-                self.client.poll()
-                sleep(0.01)
-            except KeyboardInterrupt:
-                self.irc.ircQUIT()
-                self.flush()
+    def index(self):
+        return "Hello World!"
 
 if __name__ == "__main__":
-    bot = Bot()
+    bot = Bot(channel="bot")
     bot += Debugger()
+
+    webserver = web.Server(8000, channel="web")
+    root = Root()
+
+    bot += webserver
+    bot += root
+
     bot.connect("irc.freenode.net")
-    bot.run()
+
+    while bot.client.connected:
+        try:
+            bot.flush()
+            bot.client.poll()
+            webserver.poll()
+        except KeyboardInterrupt:
+            bot.irc.ircQUIT()
+            bot.flush()
