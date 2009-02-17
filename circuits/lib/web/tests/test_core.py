@@ -34,7 +34,7 @@ class TestServer(Thread):
             except Exception, error:
                 print "ERROR: %s" % error
 
-class Test(WebCase):
+class CoreTestCase(WebCase):
 
     def setUp(self):
         self.server = TestServer()
@@ -42,6 +42,7 @@ class Test(WebCase):
 
     def tearDown(self):
         self.server.stop()
+        self.server.join()
 
     def test_HTTP11(self):
         self.PROTOCOL = "HTTP/1.1"
@@ -70,7 +71,7 @@ class Test(WebCase):
         self.assertRaises(httplib.NotConnected, self.getPage, "/")
 
 def suite():
-    return unittest.makeSuite(EventTestCase, "test")
+    return unittest.makeSuite(CoreTestCase, "test")
 
 if __name__ == "__main__":
     unittest.main()
