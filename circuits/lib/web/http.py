@@ -156,7 +156,7 @@ class HTTP(Component):
 
         try:
             req = Request(request, response)
-            v = [x for x in self.iter(req, "request") if x]
+            v = [x for x in self.iter(req, "request") if x is not None]
 
             if v:
                 if isinstance(v[0], basestring):
