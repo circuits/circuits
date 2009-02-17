@@ -200,6 +200,8 @@ class IRC(Component):
         self._data = ""
         self._info = {}
 
+        super(IRC, self).__init__(*args, **kwargs)
+
     ###
     ### Properties
     ###
