@@ -156,12 +156,15 @@ class HTTP(Component):
 
         try:
             req = Request(request, response)
-            responses = self.iter(req, "request", self.channel)
-            v = [x for x in responses if x is not None]
 
-            if v:
-                if isinstance(v[0], basestring):
-                    response.body = v[0]
+            try:
+                v = self.send(req, "request", self.channel, _raiseErrors=True)
+            except TypeError:
+                v = None
+
+            if v is not None:
+                if isinstance(v, basestring):
+                    response.body = v
                 res = Response(response)
                 self.send(res, "response", self.channel)
             else:
