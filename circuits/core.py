@@ -11,6 +11,7 @@ circuits based application or system. Normal usage of circuits:
 
 import sys
 from itertools import chain
+from functools import partial
 from collections import deque
 from collections import defaultdict
 from inspect import getargspec, getmembers
@@ -140,26 +141,14 @@ def listener(*args, **kwargs):
         f.target = kwargs.get("target", None)
         f.channels = args
 
-        argspec = getargspec(f)
-        _args = argspec[0]
-        varargs = (True if argspec[1] else False)
-        varkw = (True if argspec[2] else False)
+        _argspec = getargspec(f)
+        _args = _argspec[0]
         if _args and _args[0] == "self":
             del _args[0]
-
         if _args and _args[0] == "event":
-            f.br = 1
-        elif _args:
-            f.br = 2
+            f._passEvent = True
         else:
-            if varargs and varkw:
-                f.br = 2
-            elif varkw:
-                f.br = 3
-            elif varargs:
-                f.br = 4
-            else:
-                f.br = 5
+            f._passEvent = False
 
         return f
     return decorate
@@ -371,19 +360,11 @@ class Manager(object):
 
             r = False
             for handler in self.handlers(channel):
-                br = handler.br
-
                 try:
-                    if br == 1:
-                        r = handler(event, *eargs, **ekwargs)
-                    elif br == 2:
-                        r = handler(*eargs, **ekwargs)
-                    elif br == 3:
-                        r = handler(**ekwargs)
-                    elif br == 4:
-                        r = handler(*eargs)
+                    if handler._passEvent:
+                        r = partial(handler, event, *eargs, **ekwargs)()
                     else:
-                        r = handler()
+                        r = partial(handler, *eargs, **ekwargs)()
                 except:
                     e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
                     self.push(e, "error")
@@ -414,19 +395,11 @@ class Manager(object):
 
             r = False
             for handler in self.handlers(channel):
-                br = handler.br
-
                 try:
-                    if br == 1:
-                        r = handler(event, *eargs, **ekwargs)
-                    elif br == 2:
-                        r = handler(*eargs, **ekwargs)
-                    elif br == 3:
-                        r = handler(**ekwargs)
-                    elif br == 4:
-                        r = handler(*eargs)
+                    if handler._passEvent:
+                        r = partial(handler, event, *eargs, **ekwargs)()
                     else:
-                        r = handler()
+                        r = partial(handler, *eargs, **ekwargs)()
                 except:
                     e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
                     self.push(e, "error")
