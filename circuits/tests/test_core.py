@@ -484,15 +484,15 @@ class EventTestCase(unittest.TestCase):
         e = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
 
         self.assertEquals(repr(e),
-                "<Test/ (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+                "<Test[] (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
 
         e.channel = "bar"
         self.assertEquals(repr(e),
-                "<Test/bar (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+                "<Test[bar] (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
 
         e.target = "foo"
         self.assertEquals(repr(e),
-                "<Test/foo:bar (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+                "<Test[foo:bar] (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
 
     def testEventGetItem(self):
         """Test Event.__getitem__
