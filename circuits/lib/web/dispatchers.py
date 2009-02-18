@@ -180,7 +180,7 @@ class DefaultDispatcher(Component):
             req = Request(request, response, *vpath, **params)
 
             try:
-                responses = self.iter(req, channel, self.channel)
+                responses = self.iter(req, channel)
                 v = [x for x in responses if x is not None]
             except Exception, error:
                 raise
