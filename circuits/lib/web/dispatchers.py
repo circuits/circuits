@@ -28,7 +28,7 @@ class DefaultDispatcher(Component):
         if not defaults:
             self.defaults = ["index.html"]
 
-    def __params__(self, request, response):
+    def _getParams(self, request, response):
         body = request.body
         headers = request.headers
 
@@ -52,11 +52,10 @@ class DefaultDispatcher(Component):
         else:
             return dictform(form)
 
-    def __channel__(self, request):
-        """__channel__(request) -> channel
+    def _getChannel(self, path, method):
+        """_getChannel(path, method) -> channel
 
-        Find and return an appropiate channel
-        for the given request.
+        Find and return an appropriate channel path and method.
 
         The channel is found by traversing the system's event channels,
         and matching path components to successive channels in the system.
@@ -165,11 +164,11 @@ class DefaultDispatcher(Component):
             expires(request, response, 3500*24*30)
             return serve_file(request, response, filename)
 
-        channel, vpath = self.__channel__(request)
+        channel, vpath = self._getChannel(request.path, request.method.upper())
 
         if channel:
             params = parseQueryString(request.qs)
-            x = self.__params__(request, response)
+            x = self._getParams(request, response)
             if not x:
                 return
             elif type(x) == dict:
