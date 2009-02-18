@@ -90,9 +90,7 @@ class DefaultDispatcher(Component):
         GET       /foo/bar/hello/1/2/3   /foo/bar/hello     [1, 2, 3]
         """
 
-        path = request.path
-        method = request.method.upper()
-        defaults = ["index", method, "request"]
+        defaults = "index", method, "request"
 
         if not "/" in path:
             for default in defaults:
@@ -150,6 +148,9 @@ class DefaultDispatcher(Component):
 
     def request(self, request, response):
         path = request.path.strip("/")
+
+        filename = None
+
         if path:
             filename = os.path.abspath(os.path.join(self.docroot, path))
         else:
@@ -157,8 +158,6 @@ class DefaultDispatcher(Component):
                 filename = os.path.abspath(os.path.join(self.docroot, default))
                 if os.path.exists(filename):
                     break
-                else:
-                    filename = None
 
         if filename and os.path.exists(filename):
             expires(request, response, 3500*24*30)
