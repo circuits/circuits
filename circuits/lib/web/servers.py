@@ -7,6 +7,7 @@
 This module implements the Web Server Component.
 """
 
+import os
 from socket import gethostname as _gethostname
 
 from circuits.core import listener, Component
