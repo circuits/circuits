@@ -12,10 +12,9 @@ from time import sleep
 from socket import gethostname
 
 from circuits import web
-from circuits import Debugger
 from circuits.lib.irc import IRC
-from circuits import listener, Component
 from circuits.lib.sockets import TCPClient
+from circuits import Manager, Component, Debugger
 
 class Bot(Component):
 
@@ -29,10 +28,14 @@ class Bot(Component):
         # Important: Call the super constructors to initialize the Component.
         super(Bot, self).__init__(*args, **kwargs)
 
-        self.irc = IRC(**kwargs)
-        self.client = TCPClient(**kwargs)
+        self.irc = IRC(*args, **kwargs)
+        self.client = TCPClient(*args, **kwargs)
         self += self.irc
         self += self.client
+
+    def registered(self):
+        self.manager += self.irc
+        self.manager += self.client
 
     def connect(self, host, port=6667, ssl=False):
         "Connect to an IRC Server"
@@ -81,22 +84,23 @@ class Root(web.Controller):
         return "Hello World!"
 
 if __name__ == "__main__":
-    bot = Bot(channel="bot")
-    bot += Debugger()
+    manager = Manager() + Debugger()
 
     webserver = web.Server(8000, channel="web")
-    root = Root()
+    manager += webserver + Root()
 
-    bot += webserver
-    bot += root
+    bots = []
+    for id in xrange(2):
+        bot = Bot(channel=id)
+        manager += bot
+        bots.append(bot)
+        bot.connect("irc.freenode.net")
 
-    bot.connect("irc.freenode.net")
-
-    while bot.client.connected:
+    while True:
         try:
-            bot.flush()
-            bot.client.poll()
+            manager.flush()
+            [bot.client.poll() for bot in bots if bot.client.connected]
             webserver.poll()
         except KeyboardInterrupt:
-            bot.irc.ircQUIT()
-            bot.flush()
+            [bot.irc.ircQUIT() for bot in bots if bot.client.connected]
+            manager.flush()
