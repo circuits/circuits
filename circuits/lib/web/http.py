@@ -170,7 +170,7 @@ class HTTP(Component):
             else:
                 error = HTTPError(request, response, 404)
                 self.send(error, "httperror", self.channel)
-        except Exception, error:
+        except:
             error = HTTPError(request, response, 500, error=format_exc())
             self.send(error, "httperror", self.channel)
         finally:
