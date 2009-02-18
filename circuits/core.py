@@ -370,16 +370,19 @@ class Manager(object):
             for handler in self.handlers(channel):
                 br = handler.br
 
-                if br == 1:
-                    r = handler(event, *eargs, **ekwargs)
-                elif br == 2:
-                    r = handler(*eargs, **ekwargs)
-                elif br == 3:
-                    r = handler(**ekwargs)
-                elif br == 4:
-                    r = handler(*eargs)
-                else:
-                    r = handler()
+                try:
+                    if br == 1:
+                        r = handler(event, *eargs, **ekwargs)
+                    elif br == 2:
+                        r = handler(*eargs, **ekwargs)
+                    elif br == 3:
+                        r = handler(**ekwargs)
+                    elif br == 4:
+                        r = handler(*eargs)
+                    else:
+                        r = handler()
+                except Exception, error:
+                    self.push(Error(error), "error")
 
                 if r is not None and r and handler.type == "filter":
                     break
@@ -409,16 +412,19 @@ class Manager(object):
             for handler in self.handlers(channel):
                 br = handler.br
 
-                if br == 1:
-                    r = handler(event, *eargs, **ekwargs)
-                elif br == 2:
-                    r = handler(*eargs, **ekwargs)
-                elif br == 3:
-                    r = handler(**ekwargs)
-                elif br == 4:
-                    r = handler(*eargs)
-                else:
-                    r = handler()
+                try:
+                    if br == 1:
+                        r = handler(event, *eargs, **ekwargs)
+                    elif br == 2:
+                        r = handler(*eargs, **ekwargs)
+                    elif br == 3:
+                        r = handler(**ekwargs)
+                    elif br == 4:
+                        r = handler(*eargs)
+                    else:
+                        r = handler()
+                except Exception, error:
+                    self.push(Error(error), "error")
 
                 yield r
 
