@@ -9,6 +9,7 @@ circuits based application or system. Normal usage of circuits:
 >>> from circuits import listener, Manager, Component, Event
 """
 
+import sys
 from itertools import chain
 from collections import deque
 from collections import defaultdict
@@ -102,9 +103,11 @@ class Event(object):
 
 
 class Error(Event):
-    """Error(error) -> Error Event
+    """Error(type, value, traceback) -> Error Event
 
-    error: An exception object
+    type:      Exception type      -> sys.exc-type
+    value:     Exception value     -> sys.exc_value
+    traceback: Exception traceback -> sys.exc-traceback
     """
 
 def listener(*args, **kwargs):
@@ -381,8 +384,9 @@ class Manager(object):
                         r = handler(*eargs)
                     else:
                         r = handler()
-                except Exception, error:
-                    self.push(Error(error), "error")
+                except:
+                    e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
+                    self.push(e, "error")
 
                 if r is not None and r and handler.type == "filter":
                     break
@@ -423,8 +427,9 @@ class Manager(object):
                         r = handler(*eargs)
                     else:
                         r = handler()
-                except Exception, error:
-                    self.push(Error(error), "error")
+                except:
+                    e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
+                    self.push(e, "error")
 
                 yield r
 
