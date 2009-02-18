@@ -178,13 +178,12 @@ class DefaultDispatcher(Component):
             req = Request(request, response, *vpath, **params)
 
             try:
-                responses = self.iter(req, channel)
-                v = [x for x in responses if x is not None]
-            except Exception, error:
-                raise
- 
-            if v:
-                return v[0]
+                v = self.send(req, channel, _raiseErrors=True)
+            except TypeError:
+                v = None
+
+            if v is not None:
+                return v
             else:
                 return NotFound(request, response)
         else:
