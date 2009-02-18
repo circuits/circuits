@@ -12,6 +12,7 @@ and keyword arguments, filtering, url dispatching and more.
 """
 
 from inspect import getargspec
+from functools import update_wrapper
 
 from circuits.core import listener, BaseComponent
 
@@ -37,30 +38,18 @@ def expose(*channels, **config):
       wrapper.target = config.get("target", None)
       wrapper.channels = channels
 
-      argspec = getargspec(f)
-      _args = argspec[0]
+      _argspec = getargspec(f)
+      _args = _argspec[0]
       _args.insert(0, "response")
       _args.insert(0, "request")
-      varargs = (True if argspec[1] else False)
-      varkw = (True if argspec[2] else False)
       if _args and _args[0] == "self":
          del _args[0]
-
       if _args and _args[0] == "event":
-         wrapper.br = 1
-      elif _args:
-         wrapper.br = 2
+         wrapper._passEvent = True
       else:
-         if varargs and varkw:
-            wrapper.br = 2
-         elif varkw:
-            wrapper.br = 3
-         elif varargs:
-            wrapper.br = 4
-         else:
-            wrapper.br = 5
+         wrapper._passEvent = False
 
-      return wrapper
+      return update_wrapper(wrapper, f)
 
    return decorate
 
