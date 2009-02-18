@@ -101,6 +101,12 @@ class Event(object):
             raise TypeError("Expected int or str, got %r" % type(x))
 
 
+class Error(Event):
+    """Error(error) -> Error Event
+
+    error: An exception object
+    """
+
 def listener(*args, **kwargs):
     """Creates an Event Handler of a callable object
 
