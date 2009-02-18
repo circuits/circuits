@@ -220,7 +220,7 @@ class Manager(object):
                 y.unregistered()
             return self
         else:
-            raise Error("No registration found for %r" % y)
+            raise TypeError("No registration found for %r" % y)
 
     def __isub__(self, y):
         if y.manager == self:
@@ -229,7 +229,7 @@ class Manager(object):
                 y.unregistered()
             return self
         else:
-            raise Error("No registration found for %r" % y)
+            raise TypeError("No registration found for %r" % y)
 
     def handlers(self, s):
         if s == "*:*":
