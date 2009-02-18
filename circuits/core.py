@@ -15,11 +15,7 @@ from collections import defaultdict
 from inspect import getargspec, getmembers
 
 
-class Error(Exception):
-    pass
-
-
-class InvalidHandler(Error):
+class InvalidHandler(Exception):
     """Invalid Handler Exception
 
     Invalid Handler Exception raised when adding a callable
