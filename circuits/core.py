@@ -85,7 +85,7 @@ class Event(object):
         argsStr = ", ".join([("%s" % repr(arg)) for arg in self.args])
         kwargsStr = ", ".join(
                 [("%s=%s" % kwarg) for kwarg in self.kwargs.iteritems()])
-        return "<%s/%s (%s, %s)>" % (self.name, channelStr, argsStr, kwargsStr)
+        return "<%s[%s] (%s, %s)>" % (self.name, channelStr, argsStr, kwargsStr)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
