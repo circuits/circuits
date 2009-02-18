@@ -1,6 +1,6 @@
-# Module:	sockets
-# Date:		04th August 2004
-# Author:	James Mills <prologic@shortcircuit.net.au>
+# Module:   sockets
+# Date:     04th August 2004
+# Author:   James Mills <prologic@shortcircuit.net.au>
 
 """TCP/IP and UDP Sockets
 
@@ -19,9 +19,9 @@ import socket
 from cStringIO import StringIO
 
 try:
-	import select26 as select
+    import select26 as select
 except ImportError:
-	import select
+    import select
 
 from circuits import listener, Event, Component
 
@@ -35,7 +35,7 @@ BACKLOG = 512
 ###
 
 class Connected(Event):
-	"""Connected(Event) -> Connected Event
+    """Connected(Event) -> Connected Event
 
    if Client:
       args: host, port
@@ -45,7 +45,7 @@ class Connected(Event):
    """
 
 class Disconnected(Event):
-	"""Disconnected(Event) -> Disconnected Event
+    """Disconnected(Event) -> Disconnected Event
 
    if Client, no args.
 
@@ -54,7 +54,7 @@ class Disconnected(Event):
    """
 
 class Read(Event):
-	"""Read(Event) -> Read Event
+    """Read(Event) -> Read Event
 
    if Client:
       args: data
@@ -67,7 +67,7 @@ class Read(Event):
    """
 
 class Write(Event):
-	"""Write(Event) -> Write Event
+    """Write(Event) -> Write Event
 
    If Client:
       args: data
@@ -77,10 +77,10 @@ class Write(Event):
 
    if UDP Client or Server:
       args: address, data
-	"""
+    """
 
 class Error(Event):
-	"""Error(Event) -> Error Event
+    """Error(Event) -> Error Event
 
    if Client: error
 
@@ -88,414 +88,414 @@ class Error(Event):
    """
 
 class Close(Event):
-	"""Close(Event) -> Close Event
+    """Close(Event) -> Close Event
 
    If Client, no args.
 
    if Server:
       args: sock
-	"""
+    """
 
 class Shutdown(Event):
-	"""Shutdown(Event) -> Shutdown Event
+    """Shutdown(Event) -> Shutdown Event
 
    If Client, no args.
 
    if Server:
       args: sock
-	"""
+    """
 
 class Client(Component):
 
-	host = ""
-	port = 0
-	ssl = False
-	server = {}
-	issuer = {}
-	connected = False
+    host = ""
+    port = 0
+    ssl = False
+    server = {}
+    issuer = {}
+    connected = False
 
-	_buffer = []
-	_socks = []
-	_close = False
+    _buffer = []
+    _socks = []
+    _close = False
 
-	def poll(self, wait=POLL_INTERVAL):
-		try:
-			r, w, e = select.select(self._socks, self._socks, [], wait)
-		except socket.error, error:
-			if error[0] == errno.EBADF:
-				self.connected = False
-				return
-		except select.error, error:
-			if error[0] == 4:
-				pass
-			else:
-				self.push(Error(error), "error", self.channel)
-				return
+    def poll(self, wait=POLL_INTERVAL):
+        try:
+            r, w, e = select.select(self._socks, self._socks, [], wait)
+        except socket.error, error:
+            if error[0] == errno.EBADF:
+                self.connected = False
+                return
+        except select.error, error:
+            if error[0] == 4:
+                pass
+            else:
+                self.push(Error(error), "error", self.channel)
+                return
 
-		if r:
-			try:
-				if self.ssl and hasattr(self, "_ssock"):
-					data = self._ssock.read(BUFFER_SIZE)
-				else:
-					data = self._sock.recv(BUFFER_SIZE)
-				if data:
-					self.push(Read(data), "read", self.channel)
-				else:
-					self.close()
-					return
-			except socket.error, error:
-				self.push(Error(error), "error", self.channel)
-				self.close()
-				return
+        if r:
+            try:
+                if self.ssl and hasattr(self, "_ssock"):
+                    data = self._ssock.read(BUFFER_SIZE)
+                else:
+                    data = self._sock.recv(BUFFER_SIZE)
+                if data:
+                    self.push(Read(data), "read", self.channel)
+                else:
+                    self.close()
+                    return
+            except socket.error, error:
+                self.push(Error(error), "error", self.channel)
+                self.close()
+                return
 
-		if w:
-			if self._buffer:
-				data = self._buffer[0]
-				self.send(Write(data), "send", self.channel)
-			else:
-				if self._close:
-					self.close()
+        if w:
+            if self._buffer:
+                data = self._buffer[0]
+                self.send(Write(data), "send", self.channel)
+            else:
+                if self._close:
+                    self.close()
 
-	def open(self, host, port, ssl=False):
-		self.ssl = ssl
-		self.host = host
-		self.port = port
+    def open(self, host, port, ssl=False):
+        self.ssl = ssl
+        self.host = host
+        self.port = port
 
-		try:
-			try:
-				self._sock.connect((host, port))
-			except socket.error, error:
-				if error[0] == errno.EINPROGRESS:
-					pass
+        try:
+            try:
+                self._sock.connect((host, port))
+            except socket.error, error:
+                if error[0] == errno.EINPROGRESS:
+                    pass
 
-			if self.ssl:
-				self._ssock = socket.ssl(self._sock)
-			
-			r, w, e = select.select([], self._socks, [], CONNECT_TIMEOUT)
-			if w:
-				self.connected = True
-				self.push(Connected(host, port), "connected", self.channel)
-			else:
-				self.push(Error("Connection timed out"), "error", self.channel)
-				self.close()
-		except socket.error, error:
-			self.push(Error(error), "error", self.channel)
-			self.close()
+            if self.ssl:
+                self._ssock = socket.ssl(self._sock)
+            
+            r, w, e = select.select([], self._socks, [], CONNECT_TIMEOUT)
+            if w:
+                self.connected = True
+                self.push(Connected(host, port), "connected", self.channel)
+            else:
+                self.push(Error("Connection timed out"), "error", self.channel)
+                self.close()
+        except socket.error, error:
+            self.push(Error(error), "error", self.channel)
+            self.close()
 
-	def close(self):
-		if self._socks:
-			self.send(Shutdown(), "shutdown", self.channel)
+    def close(self):
+        if self._socks:
+            self.send(Shutdown(), "shutdown", self.channel)
 
-	def write(self, data):
-		self._buffer.append(data)
+    def write(self, data):
+        self._buffer.append(data)
 
-	@listener("shutdown", type="filter")
-	def onSHUTDOWN(self):
-		"""Close Event (Private)
+    @listener("shutdown", type="filter")
+    def onSHUTDOWN(self):
+        """Close Event (Private)
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		if self._buffer:
-			self._close = True
-			return
+        if self._buffer:
+            self._close = True
+            return
 
-		try:
-			self._socks.remove(self._sock)
-			self._sock.shutdown(2)
-			self._sock.close()
-		except socket.error, error:
-			self.push(Error(error), "error", self.channel)
+        try:
+            self._socks.remove(self._sock)
+            self._sock.shutdown(2)
+            self._sock.close()
+        except socket.error, error:
+            self.push(Error(error), "error", self.channel)
 
-		self.connected = False
+        self.connected = False
 
-		self.push(Disconnected(), "disconnected", self.channel)
+        self.push(Disconnected(), "disconnected", self.channel)
 
 class TCPClient(Client):
 
-	def open(self, host, port, ssl=False, bind=None):
-		self._sock = socket.socket(
-				socket.AF_INET,
-				socket.SOCK_STREAM)
-		self._sock.setblocking(False)
-		self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    def open(self, host, port, ssl=False, bind=None):
+        self._sock = socket.socket(
+                socket.AF_INET,
+                socket.SOCK_STREAM)
+        self._sock.setblocking(False)
+        self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-		if bind is not None:
-			self._sock.bind((bind, 0))
+        if bind is not None:
+            self._sock.bind((bind, 0))
 
-		self._socks.append(self._sock)
+        self._socks.append(self._sock)
 
-		super(TCPClient, self).open(host, port, ssl)
+        super(TCPClient, self).open(host, port, ssl)
 
-	@listener("send", type="filter")
-	def onSEND(self, data):
-		"""Send Event
+    @listener("send", type="filter")
+    def onSEND(self, data):
+        """Send Event
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		try:
-			if self.ssl:
-				bytes = self._ssock.write(data)
-			else:
-				bytes = self._sock.send(data)
+        try:
+            if self.ssl:
+                bytes = self._ssock.write(data)
+            else:
+                bytes = self._sock.send(data)
 
-			if bytes < len(data):
-				self._buffer[0] = data[bytes:]
-			else:
-				del self._buffer[0]
-		except socket.error, error:
-			if error[0] in [32, 107]:
-				self.close()
-			else:
-				self.push(Error(error), "error", self.channel)
-				self.close()
+            if bytes < len(data):
+                self._buffer[0] = data[bytes:]
+            else:
+                del self._buffer[0]
+        except socket.error, error:
+            if error[0] in [32, 107]:
+                self.close()
+            else:
+                self.push(Error(error), "error", self.channel)
+                self.close()
 
 
 class Server(Component):
 
-	address = ""
-	port = 0
-	ssl = False
+    address = ""
+    port = 0
+    ssl = False
 
-	_buffers = {}
+    _buffers = {}
 
-	_socks = []
-	_read = []
-	_write = []
-	_close = []
+    _socks = []
+    _read = []
+    _write = []
+    _close = []
 
-	def __getitem__(self, y):
-		"x.__getitem__(y) <==> x[y]"
+    def __getitem__(self, y):
+        "x.__getitem__(y) <==> x[y]"
 
-		return self._socks[y]
+        return self._socks[y]
 
-	def __contains__(self, y):
-		"x.__contains__(y) <==> y in x"
-	
-		return y in self._socks
+    def __contains__(self, y):
+        "x.__contains__(y) <==> y in x"
+    
+        return y in self._socks
 
-	def poll(self, wait=POLL_INTERVAL):
-		r, w, e = select.select(self._read, self._write, [], wait)
+    def poll(self, wait=POLL_INTERVAL):
+        r, w, e = select.select(self._read, self._write, [], wait)
 
-		for sock in w:
-			if self._buffers[sock]:
-				data = self._buffers[sock][0]
-				self.send(Write(sock, data), "send", self.channel)
-			else:
-				if sock in self._close:
-					self.close(sock)
-				else:
-					self._write.remove(sock)
-			
-		for sock in r:
-			if sock == self._sock:
-				newsock, host = sock.accept()
-				newsock.setblocking(False)
-				newsock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-				self._socks.append(newsock)
-				self._read.append(newsock)
-				self._buffers[newsock] = []
-				self.push(Connected(newsock, *host), "connected", self.channel)
-			else:
-				try:
-					data = sock.recv(BUFFER_SIZE)
-					if data:
-						self.push(Read(sock, data), "read", self.channel)
-					else:
-						self.close(sock)
-				except socket.error, e:
-					self.push(Error(sock, e), "error", self.channel)
-					self.close(sock)
+        for sock in w:
+            if self._buffers[sock]:
+                data = self._buffers[sock][0]
+                self.send(Write(sock, data), "send", self.channel)
+            else:
+                if sock in self._close:
+                    self.close(sock)
+                else:
+                    self._write.remove(sock)
+            
+        for sock in r:
+            if sock == self._sock:
+                newsock, host = sock.accept()
+                newsock.setblocking(False)
+                newsock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                self._socks.append(newsock)
+                self._read.append(newsock)
+                self._buffers[newsock] = []
+                self.push(Connected(newsock, *host), "connected", self.channel)
+            else:
+                try:
+                    data = sock.recv(BUFFER_SIZE)
+                    if data:
+                        self.push(Read(sock, data), "read", self.channel)
+                    else:
+                        self.close(sock)
+                except socket.error, e:
+                    self.push(Error(sock, e), "error", self.channel)
+                    self.close(sock)
 
-	def close(self, sock=None):
-		if sock in self:
-			self.send(Shutdown(sock), "shutdown", self.channel)
+    def close(self, sock=None):
+        if sock in self:
+            self.send(Shutdown(sock), "shutdown", self.channel)
 
-	def write(self, sock, data):
-		if not sock in self._write:
-			self._write.append(sock)
-		self._buffers[sock].append(data)
+    def write(self, sock, data):
+        if not sock in self._write:
+            self._write.append(sock)
+        self._buffers[sock].append(data)
 
-	def broadcast(self, data):
-		for sock in self._socks[1:]:
-			self.write(sock, data)
+    def broadcast(self, data):
+        for sock in self._socks[1:]:
+            self.write(sock, data)
 
-	@listener("send", type="filter")
-	def onSEND(self, sock, data):
-		"""Send Event
+    @listener("send", type="filter")
+    def onSEND(self, sock, data):
+        """Send Event
 
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		try:
-			bytes = sock.send(data)
-			if bytes < len(data):
-				self._buffers[sock][0] = data[bytes:]
-			else:
-				del self._buffers[sock][0]
-		except socket.error, e:
-			if e[0] in [32, 107]:
-				self.close(sock)
-			else:
-				self.push(Error(sock, e), "error", self.channel)
-				self.close()
+        try:
+            bytes = sock.send(data)
+            if bytes < len(data):
+                self._buffers[sock][0] = data[bytes:]
+            else:
+                del self._buffers[sock][0]
+        except socket.error, e:
+            if e[0] in [32, 107]:
+                self.close(sock)
+            else:
+                self.push(Error(sock, e), "error", self.channel)
+                self.close()
 
-	@listener("shutdown", type="filter")
-	def onSHUTDOWN(self, sock=None):
-		"""Close Event (Private)
+    @listener("shutdown", type="filter")
+    def onSHUTDOWN(self, sock=None):
+        """Close Event (Private)
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		if sock:
-			if sock not in self._socks:
-				# Invalid/Closed socket
-				return
+        if sock:
+            if sock not in self._socks:
+                # Invalid/Closed socket
+                return
 
-			if not sock == self._sock:
-				if self._buffers[sock]:
-					self._close.append(sock)
-					return
+            if not sock == self._sock:
+                if self._buffers[sock]:
+                    self._close.append(sock)
+                    return
 
-			try:
-				sock.shutdown(2)
-				sock.close()
-				self.push(Disconnected(sock), "disconnect", self.channel)
-			except socket.error, e:
-				self.push(Error(sock, e), "error", self.channel)
-			finally:
-				if sock in self._socks:
-					self._socks.remove(sock)
-				if sock in self._read:
-					self._read.remove(sock)
-				if sock in self._write:
-					self._write.remove(sock)
-				if sock in self._close:
-					self._close.remove(sock)
-				if sock in self._buffers:
-					del self._buffers[sock]
+            try:
+                sock.shutdown(2)
+                sock.close()
+                self.push(Disconnected(sock), "disconnect", self.channel)
+            except socket.error, e:
+                self.push(Error(sock, e), "error", self.channel)
+            finally:
+                if sock in self._socks:
+                    self._socks.remove(sock)
+                if sock in self._read:
+                    self._read.remove(sock)
+                if sock in self._write:
+                    self._write.remove(sock)
+                if sock in self._close:
+                    self._close.remove(sock)
+                if sock in self._buffers:
+                    del self._buffers[sock]
 
-		else:
-			for sock in self._socks:
-				self.close(sock)
+        else:
+            for sock in self._socks:
+                self.close(sock)
 
 
 class TCPServer(Server):
 
-	def __init__(self, port, address="", **kwargs):
-		super(TCPServer, self).__init__(**kwargs)
+    def __init__(self, port, address="", **kwargs):
+        super(TCPServer, self).__init__(**kwargs)
 
-		self._sock = socket.socket(
-				socket.AF_INET, socket.SOCK_STREAM)
-		self._sock.setsockopt(
-				socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self._sock.setblocking(False)
-		self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self._sock = socket.socket(
+                socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.setsockopt(
+                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.setblocking(False)
+        self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-		self._sock.bind((address, port))
-		self._sock.listen(BACKLOG)
+        self._sock.bind((address, port))
+        self._sock.listen(BACKLOG)
 
-		self._socks.append(self._sock)
-		self._read.append(self._sock)
+        self._socks.append(self._sock)
+        self._read.append(self._sock)
 
-		self.address = address
-		self.port = port
+        self.address = address
+        self.port = port
 
 class UDPServer(Server):
 
-	def __init__(self, port, address="", **kwargs):
-		super(UDPServer, self).__init__(**kwargs)
+    def __init__(self, port, address="", **kwargs):
+        super(UDPServer, self).__init__(**kwargs)
 
-		self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self._sock.setsockopt(socket.SOL_SOCKET,	socket.SO_BROADCAST, 1)
-		self._sock.setblocking(False)
-		self._sock.bind((address, port))
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.setsockopt(socket.SOL_SOCKET,    socket.SO_BROADCAST, 1)
+        self._sock.setblocking(False)
+        self._sock.bind((address, port))
 
-		self._socks.append(self._sock)
-		self._read = [self._sock]
+        self._socks.append(self._sock)
+        self._read = [self._sock]
 
-		self.address = address
-		self.port = port
+        self.address = address
+        self.port = port
 
-	def poll(self, wait=POLL_INTERVAL):
-		r, w, e = select.select(self._read, self._write, [], wait)
+    def poll(self, wait=POLL_INTERVAL):
+        r, w, e = select.select(self._read, self._write, [], wait)
 
-		if w:
-			for address, data in self._buffers.iteritems():
-				if data:
-					self.send(Write(address, data[0]), "send", self.channel)
-				else:
-					if self._close:
-						self.close()
-			self._write.remove(w[0])
+        if w:
+            for address, data in self._buffers.iteritems():
+                if data:
+                    self.send(Write(address, data[0]), "send", self.channel)
+                else:
+                    if self._close:
+                        self.close()
+            self._write.remove(w[0])
 
-		if r:
-			try:
-				data, address = self._sock.recvfrom(BUFFER_SIZE)
+        if r:
+            try:
+                data, address = self._sock.recvfrom(BUFFER_SIZE)
 
-				if not data:
-					self.close()
-				else:
-					self.push(Read(address, data), "read", self.channel)
-			except socket.error, e:
-				self.push(Error(self._sock, e), "error", self.channel)
-				self.close()
+                if not data:
+                    self.close()
+                else:
+                    self.push(Read(address, data), "read", self.channel)
+            except socket.error, e:
+                self.push(Error(self._sock, e), "error", self.channel)
+                self.close()
 
-	def write(self, address, data):
-		if not self._write:
-			self._write.append(self._sock)
-		if not self._buffers.has_key(address):
-			self._buffers[address] = []
-		self._buffers[address].append(data)
+    def write(self, address, data):
+        if not self._write:
+            self._write.append(self._sock)
+        if not self._buffers.has_key(address):
+            self._buffers[address] = []
+        self._buffers[address].append(data)
 
-	def broadcast(self, data):
-		self.write("<broadcast", data)
+    def broadcast(self, data):
+        self.write("<broadcast", data)
 
-	def close(self):
-		if self._socks:
-			self.send(Shutdown(), "shutdown", self.channel)
+    def close(self):
+        if self._socks:
+            self.send(Shutdown(), "shutdown", self.channel)
 
-	@listener("shutdown", type="filter")
-	def onSHUTDOWN(self):
-		"""Close Event (Private)
+    @listener("shutdown", type="filter")
+    def onSHUTDOWN(self):
+        """Close Event (Private)
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		try:
-			self._socks.remove(self._sock)
-			self._read.remove(self._sock)
-			self._write.remove(self._sock)
-			self._sock.shutdown(2)
-			self._sock.close()
-		except socket.error, error:
-			self.push(Error(error), "error", self.channel)
+        try:
+            self._socks.remove(self._sock)
+            self._read.remove(self._sock)
+            self._write.remove(self._sock)
+            self._sock.shutdown(2)
+            self._sock.close()
+        except socket.error, error:
+            self.push(Error(error), "error", self.channel)
 
-	@listener("send", type="filter")
-	def onSEND(self, address, data):
-		"""Send Event
+    @listener("send", type="filter")
+    def onSEND(self, address, data):
+        """Send Event
 
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		try:
-			self._sock.sendto(data, address)
-			del self._buffers[address][0]
-		except socket.error, e:
-			if e[0] in [32, 107]:
-				self.close()
-			else:
-				self.push(Error(e), "error", self.channel)
-				self.close()
+        try:
+            self._sock.sendto(data, address)
+            del self._buffers[address][0]
+        except socket.error, e:
+            if e[0] in [32, 107]:
+                self.close()
+            else:
+                self.push(Error(e), "error", self.channel)
+                self.close()
 
 UDPClient = UDPServer
