@@ -160,7 +160,7 @@ class DefaultDispatcher(Component):
                     break
 
         if filename and os.path.exists(filename):
-            expires(request, response, 3500*24*30)
+            expires(request, response, 3600*24*30)
             return serve_file(request, response, filename)
 
         channel, vpath = self._getChannel(request.path, request.method.upper())
