@@ -107,16 +107,19 @@ class Shutdown(Event):
 
 class Client(Component):
 
-    host = ""
-    port = 0
-    ssl = False
-    server = {}
-    issuer = {}
-    connected = False
+    def __init__(self, *args, **kwargs):
+        super(Client, self).__init__(*args, **kwargs)
 
-    _buffer = []
-    _socks = []
-    _close = False
+        self.host = ""
+        self.port = 0
+        self.ssl = False
+        self.server = {}
+        self.issuer = {}
+        self.connected = False
+
+        self._buffer = []
+        self._socks = []
+        self._close = False
 
     def poll(self, wait=POLL_INTERVAL):
         try:
@@ -256,16 +259,19 @@ class TCPClient(Client):
 
 class Server(Component):
 
-    address = ""
-    port = 0
-    ssl = False
+    def __init__(self, *args, **kwargs):
+        super(Server, self).__init__(*args, **kwargs)
 
-    _buffers = {}
+        self.address = ""
+        self.port = 0
+        self.ssl = False
 
-    _socks = []
-    _read = []
-    _write = []
-    _close = []
+        self._buffers = {}
+
+        self._socks = []
+        self._read = []
+        self._write = []
+        self._close = []
 
     def __getitem__(self, y):
         "x.__getitem__(y) <==> x[y]"
