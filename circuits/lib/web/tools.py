@@ -22,7 +22,7 @@ mimetypes.types_map['.dwg']='image/x-dwg'
 mimetypes.types_map['.ico']='image/x-icon'
 
 from utils import url, valid_status, get_ranges
-from errors import HTTPError, HTTPRedirect, NotFound, Redirect
+from errors import HTTPError, Redirect, NotFound, Redirect
 
 def expires(request, response, secs=0, force=False):
     """Tool for influencing cache mechanisms using the 'Expires' header.
@@ -258,7 +258,7 @@ def validate_since(request, response):
         if since and since == lastmod:
             if (status >= 200 and status <= 299) or status == 304:
                 if request.method in ("GET", "HEAD"):
-                    return HTTPRedirect(request, response, [], 304)
+                    return Redirect(request, response, [], 304)
                 else:
                     return HTTPError(request, response, 412)
 
