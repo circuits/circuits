@@ -26,7 +26,7 @@ class Manager(Thread):
 
             self.server.poll()
             
-            if self.client.connected:
+            if self.client.isConnected():
                 self.client.poll()
 
 class Client(Component):

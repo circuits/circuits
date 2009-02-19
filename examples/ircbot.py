@@ -98,8 +98,8 @@ if __name__ == "__main__":
     while True:
         try:
             manager.flush()
-            [bot.client.poll() for bot in bots if bot.client.connected]
+            [bot.client.poll() for bot in bots if bot.client.isConnected()]
             webserver.poll()
         except KeyboardInterrupt:
-            [bot.irc.ircQUIT() for bot in bots if bot.client.connected]
+            [bot.irc.ircQUIT() for bot in bots if bot.client.isConnected()]
             manager.flush()
