@@ -115,18 +115,21 @@ class Client(Component):
         self.ssl = False
         self.server = {}
         self.issuer = {}
-        self.connected = False
 
         self._buffer = []
         self._socks = []
         self._close = False
+        self._connected = False
+
+    def isConnected(self):
+        return self._connected
 
     def poll(self, wait=POLL_INTERVAL):
         try:
             r, w, e = select.select(self._socks, self._socks, [], wait)
         except socket.error, error:
             if error[0] == errno.EBADF:
-                self.connected = False
+                self._connected = False
                 return
         except select.error, error:
             if error[0] == 4:
@@ -176,7 +179,7 @@ class Client(Component):
             
             r, w, e = select.select([], self._socks, [], CONNECT_TIMEOUT)
             if w:
-                self.connected = True
+                self._connected = True
                 self.push(Connected(host, port), "connected", self.channel)
             else:
                 self.push(Error("Connection timed out"), "error", self.channel)
@@ -211,7 +214,7 @@ class Client(Component):
         except socket.error, error:
             self.push(Error(error), "error", self.channel)
 
-        self.connected = False
+        self._connected = False
 
         self.push(Disconnected(), "disconnected", self.channel)
 
