@@ -19,10 +19,4 @@ class Root(Component):
     def request(self, request, response):
         return "Hello World!"
 
-def main():
-    server = BaseServer(8000)
-    server += Root()
-    server.run()
-
-if __name__ == "__main__":
-    main()
+(BaseServer(8000) + Root()).run()

@@ -19,6 +19,4 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-server = Server(8000)
-server += Root()
-server.run()
+(Server(8000) + Root()).run()
