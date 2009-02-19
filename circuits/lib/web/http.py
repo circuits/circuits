@@ -8,7 +8,6 @@ This module implements the Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
 
-from re import split
 from cgi import escape
 from urllib import unquote
 from urlparse import urlparse
@@ -73,7 +72,7 @@ class HTTP(Component):
             if not request.body.tell() == contentLength:
                 return
         else:
-            requestline, data = split("\r?\n", data, 1)
+            requestline, data = data.split("\n", 1)
             method, path, protocol = requestline.strip().split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
