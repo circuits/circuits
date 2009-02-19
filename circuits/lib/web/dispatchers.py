@@ -22,11 +22,8 @@ class DefaultDispatcher(Component):
     def __init__(self, docroot=None, defaults=None, **kwargs):
         super(DefaultDispatcher, self).__init__(**kwargs)
 
-        if not docroot:
-            self.docroot = os.getcwd()
-
-        if not defaults:
-            self.defaults = ["index.html"]
+        self.docroot = docroot or os.getcwd()
+        self.defaults = defaults or ["index.html"]
 
     def _getParams(self, request, response):
         body = request.body
