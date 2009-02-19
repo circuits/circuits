@@ -10,13 +10,15 @@ using more higher abstracted web components from the web components
 library.
 """
 
+import psyco; psyco.full()
+
 from circuits.web import Server, Controller
 
-class HelloWorld(Controller):
+class Root(Controller):
 
-	def index(self):
-		return "Hello World!"
+    def index(self):
+        return "Hello World!"
 
 server = Server(8000)
-server += HelloWorld()
+server += Root()
 server.run()
