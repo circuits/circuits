@@ -19,8 +19,8 @@ This example makes use of:
 	* lib.sockets.UDPServer
 """
 
+from circuits import listener, Manager
 from circuits.lib.sockets import UDPServer
-from circuits.core import listener, Event, Component, Manager
 
 class EchoServer(UDPServer):
 

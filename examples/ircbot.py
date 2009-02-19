@@ -8,7 +8,6 @@ A simple example of using circuits to build a simple IRC Bot.
 This example demonstrates basic networking with circuits.
 """
 
-from time import sleep
 from socket import gethostname
 
 from circuits import web

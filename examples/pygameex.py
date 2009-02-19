@@ -2,28 +2,25 @@
 # -*- coding: utf-8 -*-
 # vim: set sw=3 sts=3 ts=3
 
-from time import sleep
-
 import pygame
-from pygame import *
+from pygame import K_q
+from pygame import DOUBLEBUF, HWSURFACE
 
-from circuits.lib.pygamepump import PyGamePump
-from circuits import listener, Event, Component, Debugger, Manager
+from circuits.drivers import PyGameDriver
+from circuits import Component, Debugger, Manager
 
 class Test(Component):
 
     def __init__(self, *args, **kwargs):
         super(Test, self).__init__(*args, **kwargs)
 
-        screen = pygame.display.set_mode((640, 480),    DOUBLEBUF | HWSURFACE)
+        screen = pygame.display.set_mode((640, 480), DOUBLEBUF | HWSURFACE)
 
-    @listener("keyup")
-    def onKEYUP(self, key, mod):
+    def keyup(self, key, mod):
         if key == K_q:
             raise SystemExit, 0
 
-    @listener("quit")
-    def onQUIT(self):
+    def quit(self):
         raise SystemExit, 0
 
 def main():
@@ -31,15 +28,15 @@ def main():
     manager = Manager()
     manager += Debugger()
 
-    pump = PyGamePump()
+    driver = PyGameDriver()
     test = Test()
 
-    manager += pump
+    manager += driver
     manager += test
 
     while True:
         try:
-            pump.poll()
+            driver.poll()
             manager.flush()
         except KeyboardInterrupt:
             break

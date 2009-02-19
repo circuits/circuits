@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-import os
 import sys
 import os.path
 
-from circuits.lib.web import Filter
-from circuits.lib.web import Middleware
-from circuits.lib.web import Application
-from circuits.lib.web import Server, Logger, Controller
+from circuits.web import Server, Logger, Controller
+from circuits.web import Application, Middleware, Filter
 
 class Debug(object):
 
@@ -87,7 +84,7 @@ class Root(Controller):
 		return "Hello from Root"
 
 server = Server(8000)
-#server += Logger()
+server += Logger()
 server += Hello()
 server += Root()
 

@@ -18,10 +18,8 @@ This example makes use of:
 	* Manager
 """
 
-import circuits
 from circuits import Debugger
 from circuits import listener, Event, Component, Bridge, Manager
-from circuits.lib.io import Stdin
 
 ###
 ### Components

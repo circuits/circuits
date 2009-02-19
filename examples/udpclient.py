@@ -22,9 +22,9 @@ This example makes use of:
 import optparse
 
 from circuits.lib.io import Stdin
+from circuits import listener, Manager
 from circuits.lib.sockets import UDPClient
 from circuits import __version__ as systemVersion
-from circuits.core import listener, Event, Component, Manager
 
 USAGE = "%prog [options] address:[port]"
 VERSION = "%prog v" + systemVersion
@@ -85,7 +85,7 @@ def main():
 		address, port = opts.bind.split(":")
 		port = int(port)
 	else:
-		address, port = opts,bind, 8000
+		address, port = opts.bind, 8000
 
 	if ":" in args[0]:
 		dest = args[0].split(":")
