@@ -15,7 +15,7 @@ from cgifs import FieldStorage
 from tools import expires, serve_file
 from errors import HTTPError, NotFound
 from utils import parseQueryString, dictform
-from events import Request, Response
+from events import Request
 
 class DefaultDispatcher(Component):
 
@@ -213,36 +213,9 @@ class FileDispatcher(Component):
       path = request.path.strip("/")
       print path
 
-      if args:
-         path = os.path.join("/", *args)
-         real = os.path.join(self.path, *args)
-      else:
-         path = ""
-         real = self.path
+      # TODO: Re-implement this...
 
-      if isfile(real):
-         response.body = open(real, "r")
-         return self.send(Response(request, response), "response", self.channel)
-
-      data = {}
-      data["path"] = path or "/"
-
-      files = []
-
-      if path:
-         href = os.path.join(self.channel, path.lstrip("/"), "..")
-         files.append("<li class=\"dir\"><a href=\"%s\">..</a>" % href)
-
-      for file in listdir(real):
-         href = os.path.join(self.channel, path.lstrip("/"), file)
-         name = ("%s/" % file if isdir(file) else file)
-         files.append("   <li class=\"dir\"><a href=\"%s\">%s</a>" % (
-            href, name))
-
-      data["files"] = "  <ul>\n%s\n  </ul>" % "\n".join(files)
-
-      response.headers["Content-Type"] = "text/html"
-      return self.template % data
+      return self.template
 
 Dispatcher = DefaultDispatcher
 FileServer = FileDispatcher

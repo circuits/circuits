@@ -10,8 +10,8 @@ Test all functionality of the sockets module.
 import unittest
 from time import sleep
 
+from circuits import Component
 from circuits.workers import Thread
-from circuits import listener, Component
 from circuits.lib.sockets import TCPServer, TCPClient, UDPServer, UDPClient
 
 class Manager(Thread):

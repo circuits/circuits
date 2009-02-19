@@ -8,25 +8,7 @@ This module implements support for parsing and handling headers.
 """
 
 import re
-import os
-import cgi
-import sys
-import stat
-import time
-import gzip
-import zlib
-import struct
-import cStringIO
-from urllib import unquote
-from urlparse import urlparse
-from cStringIO import StringIO
-from time import time, strftime
-from Cookie import SimpleCookie
-from traceback import format_exc
-from types import ListType, TupleType
-
-import circuits
-from circuits.core import listener, Event, Component
+from types import ListType
 
 # Regular expression that matches `special' characters in parameters, the
 # existance of which force quoting of the parameter value.

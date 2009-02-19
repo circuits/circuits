@@ -11,6 +11,7 @@ import re
 import cgi
 from gzip import GzipFile
 from cStringIO import StringIO
+from urllib import urljoin as _urljoin
 
 from constants import RESPONSES
 

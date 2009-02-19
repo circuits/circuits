@@ -20,15 +20,14 @@ the traceback to stdout, and keep any assertions you have from running
 be of further significance to your tests).
 """
 
-import httplib
-import os
-import pprint
 import re
-import socket
 import sys
 import time
-import traceback
 import types
+import pprint
+import socket
+import httplib
+import traceback
 
 from unittest import *
 from unittest import _TextTestResult

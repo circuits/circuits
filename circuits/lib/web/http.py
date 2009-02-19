@@ -8,21 +8,18 @@ This module implements the Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
 
-from cgi import escape
 from urllib import unquote
 from urlparse import urlparse
 from cStringIO import StringIO
 from traceback import format_exc
 
-import circuits
-from circuits.core import listener, Component
+from circuits.core import Component
 
 import webob
 import errors
+from utils import quoted_slash
 from headers import parseHeaders
-from utils import quoted_slash, quoteHTML
-from constants import DEFAULT_ERROR_MESSAGE, RESPONSES
-from constants import BUFFER_SIZE, SERVER_PROTOCOL, SERVER_VERSION
+from constants import RESPONSES, BUFFER_SIZE, SERVER_PROTOCOL
 from events import Request, Response, Stream, Write, HTTPError, Close
 
 class HTTP(Component):

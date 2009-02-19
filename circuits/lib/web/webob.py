@@ -8,11 +8,11 @@ This module implements the Request and Response objects.
 """
 
 
+import os
+import stat
 from cStringIO import StringIO
 from time import strftime, time
 from Cookie import SimpleCookie
-
-import circuits
 
 from headers import Headers
 from utils import compressBuf

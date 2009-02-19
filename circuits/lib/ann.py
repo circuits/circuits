@@ -11,7 +11,7 @@ import math
 from time import time, sleep
 
 from circuits.workers import Thread
-from circuits import listener, Event, Component
+from circuits import listener, Event
 
 class Signal(Event): pass
 

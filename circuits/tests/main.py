@@ -9,8 +9,6 @@ Main Entry Point to run all the tests in the test suite.
 """
 
 import re
-import os
-import sys
 import os.path
 import unittest
 

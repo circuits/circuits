@@ -22,7 +22,7 @@ import socket
 import select
 from cPickle import dumps as pickle
 from cPickle import loads as unpickle
-from socket import gethostname, gethostbyname, gethostbyaddr
+from socket import gethostname, gethostbyname
 
 from circuits.core import listener, Event, Component
 

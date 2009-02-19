@@ -9,11 +9,9 @@ These tools can also be used within Controlelrs and request handlers.
 """
 
 import os
-import re
+import md5
 import stat
-import time
 import types
-import urllib
 import datetime
 import mimetypes
 import mimetools
@@ -24,7 +22,7 @@ mimetypes.types_map['.dwg']='image/x-dwg'
 mimetypes.types_map['.ico']='image/x-icon'
 
 from utils import url, valid_status, get_ranges
-from errors import HTTPError, NotFound, Redirect
+from errors import HTTPError, HTTPRedirect, NotFound, Redirect
 
 def expires(request, response, secs=0, force=False):
     """Tool for influencing cache mechanisms using the 'Expires' header.
@@ -90,12 +88,12 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
     try:
         st = os.stat(path)
     except OSError:
-        return NotFound(request, respone)
+        return NotFound(request, response)
     
     # Check if path is a directory.
     if stat.S_ISDIR(st.st_mode):
         # Let the caller deal with it as they like.
-        return NotFound(request, respone)
+        return NotFound(request, response)
     
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
@@ -157,7 +155,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                     
                     for start, stop in r:
                         yield "--" + boundary
-                        yield "\r\nContent-type: %s" % content_type
+                        yield "\r\nContent-type: %s" % type
                         yield ("\r\nContent-range: bytes %s-%s/%s\r\n\r\n"
                                % (start, stop - 1, c_len))
                         bodyfile.seek(start)
@@ -185,7 +183,7 @@ def serve_download(request, response, path, name=None):
 
     return serve_file(request, response, path, type, disposition, name)
 
-def validate_etags(autotags=False):
+def validate_etags(request, response, autotags=False):
     """Validate the current ETag against If-Match, If-None-Match headers.
     
     If autotags is True, an ETag response-header value will be provided
@@ -264,12 +262,8 @@ def validate_since(request, response):
                 else:
                     return HTTPError(request, response, 412)
 
-def redirect(request, response, url='', internal=True):
-    """Raise InternalRedirect or HTTPRedirect to the given url."""
-    if internal:
-        raise InternalRedirect(request, response, url)
-    else:
-        raise Redirect(request, response, url)
+def redirect(request, response, url=''):
+    raise Redirect(request, response, url)
 
 def trailing_slash(request, response, missing=True, extra=False):
     """Redirect if path_info has (missing|extra) trailing slash."""

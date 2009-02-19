@@ -13,9 +13,9 @@ descriptors for read/write events. Pollers:
 """
 
 try:
-	import select26 as select
+	from select26.select import select
 except ImportError:
-	import select
+    from select import select
 
 from circuits.core import Event, Component
 
@@ -55,7 +55,7 @@ class Poller(Component):
 	read = []
 	write = []
 
-	def add(fd):
+	def add(self, fd):
 		"""Poller.add(fd) -> None
 
 		Add the given file descriptor fd to be polled.
@@ -87,13 +87,13 @@ class Poller(Component):
 class Select(Poller):
 	"""Select(...) -> new Select Poller Component
 
-	Creates a new Select Poller Component that uses the select.select poller
+	Creates a new Select Poller Component that uses the select poller
 	implementation. This poller is not reccomneded but is available for legacy
 	reasons as most systems implement select-based polling for backwards
 	compatibility.
 	"""
 
-	def poll(self, wait=TIMEOUT):
+	def poll(self, timeout=TIMEOUT):
 		r, w, e = select(self.read, self.write, self.fds, timeout)
 
 		for fd in w:

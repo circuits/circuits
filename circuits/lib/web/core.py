@@ -14,7 +14,7 @@ and keyword arguments, filtering, url dispatching and more.
 from inspect import getargspec
 from functools import update_wrapper
 
-from circuits.core import listener, BaseComponent
+from circuits.core import BaseComponent
 
 from errors import Forbidden, NotFound, Redirect
 

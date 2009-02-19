@@ -12,11 +12,8 @@ and as such the implementations in this module are all
 event-driven and should be sub-classed to do something usefull.
 """
 
-import re
-import time
 import errno
 import socket
-from cStringIO import StringIO
 
 try:
     import select26 as select

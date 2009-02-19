@@ -7,9 +7,16 @@
 This module implements WSGI Components.
 """
 
+from traceback import format_exc
+
 from circuits.core import listener, Component
 
+import webob
+from utils import quoteHTML
+from headers import Headers
 from dispatchers import Dispatcher
+from events import Request, Response, HTTPError
+from constants import RESPONSES, DEFAULT_ERROR_MESSAGE
 
 class Application(Component):
 
@@ -40,7 +47,7 @@ class Application(Component):
 
       headers = Headers(list(self.translateHeaders(environ)))
 
-      request = _Request(
+      request = webob.Request(
             env("REQUEST_METHOD"),
             env("PATH_INFO"),
             env("SERVER_PROTOCOL"),
@@ -51,7 +58,7 @@ class Application(Component):
       request.wsgi_environ = environ
       request.body = env("wsgi.input")
 
-      response = _Response(None)
+      response = webob.Response(None)
       response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
       return request, response
@@ -81,13 +88,10 @@ class Application(Component):
       request, response = self.getRequestResponse(environ)
 
       try:
-         self.send(Request(request, response), "request")
-      except HTTPRedirect, error:
-         error.set_response()
-      except HTTPError, error:
-         self.setError(response, error[0], error[1])
-      except Exception, error:
-         self.setError(response, 500, "Internal Server Error", format_exc())
+         self.send(Request(request, response), "request", self.channel)
+      except:
+         error = HTTPError(request, response, 500, error=format_exc())
+         self.send(error, "httperror", self.channel)
       finally:
          body = response.process()
          start_response(response.status, response.headers.items())

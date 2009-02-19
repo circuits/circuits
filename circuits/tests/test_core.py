@@ -34,7 +34,7 @@ class ListenerComponent(Component):
             self.push(Test(msg="foo"), "foo")
 
     @listener("bar")
-    def onBAR(self, test, msg=""):
+    def onBAR(self, event, test, msg=""):
         if msg.lower() == "test":
             self.push(Test(msg="hello world"), event._channel)
 

@@ -12,11 +12,8 @@ input and accept commands and react to them)
 """
 
 import os
-import sys
 import fcntl
 import select
-import inspect
-import readline
 
 from circuits.core import Event, Component
 
@@ -26,6 +23,7 @@ BUFFER_SIZE = 131072
 
 
 class Read(Event): pass
+class Error(Event): pass
 
 
 class File(file):

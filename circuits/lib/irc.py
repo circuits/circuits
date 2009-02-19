@@ -159,6 +159,12 @@ class Topic(Event):
    args: source, channel, ctime, topic
    """
 
+class NetInfo(Event):
+	"""NetINfo(Event) -> NetInfo Event
+
+   args: ...
+   """
+
 ###
 ### Protocol Class
 ###
@@ -437,10 +443,6 @@ class IRC(Component):
         else:
             self.ircRAW("NAMES")
 
-    @listener("WHOIS")
-    def ircNAMES(self, target):
-        self.ircRAW("WHOIS %s" % target)
-    
     ###
     ### Properties
     ###

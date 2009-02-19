@@ -59,6 +59,9 @@ class Create(Event):
 class Load(Event):
 	"""Load(Event) -> Load Event"""
 
+class Verify(Event):
+    """Verify(Event) -> Verify Event"""
+
 class Upgrade(Event):
 	"""Upgrade(Event) -> Upgrade Event"""
 
