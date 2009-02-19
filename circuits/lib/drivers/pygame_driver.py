@@ -25,7 +25,7 @@ class PyGameDriver(Component):
         except ImportError:
             raise DriverError("No pygame support available.")
 
-        self = super(PyGameDriver, cls).__new__(*args, **kwargs)
+        self = super(PyGameDriver, cls).__new__(cls, *args, **kwargs)
 
         self.pygame = pygame
         self.event = event
