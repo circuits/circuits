@@ -9,12 +9,12 @@ These tools can also be used within Controlelrs and request handlers.
 """
 
 import os
-import md5
 import stat
 import types
 import datetime
 import mimetypes
 import mimetools
+from hashlib import md5
 from rfc822 import formatdate
 
 mimetypes.init()
