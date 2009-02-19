@@ -20,7 +20,6 @@ This example makes use of:
 """
 
 from circuits.lib.sockets import TCPServer
-from circuits.core import listener, Event, Component, Manager
 
 ###
 ### Components
@@ -29,7 +28,6 @@ from circuits.core import listener, Event, Component, Manager
 class EchoServer(TCPServer):
 
     def read(self, sock, data):
-        print "%s: %s" % (sock, data)
         self.write(sock, data)
     
 ###
@@ -37,13 +35,11 @@ class EchoServer(TCPServer):
 ###
 
 def main():
-    manager = Manager()
     server = EchoServer(8000)
-    manager += server
 
     while True:
         try:
-            manager.flush()
+            server.flush()
             server.poll()
         except KeyboardInterrupt:
             break
