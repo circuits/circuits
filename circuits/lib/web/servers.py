@@ -77,7 +77,7 @@ class BaseServer(Component):
 
 class Server(BaseServer):
 
-    def __init__(self, port, address="", docroot=None, **kwargs):
+    def __init__(self, port, address="", **kwargs):
         super(Server, self).__init__(port, address, **kwargs)
 
         self.dispatcher = Dispatcher(**kwargs)
