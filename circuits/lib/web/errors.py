@@ -22,7 +22,7 @@ class BaseError(object):
         self.response = response
 
     def __nonzero__(self):
-        return False
+        return True
 
 class HTTPError(BaseError):
 
