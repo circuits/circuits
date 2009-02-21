@@ -670,28 +670,6 @@ class EventTestCase(unittest.TestCase):
         self.assertEquals(len(manager._handlers), 0)
 
 
-    def testIterEvents(self):
-        """Test Manager's iter
-
-        Test that events can be interated over using the Manager's
-        iter method and that the expected return results are yielded.
-        """
-
-        class Foo(Component):
-
-            @listener("foo")
-            def onFOO(self):
-                return "foo"
-
-        manager = Manager()
-        foo = Foo()
-        manager += foo
-
-        for i in foo.iter(Event(), "foo"):
-            self.assertEquals(i, "foo")
-
-        foo.unregister()
-
     def testHandlerTarget(self):
         """Test Handler Targets
 
