@@ -45,13 +45,17 @@ class HTTP(Component):
             response.body.close()
             if response.close:
                 self.send(Close(response.sock), "close", self.channel)
+            response.done = True
         
     def response(self, response):
         self.send(Write(response.sock, str(response)), "write", self.channel)
         if response.stream:
             self.push(Stream(response), "stream", self.channel)
+            return
         elif response.close:
             self.send(Close(response.sock), "close", self.channel)
+
+        response.done = True
 
     def read(self, sock, data):
         """H.read(sock, data) -> None
