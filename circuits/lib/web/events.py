@@ -36,11 +36,7 @@ class Write(Event):
 class Error(Event):
     """Error(Event) -> Error Event
 
-    args: request, response, code
-
-    kwargs:
-        msg=None
-        exc=None
+    args: error object
     """
 
 class Close(Event):
