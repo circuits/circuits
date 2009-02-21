@@ -33,8 +33,8 @@ class Write(Event):
     args: sock
     """
 
-class HTTPError(Event):
-    """HTTPError(Event) -> HTTP Error Event
+class Error(Event):
+    """Error(Event) -> Error Event
 
     args: request, response, code
 
