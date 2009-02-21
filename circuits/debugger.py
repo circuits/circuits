@@ -8,6 +8,7 @@ each event to sys.stderr or to a Logger Component instnace.
 """
 
 import sys
+from cStringIO import StringIO
 from traceback import format_tb
 
 from circuits.core import listener, Event, Component
@@ -47,14 +48,29 @@ class Debugger(Component):
         self.logger = kwargs.get("logger", None)
 
     @listener("error", type="filter")
-    def onERROR(self, type, value, traceback):
-        if self.enabled:
+    def error(self, *args, **kwargs):
+        if not self.enabled:
+            return
+
+        s = StringIO()
+
+        if len(args) == 3:
+            type, value, traceback = args
+            s.write("ERROR (%s): %s\n" % (type, value))
+            s.write("%s\n" % "".join(format_tb(traceback)))
+        else:
+            s.write("Unknown Error\n")
+            s.write("args:   %s\n" % repr(args))
+            s.write("kwargs: %s\n" % repr(kwargs))
+
+        s.seek(0)
+        for line in s:
             if self.logger:
-                self.logger.error("ERROR (%s): %s" % (type, value))
-                self.logger.error("".join(format_tb(traceback)))
+                self.logger.error(line)
             else:
-                print >> sys.stderr, "ERROR (%s): %s" % (type, value)
-                print >> sys.stderr, "".join(format_tb(traceback))
+                print >> sys.stderr, line.strip()
+
+        s.close()
 
     @listener(type="filter")
     def onEVENTS(self, event, *args, **kwargs):
