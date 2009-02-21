@@ -21,130 +21,132 @@ from constants import RESPONSES, DEFAULT_ERROR_MESSAGE
 
 class Application(Component):
 
-   headerNames = {
-         "HTTP_CGI_AUTHORIZATION": "Authorization",
-         "CONTENT_LENGTH": "Content-Length",
-         "CONTENT_TYPE": "Content-Type",
-         "REMOTE_HOST": "Remote-Host",
-         "REMOTE_ADDR": "Remote-Addr",}
+    headerNames = {
+            "HTTP_CGI_AUTHORIZATION": "Authorization",
+            "CONTENT_LENGTH": "Content-Length",
+            "CONTENT_TYPE": "Content-Type",
+            "REMOTE_HOST": "Remote-Host",
+            "REMOTE_ADDR": "Remote-Addr",
+            }
 
-   def __init__(self, *args, **kwargs):
-      super(Application, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Application, self).__init__(*args, **kwargs)
 
-      self += Dispatcher()
+        self.dispatcher = Dispatcher(**kwargs)
+        self.manager += self.dispatcher
 
-   def translateHeaders(self, environ):
-      for cgiName in environ:
-         # We assume all incoming header keys are uppercase already.
-         if cgiName in self.headerNames:
-            yield self.headerNames[cgiName], environ[cgiName]
-         elif cgiName[:5] == "HTTP_":
-            # Hackish attempt at recovering original header names.
-            translatedHeader = cgiName[5:].replace("_", "-")
-            yield translatedHeader, environ[cgiName]
-   
-   def getRequestResponse(self, environ):
-      env = environ.get
+    def registered(self):
+        self.manager += self.dispatcher
 
-      headers = Headers(list(self.translateHeaders(environ)))
+    def translateHeaders(self, environ):
+        for cgiName in environ:
+            # We assume all incoming header keys are uppercase already.
+            if cgiName in self.headerNames:
+                yield self.headerNames[cgiName], environ[cgiName]
+            elif cgiName[:5] == "HTTP_":
+                # Hackish attempt at recovering original header names.
+                translatedHeader = cgiName[5:].replace("_", "-")
+                yield translatedHeader, environ[cgiName]
 
-      request = webob.Request(
-            env("REQUEST_METHOD"),
-            env("PATH_INFO"),
-            env("SERVER_PROTOCOL"),
-            env("QUERY_STRING"))
+    def getRequestResponse(self, environ):
+        env = environ.get
 
-      request.headers = headers
-      request.script_name = env("SCRIPT_NAME")
-      request.wsgi_environ = environ
-      request.body = env("wsgi.input")
+        headers = Headers(list(self.translateHeaders(environ)))
 
-      response = webob.Response(None)
-      response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
+        request = webob.Request(
+                env("REQUEST_METHOD"),
+                env("PATH_INFO"),
+                env("SERVER_PROTOCOL"),
+                env("QUERY_STRING"))
 
-      return request, response
+        request.headers = headers
+        request.script_name = env("SCRIPT_NAME")
+        request.wsgi_environ = environ
+        request.body = env("wsgi.input")
 
-   def setError(self, response, code, message=None, traceback=None):
-      try:
-         short, long = RESPONSES[code]
-      except KeyError:
-         short, long = "???", "???"
+        response = webob.Response(None)
+        response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
-      if message is None:
-         message = short
+        return request, response
 
-      explain = long
+    def setError(self, response, status, message=None, traceback=None):
+        try:
+            short, long = RESPONSES[code]
+        except KeyError:
+            short, long = "???", "???"
 
-      content = DEFAULT_ERROR_MESSAGE % {
-         "code": code,
-         "message": quoteHTML(message),
-         "explain": explain,
-         "traceback": traceback or ""}
+        if message is None:
+            message = short
 
-      response.body = content
-      response.status = "%s %s" % (code, message)
-      response.headers.add_header("Connection", "close")
+        explain = long
 
-   def __call__(self, environ, start_response):
-      request, response = self.getRequestResponse(environ)
+        content = DEFAULT_ERROR_MESSAGE % {
+            "status": status,
+            "message": quoteHTML(message),
+            "traceback": traceback or ""}
 
-      try:
-         self.send(Request(request, response), "request", self.channel)
-      except:
-         error = HTTPError(request, response, 500, error=format_exc())
-         self.send(error, "httperror", self.channel)
-      finally:
-         body = response.process()
-         start_response(response.status, response.headers.items())
-         return [body]
+        response.body = content
+        response.status = "%s %s" % (code, message)
+        response.headers.add_header("Connection", "close")
+
+    def __call__(self, environ, start_response):
+        request, response = self.getRequestResponse(environ)
+
+        try:
+            self.send(Request(request, response), "request", self.channel)
+        except:
+            error = HTTPError(request, response, 500, error=format_exc())
+            self.send(error, "httperror", self.channel)
+        finally:
+            body = response.process()
+            start_response(response.status, response.headers.items())
+            return [body]
 
 class Middleware(Component):
 
-   request = None
-   response = None
+    def __init__(self, app, path=None):
+        super(Middleware, self).__init__(channel=path)
 
-   def __init__(self, app, path=None):
-      super(Middleware, self).__init__(channel=path)
+        self.app = app
+        self.request = self.response = None
 
-      self.app = app
+    def environ(self):
+        environ = {}
+        req = self.request
+        env = environ.__setitem__
 
-   def environ(self):
-      environ = {}
-      req = self.request
-      env = environ.__setitem__
+        env("REQUEST_METHOD", req.method)
+        env("PATH_INFO", req.path)
+        env("SERVER_PROTOCOL", req.server_protocol)
+        env("QUERY_STRING", req.qs)
+        env("SCRIPT_NAME", req.script_name)
+        env("wsgi.input", req.body)
 
-      env("REQUEST_METHOD", req.method)
-      env("PATH_INFO", req.path)
-      env("SERVER_PROTOCOL", req.server_protocol)
-      env("QUERY_STRING", req.qs)
-      env("SCRIPT_NAME", req.script_name)
-      env("wsgi.input", req.body)
+        return environ
 
-      return environ
+    def start_response(self, status, headers):
+        self.response.stats = status
+        for header in headers:
+            self.response.headers.add_header(*header)
 
-   def start_response(self, status, headers):
-      self.response.stats = status
-      for header in headers:
-         self.response.headers.add_header(*header)
+    @listener("request", type="filter")
+    def onREQUEST(self, request, response, *args, **kwargs):
+        self.request = request
+        self.response = response
 
-   @listener("request", type="filter")
-   def onREQUEST(self, request, response, *args, **kwargs):
-      self.request = request
-      self.response = response
+        response.body = "".join(self.app(self.environ(), self.start_response))
 
-      response.body = "".join(self.app(self.environ(), self.start_response))
-
-      self.send(Response(response), "response")
+        self.send(Response(response), "response")
 
 class Filter(Component):
 
-   @listener("response", type="filter")
-   def onRESPONSE(self, request, response):
-      self.request = request
-      self.response = response
+    @listener("response", type="filter")
+    def onRESPONSE(self, request, response):
+        self.request = request
+        self.response = response
 
-      try:
-         response.body = self.process()
-      finally:
-         del self.request
-         del self.response
+        try:
+            response.body = self.process()
+        finally:
+            del self.request
+            del self.response
