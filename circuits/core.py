@@ -378,43 +378,6 @@ class Manager(object):
             return self.manager.send(event, channel, target, **kwargs)
 
 
-    def iter(self, event, channel, target=None):
-        """E.iter(event, channel, target=None) -> Generator
-
-        Iterate and Send the given event to filters/listeners
-        on the channel specified. If target is given, send this
-        event to filters/listeners of the given target component.
-        For each event that is sent, yield it's return result.
-        """
-
-        if self.manager == self:
-            event.channel = channel
-            event.target = target
-            eargs = event.args
-            ekwargs = event.kwargs
-            if target is not None:
-                channel = "%s:%s" % (target, channel)
-
-            r = False
-            for handler in self.handlers(channel):
-                try:
-                    if handler._passEvent:
-                        r = partial(handler, event, *eargs, **ekwargs)()
-                    else:
-                        r = partial(handler, *eargs, **ekwargs)()
-                except:
-                    e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
-                    self.push(e, "error")
-
-                yield r
-
-                if r is not None and r and handler.type == "filter":
-                    break
-        else:
-            for i in self.manager.iter(event, channel, target):
-                yield i
-
-
 class BaseComponent(Manager):
     """Creates a new Component
 
