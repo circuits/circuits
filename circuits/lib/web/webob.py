@@ -113,6 +113,7 @@ class Response(object):
         return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
 
     def clear(self):
+        self.done = False
         self.close = False
         
         self.headers = Headers([
