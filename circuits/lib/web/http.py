@@ -16,11 +16,11 @@ from traceback import format_exc
 from circuits.core import Component
 
 import webob
-import errors
 from utils import quoted_slash
 from headers import parseHeaders
+from errors import BaseError, HTTPError, NotFound
 from constants import RESPONSES, BUFFER_SIZE, SERVER_PROTOCOL
-from events import Request, Response, Stream, Write, HTTPError, Close
+from events import Request, Response, Stream, Write, Error, Close
 
 class HTTP(Component):
     """HTTP Protocol Component
@@ -35,6 +35,22 @@ class HTTP(Component):
         super(HTTP, self).__init__(*args, **kwargs)
 
         self.server = server
+
+    def _handleError(self, request, response, error):
+        try:
+            v = self.send(error, "error", self.channel)
+        except TypeError:
+            v = None
+
+        if v is not None:
+            if isinstance(v, basestring):
+                response.body = v
+                res = Response(response)
+                self.send(res, "response", self.channel)
+            elif isinstance(v, BaseError):
+                self.send(Response(v.response), "response", self.channel)
+            else:
+                raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
 
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
@@ -93,7 +109,7 @@ class HTTP(Component):
 
             if frag:
                 error = HTTPError(request, response, 400)
-                return self.send(error, "httperror", self.channel)
+                return self.send(Error(error), "error", self.channel)
         
             if params:
                 path = "%s;%s" % (path, params)
@@ -123,7 +139,7 @@ class HTTP(Component):
             sp = request.server_protocol
             if sp[0] != rp[0]:
                 error = HTTPError(request, response, 505)
-                return self.send(error, "httperror", self.channel)
+                return self.send(Error(error), "error", self.channel)
 
             headers, body = parseHeaders(StringIO(data))
             request.headers = headers
@@ -158,28 +174,28 @@ class HTTP(Component):
             req = Request(request, response)
 
             try:
-                v = self.send(req, "request", self.channel, _raiseErrors=True)
+                v = self.send(req, "request", self.channel, errors=True)
             except TypeError:
                 v = None
 
             if v is not None:
                 if isinstance(v, basestring):
                     response.body = v
-                res = Response(response)
-                self.send(res, "response", self.channel)
+                    res = Response(response)
+                    self.send(res, "response", self.channel)
+                elif isinstance(v, BaseError):
+                    self._handleError(request, response, Error(v))
+                else:
+                    raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
             else:
-                error = HTTPError(request, response, 404)
-                self.send(error, "httperror", self.channel)
+                error = NotFound(request, response)
+                self._handleError(request, response, Error(error))
         except:
             error = HTTPError(request, response, 500, error=format_exc())
-            self.send(error, "httperror", self.channel)
+            self._handleError(request, response, Error(error))
         finally:
             if sock in self._requests:
                 del self._requests[sock]
-
-    ###
-    ### Supporting Functions
-    ###
 
     def simple(self, sock, code, message=""):
         """Simple Response Events Handler
@@ -201,17 +217,12 @@ class HTTP(Component):
 
         self.send(Response(response), "response", self.channel)
 
-    def httperror(self, request, response, status, message=None, error=None):
-        """HTTP Error Event Handler
+    def error(self, error):
+        """Default Error Handler
         
-        Arguments are the error code status, and a detailed message.
-        The detailed message defaults to the short entry matching the
-        response status.
-
-        This sends an error response (so it must be called before any
-        output has been generated), and sends a piece of HTML explaining
-        the error to the user.
+        Default Error Handler that by default just responds with the response
+        in the error object passed. The response is normally modified by a
+        BaseError instance or a subclass thereof.
         """
 
-        error = errors.HTTPError(request, response, status, message, error)
         self.send(Response(error.response), "response", self.channel)
