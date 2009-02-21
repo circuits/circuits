@@ -73,7 +73,7 @@ class Debugger(Component):
         s.close()
 
     @listener(type="filter")
-    def onEVENTS(self, event, *args, **kwargs):
+    def event(self, event, *args, **kwargs):
         """Global Event Handler
 
         Event handler to listen and filter all events printing each event
