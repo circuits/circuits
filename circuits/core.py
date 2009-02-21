@@ -341,8 +341,8 @@ class Manager(object):
         else:
             self.manager.flush()
 
-    def send(self, event, channel, target=None, **kwargs):
-        """E.send(event, channel, target=None) -> None
+    def send(self, event, channel, target=None, errors=False):
+        """E.send(event, channel, target=None, errors=False) -> None
 
         Send the given event to filters/listeners on the
         channel specified. If target is given, send this
@@ -366,10 +366,10 @@ class Manager(object):
                     else:
                         r = partial(handler, *eargs, **ekwargs)()
                 except:
+                    if errors:
+                        raise
                     e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
                     self.push(e, "error")
-                    if kwargs.get("_raiseErrors", False):
-                        raise
 
                 if r is not None and r and handler.type == "filter":
                     break
