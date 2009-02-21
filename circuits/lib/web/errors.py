@@ -13,13 +13,16 @@ from urlparse import urljoin as _urljoin
 import utils
 from constants import DEFAULT_ERROR_MESSAGE, RESPONSES, SERVER_VERSION
 
+
 class BaseError(object):
 
     def __init__(self, request, response):
-        super(BaseError, self).__init__()
-        
         self.request = request
         self.response = response
+
+        response.clear()
+        response.close = True
+        response.headers.add_header("Connection", "close")
 
     def __nonzero__(self):
         return True
@@ -29,8 +32,12 @@ class HTTPError(BaseError):
     def __init__(self, request, response, status, message=None, error=None):
         super(HTTPError, self).__init__(request, response)
 
+        self.status = status
+
         short, long = RESPONSES.get(status, ("???", "???",))
-        message = message or short
+        self.message = message = message or short
+
+        self.error = error
 
         s = DEFAULT_ERROR_MESSAGE % {
             "status": "%s %s" % (status, short),
@@ -38,11 +45,12 @@ class HTTPError(BaseError):
             "traceback": error or "",
             "version": SERVER_VERSION}
 
-        response.clear()
         response.body = s
-        response.close = True
         response.status = "%s %s" % (status, short)
-        response.headers.add_header("Connection", "close")
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return "<%s (%d, %s)>" % (name, self.status, repr(self.message))
 
 class Forbidden(HTTPError):
 
@@ -54,11 +62,9 @@ class NotFound(HTTPError):
     def __init__(self, request, response, message=None):
         super(NotFound, self).__init__(request, response, 404, message)
 
-class Redirect(BaseError):
+class Redirect(HTTPError):
 
     def __init__(self, request, response, urls, status=None):
-        super(Redirect, self).__init__(request, response)
-
         if isinstance(urls, basestring):
             urls = [urls]
         
@@ -71,7 +77,7 @@ class Redirect(BaseError):
             # Note that any query string in request is discarded.
             url = _urljoin(utils.url(request), url)
             abs_urls.append(url)
-        urls = abs_urls
+        self.urls = urls = abs_urls
         
         # RFC 2616 indicates a 301 response code fits our goal; however,
         # browser support for 301 is quite messy. Do 302/303 instead. See
@@ -85,8 +91,8 @@ class Redirect(BaseError):
             status = int(status)
             if status < 300 or status > 399:
                 raise ValueError("status must be between 300 and 399.")
-        
-        response.status = status
+
+        super(Redirect, self).__init__(request, response, status)
         
         if status in (300, 301, 302, 303, 307):
             response.headers["Content-Type"] = "text/html"
@@ -134,3 +140,7 @@ class Redirect(BaseError):
             response.headers.pop("Content-Length", None)
         else:
             raise ValueError("The %s status code is unknown." % status)
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return "<%s (%d, %s)>" % (name, self.status, " ".join(self.urls))
