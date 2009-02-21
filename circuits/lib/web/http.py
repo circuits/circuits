@@ -90,7 +90,8 @@ class HTTP(Component):
                 return
         else:
             requestline, data = data.split("\n", 1)
-            method, path, protocol = requestline.strip().split(" ", 2)
+            requestline = requestline.strip()
+            method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
             protocol = tuple([int(x) for x in protocol.split("/")[1].split(".")])
