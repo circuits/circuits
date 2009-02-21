@@ -37,11 +37,16 @@ class BaseServer(Component):
 
     @property
     def address(self):
-        return self.server.address
+        if hasattr(self, "server"):
+            return self.server.address
+        else:
+            return None
 
     @property
     def port(self):
-        return self.server.port
+        if hasattr(self, "server"):
+            return self.server.port
+        return None
 
     def base(self):
         host = self.server.address
