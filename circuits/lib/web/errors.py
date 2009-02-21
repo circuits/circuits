@@ -40,6 +40,7 @@ class HTTPError(BaseError):
 
         response.clear()
         response.body = s
+        response.close = True
         response.status = "%s %s" % (status, short)
         response.headers.add_header("Connection", "close")
 
