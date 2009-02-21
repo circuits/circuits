@@ -375,7 +375,7 @@ class Manager(object):
                     break
             return r
         else:
-            return self.manager.send(event, channel, target, **kwargs)
+            return self.manager.send(event, channel, target, errors)
 
 
 class BaseComponent(Manager):
