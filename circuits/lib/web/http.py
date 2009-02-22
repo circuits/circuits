@@ -18,9 +18,9 @@ from circuits.core import Component
 import webob
 from utils import quoted_slash
 from headers import parseHeaders
-from errors import BaseError, HTTPError, NotFound
+from errors import HTTPError, NotFound
+from events import Request, Response, Stream, Write, Close
 from constants import RESPONSES, BUFFER_SIZE, SERVER_PROTOCOL
-from events import Request, Response, Stream, Write, Error, Close
 
 class HTTP(Component):
     """HTTP Protocol Component
@@ -36,9 +36,11 @@ class HTTP(Component):
 
         self.server = server
 
-    def _handleError(self, request, response, error):
+    def _handleError(self, error):
+        response = error.response
+
         try:
-            v = self.send(error, "error", self.channel)
+            v = self.send(error, "httperror", self.channel)
         except TypeError:
             v = None
 
@@ -47,7 +49,7 @@ class HTTP(Component):
                 response.body = v
                 res = Response(response)
                 self.send(res, "response", self.channel)
-            elif isinstance(v, BaseError):
+            elif isinstance(v, HTTPError):
                 self.send(Response(v.response), "response", self.channel)
             else:
                 raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
@@ -110,7 +112,7 @@ class HTTP(Component):
 
             if frag:
                 error = HTTPError(request, response, 400)
-                return self.send(Error(error), "error", self.channel)
+                return self.send(error, "httperror", self.channel)
         
             if params:
                 path = "%s;%s" % (path, params)
@@ -140,7 +142,7 @@ class HTTP(Component):
             sp = request.server_protocol
             if sp[0] != rp[0]:
                 error = HTTPError(request, response, 505)
-                return self.send(Error(error), "error", self.channel)
+                return self.send(error, "httperror", self.channel)
 
             headers, body = parseHeaders(StringIO(data))
             request.headers = headers
@@ -184,16 +186,16 @@ class HTTP(Component):
                     response.body = v
                     res = Response(response)
                     self.send(res, "response", self.channel)
-                elif isinstance(v, BaseError):
-                    self._handleError(request, response, Error(v))
+                elif isinstance(v, HTTPError):
+                    self._handleError(v)
                 else:
                     raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
             else:
                 error = NotFound(request, response)
-                self._handleError(request, response, Error(error))
+                self._handleError(error)
         except:
             error = HTTPError(request, response, 500, error=format_exc())
-            self._handleError(request, response, Error(error))
+            self._handleError(error)
         finally:
             if sock in self._requests:
                 del self._requests[sock]
@@ -218,12 +220,12 @@ class HTTP(Component):
 
         self.send(Response(response), "response", self.channel)
 
-    def error(self, error):
-        """Default Error Handler
+    def httperror(self, request, response, status, message=None, error=None):
+        """Default HTTP Error Handler
         
         Default Error Handler that by default just responds with the response
         in the error object passed. The response is normally modified by a
-        BaseError instance or a subclass thereof.
+        HTTPError instance or a subclass thereof.
         """
 
-        self.send(Response(error.response), "response", self.channel)
+        self.send(Response(response), "response", self.channel)
