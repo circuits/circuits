@@ -175,7 +175,7 @@ class DefaultDispatcher(Component):
             req = Request(request, response, *vpath, **params)
 
             try:
-                v = self.send(req, channel, errors=True)
+                v = self.send(req, channel, errors=True, log=False)
             except TypeError:
                 v = None
 
