@@ -12,6 +12,8 @@ library.
 
 import psyco; psyco.full()
 
+from circuits import Debugger
+from circuits.web import sessions
 from circuits.web import Server, Controller
 
 class Root(Controller):
@@ -19,4 +21,15 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-(Server(8000) + Root()).run()
+    def foo(self):
+        return "Foobar"
+
+    def hello(self, name=None):
+        name = name or self.session.get("name", "anonymous")
+        self.session["name"] = name
+
+        print "name = %s" % name
+
+        return "Hello %s" % name
+
+(Server(8000) + Debugger(events=False) + sessions.Sessions() + Root()).run()
