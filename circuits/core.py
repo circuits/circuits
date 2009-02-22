@@ -366,10 +366,10 @@ class Manager(object):
                     else:
                         r = partial(handler, *eargs, **ekwargs)()
                 except:
-                    if errors:
-                        raise
                     e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
                     self.push(e, "error")
+                    if errors:
+                        raise
 
                 if r is not None and r and handler.type == "filter":
                     break
