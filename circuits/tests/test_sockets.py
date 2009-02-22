@@ -23,11 +23,8 @@ class Manager(Thread):
     def run(self):
         while self.running:
             self.flush()
-
             self.server.poll()
-            
-            if self.client.isConnected():
-                self.client.poll()
+            self.client.poll()
 
 class Client(Component):
 
