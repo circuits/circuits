@@ -9,10 +9,10 @@ circuits based application or system. Normal usage of circuits:
 >>> from circuits import listener, Manager, Component, Event
 """
 
-import sys
 from itertools import chain
 from functools import partial
 from collections import deque
+from sys import exc_info, exc_clear
 from collections import defaultdict
 from inspect import getargspec, getmembers
 
@@ -338,7 +338,7 @@ class Manager(object):
         else:
             self.manager.flush()
 
-    def send(self, event, channel, target=None, errors=False):
+    def send(self, event, channel, target=None, errors=False, log=True):
         """E.send(event, channel, target=None, errors=False) -> None
 
         Send the given event to filters/listeners on the
@@ -363,8 +363,8 @@ class Manager(object):
                     else:
                         r = partial(handler, *eargs, **ekwargs)()
                 except:
-                    e = Error(sys.exc_type, sys.exc_value, sys.exc_traceback)
-                    self.push(e, "error")
+                    if log:
+                        self.push(Error(*exc_info()), "error")
                     if errors:
                         raise
 
@@ -372,7 +372,7 @@ class Manager(object):
                     break
             return r
         else:
-            return self.manager.send(event, channel, target, errors)
+            return self.manager.send(event, channel, target, errors, log)
 
 
 class BaseComponent(Manager):
