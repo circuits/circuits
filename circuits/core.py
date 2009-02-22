@@ -65,9 +65,8 @@ class Event(object):
         args and kwargs passed.
         """
 
-        attrs = ["name", "args", "kwargs", "channel", "target"]
-        r = [getattr(self, a) == getattr(y, a) for a in attrs]
-        return False not in r
+        attrs = ("name", "args", "kwargs", "channel", "target")
+        return all([getattr(self, a) == getattr(y, a) for a in attrs])
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
