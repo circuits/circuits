@@ -177,7 +177,7 @@ class HTTP(Component):
             req = Request(request, response)
 
             try:
-                v = self.send(req, "request", self.channel, errors=True)
+                v = self.send(req, "request", self.channel, True, False)
             except TypeError:
                 v = None
 
