@@ -2,9 +2,9 @@
 
 [[TOC]]
 
-== 1.0a2 ==
- Released:: 20081209 (''9th December 2008'')
- Revision:: [208]
+== 1.0b1 ==
+ Released:: 20081231 (''31st December 2008'')
+ Revision:: [261]
 
 === Documentation ===
  * In [208]: [source:circuits/debugger.py debugger]: Removed useless docstring examples/test
