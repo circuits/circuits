@@ -8,32 +8,87 @@
 
 === Documentation ===
  * In [208]: [source:circuits/debugger.py debugger]: Removed useless docstring examples/test
+ * In [210]: [source:docs/cl docs/cl], Fixed cl script to accept an argument rather than hard coding the revision in
+ * In [211]: [source:circuits/core.py core]: Fixed spelling error
 
 === NEW ===
- * In [206]: [source:circuits/__init__.py circuits]: Added SimpleComponent - A simpler Component class that allows you to define Event Handlers by merely having prefixed methods.
+ * In [225]: [source:circuits/workers.py workers]: Renamed Worket to Thread. Implemented Process component for multiprocessing support - requried multiprocessing module
+ * In [243]: [source:circuits/core.py core]: Call "registered" function if available in y (component being registered) when adding (+).
+ * In [245]: [source:circuits/timers.py timers]: Added new Timers component to manage Timer (individual) components.
+ * In [246]: [source:circuits/__init__.py circuits]: Import new Timers component into circuits namespace.
+ * In [244]: [source:circuits/core.py core]: Better sub (-) and isub (-=) support; checks if y (component being unregistered) is registered with this manager/component and calls "unregistered" function of y (component being unregistered) if available.
+ * In [253]: [source:circuits/core.py core]: Even though there is 1 error and 1 failure - this is by far the best attempt at merging and deprecating SimpleComponent into Component. Now any method defined (that isn't already an event handler or doesn't start with a _) automatically becomes an event handler listening on a channel that reflects the method's name
 
 === Enhancements ===
-...
+ * In [217]: [source:circuits/core.py core]: Slightly improved performance of handlers function by 2%
+ * In [218]: [source:circuits/core.py core]: Slightly improved performance of handlers function by 1%
+ * In [219]: [source:circuits/core.py core]: Removed superfluous handler variable - not used anymore
+ * In [221]: [source:circuits/core.py core]: Improved event queuing improving performance by 6%
+ * In [222]: [source:circuits/core.py core]: Event Handler functions don't need the argspec stored
+ * In [223]: [source:circuits/core.py core]: Improved performance by 10% by caching handler branch points for send/iter
+ * In [224]: [source:circuits/core.py core]: Simplified no. of brnaches for calling handlers in send/iter
+ * In [230]: [source:circuits/core.py core]: Improved performance of flush() by using an iter vs. a while and popping the events
+ * Breaks Bridge - test_bridge fails on L71
+ * In [249]: [source:circuits/core.py core]: Simplified and flattened handlers()
+ * In [251]: [source:circuits/timers.py timers]: Changed add method to addTimer (conflicts with Component class)
 
 === Fixes ===
+ * In [257]: [source:circuits/workers.py workers]: Fixed Process component and moved Thread that runs the actual function inside the process
+ * In [259]: [source:circuits/bridge.py bridge]: Fixed bridge by fixing public methods that were getting confused as existing event handlers
+ * In [237]: [source:circuits/workers.py workers]: Fixed Process to share running state properly so the process can be stopped properly
+ * In [220]: [source:circuits/core.py core]: Fixed doc string tests - bad indentation
+ * In [215]: [source:circuits/core.py core]: Fixed defect in handlers for default case - where the handlers for that channel itself were not being picked up (with no target part)
+
+=== Library ===
+
+==== New ====
+ * In [233]: [source:circuits/lib/pygamepump.py lib.pygamepump]: Added new PyGamePump component to pump pygame events into a system - See [source:examples/pygameex.py examples/pygamex.py]
+
+==== Updated ====
+ * In [250]: [source:circuits/lib/web.py lib.web]: Changed _AutoListener metaclass to ExposeType - Also don't setup previously setup event handlers as exposed handlers
+ * In [212]: [source:circuits/lib/irc.py lib.irc]: Added event handlers for all implemented irc commands
+ * In [226]: [source:circuits/lib/irc.py lib.irc]; Added NAMES command
+ * In [227]: [source:circuits/lib/ann.py lib/ann]: Fixed __init__ to properly call their base class
+ * In [229]: [source:circuits/lib/ann.py lib.ann]: Fixed bad indentation
+ * In [235]: [source:circuits/lib/ann.py lib.ann]: Compatibility fixes
+ * In [236]: [source:circuits/lib/web.py lib.web]: Fixed expose decorator to match changes in core's listener changes in 1b08204a9763
+ * In [239]: [source:circuits/lib/sockets.py lib].sockets: Documented events
+ * In [240]: [source:circuits/lib/irc.py lib.irc]; Documented events
+ * In [241]: [source:circuits/lib/irc.py lib.irc]; Added WHOIS command
+ * In [255]: [source:circuits/lib/web.py lib.web]: Fixed Controller by subclassing BaseComponent instead (fixes metaclass error being thrown)
+ * In [256]: [source:circuits/lib/web.py lib.web]: Fixed expose (re-added request, response args - 237 had removed them)
  * In [207]: [source:circuits/lib/ann.py lib.ann]: Fixed bad import of Worker
 
 === Examples ===
 
 ==== New ====
-...
+ * In [213]: [source:examples/circ.py examples/circ.py]: Added new example circ - An urwid/circuits irc client
+ * In [232]: [source:examples/ examples]: New Examples
+ * In [234]: [source:examples/ai/ examples/ai/: AI and ANN examples added
 
 ==== Updated ====
-...
+ * In [258]: [source:examples/workertest.py examples/workertest.py]: Fixed checking of running state (use isAlive())
 
 === Tools ===
 
 ==== New ====
-...
+''No new tools''
 
 ==== Updated ====
  * In [204]: [source:circuits/tools/bench.py tools.bench]: Removed pymills dependancy on misc.duration (imported this function)
  * In [205]: [source:circuits/tools/sniffer.py tools.sniffer]: Fixed improper usage of {{{debugger.Debugger}}}. {{{Debugger.enable()}}} and friends are deprecated.
+ * In [242]: [source:circuits/tools/bench.py tools.bench]: Fixed broken condition checking mode. Changed default mode to Speed Test
+
+=== Tests ===
+ * In [260]: [source:circuits/tests/tests.test_bridge.py tests.test_bridge]: Removed close() - deprecated
+ * In [261]: [source:circuits/tests/tests.test_workers.py tests.test_workers]: Fixed test by waiting until worker has finished
+ * In [252]: [source:circuits/tests/tests.test_timers.py tests.test_timers]: Updated to use addTimer method vs. add
+ * In [247]: [source:circuits/tests/tests.test_timers.py tests.test_timers]: Modified to use new Timers component which in turn uses Timer
+ * In [214]: [source:circuits/tests/tests/test_debugger.py tests.test_debugger]: Fixed Debugger tests
+ * In [216]: [source:circuits/tests/tests/test_core.py tests.test_core]: Fixed event handler target test
+ * In [228]: [source:circuits/tests/tests/test_workers.py tests.test_workers]: Fixed tests to adapt to recent workers revamp
+ * In [248]: [source:circuits/tests/test_timers.py tests.test_timers]: Fixed indentation
+
 
 == 1.0a2 ==
  Released:: 20081120 (''20th November 2008'')
@@ -82,8 +137,9 @@
  * In [158]: [source:examples/helloweb.py examples/helloweb.py]: Greatly simplified and documented
  * In [157], [156]: [source:examples/hello.py examples/hello.py]: Greatly simplified and documented
 
+
 == 1.0a1 ==
- Released:: 2008-11-06
+ Released:: 2008-11-06 (''6th November 2008'')
  Revision:: [112]
 
 First official release.
