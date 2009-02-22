@@ -367,6 +367,8 @@ class Manager(object):
                         self.push(Error(*exc_info()), "error")
                     if errors:
                         raise
+                    else:
+                        exc_clear()
 
                 if r is not None and r and handler.type == "filter":
                     break
