@@ -54,7 +54,7 @@ class EventTestCase(unittest.TestCase):
         manager += debugger
         manager += foo
 
-        debugger.enabled = True
+        debugger.events = True
         e = Event()
         manager.send(e, "foo")
         sys.stderr.seek(0)
@@ -64,7 +64,7 @@ class EventTestCase(unittest.TestCase):
         sys.stderr.seek(0)
         sys.stderr.truncate()
 
-        debugger.enabled = False
+        debugger.events = False
         e = Event()
         manager.send(e, "foo")
         sys.stderr.seek(0)
@@ -89,7 +89,7 @@ class EventTestCase(unittest.TestCase):
         manager += foo
 
         debugger.IgnoreEvents.extend(["Test"])
-        debugger.enabled = True
+        debugger.events = True
 
         e = Event()
         manager.send(e, "foo")
@@ -124,7 +124,7 @@ class EventTestCase(unittest.TestCase):
         manager += foo
 
         debugger.IgnoreChannels.extend(["bar"])
-        debugger.enabled = True
+        debugger.events = True
 
         e = Event()
         manager.send(e, "foo")
