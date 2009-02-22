@@ -10,28 +10,24 @@ This module implements a set of standard HTTP Errors.
 from cgi import escape as _escape
 from urlparse import urljoin as _urljoin
 
+from circuits import Event
+
 import utils
 from constants import DEFAULT_ERROR_MESSAGE, RESPONSES, SERVER_VERSION
 
 
-class BaseError(object):
+class HTTPError(Event):
 
-    def __init__(self, request, response):
-        self.request = request
-        self.response = response
+    def __init__(self, request, response, status, message=None, error=None):
+        super(HTTPError, self).__init__(request, response,
+                status, message=message, error=error)
 
         response.clear()
         response.close = True
         response.headers.add_header("Connection", "close")
 
-    def __nonzero__(self):
-        return True
-
-class HTTPError(BaseError):
-
-    def __init__(self, request, response, status, message=None, error=None):
-        super(HTTPError, self).__init__(request, response)
-
+        self.request = request
+        self.response = response
         self.status = status
 
         short, long = RESPONSES.get(status, ("???", "???",))
@@ -39,14 +35,16 @@ class HTTPError(BaseError):
 
         self.error = error
 
-        s = DEFAULT_ERROR_MESSAGE % {
+        response.status = "%s %s" % (status, short)
+
+        response.body = DEFAULT_ERROR_MESSAGE % {
             "status": "%s %s" % (status, short),
             "message": _escape(message),
             "traceback": error or "",
             "version": SERVER_VERSION}
 
-        response.body = s
-        response.status = "%s %s" % (status, short)
+    def __nonzero__(self):
+        return True
 
     def __repr__(self):
         name = self.__class__.__name__
