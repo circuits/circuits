@@ -464,7 +464,6 @@ class EventTestCase(unittest.TestCase):
 
         e = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
 
-        self.assertEquals(e.__class__.__bases__, (object,))
         self.assertEquals(e.name, "Test")
         self.assertEquals(e.channel, None)
         self.assertEquals(e.target, None)
