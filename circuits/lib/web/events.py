@@ -33,12 +33,6 @@ class Write(Event):
     args: sock
     """
 
-class Error(Event):
-    """Error(Event) -> Error Event
-
-    args: error object
-    """
-
 class Close(Event):
     """Close(Event) -> Close Event
 
