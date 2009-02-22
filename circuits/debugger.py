@@ -38,18 +38,18 @@ class Debugger(Component):
     IgnoreEvents = []
     IgnoreChannels = []
 
-    enabled = True
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self, errors=True, events=True, logger=None, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Debugger, self).__init__(*args, **kwargs)
 
-        self.logger = kwargs.get("logger", None)
+        self.errors = errors
+        self.events = events
+        self.logger = logger
 
     @listener("error", type="filter")
     def error(self, *args, **kwargs):
-        if not self.enabled:
+        if not self.errors:
             return
 
         s = StringIO()
@@ -81,14 +81,16 @@ class Debugger(Component):
         controllbed by the :attr:`enabled flag <circuits.debugger.Debugger.enabled>`
         """
 
-        if self.enabled:
-            channel = event.channel
-            if True in [event.name == name for name in self.IgnoreEvents]:
-                return
-            elif channel in self.IgnoreChannels:
-                return
+        if not self.events:
+            return
+
+        channel = event.channel
+        if True in [event.name == name for name in self.IgnoreEvents]:
+            return
+        elif channel in self.IgnoreChannels:
+            return
+        else:
+            if self.logger:
+                self.logger.debug(repr(event))
             else:
-                if self.logger:
-                    self.logger.debug(repr(event))
-                else:
-                    print >> sys.stderr, event
+                print >> sys.stderr, event
