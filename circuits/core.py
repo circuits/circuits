@@ -45,18 +45,16 @@ class Event(object):
     :type kwargs: dict
     """
 
-    channel = None
-    target = None
-
-    source = None  # Used by Bridge
-    ignore = False # Used by Bridge
-
-    def __new__(cls, *args, **kwargs):
-        self = object.__new__(Event)
-        self.name = cls.__name__
+    def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-        return self
+
+        self.name = self.__class__.__name__
+        self.channel = None
+        self.target = None
+
+        self.source = None  # Used by Bridge
+        self.ignore = False # Used by Bridge
 
     def __eq__(self, y):
         """ x.__eq__(y) <==> x==y
