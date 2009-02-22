@@ -21,18 +21,21 @@ from errors import Forbidden, NotFound, Redirect
 def expose(*channels, **config):
    def decorate(f):
       def wrapper(self, *args, **kwargs):
-         if not hasattr(self, "request"):
-            self.request, self.response = args[:2]
-            self.cookie = self.request.cookie
-            args = args[2:]
-
          try:
+
+            if not hasattr(self, "request"):
+                (self.request, self.response), args = args[:2], args[2:]
+                self.cookie = self.request.cookie
+                if hasattr(self.request, "session"):
+                   self.session = self.request.session
             return f(self, *args, **kwargs)
          finally:
             if hasattr(self, "request"):
                del self.request
                del self.response
                del self.cookie
+            if hasattr(self, "session"):
+               del self.session
  
       wrapper.type = config.get("type", "listener")
       wrapper.target = config.get("target", None)
