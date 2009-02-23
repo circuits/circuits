@@ -10,10 +10,11 @@ using more higher abstracted web components from the web components
 library.
 """
 
-import psyco; psyco.full()
+try:
+    import psyco; psyco.full()
+except importError:
+    pass
 
-from circuits import Debugger
-from circuits.web import sessions
 from circuits.web import Server, Controller
 
 class Root(Controller):
@@ -21,15 +22,4 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-    def foo(self):
-        return "Foobar"
-
-    def hello(self, name=None):
-        name = name or self.session.get("name", "anonymous")
-        self.session["name"] = name
-
-        print "name = %s" % name
-
-        return "Hello %s" % name
-
-(Server(8000) + Debugger(events=False) + sessions.Sessions() + Root()).run()
+(Server(8000) + Debugger(events=False) + sessions.Sessions() + Root() + Admin()).run()
