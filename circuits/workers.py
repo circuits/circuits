@@ -3,12 +3,20 @@
 from threading import Thread as _Thread
 from threading import enumerate as threads
 
-from multiprocessing import Pipe as _Pipe
-from multiprocessing import Value as _Value
-from multiprocessing import Process as _Process
+try:
+    from multiprocessing import Pipe as _Pipe
+    from multiprocessing import Value as _Value
+    from multiprocessing import Process as _Process
 
-from multiprocessing import cpu_count as cpus
-from multiprocessing import active_children as processes
+    from multiprocessing import cpu_count as cpus
+    from multiprocessing import active_children as processes
+except ImportError:
+    from processing import Pipe as _Pipe
+    from processing import Value as _Value
+    from processing import Process as _Process
+
+    from processing import cpuCount as cpus
+    from processing import activeChildren as processes
 
 from circuits.core import Component as _Component
 
