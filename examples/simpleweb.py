@@ -22,4 +22,4 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-(Server(8000) + Debugger(events=False) + sessions.Sessions() + Root() + Admin()).run()
+(Server(8000) + Root()).run()
