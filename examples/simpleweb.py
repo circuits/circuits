@@ -12,7 +12,7 @@ library.
 
 try:
     import psyco; psyco.full()
-except importError:
+except ImportError:
     pass
 
 from circuits.web import Server, Controller
