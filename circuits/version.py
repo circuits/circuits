@@ -18,6 +18,8 @@ import os
 import re
 import time
 
+from types import ModuleType
+
 unknown_version = 'unknown'
 remembered_version = False
 
@@ -25,7 +27,7 @@ def get_version(doreload=False):
 	"""Return version information if available."""
 	try:
 		import circuits.__version__
-		if doreload:
+		if doreload and type(circuits.__version__) == ModuleType:
 			reload(circuits.__version__)
 		version = circuits.__version__
 	except ImportError:
