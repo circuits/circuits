@@ -77,7 +77,7 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
     If 'path' starts with a slash ('/'), this will return
         (base + script_name + path + qs).
     If it does not start with a slash, this returns
-        (base + script_name [+ request.path_info] + path + qs).
+        (base + script_name [+ request.path] + path + qs).
     
     If script_name is None, request will be used
     to find a script_name, if available.
@@ -86,12 +86,11 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
     
     Finally, note that this function can be used to obtain an absolute URL
     for the current request path (minus the querystring) by passing no args.
-    If you call url(qs=request.query_string), you should get the
+    If you call url(qs=request.qs), you should get the
     original browser URL (assuming no internal redirections).
     
-    If relative is None or not provided, request.app.relative_urls will
-    be used (if available, else False). If False, the output will be an
-    absolute URL (including the scheme, host, vhost, and script_name).
+    If relative is False the output will be an absolute URL
+    (including the scheme, host, vhost, and script_name).
     If True, the output will instead be a URL that is relative to the
     current request path, perhaps including '..' atoms. If relative is
     the string 'server', the output will instead be a URL that is
