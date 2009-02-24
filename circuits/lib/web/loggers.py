@@ -25,12 +25,14 @@ class Logger(Component):
       remote = request.remote
       outheaders = response.headers
       inheaders = request.headers
+
+      protocol = "HTTP/%d.%d" % request.protocol
       
       atoms = {"h": remote.name or remote.ip,
              "l": "-",
              "u": getattr(request, "login", None) or "-",
              "t": self.time(),
-             "r": request.request_line,
+             "r": "%s %s %s" % (request.method, request.path, protocol),
              "s": response.status.split(" ", 1)[0],
              "b": outheaders.get("Content-Length", "") or "-",
              "f": inheaders.get("Referer", ""),
