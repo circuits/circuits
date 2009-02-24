@@ -114,8 +114,7 @@ class HTTP(Component):
             # But note that "...a URI must be separated into its components
             # before the escaped characters within those components can be
             # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
-            atoms = map(unquote, quoted_slash.split(path))
-            path = "%2F".join(atoms)
+            path = "%2F".join(map(unquote, quoted_slash.split(path)))
         
             # Compare request and server HTTP protocol versions, in case our
             # server does not support the requested protocol. Limit our output
