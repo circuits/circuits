@@ -22,7 +22,7 @@ mimetypes.types_map['.dwg']='image/x-dwg'
 mimetypes.types_map['.ico']='image/x-icon'
 
 from utils import url, valid_status, get_ranges
-from errors import HTTPError, Redirect, NotFound, Redirect
+from errors import HTTPError, NotFound, Redirect
 
 def expires(request, response, secs=0, force=False):
     """Tool for influencing cache mechanisms using the 'Expires' header.
