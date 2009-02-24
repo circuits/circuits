@@ -51,10 +51,10 @@ class DefaultDispatcher(Component):
 
         return True
 
-    def _getChannel(self, path, method):
-        """_getChannel(path, method) -> channel
+    def _getChannel(self, request):
+        """_getChannel(request) -> channel
 
-        Find and return an appropriate channel path and method.
+        Find and return an appropriate channel for the given request.
 
         The channel is found by traversing the system's event channels,
         and matching path components to successive channels in the system.
@@ -88,6 +88,10 @@ class DefaultDispatcher(Component):
         GET       /foo/bar/hello         /foo/bar/hello     []
         GET       /foo/bar/hello/1/2/3   /foo/bar/hello     [1, 2, 3]
         """
+
+        path = request.path
+        method = request.method.upper()
+        request.index = path.endswith("/")
 
         defaults = "index", method, "request"
 
@@ -162,7 +166,7 @@ class DefaultDispatcher(Component):
             expires(request, response, 3600*24*30)
             return serve_file(request, response, filename)
 
-        channel, vpath = self._getChannel(request.path, request.method.upper())
+        channel, vpath = self._getChannel(request)
 
         if channel:
             params = parseQueryString(request.qs)
