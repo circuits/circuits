@@ -134,9 +134,7 @@ class Middleware(Component):
         self.request = request
         self.response = response
 
-        response.body = "".join(self.app(self.environ(), self.start_response))
-
-        self.send(Response(response), "response")
+        return "".join(self.app(self.environ(), self.start_response))
 
 class Filter(Component):
 
