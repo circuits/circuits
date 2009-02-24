@@ -16,6 +16,7 @@ from functools import update_wrapper
 
 from circuits.core import BaseComponent
 
+import tools
 from errors import Forbidden, NotFound, Redirect
 
 def expose(*channels, **config):
@@ -77,6 +78,17 @@ class BaseController(BaseComponent):
 
     def redirect(self, urls, status=None):
        return Redirect(self.request, self.response, urls, status)
+
+    def serve_file(sefl, path, type=None, disposition=None, name=None):
+        return tools.serve_file(self.request, self.response, path,
+                type, disposition, name)
+
+    def serve_download(self, path, name=None):
+        return tools.serve_download(self.request, self.response, path,
+                name)
+
+    def expires(self, secs=0, force=False):
+        return tools.expires(self.request, self.response, secs, force)
 
 class Controller(BaseController):
 
