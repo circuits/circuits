@@ -97,19 +97,18 @@ class Request(object):
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
 class Response(object):
-    """Response(sock) -> new Response object
+    """Response(sock, request) -> new Response object
 
     A Response object that holds the response to
     send back to the client. This ensure that the correct data
     is sent in the correct order.
     """
 
-    request = None
-
-    def __init__(self, sock):
+    def __init__(self, sock, request):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.sock = sock
+        self.request = request
         self.clear()
 
     def __repr__(self):
