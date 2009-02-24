@@ -44,7 +44,10 @@ class DefaultDispatcher(Component):
             else:
                 raise
 
-        params.update(dictform(form))
+        if form.file:
+            request.body = form.file
+        else:
+            params.update(dictform(form))
 
         return True
 
