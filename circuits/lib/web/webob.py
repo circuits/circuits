@@ -58,7 +58,7 @@ class Request(object):
 
     login = None
 
-    def __init__(self, method, path, protocol, qs):
+    def __init__(self, sock, method, scheme, path, protocol, qs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self._headers = None
