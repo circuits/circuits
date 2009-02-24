@@ -11,10 +11,10 @@ These tools can also be used within Controlelrs and request handlers.
 import os
 import stat
 import types
+import hashlib
 import datetime
 import mimetypes
 import mimetools
-from hashlib import md5
 from rfc822 import formatdate
 
 mimetypes.init()
@@ -212,7 +212,7 @@ def validate_etags(request, response, autotags=False):
     if (not etag) and autotags:
         if status == 200:
             etag = response.collapse_body()
-            etag = '"%s"' % md5.new(etag).hexdigest()
+            etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
             response.headers['ETag'] = etag
     
     response.ETag = etag
