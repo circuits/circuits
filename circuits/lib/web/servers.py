@@ -15,6 +15,7 @@ from circuits import Component
 from circuits.lib.sockets import TCPServer
 
 from http import HTTP
+from webob import Request, Host
 from constants import SERVER_VERSION
 from dispatchers import Dispatcher
 
@@ -25,6 +26,9 @@ class BaseServer(Component):
 
         self.server = TCPServer(port, address, **kwargs)
         self.http = HTTP(self, **kwargs)
+
+        Request.server = self
+        Request.local = Host(self.server.address, self.server.port)
 
         self.manager += self.server
         self.manager += self.http
