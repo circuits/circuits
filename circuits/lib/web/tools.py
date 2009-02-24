@@ -266,20 +266,20 @@ def redirect(request, response, url=''):
     raise Redirect(request, response, url)
 
 def trailing_slash(request, response, missing=True, extra=False):
-    """Redirect if path_info has (missing|extra) trailing slash."""
+    """Redirect if request.path has (missing|extra) trailing slash."""
 
-    pi = request.path_info
+    pi = request.path
     
-    if request.is_index is True:
+    if request.index is True:
         if missing:
             if not pi.endswith('/'):
-                new_url = url(request, pi + '/', request.query_string)
+                new_url = url(request, pi + '/', request.qs)
                 return Redirect(request, response, new_url)
-    elif request.is_index is False:
+    elif request.index is False:
         if extra:
             # If pi == '/', don't redirect to ''!
             if pi.endswith('/') and pi != '/':
-                new_url = url(request, pi[:-1], request.query_string)
+                new_url = url(request, pi[:-1], request.qs)
                 return Redirect(request, response, new_url)
 
 def flatten(request, response):
