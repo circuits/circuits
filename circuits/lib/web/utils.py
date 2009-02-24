@@ -99,40 +99,29 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
     if qs:
         qs = '?' + qs
     
-    if request.app:
-        if not path.startswith("/"):
-            # Append/remove trailing slash from path_info as needed
-            # (this is to support mistyped URL's without redirecting;
-            # if you want to redirect, use tools.trailing_slash).
-            pi = request.path_info
-            if request.is_index is True:
-                if not pi.endswith('/'):
-                    pi = pi + '/'
-            elif request.is_index is False:
-                if pi.endswith('/') and pi != '/':
-                    pi = pi[:-1]
-            
-            if path == "":
-                path = pi
-            else:
-                path = _urljoin(pi, path)
+    if not path.startswith("/"):
+        # Append/remove trailing slash from request.path as needed
+        # (this is to support mistyped URL's without redirecting;
+        # if you want to redirect, use tools.trailing_slash).
+        pi = request.path
+        if request.index is True:
+            if not pi.endswith('/'):
+                pi = pi + '/'
+        elif request.index is False:
+            if pi.endswith('/') and pi != '/':
+                pi = pi[:-1]
         
-        if script_name is None:
-            script_name = request.script_name
-        if base is None:
-            base = request.base
+        if path == "":
+            path = pi
+        else:
+            path = _urljoin(pi, path)
+    
+    if script_name is None:
+        script_name = request.script_name
+    if base is None:
+        base = request.base
         
-        newurl = base + script_name + path + qs
-    else:
-        # No request.app (we're being called outside a request).
-        # We'll have to guess the base from server.* attributes.
-        # This will produce very different results from the above
-        # if you're using vhosts or tools.proxy.
-        if base is None:
-            base = request.server.base()
-        
-        path = (script_name or "") + path
-        newurl = base + path + qs
+    newurl = base + script_name + path + qs
     
     if './' in newurl:
         # Normalize the URL by removing ./ and ../
@@ -147,9 +136,6 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
         newurl = '/'.join(atoms)
     
     # At this point, we should have a fully-qualified absolute URL.
-    
-    if relative is None:
-        relative = getattr(request.app, "relative_urls", False)
     
     # See http://www.ietf.org/rfc/rfc2396.txt
     if relative == 'server':
