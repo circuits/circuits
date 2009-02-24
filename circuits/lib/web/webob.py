@@ -80,8 +80,14 @@ class Request(object):
 
     def _setHeaders(self, headers):
         self._headers = headers
+
         if "Cookie" in self.headers:
             self.cookie.load(self.headers["Cookie"])
+
+        host = self.headers.get("Host", None)
+        if not host:
+            host = self.local.name or self.local.ip
+        self.base = "%s://%s" % (self.scheme, host)
 
     headers = property(_getHeaders, _setHeaders)
 
