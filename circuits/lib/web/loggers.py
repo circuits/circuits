@@ -22,7 +22,7 @@ class Logger(Component):
 
    def log(self, response):
       request = response.request
-      remote = request.remote_host
+      remote = request.remote
       outheaders = response.headers
       inheaders = request.headers
       
