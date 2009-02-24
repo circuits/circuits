@@ -9,7 +9,10 @@ to the user's browser. This example demonstrates how to build a
 simple but complete web server and application using circuits.
 """
 
-import psyco; psyco.full()
+try:
+    import psyco; psyco.full()
+except ImportError:
+    pass
 
 from circuits import Component
 from circuits.web import BaseServer
