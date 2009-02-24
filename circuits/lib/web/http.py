@@ -70,7 +70,8 @@ class HTTP(Component):
         if response.stream:
             self.push(Stream(response), "stream", self.channel)
             return
-        elif response.close:
+
+        if response.close:
             self.send(Close(response.sock), "close", self.channel)
 
         response.done = True
