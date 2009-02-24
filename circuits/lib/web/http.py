@@ -99,9 +99,7 @@ class HTTP(Component):
 
             protocol = tuple(map(int, protocol[5:].split(".")))
             request = webob.Request(sock, method, scheme, path, protocol, qs)
-
-            response = webob.Response(sock)
-            response.request = request
+            response = webob.Response(sock, request)
 
             if frag:
                 error = HTTPError(request, response, 400)
