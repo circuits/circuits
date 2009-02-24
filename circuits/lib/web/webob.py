@@ -61,13 +61,17 @@ class Request(object):
     def __init__(self, sock, method, scheme, path, protocol, qs):
         "initializes x; see x.__class__.__doc__ for signature"
 
+        self.sock = sock
+        self.method = method
+        self.scheme = scheme
+        self.path = path
+        self.protocol = protocol
+        self.qs = qs
+        self.cookie = SimpleCookie()
+
         self._headers = None
 
-        self.method = method
-        self.path = self.path_info = path
-        self.protocol = protocol
-        self.qs = self.query_string = qs
-        self.cookie = SimpleCookie()
+        self.remote = Host(*sock.getpeername())
 
         self.body = StringIO()
 
