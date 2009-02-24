@@ -97,7 +97,7 @@ class HTTP(Component):
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
-            protocol = tuple(map(int, protocol.split("/", 1)[1].split(".")))
+            protocol = tuple(map(int, protocol[5:].split(".")))
             request = webob.Request(sock, method, scheme, path, protocol, qs)
 
             response = webob.Response(sock)
