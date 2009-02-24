@@ -25,7 +25,7 @@ class DefaultDispatcher(Component):
         self.docroot = docroot or os.getcwd()
         self.defaults = defaults or ["index.html"]
 
-    def _getParams(self, request, response):
+    def _parseBody(self, request, response, params):
         body = request.body
         headers = request.headers
 
@@ -164,13 +164,9 @@ class DefaultDispatcher(Component):
 
         if channel:
             params = parseQueryString(request.qs)
-            x = self._getParams(request, response)
-            if not x:
-                return
-            elif type(x) == dict:
-                params.update(x)
-            else:
-                request.body = x
+            v = self._parseBody(request, response, params)
+            if not v:
+                return v # MaxSizeExceeded (return the HTTPError)
 
             req = Request(request, response, *vpath, **params)
 
