@@ -130,7 +130,7 @@ class Middleware(Component):
             self.response.headers.add_header(*header)
 
     @listener("request", type="filter")
-    def onREQUEST(self, request, response, *args, **kwargs):
+    def onREQUEST(self, request, response):
         self.request = request
         self.response = response
 
