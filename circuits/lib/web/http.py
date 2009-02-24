@@ -103,10 +103,6 @@ class HTTP(Component):
             response = webob.Response(sock)
             response.request = request
 
-            request.scheme = scheme
-            request.server_protocol = SERVER_PROTOCOL
-            request.request_line = requestline
-
             if frag:
                 error = HTTPError(request, response, 400)
                 return self.send(error, "httperror", self.channel)
