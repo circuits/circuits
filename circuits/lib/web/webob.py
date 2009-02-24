@@ -40,7 +40,8 @@ class Host(object):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
 
 class Request(object):
-    """Request(method, path, protocol, qa, headers) -> new HTTP Request object
+    """Request(sock, method, scheme, path, protocol, qa, headers) -> ...
+        new HTTP Request object
 
     Request object that holds an incoming request.
     """
