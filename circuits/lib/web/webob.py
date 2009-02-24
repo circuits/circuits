@@ -46,14 +46,17 @@ class Request(object):
     """
 
     server = None
-    script_name = ""
+
     scheme = "http"
-    server_protocol = (1, 1)
-    request_line = ""
     protocol = (1, 1)
+    server_protocol = (1, 1)
+    local = Host("127.0.0.1", 80)
+    remote = Host("127.0.0.1", 1111)
+
+    index = None
+    script_name = ""
+
     login = None
-    local_host = Host("127.0.0.1", 80)
-    remote_host = Host("127.0.0.1", 1111)
 
     def __init__(self, method, path, protocol, qs):
         "initializes x; see x.__class__.__doc__ for signature"
