@@ -45,7 +45,6 @@ class Request(object):
     Request object that holds an incoming request.
     """
 
-    app = None
     server = None
     script_name = ""
     scheme = "http"
