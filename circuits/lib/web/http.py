@@ -26,7 +26,7 @@ class HTTP(Component):
     """HTTP Protocol Component
 
     Implements the HTTP server protocol and parses and processes incoming
-    HTTP messages then creates and sends appropiate responses.
+    HTTP messages creating and sending an appropriate response.
     """
 
     _requests = {}
