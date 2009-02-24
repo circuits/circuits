@@ -44,10 +44,9 @@ class DefaultDispatcher(Component):
             else:
                 raise
 
-        if form.file:
-            return form.file
-        else:
-            return dictform(form)
+        params.update(dictform(form))
+
+        return True
 
     def _getChannel(self, path, method):
         """_getChannel(path, method) -> channel
