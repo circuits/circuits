@@ -97,12 +97,8 @@ class HTTP(Component):
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
-            protocol = tuple([int(x) for x in protocol.split("/")[1].split(".")])
-            request = webob.Request(method, path, protocol, qs)
-            request.server = self.server
-            request.local_host = webob.Host(
-                    self.server.address, self.server.port)
-            request.remtoe_host = webob.Host(*sock.getpeername())
+            protocol = tuple(map(int, protocol.split("/", 1)[1].split(".")))
+            request = webob.Request(sock, method, scheme, path, protocol, qs)
 
             response = webob.Response(sock)
             response.request = request
