@@ -221,7 +221,7 @@ class Manager(object):
         else:
             raise TypeError("No registration found for %r" % y)
 
-    def handlers(self, s):
+    def _getHandlers(self, s):
         if s == "*:*":
             return self._handlers
 
@@ -357,7 +357,7 @@ class Manager(object):
                 channel = "%s:%s" % (target, channel)
 
             r = False
-            for handler in self.handlers(channel):
+            for handler in self._getHandlers(channel):
                 try:
                     if handler._passEvent:
                         r = partial(handler, event, *eargs, **ekwargs)()
