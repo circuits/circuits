@@ -105,9 +105,9 @@ class Event(object):
 class Error(Event):
     """Error(type, value, traceback) -> Error Event
 
-    type:      Exception type      -> sys.exc-type
+    type:      Exception type      -> sys.exc_type
     value:     Exception value     -> sys.exc_value
-    traceback: Exception traceback -> sys.exc-traceback
+    traceback: Exception traceback -> sys.exc_traceback
     """
 
 def listener(*args, **kwargs):
