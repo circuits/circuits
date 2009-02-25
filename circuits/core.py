@@ -396,7 +396,8 @@ class Manager(object):
     def _calls(self):
         for v in vars(self).itervalues():
             if isinstance(v, Manager):
-                yield v.__tick__
+                if hasattr(v, "__tick__"):
+                    yield v.__tick__
 
     def _run(self):
         while self.running and self.thread.isAlive():
