@@ -175,11 +175,11 @@ class Manager(object):
         super(Manager, self).__init__()
 
         self._queue = deque()
-
         self._handlers = set()
+        self._components = set()
+        self._channels = defaultdict(list)
 
         self.manager = self
-        self.channels = defaultdict(list)
 
     def __repr__(self):
         q = len(self._queue)
