@@ -13,9 +13,9 @@ descriptors for read/write events. Pollers:
 """
 
 try:
-    from select26.select import select
+    from select26.select import select as _select
 except ImportError:
-    from select import select
+    from select import select as _select
 
 from circuits.core import Event, Component
 
@@ -95,7 +95,7 @@ class Select(Poller):
     """
 
     def poll(self, timeout=TIMEOUT):
-        r, w, e = select(self.read, self.write, self.all, timeout)
+        r, w, e = _select(self.read, self.write, self.all, timeout)
 
         for fd in w:
             self.push(Write(fd), "write", self.channel)
