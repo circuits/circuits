@@ -463,6 +463,7 @@ class BaseComponent(Manager):
                 manager._add(handler, channel)
 
         self.manager = manager
+        self.manager._components.add(self)
 
 
     def unregister(self):
