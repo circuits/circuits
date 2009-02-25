@@ -219,7 +219,7 @@ class Manager(object):
         else:
             raise TypeError("No registration found for %r" % y)
 
-    def _getHandlers(self, s):
+    def handlers(self, s):
         if s == "*:*":
             return self._handlers
 
