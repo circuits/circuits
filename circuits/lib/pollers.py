@@ -20,6 +20,8 @@ except ImportError:
 from circuits.core import Event, Component
 
 TIMEOUT=0.00001
+READ = 1
+WRITE = 2
 
 ###
 ### Events
@@ -51,38 +53,37 @@ class Poller(Component):
 	to implement the desired poller implementation.
 	"""
 
-	fds = []
-	read = []
-	write = []
+	def __init__(self, *args, **kwargs):
+		super(Poller, self).__init__(*args, **kwargs)
+
+		self._fds = []
 
 	def add(self, fd):
-		"""Poller.add(fd) -> None
-
-		Add the given file descriptor fd to be polled.
-		"""
-
-		self.fds.append(fd)
-		self.read.append(fd)
-		self.write.append(fd)
+		self._fds.append((fd, READ))
 
 	def remove(self, fd):
-		"""Poller.remove(fd) -> None
+		self._fds.remove(fd)
 
-		Remove the given file descriptor fd from being polled.
-		"""
+	@property
+	def read(self):
+		if hasattr(self, "_fds"):
+			return [fd for fd, flag in self._fds if flag & READ]
+		else:
+			return []
 
-		self.fds.remove(fd)
-		self.read.remove(fd)
-		self.write.remove(fd)
+	@property
+	def write(self):
+		if hasattr(self, "_fds"):
+			return [fd for fd, flag in self._fds if flag & WRITE]
+		else:
+			return []
 
-	def poll(self, timeout=TIMEOUT):
-		"""Poller.poll(timeout=TIMEOUT) -> None
-
-		Base poll. Sub-classes should override this depending on the polling
-		implementation.
-		"""
-
-		pass
+	@property
+	def all(self):
+		if hasattr(self, "_fds"):
+			return [fd for fd, flag in self._fds if flag & (READ | WRITE)]
+		else:
+			return []
 
 class Select(Poller):
 	"""Select(...) -> new Select Poller Component
@@ -94,7 +95,7 @@ class Select(Poller):
 	"""
 
 	def poll(self, timeout=TIMEOUT):
-		r, w, e = select(self.read, self.write, self.fds, timeout)
+		r, w, e = select(self.read, self.write, self.all, timeout)
 
 		for fd in w:
 			self.push(Write(fd), "write", self.channel)
