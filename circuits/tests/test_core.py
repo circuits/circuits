@@ -565,30 +565,30 @@ class EventTestCase(unittest.TestCase):
 
         manager = Manager()
 
-        manager.add(onFOO)
-        manager.add(onBAR)
+        manager._add(onFOO)
+        manager._add(onBAR)
         self.assertTrue(onFOO in manager.channels["*"])
         self.assertTrue(onBAR in manager.channels["*"])
 
-        manager.add(onFOO, "foo")
-        manager.add(onBAR, "bar")
+        manager._add(onFOO, "foo")
+        manager._add(onBAR, "bar")
         self.assertTrue(onFOO in manager["foo"])
         self.assertTrue(onBAR in manager["bar"])
 
         try:
-            manager.add(onTEST)
+            manager._add(onTEST)
         except InvalidHandler, error:
             pass
 
         self.assertFalse(onTEST in manager.channels["*"])
 
-        manager.remove(onFOO)
+        manager._remove(onFOO)
         self.assertTrue(onFOO not in manager._handlers)
 
-        manager.remove(onBAR, "bar")
+        manager._remove(onBAR, "bar")
         self.assertTrue(onBAR not in manager["bar"])
         self.assertTrue(onBAR in manager.channels["*"])
-        manager.remove(onBAR)
+        manager._remove(onBAR)
         self.assertTrue(onBAR not in manager._handlers)
 
         self.assertEquals(len(manager._handlers), 0)
@@ -630,10 +630,10 @@ class EventTestCase(unittest.TestCase):
 
         manager = Manager()
 
-        manager.add(onSTOP)
-        manager.add(onTEST, "test")
-        manager.add(onFOO, "test")
-        manager.add(onBAR, "bar")
+        manager._add(onSTOP)
+        manager._add(onTEST, "test")
+        manager._add(onFOO, "test")
+        manager._add(onBAR, "bar")
 
         self.assertTrue(onSTOP in manager.channels["*"])
         self.assertTrue(onTEST in manager["test"])
@@ -661,10 +661,10 @@ class EventTestCase(unittest.TestCase):
         manager.send(Test(self, time.time(), stop=True), "test")
         self.assertTrue(self.flag == False)
 
-        manager.remove(onSTOP)
-        manager.remove(onTEST, "test")
-        manager.remove(onFOO, "test")
-        manager.remove(onBAR, "bar")
+        manager._remove(onSTOP)
+        manager._remove(onTEST, "test")
+        manager._remove(onFOO, "test")
+        manager._remove(onBAR, "bar")
 
         self.assertEquals(len(manager._handlers), 0)
 
