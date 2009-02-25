@@ -21,52 +21,52 @@ VERSION = "%prog v" + circuits.__version__
 ###
 
 def parse_options():
-	"""parse_options() -> opts, args
+    """parse_options() -> opts, args
 
-	Parse the command-line options given returning both
-	the parsed options and arguments.
-	"""
+    Parse the command-line options given returning both
+    the parsed options and arguments.
+    """
 
-	parser = optparse.OptionParser(usage=USAGE, version=VERSION)
+    parser = optparse.OptionParser(usage=USAGE, version=VERSION)
 
-	parser.add_option("-b", "--bind",
-			action="store", default="0.0.0.0:8000", dest="bind",
-			help="Bind to address:port")
+    parser.add_option("-b", "--bind",
+            action="store", default="0.0.0.0:8000", dest="bind",
+            help="Bind to address:port")
 
-	opts, args = parser.parse_args()
+    opts, args = parser.parse_args()
 
-	return opts, args
+    return opts, args
 
 ###
 ### Main
 ###
 
 def main():
-	opts, args = parse_options()
+    opts, args = parse_options()
 
-	if ":" in opts.bind:
-		address, port = opts.bind.split(":")
-		port = int(port)
-	else:
-		address, port = opts.bind, 8000
+    if ":" in opts.bind:
+        address, port = opts.bind.split(":")
+        port = int(port)
+    else:
+        address, port = opts.bind, 8000
 
-	if args:
-		x = args[0].split(":")
-		if len(x) > 1:
-			nodes = [(x[0], int(x[1]))]
-		else:
-			nodes = [(x[0], 8000)]
-	else:
-		nodes = []
+    if args:
+        x = args[0].split(":")
+        if len(x) > 1:
+            nodes = [(x[0], int(x[1]))]
+        else:
+            nodes = [(x[0], 8000)]
+    else:
+        nodes = []
 
-	manager = Manager()
+    manager = Manager()
 
-	debugger = Debugger()
-	debugger.IgnoreEvents.extend(["Read", "Write"])
-	manager += debugger
+    debugger = Debugger()
+    debugger.IgnoreEvents.extend(["Read", "Write"])
+    manager += debugger
 
-	bridge = Bridge(port, address=address, nodes=nodes)
-	manager += bridge
+    bridge = Bridge(port, address=address, nodes=nodes)
+    manager += bridge
 
     manager.run()
 
@@ -75,4 +75,4 @@ def main():
 ###
 
 if __name__ == "__main__":
-	main()
+    main()
