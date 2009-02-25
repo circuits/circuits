@@ -68,12 +68,7 @@ def main():
 	bridge = Bridge(port, address=address, nodes=nodes)
 	manager += bridge
 
-	while True:
-		try:
-			manager.flush()
-			bridge.poll()
-		except KeyboardInterrupt:
-			break
+    manager.run()
 
 ###
 ### Entry Point
