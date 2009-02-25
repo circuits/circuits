@@ -259,8 +259,8 @@ class Manager(object):
         return handlers
 
 
-    def add(self, handler, channel=None):
-        """E.add(handler, channel) -> None
+    def _add(self, handler, channel=None):
+        """E._add(handler, channel) -> None
 
         Add a new filter or listener to the event manager
         adding it to the given channel. If no channel is
@@ -459,7 +459,7 @@ class BaseComponent(Manager):
 
                     channel = "%s:%s" % (target, channel)
 
-                manager.add(handler, channel)
+                manager._add(handler, channel)
 
         self.manager = manager
 
