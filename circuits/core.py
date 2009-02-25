@@ -388,29 +388,24 @@ class Manager(object):
         self.thread.setDaemon(True)
         self.thread.start()
 
-    def _run(self):
-        calls = []
-        for v in vars(self).itervalues():
-            if isinstance(v, Manager) and hasattr(v, "tick"):
-                calls.append(v.tick)
-
-        while self.running and self.thread.isAlive():
-            [call() for call in calls]
-            self.manager.flush()
-
     def stop(self):
         self.running = False
         self.thread.join()
 
-    def run(self):
-        calls = []
+    def _calls(self):
         for v in vars(self).itervalues():
-            if isinstance(v, Manager) and hasattr(v, "tick"):
-                calls.append(v.tick)
+            if isinstance(v, Manager):
+                yield v.__tick__
 
+    def _run(self):
+        while self.running and self.thread.isAlive():
+            [f() for f in self._calls()]
+            self.manager.flush()
+
+    def run(self):
         while True:
             try:
-                [call() for call in calls]
+                [f() for f in self._calls()]
                 self.manager.flush()
             except (KeyboardInterrupt, SystemExit):
                 break
