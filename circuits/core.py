@@ -362,7 +362,7 @@ class Manager(object):
                 channel = "%s:%s" % (target, channel)
 
             r = False
-            for handler in self._getHandlers(channel):
+            for handler in self.handlers(channel):
                 try:
                     if handler._passEvent:
                         r = partial(handler, event, *eargs, **ekwargs)()
