@@ -158,9 +158,9 @@ class HandlersType(type):
     def __init__(cls, name, bases, dct):
         super(HandlersType, cls).__init__(name, bases, dct)
 
-        for name, f in dct.iteritems():
-            if callable(f) and not (name[0] == "_" or hasattr(f, "type")):
-                setattr(cls, name, listener(name, type="listener")(f))
+        for k, v in dct.iteritems():
+            if callable(v) and not (k[0] == "_" or hasattr(v, "type")):
+                setattr(cls, k, listener(k, type="listener")(v))
 
 
 class Manager(object):
