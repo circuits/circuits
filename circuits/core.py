@@ -282,8 +282,8 @@ class Manager(object):
         else:
             self.channels[channel] = [handler]
 
-    def remove(self, handler, channel=None):
-        """E.remove(handler, channel=None) -> None
+    def _remove(self, handler, channel=None):
+        """E._remove(handler, channel=None) -> None
 
         Remove the given filter or listener from the
         event manager removing it from the given channel.
@@ -468,7 +468,7 @@ class BaseComponent(Manager):
         "Unregister all registered event handlers from the manager."
 
         for handler in self._handlers.copy():
-            self.manager.remove(handler)
+            self.manager._remove(handler)
 
         self.manager = self
 
