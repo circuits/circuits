@@ -10,6 +10,7 @@ circuits based application or system. Normal usage of circuits:
 """
 
 from itertools import chain
+from threading import Thread
 from functools import partial
 from collections import deque
 from sys import exc_info, exc_clear
@@ -376,6 +377,37 @@ class Manager(object):
         else:
             return self.manager.send(event, channel, target, errors, log)
 
+    def start(self):
+        self.thread = Thread(target=self._run)
+        self.running = True
+        self.thread.start()
+
+    def _run(self):
+        calls = []
+        for v in vars(self).itervalues():
+            if isinstance(v, Manager) and hasattr(v, "tick"):
+                calls.append(v.tick)
+
+        while self.running and self.thread.isAlive():
+            [call() for call in calls]
+            self.manager.flush()
+
+    def stop(self):
+        self.running = False
+        self.thread.join()
+
+    def run(self):
+        calls = []
+        for v in vars(self).itervalues():
+            if isinstance(v, Manager) and hasattr(v, "tick"):
+                calls.append(v.tick)
+
+        while True:
+            try:
+                [call() for call in calls]
+                self.manager.flush()
+            except KeyboardInterrupt:
+                break
 
 class BaseComponent(Manager):
     """Creates a new Component
