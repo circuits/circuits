@@ -442,8 +442,8 @@ class BaseComponent(Manager):
         return "<%s/%s component (q: %d h: %d)>" % (name, channel, q, h)
 
     def register(self, manager):
-        handlers = [x[1] for x in getmembers(self) if callable(x[1]) and
-                hasattr(x[1], "type")]
+        p = lambda x: callable(x) and hasattr(x, "type")
+        handlers = [v for k, v in getmembers(self, p)]
 
         for handler in handlers:
             if handler.channels:
