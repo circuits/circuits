@@ -105,3 +105,5 @@ class Select(Poller):
 
 		for fd in e:
 			self.push(Error(fd), "error", self.channel)
+
+	tick = poll
