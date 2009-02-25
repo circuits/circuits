@@ -256,6 +256,13 @@ class Manager(object):
 
         return handlers
 
+    @property
+    def components(self):
+        return self._components.copy()
+
+    @property
+    def channels(self):
+        return self._channels
 
     def _add(self, handler, channel=None):
         """E._add(handler, channel) -> None
