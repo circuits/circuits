@@ -120,7 +120,10 @@ class Bridge(Component):
             event.ignore = True
 
         event.source = self.ourself
-        s = pickle(event, -1)
+        try:
+            s = pickle(event, -1)
+        except:
+            return
 
         if self.nodes:
             for node in self.nodes:
