@@ -128,9 +128,7 @@ class HTTP(Component):
             # Notice that, in (b), the response will be "HTTP/1.1" even though
             # the client only understands 1.0. RFC 2616 10.5.6 says we should
             # only return 505 if the _major_ version is different.
-            rp = request.protocol
-            sp = request.server_protocol
-            if sp[0] != rp[0]:
+            if not request.protocol[0] == request.server_protocol[0]:
                 error = HTTPError(request, response, 505)
                 return self.send(error, "httperror", self.channel)
 
