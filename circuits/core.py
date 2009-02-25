@@ -472,6 +472,9 @@ class BaseComponent(Manager):
         for handler in self._handlers.copy():
             self.manager._remove(handler)
 
+        if self in self.manager.components:
+            self.manager._components.remove(self)
+
         self.manager = self
 
 class Component(BaseComponent):
