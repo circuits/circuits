@@ -21,28 +21,14 @@ class Root(Controller):
     page1 = index
     page2 = index
 
-class TestServer(Thread):
-
-    def run(self):
-        server = Server(8000)
-        server += Root()
-
-        while self.isAlive():
-            try:
-                server.flush()
-                server.poll()
-            except Exception, error:
-                print "ERROR: %s" % error
-
 class CoreTestCase(WebCase):
 
     def setUp(self):
-        self.server = TestServer()
+        self.server = (Server(8000) + Root())
         self.server.start()
 
     def tearDown(self):
         self.server.stop()
-        self.server.join()
 
     def test_HTTP11(self):
         self.PROTOCOL = "HTTP/1.1"
