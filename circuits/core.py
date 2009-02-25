@@ -379,7 +379,7 @@ class Manager(object):
             return self.manager.send(event, channel, target, errors, log)
 
     def start(self):
-        self.thread = Thread(target=self._run)
+        self.thread = Thread(None, self._run, self.__class__.__name__)
         self.running = True
         self.thread.start()
 
