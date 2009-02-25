@@ -186,9 +186,6 @@ class Manager(object):
         h = len(self._handlers)
         return "<Manager (q: %d h: %d)>" % (q, h)
 
-    def __getitem__(self, x):
-        return self.channels[x]
-
     def __len__(self):
         return len(self._queue)
 
