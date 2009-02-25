@@ -282,10 +282,10 @@ class Manager(object):
 
         if channel in self.channels:
             if handler not in self.channels[channel]:
-                self.channels[channel].append(handler)
-                self.channels[channel].sort(key=lambda x: x.type)
+                self._channels[channel].append(handler)
+                self._channels[channel].sort(key=lambda x: x.type)
         else:
-            self.channels[channel] = [handler]
+            self._channels[channel] = [handler]
 
     def _remove(self, handler, channel=None):
         """E._remove(handler, channel=None) -> None
@@ -299,7 +299,7 @@ class Manager(object):
 
         if channel is None:
             if handler in self.channels["*"]:
-                self.channels["*"].remove(handler)
+                self._channels["*"].remove(handler)
             keys = self.channels.keys()
         else:
             keys = [channel]
@@ -309,7 +309,7 @@ class Manager(object):
 
         for channel in keys:
             if handler in self.channels[channel]:
-                self.channels[channel].remove(handler)
+                self._channels[channel].remove(handler)
 
 
     def push(self, event, channel, target=None):
