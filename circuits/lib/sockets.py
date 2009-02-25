@@ -159,6 +159,8 @@ class Client(Component):
                 if self._close:
                     self.close()
 
+    tick = poll
+
     def open(self, host, port, ssl=False):
         self.ssl = ssl
         self.host = host
@@ -315,6 +317,8 @@ class Server(Component):
                 except socket.error, e:
                     self.push(Error(sock, e), "error", self.channel)
                     self.close(sock)
+
+    tick = poll
 
     def close(self, sock=None):
         if sock in self:
