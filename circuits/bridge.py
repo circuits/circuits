@@ -1,6 +1,6 @@
-# Module:	bridge
-# Date:		2nd April 2006
-# Author:	James Mills, prologic at shortcircuit dot net dot au
+# Module:   bridge
+# Date:     2nd April 2006
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
 """Bridge
 
@@ -28,8 +28,8 @@ from circuits.core import listener, Event, Component
 
 
 __all__ = (
-		"Bridge",
-		)
+        "Bridge",
+        )
 
 
 POLL_INTERVAL = 0.00001
@@ -45,145 +45,145 @@ class Close(Event): pass
 
 class Bridge(Component):
 
-	IgnoreEvents = ["Read", "Write"]
-	IgnoreChannels = []
+    IgnoreEvents = ["Read", "Write"]
+    IgnoreChannels = []
 
-	def __init__(self, port, address="", nodes=[], *args, **kwargs):
-		super(Bridge, self).__init__(*args, **kwargs)
+    def __init__(self, port, address="", nodes=[], *args, **kwargs):
+        super(Bridge, self).__init__(*args, **kwargs)
 
-		self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self._sock.setsockopt(socket.SOL_SOCKET,	socket.SO_BROADCAST, 1)
-		self._sock.setblocking(False)
-		self._sock.bind((address, port))
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.setsockopt(socket.SOL_SOCKET,    socket.SO_BROADCAST, 1)
+        self._sock.setblocking(False)
+        self._sock.bind((address, port))
 
-		self._write = []
-		self._buffers = {}
-		self._read = [self._sock]
+        self._write = []
+        self._buffers = {}
+        self._read = [self._sock]
 
-		self.address = address
-		self.port = port
+        self.address = address
+        self.port = port
 
-		self.nodes = set(nodes)
+        self.nodes = set(nodes)
 
-		if self.address in ["", "0.0.0.0"]:
-			address = gethostbyname(gethostname())
-		else:
-			address = self.address
+        if self.address in ["", "0.0.0.0"]:
+            address = gethostbyname(gethostname())
+        else:
+            address = self.address
 
-		self.ourself = (address, self.port)
+        self.ourself = (address, self.port)
 
-	def registered(self):
-		self.push(Helo(*self.ourself), "helo")
+    def registered(self):
+        self.push(Helo(*self.ourself), "helo")
 
-	def __write__(self, address, data):
-		if not self._write:
-			self._write.append(self._sock)
-		if not self._buffers.has_key(address):
-			self._buffers[address] = []
-		self._buffers[address].append(data)
+    def __write__(self, address, data):
+        if not self._write:
+            self._write.append(self._sock)
+        if not self._buffers.has_key(address):
+            self._buffers[address] = []
+        self._buffers[address].append(data)
 
-	def __close__(self):
-		self.push(Close(), "close", self.channel)
+    def __close__(self):
+        self.push(Close(), "close", self.channel)
 
-	def poll(self, wait=POLL_INTERVAL):
-		r, w, e = select.select(self._read, self._write, [], wait)
+    def poll(self, wait=POLL_INTERVAL):
+        r, w, e = select.select(self._read, self._write, [], wait)
 
-		if w:
-			for address, data in self._buffers.iteritems():
-				if data:
-					self.send(Write(address, data[0]), "write", self.channel)
-			self._write.remove(w[0])
+        if w:
+            for address, data in self._buffers.iteritems():
+                if data:
+                    self.send(Write(address, data[0]), "write", self.channel)
+            self._write.remove(w[0])
 
-		if r:
-			try:
-				data, address = self._sock.recvfrom(BUFFER_SIZE)
+        if r:
+            try:
+                data, address = self._sock.recvfrom(BUFFER_SIZE)
 
-				if not data:
-					self.__close__()
-				else:
-					self.push(Read(address, data), "read", self.channel)
-			except socket.error, e:
-				self.push(Error(self._sock, e), "error", self.channel)
-				self.__close__()
+                if not data:
+                    self.__close__()
+                else:
+                    self.push(Read(address, data), "read", self.channel)
+            except socket.error, e:
+                self.push(Error(self._sock, e), "error", self.channel)
+                self.__close__()
 
-	@listener(type="filter")
-	def onEVENTS(self, event, *args, **kwargs):
-		channel = event.channel
-		if True in [event.name == name for name in self.IgnoreEvents]:
-			return
-		elif channel in self.IgnoreChannels:
-			return
-		elif event.ignore:
-			return
-		else:
-			event.ignore = True
+    @listener(type="filter")
+    def onEVENTS(self, event, *args, **kwargs):
+        channel = event.channel
+        if True in [event.name == name for name in self.IgnoreEvents]:
+            return
+        elif channel in self.IgnoreChannels:
+            return
+        elif event.ignore:
+            return
+        else:
+            event.ignore = True
 
-		event.source = self.ourself
-		s = pickle(event, -1)
+        event.source = self.ourself
+        s = pickle(event, -1)
 
-		if self.nodes:
-			for node in self.nodes:
-				self.__write__(node, s)
-		else:
-			self.__write__(("<broadcast>", self.port), s)
+        if self.nodes:
+            for node in self.nodes:
+                self.__write__(node, s)
+        else:
+            self.__write__(("<broadcast>", self.port), s)
 
-	@listener("helo", type="filter")
-	def onHELO(self, event, address, port):
-		source = event.source
+    @listener("helo", type="filter")
+    def onHELO(self, event, address, port):
+        source = event.source
 
-		if (address, port) == self.ourself or source in self.nodes:
-			return True
+        if (address, port) == self.ourself or source in self.nodes:
+            return True
 
-		if not (address, port) in self.nodes:
-			self.nodes.add((address, port))
-			self.push(Helo(*self.ourself), "helo")
+        if not (address, port) in self.nodes:
+            self.nodes.add((address, port))
+            self.push(Helo(*self.ourself), "helo")
 
-	@listener("read", type="filter")
-	def onREAD(self, address, data):
-		event = unpickle(data)
+    @listener("read", type="filter")
+    def onREAD(self, address, data):
+        event = unpickle(data)
 
-		channel = event.channel
-		target = event.target
-		source = event.source
+        channel = event.channel
+        target = event.target
+        source = event.source
 
-		if source == self.ourself:
-			return
+        if source == self.ourself:
+            return
 
-		self.send(event, channel, target)
+        self.send(event, channel, target)
 
-	@listener("close", type="filter")
-	def onCLOSE(self):
-		"""Close Event
+    @listener("close", type="filter")
+    def onCLOSE(self):
+        """Close Event
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		try:
-			self._read.remove(self._sock)
-			self._write.remove(self._sock)
-			self._sock.shutdown(2)
-			self._sock.close()
-		except socket.error, error:
-			self.push(Error(error), "error", self.channel)
+        try:
+            self._read.remove(self._sock)
+            self._write.remove(self._sock)
+            self._sock.shutdown(2)
+            self._sock.close()
+        except socket.error, error:
+            self.push(Error(error), "error", self.channel)
 
-	@listener("write", type="filter")
-	def onWRITE(self, address, data):
-		"""Write Event
+    @listener("write", type="filter")
+    def onWRITE(self, address, data):
+        """Write Event
 
 
-		Typically this should NOT be overridden by sub-classes.
-		If it is, this should be called by the sub-class first.
-		"""
+        Typically this should NOT be overridden by sub-classes.
+        If it is, this should be called by the sub-class first.
+        """
 
-		try:
-			self._sock.sendto(data, address)
-			del self._buffers[address][0]
-		except socket.error, e:
-			if e[0] in [32, 107]:
-				self.__close__()
-			else:
-				self.push(Error(e), "error", self.channel)
-				self.__close__()
+        try:
+            self._sock.sendto(data, address)
+            del self._buffers[address][0]
+        except socket.error, e:
+            if e[0] in [32, 107]:
+                self.__close__()
+            else:
+                self.push(Error(e), "error", self.channel)
+                self.__close__()
 
