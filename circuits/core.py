@@ -9,6 +9,7 @@ circuits based application or system. Normal usage of circuits:
 >>> from circuits import listener, Manager, Component, Event
 """
 
+import new
 from itertools import chain
 from threading import Thread
 from functools import partial
@@ -480,3 +481,14 @@ class BaseComponent(Manager):
 class Component(BaseComponent):
 
     __metaclass__ = HandlersType
+
+    def __new__(cls, *args, **kwargs):
+        self = BaseComponent.__new__(cls, *args, **kwargs)
+        for base in cls.__bases__:
+            if issubclass(cls, base):
+                for k, v in base.__dict__.iteritems():
+                    if callable(v) and hasattr(v, "type"):
+                        name = "%s_%s" % (base.__name__, k)
+                        method = new.instancemethod(v, self, cls)
+                        setattr(self, name, method)
+        return self
