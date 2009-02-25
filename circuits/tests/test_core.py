@@ -121,10 +121,10 @@ class EventTestCase(unittest.TestCase):
         listener = ListenerComponent()
         manager += listener
 
-        self.assertTrue(filter.onFOO in manager["foo"])
-        self.assertTrue(listener.onFOO in manager["foo"])
-        self.assertTrue(filter.onBAR in manager["bar"])
-        self.assertTrue(listener.onBAR in manager["bar"])
+        self.assertTrue(filter.onFOO in manager.channels["foo"])
+        self.assertTrue(listener.onFOO in manager.channels["foo"])
+        self.assertTrue(filter.onBAR in manager.channels["bar"])
+        self.assertTrue(listener.onBAR in manager.channels["bar"])
 
         filter.unregister()
         listener.unregister()
@@ -572,8 +572,8 @@ class EventTestCase(unittest.TestCase):
 
         manager._add(onFOO, "foo")
         manager._add(onBAR, "bar")
-        self.assertTrue(onFOO in manager["foo"])
-        self.assertTrue(onBAR in manager["bar"])
+        self.assertTrue(onFOO in manager.channels["foo"])
+        self.assertTrue(onBAR in manager.channels["bar"])
 
         try:
             manager._add(onTEST)
@@ -586,7 +586,7 @@ class EventTestCase(unittest.TestCase):
         self.assertTrue(onFOO not in manager._handlers)
 
         manager._remove(onBAR, "bar")
-        self.assertTrue(onBAR not in manager["bar"])
+        self.assertTrue(onBAR not in manager.channels["bar"])
         self.assertTrue(onBAR in manager.channels["*"])
         manager._remove(onBAR)
         self.assertTrue(onBAR not in manager._handlers)
@@ -636,9 +636,9 @@ class EventTestCase(unittest.TestCase):
         manager._add(onBAR, "bar")
 
         self.assertTrue(onSTOP in manager.channels["*"])
-        self.assertTrue(onTEST in manager["test"])
-        self.assertTrue(onFOO in manager["test"])
-        self.assertTrue(onBAR in manager["bar"])
+        self.assertTrue(onTEST in manager.channels["test"])
+        self.assertTrue(onFOO in manager.channels["test"])
+        self.assertTrue(onBAR in manager.channels["bar"])
         self.assertEquals(len(manager._handlers), 4)
 
         manager.push(Test(self, time.time()), "test")
