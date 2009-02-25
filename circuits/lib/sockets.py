@@ -118,6 +118,9 @@ class Client(Component):
         self._close = False
         self._connected = False
 
+    def __tick__(self):
+        self.poll()
+
     def isConnected(self):
         return self._connected
 
@@ -158,8 +161,6 @@ class Client(Component):
             else:
                 if self._close:
                     self.close()
-
-    tick = poll
 
     def open(self, host, port, ssl=False):
         self.ssl = ssl
@@ -285,6 +286,9 @@ class Server(Component):
     
         return y in self._socks
 
+    def __tick__(self):
+        self.poll()
+
     def poll(self, wait=POLL_INTERVAL):
         r, w, e = select.select(self._read, self._write, [], wait)
 
@@ -317,8 +321,6 @@ class Server(Component):
                 except socket.error, e:
                     self.push(Error(sock, e), "error", self.channel)
                     self.close(sock)
-
-    tick = poll
 
     def close(self, sock=None):
         if sock in self:
