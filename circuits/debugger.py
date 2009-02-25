@@ -65,7 +65,7 @@ class Debugger(Component):
 
         s.seek(0)
         for line in s:
-            if self.logger:
+            if self.logger is not None:
                 self.logger.error(line)
             else:
                 print >> sys.stderr, line.strip()
@@ -90,7 +90,7 @@ class Debugger(Component):
         elif channel in self.IgnoreChannels:
             return
         else:
-            if self.logger:
+            if self.logger is not None:
                 self.logger.debug(repr(event))
             else:
                 print >> sys.stderr, event
