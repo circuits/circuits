@@ -13,8 +13,9 @@ from itertools import chain
 from threading import Thread
 from functools import partial
 from collections import deque
-from sys import exc_info, exc_clear
 from collections import defaultdict
+from sys import exc_info as _exc_info
+from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
 
 
@@ -365,11 +366,11 @@ class Manager(object):
                         r = partial(handler, *eargs, **ekwargs)()
                 except:
                     if log:
-                        self.push(Error(*exc_info()), "error")
+                        self.push(Error(*_exc_info()), "error")
                     if errors:
                         raise
                     else:
-                        exc_clear()
+                        _exc_clear()
 
                 if r is not None and r and handler.type == "filter":
                     break
