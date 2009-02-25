@@ -94,6 +94,9 @@ class Select(Poller):
     compatibility.
     """
 
+    def __tick__(self):
+        self.poll()
+
     def poll(self, timeout=TIMEOUT):
         r, w, e = _select(self.read, self.write, self.all, timeout)
 
@@ -105,5 +108,3 @@ class Select(Poller):
 
         for fd in e:
             self.push(Error(fd), "error", self.channel)
-
-    tick = poll
