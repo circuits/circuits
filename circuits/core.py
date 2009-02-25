@@ -381,6 +381,7 @@ class Manager(object):
     def start(self):
         self.thread = Thread(None, self._run, self.__class__.__name__)
         self.running = True
+        self.thread.setDaemon(True)
         self.thread.start()
 
     def _run(self):
