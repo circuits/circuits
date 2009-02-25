@@ -408,7 +408,7 @@ class Manager(object):
             try:
                 [call() for call in calls]
                 self.manager.flush()
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, SystemExit):
                 break
 
 class BaseComponent(Manager):
