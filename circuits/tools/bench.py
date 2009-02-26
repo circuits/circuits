@@ -99,19 +99,15 @@ def parse_options():
             action="store_true", default=False, dest="speed",
             help="Enable psyco (circuits on speed!)")
 
+    parser.add_option("-o", "--output",
+            action="store", default=None, dest="output",
+            help="Specify output format")
+
+    parser.add_option("-q", "--quiet",
+            action="store_false", default=True, dest="verbose",
+            help="Suppress output")
+
     opts, args = parser.parse_args()
-
-    try:
-        opts.events = int(opts.events)
-    except Exception, e:
-        print str(e)
-        parser.exit(ERRORS[1][0], ERRORS[1][1])
-
-    try:
-        opts.time = int(opts.time)
-    except Exception, e:
-        print str(e)
-        parser.exit(ERRORS[2][0], ERRORS[2][1])
 
     if opts.listen and args:
         parser.exit(ERRORS[0][0], ERRORS[0][1])
@@ -132,7 +128,14 @@ class Foo(Event): pass
 ### Components
 ###
 
-class Sender(Component):
+class Base(Component):
+
+    def __init__(self, opts, *args, **kwargs):
+        super(Base, self).__init__(*args, **kwargs)
+
+        self.opts = opts
+
+class Sender(Base):
 
     concurrency = 1
 
@@ -140,7 +143,7 @@ class Sender(Component):
     def onRECEIVED(self, message=""):
         self.push(Hello("hello"), "hello", self.channel)
 
-class Receiver(Component):
+class Receiver(Base):
 
     @listener("helo")
     def onHELO(self, address, port):
@@ -150,13 +153,13 @@ class Receiver(Component):
     def onHELLO(self, message=""):
         self.push(Received(message), "received", self.channel)
 
-class SpeedTest(Component):
+class SpeedTest(Base):
 
     @listener("hello")
     def onHELLO(self, message):
         self.push(Hello(message), "hello", self.channel)
 
-class LatencyTest(Component):
+class LatencyTest(Base):
 
     t = None
 
@@ -171,7 +174,7 @@ class LatencyTest(Component):
         self.t = time.time()
         self.push(Received(message), "received", self.channel)
     
-class State(Component):
+class State(Base):
 
     done = False
 
@@ -183,7 +186,7 @@ class State(Component):
     def onTERM(self):
         self.done = True
 
-class Monitor(Component):
+class Monitor(Base):
 
     sTime = sys.maxint
     events = 0
@@ -191,7 +194,8 @@ class Monitor(Component):
 
     @listener("helo")
     def onHELO(self, *args, **kwargs):
-        print "Resetting sTime"
+        if opts.verbose:
+            print "Resetting sTime"
         self.sTime = time.time()
 
     @listener(type="filter")
@@ -210,10 +214,10 @@ def main():
 
     manager = Manager()
 
-    monitor = Monitor()
+    monitor = Monitor(opts)
     manager += monitor
 
-    state = State()
+    state = State(opts)
     manager += state
 
     if opts.debug:
@@ -245,49 +249,52 @@ def main():
         bridge = None
 
     if opts.mode.lower() == "speed":
-        print "Setting up Speed Test..."
+        if opts.verbose:
+            print "Setting up Speed Test..."
         if opts.concurrency > 1:
             for c in xrange(int(opts.concurrency)):
-                manager += SpeedTest(channel=c)
+                manager += SpeedTest(opts, channel=c)
         else:
-            manager += SpeedTest()
+            manager += SpeedTest(opts)
         monitor.sTime = time.time()
     elif opts.mode.lower() == "latency":
-        print "Setting up Latency Test..."
-        manager += LatencyTest()
+        if opts.verbose:
+            print "Setting up Latency Test..."
+        manager += LatencyTest(opts)
         monitor.sTime = time.time()
     elif opts.listen:
-        print "Setting up Receiver..."
+        if opts.verbose:
+            print "Setting up Receiver..."
         if opts.concurrency > 1:
             for c in xrange(int(opts.concurrency)):
-                manager += Receiver(channel=c)
+                manager += Receiver(opts, channel=c)
         else:
-            manager += Receiver()
+            manager += Receiver(opts)
     elif args:
-        print "Setting up Sender..."
+        if opts.verbose:
+            print "Setting up Sender..."
         if opts.concurrency > 1:
             for c in xrange(int(opts.concurrency)):
-                manager += Sender(channel=c)
+                manager += Sender(opts, channel=c)
         else:
-            manager += Sender()
+            manager += Sender(opts)
     else:
-        print "Setting up Sender..."
-        print "Setting up Receiver..."
+        if opts.verbose:
+            print "Setting up Sender..."
+            print "Setting up Receiver..."
         if opts.concurrency > 1:
             for c in xrange(int(opts.concurrency)):
                 manager += Sender(channel=c)
-                manager += Receiver(channel=c)
+                manager += Receiver(opts, channel=c)
         else:
-            manager += Sender()
-            manager += Receiver()
+            manager += Sender(opts)
+            manager += Receiver(opts)
         monitor.sTime = time.time()
 
     if opts.profile:
         if hotshot:
             profiler = hotshot.Profile("bench.prof")
             profiler.start()
-        else:
-            print "Warning: Can't profile - hotshot not available!"
 
     if opts.concurrency > 1:
         for c in xrange(int(opts.concurrency)):
@@ -312,14 +319,20 @@ def main():
         except KeyboardInterrupt:
             manager.send(Stop(), "stop")
 
-    print
+    if opts.verbose:
+        print
 
     eTime = time.time()
 
     tTime = eTime - monitor.sTime
 
-    print "Total Events: %d (%d/s after %0.2fs)" % (
-            monitor.events, int(math.ceil(float(monitor.events) / tTime)), tTime)
+    events = monitor.events
+    speed = int(math.ceil(float(monitor.events) / tTime))
+
+    if opts.output:
+        print opts.output % (events, speed, tTime)
+    else:
+        print "Total Events: %d (%d/s after %0.2fs)" % (events, speed, tTime)
 
     if opts.profile and hotshot:
         profiler.stop()
