@@ -437,6 +437,14 @@ class BaseComponent(Manager):
 
     channel = None
 
+    def __new__(cls, *args, **kwargs):
+        """TODO Work around for Python bug.
+
+        Bug: http://bugs.python.org/issue5322
+        """
+
+        return object.__new__(cls)
+
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
