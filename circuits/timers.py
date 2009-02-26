@@ -24,6 +24,9 @@ class Timers(Component):
 
         self.timers = []
 
+    def __tick__(self):
+        self.poll()
+
     def addTimer(self, s, e, c="timer", t=None, persist=False):
         timer = Timer(s, e, c, t, persist)
         self.manager += timer
@@ -60,6 +63,9 @@ class Timer(Component):
         self.persist = persist
 
         self.reset()
+
+    def __tick__(self):
+        self.poll()
 
     def reset(self):
         """T.reset() -> None
