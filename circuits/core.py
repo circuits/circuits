@@ -177,8 +177,10 @@ class Manager(object):
 
         self._queue = deque()
         self._handlers = set()
-        self._components = set()
         self._channels = defaultdict(list)
+
+        self._hidden = set()
+        self._components = set()
 
         self.manager = self
 
