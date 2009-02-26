@@ -476,8 +476,20 @@ class BaseComponent(Manager):
 
                 manager._add(handler, channel)
 
+        hidden = set()
+        for x in self.components:
+            if len(x.components) > 1:
+                for y in x.components:
+                    if not (x == y):
+                        hidden.add(y)
+
+        for x in hidden.copy():
+            if x.manager in hidden:
+                hidden.remove(x)
+
         self.manager = manager
         self.manager._components.add(self)
+        self.manager._hidden.update(hidden)
 
 
     def unregister(self):
