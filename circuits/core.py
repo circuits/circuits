@@ -398,16 +398,20 @@ class Manager(object):
             if isinstance(v, Manager):
                 if hasattr(v, "__tick__"):
                     yield v.__tick__
+        for component in self.components:
+            if hasattr(component, "__tick__"):
+                yield component.__tick__
+
 
     def _run(self):
         while self.running and self.thread.isAlive():
-            [f() for f in self._calls()]
+            [f() for f in set(self._calls())]
             self.manager.flush()
 
     def run(self):
         while True:
             try:
-                [f() for f in self._calls()]
+                [f() for f in set(self._calls())]
                 self.manager.flush()
             except (KeyboardInterrupt, SystemExit):
                 break
