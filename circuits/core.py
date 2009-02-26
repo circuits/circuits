@@ -173,8 +173,6 @@ class Manager(object):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(Manager, self).__init__()
-
         self._queue = deque()
         self._handlers = set()
         self._channels = defaultdict(list)
