@@ -20,22 +20,6 @@ from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
 
 
-class InvalidHandler(Exception):
-    """Invalid Handler Exception
-
-    Invalid Handler Exception raised when adding a callable
-    to a manager that was not decorated with the
-    :func:`listener decorator <circuits.core.listener>`.
-    """
-
-    def __init__(self, handler):
-        "initializes x; see x.__class__.__doc__ for signature"
-
-        super(InvalidHandler, self).__init__()
-
-        self.handler = handler
-
-
 class Event(object):
     """Create a new Event Object
 
@@ -264,9 +248,6 @@ class Manager(object):
         adding it to the given channel. If no channel is
         given, add it to the global channel.
         """
-
-        if getattr(handler, "type", None) not in ["filter", "listener"]:
-            raise InvalidHandler(handler)
 
         self._handlers.add(handler)
 
