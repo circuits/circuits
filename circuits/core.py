@@ -162,6 +162,7 @@ class Manager(object):
         self._handlers = set()
         self._channels = defaultdict(list)
 
+        self._ticks = set()
         self._hidden = set()
         self._components = set()
 
@@ -378,14 +379,14 @@ class Manager(object):
 
     def _run(self):
         while self.running and self.thread.isAlive():
-            [f() for f in set(self._calls())]
-            self.manager.flush()
+            [f() for f in self._ticks.copy()]
+            self.flush()
 
     def run(self):
         while True:
             try:
-                [f() for f in set(self._calls())]
-                self.manager.flush()
+                [f() for f in self._ticks.copy()]
+                self.flush()
             except (KeyboardInterrupt, SystemExit):
                 break
 
