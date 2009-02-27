@@ -222,12 +222,12 @@ class Client(Component):
         finally:
             self._connected = False
 
-            if sock in self._socks:
-                self._socks.remove(sock)
-            if sock in self._read:
-                self._read.remove(sock)
-            if sock in self._write:
-                self._write.remove(sock)
+            if self._sock in self._socks:
+                self._socks.remove(self._sock)
+            if self._sock in self._read:
+                self._read.remove(self._sock)
+            if self._sock in self._write:
+                self._write.remove(self._sock)
 
 
 class TCPClient(Client):
