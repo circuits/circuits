@@ -9,7 +9,7 @@ Test all functionality of the event library.
 
 import unittest
 
-from circuits.core import listener, InvalidHandler
+from circuits.core import listener
 from circuits.core import Manager, Component, Event
 
 class Test(Event):
@@ -544,9 +544,7 @@ class EventTestCase(unittest.TestCase):
 
         Test that filters and listeners can be added to
         the global channel. Test that filters and listeners
-        can be added to specific channels. Test that
-        non-filters and non-listeners cannot be added to any
-        channel and raises an InvalidHandler. Test that filters
+        can be added to specific channels. Test that filters
         and listeners can be removed from all channels.
         Test that filters and listeners can be removed from
         a specific channel.
@@ -574,11 +572,6 @@ class EventTestCase(unittest.TestCase):
         manager._add(onBAR, "bar")
         self.assertTrue(onFOO in manager.channels["foo"])
         self.assertTrue(onBAR in manager.channels["bar"])
-
-        try:
-            manager._add(onTEST)
-        except InvalidHandler, error:
-            pass
 
         self.assertFalse(onTEST in manager.channels["*"])
 
