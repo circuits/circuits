@@ -8,32 +8,25 @@ Test all functionality of the sockets module.
 """
 
 import unittest
-from time import sleep
 
 from circuits import Component
-from circuits.workers import Thread
 from circuits.lib.sockets import TCPServer, TCPClient, UDPServer, UDPClient
 
-class Manager(Thread):
-
-    client = None
-    server = None
-    events = 0
-
-    def run(self):
-        while self.running:
-            self.flush()
-            self.server.poll()
-            self.client.poll()
+def wait():
+    for x in xrange(100000):
+        pass
 
 class Client(Component):
 
-    channel = "client"
+    def __init__(self, client):
+        super(Client, self).__init__()
 
-    connected = False
-    disconnected = False
-    error = None
-    data = ""
+        self.client = client
+        self.manager += self.client
+
+        self.connected = False
+        self.disconnected = False
+        self.data = ""
 
     def connected(self, host, port):
         self.connected = True
@@ -44,25 +37,21 @@ class Client(Component):
     def read(self, data):
         self.data = data
 
-    def error(self, error):
-        self.error = error
-
 class Server(Component):
 
-    channel = "server"
+    def __init__(self, server):
+        super(Server, self).__init__()
 
-    data = ""
-    errors = {}
-    server = None
+        self.server = server
+        self.manager += self.server
+
+        self.data = ""
 
     def connected(self, sock, host, port):
         self.server.write(sock, "Ready")
 
     def read(self, sock, data):
         self.data = data
-
-    def error(self, sock, error):
-        self.errors[sock] = error
 
 class SocketsTestCase(unittest.TestCase):
 
@@ -73,38 +62,31 @@ class SocketsTestCase(unittest.TestCase):
         TCPServer work correctly.
         """
 
-        manager = Manager()
-        tcpserver = TCPServer(9999, channel="server")
-        tcpclient = TCPClient(channel="client")
-        server = Server()
-        client = Client()
-        manager += tcpserver
-        manager += tcpclient
-        manager += server
-        manager += client
-        manager.server = tcpserver
-        server.server = tcpserver
-        manager.client = tcpclient
+        server = Server(TCPServer(9999))
+        client = Client(TCPClient())
 
-        manager.start()
+        server.start()
+        client.start()
 
         try:
-            tcpclient.open("localhost", 9999)
-            sleep(0.1)
-            self.assertTrue(client.connected)
+            client.client.open("localhost", 9999)
+            wait()
 
+            self.assertTrue(client.connected)
             self.assertTrue(client.data == "Ready")
 
-            tcpclient.write("foo")
-            sleep(0.1)
+            client.client.write("foo")
+            wait()
+
             self.assertTrue(server.data == "foo")
 
-            tcpclient.close()
-            sleep(0.1)
+            client.client.close()
+            wait()
+
             self.assertTrue(client.disconnected)
         finally:
-            manager.stop()
-            manager.join()
+            server.stop()
+            client.stop()
 
     def testUDPClientServer(self):
         """Test sockets.UDPClient and sockets.UDPServer
@@ -113,33 +95,20 @@ class SocketsTestCase(unittest.TestCase):
         UDPServer work correctly.
         """
 
-        manager = Manager()
-        udpserver = UDPServer(9999, channel="server")
-        udpclient = UDPClient(10000, channel="client")
-        server = Server()
-        client = Client()
-        manager += udpserver
-        manager += udpclient
-        manager += server
-        manager += client
-        manager.server = udpserver
-        server.server = udpserver
-        manager.client = udpclient
+        server = Server(UDPServer(9999))
+        client = Client(UDPClient(10000))
 
-        manager.start()
+        server.start()
+        client.start()
 
         try:
-            udpclient.connected = True
-            #udpclient.open("localhost", 9999)
-            #sleep(0.1)
-            #self.assertTrue(client.connected)
+            client.client.write(("localhost", 9999), "foo")
+            wait()
 
-            udpclient.write(("localhost", 9999), "foo")
-            sleep(0.1)
             self.assertTrue(server.data == "foo")
         finally:
-            manager.stop()
-            manager.join()
+            server.stop()
+            client.stop()
 
 
 def suite():
