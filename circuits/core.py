@@ -122,6 +122,7 @@ def listener(*args, **kwargs):
 
     def decorate(f):
         f.type = kwargs.get("type", "listener")
+        f.filter = f.type == "filter"
         f.target = kwargs.get("target", None)
         f.channels = args
 
@@ -318,33 +319,6 @@ class Manager(object):
         else:
             self.manager.flush()
 
-    def _send(self, event, channel, target=None, errors=False, log=True):
-        event.channel = channel
-        event.target = target
-        eargs = event.args
-        ekwargs = event.kwargs
-        if target is not None:
-            channel = "%s:%s" % (target, channel)
-
-        r = False
-        for handler in self.handlers(channel):
-            try:
-                if handler._passEvent:
-                    r = partial(handler, event, *eargs, **ekwargs)()
-                else:
-                    r = partial(handler, *eargs, **ekwargs)()
-            except:
-                if log:
-                    self.push(Error(*_exc_info()), "error")
-                if errors:
-                    raise
-                else:
-                    _exc_clear()
-
-            if r is not None and r and handler.type == "filter":
-                break
-        return r
-
     def send(self, event, channel, target=None, errors=False, log=True):
         """E.send(event, channel, target=None, errors=False) -> None
 
@@ -355,10 +329,30 @@ class Manager(object):
         """
 
         if self.manager == self:
-            if self._hidden:
-                for hidden in self._hidden.copy():
-                    hidden._send(event, channel, target, errors, log)
-            return self._send(event, channel, target, errors, log)
+            event.channel = channel
+            event.target = target
+            eargs = event.args
+            ekwargs = event.kwargs
+            if target is not None:
+                channel = "%s:%s" % (target, channel)
+
+            r = False
+            for handler in self.handlers(channel):
+                try:
+                    if handler._passEvent:
+                        r = partial(handler, event, *eargs, **ekwargs)()
+                    else:
+                        r = partial(handler, *eargs, **ekwargs)()
+                except:
+                    if log:
+                        self.push(Error(*_exc_info()), "error")
+                    if errors:
+                        raise
+                    else:
+                        _exc_clear()
+                if r is not None and r and handler.filter:
+                    return r
+            return r
         else:
             return self.manager.send(event, channel, target, errors, log)
 
