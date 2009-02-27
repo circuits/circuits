@@ -115,6 +115,8 @@ class Client(Component):
 
         self._buffer = []
         self._socks = []
+        self._read = []
+        self._write = []
         self._close = False
         self._connected = False
 
@@ -126,7 +128,7 @@ class Client(Component):
 
     def poll(self, wait=POLL_INTERVAL):
         try:
-            r, w, e = select.select(self._socks, self._socks, [], wait)
+            r, w, e = select.select(self._read, self._write, [], wait)
         except socket.error, error:
             if error[0] == errno.EBADF:
                 self._connected = False
@@ -161,6 +163,8 @@ class Client(Component):
             else:
                 if self._close:
                     self.close()
+                else:
+                    self._write.remove(self._sock)
 
     def open(self, host, port, ssl=False):
         self.ssl = ssl
@@ -193,6 +197,8 @@ class Client(Component):
             self.send(Shutdown(), "shutdown", self.channel)
 
     def write(self, data):
+        if not self._sock in self._write:
+            self._write.append(self._sock)
         self._buffer.append(data)
 
     @listener("shutdown", type="filter")
@@ -208,15 +214,21 @@ class Client(Component):
             return
 
         try:
-            self._socks.remove(self._sock)
             self._sock.shutdown(2)
             self._sock.close()
+            self.push(Disconnected(), "disconnected", self.channel)
         except socket.error, error:
             self.push(Error(error), "error", self.channel)
+        finally:
+            self._connected = False
 
-        self._connected = False
+            if sock in self._socks:
+                self._socks.remove(sock)
+            if sock in self._read:
+                self._read.remove(sock)
+            if sock in self._write:
+                self._write.remove(sock)
 
-        self.push(Disconnected(), "disconnected", self.channel)
 
 class TCPClient(Client):
 
@@ -231,6 +243,7 @@ class TCPClient(Client):
             self._sock.bind((bind, 0))
 
         self._socks.append(self._sock)
+        self._read.append(self._sock)
 
         super(TCPClient, self).open(host, port, ssl)
 
