@@ -392,7 +392,7 @@ class Manager(object):
         self.thread.join()
 
     def _calls(self):
-        for v in vars(self).itervalues():
+        for v in vars(self).values():
             if isinstance(v, Manager):
                 if hasattr(v, "__tick__"):
                     yield v.__tick__
