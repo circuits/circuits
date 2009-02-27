@@ -245,8 +245,7 @@ def main():
 
         bridge = Bridge(port, address=address, nodes=nodes)
         manager += bridge
-    else:
-        bridge = None
+        bridge.start()
 
     if opts.mode.lower() == "speed":
         if opts.verbose:
@@ -305,8 +304,6 @@ def main():
     while not state.done:
         try:
             manager.flush()
-            if bridge:
-                bridge.poll()
 
             for i in xrange(opts.fill):
                 manager.push(Foo(), "foo")
