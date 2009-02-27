@@ -480,6 +480,9 @@ class BaseComponent(Manager):
         for component in self.components:
             if hasattr(component, "__tick__"):
                 ticks.add(component.__tick__)
+        for component in self._hidden:
+            if hasattr(component, "__tick__"):
+                ticks.add(component.__tick__)
         self.manager._ticks.update(ticks)
 
     def register(self, manager):
