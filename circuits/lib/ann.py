@@ -8,14 +8,13 @@
 """
 
 import math
-from time import time, sleep
+from time import sleep
 
-from circuits.workers import Thread
-from circuits import listener, Event
+from circuits import Event, Component
 
 class Signal(Event): pass
 
-class Node(Thread):
+class Node(Component):
 
    def __init__(self, *args, **kwargs):
       super(Node, self).__init__(*args, **kwargs)
@@ -23,48 +22,52 @@ class Node(Thread):
       self.start()
 
    def __repr__(self):
-      return "<Node running=%s>" % self.running
+      return "<Node (%d) running=%s>" % (id(self), self.running)
 
    def fire(self, level=1.0):
-      self.push(Signal(level), "signal")
+      self.push(Signal(level), "signal", self.channel)
 
-   def run(self):
-      while self.running:
-         self.flush()
-         sleep(0.01)
-
-class Connection(Node):
+class Synapse(Node):
 
    def __init__(self, *args, **kwargs):
-      super(Connection, self).__init__(*args, **kwargs)
+      super(Synapse, self).__init__(*args, **kwargs)
 
       self.weight = kwargs.get("weight", 1.0)
 
    def __repr__(self):
-      return "<Connection weight=%0.2f>" % self.weight
+      return "<Synapse (%d) weight=%0.2f>" % (id(self), self.weight)
 
-   @listener("signal")
-   def onSIGNAL(self, level):
+   def signal(self, level):
       self.fire(level * self.weight)
 
-class _StepNeuron(object):
+class Neuron(Node):
 
-   def compute(self):
+   def __init__(self, *args, **kwargs):
+      super(Neuron, self).__init__(*args, **kwargs)
+
+      self.threshold = kwargs.get("threshold", 1.0)
+      self.level = 0.0
+
+      self.type = kwargs.get("type", "step")
+      self._compute = getattr(self, "_%s" % self.type)
+
+   _compute = lambda self: None
+
+   def __tick__(self):
+      sleep(0.1)
+      self._compute()
+      self.level = 0.0
+
+   def _step(self):
       if self.level >= self.threshold:
          self.fire(1.0)
       else:
          self.fire(0.0)
 
-
-class _LinearNeuron(object):
-
-   def compute(self):
+   def _linear(self):
       self.fire(self.level + self.threshold)
 
-
-class _SigmoidNeuron(object):
-
-   def compute(self):
+   def _sigmoid(self):
       self.fire(
             1.0 / (
                1.0 + math.exp(-1 * (
@@ -73,49 +76,12 @@ class _SigmoidNeuron(object):
                )
             )
 
-
-class Neuron(Node):
-
-   def __init__(self, *args, **kwargs):
-      self.ls = None
-      super(Neuron, self).__init__(*args, **kwargs)
-
-      self.threshold = kwargs.get("threshold", 1.0)
-      self.level = 0.0
-
-      type = kwargs.get("type", "step")
-
-      if type == "step":
-         self.type = "Step"
-         base = _StepNeuron
-      elif type == "linear":
-         self.type = "Linear"
-         base = _LinearNeuron
-      elif type == "sigmoid":
-         self.type = "Sigmoid"
-         base = _SigmoidNeuron
-      else:
-         raise TypeError("Invalid type")
-
-      self.__class__.__bases__ += (base,)
-
    def __repr__(self):
-      return "<Neuron type=%s threshold=%0.2f level=%0.2f>" % (
-            self.type, self.threshold, self.level)
+      return "<Neuron (%d) type=%s threshold=%0.2f level=%0.2f>" % (
+            id(self), self.type, self.threshold, self.level)
 
-   @listener("signal")
-   def onSIGNAL(self, level):
-      self.ls = time()
+   def signal(self, level):
       self.level += level
-
-   def run(self):
-      while self.running:
-         if self.ls is not None and (time() - self.ls > 0.01):
-            self.compute()
-            self.level = 0.0
-            self.ls = None
-         self.flush()
-         sleep(0.01)
 
 class Output(Node):
 
@@ -125,8 +91,7 @@ class Output(Node):
       self.output = 0.0
 
    def __repr__(self):
-      return "<Output output=%0.2f>" % self.output
+      return "<Output (%d) output=%0.2f>" % (id(self), self.output)
 
-   @listener("signal")
-   def onSIGNAL(self, level):
+   def signal(self, level):
       self.output = level
