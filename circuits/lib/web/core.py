@@ -39,6 +39,7 @@ def expose(*channels, **config):
                del self.session
  
       wrapper.type = config.get("type", "listener")
+      wrapper.filter = wrapper.type == "filter"
       wrapper.target = config.get("target", None)
       wrapper.channels = channels
 
