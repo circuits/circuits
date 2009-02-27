@@ -429,7 +429,7 @@ class BaseComponent(Manager):
         h = len(self._handlers)
         return "<%s/%s component (q: %d h: %d)>" % (name, channel, q, h)
 
-    def _updateHidden(self):
+    def _registerHidden(self):
         d = 0
         i = 0
         x = self
@@ -464,7 +464,23 @@ class BaseComponent(Manager):
                 else:
                     done = True
 
+        for x in hidden:
+            x.register(self.manager)
+
         self.manager._hidden.update(hidden)
+
+    def _updateTicks(self):
+        ticks = set()
+        if hasattr(self, "__tick__"):
+            ticks.add(self.__tick__)
+        for v in vars(self).itervalues():
+            if isinstance(v, Manager):
+                if hasattr(v, "__tick__"):
+                    ticks.add(v.__tick__)
+        for component in self.components:
+            if hasattr(component, "__tick__"):
+                ticks.add(component.__tick__)
+        self.manager._ticks.update(ticks)
 
     def register(self, manager):
         p = lambda x: callable(x) and hasattr(x, "type")
@@ -493,7 +509,9 @@ class BaseComponent(Manager):
             self.manager._components.add(self)
             if hasattr(self, "registered"):
                 self.registered()
-            self._updateHidden()
+            self._registerHidden()
+
+        self._updateTicks()
 
     def unregister(self):
         "Unregister all registered event handlers from the manager."
