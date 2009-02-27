@@ -192,21 +192,15 @@ class Manager(object):
 
     def __add__(self, y):
         y.register(self.manager)
-        if hasattr(y, "registered"):
-            y.registered()
         return self
     
     def __iadd__(self, y):
         y.register(self.manager)
-        if hasattr(y, "registered"):
-            y.registered()
         return self
 
     def __sub__(self, y):
         if y.manager == self:
             y.unregister()
-            if hasattr(y, "unregistered"):
-                y.unregistered()
             return self
         else:
             raise TypeError("No registration found for %r" % y)
@@ -214,8 +208,6 @@ class Manager(object):
     def __isub__(self, y):
         if y.manager == self:
             y.unregister()
-            if hasattr(y, "unregistered"):
-                y.unregistered()
             return self
         else:
             raise TypeError("No registration found for %r" % y)
@@ -461,6 +453,43 @@ class BaseComponent(Manager):
         h = len(self._handlers)
         return "<%s/%s component (q: %d h: %d)>" % (name, channel, q, h)
 
+    def _updateHidden(self):
+        d = 0
+        i = 0
+        x = self
+        stack = []
+        done = False
+        hidden = set()
+        visited = set()
+        children = list(x.components)
+        while not done:
+            if x not in visited:
+                p1 = x is not self
+                p2 = x.manager is not self
+                p3 = x not in self.manager.components
+                p4 = x.manager not in hidden
+                if p1 and (p2 or p3) and p4:
+                    hidden.add(x)
+                visited.add(x)
+                if x.components:
+                    d += 1
+
+            if i < len(children):
+                x = children[i]
+                i += 1
+                if x.components:
+                    stack.append((i, children))
+                    children = list(x.components)
+                    i = 0
+            else:
+                if stack:
+                    i, children = stack.pop()
+                    d -= 1
+                else:
+                    done = True
+
+        self.manager._hidden.update(hidden)
+
     def register(self, manager):
         p = lambda x: callable(x) and hasattr(x, "type")
         handlers = [v for k, v in getmembers(self, p)]
@@ -482,21 +511,13 @@ class BaseComponent(Manager):
 
                 manager._add(handler, channel)
 
-        hidden = set()
-        for x in self.components:
-            if len(x.components) > 1:
-                for y in x.components:
-                    if not (x == y):
-                        hidden.add(y)
-
-        for x in hidden.copy():
-            if x.manager in hidden:
-                hidden.remove(x)
-
         self.manager = manager
-        self.manager._components.add(self)
-        self.manager._hidden.update(hidden)
 
+        if manager is not self:
+            self.manager._components.add(self)
+            if hasattr(self, "registered"):
+                self.registered()
+            self._updateHidden()
 
     def unregister(self):
         "Unregister all registered event handlers from the manager."
@@ -508,6 +529,9 @@ class BaseComponent(Manager):
             self.manager._components.remove(self)
 
         self.manager = self
+
+        if hasattr(self, "unregistered") and manager is not self:
+            self.unregistered()
 
 class Component(BaseComponent):
 
