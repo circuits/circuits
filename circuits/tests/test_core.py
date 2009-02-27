@@ -28,13 +28,11 @@ class FilterComponent(Component):
 
 class ListenerComponent(Component):
 
-    @listener("foo")
-    def onFOO(self, test, msg=""):
+    def foo(self, test, msg=""):
         if msg.lower() == "start":
             self.push(Test(msg="foo"), "foo")
 
-    @listener("bar")
-    def onBAR(self, event, test, msg=""):
+    def bar(self, event, test, msg=""):
         if msg.lower() == "test":
             self.push(Test(msg="hello world"), event._channel)
 
@@ -122,9 +120,9 @@ class EventTestCase(unittest.TestCase):
         manager += listener
 
         self.assertTrue(filter.onFOO in manager.channels["foo"])
-        self.assertTrue(listener.onFOO in manager.channels["foo"])
+        self.assertTrue(listener.foo in manager.channels["foo"])
         self.assertTrue(filter.onBAR in manager.channels["bar"])
-        self.assertTrue(listener.onBAR in manager.channels["bar"])
+        self.assertTrue(listener.bar in manager.channels["bar"])
 
         filter.unregister()
         listener.unregister()
