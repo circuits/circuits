@@ -135,6 +135,12 @@ class Ping(Event):
    args: server
    """
 
+class Pong(Event):
+	"""Pong(Event) -> Pong Event
+
+   args: source daemon [daemon2]
+   """
+
 class Join(Event):
 	"""Join(Event) -> Join Event
 
@@ -637,6 +643,11 @@ class IRC(Component):
             self.push(Nick(
                     source, newNick, ctime),
                     "nick", self.channel)
+
+        elif tokens[1] == "PONG":
+            source = sourceSplit(strip(tokens[0].lower()))[0]
+            args = [strip(x) for x in tokens[2:]]
+            self.push(Pong(source, *args), "pong", self.channel)
 
     ###
     ### Default Events
