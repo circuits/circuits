@@ -35,6 +35,9 @@ class PyGameDriver(Component):
 
         return self
 
+    def __tick__(self):
+        self.poll()
+
     def poll(self):
         for e in self.event.get():
             if e.type == self.pygame.QUIT:
