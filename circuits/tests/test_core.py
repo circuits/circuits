@@ -465,7 +465,6 @@ class EventTestCase(unittest.TestCase):
         self.assertEquals(e.name, "Test")
         self.assertEquals(e.channel, None)
         self.assertEquals(e.target, None)
-        self.assertFalse(e.ignore)
 
         self.assertTrue((1, 2, 3, "foo", "bar") == e.args)
 
