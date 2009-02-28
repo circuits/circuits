@@ -39,13 +39,12 @@ def graph(x):
             x = children[i]
             i += 1
             if x.components:
-                stack.append((i, children))
+                stack.append((i, d, children))
                 children = list(x.components)
                 i = 0
         else:
             if stack:
-                i, children = stack.pop()
-                d -= 1
+                i, d, children = stack.pop()
             else:
                 done = True
 
