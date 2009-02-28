@@ -10,6 +10,7 @@ circuits based application or system. Normal usage of circuits:
 """
 
 import new
+import time
 from itertools import chain
 from threading import Thread
 from functools import partial
@@ -357,8 +358,12 @@ class Manager(object):
         else:
             return self.manager.send(event, channel, target, errors, log)
 
-    def start(self):
-        self.thread = Thread(None, self._run, self.__class__.__name__)
+    def start(self, sleep=None):
+        group = None
+        target = self._run
+        name = self.__class__.__name__
+        args = (sleep,)
+        self.thread = Thread(group, target, name, args)
         self.running = True
         self.thread.setDaemon(True)
         self.thread.start()
@@ -367,26 +372,20 @@ class Manager(object):
         self.running = False
         self.thread.join()
 
-    def _calls(self):
-        for v in vars(self).values():
-            if isinstance(v, Manager):
-                if hasattr(v, "__tick__"):
-                    yield v.__tick__
-        for component in self.components:
-            if hasattr(component, "__tick__"):
-                yield component.__tick__
-
-
-    def _run(self):
+    def _run(self, sleep=None):
         while self.running and self.thread.isAlive():
             [f() for f in self._ticks.copy()]
             self.flush()
+            if sleep:
+                time.sleep(sleep)
 
-    def run(self):
+    def run(self, sleep=None):
         while True:
             try:
                 [f() for f in self._ticks.copy()]
                 self.flush()
+                if sleep:
+                    time.sleep(sleep)
             except (KeyboardInterrupt, SystemExit):
                 break
 
