@@ -41,9 +41,6 @@ class Event(object):
         self.channel = None
         self.target = None
 
-        self.source = None  # Used by Bridge
-        self.ignore = False # Used by Bridge
-
     def __eq__(self, y):
         """ x.__eq__(y) <==> x==y
 
