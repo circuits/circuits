@@ -590,9 +590,6 @@ class EventTestCase(unittest.TestCase):
         the event queue is empty after flushing. Test that
         events can be sent directly without queuing.
 
-        Test that Event._channel, Event._time and
-        Event._source are set appropiately.
-
         Test that a filter will filter an event and prevent
         any further processing of this event.
         """
