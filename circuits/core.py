@@ -345,6 +345,8 @@ class Manager(object):
                         r = partial(handler, event, *eargs, **ekwargs)()
                     else:
                         r = partial(handler, *eargs, **ekwargs)()
+                except (KeyboardInterrupt, SystemExit):
+                    raise
                 except:
                     if log:
                         self.push(Error(*_exc_info()), "error")
