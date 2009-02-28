@@ -69,23 +69,23 @@ class EventTestCase(unittest.TestCase):
         """
 
         x = Manager()
-        self.assertEquals(repr(x), "<Manager (q: 0 h: 0)>")
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 0 h: 0) [S]>")
 
         a = Foo()
         x += a
-        self.assertEquals(repr(x), "<Manager (q: 0 h: 3)>")
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 3 h: 3) [S]>")
 
         x.flush()
-        self.assertEquals(repr(x), "<Manager (q: 0 h: 3)>")
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 3 h: 3) [S]>")
 
         x.push(Test(), "foo")
-        self.assertEquals(repr(x), "<Manager (q: 1 h: 3)>")
+        self.assertEquals(repr(x), "<Manager (q: 1 c: 3 h: 3) [S]>")
 
         x.flush()
-        self.assertEquals(repr(x), "<Manager (q: 0 h: 3)>")
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 4 h: 3) [S]>")
 
         x -= a
-        self.assertEquals(repr(x), "<Manager (q: 0 h: 0)>")
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 0 h: 0) [S]>")
 
 
     def testComponentRepr(self):
@@ -95,13 +95,13 @@ class EventTestCase(unittest.TestCase):
         """
 
         a = Foo()
-        self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 3)>")
+        self.assertEquals(repr(a), "<Foo/ (q: 0 c: 3 h: 3) [S]>")
 
         a.push(Test(), "foo")
-        self.assertEquals(repr(a), "<Foo/ component (q: 1 h: 3)>")
+        self.assertEquals(repr(a), "<Foo/ (q: 1 c: 3 h: 3) [S]>")
 
         a.flush()
-        self.assertEquals(repr(a), "<Foo/ component (q: 0 h: 3)>")
+        self.assertEquals(repr(a), "<Foo/ (q: 0 c: 4 h: 3) [S]>")
 
 
     def testComponentSetup(self):
