@@ -167,22 +167,53 @@ class Manager(object):
         self.manager = self
 
     def __repr__(self):
+        "x.__repr__() <==> repr(x)"
+
         q = len(self._queue)
         h = len(self._handlers)
         return "<Manager (q: %d h: %d)>" % (q, h)
 
     def __len__(self):
+        """x.__len__() <==> len(x)
+
+        Returns the number of events in the x's queue.
+        """
+
         return len(self._queue)
 
     def __add__(self, y):
+        """x.__add__(y) <==> x+y
+
+        (Optional) Convenience operator to register y with x.manager
+        Equivalent to: y.register(x.manager)
+
+        Returns x
+        """
+
         y.register(self.manager)
         return self
     
     def __iadd__(self, y):
+        """x.__iadd__(y) <==> x += y
+
+        (Optional) Convenience operator to register y with x.manager
+        Equivalent to: y.register(x.manager)
+
+        Returns and Assigns to x
+        """
+
         y.register(self.manager)
         return self
 
     def __sub__(self, y):
+        """x.__sub__(y) <==> x-y
+
+        (Optional) Convenience operator to unregister y from x.manager
+        Equivalent to: y.unregister()
+
+        Returns x
+        """
+
         if y.manager == self:
             y.unregister()
             return self
@@ -190,6 +221,14 @@ class Manager(object):
             raise TypeError("No registration found for %r" % y)
 
     def __isub__(self, y):
+        """x.__sub__(y) <==> x -= y
+
+        (Optional) Convenience operator to unregister y from x
+        Equivalent to: y.unregister()
+
+        Returns and Assigns to x
+        """
+
         if y.manager == self:
             y.unregister()
             return self
