@@ -164,14 +164,21 @@ class Manager(object):
         self._hidden = set()
         self._components = set()
 
+        self._task = None
+        self._running = False
+
         self.manager = self
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
+        name = self.__class__.__name__
         q = len(self._queue)
+        c = len(self._channels)
         h = len(self._handlers)
-        return "<Manager (q: %d h: %d)>" % (q, h)
+        state = self.state
+        format = "<%s (q: %d c: %d h: %d) [%s]>"
+        return format % (name, q, c, h, state)
 
     def __len__(self):
         """x.__len__() <==> len(x)
@@ -271,6 +278,23 @@ class Manager(object):
             handlers = chain(handlers, channels[s])
 
         return handlers
+
+    @property
+    def state(self):
+        if self._running:
+            if self._task is None:
+                return "R"
+            else:
+                if self._task.is_alive():
+                    return "R"
+                else:
+                    return "D"
+        else:
+            return "S"
+
+    @property
+    def running(self):
+        return self._running
 
     @property
     def components(self):
@@ -458,13 +482,17 @@ class BaseComponent(Manager):
         self.channel = kwargs.get("channel", self.channel)
         self.register(self)
 
-
     def __repr__(self):
+        "x.__repr__() <==> repr(x)"
+
         name = self.__class__.__name__
         channel = self.channel or ""
         q = len(self._queue)
+        c = len(self._channels)
         h = len(self._handlers)
-        return "<%s/%s component (q: %d h: %d)>" % (name, channel, q, h)
+        state = self.state
+        format = "<%s/%s (q: %d c: %d h: %d) [%s]>"
+        return format % (name, channel, q, c, h, state)
 
     def _registerHidden(self):
         d = 0
