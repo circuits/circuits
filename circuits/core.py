@@ -347,6 +347,8 @@ class Manager(object):
         for channel in keys:
             if handler in self.channels[channel]:
                 self._channels[channel].remove(handler)
+            if not self._channels[channel]:
+                del self._channels[channel]
 
 
     def push(self, event, channel, target=None):
