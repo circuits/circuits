@@ -95,11 +95,4 @@ if __name__ == "__main__":
         bots.append(bot)
         bot.connect("irc.freenode.net")
 
-    while True:
-        try:
-            manager.flush()
-            [bot.client.poll() for bot in bots if bot.client.isConnected()]
-            webserver.poll()
-        except KeyboardInterrupt:
-            [bot.irc.ircQUIT() for bot in bots if bot.client.isConnected()]
-            manager.flush()
+    manager.run()
