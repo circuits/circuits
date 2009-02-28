@@ -10,7 +10,7 @@ Test all functionality of the wtimersorkers module.
 import unittest
 from time import sleep
 
-from circuits import Timers
+from circuits import Timer
 from circuits import listener, Event, Component, Manager
 
 
@@ -36,21 +36,18 @@ class EventTestCase(unittest.TestCase):
         """
 
         x = Manager()
+        x.start()
         a = Foo()
-        t = Timers()
-        t.addTimer(0.01, Test(), "timer")
-
         x += a
-        x += t
+        x += Timer(0.01, Test(), "timer")
 
         sleep(0.02)
-        t.poll()
-        x.flush()
 
         self.assertTrue(a.flag)
 
-        x -= a
-        x -= t
+        a.unregister()
+        x.stop()
+
 
     def testPersistentTimer(self):
         """Test Persistent Timers
@@ -59,22 +56,18 @@ class EventTestCase(unittest.TestCase):
         """
 
         x = Manager()
+        x.start()
         a = Foo()
-        t = Timers()
-        t.addTimer(0.01, Test(), "timer", persist=True)
-
         x += a
-        x += t
+        x += Timer(0.01, Test(), "timer", persist=True)
 
         for i in xrange(5):
             sleep(0.02)
-            t.poll()
-            x.flush()
             self.assertTrue(a.flag)
             a.flag = False
 
-        x -= a
-        x -= t
+        a.unregister()
+        x.stop()
 
 
 def suite():
