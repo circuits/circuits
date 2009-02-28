@@ -469,7 +469,7 @@ class BaseComponent(Manager):
 
         self.manager._hidden.update(hidden)
 
-    def _updateTicks(self):
+    def _getTicks(self):
         ticks = set()
         if hasattr(self, "__tick__"):
             ticks.add(self.__tick__)
@@ -483,7 +483,7 @@ class BaseComponent(Manager):
         for component in self._hidden:
             if hasattr(component, "__tick__"):
                 ticks.add(component.__tick__)
-        self.manager._ticks.update(ticks)
+        return ticks
 
     def register(self, manager):
         p = lambda x: callable(x) and hasattr(x, "type")
@@ -514,7 +514,7 @@ class BaseComponent(Manager):
                 self.registered()
             self._registerHidden()
 
-        self._updateTicks()
+        self.manager._ticks.update(self._getTicks())
 
     def unregister(self):
         "Unregister all registered event handlers from the manager."
@@ -524,6 +524,8 @@ class BaseComponent(Manager):
 
         if self in self.manager.components:
             self.manager._components.remove(self)
+
+        self.manager._ticks.difference_update(self._getTicks())
 
         self.manager = self
 
