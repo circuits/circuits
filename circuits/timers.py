@@ -11,32 +11,6 @@ from time import time
 
 from circuits.core import Component
 
-class Timers(Component):
-    """Timers() -> new timers component
-
-    ...
-    """
-
-    def __init__(self, *args, **kwargs):
-        "initializes x; see x.__class__.__doc__ for signature"
-
-        super(Timers, self).__init__(*args, **kwargs)
-
-        self.timers = []
-
-    def __tick__(self):
-        self.poll()
-
-    def addTimer(self, s, e, c="timer", t=None, persist=False):
-        timer = Timer(s, e, c, t, persist)
-        self.manager += timer
-        self.timers.append(timer)
-
-    def poll(self):
-        for timer in self.timers[:]:
-            if timer.poll():
-                self.timers.remove(timer)
-            
 class Timer(Component):
     """Timer(s, e, c, t, persist) -> new timer component
 
