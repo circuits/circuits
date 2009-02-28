@@ -238,7 +238,7 @@ class Manager(object):
 
     @property
     def components(self):
-        return self._components.copy()
+        return self._components
 
     @property
     def channels(self):
