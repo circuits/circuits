@@ -317,7 +317,11 @@ class Server(Component):
             
         for sock in r:
             if sock == self._sock:
-                newsock, host = sock.accept()
+                try:
+                    newsock, host = sock.accept()
+                except socket.error, error:
+                    if error[0] == errno.EAGAIN:
+                        continue
                 newsock.setblocking(False)
                 newsock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                 self._socks.append(newsock)
