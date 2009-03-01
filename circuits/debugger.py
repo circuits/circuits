@@ -38,14 +38,19 @@ class Debugger(Component):
     IgnoreEvents = []
     IgnoreChannels = []
 
-    def __init__(self, errors=True, events=True, logger=None, *args, **kwargs):
+    def __init__(self, errors=True, events=True, file=None, logger=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(Debugger, self).__init__(*args, **kwargs)
+        super(Debugger, self).__init__()
 
         self.errors = errors
         self.events = events
         self.logger = logger
+
+        if file is None:
+            self.file = sys.stderr
+        else:
+            self.file = file
 
     @listener("error", type="filter")
     def error(self, *args, **kwargs):
@@ -64,11 +69,13 @@ class Debugger(Component):
             s.write("kwargs: %s\n" % repr(kwargs))
 
         s.seek(0)
-        for line in s:
-            if self.logger is not None:
+
+        if self.logger is not None:
+            for line in s:
                 self.logger.error(line)
-            else:
-                print >> sys.stderr, line.strip()
+        else:
+            self.file.write(s.read())
+            self.file.flush()
 
         s.close()
 
@@ -77,8 +84,7 @@ class Debugger(Component):
         """Global Event Handler
 
         Event handler to listen and filter all events printing each event
-        to sys.stderr or a Logger Component instnace. This behavior is
-        controllbed by the :attr:`enabled flag <circuits.debugger.Debugger.enabled>`
+        to self.file or a Logger Component instnace by calling self.logger.debug
         """
 
         if not self.events:
@@ -93,4 +99,5 @@ class Debugger(Component):
             if self.logger is not None:
                 self.logger.debug(repr(event))
             else:
-                print >> sys.stderr, event
+                self.file.write("%s\n" % repr(event))
+                self.file.flush()
