@@ -556,6 +556,7 @@ class BaseComponent(Manager):
             x.register(self.manager)
 
         self.manager._hidden.update(hidden)
+        self.manager._components.difference_update(hidden)
 
     def _getTicks(self):
         ticks = set()
