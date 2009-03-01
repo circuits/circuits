@@ -462,7 +462,7 @@ class Manager(object):
 
         self._running = True
 
-        while self.running or (self.running and self._task is not None and self._task.is_alive()):
+        while self._running or (self._running and self._task is not None and self._task.is_alive()):
             try:
                 [f() for f in self._ticks.copy()]
                 self.flush()
