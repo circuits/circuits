@@ -27,21 +27,21 @@ class Thread(_Component):
     def __init__(self, *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
 
-        self.running = False
-        self.thread = _Thread(target=self.run)
+        self._running = False
+        self._thread = _Thread(target=self.run)
 
     def start(self):
-        self.running = True
-        self.thread.start()
+        self._running = True
+        self._thread.start()
 
     def run(self):
         pass
 
     def stop(self):
-        self.running = False
+        self._running = False
 
     def join(self):
-        return self.thread.join()
+        return self._thread.join()
 
     def isAlive(self):
         return self.running and self.thread.isAlive()
