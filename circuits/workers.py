@@ -43,8 +43,9 @@ class Thread(_Component):
     def join(self):
         return self._thread.join()
 
-    def isAlive(self):
-        return self.running and self.thread.isAlive()
+    @property
+    def alive(self):
+        return self._running and self._thread.isAlive()
 
 class Process(_Component):
 
