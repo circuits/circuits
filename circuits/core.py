@@ -20,6 +20,16 @@ from sys import exc_info as _exc_info
 from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
 
+try:
+    from multiprocessing import Process
+    HAS_MULTIPROCESSING = 2
+except ImportError:
+    try:
+        from processing import Process
+        HAS_MULTIPROCESSING = 1
+    except ImportError:
+        HAS_MULTIPROCESSING = 0
+
 
 class Event(object):
     """Create a new Event Object
@@ -422,36 +432,47 @@ class Manager(object):
         else:
             return self.manager.send(event, channel, target, errors, log)
 
-    def start(self, sleep=None):
+    def start(self, sleep=0, process=False):
         group = None
-        target = self._run
+        target = self.run
         name = self.__class__.__name__
         args = (sleep,)
-        self.thread = Thread(group, target, name, args)
-        self.running = True
-        self.thread.setDaemon(True)
-        self.thread.start()
+
+        if process and HAS_MULTIPROCESSING:
+            args += (self,)
+            self._task = Process(group, target, name, args)
+            if HAS_MULTIPROCESSING == 1:
+                setattr(self._task, "is_alive", self._task.isAlive)
+            self._task.start()
+        else:
+            self._task = Thread(group, target, name, args)
+            self._task.start()
 
     def stop(self):
-        self.running = False
-        self.thread.join()
+        self._running = False
+        if hasattr(self._task, "terminate"):
+            self._task.terminate()
+        if hasattr(self._task, "join"):
+            self._task.join(5)
+        self._task = None
 
-    def _run(self, sleep=None):
-        while self.running and self.thread.isAlive():
-            [f() for f in self._ticks.copy()]
-            self.flush()
-            if sleep:
-                time.sleep(sleep)
+    def run(self, sleep=0, __self=None):
+        if __self is not None:
+            self = __self
 
-    def run(self, sleep=None):
-        while True:
+        self._running = True
+
+        while self.running or (self.running and self._task is not None and self._task.is_alive()):
             try:
                 [f() for f in self._ticks.copy()]
                 self.flush()
                 if sleep:
                     time.sleep(sleep)
             except (KeyboardInterrupt, SystemExit):
-                break
+                self._running = False
+                if hasattr(self._task, "terminate"):
+                    self._task.terminate()
+
 
 class BaseComponent(Manager):
     """Creates a new Component
