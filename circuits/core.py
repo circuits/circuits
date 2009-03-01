@@ -517,6 +517,11 @@ class BaseComponent(Manager):
         format = "<%s/%s (q: %d c: %d h: %d) [%s]>"
         return format % (name, channel, q, c, h, state)
 
+    def __call__(self, channel, *args, **kwargs):
+        e = Event(*args, **kwargs)
+        e.name = channel.title()
+        return self.send(e, channel, self.channel)
+
     def _registerHidden(self):
         d = 0
         i = 0
