@@ -26,7 +26,7 @@ class Foo(Thread):
       self.flag = True
 
    def run(self):
-      while self.isAlive():
+      while self.alive:
          self.count += 1
          if self.count == 5:
             self.stop()
@@ -50,7 +50,7 @@ class EventTestCase(unittest.TestCase):
 
       x.push(Test(), "foo")
 
-      while w.isAlive(): pass
+      while w.alive: pass
       x.flush()
 
       self.assertEquals(w.count, 5)
