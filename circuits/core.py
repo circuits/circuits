@@ -201,25 +201,25 @@ class Manager(object):
     def __add__(self, y):
         """x.__add__(y) <==> x+y
 
-        (Optional) Convenience operator to register y with x.manager
-        Equivalent to: y.register(x.manager)
+        (Optional) Convenience operator to register y with x
+        Equivalent to: y.register(x)
 
         Returns x
         """
 
-        y.register(self.manager)
+        y.register(self)
         return self
     
     def __iadd__(self, y):
         """x.__iadd__(y) <==> x += y
 
-        (Optional) Convenience operator to register y with x.manager
-        Equivalent to: y.register(x.manager)
+        (Optional) Convenience operator to register y with x
+        Equivalent to: y.register(x)
 
         Returns and Assigns to x
         """
 
-        y.register(self.manager)
+        y.register(self)
         return self
 
     def __sub__(self, y):
