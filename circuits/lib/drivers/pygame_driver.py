@@ -7,14 +7,23 @@
 A driver for the pygame library.
 """
 
-from circuits.core import Event, Component
 from circuits.lib.drivers import DriverError
 
-class KeyEvent(Event): pass
-class QuitEvent(Event): pass
-class FocusEvent(Event): pass
-class MouseEvent(Event): pass
-class ClickEvent(Event): pass
+try:
+    from pygame import fastevent as event
+except ImportError:
+    try:
+        from pygame import event
+    except ImportError:
+        raise DriverError("No pygame support available.")
+
+from circuits.core import Event, Component
+
+class Key(Event): pass
+class Quit(Event): pass
+class Focus(Event): pass
+class Mouse(Event): pass
+class Click(Event): pass
     
 class PyGameDriver(Component):
 
@@ -39,18 +48,20 @@ class PyGameDriver(Component):
         self.poll()
 
     def poll(self):
-        for e in self.event.get():
-            if e.type == self.pygame.QUIT:
-                self.push(QuitEvent(), "quit")
-            elif e.type == self.pygame.KEYDOWN:
-                self.push(KeyEvent(e.key, e.mod), "keydown")
-            elif e.type == self.pygame.KEYUP:
-                self.push(KeyEvent(e.key, e.mod), "keyup")
-            elif e.type == self.pygame.ACTIVEEVENT:
-                self.push(FocusEvent(e.state, e.gain), "focus")
-            elif e.type == self.pygame.MOUSEMOTION:
-                self.push(MouseEvent(e.buttons, e.pos, e.rel), "mouse")
-            elif e.type == self.pygame.MOUSEBUTTONDOWN:
-                self.push(ClickEvent(e.button, e.pos), "click")
-            elif e.type == self.pygame.MOUSEBUTTONUP:
-                self.push(ClickEvent(e.button, e.pos), "click")
+        for e in event.get():
+            if e.type == pygame.QUIT:
+                self.push(Quit(), "quit")
+            elif e.type == pygame.KEYDOWN:
+                self.push(Key(e.key, e.mod), "keydown")
+            elif e.type == pygame.KEYUP:
+                self.push(Key(e.key, e.mod), "keyup")
+            elif e.type == pygame.ACTIVEEVENT:
+                self.push(Focus(e.state, e.gain), "focus")
+            elif e.type == pygame.MOUSEMOTION:
+                self.push(Mouse(e.buttons, e.pos, e.rel), "mouse")
+            elif e.type == pygame.MOUSEBUTTONDOWN:
+                self.push(Click(e.button, e.pos), "click")
+            elif e.type == pygame.MOUSEBUTTONUP:
+                self.push(Click(e.button, e.pos), "click")
+            else:
+                self.push(Unknown(e), "unknown")
