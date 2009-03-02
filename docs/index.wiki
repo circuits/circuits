@@ -40,10 +40,10 @@ Download and install the circuits library. Learn how to write Components and
 be sure to check out the Examples and the classic [source:examples/hello.py Hello World!]
 
  * [./DownloadInstall Downloading and Installing]
- * [./QuickStart Quick Start Guide]
+ * [./Tutorial Tutorial]
 
-== Tutorials ==
- * [./TutorialHelloWorld Hello World Tutorial]
+== Documentation ==
+ * [./DevelopersGuide Developers Guide]
 
 == References ==
  * [./core Core Library]
