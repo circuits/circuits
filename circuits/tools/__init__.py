@@ -46,6 +46,14 @@ def graph(x):
 
     return "".join(s)
 
+def reprhandler(x):
+    if not hasattr(x, "handler"):
+        raise TypeError("%r is not an Event Handler" % x)
+
+    format = "<handler %r {filter: %s, target: %s) of %s>"
+    component = getattr(x, "im_self", None)
+    return format % (x.channels, x.filter, x.target, component)
+
 def inspect(x):
     s = []
     write = s.append
