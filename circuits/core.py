@@ -365,11 +365,10 @@ class Manager(object):
     def _remove(self, handler, channel=None):
         """E._remove(handler, channel=None) -> None
 
-        Remove the given filter or listener from the
-        event manager removing it from the given channel.
-        if channel is None, remove it from the global
-        channel. This will succeed even if the specified
-        handler has already been removed.
+        Remove the given Event Handler from the Event Manager
+        removing it from the given channel. if channel is None,
+        remove it from all channels. This will succeed even
+        if the specified  handler has already been removed.
         """
 
         if channel is None:
