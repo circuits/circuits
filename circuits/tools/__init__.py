@@ -8,13 +8,8 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 def graph(x):
-    s = StringIO()
+    s = []
 
     d = 0
     i = 0
@@ -25,10 +20,10 @@ def graph(x):
     while not done:
         if x not in visited:
             if d:
-                s.write("%s%s\n" % (" " * d, "|"))
-                s.write("%s%s%s\n" % (" " * d, "|-", x))
+                s.append("%s%s\n" % (" " * d, "|"))
+                s.append("%s%s%s\n" % (" " * d, "|-", x))
             else:
-                s.write(" .%s\n" % x)
+                s.append(" .%s\n" % x)
 
             if x.components:
                 d += 1
@@ -48,4 +43,4 @@ def graph(x):
             else:
                 done = True
 
-    return s.getvalue()
+    return "".join(s)
