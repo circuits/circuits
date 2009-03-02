@@ -570,9 +570,8 @@ class BaseComponent(Manager):
         if hasattr(self, "__tick__"):
             ticks.add(self.__tick__)
         for v in vars(self).itervalues():
-            if isinstance(v, Manager):
-                if hasattr(v, "__tick__"):
-                    ticks.add(v.__tick__)
+            if isinstance(v, Component) and hasattr(v, "__tick__"):
+                ticks.add(v.__tick__)
         for component in self.components:
             if hasattr(component, "__tick__"):
                 ticks.add(component.__tick__)
