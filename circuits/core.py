@@ -572,6 +572,12 @@ class BaseComponent(Manager):
             x.register(self.manager)
 
         self.manager._hidden.update(hidden)
+
+        pmanager = self.manager.manager
+        if self.manager is not pmanager:
+            hidden.add(self)
+            self.register(pmanager)
+
         self.manager._components.difference_update(hidden)
 
     def _getTicks(self):
