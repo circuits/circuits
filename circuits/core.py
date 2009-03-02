@@ -598,7 +598,7 @@ class BaseComponent(Manager):
         for component in self.components:
             if hasattr(component, "__tick__"):
                 ticks.add(component.__tick__)
-        for component in self._hidden:
+        for component in self.hidden:
             if hasattr(component, "__tick__"):
                 ticks.add(component.__tick__)
         return ticks
