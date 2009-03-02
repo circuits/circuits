@@ -6,11 +6,12 @@
 Core of the circuits library containing all of the essentials for a
 circuits based application or system. Normal usage of circuits:
 
->>> from circuits import listener, Manager, Component, Event
+>>> from circuits import handler, Manager, Component, Event
 """
 
 import new
 import time
+from warnings import warn
 from itertools import chain
 from threading import Thread
 from functools import partial
@@ -133,9 +134,15 @@ def listener(*channels, **kwargs):
     ...     pass
     """
 
-    def decorate(f):
-        f.type = kwargs.get("type", "listener")
-        f.filter = f.type == "filter"
+    def wrapper(f):
+        f.handler = True
+
+        if "type" in kwargs:
+            warn("Please use 'filter', 'type' will be deprecated in 1.2")
+            f.filter = kwargs.get("type", "listener") == "filter"
+        else:
+            f.filter = kwargs.get("filter", False)
+
         f.target = kwargs.get("target", None)
         f.channels = channels
 
@@ -149,8 +156,12 @@ def listener(*channels, **kwargs):
             f._passEvent = False
 
         return f
-    return decorate
 
+    return wrapper
+
+def listener(*channels, **kwargs):
+    warn("Please use @handler, @listener will be deprecated in 1.2")
+    return handler(*channels, **kwargs)
 
 class HandlersType(type):
 
