@@ -12,6 +12,12 @@ import unittest
 from circuits import Bridge
 from circuits import listener, Event, Component, Manager
 
+
+def wait():
+    for x in xrange(100000):
+        pass
+
+
 class Foo(Component):
 
     flag = False
@@ -51,6 +57,7 @@ class EventTestCase(unittest.TestCase):
         foo = Foo()
         m1 += b1
         m1 += foo
+        m1.start()
 
         m2 = Manager()
         b2 = Bridge(8001, "127.0.0.1", nodes=[("127.0.0.1", 8000)])
@@ -58,28 +65,24 @@ class EventTestCase(unittest.TestCase):
         bar = Bar()
         m2 += b2
         m2 += bar
+        m2.start()
 
         m1.push(Event(), "bar")
         m1.push(Event(), "dummy")
-        for i in xrange(10):
-            m1.flush()
-            b1.poll()
-            b2.poll()
-            m2.flush()
+        wait()
 
         self.assertFalse(foo.flag)
         self.assertTrue(bar.flag)
 
         m2.push(Event(), "foo")
         m2.push(Event(), "dummy")
-        for i in xrange(10):
-            m2.flush()
-            b2.poll()
-            b1.poll()
-            m1.flush()
+        wait()
 
         self.assertTrue(foo.flag)
         self.assertTrue(bar.flag)
+
+        m1.stop()
+        m2.stop()
 
         bar.unregister()
         b2.unregister()
