@@ -121,6 +121,7 @@ class Client(Component):
         self.server = {}
         self.issuer = {}
 
+        self._sock = None
         self._buffer = []
         self._socks = []
         self._read = []
@@ -175,10 +176,10 @@ class Client(Component):
                 else:
                     self._write.remove(self._sock)
 
-    def open(self, host, port, ssl=False):
-        self.ssl = ssl
-        self.host = host
-        self.port = port
+    def connect(self, host=None, port=None, ssl=None):
+        self.host = host = (host if host is not None else self.host)
+        self.port = port = (port if port is not None else self.port)
+        self.ssl = ssl = (ssl if ssl is not None else self.ssl)
 
         try:
             try:
@@ -193,6 +194,7 @@ class Client(Component):
             r, w, e = select.select([], self._socks, [], CONNECT_TIMEOUT)
             if w:
                 self._connected = True
+                self._read.append(self._sock)
                 self.push(Connected(host, port), "connected", self.channel)
             else:
                 self.push(Error("Connection timed out"), "error", self.channel)
@@ -241,10 +243,15 @@ class Client(Component):
 
 class TCPClient(Client):
 
-    def open(self, host, port, ssl=False, bind=None):
-        self._sock = socket.socket(
-                socket.AF_INET,
-                socket.SOCK_STREAM)
+    def __init__(self, host, port, ssl=False, bind=None, **kwargs):
+        super(TCPClient, self).__init__(**kwargs)
+
+        self.host = host
+        self.port = port
+        self.ssl = ssl
+        self.bind = bind
+
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.setblocking(False)
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
@@ -252,9 +259,6 @@ class TCPClient(Client):
             self._sock.bind((bind, 0))
 
         self._socks.append(self._sock)
-        self._read.append(self._sock)
-
-        super(TCPClient, self).open(host, port, ssl)
 
     @listener("send", type="filter")
     def onSEND(self, data):
