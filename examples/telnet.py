@@ -17,16 +17,15 @@ This example demonstrates:
 This example makes use of:
     * Component
     * Event
-    * Manager
     * lib.sockets.TCPClient
 """
 
 import optparse
 
 from circuits.lib.io import Stdin
-from circuits import listener, Manager
-from circuits.lib.sockets import TCPClient
+from circuits import listener, Component
 from circuits import __version__ as systemVersion
+from circuits.lib.sockets import TCPClient, Connect
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
@@ -60,7 +59,15 @@ def parse_options():
 ### Components
 ###
 
-class Telnet(TCPClient):
+class Telnet(Component):
+
+    def __init__(self, host, port):
+        super(Telnet, self).__init__()
+
+        self.client = TCPClient(host, port)
+        self += self.client
+
+        self.push(Connect(), "connect", self.channel)
 
     def connected(self, host, port):
         print "Connected to %s" % host
@@ -68,7 +75,7 @@ class Telnet(TCPClient):
     def read(self, data):
         print data.strip()
 
-    @listener("stdin:read")
+    @listener("read", target="stdin")
     def onINPUT(self, data):
         self.write(data)
 
@@ -85,26 +92,8 @@ def main():
     else:
         port = 23
 
-    manager = Manager()
-
-    telnet = Telnet()
-    stdin = Stdin()
-
-    manager += stdin
-    manager += telnet
-
     print "Trying %s..." % host
-    telnet.open(host, port, ssl=opts.ssl)
-
-    while telnet.isConnected():
-        try:
-            manager.flush()
-            stdin.poll()
-            telnet.poll()
-        except KeyboardInterrupt:
-            break
-
-    telnet.close()
+    (Telnet(host, port) + Stdin()).run()
 
 ###
 ### Entry Point
