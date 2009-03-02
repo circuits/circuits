@@ -358,7 +358,7 @@ class Manager(object):
         if channel in self.channels:
             if handler not in self.channels[channel]:
                 self._channels[channel].append(handler)
-                self._channels[channel].sort(key=lambda x: x.type)
+                self._channels[channel].sort(key=lambda x: not x.filter)
         else:
             self._channels[channel] = [handler]
 
