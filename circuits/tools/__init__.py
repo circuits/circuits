@@ -90,7 +90,7 @@ def inspect(x):
             write("\n  %s:" % channel)
             if x.channels[channel]:
                 for handler in x.channels[channel]:
-                    write("\n   %s" % handler)
+                    write("\n   %s" % reprhandler(handler))
             else:
                 write(" None")
     else:
