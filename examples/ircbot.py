@@ -8,91 +8,35 @@ A simple example of using circuits to build a simple IRC Bot.
 This example demonstrates basic networking with circuits.
 """
 
-from socket import gethostname
-
-from circuits import web
-from circuits.lib.irc import IRC
-from circuits.lib.sockets import TCPClient
-from circuits import Manager, Component, Debugger
+from circuits import Component, Debugger
+from circuits.lib.sockets import TCPClient, Connect
+from circuits.lib.irc import IRC, Message, User, Nick
 
 class Bot(Component):
 
-    def __init__(self, *args, **kwargs):
-        """Initialize Bot Component
+    def __init__(self, host, port=6667, channel=None):
+        super(Bot, self).__init__(channel=channel)
 
-        Create instances of the IRC and TCPClient Components and add them
-        to our Bot Component.
-        """
+        self.host = host
+        self.port = port
 
-        # Important: Call the super constructors to initialize the Component.
-        super(Bot, self).__init__(*args, **kwargs)
+        self.irc = IRC(channel=channel)
+        self.client = TCPClient(host, port, channel=channel)
+        self += (self.client + self.irc)
 
-        self.irc = IRC(*args, **kwargs)
-        self.client = TCPClient(*args, **kwargs)
-        self += self.irc
-        self += self.client
-
-    def registered(self):
-        self.manager += self.irc
-        self.manager += self.client
-
-    def connect(self, host, port=6667, ssl=False):
-        "Connect to an IRC Server"
-
-        self.client.open(host, port, ssl)
+        self.push(Connect(), "connect", self.channel)
 
     def connected(self, host, port):
-        """Connected Event Handler
-
-        Event Handler for "connect" Events that implements:
-         * When the Bot has connectd:
-          * Send a USER command
-          * Send a NICK command
-        """
-
-        self.irc.ircUSER("test", gethostname(), host, "Test Bot")
-        self.irc.ircNICK("test")
+        self.push(User("test", host, host, "Test Bot"), "USER", self.channel)
+        self.push(Nick("test"), "NICK", self.channel)
 
     def numeric(self, source, target, numeric, args, message):
-        """Numeric Event Handler
-
-        Event Handler for "numeric" Events that implements:
-         * When the Bot receives a numeric message:
-          * If the numeric is a 433:
-           * Change our nick by appending a "_" to our current nick
-
-        Note: 433 is the IRC numeric for "Nickname in use"
-        """
-
         if numeric == 433:
-            self.irc.ircNICK("%s_" % self.irc.getNick())
+            self.push(Nick("%s_" % self("getNick")), "NICK", self.channel)
 
     def message(self, source, target, message):
-        """Message Event Handler
-
-        Event Handler for "message" Events that implements:
-         * When the Bot receives a message:
-          * Echo the message back to the sender (source).
-        """
-
-        self.irc.ircPRIVMSG(source, message)
-
-class Root(web.Controller):
-
-    def index(self):
-        return "Hello World!"
+        self.push(Message(source, message), "PRIVMSG", self.channel)
 
 if __name__ == "__main__":
-    manager = Manager() + Debugger()
-
-    webserver = web.Server(8000, channel="web")
-    manager += webserver + Root()
-
-    bots = []
-    for id in xrange(2):
-        bot = Bot(channel=id)
-        manager += bot
-        bots.append(bot)
-        bot.connect("irc.freenode.net")
-
-    manager.run()
+    bot = Bot("irc.freenode.net") + Debugger()
+    bot.run()
