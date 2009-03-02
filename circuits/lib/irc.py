@@ -287,175 +287,150 @@ class IRC(Component):
     ### IRC Commands
     ###
 
-    @listener("RAW")
-    def ircRAW(self, data):
-        """I.ircRAW(data) -> None
-
-        Send a raw message
-        """
-
+    def RAW(self, data):
         self.push(Write("%s\r\n" % data), "write", self.channel)
 
-    @listener("PASS")
-    def ircPASS(self, password):
-        self.ircRAW("PASS %s" % password)
+    def PASS(self, password):
+        self.RAW("PASS %s" % password)
 
-    @listener("SERVER")
-    def ircSERVER(self, server, hops, token, description):
-         self.ircRAW("SERVER %s %s %s :%s" % (server, hops,
+    def SERVER(self, server, hops, token, description):
+         self.RAW("SERVER %s %s %s :%s" % (server, hops,
              token, description))
 
-    @listener("USER")
-    def ircUSER(self, ident, host, server, name):
-        self.ircRAW("USER %s \"%s\" \"%s\" :%s" % (
+    def USER(self, ident, host, server, name):
+        self.RAW("USER %s \"%s\" \"%s\" :%s" % (
             ident, host, server, name))
         self._info["ident"] = ident
         self._info["host"] = host
         self._info["server"] = server
         self._info["name"] = name
 
-    @listener("NICK")
-    def ircNICK(self, nick, idle=None, signon=None, ident=None,
+    def NICK(self, nick, idle=None, signon=None, ident=None,
             host=None, server=None, hops=None, name=None):
 
         if reduce(lambda x, y: x is not None and y is not None, [
             idle, signon, ident, host, server, hops, name]):
 
-            self.ircRAW("NICK %s %d %d %s %s %s %d :%s" % (
+            self.RAW("NICK %s %d %d %s %s %s %d :%s" % (
                 nick, idle, signon, ident, host, server,
                 hops, name))
 
         else:
-            self.ircRAW("NICK %s" % nick)
+            self.RAW("NICK %s" % nick)
             self._info["nick"] = nick
 
-    @listener("PING")
-    def ircPING(self, server):
-        self.ircRAW("PING :%s" % server)
+    def PING(self, server):
+        self.RAW("PING :%s" % server)
 
-    @listener("PONG")
-    def ircPONG(self, server):
-        self.ircRAW("PONG :%s" % server)
+    def PONG(self, server):
+        self.RAW("PONG :%s" % server)
 
-    @listener("QUIT")
-    def ircQUIT(self, message="", source=None):
+    def QUIT(self, message="", source=None):
         if source is None:
-            self.ircRAW("QUIT :%s" % message)
+            self.RAW("QUIT :%s" % message)
         else:
-            self.ircRAW(":%s QUIT :%s" % (source, message))
+            self.RAW(":%s QUIT :%s" % (source, message))
 
-    @listener("JOIN")
-    def ircJOIN(self, channel, key=None, source=None):
+    def JOIN(self, channel, key=None, source=None):
         if source is None:
             if key is None:
-                self.ircRAW("JOIN %s" % channel)
+                self.RAW("JOIN %s" % channel)
             else:
-                self.ircRAW("JOIN %s %s" % (channel, key))
+                self.RAW("JOIN %s %s" % (channel, key))
         else:
             if key is None:
-                self.ircRAW(":%s JOIN %s" % (source, channel))
+                self.RAW(":%s JOIN %s" % (source, channel))
             else:
-                self.ircRAW(":%s JOIN %s %s" % (source,
+                self.RAW(":%s JOIN %s %s" % (source,
                     channel, key))
 
-    @listener("PART")
-    def ircPART(self, channel, message="", source=None):
+    def PART(self, channel, message="", source=None):
         if source is None:
-            self.ircRAW("PART %s :%s" % (channel, message))
+            self.RAW("PART %s :%s" % (channel, message))
         else:
-            self.ircRAW(":%s PART %s :%s" % (source, channel,
+            self.RAW(":%s PART %s :%s" % (source, channel,
                 message))
 
-    @listener("PRIVMSG")
-    def ircPRIVMSG(self, target, message, source=None):
+    def PRIVMSG(self, target, message, source=None):
         if source is None:
-            self.ircRAW("PRIVMSG %s :%s" % (target, message))
+            self.RAW("PRIVMSG %s :%s" % (target, message))
         else:
-            self.ircRAW(":%s PRIVMSG %s :%s" % (source,
+            self.RAW(":%s PRIVMSG %s :%s" % (source,
                 target, message))
 
-    @listener("NOTICE")
-    def ircNOTICE(self, target, message, source=None):
+    def NOTICE(self, target, message, source=None):
         if source is None:
-            self.ircRAW("NOTICE %s :%s" % (target, message))
+            self.RAW("NOTICE %s :%s" % (target, message))
         else:
-            self.ircRAW(":%s NOTICE %s :%s" % (source,
+            self.RAW(":%s NOTICE %s :%s" % (source,
                 target, message))
 
-    @listener("CTCP")
-    def ircCTCP(self, target, type, message, source=None):
-        self.ircPRIVMSG(target, "%s %s" % (type, message),
+    def CTCP(self, target, type, message, source=None):
+        self.PRIVMSG(target, "%s %s" % (type, message),
                 source)
 
-    @listener("CTCPREPLY")
-    def ircCTCPREPLY(self, target, type, message, source=None):
-        self.ircNOTICE(target, "%s %s" % (type, message),
+    def CTCPREPLY(self, target, type, message, source=None):
+        self.NOTICE(target, "%s %s" % (type, message),
               source)
 
-    @listener("KICK")
-    def ircKICK(self, channel, target, message="", source=None):
+    def KICK(self, channel, target, message="", source=None):
         if source is None:
-            self.ircRAW("KICK %s %s :%s" % (channel, target,
+            self.RAW("KICK %s %s :%s" % (channel, target,
                 message))
         else:
-            self.ircRAW(":%s KICK %s %s :%s" % (source, channel,
+            self.RAW(":%s KICK %s %s :%s" % (source, channel,
                 target, message))
 
-    @listener("TOPIC")
-    def ircTOPIC(self, channel, topic, whoset=None,
+    def TOPIC(self, channel, topic, whoset=None,
             whenset=None, source=None):
         if source is None:
             if whoset is None and whenset is None:
-                self.ircRAW("TOPIC %s :%s" % (channel, topic))
+                self.RAW("TOPIC %s :%s" % (channel, topic))
             else:
-                self.ircRAW("TOPIC %s %s %d :%s" % (channel,
+                self.RAW("TOPIC %s %s %d :%s" % (channel,
                     whoset, whenset, topic)),
         else:
             if whoset is None and whenset is None:
-                self.ircRAW(":%s TOPIC %s :%s" % (source,
+                self.RAW(":%s TOPIC %s :%s" % (source,
                     channel, topic))
             else:
-                self.ircRAW(":%s TOPIC %s %s %d :%s" % (source,
+                self.RAW(":%s TOPIC %s %s %d :%s" % (source,
                     channel, whoset, whenset, topic)),
 
-    @listener("MODE")
-    def ircMODE(self, modes, channel=None, source=None):
+    def MODE(self, modes, channel=None, source=None):
         if source is None:
             if channel is None:
-                self.ircMODE("MODE :%s" % modes)
+                self.MODE("MODE :%s" % modes)
             else:
-                self.ircMODE("MODE %s :%s" % (channel, modes))
+                self.MODE("MODE %s :%s" % (channel, modes))
         else:
             if channel is None:
-                self.ircMODE(":%s MODE :%s" % (source, modes))
+                self.MODE(":%s MODE :%s" % (source, modes))
             else:
-                self.ircMODE(":%s MODE %s :%s" % (source, channel,
+                self.MODE(":%s MODE %s :%s" % (source, channel,
                     modes))
 
-    @listener("KILL")
-    def ircKILL(self, target, message):
-        self.ircRAW("KILL %s :%s" % (target, message))
+    def KILL(self, target, message):
+        self.RAW("KILL %s :%s" % (target, message))
 
-    @listener("INVITE")
-    def ircINVITE(self, target, channel, source=None):
+    def INVITE(self, target, channel, source=None):
         if source is None:
-            self.ircRAW("INVITE %s %s" % (target, channel))
+            self.RAW("INVITE %s %s" % (target, channel))
         else:
-            self.ircRAW(":%s INVITE %s %s" % (source, target,
+            self.RAW(":%s INVITE %s %s" % (source, target,
                 channel))
 
-    @listener("NAMES")
-    def ircNAMES(self, channel=None):
+    def NAMES(self, channel=None):
         if channel:
-            self.ircRAW("NAMES %s" % channel)
+            self.RAW("NAMES %s" % channel)
         else:
-            self.ircRAW("NAMES")
+            self.RAW("NAMES")
 
     ###
     ### Properties
     ###
 
-    nick = property(getNick, ircNICK)
+    nick = property(getNick, NICK)
 
     ###
     ### Event Processing
