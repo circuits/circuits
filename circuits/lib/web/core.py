@@ -38,8 +38,11 @@ def expose(*channels, **config):
             if hasattr(self, "session"):
                del self.session
  
-      wrapper.type = config.get("type", "listener")
-      wrapper.filter = wrapper.type == "filter"
+      wrapper.handler = True
+      if "type" in config:
+         wrapper.filter = config.get("type", "listener") == "filter"
+      else:
+         wrapper.filter = config.get("filter", False)
       wrapper.target = config.get("target", None)
       wrapper.channels = channels
 
