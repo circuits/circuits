@@ -112,13 +112,14 @@ class Unregistered(Event): pass
 def listener(*channels, **kwargs):
     """Creates an Event Handler of a callable object
 
-    Decorator to wrap a callable into an event handler that
-    listens on a set of channels defined by args. The type
-    of the listener defaults to "listener" and is defined
-    by kwargs["type"]. To define a filter, pass type="filter"
-    to kwargs. If kwargs["target"] is not None, this event handler
-    will be registered and will ignore the channel of it's containing
-    Component.
+    Decorator to wrap a callable into an event Handler that
+    listens on a set of channels defined by channels. The type
+    of the handler defaults to "listener". If kwargs["filter"]
+    is defined and is True, the Event Handler is defined as a
+    filter and has priority over non-filter Event Handlers.
+    If kwargs["target"] is defined and and is not None, the
+    Event Handler will listen for the spcified channels on the
+    spcified target Component's channel.
     
     Examples:
 
