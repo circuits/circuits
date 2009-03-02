@@ -10,9 +10,11 @@ A driver for the pygame library.
 from circuits.lib.drivers import DriverError
 
 try:
+    import pygame
     from pygame import fastevent as event
 except ImportError:
     try:
+        import pygame
         from pygame import event
     except ImportError:
         raise DriverError("No pygame support available.")
