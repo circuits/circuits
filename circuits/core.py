@@ -372,16 +372,14 @@ class Manager(object):
         """
 
         if channel is None:
-            if handler in self.channels["*"]:
-                self._channels["*"].remove(handler)
-            keys = self.channels.keys()
+            channels = self.channels.keys()
         else:
-            keys = [channel]
+            channels = [channel]
 
         if handler in self._handlers:
             self._handlers.remove(handler)
 
-        for channel in keys:
+        for channel in channels:
             if handler in self.channels[channel]:
                 self._channels[channel].remove(handler)
             if not self._channels[channel]:
