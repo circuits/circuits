@@ -109,7 +109,7 @@ class Stopped(Event): pass
 class Registered(Event): pass
 class Unregistered(Event): pass
 
-def listener(*channels, **kwargs):
+def handler(*channels, **kwargs):
     """Creates an Event Handler of a callable object
 
     Decorator to wrap a callable into an event Handler that
