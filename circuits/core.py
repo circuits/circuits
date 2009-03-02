@@ -402,11 +402,9 @@ class Manager(object):
             self.manager.push(event, channel, target)
 
     def flush(self):
-        """E.flushEvents() -> None
+        """E.flush() -> None
 
-        Flush all events waiting in the queue.
-        Any event waiting in the queue will be sent out
-        to filters/listeners.
+        Flush and Send all Events waiting on the Queue.
         """
 
         if self.manager == self:
