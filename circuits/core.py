@@ -103,7 +103,7 @@ class Error(Event):
     traceback: Exception traceback -> sys.exc_traceback
     """
 
-def listener(*args, **kwargs):
+def listener(*channels, **kwargs):
     """Creates an Event Handler of a callable object
 
     Decorator to wrap a callable into an event handler that
@@ -132,7 +132,7 @@ def listener(*args, **kwargs):
         f.type = kwargs.get("type", "listener")
         f.filter = f.type == "filter"
         f.target = kwargs.get("target", None)
-        f.channels = args
+        f.channels = channels
 
         _argspec = getargspec(f)
         _args = _argspec[0]
