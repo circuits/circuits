@@ -102,6 +102,11 @@ circuits.sniffer = circuits.tools.sniffer:main
 from core import listener, Event, Component,  Manager
 
 from bridge import Bridge
+from workers import Thread
 from debugger import Debugger
 from timers import Timer, Timer
-from workers import Thread, Process
+
+try:
+    from workers import Process
+except ImportError:
+    pass
