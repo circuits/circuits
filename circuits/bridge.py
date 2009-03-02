@@ -86,6 +86,9 @@ class Bridge(Component):
     def __close__(self):
         self.push(Close(), "close", self.channel)
 
+    def __tick__(self):
+        self.poll()
+
     def poll(self, wait=POLL_INTERVAL):
         r, w, e = select.select(self._read, self._write, [], wait)
 
