@@ -61,6 +61,9 @@ class Stdin(Component):
         self._stdin.setblocking(False)
         self._fds = [self._stdin]
 
+    def __tick__(self):
+        self.poll()
+
     def poll(self, wait=POLL_INTERVAL):
         try:
             r, w, e = select.select(self._fds, [], [], wait)
