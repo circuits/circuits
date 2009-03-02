@@ -444,9 +444,10 @@ class Manager(object):
             if HAS_MULTIPROCESSING == 1:
                 setattr(self._task, "is_alive", self._task.isAlive)
             self._task.start()
-        else:
-            self._task = Thread(group, target, name, args)
-            self._task.start()
+            return
+
+        self._task = Thread(group, target, name, args)
+        self._task.start()
 
     def stop(self):
         self._running = False
