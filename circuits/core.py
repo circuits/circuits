@@ -345,7 +345,7 @@ class Manager(object):
     def _add(self, handler, channel=None):
         """E._add(handler, channel) -> None
 
-        Add a new filter or listener to the event manager
+        Add a new Event Handler to the Event Manager
         adding it to the given channel. If no channel is
         given, add it to the global channel.
         """
