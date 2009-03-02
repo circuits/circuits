@@ -62,7 +62,7 @@ class EventTestCase(unittest.TestCase):
         x += Timer(0.01, Test(), "timer", persist=True)
 
         for i in xrange(5):
-            sleep(0.02)
+            sleep(0.1)
             self.assertTrue(a.flag)
             a.flag = False
 
