@@ -123,15 +123,18 @@ def listener(*channels, **kwargs):
     
     Examples:
 
-    >>> from circuits.core import listener
-    >>> @listener("foo")
-    ... def onFOO():
+    >>> from circuits.core import handler
+    >>> @handler("foo")
+    ... def foo():
     ...     pass
-    >>> @listener("bar", type="filter")
-    ... def onBAR():
+    >>> @handler("bar", filter=True)
+    ... def bar():
     ...     pass
-    >>> @listener("foo", "bar")
-    ... def onFOOBAR():
+    >>> @handler("foo", "bar")
+    ... def foobar():
+    ...     pass
+    >>> @handler("x", target="other")
+    ... def x():
     ...     pass
     """
 
