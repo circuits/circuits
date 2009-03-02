@@ -24,19 +24,19 @@ class Bot(Component):
         self.client = TCPClient(host, port, channel=channel)
         self += (self.client + self.irc)
 
-        self.push(Connect(), "connect", self.channel)
+        self.push(Connect(), "connect")
 
     def connected(self, host, port):
-        self.push(User("test", host, host, "Test Bot"), "USER", self.channel)
-        self.push(Nick("test"), "NICK", self.channel)
+        self.push(User("test", host, host, "Test Bot"), "USER")
+        self.push(Nick("test"), "NICK")
 
     def numeric(self, source, target, numeric, args, message):
         if numeric == 433:
-            self.push(Nick("%s_" % self("getNick")), "NICK", self.channel)
+            self.push(Nick("%s_" % self("getNick")), "NICK")
 
     def message(self, source, target, message):
-        self.push(Message(source, message), "PRIVMSG", self.channel)
+        self.push(Message(source, message), "PRIVMSG")
 
 if __name__ == "__main__":
-    bot = Bot("irc.freenode.net") + Debugger()
+    bot = Bot("irc.freenode.net", channel="bot") + Debugger()
     bot.run()
