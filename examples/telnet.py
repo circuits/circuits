@@ -67,7 +67,7 @@ class Telnet(Component):
         self.client = TCPClient(host, port)
         self += self.client
 
-        self.push(Connect(), "connect", self.channel)
+        self.push(Connect(), "connect")
 
     def connected(self, host, port):
         print "Connected to %s" % host
