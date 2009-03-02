@@ -173,8 +173,8 @@ class HandlersType(type):
         super(HandlersType, cls).__init__(name, bases, dct)
 
         for k, v in dct.iteritems():
-            if callable(v) and not (k[0] == "_" or hasattr(v, "type")):
-                setattr(cls, k, listener(k, type="listener")(v))
+            if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
+                setattr(cls, k, handler(k)(v))
 
 
 class Manager(object):
@@ -619,7 +619,7 @@ class BaseComponent(Manager):
         return ticks
 
     def register(self, manager):
-        p = lambda x: callable(x) and hasattr(x, "type")
+        p = lambda x: callable(x) and getattr(x, "handler", False)
         handlers = [v for k, v in getmembers(self, p)]
 
         for handler in handlers:
@@ -674,7 +674,7 @@ class Component(BaseComponent):
         for base in cls.__bases__:
             if issubclass(cls, base):
                 for k, v in base.__dict__.iteritems():
-                    if callable(v) and hasattr(v, "type"):
+                    if callable(v) and getattr(v, "handler", False):
                         name = "%s_%s" % (base.__name__, k)
                         method = new.instancemethod(v, self, cls)
                         setattr(self, name, method)
