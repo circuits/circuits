@@ -8,7 +8,7 @@ highly recommended that you try to install circuits using setuptools
 or from source.
 
 == Setuptools ==
-To instlal Circuits using setuptools' {{{easy_install}}}
+To install Circuits using setuptools' {{{easy_install}}}
 run the following command in your terminal/console:
 
 {{{
@@ -19,11 +19,11 @@ $ easy_install circuits
 ''Windows Users'': Run the above in your __Command Prompt__.
 
 == Source ==
-To install CIrcuits from source:
+To install Circuits from source:
 
  1. Download Circuits from either:
   * [http://pypi.python.org/pypi/circuits/> Python Package Index]
-  * [http://trac.softcircuit.com.au/circuits/downloads> CIrcuits Website]
+  * [http://trac.softcircuit.com.au/circuits/downloads> Circuits Website]
 
  2. Extract archive and Install:
 {{{
@@ -33,7 +33,7 @@ $ python setup.py build install
 }}}
 
 ''Windows Users'':
- * Use your favourite tool to extract the archive, eg: Winzip
+ * Use your favorite tool to extract the archive, eg: Winzip
  * Open your __Command Prompt__ to the extracted path.
  * Type: {{{python setup.py build install}}}
 
@@ -73,7 +73,7 @@ $ python -c "import circuits"
 
 If everything worked, nothing should be displayed.
 
-Also tryr and run the [source:examples/hello.py Hello World!] example:
+Also try and run the [source:examples/hello.py Hello World!] example:
 
 {{{
 #!sh
