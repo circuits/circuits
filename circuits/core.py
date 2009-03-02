@@ -403,7 +403,7 @@ class Manager(object):
         """
 
         if self.manager == self:
-            target = target or self.channel
+            target = target or getattr(self, "channel", None)
             event.channel = channel
             event.target = target
             eargs = event.args
