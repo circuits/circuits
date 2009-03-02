@@ -503,17 +503,6 @@ class Manager(object):
             self.push(Stopped(), "stopped")
 
 class BaseComponent(Manager):
-    """Creates a new Component
-
-    Subclasses of Component define Event Handlers by decorating
-    methods by using the listener decorator.
-
-    All listeners found in the Component will automatically be
-    picked up when the Component is instantiated.
-
-    :param channel: channel this Component listens on (*default*: ``None``)
-    :type channel: str
-    """
 
     channel = None
 
@@ -660,6 +649,20 @@ class BaseComponent(Manager):
         self.push(Unregistered(manager), "unregistered")
 
 class Component(BaseComponent):
+    """Creates a new Component
+
+    Subclasses of Component define Event Handlers by decorating
+    their methods with the handler decorator.
+
+    All Event Handlers found in the Component will automatically be
+    picked up when the Component and registered to it's Manager.
+
+    All methods defined in a Component are automatically turned into
+    Event Handlers, configured to listen on a channel of the same
+    name as the method. The exception to this is any method that starts
+    with a single _ or any method already previously defined as an
+    Event Handlers with the @handler decorator.
+    """
 
     __metaclass__ = HandlersType
 
