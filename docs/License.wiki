@@ -1,4 +1,4 @@
-= Circuits Licenses =
+﻿= Circuits Licenses =
 
 [[TOC]]
 
@@ -12,7 +12,7 @@ Note that the following paragraphs are **not legal advice**. They are one person
 Generally speaking, the parts of Circuits allow you to not only include them with your work, but to modify them at will.
 
 == Copyright ==
-Copyright (C) 2004-2008 James Mills
+Copyright (C) 2004-2009 James Mills
 
 == License ==
 Circuits is covered by the MIT license::
