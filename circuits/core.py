@@ -319,6 +319,14 @@ class Manager(object):
     def channels(self):
         return self._channels
 
+    @property
+    def hidden(self):
+        return self._hidden
+
+    @property
+    def ticks(self):
+        return self._ticks
+
     def _add(self, handler, channel=None):
         """E._add(handler, channel) -> None
 
