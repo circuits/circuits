@@ -130,6 +130,30 @@ class EventTestCase(unittest.TestCase):
         self.assertEquals(len(manager._handlers), 0)
 
 
+    def testFilterOrder(self):
+        """Test Filter Order
+
+        Test that Events Handlers set as Filters are added and sorted
+        such that Filters preceed non-filters.
+        """
+
+        class Foo(Component):
+
+            @listener("a")
+            def a1(self):
+                pass
+
+            @listener("a", type="filter")
+            def a2(self):
+                pass
+
+            @listener("a")
+            def a3(self):
+                pass
+
+        foo = Foo()
+        self.assertTrue(foo.channels["a"][0] == foo.a2)
+
     def testTargetsAndChannels(self):
         """Test Components, Targets and Channels
 
