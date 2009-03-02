@@ -419,10 +419,9 @@ class Manager(object):
     def send(self, event, channel, target=None, errors=False, log=True):
         """E.send(event, channel, target=None, errors=False) -> None
 
-        Send the given event to filters/listeners on the
-        channel specified. If target is given, send this
-        event to filters/listeners of the given target
-        component.
+        Send the given Event to all Event Handlers on the channel
+        specified. If target is not None, send this event to
+        Event Handlers of the spcified target Component's channel.
         """
 
         if self.manager == self:
