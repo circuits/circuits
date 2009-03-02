@@ -110,6 +110,8 @@ class Shutdown(Event):
 
 class Client(Component):
 
+    _connected = False
+
     def __init__(self, *args, **kwargs):
         super(Client, self).__init__(*args, **kwargs)
 
@@ -129,7 +131,8 @@ class Client(Component):
     def __tick__(self):
         self.poll()
 
-    def isConnected(self):
+    @property
+    def connected(self):
         return self._connected
 
     def poll(self, wait=POLL_INTERVAL):
