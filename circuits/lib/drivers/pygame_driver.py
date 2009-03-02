@@ -27,23 +27,6 @@ class Click(Event): pass
     
 class PyGameDriver(Component):
 
-    def __new__(cls, *args, **kwargs):
-        try:
-            import pygame
-            from pygame import fastevent as event
-        except ImportError:
-            raise DriverError("No pygame support available.")
-
-        self = super(PyGameDriver, cls).__new__(cls, *args, **kwargs)
-
-        self.pygame = pygame
-        self.event = event
-
-        self.pygame.init()
-        self.event.init()
-
-        return self
-
     def __tick__(self):
         self.poll()
 
