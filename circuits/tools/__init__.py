@@ -10,6 +10,7 @@ tools are installed as executables with a prefix of "circuits."
 
 def graph(x):
     s = []
+    write = s.append
 
     d = 0
     i = 0
@@ -20,10 +21,10 @@ def graph(x):
     while not done:
         if x not in visited:
             if d:
-                s.append("%s%s\n" % (" " * d, "|"))
-                s.append("%s%s%s\n" % (" " * d, "|-", x))
+                write("%s%s\n" % (" " * d, "|"))
+                write("%s%s%s\n" % (" " * d, "|-", x))
             else:
-                s.append(" .%s\n" % x)
+                write(" .%s\n" % x)
 
             if x.components:
                 d += 1
