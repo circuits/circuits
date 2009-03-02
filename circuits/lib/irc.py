@@ -105,6 +105,8 @@ class NewNick(Event):
    (Server mode only)
    """
 
+class User(Event): pass
+
 class Nick(Event):
 	"""Nick(Event) -> Nick Event
 
