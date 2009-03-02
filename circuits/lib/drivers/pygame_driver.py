@@ -29,6 +29,11 @@ class Click(Event): pass
     
 class PyGameDriver(Component):
 
+    def __new__(cls, *args, **kwargs):
+        self = super(PyGameDriver, cls).__new__(cls, *args, **kwargs)
+        event.init()
+        return self
+
     def __tick__(self):
         self.poll()
 
