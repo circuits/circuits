@@ -482,7 +482,7 @@ class Manager(object):
         try:
             while self._running or (self._running and self._task is not None and self._task.is_alive()):
                 try:
-                    [f() for f in self._ticks.copy()]
+                    [f() for f in self.ticks.copy()]
                     self.flush()
                     if sleep:
                         time.sleep(sleep)
