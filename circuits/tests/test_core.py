@@ -73,13 +73,13 @@ class EventTestCase(unittest.TestCase):
 
         a = Foo()
         x += a
-        self.assertEquals(repr(x), "<Manager (q: 0 c: 3 h: 3) [S]>")
+        self.assertEquals(repr(x), "<Manager (q: 1 c: 3 h: 3) [S]>")
 
         x.flush()
-        self.assertEquals(repr(x), "<Manager (q: 0 c: 3 h: 3) [S]>")
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 4 h: 3) [S]>")
 
         x.push(Test(), "foo")
-        self.assertEquals(repr(x), "<Manager (q: 1 c: 3 h: 3) [S]>")
+        self.assertEquals(repr(x), "<Manager (q: 1 c: 4 h: 3) [S]>")
 
         x.flush()
         self.assertEquals(repr(x), "<Manager (q: 0 c: 4 h: 3) [S]>")
