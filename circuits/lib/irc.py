@@ -436,9 +436,8 @@ class IRC(Component):
     ### Event Processing
     ###
 
-    @listener("read")
-    def onREAD(self, data):
-        """I.onREAD(data) -> None
+    def read(self, data):
+        """Read Event Handler
 
         Process any incoming data appending it to an internal
         buffer. Split the buffer by the standard IRC delimiter
@@ -450,8 +449,7 @@ class IRC(Component):
         for line in lines:
             self.push(Raw(line), "raw", self.channel)
 
-    @listener("raw")
-    def onRAW(self, line):
+    def raw(self, line):
         """I.onRAW(line) -> None
 
         Process a line of text and generate the appropiate
@@ -630,8 +628,7 @@ class IRC(Component):
     ### Default Events
     ###
 
-    @listener("ping")
-    def onPING(self, server):
+    def ping(self, server):
         """Ping Event
 
         This is a default event ro respond to Ping Events
@@ -641,7 +638,7 @@ class IRC(Component):
         or sending your own Pong reponse.
         """
 
-        self.ircPONG(server)
+        self.push(Pong(server), "PONG", self.channel)
 
 ###
 ### Errors and Numeric Replies
