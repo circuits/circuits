@@ -45,3 +45,48 @@ def graph(x):
                 done = True
 
     return "".join(s)
+
+def inspect(x):
+    s = []
+    write = s.append
+
+    write("%s\n" % x)
+
+    write(" Registered Components:")
+    if x.components:
+        for component in x.components:
+            write("\n  %s" % component)
+    else:
+        write(" None")
+    write("\n")
+
+    write(" Hidden Components:")
+    if x.hidden:
+        for component in x.hidden:
+            write("\n  %s" % component)
+    else:
+        write(" None")
+    write("\n")
+
+    write(" Tick Functions:")
+    if x.ticks:
+        for tick in x.ticks:
+            write("\n  %s" % tick)
+    else:
+        write(" None")
+    write("\n")
+
+    write(" Channels and Event Handlers:")
+    if x.channels:
+        for channel in x.channels:
+            write("\n  %s:" % channel)
+            if x.channels[channel]:
+                for handler in x.channels[channel]:
+                    write("\n   %s" % handler)
+            else:
+                write(" None")
+    else:
+        write(" None")
+    write("\n")
+
+    return "".join(s)
