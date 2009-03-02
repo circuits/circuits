@@ -31,6 +31,12 @@ BACKLOG = 512
 ### Events
 ###
 
+class Connect(Event):
+    """Connect(host, port, ssl=False) -> Connect Event
+
+    Connect event used for Client components to initiate a new connection.
+    """
+
 class Connected(Event):
     """Connected(Event) -> Connected Event
 
