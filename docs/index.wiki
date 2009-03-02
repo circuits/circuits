@@ -2,24 +2,42 @@
 
 [[TOC]]
 
-Circuits is an event-driven framework with a focus on Component Software
-Architectures where System Functionality is defined in Components. Components
-communicate with one another by propagating events throughout the system. Each
-Component can react to events and expose events to other parts of the system.
-Components are able to manage their own events and can also be linked to other
-Components.
+== Overview ==
+'''circuits''' is a '''light weight''', '''Event''' driven framework
+with a focus on '''Component''' Software Architectures where System
+Functionality is defined in Components.
 
-Circuits has a clean architecture and has no external dependencies on any
-other library. It's simplistic design is unmatchable but yet delivers a
+Components communicate with one another by propagating events throughout
+the system. Each Component can react to events and expose events to other
+parts of the system. Components are able to manage their own events and
+can also be registered to other Components.
+
+circuits has a clean architecture and has no external dependencies on any
+other library. It's simplistic design is unmatchable and delivers a
 powerful framework for building large, scalable, maintainable applications
-and systems. Circuits was a core integral part of the
+and systems. circuits was a core integral part of the
 [http://trac.softcircuit.com.au/pymills pymills] library developed in 2006
 and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 
+=== Quick Examples ===
+
+==== Hello World! ====
+{{{
+#!python
+>>> from circuits.core import Event, Component
+>>>
+>>> class MyApp(Component):
+...   def hello(self):
+...      print "Hello World!"
+>>> app = MyApp()
+>>> app.start()
+>>> app.push(Event(), "hello")
+Hello World!
+}}}
+
 == Getting Started ==
-Download and Install the Circuits library. Learn how to write Components and
-be sure to check out the Examples and the classical
-[source:examples/hello.py Hello World!]
+Download and install the circuits library. Learn how to write Components and
+be sure to check out the Examples and the classic [source:examples/hello.py Hello World!]
 
  * [./DownloadInstall Downloading and Installing]
  * [./QuickStart Quick Start Guide]
@@ -28,7 +46,13 @@ be sure to check out the Examples and the classical
  * [./TutorialHelloWorld Hello World Tutorial]
 
 == References ==
- * [./Reference Reference Manual]
+ * [./core Core Library]
+ * [./bridge Bridge]
+ * [./debugger Debugger]
+ * [./drivers Drivers] ''Drivers for foreign event systems''
+ * [./timers Timers]
+ * [./workers Worekrs] ''Thread and Process workers''
+ * [./web Web] ''circuits.web''
  * [./lib Component Library]
 
 == Miscellaneous ==
