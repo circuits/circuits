@@ -2,7 +2,7 @@
 
 [[TOC]]
 
-||**Status**||Work in Progress||
+||'''Status'''||Work in Progress||
 
 [[Include(source:examples/hello.py)]]
 
