@@ -10,13 +10,19 @@ try:
 
     from multiprocessing import cpu_count as cpus
     from multiprocessing import active_children as processes
+    HAS_MULTIPROCESSING = 2
 except ImportError:
-    from processing import Pipe as _Pipe
-    from processing import Value as _Value
-    from processing import Process as _Process
+    try:
+        from processing import Pipe as _Pipe
+        from processing import Value as _Value
+        from processing import Process as _Process
 
-    from processing import cpuCount as cpus
-    from processing import activeChildren as processes
+        from processing import cpuCount as cpus
+        from processing import activeChildren as processes
+        HAS_MULTIPROCESSING = 1
+    except ImportError:
+        HAS_MULTIPROCESSING = 0
+
 
 from circuits.core import Component as _Component
 
@@ -47,65 +53,67 @@ class Thread(_Component):
     def alive(self):
         return self._running and self._thread.isAlive()
 
-class Process(_Component):
+if HAS_MULTIPROCESSING:
 
-    def __init__(self, *args, **kwargs):
-        super(Process, self).__init__(*args, **kwargs)
+    class Process(_Component):
 
-        self.running = _Value("b", False)
-        self.process = _Process(target=self._run, args=(self.run, self.running,))
-        self.parent, self.child = _Pipe()
+        def __init__(self, *args, **kwargs):
+            super(Process, self).__init__(*args, **kwargs)
 
-    def _run(self, fn, running):
-        thread = _Thread(target=fn)
-        thread.start()
+            self.running = _Value("b", False)
+            self.process = _Process(target=self._run, args=(self.run, self.running,))
+            self.parent, self.child = _Pipe()
 
-        try:
-            while running.value:
-                try:
-                    self.flush()
-                    if self.child.poll(POLL_INTERVAL):
-                        event = self.child.recv()
-                        channel = event.channel
-                        target = event.target
-                        self.send(event, channel, target)
-                except SystemExit:
-                    running.acquire()
-                    running.value = False
-                    running.release()
-                    break
-                except KeyboardInterrupt:
-                    running.acquire()
-                    running.value = False
-                    running.release()
-                    break
-        finally:
-            running.acquire()
-            running.value = False
-            running.release()
-            thread.join()
-            self.flush()
+        def _run(self, fn, running):
+            thread = _Thread(target=fn)
+            thread.start()
 
-    def start(self):
-        self.running.acquire()
-        self.running.value = True
-        self.running.release()
-        self.process.start()
+            try:
+                while running.value:
+                    try:
+                        self.flush()
+                        if self.child.poll(POLL_INTERVAL):
+                            event = self.child.recv()
+                            channel = event.channel
+                            target = event.target
+                            self.send(event, channel, target)
+                    except SystemExit:
+                        running.acquire()
+                        running.value = False
+                        running.release()
+                        break
+                    except KeyboardInterrupt:
+                        running.acquire()
+                        running.value = False
+                        running.release()
+                        break
+            finally:
+                running.acquire()
+                running.value = False
+                running.release()
+                thread.join()
+                self.flush()
 
-    def run(self):
-        pass
+        def start(self):
+            self.running.acquire()
+            self.running.value = True
+            self.running.release()
+            self.process.start()
 
-    def stop(self):
-        self.running.acquire()
-        self.running.value = False
-        self.running.release()
+        def run(self):
+            pass
 
-    def isAlive(self):
-        return self.running.value
+        def stop(self):
+            self.running.acquire()
+            self.running.value = False
+            self.running.release()
 
-    def poll(self, wait=POLL_INTERVAL):
-        if self.parent.poll(POLL_INTERVAL):
-            event = self.parent.recv()
-            channel = event.channel
-            target = event.target
-            self.send(event, channel, target)
+        def isAlive(self):
+            return self.running.value
+
+        def poll(self, wait=POLL_INTERVAL):
+            if self.parent.poll(POLL_INTERVAL):
+                event = self.parent.recv()
+                channel = event.channel
+                target = event.target
+                self.send(event, channel, target)
