@@ -54,8 +54,8 @@ class Stdin(Component):
 
     channel = "stdin"
 
-    def __init__(self, *args, **kwargs):
-        super(Stdin, self).__init__(*args, **kwargs)
+    def __init__(self, channel=channel):
+        super(Stdin, self).__init__(channel=channel)
 
         self._stdin = File("/dev/stdin", "r")
         self._stdin.setblocking(False)
