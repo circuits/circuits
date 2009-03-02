@@ -103,6 +103,11 @@ class Error(Event):
     traceback: Exception traceback -> sys.exc_traceback
     """
 
+class Started(Event): pass
+class Stopped(Event): pass
+class Registered(Event): pass
+class Unregistered(Event): pass
+
 def listener(*channels, **kwargs):
     """Creates an Event Handler of a callable object
 
@@ -464,17 +469,21 @@ class Manager(object):
 
         self._running = True
 
-        while self._running or (self._running and self._task is not None and self._task.is_alive()):
-            try:
-                [f() for f in self._ticks.copy()]
-                self.flush()
-                if sleep:
-                    time.sleep(sleep)
-            except (KeyboardInterrupt, SystemExit):
-                self._running = False
-                if hasattr(self._task, "terminate"):
-                    self._task.terminate()
+        self.push(Started(), "started")
 
+        try:
+            while self._running or (self._running and self._task is not None and self._task.is_alive()):
+                try:
+                    [f() for f in self._ticks.copy()]
+                    self.flush()
+                    if sleep:
+                        time.sleep(sleep)
+                except (KeyboardInterrupt, SystemExit):
+                    self._running = False
+                    if hasattr(self._task, "terminate"):
+                        self._task.terminate()
+        finally:
+            self.push(Stopped(), "stopped")
 
 class BaseComponent(Manager):
     """Creates a new Component
@@ -604,9 +613,8 @@ class BaseComponent(Manager):
         self.manager = manager
 
         if manager is not self:
-            self.manager._components.add(self)
-            if hasattr(self, "registered"):
-                self.registered()
+            manager._components.add(self)
+            self.push(Registered(manager), "registered")
             self._registerHidden()
 
         self.manager._ticks.update(self._getTicks())
@@ -614,18 +622,19 @@ class BaseComponent(Manager):
     def unregister(self):
         "Unregister all registered event handlers from the manager."
 
+        manager = self.manager
+
         for handler in self._handlers.copy():
-            self.manager._remove(handler)
+            manager._remove(handler)
 
-        if self in self.manager.components:
-            self.manager._components.remove(self)
+        if self in manager._components.copy():
+            manager._components.remove(self)
 
-        self.manager._ticks.difference_update(self._getTicks())
+        manager._ticks.difference_update(self._getTicks())
 
         self.manager = self
 
-        if hasattr(self, "unregistered") and manager is not self:
-            self.unregistered()
+        self.push(Unregistered(manager), "unregistered")
 
 class Component(BaseComponent):
 
