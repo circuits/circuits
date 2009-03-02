@@ -63,13 +63,13 @@ class SocketsTestCase(unittest.TestCase):
         """
 
         server = Server(TCPServer(9999))
-        client = Client(TCPClient())
+        client = Client(TCPClient("localhost", 9999))
 
         server.start()
         client.start()
 
         try:
-            client.client.open("localhost", 9999)
+            client.client.connect()
             wait()
 
             self.assertTrue(client.connected)
