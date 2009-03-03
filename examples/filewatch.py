@@ -7,6 +7,8 @@ from circuits import Component
 class FileWatcher(Component):
 
     def __init__(self, filename):
+        super(FileWatcher, self).__init__()
+
         self.filename = filename
         self.fp = open(self.filename, "r")
 
