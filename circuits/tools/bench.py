@@ -139,38 +139,32 @@ class Sender(Base):
 
     concurrency = 1
 
-    @listener("received")
-    def onRECEIVED(self, message=""):
+    def recevied(self, message=""):
         self.push(Hello("hello"), "hello", self.channel)
 
 class Receiver(Base):
 
-    @listener("helo")
-    def onHELO(self, address, port):
+    def helo(self, address, port):
         self.push(Hello("hello"), "hello", self.channel)
 
-    @listener("hello")
-    def onHELLO(self, message=""):
+    def hello(self, message=""):
         self.push(Received(message), "received", self.channel)
 
 class SpeedTest(Base):
 
-    @listener("hello")
-    def onHELLO(self, message):
+    def hello(self, message):
         self.push(Hello(message), "hello", self.channel)
 
 class LatencyTest(Base):
 
     t = None
 
-    @listener("received")
-    def onRECEIVED(self, message=""):
+    def received(self, message=""):
         print "Latency: %0.2f ms" % ((time.time() - self.t) * 1000)
         time.sleep(1)
         self.push(Hello("hello"), "hello", self.channel)
 
-    @listener("hello")
-    def onHELLO(self, message=""):
+    def hello(self, message=""):
         self.t = time.time()
         self.push(Received(message), "received", self.channel)
     
@@ -178,12 +172,10 @@ class State(Base):
 
     done = False
 
-    @listener("stop")
-    def onSTOP(self):
+    def stop(self):
         self.push(Term(), "term")
 
-    @listener("term")
-    def onTERM(self):
+    def term(self):
         self.done = True
 
 class Monitor(Base):
@@ -192,14 +184,13 @@ class Monitor(Base):
     events = 0
     state = 0
 
-    @listener("helo")
-    def onHELO(self, *args, **kwargs):
-        if opts.verbose:
+    def helo(self, *args, **kwargs):
+        if self.opts.verbose:
             print "Resetting sTime"
         self.sTime = time.time()
 
-    @listener(type="filter")
-    def onEVENTS(self, *args, **kwargs):
+    @handler(filter=True)
+    def event(self, *args, **kwargs):
         self.events += 1
 
 ###
