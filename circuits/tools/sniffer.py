@@ -10,7 +10,7 @@ Component, events can be sniffed and printed.
 import optparse
 
 import circuits
-from circuits import listener, Component, Debugger, Bridge, Manager
+from circuits import Debugger, Bridge, Manager
 
 USAGE = "%prog [options] [host[:port]]"
 VERSION = "%prog v" + circuits.__version__
