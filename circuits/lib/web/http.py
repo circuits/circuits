@@ -176,6 +176,9 @@ class HTTP(Component):
                     self.send(res, "response", self.channel)
                 elif isinstance(v, HTTPError):
                     self._handleError(v)
+                elif isinstance(v, webob.Response):
+                    res = Response(v)
+                    self.send(res, "response", self.channel)
                 else:
                     raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
             else:
