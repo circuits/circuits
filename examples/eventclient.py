@@ -21,7 +21,7 @@ This example makes use of:
 from time import time
 
 from circuits import Debugger
-from circuits import listener, Event, Component, Bridge, Manager
+from circuits import Event, Component, Bridge, Manager
 
 ###
 ### Components
