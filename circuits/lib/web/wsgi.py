@@ -35,7 +35,7 @@ class Application(Component):
         self.dispatcher = Dispatcher(**kwargs)
         self.manager += self.dispatcher
 
-    def registered(self, manager):
+    def registered(self, component, manager):
         manager += self.dispatcher
 
     def translateHeaders(self, environ):
