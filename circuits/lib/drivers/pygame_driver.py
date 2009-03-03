@@ -26,6 +26,7 @@ class Quit(Event): pass
 class Focus(Event): pass
 class Mouse(Event): pass
 class Click(Event): pass
+class Unknown(Event): pass
     
 class PyGameDriver(Component):
 
