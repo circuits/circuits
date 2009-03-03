@@ -9,17 +9,16 @@ server/client system. This is a really simple example and only to
 demonstrate the Bridge Component.
 
 This example demonstrates:
-	* Basic Request/Response model using events.
-	* Briding systems/components.
+    * Basic Request/Response model using events.
+    * Briding systems/components.
 
 This example makes use of:
-	* Component
-	* Bridge
-	* Manager
+    * Component
+    * Bridge
+    * Manager
 """
 
-from circuits import Debugger
-from circuits import listener, Event, Component, Bridge, Manager
+from circuits import Event, Component, Bridge, Manager, Debugger
 
 ###
 ### Components
@@ -27,35 +26,29 @@ from circuits import listener, Event, Component, Bridge, Manager
 
 class Server(Component):
 
-	@listener("hello")
-	def onHELLO(self, message):
-		self.push(Event("Received: %s" % message), "received")
+    def hello(self, message):
+        self.push(Event("Received: %s" % message), "received")
 
 ###
 ### Main
 ###
 
 def main():
-	manager = Manager()
-	debugger = Debugger()
-	bridge = Bridge(8000)
+    manager = Manager()
+    debugger = Debugger()
+    bridge = Bridge(8000)
 
-	debugger.IgnoreEvents = ["Read", "Write"]
+    debugger.IgnoreEvents = ["Read", "Write"]
 
-	manager += bridge
-	manager += debugger
-	manager += Server()
+    manager += bridge
+    manager += debugger
+    manager += Server()
 
-	while True:
-		try:
-			manager.flush()
-			bridge.poll()
-		except KeyboardInterrupt:
-			break
+    manager.run()
 
 ###
 ### Entry Point
 ###
 
 if __name__ == "__main__":
-	main()
+    main()
