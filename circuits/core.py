@@ -431,7 +431,9 @@ class Manager(object):
             event.target = target
             eargs = event.args
             ekwargs = event.kwargs
-            if target is not None:
+            if target is not None and isinstance(target, Component):
+                target = getattr(target, "channel", None)
+            if target is not None and type(target) == str:
                 channel = "%s:%s" % (target, channel)
 
             r = False
