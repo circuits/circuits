@@ -454,10 +454,6 @@ class UDPServer(Server):
     def __init__(self, port, address="", **kwargs):
         super(UDPServer, self).__init__(**kwargs)
 
-        # Remove Inherited  Event Handler Server_onSEND
-        self.manager._remove(self.Server_onSEND)
-        del self.Server_onSEND
-
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.SOL_SOCKET,    socket.SO_BROADCAST, 1)
