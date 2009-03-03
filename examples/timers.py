@@ -19,7 +19,7 @@ This example makes use of:
 """
 
 from circuits import Timer
-from circuits.core import listener, Event, Component, Manager
+from circuits.core import Event, Component, Manager
 
 ###
 ### Components
