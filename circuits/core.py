@@ -631,7 +631,7 @@ class BaseComponent(Manager):
 
         if manager is not self:
             manager._components.add(self)
-            self.push(Registered(manager), "registered")
+            self.push(Registered(manager), "registered", self.channel)
             self._registerHidden()
 
         self.manager._ticks.update(self._getTicks())
@@ -649,9 +649,9 @@ class BaseComponent(Manager):
 
         manager._ticks.difference_update(self._getTicks())
 
-        self.manager = self
+        self.push(Unregistered(manager), "unregistered", self.channel)
 
-        self.push(Unregistered(manager), "unregistered")
+        self.manager = self
 
 class Component(BaseComponent):
     """Creates a new Component
