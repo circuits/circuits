@@ -300,3 +300,4 @@ def flatten(request, response):
                     yield y 
 
     response.body = flattener(response.body)
+    return response
