@@ -23,8 +23,8 @@ try:
 except ImportError:
     psyco = None
 
-from circuits import listener, Event, Component, Bridge, Manager
 from circuits import __version__ as systemVersion
+from circuits import handler, Event, Component, Bridge, Manager, Debugger
 
 USAGE = "%prog [options]"
 VERSION = "%prog v" + systemVersion
