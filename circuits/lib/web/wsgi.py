@@ -35,8 +35,8 @@ class Application(Component):
         self.dispatcher = Dispatcher(**kwargs)
         self.manager += self.dispatcher
 
-    def registered(self):
-        self.manager += self.dispatcher
+    def registered(self, manager):
+        manager += self.dispatcher
 
     def translateHeaders(self, environ):
         for cgiName in environ:
