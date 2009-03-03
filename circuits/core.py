@@ -399,6 +399,8 @@ class Manager(object):
         if self.manager == self:
             self._queue.append((event, channel, target))
         else:
+            if target is None:
+                target = getattr(self, "channel", None)
             self.manager.push(event, channel, target)
 
     def flush(self):
