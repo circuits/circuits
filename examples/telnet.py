@@ -61,11 +61,11 @@ def parse_options():
 
 class Telnet(Component):
 
+    channel = "telnet"
+
     def __init__(self, host, port):
-        super(Telnet, self).__init__()
-
+        super(Telnet, self).__init__() 
         self += TCPClient(host, port)
-
         self.push(Connect(), "connect")
 
     def connected(self, host, port):
