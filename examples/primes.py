@@ -14,7 +14,7 @@ import optparse
 from uuid import uuid4 as uuid
 
 from circuits import __version__ as systemVersion
-from circuits import listener, Event, Component, Bridge, Debugger, Manager
+from circuits import handler, Event, Component, Bridge, Debugger, Manager
 
 USAGE = "%prog [options] [host:[port]]"
 VERSION = "%prog v" + systemVersion
@@ -97,8 +97,7 @@ class PrimeFinder(Component):
 		self.stop = None
 		self.step = None
 
-	@listener("stop")
-	def onSTOP(self):
+	def stop(self):
 		if self.busy:
 			self.push(Busy(self.id), "busy")
 			self.term = True
@@ -106,15 +105,13 @@ class PrimeFinder(Component):
 		else:
 			self.push(Term(), "term")
 
-	@listener("query")
-	def onQUERY(self):
+	def query(self):
 		if self.busy:
 			self.push(Busy(self.id), "busy")
 		else:
 			self.push(Ready(self.id), "ready")
 
-	@listener("task")
-	def onTASK(self, id, n):
+	def task(self, id, n):
 		if self.busy:
 			self.push(Busy(self.id), "busy")
 			return
@@ -149,8 +146,7 @@ class PrimeFinder(Component):
 
 			self.push(Run(self.id, self.n), "run")
 
-	@listener("run")
-	def onRUN(self, id, n):
+	def run(self, id, n):
 		if self.start % self.n == 0:
 			self.push(Done(self.id, self.n, False), "done")
 			self.reset()
@@ -167,22 +163,18 @@ class TaskManager(Component):
 	n = 1
 	primes = []
 
-	@listener("helo")
-	def onHELO(self, host, port):
+	def helo(self, host, port):
 		self.push(Query(), "query")
 
-	@listener("start")
-	def onSTART(self):
+	def start(self):
 		self.push(Query(), "query")
 
-	@listener("ready")
-	def onREADY(self, id):
+	def ready(self, id):
 		self.push(Task(id, self.n), "task")
 		self.n += 1
 		self.push(Query(), "query")
 
-	@listener("done")
-	def onDONE(self, id, n, r):
+	def done(self, id, n, r):
 		if r and (n not in self.primes):
 			self.primes.append(n)
 			self.push(Prime(id, n), "prime")
@@ -197,8 +189,7 @@ class State(Component):
 	done = False
 	n = 0
 
-	@listener("term")
-	def onTERM(self):
+	def term(self):
 		self.done = True
 
 class Stats(Component):
@@ -208,21 +199,20 @@ class Stats(Component):
 	primes = 0
 	distribution = {}
 
-	@listener()
-	def onEVENTS(self, *args, **kwargs):
+	@handler(filter=True)
+	def event(self, *args, **kwargs):
 		self.events += 1
 
-	@listener("helo")
-	def onHELO(self, host, port):
+	def helo(self, host, port):
 		if self.sTime == sys.maxint:
 			self.sTime = time.time()
 
-	@listener("start", type="filter")
-	def onSTART(self):
+	@handler("start", filter=True)
+	def start(self):
 		self.sTime = time.time()
 
-	@listener("prime", type="filter")
-	def onPRIME(self, id, n):
+	@handler("prime", filter=True)
+	def prime(self, id, n):
 		self.primes += 1
 
 		if not self.distribution.has_key(id):
