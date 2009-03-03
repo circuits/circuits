@@ -15,7 +15,7 @@ import re
 import time
 
 from circuits.lib.sockets import Write
-from circuits.core import listener, Event, Component
+from circuits.core import Event, Component
 
 ###
 ### Supporting Functions
