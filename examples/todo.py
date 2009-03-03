@@ -11,13 +11,13 @@ architecture was partially inspired by that of Trac's architecture
 and hence this example.
 
 This example demonstrates:
-	* Basic Component creation.
-	* Basic Event handling.
+    * Basic Component creation.
+    * Basic Event handling.
 
 This example makes use of:
-	* Component
-	* Event
-	* Manager
+    * Component
+    * Event
+    * Manager
 """
 
 from circuits.core import listener, Event, Component, Manager
@@ -27,10 +27,10 @@ from circuits.core import listener, Event, Component, Manager
 ###
 
 class TodoItem(Event):
-	"""TodoItem(Event) -> TodoItem Event
+    """TodoItem(Event) -> TodoItem Event
 
-	args: name, description
-	"""
+    args: name, description
+    """
 
 ###
 ### Components
@@ -38,54 +38,56 @@ class TodoItem(Event):
 
 class TodoList(Component):
 
-	todos = {}
+    todos = {}
 
-	@listener("add")
-	def onADD(self, name, description):
-		assert name not in self.todos, "To-do already in list"
-		self.todos[name] = description
-		self.push(TodoItem(name, description), "added")
+    def add(self, name, description):
+        assert name not in self.todos, "To-do already in list"
+        self.todos[name] = description
+        self.push(TodoItem(name, description), "added")
 
 class TodoPrinter(Component):
 
-	@listener("added")
-	def onADDED(self, name, description):
-		print "TODO: %s" % name
-		print "      %s" % description
+    def added(self, name, description):
+        print "TODO: %s" % name
+        print "      %s" % description
 
 ###
 ### Main
 ###
 
 def main():
-	manager = Manager()
+    manager = Manager()
 
-	todo = TodoList()
-	printer = TodoPrinter()
+    todo = TodoList()
+    printer = TodoPrinter()
 
-	manager += todo
-	manager += printer
+    manager += todo
+    manager += printer
 
-	manager.push(
-			TodoItem(
-				"Make coffee",
-				"Really need to make some coffee"
-				),
-			"add")
+    manager.start()
 
-	manager.push(
-			TodoItem(
-				"Bug triage",
-				"Double-check that all known issues were addressed"
-				),
-			"add")
+    manager.push(
+            TodoItem(
+                "Make coffee",
+                "Really need to make some coffee"
+                ),
+            "add")
 
-	while manager:
-		manager.flush()
+    manager.push(
+            TodoItem(
+                "Bug triage",
+                "Double-check that all known issues were addressed"
+                ),
+            "add")
+
+    while manager:
+        pass
+
+    manager.stop()
 
 ###
 ### Entry Point
 ###
 
 if __name__ == "__main__":
-	main()
+    main()
