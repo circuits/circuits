@@ -197,8 +197,7 @@ class IRC(Component):
     #!python
     class Client(IRC):
 
-       @listener("message")
-       def onMESSAGE(self, source, target, message):
+       def message(self, source, target, message):
           print "Message from %s to %s" % (source, target)
           print message
     }}}
