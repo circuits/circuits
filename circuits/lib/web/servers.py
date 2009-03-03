@@ -35,9 +35,9 @@ class BaseServer(Component):
 
         print "%s listening on %s" % (SERVER_VERSION, self.base())
 
-    def registered(self):
-        self.manager += self.server
-        self.manager += self.http
+    def registered(self, manager):
+        manager += self.server
+        manager += self.http
 
     @property
     def address(self):
@@ -82,10 +82,8 @@ class Server(BaseServer):
         self.dispatcher = Dispatcher(docroot=docroot, **kwargs)
         self.manager += self.dispatcher
 
-    def registered(self):
-        super(Server, self).registered()
-
-        self.manager += self.dispatcher
+    def registered(self, manager):
+        manager += self.dispatcher
 
     def _getDocRoot(self):
         if hasattr(self, "dispatcher"):
