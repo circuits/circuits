@@ -49,8 +49,10 @@ EVENT_MAP = {
 
 class INotifyDriver(Component):
 
-    def __init__(self, freq=1, timeout=1):
-        super(INotifyDriver, self).__init__()
+    channel = "inotify"
+
+    def __init__(self, freq=1, timeout=1, channel=channel):
+        super(INotifyDriver, self).__init__(channel=channel)
 
         self._freq = freq
         self._wm = WatchManager()
