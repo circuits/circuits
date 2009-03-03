@@ -653,7 +653,7 @@ class BaseComponent(Manager):
 
         manager._ticks.difference_update(self._getTicks())
 
-        self.push(Unregistered(manager), "unregistered", self.channel)
+        self.push(Unregistered(self, manager), "unregistered", self.channel)
 
         self.manager = self
 
