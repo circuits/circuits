@@ -24,20 +24,14 @@ class BaseServer(Component):
     def __init__(self, port, address="", docroot=None, **kwargs):
         super(BaseServer, self).__init__(**kwargs)
 
-        self.server = TCPServer(port, address, **kwargs)
-        self.http = HTTP(self, **kwargs)
+        self.server = TCPServer(port, address, **kwargs) + HTTP(self, **kwargs)
 
         Request.server = self
         Request.local = Host(self.server.address, self.server.port)
 
-        self.manager += self.server
-        self.manager += self.http
+        self += self.server
 
         print "%s listening on %s" % (SERVER_VERSION, self.base())
-
-    def registered(self, manager):
-        manager += self.server
-        manager += self.http
 
     @property
     def address(self):
@@ -80,10 +74,7 @@ class Server(BaseServer):
         super(Server, self).__init__(port, address, docroot, **kwargs)
 
         self.dispatcher = Dispatcher(docroot=docroot, **kwargs)
-        self.manager += self.dispatcher
-
-    def registered(self, manager):
-        manager += self.dispatcher
+        self += self.dispatcher
 
     def _getDocRoot(self):
         if hasattr(self, "dispatcher"):
