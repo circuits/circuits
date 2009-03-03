@@ -19,8 +19,8 @@ import webob
 from utils import quoted_slash
 from headers import parseHeaders
 from errors import HTTPError, NotFound
+from constants import RESPONSES, BUFFER_SIZE
 from events import Request, Response, Stream, Write, Close
-from constants import RESPONSES, BUFFER_SIZE, SERVER_PROTOCOL
 
 class HTTP(Component):
     """HTTP Protocol Component
