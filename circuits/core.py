@@ -11,7 +11,7 @@ circuits based application or system. Normal usage of circuits:
 
 import new
 import time
-from warnings import warn
+import warnings
 from itertools import chain
 from threading import Thread
 from functools import partial
@@ -142,7 +142,7 @@ def handler(*channels, **kwargs):
         f.handler = True
 
         if "type" in kwargs:
-            warn("Please use 'filter', 'type' will be deprecated in 1.2")
+            warnings.warn("Please use 'filter', 'type' will be deprecated in 1.2")
             f.filter = kwargs.get("type", "listener") == "filter"
         else:
             f.filter = kwargs.get("filter", False)
@@ -164,7 +164,7 @@ def handler(*channels, **kwargs):
     return wrapper
 
 def listener(*channels, **kwargs):
-    warn("Please use @handler, @listener will be deprecated in 1.2")
+    warnings.warn("Please use @handler, @listener will be deprecated in 1.2")
     return handler(*channels, **kwargs)
 
 class HandlersType(type):
