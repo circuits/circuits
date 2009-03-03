@@ -44,7 +44,7 @@ class IrcClient(Component):
         self.irc = IRC()
         self.tcpClient = TCPClient()
 
-    def registered(self, manager):
+    def registered(self, component, manager):
         manager += self.irc
         manager += self.tcpClient
 
