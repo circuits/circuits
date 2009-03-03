@@ -73,7 +73,7 @@ class Bridge(Component):
 
         self.ourself = (address, self.port)
 
-    def registered(self, manager):
+    def registered(self, component, manager):
         self.push(Helo(*self.ourself), "helo")
 
     def __write__(self, address, data):
