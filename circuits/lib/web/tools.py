@@ -173,7 +173,8 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
     else:
         response.headers['Content-Length'] = c_len
         response.body = bodyfile
-    return response.body
+
+    return response
 
 def serve_download(request, response, path, name=None):
     """Serve 'path' as an application/x-download attachment."""
