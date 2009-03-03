@@ -71,7 +71,7 @@ class Application(Component):
 
     def setError(self, response, status, message=None, traceback=None):
         try:
-            short, long = RESPONSES[code]
+            short, long = RESPONSES[status]
         except KeyError:
             short, long = "???", "???"
 
@@ -86,7 +86,7 @@ class Application(Component):
             "traceback": traceback or ""}
 
         response.body = content
-        response.status = "%s %s" % (code, message)
+        response.status = "%s %s" % (status, message)
         response.headers.add_header("Connection", "close")
 
     def __call__(self, environ, start_response):
