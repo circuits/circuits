@@ -316,7 +316,30 @@ class Server(Component):
         self.poll()
 
     def poll(self, wait=POLL_INTERVAL):
-        r, w, e = select.select(self._read, self._write, [], wait)
+        try:
+            r, w, _ = select.select(self._read, self._write, [], wait)
+        except ValueError, ve:
+            # Possibly a file descriptor has gone negative?
+            return self._pruneSocks()
+        except TypeError, te:
+            # Something *totally* invalid (object w/o fileno, non-integral
+            # result) was passed
+            return self._pruneSocks()
+        except (select.error, IOError), se:
+            # select(2) encountered an error
+            if se.args[0] in (0, 2):
+                # windows does this if it got an empty list
+                if (not self._reads) and (not self._writes):
+                    return
+                else:
+                    raise
+            elif se.args[0] == EINTR:
+                return
+            elif se.args[0] == EBADF:
+                return self._pruneSocks()
+            else:
+                # OK, I really don't know what's going on.  Blow up.
+                raise
 
         for sock in w:
             if self._buffers[sock]:
@@ -331,10 +354,34 @@ class Server(Component):
         for sock in r:
             if sock == self._sock:
                 try:
-                    newsock, host = sock.accept()
-                except socket.error, error:
-                    if error[0] == errno.EAGAIN:
+                    newsock, host = self._sock.accept()
+                except socket.error, e:
+                    if e.args[0] in (EWOULDBLOCK, EAGAIN):
+                        self.numberAccepts = i
+                        return
+                    elif e.args[0] == EPERM:
+                        # Netfilter on Linux may have rejected the
+                        # connection, but we get told to try to accept()
+                        # anyway.
                         continue
+                    elif e.args[0] in (EMFILE, ENOBUFS, ENFILE, ENOMEM, ECONNABORTED):
+
+                        # Linux gives EMFILE when a process is not allowed
+                        # to allocate any more file descriptors.  *BSD and
+                        # Win32 give (WSA)ENOBUFS.  Linux can also give
+                        # ENFILE if the system is out of inodes, or ENOMEM
+                        # if there is insufficient memory to allocate a new
+                        # dentry.  ECONNABORTED is documented as possible on
+                        # both Linux and Windows, but it is not clear
+                        # whether there are actually any circumstances under
+                        # which it can happen (one might expect it to be
+                        # possible if a client sends a FIN or RST after the
+                        # server sends a SYN|ACK but before application code
+                        # calls accept(2), however at least on Linux this
+                        # _seems_ to be short-circuited by syncookies.
+
+                        continue
+                    raise
                 newsock.setblocking(False)
                 self._socks.append(newsock)
                 self._read.append(newsock)
