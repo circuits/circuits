@@ -20,7 +20,7 @@ This example makes use of:
     * Manager
 """
 
-from circuits.core import listener, Event, Component, Manager
+from circuits.core import Event, Component, Manager
 
 ###
 ### Events
