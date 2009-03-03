@@ -212,8 +212,7 @@ def main():
     manager += state
 
     if opts.debug:
-        debugger.enable()
-        manager += debugger
+        manager += Debugger()
 
     if opts.listen or args:
         nodes = []
