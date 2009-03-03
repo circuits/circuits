@@ -64,8 +64,7 @@ class Telnet(Component):
     def __init__(self, host, port):
         super(Telnet, self).__init__()
 
-        self.client = TCPClient(host, port)
-        self += self.client
+        self += TCPClient(host, port)
 
         self.push(Connect(), "connect")
 
