@@ -504,6 +504,8 @@ class Manager(object):
                     self._running = False
                     if hasattr(self._task, "terminate"):
                         self._task.terminate()
+                except:
+                    pass
         finally:
             self.push(Stopped(), "stopped")
 
