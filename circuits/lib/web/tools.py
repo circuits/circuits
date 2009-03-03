@@ -282,6 +282,8 @@ def trailing_slash(request, response, missing=True, extra=False):
             if pi.endswith('/') and pi != '/':
                 new_url = url(request, pi[:-1], request.qs)
                 return Redirect(request, response, new_url)
+    else:
+        return response
 
 def flatten(request, response):
     """Wrap response.body in a generator that recursively iterates over body.
