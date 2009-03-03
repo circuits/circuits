@@ -83,7 +83,7 @@ class BaseController(BaseComponent):
     def redirect(self, urls, status=None):
        return Redirect(self.request, self.response, urls, status)
 
-    def serve_file(sefl, path, type=None, disposition=None, name=None):
+    def serve_file(self, path, type=None, disposition=None, name=None):
         return tools.serve_file(self.request, self.response, path,
                 type, disposition, name)
 
