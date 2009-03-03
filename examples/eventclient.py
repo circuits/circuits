@@ -9,13 +9,13 @@ server/client system. This is a really simple example and only to
 demonstrate the Bridge Component.
 
 This example demonstrates:
-	* Basic Request/Response model using events.
-	* Briding systems/components.
+    * Basic Request/Response model using events.
+    * Briding systems/components.
 
 This example makes use of:
-	* Component
-	* Bridge
-	* Manager
+    * Component
+    * Bridge
+    * Manager
 """
 
 from time import time
@@ -29,40 +29,41 @@ from circuits import listener, Event, Component, Bridge, Manager
 
 class Client(Component):
 
-	@listener("received")
-	def onRECEIVED(self, message):
-		print message
+    def received(self, message):
+        print message
 
 ###
 ### Main
 ###
 
 def main():
-	manager = Manager()
-	debugger = Debugger()
-	bridge = Bridge(8001, nodes=[("127.0.0.1", 8000)])
+    manager = Manager()
+    debugger = Debugger()
+    bridge = Bridge(8001, nodes=[("127.0.0.1", 8000)])
 
-	debugger.IgnoreEvents = ["Read", "Write"]
+    debugger.IgnoreEvents = ["Read", "Write"]
 
-	manager += bridge
-	manager += debugger
-	manager += Client()
+    manager += bridge
+    manager += debugger
+    manager += Client()
 
-	sTime = time()
+    manager.start()
 
-	while True:
-		try:
-			manager.flush()
-			bridge.poll()
-			if (time() - sTime) > 5:
-				manager.push(Event("Hello World"), "hello")
-				sTime = time()
-		except KeyboardInterrupt:
-			break
+    sTime = time()
+
+    while True:
+        try:
+            if (time() - sTime) > 5:
+                manager.push(Event("Hello World"), "hello")
+                sTime = time()
+        except KeyboardInterrupt:
+            break
+    
+    manager.stop()
 
 ###
 ### Entry Point
 ###
 
 if __name__ == "__main__":
-	main()
+    main()
