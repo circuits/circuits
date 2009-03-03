@@ -427,6 +427,9 @@ class Manager(object):
         Event Handlers of the spcified target Component's channel.
         """
 
+        if target is None:
+            target = getattr(self, "channel", None)
+
         if self.manager == self:
             event.channel = channel
             event.target = target
@@ -457,8 +460,6 @@ class Manager(object):
                     return r
             return r
         else:
-            if target is None:
-                target = getattr(self, "channel", None)
             return self.manager.send(event, channel, target, errors, log)
 
     def start(self, sleep=0, process=False):
