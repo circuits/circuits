@@ -427,7 +427,6 @@ class Manager(object):
         """
 
         if self.manager == self:
-            target = target or getattr(self, "channel", None)
             event.channel = channel
             event.target = target
             eargs = event.args
@@ -455,6 +454,8 @@ class Manager(object):
                     return r
             return r
         else:
+            if target is None:
+                target = getattr(self, "channel", None)
             return self.manager.send(event, channel, target, errors, log)
 
     def start(self, sleep=0, process=False):
