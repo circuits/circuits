@@ -7,6 +7,7 @@
 A driver for the inotify system using the pyinotify library.
 """
 
+import time
 from circuits.lib.drivers import DriverError
 
 try:
@@ -48,16 +49,27 @@ EVENT_MAP = {
 
 class INotifyDriver(Component):
 
-    def __init__(self, *args, **kwargs):
-        super(INotifyDriver, self).__init__(*args, **kwargs)
+    def __init__(self, freq=1, timeout=1):
+        super(INotifyDriver, self).__init__()
 
-        self._manager = WatchManager()
-        self._notifier = Notifier(self._manager, self._process, timeout=0.1)
+        self._freq = freq
+        self._wm = WatchManager()
+        self._notifier = Notifier(self._wm, self._process, timeout=timeout)
+
+    def _sleep(self, rtime):
+        # Only consider sleeping if _freq is > 0
+        if self._freq > 0:
+            ctime = time.time()
+            s = self._freq - (ctime - rtime)
+            if s > 0:
+                time.sleep(s)
 
     def __tick__(self):
+        self._notifier.process_events()
+        rtime = time.time()
         if self._notifier.check_events():
+            self._sleep(rtime)
             self._notifier.read_events()
-            self._notifier.process_events()
 
     def _process(self, event):
         dir = event.dir
@@ -74,9 +86,9 @@ class INotifyDriver(Component):
 
     def add(self, path, mask=None, recursive=False):
         mask = mask or MASK
-        self._manager.add_watch(path, mask, rec=recursive)
+        self._wm.add_watch(path, mask, rec=recursive)
 
     def remove(self, path, recursive=False):
-        wd = self._manager.get_wd(path)
+        wd = self._wm.get_wd(path)
         if wd:
-            self._manager.rm_watch(wd, rec=recursive)
+            self._wm.rm_watch(wd, rec=recursive)
