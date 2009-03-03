@@ -85,7 +85,7 @@ class EventTestCase(unittest.TestCase):
         self.assertEquals(repr(x), "<Manager (q: 0 c: 4 h: 3) [S]>")
 
         x -= a
-        self.assertEquals(repr(x), "<Manager (q: 0 c: 0 h: 0) [S]>")
+        self.assertEquals(repr(x), "<Manager (q: 1 c: 0 h: 0) [S]>")
 
 
     def testComponentRepr(self):
