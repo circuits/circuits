@@ -30,6 +30,8 @@ class Unknown(Event): pass
     
 class PyGameDriver(Component):
 
+    channel = "pygame"
+
     def __new__(cls, *args, **kwargs):
         self = super(PyGameDriver, cls).__new__(cls, *args, **kwargs)
         event.init()
