@@ -41,7 +41,7 @@ class EventTestCase(unittest.TestCase):
         x += a
         x += Timer(0.01, Test(), "timer")
 
-        sleep(0.02)
+        sleep(0.1)
 
         self.assertTrue(a.flag)
 
