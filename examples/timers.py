@@ -7,15 +7,15 @@
 A trivial simple example of using circuits and timers.
 
 This example demonstrates:
-	* Basic Component creation.
-	* Basic Event handling.
-	* Use of Timer Component
+    * Basic Component creation.
+    * Basic Event handling.
+    * Use of Timer Component
 
 This example makes use of:
-	* Component
-	* Event
-	* Manager
-	* timers.Timer
+    * Component
+    * Event
+    * Manager
+    * timers.Timer
 """
 
 from circuits import Timer
@@ -27,49 +27,31 @@ from circuits.core import listener, Event, Component, Manager
 
 class HelloWorld(Component):
 
-	@listener("hello")
-	def onHELLO(self):
-		print "Hello World"
+    def hello(self):
+        print "Hello World"
 
-	@listener("foo")
-	def onFOO(self):
-		print "Foo"
+    def foo(self):
+        print "Foo"
 
-	@listener("bar")
-	def onBAR(self):
-		print "Bar"
+    def bar(self):
+        print "Bar"
 
 ###
 ### Main
 ###
 
 def main():
-	manager = Manager()
-	manager += HelloWorld()
+    manager = Manager() + HelloWorld()
 
-	timers = []
+    manager += Timer(5, Event(), "hello")
+    manager += Timer(1, Event(), "foo", persist=True)
+    manager += Timer(3, Event(), "bar", persist=True)
 
-	timers.append(Timer(5, Event("Hello"), "hello"))
-	timers.append(Timer(1, Event("Foo"), "foo", persist=True))
-	timers.append(Timer(3, Event("Bar"), "bar", persist=True))
-
-	for timer in timers:
-		manager += timer
-
-	while True:
-		try:
-			manager.flush()
-			for timer in timers[:]:
-				if timer.manager == manager:
-					timer.poll()
-				else:
-					timers.remove(timer)
-		except KeyboardInterrupt:
-			break
+    manager.run()
 
 ###
 ### Entry Point
 ###
 
 if __name__ == "__main__":
-	main()
+    main()
