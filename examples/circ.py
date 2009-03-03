@@ -44,9 +44,9 @@ class IrcClient(Component):
         self.irc = IRC()
         self.tcpClient = TCPClient()
 
-    def registered(self):
-        self.manager += self.irc
-        self.manager += self.tcpClient
+    def registered(self, manager):
+        manager += self.irc
+        manager += self.tcpClient
 
     def poll(self):
         self.tcpClient.poll()
