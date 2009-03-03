@@ -23,7 +23,7 @@ This example makes use of:
 import optparse
 
 from circuits.lib.io import Stdin
-from circuits import listener, Component
+from circuits import handler, Component
 from circuits import __version__ as systemVersion
 from circuits.lib.sockets import TCPClient, Connect
 
@@ -75,9 +75,9 @@ class Telnet(Component):
     def read(self, data):
         print data.strip()
 
-    @listener("read", target="stdin")
-    def onINPUT(self, data):
-        self.write(data)
+    @handler("read", target="stdin")
+    def stdin_read(self, data):
+        self.push(Write(data), "write")
 
 ###
 ### Main
