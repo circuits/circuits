@@ -25,7 +25,7 @@ import optparse
 from circuits.lib.io import Stdin
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
-from circuits.lib.sockets import TCPClient, Connect
+from circuits.lib.sockets import TCPClient, Connect, Write
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
