@@ -336,7 +336,6 @@ class Server(Component):
                     if error[0] == errno.EAGAIN:
                         continue
                 newsock.setblocking(False)
-                newsock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                 self._socks.append(newsock)
                 self._read.append(newsock)
                 self._buffers[newsock] = []
