@@ -11,10 +11,9 @@ a WSGI.
 
 from circuits.lib.web import Application, Controller
 
-class HelloWorld(Controller):
+class Root(Controller):
 
 	def index(self):
 		return "Hello World!"
 
-application = Application()
-application += HelloWorld()
+application = Application() + Root()
