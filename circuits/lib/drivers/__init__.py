@@ -8,6 +8,7 @@ circuits.lib.drivers contains drivers for other sources of events.
 """
 
 from os import listdir as _listdir
+from warnings import warn as _warn
 from os.path import dirname as _dirname
 from os.path import splitext as _splitext
 from traceback import format_exc as _format_exc
