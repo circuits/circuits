@@ -12,11 +12,11 @@ from traceback import format_exc
 from circuits.core import listener, Component
 
 import webob
+from events import Request
 from utils import quoteHTML
 from headers import Headers
 from errors import HTTPError
 from dispatchers import Dispatcher
-from events import Request, Response
 from constants import RESPONSES, DEFAULT_ERROR_MESSAGE
 
 class Application(Component):
