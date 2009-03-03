@@ -7,7 +7,6 @@ occur in another system. As long as that system has an instnace of the Bridge
 Component, events can be sniffed and printed.
 """
 
-import sys
 import optparse
 
 import circuits
