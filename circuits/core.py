@@ -617,12 +617,12 @@ class BaseComponent(Manager):
                 channels = ["*"]
 
             for channel in channels:
-                if self.channel is not None:
-                    if handler.target is not None:
-                        target = handler.target
-                    else:
-                        target = self.channel
+                if handler.target is not None:
+                    target = handler.target
+                else:
+                    target = self.channel
 
+                if target is not None:
                     channel = "%s:%s" % (target, channel)
 
                 manager._add(handler, channel)
