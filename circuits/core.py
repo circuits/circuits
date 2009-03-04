@@ -477,6 +477,7 @@ class Manager(object):
             return
 
         self._task = Thread(group, target, name, args)
+        self._task.setDaemon(True)
         self._task.start()
 
     def stop(self):
