@@ -511,6 +511,13 @@ class Manager(object):
                     pass
         finally:
             self.push(Stopped(), "stopped")
+            rtime = time.time()
+            while len(self) > 0 and (time.time() - rtime) < 3:
+                [f() for f in self.ticks.copy()]
+                self.flush()
+                if sleep:
+                    time.sleep(sleep)
+                rtime = time.time()
 
 class BaseComponent(Manager):
 
