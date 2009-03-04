@@ -462,11 +462,11 @@ class Manager(object):
         else:
             return self.manager.send(event, channel, target, errors, log)
 
-    def start(self, sleep=0, process=False):
+    def start(self, sleep=0, errors=False, log=True, process=False):
         group = None
         target = self.run
         name = self.__class__.__name__
-        args = (sleep,)
+        args = (sleep, errors, log,)
 
         if process and HAS_MULTIPROCESSING:
             args += (self,)
@@ -488,7 +488,7 @@ class Manager(object):
             self._task.join(5)
         self._task = None
 
-    def run(self, sleep=0, __self=None):
+    def run(self, sleep=0, errors=False, log=True, __self=None):
         if __self is not None:
             self = __self
 
@@ -508,7 +508,12 @@ class Manager(object):
                     if hasattr(self._task, "terminate"):
                         self._task.terminate()
                 except:
-                    pass
+                    if log:
+                        self.push(Error(*_exc_info()), "error")
+                    if errors:
+                        raise
+                    else:
+                        _exc_clear()
         finally:
             self.push(Stopped(), "stopped")
             rtime = time.time()
