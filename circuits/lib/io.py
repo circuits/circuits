@@ -2,17 +2,19 @@
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
 
-"""Advanced IO
+"""File I/O Components
 
-This module contains various classes for advanced IO.
-For instance, the Command class, used to make writing
-command-style programs easier. (ie: programs that prompt for
-input and accept commands and react to them)
+This module implements an Asynchronous File Component that is a wrapper
+around the standard file object where read/write operations are
+non-blocking. Three additional convenient components are also provided,
+namely Stdin, Stdout and Stderr.
 """
 
 import os
 import fcntl
+import errno
 import select
+from collections import deque
 
 from circuits.core import Event, Component
 
@@ -21,11 +23,14 @@ POLL_INTERVAL = 0.00001
 BUFFER_SIZE = 131072
 
 
+class Opened(Event): pass
+class Closed(Event): pass
 class Read(Event): pass
+class Write(Event): pass
 class Error(Event): pass
 
 
-class File(file):
+class _File(file):
 
     def setblocking(self, flag):
         " set/clear blocking mode"
@@ -42,45 +47,101 @@ class File(file):
         # update the file's flags
         fcntl.fcntl(fd, fcntl.F_SETFL, fl)
 
-    def write(self, str):
+    def write(self, data):
         try:
-            return os.write(self.fileno(), str)
-        except OSError, inst:
-            raise IOError(inst.errno, inst.strerror, inst.filename)
+            return os.write(self.fileno(), data)
+        except OSError, e:
+            raise IOError(e.errno, e.strerror, e.filename)
 
 
-class Stdin(Component):
+class File(Component):
 
-    channel = "stdin"
+    channel = "file"
 
-    def __init__(self, channel=channel):
-        super(Stdin, self).__init__(channel=channel)
+    def __init__(self, filename, mode, channel=channel):
+        super(File, self).__init__(channel=channel)
 
-        self._stdin = File("/dev/stdin", "r")
-        self._stdin.setblocking(False)
-        self._fds = [self._stdin]
+        self.name = filename
+        self.mode = mode
+
+        self._read = []
+        self._write = []
+        self._buffer = deque()
+
+        self._fd = _File(self.name, self.mode)
+        self._fd.setblocking(False)
+        self._read.append(self._fd)
+
+        self.push(Opened(self.name), "opened")
+
+    @property
+    def closed(self):
+        return self._fd.closed if hasattr(self, "_fd") else None
 
     def __tick__(self):
         self.poll()
 
     def poll(self, wait=POLL_INTERVAL):
-        try:
-            r, w, e = select.select(self._fds, [], [], wait)
-        except select.error, error:
-            if error[0] == 4:
-                pass
-            else:
-                self.push(Error(error), "error", self.channel)
-                return
+        if not self.closed:
+            try:
+                r, w, e = select.select(self._read, self._write, [], wait)
+            except select.error, error:
+                if error[0] == 4:
+                    pass
+                else:
+                    self.push(Error(error), "error")
+                    return
 
-        if r:
-            data = self._stdin.read(BUFFER_SIZE)
-            if data:
-                self.push(Read(data), "read", self.channel)
-            else:
-                self.close()
-                return
+            if w:
+                data = self._buffer.popleft()
+                self._fd.write(data)
+                if not self._buffer:
+                    self._write.remove(self._fd)
+
+            if r:
+                try:
+                    data = self._fd.read(BUFFER_SIZE)
+                except IOError, e:
+                    if e[0] == errno.EBADF:
+                        data = None
+
+                if data:
+                    self.push(Read(data), "read")
+
+    def write(self, data):
+        if self._fd not in self._write:
+            self._write.append(self._fd)
+        self._buffer.append(data)
 
     def close(self):
-        self._stdin.close()
-        self._fds = []
+        self._fd.close()
+        self._read = []
+        self._write = []
+        self.push(Closed(self.name), "closed")
+
+class StdIn(File):
+
+    channel = "stdin"
+
+    def __init__(self, channel=channel):
+        super(StdIn, self).__init__("/dev/stdin", "r", channel=channel)
+
+stdin = StdIn()
+
+class StdOut(File):
+
+    channel = "stdout"
+
+    def __init__(self, channel=channel):
+        super(StdOut, self).__init__("/dev/stdout", "w", channel=channel)
+
+stdout = StdOut()
+
+class StdErr(File):
+
+    channel = "stderr"
+
+    def __init__(self, channel=channel):
+        super(StdErr, self).__init__("/dev/stderr", "w", channel=channel)
+
+stderr = StdErr()
