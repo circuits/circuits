@@ -145,7 +145,7 @@ class Application(Component):
             start_response(response.status, response.headers.items())
             return [body]
 
-class Middleware(Component):
+class Gateway(Component):
 
     def __init__(self, app, path=None):
         super(Middleware, self).__init__(channel=path)
@@ -185,6 +185,8 @@ class Middleware(Component):
         self.response = response
 
         return "".join(self.app(self.environ(), self.start_response))
+
+Middleware = Gateway
 
 class Filter(Component):
 
