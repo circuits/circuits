@@ -49,7 +49,8 @@ class Application(Component):
 
         headers = Headers(list(self.translateHeaders(environ)))
 
-        request = webob.Request(
+        protocol = tuple(map(int, env("SERVER_PROTOCOL")[5:].split(".")))
+        request = webob.Request(None,
                 env("REQUEST_METHOD"),
                 env("PATH_INFO"),
                 env("SERVER_PROTOCOL"),
