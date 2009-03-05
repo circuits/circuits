@@ -13,7 +13,7 @@ from __future__ import with_statement
 
 import os
 
-from circuits import listener, Event, Component
+from circuits import handler, Event, Component
 
 from log import Logger
 from config import (
@@ -116,7 +116,7 @@ class Environment(Component):
         self.path = os.path.abspath(os.path.expanduser(path))
         self.name = name
 
-    @listener("create")
+    @handler("create")
     def onCREATE(self):
         """E.onCREATE()
 
@@ -153,7 +153,7 @@ class Environment(Component):
 
         self.send(Created(), "created", self.channel)
 
-    @listener("verify")
+    @handler("verify")
     def onVERIFY(self):
         """E.onVERIFY()
 
@@ -186,7 +186,7 @@ class Environment(Component):
                             "invalid",
                             self.channel)
 
-    @listener("load")
+    @handler("load")
     def onLOAD(self, verify=False):
         """E.onLOAD(verify=False)
 
