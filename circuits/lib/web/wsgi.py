@@ -7,6 +7,7 @@
 This module implements WSGI Components.
 """
 
+import warnings
 from traceback import format_exc
 
 from circuits import handler, Component
@@ -186,7 +187,15 @@ class Gateway(Component):
 
         return "".join(self.app(self.environ(), self.start_response))
 
-Middleware = Gateway
+def Middleware(*args, **kwargs):
+    """Alias to Gateway for backward compatibility.
+
+    @deprecated: Middleware will be deprecated in 1.2 Use Gateway insetad.
+    """
+
+    warnings.warn("Please use Gateway, Middleware will be deprecated in 1.2")
+
+    return Gateway(*args, **kwargs)
 
 class Filter(Component):
 
