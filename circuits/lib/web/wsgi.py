@@ -64,7 +64,8 @@ class Application(Component):
         request.wsgi_environ = environ
         request.body = env("wsgi.input")
 
-        response = webob.Response(None)
+        response = webob.Response(None, request)
+        response.headers.add_header("X-Powered-By", SERVER_VERSION)
         response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
         return request, response
