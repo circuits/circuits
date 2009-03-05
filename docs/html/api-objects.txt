@@ -42,7 +42,7 @@ circuits.lib.ann	circuits.lib.ann-module.html
 circuits.lib.ann.__package__	circuits.lib.ann-module.html#__package__
 circuits.lib.config	circuits.lib.config-module.html
 circuits.lib.config.__package__	circuits.lib.config-module.html#__package__
-circuits.lib.config.listener	circuits.core-module.html#listener
+circuits.lib.config.handler	circuits.core-module.html#handler
 circuits.lib.drivers	circuits.lib.drivers-module.html
 circuits.lib.drivers.load	circuits.lib.drivers-module.html#load
 circuits.lib.drivers.modules	circuits.lib.drivers-module.html#modules
@@ -56,8 +56,8 @@ circuits.lib.drivers.pygame_driver	circuits.lib.drivers.pygame_driver-module.htm
 circuits.lib.drivers.pygame_driver.__package__	circuits.lib.drivers.pygame_driver-module.html#__package__
 circuits.lib.env	circuits.lib.env-module.html
 circuits.lib.env.__package__	circuits.lib.env-module.html#__package__
+circuits.lib.env.handler	circuits.core-module.html#handler
 circuits.lib.env.createFile	circuits.lib.env-module.html#createFile
-circuits.lib.env.listener	circuits.core-module.html#listener
 circuits.lib.env.VERSION	circuits.lib.env-module.html#VERSION
 circuits.lib.env.CONFIG	circuits.lib.env-module.html#CONFIG
 circuits.lib.io	circuits.lib.io-module.html
@@ -204,14 +204,14 @@ circuits.lib.smtp.stripAddress	circuits.lib.smtp-module.html#stripAddress
 circuits.lib.smtp.splitTo	circuits.lib.smtp-module.html#splitTo
 circuits.lib.smtp.getAddress	circuits.lib.smtp-module.html#getAddress
 circuits.lib.smtp.__package__	circuits.lib.smtp-module.html#__package__
-circuits.lib.smtp.listener	circuits.core-module.html#listener
+circuits.lib.smtp.handler	circuits.core-module.html#handler
 circuits.lib.smtp.splitLines	circuits.lib.smtp-module.html#splitLines
 circuits.lib.sockets	circuits.lib.sockets-module.html
 circuits.lib.sockets.BUFFER_SIZE	circuits.lib.sockets-module.html#BUFFER_SIZE
 circuits.lib.sockets.BACKLOG	circuits.lib.sockets-module.html#BACKLOG
 circuits.lib.sockets.__package__	circuits.lib.sockets-module.html#__package__
+circuits.lib.sockets.handler	circuits.core-module.html#handler
 circuits.lib.sockets.CONNECT_TIMEOUT	circuits.lib.sockets-module.html#CONNECT_TIMEOUT
-circuits.lib.sockets.listener	circuits.core-module.html#listener
 circuits.lib.sockets.POLL_INTERVAL	circuits.lib.sockets-module.html#POLL_INTERVAL
 circuits.lib.web	circuits.lib.web-module.html
 circuits.lib.web.__package__	circuits.lib.web-module.html#__package__
@@ -254,7 +254,7 @@ circuits.lib.web.servers	circuits.lib.web.servers-module.html
 circuits.lib.web.servers.__package__	circuits.lib.web.servers-module.html#__package__
 circuits.lib.web.sessions	circuits.lib.web.sessions-module.html
 circuits.lib.web.sessions.__package__	circuits.lib.web.sessions-module.html#__package__
-circuits.lib.web.sessions.listener	circuits.core-module.html#listener
+circuits.lib.web.sessions.handler	circuits.core-module.html#handler
 circuits.lib.web.tools	circuits.lib.web.tools-module.html
 circuits.lib.web.tools.serve_file	circuits.lib.web.tools-module.html#serve_file
 circuits.lib.web.tools.flatten	circuits.lib.web.tools-module.html#flatten
@@ -269,11 +269,11 @@ circuits.lib.web.tools.validate_etags	circuits.lib.web.tools-module.html#validat
 circuits.lib.web.tools.url	circuits.lib.web.utils-module.html#url
 circuits.lib.web.tools.trailing_slash	circuits.lib.web.tools-module.html#trailing_slash
 circuits.lib.web.utils	circuits.lib.web.utils-module.html
-circuits.lib.web.utils.url	circuits.lib.web.utils-module.html#url
 circuits.lib.web.utils.valid_status	circuits.lib.web.utils-module.html#valid_status
 circuits.lib.web.utils.__package__	circuits.lib.web.utils-module.html#__package__
 circuits.lib.web.utils.compressBuf	circuits.lib.web.utils-module.html#compressBuf
 circuits.lib.web.utils.quoteHTML	circuits.lib.web.utils-module.html#quoteHTML
+circuits.lib.web.utils.url	circuits.lib.web.utils-module.html#url
 circuits.lib.web.utils.quoted_slash	circuits.lib.web.utils-module.html#quoted_slash
 circuits.lib.web.utils.parseQueryString	circuits.lib.web.utils-module.html#parseQueryString
 circuits.lib.web.utils.dictform	circuits.lib.web.utils-module.html#dictform
