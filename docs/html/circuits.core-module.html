@@ -122,7 +122,8 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits.core.HandlersType-class.html" class="summary-name">HandlersType</a>
+        <a href="circuits.core.HandlersType-class.html" class="summary-name">HandlersType</a><br />
+      Handlers metaclass
     </td>
   </tr>
 <tr>
@@ -130,14 +131,15 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="circuits.core.Manager-class.html" class="summary-name">Manager</a><br />
-      Creates a new Manager
+      Manager
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits.core.BaseComponent-class.html" class="summary-name">BaseComponent</a>
+        <a href="circuits.core.BaseComponent-class.html" class="summary-name">BaseComponent</a><br />
+      Base Component
     </td>
   </tr>
 <tr>
@@ -145,7 +147,7 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="circuits.core.Component-class.html" class="summary-name">Component</a><br />
-      Creates a new Component
+      Component
     </td>
   </tr>
 </table>
@@ -181,7 +183,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="listener"></a><span class="summary-sig-name">listener</span>(<span class="summary-sig-arg">*channels</span>,
+          <td><span class="summary-sig"><a href="circuits.core-module.html#listener" class="summary-sig-name">listener</a>(<span class="summary-sig-arg">*channels</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span></td>
           <td align="right" valign="top">
             
@@ -221,10 +223,10 @@
     </td><td class="summary">
         <a href="circuits.core-module.html#__warningregistry__" class="summary-name">__warningregistry__</a> = <code title="{('Please use \'filter\', \'type\' will be deprecated in 1.2',
   &lt;type 'exceptions.UserWarning'&gt;,
-  225): True,
+  226): True,
  ('Please use @handler, @listener will be deprecated in 1.2',
   &lt;type 'exceptions.UserWarning'&gt;,
-  247): True}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use \'filter\', \'type\' will </code><code class="variable-ellipsis">...</code></code>
+  250): True}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use \'filter\', \'type\' will </code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 </table>
@@ -260,24 +262,41 @@
   priority over Listener Event Handlers. If kwargs[&quot;target&quot;] is 
   defined and is not None, the Event Handler will listen for the spcified 
   channels on the spcified Target Component's Channel.</p>
-  <p>Examples:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> circuits.core <span class="py-keyword">import</span> handler
-<span class="py-prompt">&gt;&gt;&gt; </span>@handler(<span class="py-string">&quot;foo&quot;</span>)
-<span class="py-more">... </span><span class="py-keyword">def</span> <span class="py-defname">foo</span>():
-<span class="py-more">... </span>    <span class="py-keyword">pass</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>@handler(<span class="py-string">&quot;bar&quot;</span>, filter=True)
-<span class="py-more">... </span><span class="py-keyword">def</span> <span class="py-defname">bar</span>():
-<span class="py-more">... </span>    <span class="py-keyword">pass</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>@handler(<span class="py-string">&quot;foo&quot;</span>, <span class="py-string">&quot;bar&quot;</span>)
-<span class="py-more">... </span><span class="py-keyword">def</span> <span class="py-defname">foobar</span>():
-<span class="py-more">... </span>    <span class="py-keyword">pass</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>@handler(<span class="py-string">&quot;x&quot;</span>, target=<span class="py-string">&quot;other&quot;</span>)
-<span class="py-more">... </span><span class="py-keyword">def</span> <span class="py-defname">x</span>():
-<span class="py-more">... </span>    <span class="py-keyword">pass</span></pre>
+  <p>Examples: &gt;&gt;&gt; @handler(&quot;foo&quot;) ... def foo(): ...
+  pass &gt;&gt;&gt; @handler(&quot;bar&quot;, filter=True) ... def bar(): 
+  ...     pass &gt;&gt;&gt; @handler(&quot;foo&quot;, &quot;bar&quot;) ... 
+  def foobar(): ...     pass &gt;&gt;&gt; @handler(&quot;x&quot;, 
+  target=&quot;other&quot;) ... def x(): ...     pass</p>
   <dl class="fields">
   </dl>
-</td></tr></table>
+<div class="fields">      <p><strong>Deprecated:</strong>
+        The use of 'type' in kwargs will be deprecated in 1.2 Use 'filter' 
+    instead.
+      </p>
+</div></td></tr></table>
+</div>
+<a name="listener"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">listener</span>(<span class="sig-arg">*channels</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+  </dl>
+<div class="fields">      <p><strong>Deprecated:</strong>
+        This is planned to be deprecated in 1.2 Use handlers instead
+      </p>
+</div></td></tr></table>
 </div>
 <br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
@@ -303,10 +322,10 @@
       <dd><table><tr><td><pre class="variable">
 <code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use \'filter\', \'type\' will be deprecated in 1.2</code><code class="variable-quote">'</code><code class="variable-op">,</code>
   &lt;type 'exceptions.UserWarning'&gt;<code class="variable-op">,</code>
-  225<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-op">,</code>
+  226<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-op">,</code>
  <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use @handler, @listener will be deprecated in 1.2</code><code class="variable-quote">'</code><code class="variable-op">,</code>
   &lt;type 'exceptions.UserWarning'&gt;<code class="variable-op">,</code>
-  247<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-group">}</code>
+  250<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-group">}</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -344,7 +363,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Mar  5 19:52:48 2009
+    Generated by Epydoc 3.0.1 on Thu Mar  5 21:53:42 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

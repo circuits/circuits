@@ -93,10 +93,10 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.pygame_driver.Click-class.html">circuits.lib.drivers.pygame_driver.Click</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.events.Close-class.html">circuits.lib.web.events.Close</a></strong>:
+    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Close-class.html">circuits.lib.sockets.Close</a></strong>:
       <em class="summary">Close(Event) -&gt; Close Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Close-class.html">circuits.lib.sockets.Close</a></strong>:
+    <li> <strong class="uidlink"><a href="circuits.lib.web.events.Close-class.html">circuits.lib.web.events.Close</a></strong>:
       <em class="summary">Close(Event) -&gt; Close Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver.Closed-class.html">circuits.lib.drivers.inotify_driver.Closed</a></strong>
@@ -136,17 +136,17 @@
     <li> <strong class="uidlink"><a href="circuits.lib.sockets.Disconnected-class.html">circuits.lib.sockets.Disconnected</a></strong>:
       <em class="summary">Disconnected(Event) -&gt; Disconnected Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Error-class.html">circuits.lib.sockets.Error</a></strong>:
-      <em class="summary">Error(Event) -&gt; Error Event</em>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.log.Error-class.html">circuits.lib.log.Error</a></strong>:
       <em class="summary">Error(Event) -&gt; Error Log Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Error-class.html">circuits.lib.pollers.Error</a></strong>:
+      <em class="summary">Error(fd) -&gt; Error Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.core.Error-class.html">circuits.core.Error</a></strong>:
       <em class="summary">Error Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Error-class.html">circuits.lib.pollers.Error</a></strong>:
-      <em class="summary">Error(fd) -&gt; Error Event</em>
+    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Error-class.html">circuits.lib.sockets.Error</a></strong>:
+      <em class="summary">Error(Event) -&gt; Error Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.io.Error-class.html">circuits.lib.io.Error</a></strong>
     </li>
@@ -182,10 +182,10 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.pygame_driver.Key-class.html">circuits.lib.drivers.pygame_driver.Key</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.env.Load-class.html">circuits.lib.env.Load</a></strong>:
+    <li> <strong class="uidlink"><a href="circuits.lib.config.Load-class.html">circuits.lib.config.Load</a></strong>:
       <em class="summary">Load(Event) -&gt; Load Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.config.Load-class.html">circuits.lib.config.Load</a></strong>:
+    <li> <strong class="uidlink"><a href="circuits.lib.env.Load-class.html">circuits.lib.env.Load</a></strong>:
       <em class="summary">Load(Event) -&gt; Load Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.env.Loaded-class.html">circuits.lib.env.Loaded</a></strong>:
@@ -224,9 +224,9 @@
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Numeric-class.html">circuits.lib.irc.Numeric</a></strong>:
       <em class="summary">Numeric(Event) -&gt; Numeric Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver.Opened-class.html">circuits.lib.drivers.inotify_driver.Opened</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.io.Opened-class.html">circuits.lib.io.Opened</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver.Opened-class.html">circuits.lib.drivers.inotify_driver.Opened</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Part-class.html">circuits.lib.irc.Part</a></strong>:
       <em class="summary">Part(Event) -&gt; Part Event</em>
@@ -242,9 +242,9 @@
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Quit-class.html">circuits.lib.irc.Quit</a></strong>:
       <em class="summary">Quit(Event) -&gt; Quit Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.smtp.Quit-class.html">circuits.lib.smtp.Quit</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.pygame_driver.Quit-class.html">circuits.lib.drivers.pygame_driver.Quit</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.smtp.Quit-class.html">circuits.lib.smtp.Quit</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Raw-class.html">circuits.lib.irc.Raw</a></strong>:
       <em class="summary">Raw(Event) -&gt; Raw Event</em>
@@ -344,9 +344,10 @@
       <em class="summary">An internet address.</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.core.Manager-class.html">circuits.core.Manager</a></strong>:
-      <em class="summary">Creates a new Manager</em>
+      <em class="summary">Manager</em>
     <ul>
-    <li> <strong class="uidlink"><a href="circuits.core.BaseComponent-class.html">circuits.core.BaseComponent</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.core.BaseComponent-class.html">circuits.core.BaseComponent</a></strong>:
+      <em class="summary">Base Component</em>
     <ul>
     <li> <strong class="uidlink"><a href="circuits.lib.web.core.BaseController-class.html">circuits.lib.web.core.BaseController</a></strong>
     <ul>
@@ -355,7 +356,7 @@
     </ul>
     </li>
     <li> <strong class="uidlink"><a href="circuits.core.Component-class.html">circuits.core.Component</a></strong>:
-      <em class="summary">Creates a new Component</em>
+      <em class="summary">Component</em>
     <ul>
     <li> <strong class="uidlink"><a href="circuits.lib.web.wsgi.Application-class.html">circuits.lib.web.wsgi.Application</a></strong>
     </li>
@@ -422,9 +423,9 @@
     <li> <strong class="uidlink"><a href="circuits.lib.irc.IRC-class.html">circuits.lib.irc.IRC</a></strong>:
       <em class="summary">IRC Protocol Component</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.log.Logger-class.html">circuits.lib.log.Logger</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.web.loggers.Logger-class.html">circuits.lib.web.loggers.Logger</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.log.Logger-class.html">circuits.lib.log.Logger</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.web.wsgi.Middleware-class.html">circuits.lib.web.wsgi.Middleware</a></strong>
     </li>
@@ -494,7 +495,8 @@
     <ul>
     <li> <strong class="uidlink"><a href="circuits.lib.web.core.ExposeType-class.html">circuits.lib.web.core.ExposeType</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.core.HandlersType-class.html">circuits.core.HandlersType</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.core.HandlersType-class.html">circuits.core.HandlersType</a></strong>:
+      <em class="summary">Handlers metaclass</em>
     </li>
     </ul>
     </li>
@@ -532,7 +534,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Mar  5 19:52:48 2009
+    Generated by Epydoc 3.0.1 on Thu Mar  5 21:53:42 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

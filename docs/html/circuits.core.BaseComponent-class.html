@@ -71,6 +71,27 @@ object --+
 </dd></dl>
 
 <hr />
+<p>Base Component</p>
+  <p>This is the Base of the Component which manages registrations to other
+  components or managers. Every Base Component and thus Component has a 
+  unique Channel that is used as a separation of concern for it's 
+  registered Event Handlers. By default, this Channels is None (or also 
+  known as the Global Channel).</p>
+  <p>When a Component (Base Component) has a set Channel that is not the 
+  Global Channel (None), then any Event Handlers will actually listen on a 
+  Channel that is a combination of the Component's Channel prefixed with 
+  the Event Handler's Channel. The form becomes:</p>
+  <p><code>target:channel</code></p>
+  <p>Where:</p>
+  <ul>
+    <li>
+      target is the Component's Channel
+    </li>
+    <li>
+      channel is the Event Handler's Channel
+    </li>
+  </ul>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -121,10 +142,9 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__call__"></a><span class="summary-sig-name">__call__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">channel</span>,
-        <span class="summary-sig-arg">*args</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td><span class="summary-sig"><a href="circuits.core.BaseComponent-class.html#__call__" class="summary-sig-name">__call__</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">...</span>)</span><br />
+      x(...)</td>
           <td align="right" valign="top">
             
             
@@ -140,8 +160,9 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="register"></a><span class="summary-sig-name">register</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">manager</span>)</span></td>
+          <td><span class="summary-sig"><a href="circuits.core.BaseComponent-class.html#register" class="summary-sig-name">register</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">manager</span>)</span><br />
+      Register all Event Handlers with the given Manager</td>
           <td align="right" valign="top">
             
             
@@ -177,7 +198,6 @@ object --+
       <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
       <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
-      <code><a href="circuits.core.Manager-class.html#handlers">handlers</a></code>,
       <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
       <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
       <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
@@ -227,20 +247,27 @@ object --+
     </td>
   </tr>
 </table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
   <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Class Variables</span></td>
+    <span class="table-header">Instance Variables</span></td>
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a name="channel"></a><span class="summary-name">channel</span> = <code title="None">None</code><br />
-      hash(x)
+      The Component's Channel
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
+      <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -352,6 +379,60 @@ object --+
   </dl>
 </td></tr></table>
 </div>
+<a name="__call__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__call__</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">...</span>)</span>
+    <br /><em class="fname">(Call operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x(...)</p>
+  <p>(Optional) Convenience callable to send an arbitary Event to the given
+  Channel populating the Event OBject with the given *args and **kwargs and
+  returning the result.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Result of sending Event to Channel with (*args, **kwargs) @rtype 
+          object</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="register"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">register</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">manager</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register all Event Handlers with the given Manager</p>
+  <p>This will register all Event Handlers of this Component to the given 
+  Manager. By default, every Component (Base Component) is registered with 
+  itself.</p>
+  <p>Iif the Component or Manager being registered with is not the current 
+  Component, then any Hidden Components in registered to this Component 
+  will also be regsitered with the given Manager. A Registered Event will 
+  also be sent.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <a name="unregister"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -408,7 +489,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Mar  5 19:52:48 2009
+    Generated by Epydoc 3.0.1 on Thu Mar  5 21:53:42 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
