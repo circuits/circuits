@@ -13,7 +13,7 @@ from __future__ import with_statement
 
 from ConfigParser import ConfigParser
 
-from circuits import listener, Event, Component
+from circuits import handler, Event, Component
 
 
 ###
@@ -64,7 +64,7 @@ class Config(Component, ConfigParser):
 		else:
 			return default
 
-	@listener("load")
+	@handler("load")
 	def onLOAD(self):
 		"""C.onLOAD()
 
@@ -73,7 +73,7 @@ class Config(Component, ConfigParser):
 
 		self.read(self.filename)
 
-	@listener("save")
+	@handler("save")
 	def onSAVE(self):
 		"""C.onSAVE()
 
