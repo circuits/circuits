@@ -88,7 +88,8 @@ class Request(object):
 
         self._headers = None
 
-        self.remote = Host(*sock.getpeername())
+        if sock:
+            self.remote = Host(*sock.getpeername())
 
         self.body = StringIO()
 
