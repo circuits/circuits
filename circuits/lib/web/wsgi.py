@@ -166,6 +166,11 @@ class Middleware(Component):
         env("QUERY_STRING", req.qs)
         env("SCRIPT_NAME", req.script_name)
         env("wsgi.input", req.body)
+        env("wsgi.version", (1, 0))
+        env("wsgi.errors", None)
+        env("wsgi.multithread", True)
+        env("wsgi.multiprocess", True)
+        env("wsgi.run_once", False)
 
         return environ
 
