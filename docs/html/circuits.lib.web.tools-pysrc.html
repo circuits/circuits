@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.lib.web.tools</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
+        <a href="circuits.lib.web-module.html">Package&nbsp;web</a> ::
+        Module&nbsp;tools
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="circuits.lib.web.tools-module.html">Module circuits.lib.web.tools</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Module:   tools</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># Date:     16th February 2009</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># Author:   James Mills, prologic at shortcircuit dot net dot au</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">"""Tools</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">This module implements tools used throughout circuits.web.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">These tools can also be used within Controlelrs and request handlers.</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">stat</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">types</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">hashlib</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">datetime</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">mimetypes</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">mimetools</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">rfc822</tt> <tt class="py-keyword">import</tt> <tt class="py-name">formatdate</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-name">mimetypes</tt><tt class="py-op">.</tt><tt class="py-name">init</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-name">mimetypes</tt><tt class="py-op">.</tt><tt class="py-name">types_map</tt><tt class="py-op">[</tt><tt class="py-string">'.dwg'</tt><tt class="py-op">]</tt><tt class="py-op">=</tt><tt class="py-string">'image/x-dwg'</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-name">mimetypes</tt><tt class="py-op">.</tt><tt class="py-name">types_map</tt><tt class="py-op">[</tt><tt class="py-string">'.ico'</tt><tt class="py-op">]</tt><tt class="py-op">=</tt><tt class="py-string">'image/x-icon'</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module circuits.lib.web.utils=circuits.lib.web.utils-module.html"><a title="circuits.lib.web.utils" class="py-name" href="#" onclick="return doclink('link-0', 'utils', 'link-0');">utils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Function circuits.lib.web.utils.url()=circuits.lib.web.utils-module.html#url"><a title="circuits.lib.web.utils.url" class="py-name" href="#" onclick="return doclink('link-1', 'url', 'link-1');">url</a></tt><tt class="py-op">,</tt> <tt id="link-2" class="py-name" targets="Function circuits.lib.web.utils.valid_status()=circuits.lib.web.utils-module.html#valid_status"><a title="circuits.lib.web.utils.valid_status" class="py-name" href="#" onclick="return doclink('link-2', 'valid_status', 'link-2');">valid_status</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Function circuits.lib.web.utils.get_ranges()=circuits.lib.web.utils-module.html#get_ranges"><a title="circuits.lib.web.utils.get_ranges" class="py-name" href="#" onclick="return doclink('link-3', 'get_ranges', 'link-3');">get_ranges</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module circuits.lib.web.errors=circuits.lib.web.errors-module.html"><a title="circuits.lib.web.errors" class="py-name" href="#" onclick="return doclink('link-4', 'errors', 'link-4');">errors</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class circuits.lib.web.errors.HTTPError=circuits.lib.web.errors.HTTPError-class.html"><a title="circuits.lib.web.errors.HTTPError" class="py-name" href="#" onclick="return doclink('link-5', 'HTTPError', 'link-5');">HTTPError</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Class circuits.lib.web.errors.NotFound=circuits.lib.web.errors.NotFound-class.html"><a title="circuits.lib.web.errors.NotFound" class="py-name" href="#" onclick="return doclink('link-6', 'NotFound', 'link-6');">NotFound</a></tt><tt class="py-op">,</tt> <tt id="link-7" class="py-name" targets="Class circuits.lib.web.errors.Redirect=circuits.lib.web.errors.Redirect-class.html"><a title="circuits.lib.web.errors.Redirect" class="py-name" href="#" onclick="return doclink('link-7', 'Redirect', 'link-7');">Redirect</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"> </tt>
+<a name="expires"></a><div id="expires-def"><a name="L27"></a><tt class="py-lineno"> 27</tt> <a class="py-toggle" href="#" id="expires-toggle" onclick="return toggle('expires');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#expires">expires</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">,</tt> <tt class="py-param">secs</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">force</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="expires-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="expires-expanded"><a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">    <tt class="py-docstring">"""Tool for influencing cache mechanisms using the 'Expires' header.</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-docstring">    'secs' must be either an int or a datetime.timedelta, and indicates the</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-docstring">    number of seconds between response.time and when the response should</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-docstring">    expire. The 'Expires' header will be set to (response.time + secs).</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-docstring">    If 'secs' is zero, the 'Expires' header is set one year in the past, and</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-docstring">    the following "cache prevention" headers are also set:</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-docstring">       'Pragma': 'no-cache'</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-docstring">       'Cache-Control': 'no-cache, must-revalidate'</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring">    If 'force' is False (the default), the following headers are checked:</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">    'Etag', 'Last-Modified', 'Age', 'Expires'. If any are already present,</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">    none of the above response headers are set.</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">     </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">    <tt id="link-8" class="py-name" targets="Module circuits.lib.web.headers=circuits.lib.web.headers-module.html,Variable circuits.lib.web.webob.Request.headers=circuits.lib.web.webob.Request-class.html#headers"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-8', 'headers', 'link-8');">headers</a></tt> <tt class="py-op">=</tt> <tt id="link-9" class="py-name" targets="Method circuits.lib.web.http.HTTP.response()=circuits.lib.web.http.HTTP-class.html#response,Method circuits.lib.web.loggers.Logger.response()=circuits.lib.web.loggers.Logger-class.html#response"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-9', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-10', 'headers', 'link-8');">headers</a></tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">     </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">    <tt class="py-name">cacheable</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">force</tt><tt class="py-op">:</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-comment"># some header names that indicate that the response can be cached</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">indicator</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-string">'Etag'</tt><tt class="py-op">,</tt> <tt class="py-string">'Last-Modified'</tt><tt class="py-op">,</tt> <tt class="py-string">'Age'</tt><tt class="py-op">,</tt> <tt class="py-string">'Expires'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">indicator</tt> <tt class="py-keyword">in</tt> <tt id="link-11" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-11', 'headers', 'link-8');">headers</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">                <tt class="py-name">cacheable</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">     </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">cacheable</tt><tt class="py-op">:</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">secs</tt><tt class="py-op">,</tt> <tt class="py-name">datetime</tt><tt class="py-op">.</tt><tt class="py-name">timedelta</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">            <tt class="py-name">secs</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">86400</tt> <tt class="py-op">*</tt> <tt class="py-name">secs</tt><tt class="py-op">.</tt><tt class="py-name">days</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-name">secs</tt><tt class="py-op">.</tt><tt class="py-name">seconds</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">         </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">secs</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">force</tt> <tt class="py-keyword">or</tt> <tt class="py-string">"Pragma"</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt id="link-12" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-12', 'headers', 'link-8');">headers</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">                <tt id="link-13" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-13', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">"Pragma"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"no-cache"</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-14" class="py-name" targets="Method circuits.lib.web.dispatchers.DefaultDispatcher.request()=circuits.lib.web.dispatchers.DefaultDispatcher-class.html#request,Method circuits.lib.web.dispatchers.FileDispatcher.request()=circuits.lib.web.dispatchers.FileDispatcher-class.html#request,Method circuits.lib.web.sessions.Sessions.request()=circuits.lib.web.sessions.Sessions-class.html#request"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-14', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Variable circuits.lib.web.webob.Request.protocol=circuits.lib.web.webob.Request-class.html#protocol"><a title="circuits.lib.web.webob.Request.protocol" class="py-name" href="#" onclick="return doclink('link-15', 'protocol', 'link-15');">protocol</a></tt> <tt class="py-op">&gt;=</tt> <tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">force</tt> <tt class="py-keyword">or</tt> <tt class="py-string">"Cache-Control"</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt id="link-16" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-16', 'headers', 'link-8');">headers</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                    <tt id="link-17" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-17', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">"Cache-Control"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"no-cache, must-revalidate"</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">            <tt class="py-comment"># Set an explicit Expires date in the past.</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">            <tt class="py-name">expiry</tt> <tt class="py-op">=</tt> <tt class="py-name">formatdate</tt><tt class="py-op">(</tt><tt class="py-number">1169942400.0</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt class="py-name">expiry</tt> <tt class="py-op">=</tt> <tt class="py-name">formatdate</tt><tt class="py-op">(</tt><tt id="link-18" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-18', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method circuits.lib.web.loggers.Logger.time()=circuits.lib.web.loggers.Logger-class.html#time"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-19', 'time', 'link-19');">time</a></tt> <tt class="py-op">+</tt> <tt class="py-name">secs</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">force</tt> <tt class="py-keyword">or</tt> <tt class="py-string">"Expires"</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt id="link-20" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-20', 'headers', 'link-8');">headers</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">            <tt id="link-21" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-21', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">"Expires"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">expiry</tt> </tt>
+</div><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"> </tt>
+<a name="serve_file"></a><div id="serve_file-def"><a name="L72"></a><tt class="py-lineno"> 72</tt> <a class="py-toggle" href="#" id="serve_file-toggle" onclick="return toggle('serve_file');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#serve_file">serve_file</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">,</tt> <tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">type</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">disposition</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="serve_file-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="serve_file-expanded"><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">    <tt class="py-docstring">"""Set status, headers, and body in order to serve the given file.</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-docstring">    The Content-Type header will be set to the type arg, if provided.</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-docstring">    If not provided, the Content-Type will be guessed by the file extension</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-docstring">    of the 'path' argument.</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"><tt class="py-docstring">    If disposition is not None, the Content-Disposition header will be set</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"><tt class="py-docstring">    to "&lt;disposition&gt;; filename=&lt;name&gt;". If name is None, it will be set</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-docstring">    to the basename of path. If disposition is None, no Content-Disposition</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">    header will be written.</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">     </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">isabs</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">ValueError</tt><tt class="py-op">(</tt><tt class="py-string">"'%s' is not an absolute path."</tt> <tt class="py-op">%</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">     </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-name">st</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">stat</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt> <tt class="py-name">OSError</tt><tt class="py-op">:</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-22" class="py-name"><a title="circuits.lib.web.errors.NotFound" class="py-name" href="#" onclick="return doclink('link-22', 'NotFound', 'link-6');">NotFound</a></tt><tt class="py-op">(</tt><tt id="link-23" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-23', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-24" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-24', 'response', 'link-9');">response</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">     </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">    <tt class="py-comment"># Check if path is a directory.</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">stat</tt><tt class="py-op">.</tt><tt class="py-name">S_ISDIR</tt><tt class="py-op">(</tt><tt class="py-name">st</tt><tt class="py-op">.</tt><tt class="py-name">st_mode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-comment"># Let the caller deal with it as they like.</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-25" class="py-name"><a title="circuits.lib.web.errors.NotFound" class="py-name" href="#" onclick="return doclink('link-25', 'NotFound', 'link-6');">NotFound</a></tt><tt class="py-op">(</tt><tt id="link-26" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-26', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-27" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-27', 'response', 'link-9');">response</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">     </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">    <tt class="py-comment"># Set the Last-Modified response header, so that</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">    <tt class="py-comment"># modified-since validation code can work.</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">    <tt id="link-28" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-28', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-29', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Last-Modified'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">formatdate</tt><tt class="py-op">(</tt><tt class="py-name">st</tt><tt class="py-op">.</tt><tt class="py-name">st_mtime</tt><tt class="py-op">)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">    <tt id="link-30" class="py-name" targets="Function circuits.lib.web.tools.validate_since()=circuits.lib.web.tools-module.html#validate_since"><a title="circuits.lib.web.tools.validate_since" class="py-name" href="#" onclick="return doclink('link-30', 'validate_since', 'link-30');">validate_since</a></tt><tt class="py-op">(</tt><tt id="link-31" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-31', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-32" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-32', 'response', 'link-9');">response</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">     </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">type</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-comment"># Set content-type based on filename extension</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-name">ext</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-name">i</tt> <tt class="py-op">=</tt> <tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">rfind</tt><tt class="py-op">(</tt><tt class="py-string">'.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">i</tt> <tt class="py-op">!=</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">            <tt class="py-name">ext</tt> <tt class="py-op">=</tt> <tt class="py-name">path</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-name">type</tt> <tt class="py-op">=</tt> <tt class="py-name">mimetypes</tt><tt class="py-op">.</tt><tt class="py-name">types_map</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Method circuits.lib.config.Config.get()=circuits.lib.config.Config-class.html#get,Method circuits.lib.web.headers.Headers.get()=circuits.lib.web.headers.Headers-class.html#get"><a title="circuits.lib.config.Config.get
+circuits.lib.web.headers.Headers.get" class="py-name" href="#" onclick="return doclink('link-33', 'get', 'link-33');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">ext</tt><tt class="py-op">,</tt> <tt class="py-string">"text/plain"</tt><tt class="py-op">)</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">    <tt id="link-34" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-34', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-35', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Content-Type'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">type</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">     </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">disposition</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-36" class="py-name" targets="Variable circuits.lib.web.webob.Host.name=circuits.lib.web.webob.Host-class.html#name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-36', 'name', 'link-36');">name</a></tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">            <tt id="link-37" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-37', 'name', 'link-36');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">basename</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-name">cd</tt> <tt class="py-op">=</tt> <tt class="py-string">'%s; filename="%s"'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">disposition</tt><tt class="py-op">,</tt> <tt id="link-38" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-38', 'name', 'link-36');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt id="link-39" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-39', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-40', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">"Content-Disposition"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">cd</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">     </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">    <tt class="py-comment"># Set Content-Length and use an iterable (file object)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">    <tt class="py-comment">#   this way CP won't load the whole file in memory</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">    <tt class="py-name">c_len</tt> <tt class="py-op">=</tt> <tt class="py-name">st</tt><tt class="py-op">.</tt><tt class="py-name">st_size</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">    <tt class="py-name">bodyfile</tt> <tt class="py-op">=</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-string">'rb'</tt><tt class="py-op">)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">     </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">    <tt class="py-comment"># HTTP/1.0 didn't have Range/Accept-Ranges headers, or the 206 code</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-41" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-41', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="circuits.lib.web.webob.Request.protocol" class="py-name" href="#" onclick="return doclink('link-42', 'protocol', 'link-15');">protocol</a></tt> <tt class="py-op">&gt;=</tt> <tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt id="link-43" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-43', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-44', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">"Accept-Ranges"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"bytes"</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt id="link-45" class="py-name"><a title="circuits.lib.web.utils.get_ranges" class="py-name" href="#" onclick="return doclink('link-45', 'get_ranges', 'link-3');">get_ranges</a></tt><tt class="py-op">(</tt><tt id="link-46" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-46', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-47', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="circuits.lib.config.Config.get
+circuits.lib.web.headers.Headers.get" class="py-name" href="#" onclick="return doclink('link-48', 'get', 'link-33');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'Range'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">c_len</tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">r</tt> <tt class="py-op">==</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">            <tt id="link-49" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-49', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-50', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Content-Range'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"bytes */%s"</tt> <tt class="py-op">%</tt> <tt class="py-name">c_len</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">            <tt class="py-name">message</tt> <tt class="py-op">=</tt> <tt class="py-string">"Invalid Range (first-byte-pos greater than Content-Length)"</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-51" class="py-name"><a title="circuits.lib.web.errors.HTTPError" class="py-name" href="#" onclick="return doclink('link-51', 'HTTPError', 'link-5');">HTTPError</a></tt><tt class="py-op">(</tt><tt id="link-52" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-52', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-53" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-53', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-number">416</tt><tt class="py-op">,</tt> <tt class="py-name">message</tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">r</tt><tt class="py-op">:</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">r</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">                <tt class="py-comment"># Return a single-part response.</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">                <tt id="link-54" class="py-name" targets="Method circuits.core.Manager.start()=circuits.core.Manager-class.html#start,Method circuits.workers.Process.start()=circuits.workers.Process-class.html#start,Method circuits.workers.Thread.start()=circuits.workers.Thread-class.html#start"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-54', 'start', 'link-54');">start</a></tt><tt class="py-op">,</tt> <tt id="link-55" class="py-name" targets="Method circuits.core.Manager.stop()=circuits.core.Manager-class.html#stop,Method circuits.tools.bench.State.stop()=circuits.tools.bench.State-class.html#stop,Method circuits.workers.Process.stop()=circuits.workers.Process-class.html#stop,Method circuits.workers.Thread.stop()=circuits.workers.Thread-class.html#stop"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-55', 'stop', 'link-55');">stop</a></tt> <tt class="py-op">=</tt> <tt class="py-name">r</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">                <tt class="py-name">r_len</tt> <tt class="py-op">=</tt> <tt id="link-56" class="py-name"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-56', 'stop', 'link-55');">stop</a></tt> <tt class="py-op">-</tt> <tt id="link-57" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-57', 'start', 'link-54');">start</a></tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">                <tt id="link-58" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-58', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">status</tt> <tt class="py-op">=</tt> <tt class="py-string">"206 Partial Content"</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">                <tt id="link-59" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-59', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-60', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Content-Range'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-string">"bytes %s-%s/%s"</tt> <tt class="py-op">%</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">                                                       <tt class="py-op">(</tt><tt id="link-61" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-61', 'start', 'link-54');">start</a></tt><tt class="py-op">,</tt> <tt id="link-62" class="py-name"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-62', 'stop', 'link-55');">stop</a></tt> <tt class="py-op">-</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">c_len</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">                <tt id="link-63" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-63', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-64', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Content-Length'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">r_len</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">                <tt class="py-name">bodyfile</tt><tt class="py-op">.</tt><tt class="py-name">seek</tt><tt class="py-op">(</tt><tt id="link-65" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-65', 'start', 'link-54');">start</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">                <tt id="link-66" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-66', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">bodyfile</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name" targets="Method circuits.lib.irc.IRC.read()=circuits.lib.irc.IRC-class.html#read,Variable circuits.lib.pollers.Poller.read=circuits.lib.pollers.Poller-class.html#read,Method circuits.lib.web.http.HTTP.read()=circuits.lib.web.http.HTTP-class.html#read"><a title="circuits.lib.irc.IRC.read
+circuits.lib.pollers.Poller.read
+circuits.lib.web.http.HTTP.read" class="py-name" href="#" onclick="return doclink('link-67', 'read', 'link-67');">read</a></tt><tt class="py-op">(</tt><tt class="py-name">r_len</tt><tt class="py-op">)</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">                <tt class="py-comment"># Return a multipart/byteranges response.</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                <tt id="link-68" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-68', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">status</tt> <tt class="py-op">=</tt> <tt class="py-string">"206 Partial Content"</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">                <tt class="py-name">boundary</tt> <tt class="py-op">=</tt> <tt class="py-name">mimetools</tt><tt class="py-op">.</tt><tt class="py-name">choose_boundary</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">                <tt class="py-name">ct</tt> <tt class="py-op">=</tt> <tt class="py-string">"multipart/byteranges; boundary=%s"</tt> <tt class="py-op">%</tt> <tt class="py-name">boundary</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">                <tt id="link-69" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-69', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-70', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Content-Type'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">ct</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-71" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-71', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-72', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-73" class="py-name" targets="Method circuits.lib.web.headers.Headers.has_key()=circuits.lib.web.headers.Headers-class.html#has_key"><a title="circuits.lib.web.headers.Headers.has_key" class="py-name" href="#" onclick="return doclink('link-73', 'has_key', 'link-73');">has_key</a></tt><tt class="py-op">(</tt><tt class="py-string">"Content-Length"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">                    <tt class="py-comment"># Delete Content-Length header so finalize() recalcs it.</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">                    <tt class="py-keyword">del</tt> <tt id="link-74" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-74', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-75', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">"Content-Length"</tt><tt class="py-op">]</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">                 </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">                <tt class="py-keyword">def</tt> <tt class="py-def-name">file_ranges</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">                    <tt class="py-comment"># Apache compatibility:</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">                    <tt class="py-keyword">yield</tt> <tt class="py-string">"\r\n"</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">                     </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">                    <tt class="py-keyword">for</tt> <tt id="link-76" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-76', 'start', 'link-54');">start</a></tt><tt class="py-op">,</tt> <tt id="link-77" class="py-name"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-77', 'stop', 'link-55');">stop</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">r</tt><tt class="py-op">:</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">                        <tt class="py-keyword">yield</tt> <tt class="py-string">"--"</tt> <tt class="py-op">+</tt> <tt class="py-name">boundary</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">                        <tt class="py-keyword">yield</tt> <tt class="py-string">"\r\nContent-type: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">type</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">                        <tt class="py-keyword">yield</tt> <tt class="py-op">(</tt><tt class="py-string">"\r\nContent-range: bytes %s-%s/%s\r\n\r\n"</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">                               <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-78" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-78', 'start', 'link-54');">start</a></tt><tt class="py-op">,</tt> <tt id="link-79" class="py-name"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-79', 'stop', 'link-55');">stop</a></tt> <tt class="py-op">-</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">c_len</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">                        <tt class="py-name">bodyfile</tt><tt class="py-op">.</tt><tt class="py-name">seek</tt><tt class="py-op">(</tt><tt id="link-80" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-80', 'start', 'link-54');">start</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">                        <tt class="py-keyword">yield</tt> <tt class="py-name">bodyfile</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="circuits.lib.irc.IRC.read
+circuits.lib.pollers.Poller.read
+circuits.lib.web.http.HTTP.read" class="py-name" href="#" onclick="return doclink('link-81', 'read', 'link-67');">read</a></tt><tt class="py-op">(</tt><tt id="link-82" class="py-name"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-82', 'stop', 'link-55');">stop</a></tt> <tt class="py-op">-</tt> <tt id="link-83" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-83', 'start', 'link-54');">start</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">                        <tt class="py-keyword">yield</tt> <tt class="py-string">"\r\n"</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">                    <tt class="py-comment"># Final boundary</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">                    <tt class="py-keyword">yield</tt> <tt class="py-string">"--"</tt> <tt class="py-op">+</tt> <tt class="py-name">boundary</tt> <tt class="py-op">+</tt> <tt class="py-string">"--"</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">                     </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">                    <tt class="py-comment"># Apache compatibility:</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">                    <tt class="py-keyword">yield</tt> <tt class="py-string">"\r\n"</tt> </tt>
+</div><a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">                <tt id="link-84" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-84', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">file_ranges</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">            <tt id="link-85" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-85', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-86', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Content-Length'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">c_len</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">            <tt id="link-87" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-87', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">bodyfile</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">        <tt id="link-88" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-88', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-89', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'Content-Length'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">c_len</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt id="link-90" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-90', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">bodyfile</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-91" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-91', 'response', 'link-9');">response</a></tt> </tt>
+</div><a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"> </tt>
+<a name="serve_download"></a><div id="serve_download-def"><a name="L179"></a><tt class="py-lineno">179</tt> <a class="py-toggle" href="#" id="serve_download-toggle" onclick="return toggle('serve_download');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#serve_download">serve_download</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">,</tt> <tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="serve_download-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="serve_download-expanded"><a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">    <tt class="py-docstring">"""Serve 'path' as an application/x-download attachment."""</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">    <tt class="py-name">type</tt> <tt class="py-op">=</tt> <tt class="py-string">"application/x-download"</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">    <tt class="py-name">disposition</tt> <tt class="py-op">=</tt> <tt class="py-string">"attachment"</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-92" class="py-name" targets="Method circuits.lib.web.core.BaseController.serve_file()=circuits.lib.web.core.BaseController-class.html#serve_file,Function circuits.lib.web.tools.serve_file()=circuits.lib.web.tools-module.html#serve_file"><a title="circuits.lib.web.core.BaseController.serve_file
+circuits.lib.web.tools.serve_file" class="py-name" href="#" onclick="return doclink('link-92', 'serve_file', 'link-92');">serve_file</a></tt><tt class="py-op">(</tt><tt id="link-93" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-93', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-94" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-94', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">,</tt> <tt class="py-name">disposition</tt><tt class="py-op">,</tt> <tt id="link-95" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-95', 'name', 'link-36');">name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"> </tt>
+<a name="validate_etags"></a><div id="validate_etags-def"><a name="L187"></a><tt class="py-lineno">187</tt> <a class="py-toggle" href="#" id="validate_etags-toggle" onclick="return toggle('validate_etags');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#validate_etags">validate_etags</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">,</tt> <tt class="py-param">autotags</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="validate_etags-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="validate_etags-expanded"><a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">    <tt class="py-docstring">"""Validate the current ETag against If-Match, If-None-Match headers.</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line"><tt class="py-docstring">    If autotags is True, an ETag response-header value will be provided</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"><tt class="py-docstring">    from an MD5 hash of the response body (unless some other code has</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line"><tt class="py-docstring">    already provided an ETag header). If False (the default), the ETag</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line"><tt class="py-docstring">    will not be automatic.</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"><tt class="py-docstring">    WARNING: the autotags feature is not designed for URL's which allow</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"><tt class="py-docstring">    methods other than GET. For example, if a POST to the same URL returns</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"><tt class="py-docstring">    no content, the automatic ETag will be incorrect, breaking a fundamental</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"><tt class="py-docstring">    use for entity tags in a possibly destructive fashion. Likewise, if you</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line"><tt class="py-docstring">    raise 304 Not Modified, the response body will be empty, the ETag hash</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line"><tt class="py-docstring">    will be incorrect, and your application will break.</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line"><tt class="py-docstring">    See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">     </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">    <tt class="py-comment"># Guard against being run twice.</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt id="link-96" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-96', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-string">"ETag"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">     </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">    <tt class="py-name">status</tt><tt class="py-op">,</tt> <tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt id="link-97" class="py-name"><a title="circuits.lib.web.utils.valid_status" class="py-name" href="#" onclick="return doclink('link-97', 'valid_status', 'link-2');">valid_status</a></tt><tt class="py-op">(</tt><tt id="link-98" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-98', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">status</tt><tt class="py-op">)</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">     </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">    <tt class="py-name">etag</tt> <tt class="py-op">=</tt> <tt id="link-99" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-99', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-100" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-100', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-101" class="py-name"><a title="circuits.lib.config.Config.get
+circuits.lib.web.headers.Headers.get" class="py-name" href="#" onclick="return doclink('link-101', 'get', 'link-33');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'ETag'</tt><tt class="py-op">)</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">     </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">    <tt class="py-comment"># Automatic ETag generation. See warning in docstring.</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-keyword">not</tt> <tt class="py-name">etag</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-name">autotags</tt><tt class="py-op">:</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">status</tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">            <tt class="py-name">etag</tt> <tt class="py-op">=</tt> <tt id="link-102" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-102', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">collapse_body</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">            <tt class="py-name">etag</tt> <tt class="py-op">=</tt> <tt class="py-string">'"%s"'</tt> <tt class="py-op">%</tt> <tt class="py-name">hashlib</tt><tt class="py-op">.</tt><tt class="py-name">md5</tt><tt class="py-op">.</tt><tt class="py-name">new</tt><tt class="py-op">(</tt><tt class="py-name">etag</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hexdigest</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">            <tt id="link-103" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-103', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-104" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-104', 'headers', 'link-8');">headers</a></tt><tt class="py-op">[</tt><tt class="py-string">'ETag'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">etag</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">     </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">    <tt id="link-105" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-105', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">ETag</tt> <tt class="py-op">=</tt> <tt class="py-name">etag</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">     </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">    <tt class="py-comment"># "If the request would, without the If-Match header field, result in</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">    <tt class="py-comment"># anything other than a 2xx or 412 status, then the If-Match header</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">    <tt class="py-comment"># MUST be ignored."</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">status</tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">200</tt> <tt class="py-keyword">and</tt> <tt class="py-name">status</tt> <tt class="py-op">&lt;=</tt> <tt class="py-number">299</tt><tt class="py-op">:</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">        <tt class="py-name">conditions</tt> <tt class="py-op">=</tt> <tt id="link-106" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-106', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-107', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-108" class="py-name" targets="Method circuits.lib.web.headers.Headers.elements()=circuits.lib.web.headers.Headers-class.html#elements"><a title="circuits.lib.web.headers.Headers.elements" class="py-name" href="#" onclick="return doclink('link-108', 'elements', 'link-108');">elements</a></tt><tt class="py-op">(</tt><tt class="py-string">'If-Match'</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">        <tt class="py-name">conditions</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">conditions</tt><tt class="py-op">]</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">conditions</tt> <tt class="py-keyword">and</tt> <tt class="py-keyword">not</tt> <tt class="py-op">(</tt><tt class="py-name">conditions</tt> <tt class="py-op">==</tt> <tt class="py-op">[</tt><tt class="py-string">"*"</tt><tt class="py-op">]</tt> <tt class="py-keyword">or</tt> <tt class="py-name">etag</tt> <tt class="py-keyword">in</tt> <tt class="py-name">conditions</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-109" class="py-name"><a title="circuits.lib.web.errors.HTTPError" class="py-name" href="#" onclick="return doclink('link-109', 'HTTPError', 'link-5');">HTTPError</a></tt><tt class="py-op">(</tt><tt id="link-110" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-110', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-111" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-111', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-number">412</tt><tt class="py-op">,</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">                    <tt class="py-string">"If-Match failed: ETag %r did not match %r"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">                        <tt class="py-name">etag</tt><tt class="py-op">,</tt> <tt class="py-name">conditions</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">         </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">        <tt class="py-name">conditions</tt> <tt class="py-op">=</tt> <tt id="link-112" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-112', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-113', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-114" class="py-name"><a title="circuits.lib.web.headers.Headers.elements" class="py-name" href="#" onclick="return doclink('link-114', 'elements', 'link-108');">elements</a></tt><tt class="py-op">(</tt><tt class="py-string">'If-None-Match'</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">        <tt class="py-name">conditions</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">conditions</tt><tt class="py-op">]</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">conditions</tt> <tt class="py-op">==</tt> <tt class="py-op">[</tt><tt class="py-string">"*"</tt><tt class="py-op">]</tt> <tt class="py-keyword">or</tt> <tt class="py-name">etag</tt> <tt class="py-keyword">in</tt> <tt class="py-name">conditions</tt><tt class="py-op">:</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-115" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-115', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt class="py-name">method</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-string">"GET"</tt><tt class="py-op">,</tt> <tt class="py-string">"HEAD"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt id="link-116" class="py-name"><a title="circuits.lib.web.errors.Redirect" class="py-name" href="#" onclick="return doclink('link-116', 'Redirect', 'link-7');">Redirect</a></tt><tt class="py-op">(</tt><tt id="link-117" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-117', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-118" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-118', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-number">304</tt><tt class="py-op">)</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt id="link-119" class="py-name"><a title="circuits.lib.web.errors.HTTPError" class="py-name" href="#" onclick="return doclink('link-119', 'HTTPError', 'link-5');">HTTPError</a></tt><tt class="py-op">(</tt><tt id="link-120" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-120', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-121" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-121', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-number">412</tt><tt class="py-op">,</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line">                        <tt class="py-string">"If-None-Match failed: ETag %r matched %r"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">                            <tt class="py-name">etag</tt><tt class="py-op">,</tt> <tt class="py-name">conditions</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"> </tt>
+<a name="validate_since"></a><div id="validate_since-def"><a name="L242"></a><tt class="py-lineno">242</tt> <a class="py-toggle" href="#" id="validate_since-toggle" onclick="return toggle('validate_since');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#validate_since">validate_since</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="validate_since-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="validate_since-expanded"><a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">    <tt class="py-docstring">"""Validate the current Last-Modified against If-Modified-Since headers.</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"><tt class="py-docstring">    If no code has set the Last-Modified response header, then no validation</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"><tt class="py-docstring">    will be performed.</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line"> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">    <tt class="py-name">lastmod</tt> <tt class="py-op">=</tt> <tt id="link-122" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-122', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-123', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-124" class="py-name"><a title="circuits.lib.config.Config.get
+circuits.lib.web.headers.Headers.get" class="py-name" href="#" onclick="return doclink('link-124', 'get', 'link-33');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'Last-Modified'</tt><tt class="py-op">)</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">lastmod</tt><tt class="py-op">:</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">        <tt class="py-name">status</tt><tt class="py-op">,</tt> <tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt id="link-125" class="py-name"><a title="circuits.lib.web.utils.valid_status" class="py-name" href="#" onclick="return doclink('link-125', 'valid_status', 'link-2');">valid_status</a></tt><tt class="py-op">(</tt><tt id="link-126" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-126', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">status</tt><tt class="py-op">)</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">         </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">        <tt class="py-name">since</tt> <tt class="py-op">=</tt> <tt id="link-127" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-127', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-128" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-128', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-129" class="py-name"><a title="circuits.lib.config.Config.get
+circuits.lib.web.headers.Headers.get" class="py-name" href="#" onclick="return doclink('link-129', 'get', 'link-33');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'If-Unmodified-Since'</tt><tt class="py-op">)</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">since</tt> <tt class="py-keyword">and</tt> <tt class="py-name">since</tt> <tt class="py-op">!=</tt> <tt class="py-name">lastmod</tt><tt class="py-op">:</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">status</tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">200</tt> <tt class="py-keyword">and</tt> <tt class="py-name">status</tt> <tt class="py-op">&lt;=</tt> <tt class="py-number">299</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">status</tt> <tt class="py-op">==</tt> <tt class="py-number">412</tt><tt class="py-op">:</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt id="link-130" class="py-name"><a title="circuits.lib.web.errors.HTTPError" class="py-name" href="#" onclick="return doclink('link-130', 'HTTPError', 'link-5');">HTTPError</a></tt><tt class="py-op">(</tt><tt id="link-131" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-131', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-132" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-132', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-number">412</tt><tt class="py-op">)</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">         </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">        <tt class="py-name">since</tt> <tt class="py-op">=</tt> <tt id="link-133" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-133', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-134" class="py-name"><a title="circuits.lib.web.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-134', 'headers', 'link-8');">headers</a></tt><tt class="py-op">.</tt><tt id="link-135" class="py-name"><a title="circuits.lib.config.Config.get
+circuits.lib.web.headers.Headers.get" class="py-name" href="#" onclick="return doclink('link-135', 'get', 'link-33');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'If-Modified-Since'</tt><tt class="py-op">)</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">since</tt> <tt class="py-keyword">and</tt> <tt class="py-name">since</tt> <tt class="py-op">==</tt> <tt class="py-name">lastmod</tt><tt class="py-op">:</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">status</tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">200</tt> <tt class="py-keyword">and</tt> <tt class="py-name">status</tt> <tt class="py-op">&lt;=</tt> <tt class="py-number">299</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">status</tt> <tt class="py-op">==</tt> <tt class="py-number">304</tt><tt class="py-op">:</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-136" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-136', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt class="py-name">method</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-string">"GET"</tt><tt class="py-op">,</tt> <tt class="py-string">"HEAD"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">                    <tt class="py-keyword">return</tt> <tt id="link-137" class="py-name"><a title="circuits.lib.web.errors.Redirect" class="py-name" href="#" onclick="return doclink('link-137', 'Redirect', 'link-7');">Redirect</a></tt><tt class="py-op">(</tt><tt id="link-138" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-138', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-139" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-139', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-number">304</tt><tt class="py-op">)</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">                    <tt class="py-keyword">return</tt> <tt id="link-140" class="py-name"><a title="circuits.lib.web.errors.HTTPError" class="py-name" href="#" onclick="return doclink('link-140', 'HTTPError', 'link-5');">HTTPError</a></tt><tt class="py-op">(</tt><tt id="link-141" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-141', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-142" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-142', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-number">412</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"> </tt>
+<a name="redirect"></a><div id="redirect-def"><a name="L266"></a><tt class="py-lineno">266</tt> <a class="py-toggle" href="#" id="redirect-toggle" onclick="return toggle('redirect');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#redirect">redirect</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">,</tt> <tt class="py-param">url</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="redirect-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="redirect-expanded"><a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">    <tt class="py-keyword">raise</tt> <tt id="link-143" class="py-name"><a title="circuits.lib.web.errors.Redirect" class="py-name" href="#" onclick="return doclink('link-143', 'Redirect', 'link-7');">Redirect</a></tt><tt class="py-op">(</tt><tt id="link-144" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-144', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-145" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-145', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt id="link-146" class="py-name"><a title="circuits.lib.web.utils.url" class="py-name" href="#" onclick="return doclink('link-146', 'url', 'link-1');">url</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line"> </tt>
+<a name="trailing_slash"></a><div id="trailing_slash-def"><a name="L269"></a><tt class="py-lineno">269</tt> <a class="py-toggle" href="#" id="trailing_slash-toggle" onclick="return toggle('trailing_slash');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#trailing_slash">trailing_slash</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">,</tt> <tt class="py-param">missing</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-param">extra</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="trailing_slash-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="trailing_slash-expanded"><a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line">    <tt class="py-docstring">"""Redirect if request.path has (missing|extra) trailing slash."""</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line"> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">    <tt class="py-name">pi</tt> <tt class="py-op">=</tt> <tt id="link-147" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-147', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt class="py-name">path</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">     </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-148" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-148', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-149" class="py-name" targets="Variable circuits.lib.web.webob.Request.index=circuits.lib.web.webob.Request-class.html#index"><a title="circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-149', 'index', 'link-149');">index</a></tt> <tt class="py-keyword">is</tt> <tt class="py-name">True</tt><tt class="py-op">:</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">missing</tt><tt class="py-op">:</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">pi</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">                <tt class="py-name">new_url</tt> <tt class="py-op">=</tt> <tt id="link-150" class="py-name"><a title="circuits.lib.web.utils.url" class="py-name" href="#" onclick="return doclink('link-150', 'url', 'link-1');">url</a></tt><tt class="py-op">(</tt><tt id="link-151" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-151', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt class="py-name">pi</tt> <tt class="py-op">+</tt> <tt class="py-string">'/'</tt><tt class="py-op">,</tt> <tt id="link-152" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-152', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt class="py-name">qs</tt><tt class="py-op">)</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt id="link-153" class="py-name"><a title="circuits.lib.web.errors.Redirect" class="py-name" href="#" onclick="return doclink('link-153', 'Redirect', 'link-7');">Redirect</a></tt><tt class="py-op">(</tt><tt id="link-154" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-154', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-155" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-155', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-name">new_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt id="link-156" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-156', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt id="link-157" class="py-name"><a title="circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-157', 'index', 'link-149');">index</a></tt> <tt class="py-keyword">is</tt> <tt class="py-name">False</tt><tt class="py-op">:</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">extra</tt><tt class="py-op">:</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">            <tt class="py-comment"># If pi == '/', don't redirect to ''!</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">pi</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-name">pi</tt> <tt class="py-op">!=</tt> <tt class="py-string">'/'</tt><tt class="py-op">:</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">                <tt class="py-name">new_url</tt> <tt class="py-op">=</tt> <tt id="link-158" class="py-name"><a title="circuits.lib.web.utils.url" class="py-name" href="#" onclick="return doclink('link-158', 'url', 'link-1');">url</a></tt><tt class="py-op">(</tt><tt id="link-159" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-159', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt class="py-name">pi</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt id="link-160" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-160', 'request', 'link-14');">request</a></tt><tt class="py-op">.</tt><tt class="py-name">qs</tt><tt class="py-op">)</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt id="link-161" class="py-name"><a title="circuits.lib.web.errors.Redirect" class="py-name" href="#" onclick="return doclink('link-161', 'Redirect', 'link-7');">Redirect</a></tt><tt class="py-op">(</tt><tt id="link-162" class="py-name"><a title="circuits.lib.web.dispatchers.DefaultDispatcher.request
+circuits.lib.web.dispatchers.FileDispatcher.request
+circuits.lib.web.sessions.Sessions.request" class="py-name" href="#" onclick="return doclink('link-162', 'request', 'link-14');">request</a></tt><tt class="py-op">,</tt> <tt id="link-163" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-163', 'response', 'link-9');">response</a></tt><tt class="py-op">,</tt> <tt class="py-name">new_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-164" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-164', 'response', 'link-9');">response</a></tt> </tt>
+</div><a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"> </tt>
+<a name="flatten"></a><div id="flatten-def"><a name="L288"></a><tt class="py-lineno">288</tt> <a class="py-toggle" href="#" id="flatten-toggle" onclick="return toggle('flatten');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tools-module.html#flatten">flatten</a><tt class="py-op">(</tt><tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">response</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="flatten-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="flatten-expanded"><a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">    <tt class="py-docstring">"""Wrap response.body in a generator that recursively iterates over body.</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line"><tt class="py-docstring">    This allows response.body to consist of 'nested generators';</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"><tt class="py-docstring">    that is, a set of generators that yield generators.</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">    <tt class="py-keyword">def</tt> <tt class="py-def-name">flattener</tt><tt class="py-op">(</tt><tt class="py-param">input</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">input</tt><tt class="py-op">:</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">,</tt> <tt class="py-name">types</tt><tt class="py-op">.</tt><tt class="py-name">GeneratorType</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line">                <tt class="py-keyword">yield</tt> <tt class="py-name">x</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">y</tt> <tt class="py-keyword">in</tt> <tt class="py-name">flattener</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">                    <tt class="py-keyword">yield</tt> <tt class="py-name">y</tt>  </tt>
+</div><a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">    <tt id="link-165" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-165', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">flattener</tt><tt class="py-op">(</tt><tt id="link-166" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-166', 'response', 'link-9');">response</a></tt><tt class="py-op">.</tt><tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-167" class="py-name"><a title="circuits.lib.web.http.HTTP.response
+circuits.lib.web.loggers.Logger.response" class="py-name" href="#" onclick="return doclink('link-167', 'response', 'link-9');">response</a></tt> </tt>
+</div><a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:41:52 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

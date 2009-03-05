@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.lib.web.tests.test_core</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
+        <a href="circuits.lib.web-module.html">Package&nbsp;web</a> ::
+        <a href="circuits.lib.web.tests-module.html">Package&nbsp;tests</a> ::
+        Module&nbsp;test_core
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="circuits.lib.web.tests.test_core-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="circuits.lib.web.tests.test_core-module.html">Module circuits.lib.web.tests.test_core</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Module:       test_core</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"># Date:         16th February 2009</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># Author:       James Mills, prologic at shortcircuit dot net dot au</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">httplib</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">unittest</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package circuits=circuits-module.html"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-0', 'circuits', 'link-0');">circuits</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module circuits.workers=circuits.workers-module.html"><a title="circuits.workers" class="py-name" href="#" onclick="return doclink('link-1', 'workers', 'link-1');">workers</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class circuits.workers.Thread=circuits.workers.Thread-class.html"><a title="circuits.workers.Thread" class="py-name" href="#" onclick="return doclink('link-2', 'Thread', 'link-2');">Thread</a></tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-3', 'circuits', 'link-0');">circuits</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Package circuits.lib.web=circuits.lib.web-module.html,Module circuits.web=circuits.web-module.html"><a title="circuits.lib.web
+circuits.web" class="py-name" href="#" onclick="return doclink('link-4', 'web', 'link-4');">web</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class circuits.lib.sockets.Server=circuits.lib.sockets.Server-class.html,Class circuits.lib.web.servers.Server=circuits.lib.web.servers.Server-class.html,Class circuits.tests.test_sockets.Server=circuits.tests.test_sockets.Server-class.html"><a title="circuits.lib.sockets.Server
+circuits.lib.web.servers.Server
+circuits.tests.test_sockets.Server" class="py-name" href="#" onclick="return doclink('link-5', 'Server', 'link-5');">Server</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Class circuits.lib.web.core.Controller=circuits.lib.web.core.Controller-class.html"><a title="circuits.lib.web.core.Controller" class="py-name" href="#" onclick="return doclink('link-6', 'Controller', 'link-6');">Controller</a></tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-7" class="py-name" targets="Module circuits.lib.web.tests.webtest=circuits.lib.web.tests.webtest-module.html"><a title="circuits.lib.web.tests.webtest" class="py-name" href="#" onclick="return doclink('link-7', 'webtest', 'link-7');">webtest</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name" targets="Class circuits.lib.web.tests.webtest.WebCase=circuits.lib.web.tests.webtest.WebCase-class.html"><a title="circuits.lib.web.tests.webtest.WebCase" class="py-name" href="#" onclick="return doclink('link-8', 'WebCase', 'link-8');">WebCase</a></tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt id="link-9" class="py-name" targets="Variable circuits.lib.web.tests.test_core.pov=circuits.lib.web.tests.test_core-module.html#pov"><a title="circuits.lib.web.tests.test_core.pov" class="py-name" href="#" onclick="return doclink('link-9', 'pov', 'link-9');">pov</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"pPeErRsSiIsStTeEnNcCeE oOfF vViIsSiIoOnN"</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"> </tt>
+<a name="Root"></a><div id="Root-def"><a name="L16"></a><tt class="py-lineno">16</tt> <a class="py-toggle" href="#" id="Root-toggle" onclick="return toggle('Root');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.web.tests.test_core.Root-class.html">Root</a><tt class="py-op">(</tt><tt class="py-base-class">Controller</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Root-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Root-expanded"><a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"> </tt>
+<a name="Root.index"></a><div id="Root.index-def"><a name="L18"></a><tt class="py-lineno">18</tt> <a class="py-toggle" href="#" id="Root.index-toggle" onclick="return toggle('Root.index');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tests.test_core.Root-class.html#index">index</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Root.index-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Root.index-expanded"><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-10" class="py-name"><a title="circuits.lib.web.tests.test_core.pov" class="py-name" href="#" onclick="return doclink('link-10', 'pov', 'link-9');">pov</a></tt> </tt>
+</div><a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">    <tt id="link-11" class="py-name" targets="Method circuits.lib.web.tests.test_core.Root.page1()=circuits.lib.web.tests.test_core.Root-class.html#page1"><a title="circuits.lib.web.tests.test_core.Root.page1" class="py-name" href="#" onclick="return doclink('link-11', 'page1', 'link-11');">page1</a></tt> <tt class="py-op">=</tt> <tt id="link-12" class="py-name" targets="Method circuits.lib.web.tests.test_core.Root.index()=circuits.lib.web.tests.test_core.Root-class.html#index,Variable circuits.lib.web.webob.Request.index=circuits.lib.web.webob.Request-class.html#index"><a title="circuits.lib.web.tests.test_core.Root.index
+circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-12', 'index', 'link-12');">index</a></tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">    <tt id="link-13" class="py-name" targets="Method circuits.lib.web.tests.test_core.Root.page2()=circuits.lib.web.tests.test_core.Root-class.html#page2"><a title="circuits.lib.web.tests.test_core.Root.page2" class="py-name" href="#" onclick="return doclink('link-13', 'page2', 'link-13');">page2</a></tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name"><a title="circuits.lib.web.tests.test_core.Root.index
+circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-14', 'index', 'link-12');">index</a></tt> </tt>
+</div><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="CoreTestCase"></a><div id="CoreTestCase-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="CoreTestCase-toggle" onclick="return toggle('CoreTestCase');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.web.tests.test_core.CoreTestCase-class.html">CoreTestCase</a><tt class="py-op">(</tt><tt class="py-base-class">WebCase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CoreTestCase-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="CoreTestCase-expanded"><a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="CoreTestCase.setUp"></a><div id="CoreTestCase.setUp-def"><a name="L26"></a><tt class="py-lineno">26</tt> <a class="py-toggle" href="#" id="CoreTestCase.setUp-toggle" onclick="return toggle('CoreTestCase.setUp');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tests.test_core.CoreTestCase-class.html#setUp">setUp</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CoreTestCase.setUp-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CoreTestCase.setUp-expanded"><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Variable circuits.lib.web.webob.Request.server=circuits.lib.web.webob.Request-class.html#server"><a title="circuits.lib.web.webob.Request.server" class="py-name" href="#" onclick="return doclink('link-15', 'server', 'link-15');">server</a></tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt id="link-16" class="py-name"><a title="circuits.lib.sockets.Server
+circuits.lib.web.servers.Server
+circuits.tests.test_sockets.Server" class="py-name" href="#" onclick="return doclink('link-16', 'Server', 'link-5');">Server</a></tt><tt class="py-op">(</tt><tt class="py-number">8000</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt id="link-17" class="py-name" targets="Class circuits.lib.web.tests.test_core.Root=circuits.lib.web.tests.test_core.Root-class.html"><a title="circuits.lib.web.tests.test_core.Root" class="py-name" href="#" onclick="return doclink('link-17', 'Root', 'link-17');">Root</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="circuits.lib.web.webob.Request.server" class="py-name" href="#" onclick="return doclink('link-18', 'server', 'link-15');">server</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method circuits.core.Manager.start()=circuits.core.Manager-class.html#start,Method circuits.workers.Process.start()=circuits.workers.Process-class.html#start,Method circuits.workers.Thread.start()=circuits.workers.Thread-class.html#start"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-19', 'start', 'link-19');">start</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"> </tt>
+<a name="CoreTestCase.tearDown"></a><div id="CoreTestCase.tearDown-def"><a name="L30"></a><tt class="py-lineno">30</tt> <a class="py-toggle" href="#" id="CoreTestCase.tearDown-toggle" onclick="return toggle('CoreTestCase.tearDown');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tests.test_core.CoreTestCase-class.html#tearDown">tearDown</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CoreTestCase.tearDown-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CoreTestCase.tearDown-expanded"><a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="circuits.lib.web.webob.Request.server" class="py-name" href="#" onclick="return doclink('link-20', 'server', 'link-15');">server</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method circuits.core.Manager.stop()=circuits.core.Manager-class.html#stop,Method circuits.tools.bench.State.stop()=circuits.tools.bench.State-class.html#stop,Method circuits.workers.Process.stop()=circuits.workers.Process-class.html#stop,Method circuits.workers.Thread.stop()=circuits.workers.Thread-class.html#stop"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-21', 'stop', 'link-21');">stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt>
+<a name="CoreTestCase.test_HTTP11"></a><div id="CoreTestCase.test_HTTP11-def"><a name="L33"></a><tt class="py-lineno">33</tt> <a class="py-toggle" href="#" id="CoreTestCase.test_HTTP11-toggle" onclick="return toggle('CoreTestCase.test_HTTP11');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tests.test_core.CoreTestCase-class.html#test_HTTP11">test_HTTP11</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CoreTestCase.test_HTTP11-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CoreTestCase.test_HTTP11-expanded"><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Variable circuits.lib.web.tests.webtest.WebCase.PROTOCOL=circuits.lib.web.tests.webtest.WebCase-class.html#PROTOCOL"><a title="circuits.lib.web.tests.webtest.WebCase.PROTOCOL" class="py-name" href="#" onclick="return doclink('link-22', 'PROTOCOL', 'link-22');">PROTOCOL</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"HTTP/1.1"</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Variable circuits.lib.web.tests.webtest.WebCase.persistent=circuits.lib.web.tests.webtest.WebCase-class.html#persistent"><a title="circuits.lib.web.tests.webtest.WebCase.persistent" class="py-name" href="#" onclick="return doclink('link-23', 'persistent', 'link-23');">persistent</a></tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt class="py-comment"># Make the first request and assert there's no "Connection: close".</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method circuits.lib.web.tests.webtest.WebCase.getPage()=circuits.lib.web.tests.webtest.WebCase-class.html#getPage"><a title="circuits.lib.web.tests.webtest.WebCase.getPage" class="py-name" href="#" onclick="return doclink('link-24', 'getPage', 'link-24');">getPage</a></tt><tt class="py-op">(</tt><tt class="py-string">"/"</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method circuits.lib.web.tests.webtest.WebCase.assertStatus()=circuits.lib.web.tests.webtest.WebCase-class.html#assertStatus"><a title="circuits.lib.web.tests.webtest.WebCase.assertStatus" class="py-name" href="#" onclick="return doclink('link-25', 'assertStatus', 'link-25');">assertStatus</a></tt><tt class="py-op">(</tt><tt class="py-string">"200 OK"</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method circuits.lib.web.tests.webtest.WebCase.assertBody()=circuits.lib.web.tests.webtest.WebCase-class.html#assertBody"><a title="circuits.lib.web.tests.webtest.WebCase.assertBody" class="py-name" href="#" onclick="return doclink('link-26', 'assertBody', 'link-26');">assertBody</a></tt><tt class="py-op">(</tt><tt id="link-27" class="py-name"><a title="circuits.lib.web.tests.test_core.pov" class="py-name" href="#" onclick="return doclink('link-27', 'pov', 'link-9');">pov</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Method circuits.lib.web.tests.webtest.WebCase.assertNoHeader()=circuits.lib.web.tests.webtest.WebCase-class.html#assertNoHeader"><a title="circuits.lib.web.tests.webtest.WebCase.assertNoHeader" class="py-name" href="#" onclick="return doclink('link-28', 'assertNoHeader', 'link-28');">assertNoHeader</a></tt><tt class="py-op">(</tt><tt class="py-string">"Connection"</tt><tt class="py-op">)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-comment"># Make another request on the same connection.</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.getPage" class="py-name" href="#" onclick="return doclink('link-29', 'getPage', 'link-24');">getPage</a></tt><tt class="py-op">(</tt><tt class="py-string">"/page1"</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.assertStatus" class="py-name" href="#" onclick="return doclink('link-30', 'assertStatus', 'link-25');">assertStatus</a></tt><tt class="py-op">(</tt><tt class="py-string">"200 OK"</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.assertBody" class="py-name" href="#" onclick="return doclink('link-31', 'assertBody', 'link-26');">assertBody</a></tt><tt class="py-op">(</tt><tt id="link-32" class="py-name"><a title="circuits.lib.web.tests.test_core.pov" class="py-name" href="#" onclick="return doclink('link-32', 'pov', 'link-9');">pov</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.assertNoHeader" class="py-name" href="#" onclick="return doclink('link-33', 'assertNoHeader', 'link-28');">assertNoHeader</a></tt><tt class="py-op">(</tt><tt class="py-string">"Connection"</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">        <tt class="py-comment"># Test client-side close.</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.getPage" class="py-name" href="#" onclick="return doclink('link-34', 'getPage', 'link-24');">getPage</a></tt><tt class="py-op">(</tt><tt class="py-string">"/page2"</tt><tt class="py-op">,</tt> <tt id="link-35" class="py-name" targets="Module circuits.lib.web.headers=circuits.lib.web.headers-module.html,Variable circuits.lib.web.tests.webtest.WebCase.headers=circuits.lib.web.tests.webtest.WebCase-class.html#headers,Variable circuits.lib.web.webob.Request.headers=circuits.lib.web.webob.Request-class.html#headers"><a title="circuits.lib.web.headers
+circuits.lib.web.tests.webtest.WebCase.headers
+circuits.lib.web.webob.Request.headers" class="py-name" href="#" onclick="return doclink('link-35', 'headers', 'link-35');">headers</a></tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">"Connection"</tt><tt class="py-op">,</tt> <tt class="py-string">"close"</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.assertStatus" class="py-name" href="#" onclick="return doclink('link-36', 'assertStatus', 'link-25');">assertStatus</a></tt><tt class="py-op">(</tt><tt class="py-string">"200 OK"</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.assertBody" class="py-name" href="#" onclick="return doclink('link-37', 'assertBody', 'link-26');">assertBody</a></tt><tt class="py-op">(</tt><tt id="link-38" class="py-name"><a title="circuits.lib.web.tests.test_core.pov" class="py-name" href="#" onclick="return doclink('link-38', 'pov', 'link-9');">pov</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method circuits.lib.web.tests.webtest.WebCase.assertHeader()=circuits.lib.web.tests.webtest.WebCase-class.html#assertHeader"><a title="circuits.lib.web.tests.webtest.WebCase.assertHeader" class="py-name" href="#" onclick="return doclink('link-39', 'assertHeader', 'link-39');">assertHeader</a></tt><tt class="py-op">(</tt><tt class="py-string">"Connection"</tt><tt class="py-op">,</tt> <tt class="py-string">"close"</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">        <tt class="py-comment"># Make another request on the same connection, which should error.</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertRaises</tt><tt class="py-op">(</tt><tt class="py-name">httplib</tt><tt class="py-op">.</tt><tt class="py-name">NotConnected</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="circuits.lib.web.tests.webtest.WebCase.getPage" class="py-name" href="#" onclick="return doclink('link-40', 'getPage', 'link-24');">getPage</a></tt><tt class="py-op">,</tt> <tt class="py-string">"/"</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt>
+<a name="suite"></a><div id="suite-def"><a name="L59"></a><tt class="py-lineno">59</tt> <a class="py-toggle" href="#" id="suite-toggle" onclick="return toggle('suite');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.web.tests.test_core-module.html#suite">suite</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="suite-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="suite-expanded"><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">unittest</tt><tt class="py-op">.</tt><tt class="py-name">makeSuite</tt><tt class="py-op">(</tt><tt id="link-41" class="py-name" targets="Class circuits.lib.web.tests.test_core.CoreTestCase=circuits.lib.web.tests.test_core.CoreTestCase-class.html"><a title="circuits.lib.web.tests.test_core.CoreTestCase" class="py-name" href="#" onclick="return doclink('link-41', 'CoreTestCase', 'link-41');">CoreTestCase</a></tt><tt class="py-op">,</tt> <tt class="py-string">"test"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt id="link-42" class="py-name" targets="Variable circuits.__name__=circuits-module.html#__name__"><a title="circuits.__name__" class="py-name" href="#" onclick="return doclink('link-42', '__name__', 'link-42');">__name__</a></tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">    <tt class="py-name">unittest</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Module circuits.lib.web.tests.main=circuits.lib.web.tests.main-module.html,Function circuits.lib.web.tests.main.main()=circuits.lib.web.tests.main-module.html#main,Module circuits.tests.main=circuits.tests.main-module.html,Function circuits.tests.main.main()=circuits.tests.main-module.html#main,Function circuits.tools.bench.main()=circuits.tools.bench-module.html#main,Function circuits.tools.sniffer.main()=circuits.tools.sniffer-module.html#main"><a title="circuits.lib.web.tests.main
+circuits.lib.web.tests.main.main
+circuits.tests.main
+circuits.tests.main.main
+circuits.tools.bench.main
+circuits.tools.sniffer.main" class="py-name" href="#" onclick="return doclink('link-43', 'main', 'link-43');">main</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:31:08 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

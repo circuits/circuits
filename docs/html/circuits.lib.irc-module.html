@@ -1,0 +1,1252 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.lib.irc</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
+        Module&nbsp;irc
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module irc</h1><p class="nomargin-top"></p>
+<p>Internet Relay Chat Protocol</p>
+  <p>This module implements the Internet Relay Chat Protocol or commonly 
+  known as IRC.</p>
+  <p>This module can be used in both server and client implementations.</p>
+
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Raw-class.html" class="summary-name">Raw</a><br />
+      Raw(Event) -&gt; Raw Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Numeric-class.html" class="summary-name">Numeric</a><br />
+      Numeric(Event) -&gt; Numeric Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.NewNick-class.html" class="summary-name">NewNick</a><br />
+      NewNick(Event) -&gt; NewNick Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Pass-class.html" class="summary-name">Pass</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.User-class.html" class="summary-name">User</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Nick-class.html" class="summary-name">Nick</a><br />
+      Nick(Event) -&gt; Nick Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Quit-class.html" class="summary-name">Quit</a><br />
+      Quit(Event) -&gt; Quit Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Message-class.html" class="summary-name">Message</a><br />
+      Message(Event) -&gt; Message Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Notice-class.html" class="summary-name">Notice</a><br />
+      Notice(Event) -&gt; Notice Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Ping-class.html" class="summary-name">Ping</a><br />
+      Ping(Event) -&gt; Ping Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Pong-class.html" class="summary-name">Pong</a><br />
+      Pong(Event) -&gt; Pong Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Join-class.html" class="summary-name">Join</a><br />
+      Join(Event) -&gt; Join Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Part-class.html" class="summary-name">Part</a><br />
+      Part(Event) -&gt; Part Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Ctcp-class.html" class="summary-name">Ctcp</a><br />
+      Ctcp(Event) -&gt; Ctcp Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.Topic-class.html" class="summary-name">Topic</a><br />
+      Topic(Event) -&gt; Topic Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.NetInfo-class.html" class="summary-name">NetInfo</a><br />
+      NetINfo(Event) -&gt; NetInfo Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.lib.irc.IRC-class.html" class="summary-name">IRC</a><br />
+      IRC(event) -&gt; new irc object
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Functions</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">lines, buffer</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.irc-module.html#splitLines" class="summary-sig-name">splitLines</a>(<span class="summary-sig-arg">s</span>,
+        <span class="summary-sig-arg">buffer</span>)</span><br />
+      Append s to buffer and find any new lines of text in the
+    string splitting at the standard IRC delimiter 
+.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="strip"></a><span class="summary-sig-name">strip</span>(<span class="summary-sig-arg">s</span>,
+        <span class="summary-sig-arg">color</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Strips the : from the start of a string and optionally also strips 
+      all colors if color is True.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sourceJoin"></a><span class="summary-sig-name">sourceJoin</span>(<span class="summary-sig-arg">nick</span>,
+        <span class="summary-sig-arg">ident</span>,
+        <span class="summary-sig-arg">host</span>)</span><br />
+      Join a source previously split by sourceSplit and join it back 
+      together inserting the ! and @ appropiately.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str, str, str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.irc-module.html#sourceSplit" class="summary-sig-name">sourceSplit</a>(<span class="summary-sig-arg">source</span>)</span><br />
+      Split the given source into it's parts.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="LINESEP"></a><span class="summary-name">LINESEP</span> = <code title="re.compile(r'\r?\n')">re.compile(r'\r<code class="re-op">?</code>\n')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WELCOME"></a><span class="summary-name">RPL_WELCOME</span> = <code title="1">1</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_YOURHOST"></a><span class="summary-name">RPL_YOURHOST</span> = <code title="2">2</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACELINK"></a><span class="summary-name">RPL_TRACELINK</span> = <code title="200">200</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACECONNECTING"></a><span class="summary-name">RPL_TRACECONNECTING</span> = <code title="201">201</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACEHANDSHAKE"></a><span class="summary-name">RPL_TRACEHANDSHAKE</span> = <code title="202">202</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACEUNKNOWN"></a><span class="summary-name">RPL_TRACEUNKNOWN</span> = <code title="203">203</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACEOPERATOR"></a><span class="summary-name">RPL_TRACEOPERATOR</span> = <code title="204">204</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACEUSER"></a><span class="summary-name">RPL_TRACEUSER</span> = <code title="205">205</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACESERVER"></a><span class="summary-name">RPL_TRACESERVER</span> = <code title="206">206</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACENEWTYPE"></a><span class="summary-name">RPL_TRACENEWTYPE</span> = <code title="208">208</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TRACELOG"></a><span class="summary-name">RPL_TRACELOG</span> = <code title="261">261</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSLINKINFO"></a><span class="summary-name">RPL_STATSLINKINFO</span> = <code title="211">211</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSCOMMANDS"></a><span class="summary-name">RPL_STATSCOMMANDS</span> = <code title="212">212</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSCLINE"></a><span class="summary-name">RPL_STATSCLINE</span> = <code title="213">213</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSNLINE"></a><span class="summary-name">RPL_STATSNLINE</span> = <code title="214">214</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSILINE"></a><span class="summary-name">RPL_STATSILINE</span> = <code title="215">215</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSKLINE"></a><span class="summary-name">RPL_STATSKLINE</span> = <code title="216">216</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSYLINE"></a><span class="summary-name">RPL_STATSYLINE</span> = <code title="218">218</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFSTATS"></a><span class="summary-name">RPL_ENDOFSTATS</span> = <code title="219">219</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSLLINE"></a><span class="summary-name">RPL_STATSLLINE</span> = <code title="241">241</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSUPTIME"></a><span class="summary-name">RPL_STATSUPTIME</span> = <code title="242">242</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSOLINE"></a><span class="summary-name">RPL_STATSOLINE</span> = <code title="243">243</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_STATSHLINE"></a><span class="summary-name">RPL_STATSHLINE</span> = <code title="244">244</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_UMODEIS"></a><span class="summary-name">RPL_UMODEIS</span> = <code title="221">221</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LUSERCLIENT"></a><span class="summary-name">RPL_LUSERCLIENT</span> = <code title="251">251</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LUSEROP"></a><span class="summary-name">RPL_LUSEROP</span> = <code title="252">252</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LUSERUNKNOWN"></a><span class="summary-name">RPL_LUSERUNKNOWN</span> = <code title="253">253</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LUSERCHANNELS"></a><span class="summary-name">RPL_LUSERCHANNELS</span> = <code title="254">254</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LUSERME"></a><span class="summary-name">RPL_LUSERME</span> = <code title="255">255</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ADMINME"></a><span class="summary-name">RPL_ADMINME</span> = <code title="256">256</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ADMINLOC1"></a><span class="summary-name">RPL_ADMINLOC1</span> = <code title="257">257</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ADMINLOC2"></a><span class="summary-name">RPL_ADMINLOC2</span> = <code title="258">258</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ADMINEMAIL"></a><span class="summary-name">RPL_ADMINEMAIL</span> = <code title="259">259</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_NONE"></a><span class="summary-name">RPL_NONE</span> = <code title="300">300</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_USERHOST"></a><span class="summary-name">RPL_USERHOST</span> = <code title="302">302</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ISON"></a><span class="summary-name">RPL_ISON</span> = <code title="303">303</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_AWAY"></a><span class="summary-name">RPL_AWAY</span> = <code title="301">301</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_UNAWAY"></a><span class="summary-name">RPL_UNAWAY</span> = <code title="305">305</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_NOWAWAY"></a><span class="summary-name">RPL_NOWAWAY</span> = <code title="306">306</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WHOISUSER"></a><span class="summary-name">RPL_WHOISUSER</span> = <code title="311">311</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WHOISSERVER"></a><span class="summary-name">RPL_WHOISSERVER</span> = <code title="312">312</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WHOISOPERATOR"></a><span class="summary-name">RPL_WHOISOPERATOR</span> = <code title="313">313</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WHOISIDLE"></a><span class="summary-name">RPL_WHOISIDLE</span> = <code title="317">317</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFWHOIS"></a><span class="summary-name">RPL_ENDOFWHOIS</span> = <code title="318">318</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WHOISCHANNELS"></a><span class="summary-name">RPL_WHOISCHANNELS</span> = <code title="319">319</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WHOWASUSER"></a><span class="summary-name">RPL_WHOWASUSER</span> = <code title="314">314</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFWHOWAS"></a><span class="summary-name">RPL_ENDOFWHOWAS</span> = <code title="369">369</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LIST"></a><span class="summary-name">RPL_LIST</span> = <code title="322">322</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LISTEND"></a><span class="summary-name">RPL_LISTEND</span> = <code title="323">323</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_CHANNELMODEIS"></a><span class="summary-name">RPL_CHANNELMODEIS</span> = <code title="324">324</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_NOTOPIC"></a><span class="summary-name">RPL_NOTOPIC</span> = <code title="331">331</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TOPIC"></a><span class="summary-name">RPL_TOPIC</span> = <code title="332">332</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_INVITING"></a><span class="summary-name">RPL_INVITING</span> = <code title="341">341</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_SUMMONING"></a><span class="summary-name">RPL_SUMMONING</span> = <code title="342">342</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_VERSION"></a><span class="summary-name">RPL_VERSION</span> = <code title="351">351</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_WHOREPLY"></a><span class="summary-name">RPL_WHOREPLY</span> = <code title="352">352</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFWHO"></a><span class="summary-name">RPL_ENDOFWHO</span> = <code title="315">315</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_NAMREPLY"></a><span class="summary-name">RPL_NAMREPLY</span> = <code title="353">353</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFNAMES"></a><span class="summary-name">RPL_ENDOFNAMES</span> = <code title="366">366</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_LINKS"></a><span class="summary-name">RPL_LINKS</span> = <code title="364">364</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFLINKS"></a><span class="summary-name">RPL_ENDOFLINKS</span> = <code title="365">365</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_BANLIST"></a><span class="summary-name">RPL_BANLIST</span> = <code title="367">367</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFBANLIST"></a><span class="summary-name">RPL_ENDOFBANLIST</span> = <code title="368">368</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_INFO"></a><span class="summary-name">RPL_INFO</span> = <code title="371">371</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFINFO"></a><span class="summary-name">RPL_ENDOFINFO</span> = <code title="374">374</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_MOTDSTART"></a><span class="summary-name">RPL_MOTDSTART</span> = <code title="375">375</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_MOTD"></a><span class="summary-name">RPL_MOTD</span> = <code title="372">372</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFMOTD"></a><span class="summary-name">RPL_ENDOFMOTD</span> = <code title="376">376</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_YOUREOPER"></a><span class="summary-name">RPL_YOUREOPER</span> = <code title="381">381</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_REHASHING"></a><span class="summary-name">RPL_REHASHING</span> = <code title="382">382</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_TIME"></a><span class="summary-name">RPL_TIME</span> = <code title="391">391</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_USERSSTART"></a><span class="summary-name">RPL_USERSSTART</span> = <code title="392">392</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_USERS"></a><span class="summary-name">RPL_USERS</span> = <code title="393">393</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_ENDOFUSERS"></a><span class="summary-name">RPL_ENDOFUSERS</span> = <code title="394">394</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RPL_NOUSERS"></a><span class="summary-name">RPL_NOUSERS</span> = <code title="395">395</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOSUCHNICK"></a><span class="summary-name">ERR_NOSUCHNICK</span> = <code title="401">401</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOSUCHSERVER"></a><span class="summary-name">ERR_NOSUCHSERVER</span> = <code title="402">402</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOSUCHCHANNEL"></a><span class="summary-name">ERR_NOSUCHCHANNEL</span> = <code title="403">403</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_CANNOTSENDTOCHAN"></a><span class="summary-name">ERR_CANNOTSENDTOCHAN</span> = <code title="404">404</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_TOOMANYCHANNELS"></a><span class="summary-name">ERR_TOOMANYCHANNELS</span> = <code title="405">405</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_WASNOSUCHNICK"></a><span class="summary-name">ERR_WASNOSUCHNICK</span> = <code title="406">406</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_TOOMANYTARGETS"></a><span class="summary-name">ERR_TOOMANYTARGETS</span> = <code title="407">407</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOORIGIN"></a><span class="summary-name">ERR_NOORIGIN</span> = <code title="409">409</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NORECIPIENT"></a><span class="summary-name">ERR_NORECIPIENT</span> = <code title="411">411</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOTEXTTOSEND"></a><span class="summary-name">ERR_NOTEXTTOSEND</span> = <code title="412">412</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOTOPLEVEL"></a><span class="summary-name">ERR_NOTOPLEVEL</span> = <code title="413">413</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_WILDTOPLEVEL"></a><span class="summary-name">ERR_WILDTOPLEVEL</span> = <code title="414">414</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_UNKNOWNCOMMAND"></a><span class="summary-name">ERR_UNKNOWNCOMMAND</span> = <code title="421">421</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOMOTD"></a><span class="summary-name">ERR_NOMOTD</span> = <code title="422">422</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOADMININFO"></a><span class="summary-name">ERR_NOADMININFO</span> = <code title="423">423</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_FILEERROR"></a><span class="summary-name">ERR_FILEERROR</span> = <code title="424">424</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NONICKNAMEGIVEN"></a><span class="summary-name">ERR_NONICKNAMEGIVEN</span> = <code title="431">431</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_ERRONEUSNICKNAME"></a><span class="summary-name">ERR_ERRONEUSNICKNAME</span> = <code title="432">432</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NICKNAMEINUSE"></a><span class="summary-name">ERR_NICKNAMEINUSE</span> = <code title="433">433</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NICKCOLLISION"></a><span class="summary-name">ERR_NICKCOLLISION</span> = <code title="436">436</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOTONCHANNEL"></a><span class="summary-name">ERR_NOTONCHANNEL</span> = <code title="442">442</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_USERONCHANNEL"></a><span class="summary-name">ERR_USERONCHANNEL</span> = <code title="443">443</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOLOGIN"></a><span class="summary-name">ERR_NOLOGIN</span> = <code title="444">444</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_SUMMONDISABLED"></a><span class="summary-name">ERR_SUMMONDISABLED</span> = <code title="445">445</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_USERSDISABLED"></a><span class="summary-name">ERR_USERSDISABLED</span> = <code title="446">446</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOTREGISTERED"></a><span class="summary-name">ERR_NOTREGISTERED</span> = <code title="451">451</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NEEDMOREPARAMS"></a><span class="summary-name">ERR_NEEDMOREPARAMS</span> = <code title="461">461</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_ALREADYREGISTRED"></a><span class="summary-name">ERR_ALREADYREGISTRED</span> = <code title="462">462</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_PASSWDMISMATCH"></a><span class="summary-name">ERR_PASSWDMISMATCH</span> = <code title="464">464</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_YOUREBANNEDCREEP"></a><span class="summary-name">ERR_YOUREBANNEDCREEP</span> = <code title="465">465</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_KEYSET"></a><span class="summary-name">ERR_KEYSET</span> = <code title="467">467</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_CHANNELISFULL"></a><span class="summary-name">ERR_CHANNELISFULL</span> = <code title="471">471</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_UNKNOWNMODE"></a><span class="summary-name">ERR_UNKNOWNMODE</span> = <code title="472">472</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_INVITEONLYCHAN"></a><span class="summary-name">ERR_INVITEONLYCHAN</span> = <code title="473">473</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_BANNEDFROMCHAN"></a><span class="summary-name">ERR_BANNEDFROMCHAN</span> = <code title="474">474</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_BADCHANNELKEY"></a><span class="summary-name">ERR_BADCHANNELKEY</span> = <code title="475">475</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOPRIVILEGES"></a><span class="summary-name">ERR_NOPRIVILEGES</span> = <code title="481">481</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_CHANOPRIVSNEEDED"></a><span class="summary-name">ERR_CHANOPRIVSNEEDED</span> = <code title="482">482</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_CANTKILLSERVER"></a><span class="summary-name">ERR_CANTKILLSERVER</span> = <code title="483">483</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_NOOPERHOST"></a><span class="summary-name">ERR_NOOPERHOST</span> = <code title="491">491</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_UMODEUNKNOWNFLAG"></a><span class="summary-name">ERR_UMODEUNKNOWNFLAG</span> = <code title="501">501</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ERR_USERSDONTMATCH"></a><span class="summary-name">ERR_USERSDONTMATCH</span> = <code title="502">502</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'circuits.lib'"><code class="variable-quote">'</code><code class="variable-string">circuits.lib</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Function Details</span></td>
+</tr>
+</table>
+<a name="splitLines"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">splitLines</span>(<span class="sig-arg">s</span>,
+        <span class="sig-arg">buffer</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+    Append s to buffer and find any new lines of text in the
+    string splitting at the standard IRC delimiter 
+. Any
+    new lines found, return them as a list and the remaining
+    buffer for further processing.
+    
+
+</pre>
+  <dl class="fields">
+    <dt>Returns: lines, buffer</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sourceSplit"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sourceSplit</span>(<span class="sig-arg">source</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Split the given source into it's parts.
+
+source must be of the form:
+    nick!ident@host
+
+Example:
+    nick, ident, host, = sourceSplit(&quot;Joe!Blogs@localhost&quot;)
+
+</pre>
+  <dl class="fields">
+    <dt>Returns: str, str, str</dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:47:25 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

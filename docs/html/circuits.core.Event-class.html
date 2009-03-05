@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.core.Event</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.core-module.html">Module&nbsp;core</a> ::
+        Class&nbsp;Event
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Event</h1><p class="nomargin-top"></p>
+<center>
+  <div class="private"><center>  <map id="class_hierarchy_for_event" name="class_hierarchy_for_event">
+<area shape="rect" href="javascript:void(0);" title="bridge.Close" alt="" coords="5,61,104,88"/>
+<area shape="rect" href="javascript:void(0);" title="bridge.Error" alt="" coords="128,61,224,88"/>
+<area shape="rect" href="javascript:void(0);" title="bridge.Helo" alt="" coords="248,61,339,88"/>
+<area shape="rect" href="javascript:void(0);" title="bridge.Read" alt="" coords="363,61,459,88"/>
+<area shape="rect" href="javascript:void(0);" title="bridge.Write" alt="" coords="483,61,579,88"/>
+<area shape="rect" href="circuits.core.Error-class.html" title="Error" alt="" coords="603,61,656,88"/>
+<area shape="rect" href="circuits.core.Event-class.html" title="Event" alt="" coords="7485,5,7541,32"/>
+<area shape="rect" href="circuits.core.Registered-class.html" title="Registered" alt="" coords="680,61,771,88"/>
+<area shape="rect" href="circuits.core.Started-class.html" title="Started" alt="" coords="795,61,861,88"/>
+<area shape="rect" href="circuits.core.Stopped-class.html" title="Stopped" alt="" coords="885,61,960,88"/>
+<area shape="rect" href="circuits.core.Unregistered-class.html" title="Unregistered" alt="" coords="984,61,1088,88"/>
+<area shape="rect" href="circuits.debugger.Debug-class.html" title="debugger.Debug" alt="" coords="1112,61,1235,88"/>
+<area shape="rect" href="circuits.lib.ann.Signal-class.html" title="lib.ann.Signal" alt="" coords="1259,61,1363,88"/>
+<area shape="rect" href="circuits.lib.config.Load-class.html" title="lib.config.Load" alt="" coords="1387,61,1496,88"/>
+<area shape="rect" href="circuits.lib.config.Save-class.html" title="lib.config.Save" alt="" coords="1520,61,1629,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Accessed-class.html" title="lib.drivers.inotify_driver.Accessed" alt="" coords="1653,61,1880,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Closed-class.html" title="lib.drivers.inotify_driver.Closed" alt="" coords="1904,61,2115,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Created-class.html" title="lib.drivers.inotify_driver.Created" alt="" coords="2139,61,2357,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Deleted-class.html" title="lib.drivers.inotify_driver.Deleted" alt="" coords="2381,61,2597,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Modified-class.html" title="lib.drivers.inotify_driver.Modified" alt="" coords="2621,61,2843,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Moved-class.html" title="lib.drivers.inotify_driver.Moved" alt="" coords="2867,61,3077,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Opened-class.html" title="lib.drivers.inotify_driver.Opened" alt="" coords="3101,61,3320,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Unmounted-class.html" title="lib.drivers.inotify_driver.Unmounted" alt="" coords="3344,61,3584,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Click-class.html" title="lib.drivers.pygame_driver.Click" alt="" coords="3608,61,3819,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Focus-class.html" title="lib.drivers.pygame_driver.Focus" alt="" coords="3843,61,4059,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Key-class.html" title="lib.drivers.pygame_driver.Key" alt="" coords="4083,61,4285,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Mouse-class.html" title="lib.drivers.pygame_driver.Mouse" alt="" coords="4309,61,4531,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Quit-class.html" title="lib.drivers.pygame_driver.Quit" alt="" coords="4555,61,4760,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Unknown-class.html" title="lib.drivers.pygame_driver.Unknown" alt="" coords="4784,61,5024,88"/>
+<area shape="rect" href="circuits.lib.env.Create-class.html" title="lib.env.Create" alt="" coords="5048,61,5155,88"/>
+<area shape="rect" href="circuits.lib.env.Created-class.html" title="lib.env.Created" alt="" coords="5179,61,5293,88"/>
+<area shape="rect" href="circuits.lib.env.Invalid-class.html" title="lib.env.Invalid" alt="" coords="5317,61,5421,88"/>
+<area shape="rect" href="circuits.lib.env.Load-class.html" title="lib.env.Load" alt="" coords="5445,61,5541,88"/>
+<area shape="rect" href="circuits.lib.env.Loaded-class.html" title="lib.env.Loaded" alt="" coords="5565,61,5677,88"/>
+<area shape="rect" href="circuits.lib.env.NeedsUpgrade-class.html" title="lib.env.NeedsUpgrade" alt="" coords="5701,61,5861,88"/>
+<area shape="rect" href="circuits.lib.env.Upgrade-class.html" title="lib.env.Upgrade" alt="" coords="5885,61,6003,88"/>
+<area shape="rect" href="circuits.lib.env.Upgraded-class.html" title="lib.env.Upgraded" alt="" coords="6027,61,6152,88"/>
+<area shape="rect" href="circuits.lib.env.Verify-class.html" title="lib.env.Verify" alt="" coords="6176,61,6275,88"/>
+<area shape="rect" href="circuits.lib.io.Closed-class.html" title="lib.io.Closed" alt="" coords="6299,61,6395,88"/>
+<area shape="rect" href="circuits.lib.io.Error-class.html" title="lib.io.Error" alt="" coords="6419,61,6501,88"/>
+<area shape="rect" href="circuits.lib.io.Opened-class.html" title="lib.io.Opened" alt="" coords="6525,61,6627,88"/>
+<area shape="rect" href="circuits.lib.io.Read-class.html" title="lib.io.Read" alt="" coords="6651,61,6736,88"/>
+<area shape="rect" href="circuits.lib.io.Write-class.html" title="lib.io.Write" alt="" coords="6760,61,6843,88"/>
+<area shape="rect" href="circuits.lib.irc.Ctcp-class.html" title="lib.irc.Ctcp" alt="" coords="6867,61,6949,88"/>
+<area shape="rect" href="circuits.lib.irc.Join-class.html" title="lib.irc.Join" alt="" coords="6973,61,7053,88"/>
+<area shape="rect" href="circuits.lib.irc.Message-class.html" title="lib.irc.Message" alt="" coords="7077,61,7189,88"/>
+<area shape="rect" href="circuits.lib.irc.NetInfo-class.html" title="lib.irc.NetInfo" alt="" coords="7213,61,7315,88"/>
+<area shape="rect" href="circuits.lib.irc.NewNick-class.html" title="lib.irc.NewNick" alt="" coords="7339,61,7448,88"/>
+<area shape="rect" href="circuits.lib.irc.Nick-class.html" title="lib.irc.Nick" alt="" coords="7472,61,7555,88"/>
+<area shape="rect" href="circuits.lib.irc.Notice-class.html" title="lib.irc.Notice" alt="" coords="7579,61,7675,88"/>
+<area shape="rect" href="circuits.lib.irc.Numeric-class.html" title="lib.irc.Numeric" alt="" coords="7699,61,7805,88"/>
+<area shape="rect" href="circuits.lib.irc.Part-class.html" title="lib.irc.Part" alt="" coords="7829,61,7909,88"/>
+<area shape="rect" href="circuits.lib.irc.Pass-class.html" title="lib.irc.Pass" alt="" coords="7933,61,8019,88"/>
+<area shape="rect" href="circuits.lib.irc.Ping-class.html" title="lib.irc.Ping" alt="" coords="8043,61,8125,88"/>
+<area shape="rect" href="circuits.lib.irc.Pong-class.html" title="lib.irc.Pong" alt="" coords="8149,61,8237,88"/>
+<area shape="rect" href="circuits.lib.irc.Quit-class.html" title="lib.irc.Quit" alt="" coords="8261,61,8341,88"/>
+<area shape="rect" href="circuits.lib.irc.Raw-class.html" title="lib.irc.Raw" alt="" coords="8365,61,8448,88"/>
+<area shape="rect" href="circuits.lib.irc.Topic-class.html" title="lib.irc.Topic" alt="" coords="8472,61,8563,88"/>
+<area shape="rect" href="circuits.lib.irc.User-class.html" title="lib.irc.User" alt="" coords="8587,61,8672,88"/>
+<area shape="rect" href="circuits.lib.log.Critical-class.html" title="lib.log.Critical" alt="" coords="8696,61,8797,88"/>
+<area shape="rect" href="circuits.lib.log.Debug-class.html" title="lib.log.Debug" alt="" coords="8821,61,8920,88"/>
+<area shape="rect" href="circuits.lib.log.Error-class.html" title="lib.log.Error" alt="" coords="8944,61,9035,88"/>
+<area shape="rect" href="circuits.lib.log.Exception-class.html" title="lib.log.Exception" alt="" coords="9059,61,9179,88"/>
+<area shape="rect" href="circuits.lib.log.Info-class.html" title="lib.log.Info" alt="" coords="9203,61,9285,88"/>
+<area shape="rect" href="circuits.lib.log.Warning-class.html" title="lib.log.Warning" alt="" coords="9309,61,9421,88"/>
+<area shape="rect" href="circuits.lib.pollers.Error-class.html" title="lib.pollers.Error" alt="" coords="9445,61,9560,88"/>
+<area shape="rect" href="circuits.lib.pollers.Read-class.html" title="lib.pollers.Read" alt="" coords="9584,61,9699,88"/>
+<area shape="rect" href="circuits.lib.pollers.Write-class.html" title="lib.pollers.Write" alt="" coords="9723,61,9837,88"/>
+<area shape="rect" href="circuits.lib.smtp.Data-class.html" title="lib.smtp.Data" alt="" coords="9861,61,9960,88"/>
+<area shape="rect" href="circuits.lib.smtp.Helo-class.html" title="lib.smtp.Helo" alt="" coords="9984,61,10083,88"/>
+<area shape="rect" href="circuits.lib.smtp.Mail-class.html" title="lib.smtp.Mail" alt="" coords="10107,61,10203,88"/>
+<area shape="rect" href="circuits.lib.smtp.Message-class.html" title="lib.smtp.Message" alt="" coords="10227,61,10355,88"/>
+<area shape="rect" href="circuits.lib.smtp.Noop-class.html" title="lib.smtp.Noop" alt="" coords="10379,61,10483,88"/>
+<area shape="rect" href="circuits.lib.smtp.Quit-class.html" title="lib.smtp.Quit" alt="" coords="10507,61,10603,88"/>
+<area shape="rect" href="circuits.lib.smtp.Raw-class.html" title="lib.smtp.Raw" alt="" coords="10627,61,10725,88"/>
+<area shape="rect" href="circuits.lib.smtp.Rcpt-class.html" title="lib.smtp.Rcpt" alt="" coords="10749,61,10848,88"/>
+<area shape="rect" href="circuits.lib.smtp.Rset-class.html" title="lib.smtp.Rset" alt="" coords="10872,61,10971,88"/>
+<area shape="rect" href="circuits.lib.sockets.Close-class.html" title="lib.sockets.Close" alt="" coords="10995,61,11117,88"/>
+<area shape="rect" href="circuits.lib.sockets.Connect-class.html" title="lib.sockets.Connect" alt="" coords="11141,61,11283,88"/>
+<area shape="rect" href="circuits.lib.sockets.Connected-class.html" title="lib.sockets.Connected" alt="" coords="11307,61,11464,88"/>
+<area shape="rect" href="circuits.lib.sockets.Disconnected-class.html" title="lib.sockets.Disconnected" alt="" coords="11488,61,11661,88"/>
+<area shape="rect" href="circuits.lib.sockets.Error-class.html" title="lib.sockets.Error" alt="" coords="11685,61,11805,88"/>
+<area shape="rect" href="circuits.lib.sockets.Read-class.html" title="lib.sockets.Read" alt="" coords="11829,61,11952,88"/>
+<area shape="rect" href="circuits.lib.sockets.Shutdown-class.html" title="lib.sockets.Shutdown" alt="" coords="11976,61,12125,88"/>
+<area shape="rect" href="circuits.lib.sockets.Write-class.html" title="lib.sockets.Write" alt="" coords="12149,61,12269,88"/>
+<area shape="rect" href="circuits.lib.web.errors.HTTPError-class.html" title="lib.web.errors.HTTPError" alt="" coords="12293,61,12469,88"/>
+<area shape="rect" href="circuits.lib.web.events.Close-class.html" title="lib.web.events.Close" alt="" coords="12493,61,12640,88"/>
+<area shape="rect" href="circuits.lib.web.events.Request-class.html" title="lib.web.events.Request" alt="" coords="12664,61,12827,88"/>
+<area shape="rect" href="circuits.lib.web.events.Response-class.html" title="lib.web.events.Response" alt="" coords="12851,61,13024,88"/>
+<area shape="rect" href="circuits.lib.web.events.Stream-class.html" title="lib.web.events.Stream" alt="" coords="13048,61,13203,88"/>
+<area shape="rect" href="circuits.lib.web.events.Write-class.html" title="lib.web.events.Write" alt="" coords="13227,61,13371,88"/>
+<area shape="rect" href="circuits.tools.bench.Foo-class.html" title="tools.bench.Foo" alt="" coords="13395,61,13515,88"/>
+<area shape="rect" href="circuits.tools.bench.Hello-class.html" title="tools.bench.Hello" alt="" coords="13539,61,13667,88"/>
+<area shape="rect" href="circuits.tools.bench.Received-class.html" title="tools.bench.Received" alt="" coords="13691,61,13845,88"/>
+<area shape="rect" href="circuits.tools.bench.Stop-class.html" title="tools.bench.Stop" alt="" coords="13869,61,13992,88"/>
+<area shape="rect" href="circuits.tools.bench.Term-class.html" title="tools.bench.Term" alt="" coords="14016,61,14144,88"/>
+<area shape="rect" href="circuits.lib.web.errors.Forbidden-class.html" title="lib.web.errors.Forbidden" alt="" coords="12105,117,12273,144"/>
+<area shape="rect" href="circuits.lib.web.errors.NotFound-class.html" title="lib.web.errors.NotFound" alt="" coords="12297,117,12465,144"/>
+<area shape="rect" href="circuits.lib.web.errors.Redirect-class.html" title="lib.web.errors.Redirect" alt="" coords="12489,117,12649,144"/>
+</map>
+  <img src="class_hierarchy_for_event.gif" alt='' usemap="#class_hierarchy_for_event" ismap="ismap" class="graph-without-title" />
+</center></div>
+  <div class="public" style="display:none"><center>  <map id="class_hierarchy_for_event_2" name="class_hierarchy_for_event_2">
+<area shape="rect" href="circuits.core.Error-class.html" title="Error" alt="" coords="5,61,59,88"/>
+<area shape="rect" href="circuits.core.Event-class.html" title="Event" alt="" coords="7185,5,7241,32"/>
+<area shape="rect" href="circuits.core.Registered-class.html" title="Registered" alt="" coords="83,61,173,88"/>
+<area shape="rect" href="circuits.core.Started-class.html" title="Started" alt="" coords="197,61,264,88"/>
+<area shape="rect" href="circuits.core.Stopped-class.html" title="Stopped" alt="" coords="288,61,363,88"/>
+<area shape="rect" href="circuits.core.Unregistered-class.html" title="Unregistered" alt="" coords="387,61,491,88"/>
+<area shape="rect" href="circuits.debugger.Debug-class.html" title="debugger.Debug" alt="" coords="515,61,637,88"/>
+<area shape="rect" href="circuits.lib.ann.Signal-class.html" title="lib.ann.Signal" alt="" coords="661,61,765,88"/>
+<area shape="rect" href="circuits.lib.config.Load-class.html" title="lib.config.Load" alt="" coords="789,61,899,88"/>
+<area shape="rect" href="circuits.lib.config.Save-class.html" title="lib.config.Save" alt="" coords="923,61,1032,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Accessed-class.html" title="lib.drivers.inotify_driver.Accessed" alt="" coords="1056,61,1283,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Closed-class.html" title="lib.drivers.inotify_driver.Closed" alt="" coords="1307,61,1517,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Created-class.html" title="lib.drivers.inotify_driver.Created" alt="" coords="1541,61,1760,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Deleted-class.html" title="lib.drivers.inotify_driver.Deleted" alt="" coords="1784,61,2000,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Modified-class.html" title="lib.drivers.inotify_driver.Modified" alt="" coords="2024,61,2245,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Moved-class.html" title="lib.drivers.inotify_driver.Moved" alt="" coords="2269,61,2480,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Opened-class.html" title="lib.drivers.inotify_driver.Opened" alt="" coords="2504,61,2723,88"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.Unmounted-class.html" title="lib.drivers.inotify_driver.Unmounted" alt="" coords="2747,61,2987,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Click-class.html" title="lib.drivers.pygame_driver.Click" alt="" coords="3011,61,3221,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Focus-class.html" title="lib.drivers.pygame_driver.Focus" alt="" coords="3245,61,3461,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Key-class.html" title="lib.drivers.pygame_driver.Key" alt="" coords="3485,61,3688,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Mouse-class.html" title="lib.drivers.pygame_driver.Mouse" alt="" coords="3712,61,3933,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Quit-class.html" title="lib.drivers.pygame_driver.Quit" alt="" coords="3957,61,4163,88"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.Unknown-class.html" title="lib.drivers.pygame_driver.Unknown" alt="" coords="4187,61,4427,88"/>
+<area shape="rect" href="circuits.lib.env.Create-class.html" title="lib.env.Create" alt="" coords="4451,61,4557,88"/>
+<area shape="rect" href="circuits.lib.env.Created-class.html" title="lib.env.Created" alt="" coords="4581,61,4696,88"/>
+<area shape="rect" href="circuits.lib.env.Invalid-class.html" title="lib.env.Invalid" alt="" coords="4720,61,4824,88"/>
+<area shape="rect" href="circuits.lib.env.Load-class.html" title="lib.env.Load" alt="" coords="4848,61,4944,88"/>
+<area shape="rect" href="circuits.lib.env.Loaded-class.html" title="lib.env.Loaded" alt="" coords="4968,61,5080,88"/>
+<area shape="rect" href="circuits.lib.env.NeedsUpgrade-class.html" title="lib.env.NeedsUpgrade" alt="" coords="5104,61,5264,88"/>
+<area shape="rect" href="circuits.lib.env.Upgrade-class.html" title="lib.env.Upgrade" alt="" coords="5288,61,5405,88"/>
+<area shape="rect" href="circuits.lib.env.Upgraded-class.html" title="lib.env.Upgraded" alt="" coords="5429,61,5555,88"/>
+<area shape="rect" href="circuits.lib.env.Verify-class.html" title="lib.env.Verify" alt="" coords="5579,61,5677,88"/>
+<area shape="rect" href="circuits.lib.io.Closed-class.html" title="lib.io.Closed" alt="" coords="5701,61,5797,88"/>
+<area shape="rect" href="circuits.lib.io.Error-class.html" title="lib.io.Error" alt="" coords="5821,61,5904,88"/>
+<area shape="rect" href="circuits.lib.io.Opened-class.html" title="lib.io.Opened" alt="" coords="5928,61,6029,88"/>
+<area shape="rect" href="circuits.lib.io.Read-class.html" title="lib.io.Read" alt="" coords="6053,61,6139,88"/>
+<area shape="rect" href="circuits.lib.io.Write-class.html" title="lib.io.Write" alt="" coords="6163,61,6245,88"/>
+<area shape="rect" href="circuits.lib.irc.Ctcp-class.html" title="lib.irc.Ctcp" alt="" coords="6269,61,6352,88"/>
+<area shape="rect" href="circuits.lib.irc.Join-class.html" title="lib.irc.Join" alt="" coords="6376,61,6456,88"/>
+<area shape="rect" href="circuits.lib.irc.Message-class.html" title="lib.irc.Message" alt="" coords="6480,61,6592,88"/>
+<area shape="rect" href="circuits.lib.irc.NetInfo-class.html" title="lib.irc.NetInfo" alt="" coords="6616,61,6717,88"/>
+<area shape="rect" href="circuits.lib.irc.NewNick-class.html" title="lib.irc.NewNick" alt="" coords="6741,61,6851,88"/>
+<area shape="rect" href="circuits.lib.irc.Nick-class.html" title="lib.irc.Nick" alt="" coords="6875,61,6957,88"/>
+<area shape="rect" href="circuits.lib.irc.Notice-class.html" title="lib.irc.Notice" alt="" coords="6981,61,7077,88"/>
+<area shape="rect" href="circuits.lib.irc.Numeric-class.html" title="lib.irc.Numeric" alt="" coords="7101,61,7208,88"/>
+<area shape="rect" href="circuits.lib.irc.Part-class.html" title="lib.irc.Part" alt="" coords="7232,61,7312,88"/>
+<area shape="rect" href="circuits.lib.irc.Pass-class.html" title="lib.irc.Pass" alt="" coords="7336,61,7421,88"/>
+<area shape="rect" href="circuits.lib.irc.Ping-class.html" title="lib.irc.Ping" alt="" coords="7445,61,7528,88"/>
+<area shape="rect" href="circuits.lib.irc.Pong-class.html" title="lib.irc.Pong" alt="" coords="7552,61,7640,88"/>
+<area shape="rect" href="circuits.lib.irc.Quit-class.html" title="lib.irc.Quit" alt="" coords="7664,61,7744,88"/>
+<area shape="rect" href="circuits.lib.irc.Raw-class.html" title="lib.irc.Raw" alt="" coords="7768,61,7851,88"/>
+<area shape="rect" href="circuits.lib.irc.Topic-class.html" title="lib.irc.Topic" alt="" coords="7875,61,7965,88"/>
+<area shape="rect" href="circuits.lib.irc.User-class.html" title="lib.irc.User" alt="" coords="7989,61,8075,88"/>
+<area shape="rect" href="circuits.lib.log.Critical-class.html" title="lib.log.Critical" alt="" coords="8099,61,8200,88"/>
+<area shape="rect" href="circuits.lib.log.Debug-class.html" title="lib.log.Debug" alt="" coords="8224,61,8323,88"/>
+<area shape="rect" href="circuits.lib.log.Error-class.html" title="lib.log.Error" alt="" coords="8347,61,8437,88"/>
+<area shape="rect" href="circuits.lib.log.Exception-class.html" title="lib.log.Exception" alt="" coords="8461,61,8581,88"/>
+<area shape="rect" href="circuits.lib.log.Info-class.html" title="lib.log.Info" alt="" coords="8605,61,8688,88"/>
+<area shape="rect" href="circuits.lib.log.Warning-class.html" title="lib.log.Warning" alt="" coords="8712,61,8824,88"/>
+<area shape="rect" href="circuits.lib.pollers.Error-class.html" title="lib.pollers.Error" alt="" coords="8848,61,8963,88"/>
+<area shape="rect" href="circuits.lib.pollers.Read-class.html" title="lib.pollers.Read" alt="" coords="8987,61,9101,88"/>
+<area shape="rect" href="circuits.lib.pollers.Write-class.html" title="lib.pollers.Write" alt="" coords="9125,61,9240,88"/>
+<area shape="rect" href="circuits.lib.smtp.Data-class.html" title="lib.smtp.Data" alt="" coords="9264,61,9363,88"/>
+<area shape="rect" href="circuits.lib.smtp.Helo-class.html" title="lib.smtp.Helo" alt="" coords="9387,61,9485,88"/>
+<area shape="rect" href="circuits.lib.smtp.Mail-class.html" title="lib.smtp.Mail" alt="" coords="9509,61,9605,88"/>
+<area shape="rect" href="circuits.lib.smtp.Message-class.html" title="lib.smtp.Message" alt="" coords="9629,61,9757,88"/>
+<area shape="rect" href="circuits.lib.smtp.Noop-class.html" title="lib.smtp.Noop" alt="" coords="9781,61,9885,88"/>
+<area shape="rect" href="circuits.lib.smtp.Quit-class.html" title="lib.smtp.Quit" alt="" coords="9909,61,10005,88"/>
+<area shape="rect" href="circuits.lib.smtp.Raw-class.html" title="lib.smtp.Raw" alt="" coords="10029,61,10128,88"/>
+<area shape="rect" href="circuits.lib.smtp.Rcpt-class.html" title="lib.smtp.Rcpt" alt="" coords="10152,61,10251,88"/>
+<area shape="rect" href="circuits.lib.smtp.Rset-class.html" title="lib.smtp.Rset" alt="" coords="10275,61,10373,88"/>
+<area shape="rect" href="circuits.lib.sockets.Close-class.html" title="lib.sockets.Close" alt="" coords="10397,61,10520,88"/>
+<area shape="rect" href="circuits.lib.sockets.Connect-class.html" title="lib.sockets.Connect" alt="" coords="10544,61,10685,88"/>
+<area shape="rect" href="circuits.lib.sockets.Connected-class.html" title="lib.sockets.Connected" alt="" coords="10709,61,10867,88"/>
+<area shape="rect" href="circuits.lib.sockets.Disconnected-class.html" title="lib.sockets.Disconnected" alt="" coords="10891,61,11064,88"/>
+<area shape="rect" href="circuits.lib.sockets.Error-class.html" title="lib.sockets.Error" alt="" coords="11088,61,11208,88"/>
+<area shape="rect" href="circuits.lib.sockets.Read-class.html" title="lib.sockets.Read" alt="" coords="11232,61,11355,88"/>
+<area shape="rect" href="circuits.lib.sockets.Shutdown-class.html" title="lib.sockets.Shutdown" alt="" coords="11379,61,11528,88"/>
+<area shape="rect" href="circuits.lib.sockets.Write-class.html" title="lib.sockets.Write" alt="" coords="11552,61,11672,88"/>
+<area shape="rect" href="circuits.lib.web.errors.HTTPError-class.html" title="lib.web.errors.HTTPError" alt="" coords="11696,61,11872,88"/>
+<area shape="rect" href="circuits.lib.web.events.Close-class.html" title="lib.web.events.Close" alt="" coords="11896,61,12043,88"/>
+<area shape="rect" href="circuits.lib.web.events.Request-class.html" title="lib.web.events.Request" alt="" coords="12067,61,12229,88"/>
+<area shape="rect" href="circuits.lib.web.events.Response-class.html" title="lib.web.events.Response" alt="" coords="12253,61,12427,88"/>
+<area shape="rect" href="circuits.lib.web.events.Stream-class.html" title="lib.web.events.Stream" alt="" coords="12451,61,12605,88"/>
+<area shape="rect" href="circuits.lib.web.events.Write-class.html" title="lib.web.events.Write" alt="" coords="12629,61,12773,88"/>
+<area shape="rect" href="circuits.tools.bench.Foo-class.html" title="tools.bench.Foo" alt="" coords="12797,61,12917,88"/>
+<area shape="rect" href="circuits.tools.bench.Hello-class.html" title="tools.bench.Hello" alt="" coords="12941,61,13069,88"/>
+<area shape="rect" href="circuits.tools.bench.Received-class.html" title="tools.bench.Received" alt="" coords="13093,61,13248,88"/>
+<area shape="rect" href="circuits.tools.bench.Stop-class.html" title="tools.bench.Stop" alt="" coords="13272,61,13395,88"/>
+<area shape="rect" href="circuits.tools.bench.Term-class.html" title="tools.bench.Term" alt="" coords="13419,61,13547,88"/>
+<area shape="rect" href="circuits.lib.web.errors.Forbidden-class.html" title="lib.web.errors.Forbidden" alt="" coords="11508,117,11676,144"/>
+<area shape="rect" href="circuits.lib.web.errors.NotFound-class.html" title="lib.web.errors.NotFound" alt="" coords="11700,117,11868,144"/>
+<area shape="rect" href="circuits.lib.web.errors.Redirect-class.html" title="lib.web.errors.Redirect" alt="" coords="11892,117,12052,144"/>
+</map>
+  <img src="class_hierarchy_for_event_2.gif" alt='' usemap="#class_hierarchy_for_event_2" ismap="ismap" class="graph-without-title" />
+</center></div>
+</center>
+<hr />
+<p>Create a new Event Object</p>
+  <p>Create a new event object populating it with the given list of 
+  arguments and keyword arguments.</p>
+  <p>:param args: list of arguments for this event :type args: list/tuple 
+  or iterable :param kwargs: keyword arguments for this event :type kwargs:
+  dict</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__eq__" class="summary-sig-name">__eq__</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      x==y</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__getitem__" class="summary-sig-name">__getitem__</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      x[y]</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">x</span>)</span><br />
+      repr(x)</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__eq__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__eq__</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>)</span>
+    <br /><em class="fname">(Equality operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x==y</p>
+  <p>Tests the equality of event self against event y. Two events are 
+  considered &quot;equal&quot; iif the name, channel and target are 
+  identical as well as their args and kwargs passed.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__getitem__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getitem__</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>)</span>
+    <br /><em class="fname">(Indexing operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x[y]</p>
+  <p>Get and return data from the event object requested by &quot;x&quot;. 
+  If an int is passed to x, the requested argument from self.args is 
+  returned index by x. If a str is passed to x, the requested keyword 
+  argument from self.kwargs is returned keyed by x. Otherwise a TypeError 
+  is raised as nothing else is valid.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__repr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">x</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>repr(x)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__repr__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:47:27 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

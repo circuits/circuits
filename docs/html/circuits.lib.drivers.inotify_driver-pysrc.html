@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.lib.drivers.inotify_driver</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
+        <a href="circuits.lib.drivers-module.html">Package&nbsp;drivers</a> ::
+        Module&nbsp;inotify_driver
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="circuits.lib.drivers.inotify_driver-module.html">Module circuits.lib.drivers.inotify_driver</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Module:   inotify_driver</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Date:     2nd March 2009</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"># Author:   James Mills, prologic at shortcircuit dot net dot au</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-docstring">"""INotify Driver</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-docstring">A driver for the inotify system using the pyinotify library.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Method circuits.lib.web.loggers.Logger.time()=circuits.lib.web.loggers.Logger-class.html#time"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-0', 'time', 'link-0');">time</a></tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Package circuits=circuits-module.html"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-1', 'circuits', 'link-1');">circuits</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Package circuits.lib=circuits.lib-module.html"><a title="circuits.lib" class="py-name" href="#" onclick="return doclink('link-2', 'lib', 'link-2');">lib</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Module circuits.drivers=circuits.drivers-module.html,Package circuits.lib.drivers=circuits.lib.drivers-module.html,Variable circuits.lib.drivers.drivers=circuits.lib.drivers-module.html#drivers"><a title="circuits.drivers
+circuits.lib.drivers
+circuits.lib.drivers.drivers" class="py-name" href="#" onclick="return doclink('link-3', 'drivers', 'link-3');">drivers</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Class circuits.lib.drivers.DriverError=circuits.lib.drivers.DriverError-class.html"><a title="circuits.lib.drivers.DriverError" class="py-name" href="#" onclick="return doclink('link-4', 'DriverError', 'link-4');">DriverError</a></tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">pyinotify</tt> <tt class="py-keyword">import</tt> <tt class="py-name">IN_UNMOUNT</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">pyinotify</tt> <tt class="py-keyword">import</tt> <tt class="py-name">WatchManager</tt><tt class="py-op">,</tt> <tt class="py-name">Notifier</tt><tt class="py-op">,</tt> <tt class="py-name">ALL_EVENTS</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">pyinotify</tt> <tt class="py-keyword">import</tt> <tt class="py-name">IN_ACCESS</tt><tt class="py-op">,</tt> <tt class="py-name">IN_MODIFY</tt><tt class="py-op">,</tt> <tt class="py-name">IN_ATTRIB</tt><tt class="py-op">,</tt> <tt class="py-name">IN_CLOSE_WRITE</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">pyinotify</tt> <tt class="py-keyword">import</tt> <tt class="py-name">IN_CREATE</tt><tt class="py-op">,</tt> <tt class="py-name">IN_DELETE</tt><tt class="py-op">,</tt> <tt class="py-name">IN_DELETE_SELF</tt><tt class="py-op">,</tt> <tt class="py-name">IN_MOVE_SELF</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">pyinotify</tt> <tt class="py-keyword">import</tt> <tt class="py-name">IN_CLOSE_NOWRITE</tt><tt class="py-op">,</tt> <tt class="py-name">IN_OPEN</tt><tt class="py-op">,</tt> <tt class="py-name">IN_MOVED_FROM</tt><tt class="py-op">,</tt> <tt class="py-name">IN_MOVED_TO</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-keyword">except</tt> <tt class="py-name">ImportError</tt><tt class="py-op">:</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">    <tt class="py-keyword">raise</tt> <tt id="link-5" class="py-name"><a title="circuits.lib.drivers.DriverError" class="py-name" href="#" onclick="return doclink('link-5', 'DriverError', 'link-4');">DriverError</a></tt><tt class="py-op">(</tt><tt class="py-string">"No pyinotify support available."</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-6', 'circuits', 'link-1');">circuits</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Module circuits.core=circuits.core-module.html,Module circuits.lib.web.core=circuits.lib.web.core-module.html"><a title="circuits.core
+circuits.lib.web.core" class="py-name" href="#" onclick="return doclink('link-7', 'core', 'link-7');">core</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name" targets="Class circuits.core.Event=circuits.core.Event-class.html"><a title="circuits.core.Event" class="py-name" href="#" onclick="return doclink('link-8', 'Event', 'link-8');">Event</a></tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name" targets="Class circuits.core.Component=circuits.core.Component-class.html"><a title="circuits.core.Component" class="py-name" href="#" onclick="return doclink('link-9', 'Component', 'link-9');">Component</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt id="link-10" class="py-name" targets="Variable circuits.lib.drivers.inotify_driver.MASK=circuits.lib.drivers.inotify_driver-module.html#MASK"><a title="circuits.lib.drivers.inotify_driver.MASK" class="py-name" href="#" onclick="return doclink('link-10', 'MASK', 'link-10');">MASK</a></tt> <tt class="py-op">=</tt> <tt class="py-name">ALL_EVENTS</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="Moved"></a><div id="Moved-def"><a name="L26"></a><tt class="py-lineno">26</tt> <a class="py-toggle" href="#" id="Moved-toggle" onclick="return toggle('Moved');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Moved-class.html">Moved</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Opened"></a><div id="Opened-def"><a name="L27"></a><tt class="py-lineno">27</tt> <a class="py-toggle" href="#" id="Opened-toggle" onclick="return toggle('Opened');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Opened-class.html">Opened</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Closed"></a><div id="Closed-def"><a name="L28"></a><tt class="py-lineno">28</tt> <a class="py-toggle" href="#" id="Closed-toggle" onclick="return toggle('Closed');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Closed-class.html">Closed</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Created"></a><div id="Created-def"><a name="L29"></a><tt class="py-lineno">29</tt> <a class="py-toggle" href="#" id="Created-toggle" onclick="return toggle('Created');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Created-class.html">Created</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Deleted"></a><div id="Deleted-def"><a name="L30"></a><tt class="py-lineno">30</tt> <a class="py-toggle" href="#" id="Deleted-toggle" onclick="return toggle('Deleted');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Deleted-class.html">Deleted</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Accessed"></a><div id="Accessed-def"><a name="L31"></a><tt class="py-lineno">31</tt> <a class="py-toggle" href="#" id="Accessed-toggle" onclick="return toggle('Accessed');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Accessed-class.html">Accessed</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Modified"></a><div id="Modified-def"><a name="L32"></a><tt class="py-lineno">32</tt> <a class="py-toggle" href="#" id="Modified-toggle" onclick="return toggle('Modified');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Modified-class.html">Modified</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Unmounted"></a><div id="Unmounted-def"><a name="L33"></a><tt class="py-lineno">33</tt> <a class="py-toggle" href="#" id="Unmounted-toggle" onclick="return toggle('Unmounted');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.Unmounted-class.html">Unmounted</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt id="link-11" class="py-name" targets="Variable circuits.lib.drivers.inotify_driver.EVENT_MAP=circuits.lib.drivers.inotify_driver-module.html#EVENT_MAP"><a title="circuits.lib.drivers.inotify_driver.EVENT_MAP" class="py-name" href="#" onclick="return doclink('link-11', 'EVENT_MAP', 'link-11');">EVENT_MAP</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">IN_MOVED_TO</tt><tt class="py-op">:</tt>        <tt id="link-12" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Moved=circuits.lib.drivers.inotify_driver.Moved-class.html"><a title="circuits.lib.drivers.inotify_driver.Moved" class="py-name" href="#" onclick="return doclink('link-12', 'Moved', 'link-12');">Moved</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">IN_MOVE_SELF</tt><tt class="py-op">:</tt>       <tt id="link-13" class="py-name"><a title="circuits.lib.drivers.inotify_driver.Moved" class="py-name" href="#" onclick="return doclink('link-13', 'Moved', 'link-12');">Moved</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt class="py-name">IN_MOVED_FROM</tt><tt class="py-op">:</tt>      <tt id="link-14" class="py-name"><a title="circuits.lib.drivers.inotify_driver.Moved" class="py-name" href="#" onclick="return doclink('link-14', 'Moved', 'link-12');">Moved</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-name">IN_CLOSE_WRITE</tt><tt class="py-op">:</tt>     <tt id="link-15" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Closed=circuits.lib.drivers.inotify_driver.Closed-class.html,Class circuits.lib.io.Closed=circuits.lib.io.Closed-class.html"><a title="circuits.lib.drivers.inotify_driver.Closed
+circuits.lib.io.Closed" class="py-name" href="#" onclick="return doclink('link-15', 'Closed', 'link-15');">Closed</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">IN_CLOSE_NOWRITE</tt><tt class="py-op">:</tt>   <tt id="link-16" class="py-name"><a title="circuits.lib.drivers.inotify_driver.Closed
+circuits.lib.io.Closed" class="py-name" href="#" onclick="return doclink('link-16', 'Closed', 'link-15');">Closed</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-name">IN_OPEN</tt><tt class="py-op">:</tt>            <tt id="link-17" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Opened=circuits.lib.drivers.inotify_driver.Opened-class.html,Class circuits.lib.io.Opened=circuits.lib.io.Opened-class.html"><a title="circuits.lib.drivers.inotify_driver.Opened
+circuits.lib.io.Opened" class="py-name" href="#" onclick="return doclink('link-17', 'Opened', 'link-17');">Opened</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">        <tt class="py-name">IN_DELETE_SELF</tt><tt class="py-op">:</tt>     <tt id="link-18" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Deleted=circuits.lib.drivers.inotify_driver.Deleted-class.html"><a title="circuits.lib.drivers.inotify_driver.Deleted" class="py-name" href="#" onclick="return doclink('link-18', 'Deleted', 'link-18');">Deleted</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-name">IN_DELETE</tt><tt class="py-op">:</tt>          <tt id="link-19" class="py-name"><a title="circuits.lib.drivers.inotify_driver.Deleted" class="py-name" href="#" onclick="return doclink('link-19', 'Deleted', 'link-18');">Deleted</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-name">IN_CREATE</tt><tt class="py-op">:</tt>          <tt id="link-20" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Created=circuits.lib.drivers.inotify_driver.Created-class.html,Class circuits.lib.env.Created=circuits.lib.env.Created-class.html"><a title="circuits.lib.drivers.inotify_driver.Created
+circuits.lib.env.Created" class="py-name" href="#" onclick="return doclink('link-20', 'Created', 'link-20');">Created</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">IN_ACCESS</tt><tt class="py-op">:</tt>          <tt id="link-21" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Accessed=circuits.lib.drivers.inotify_driver.Accessed-class.html"><a title="circuits.lib.drivers.inotify_driver.Accessed" class="py-name" href="#" onclick="return doclink('link-21', 'Accessed', 'link-21');">Accessed</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-name">IN_MODIFY</tt><tt class="py-op">:</tt>          <tt id="link-22" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Modified=circuits.lib.drivers.inotify_driver.Modified-class.html"><a title="circuits.lib.drivers.inotify_driver.Modified" class="py-name" href="#" onclick="return doclink('link-22', 'Modified', 'link-22');">Modified</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-name">IN_ATTRIB</tt><tt class="py-op">:</tt>          <tt id="link-23" class="py-name"><a title="circuits.lib.drivers.inotify_driver.Modified" class="py-name" href="#" onclick="return doclink('link-23', 'Modified', 'link-22');">Modified</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-name">IN_UNMOUNT</tt><tt class="py-op">:</tt>         <tt id="link-24" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Unmounted=circuits.lib.drivers.inotify_driver.Unmounted-class.html"><a title="circuits.lib.drivers.inotify_driver.Unmounted" class="py-name" href="#" onclick="return doclink('link-24', 'Unmounted', 'link-24');">Unmounted</a></tt><tt class="py-op">}</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"> </tt>
+<a name="INotifyDriver"></a><div id="INotifyDriver-def"><a name="L50"></a><tt class="py-lineno">50</tt> <a class="py-toggle" href="#" id="INotifyDriver-toggle" onclick="return toggle('INotifyDriver');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html">INotifyDriver</a><tt class="py-op">(</tt><tt class="py-base-class">Component</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="INotifyDriver-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="INotifyDriver-expanded"><a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">    <tt id="link-25" class="py-name" targets="Variable circuits.core.BaseComponent.channel=circuits.core.BaseComponent-class.html#channel,Variable circuits.lib.config.Config.channel=circuits.lib.config.Config-class.html#channel,Variable circuits.lib.drivers.inotify_driver.INotifyDriver.channel=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#channel,Variable circuits.lib.drivers.pygame_driver.PyGameDriver.channel=circuits.lib.drivers.pygame_driver.PyGameDriver-class.html#channel,Variable circuits.lib.env.Environment.channel=circuits.lib.env.Environment-class.html#channel,Variable circuits.lib.io.File.channel=circuits.lib.io.File-class.html#channel,Variable circuits.lib.io.StdErr.channel=circuits.lib.io.StdErr-class.html#channel,Variable circuits.lib.io.StdIn.channel=circuits.lib.io.StdIn-class.html#channel,Variable circuits.lib.io.StdOut.channel=circuits.lib.io.StdOut-class.html#channel,Variable circuits.lib.log.Logger.channel=circuits.lib.log.Logger-class.html#channel,Variable circuits.lib.web.core.BaseController.channel=circuits.lib.web.core.BaseController-class.html#channel"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-25', 'channel', 'link-25');">channel</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"inotify"</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"> </tt>
+<a name="INotifyDriver.__init__"></a><div id="INotifyDriver.__init__-def"><a name="L54"></a><tt class="py-lineno">54</tt> <a class="py-toggle" href="#" id="INotifyDriver.__init__-toggle" onclick="return toggle('INotifyDriver.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">freq</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-param">timeout</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-param">channel</tt><tt class="py-op">=</tt><tt id="link-26" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-26', 'channel', 'link-25');">channel</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="INotifyDriver.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="INotifyDriver.__init__-expanded"><a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-27" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.INotifyDriver=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html"><a title="circuits.lib.drivers.inotify_driver.INotifyDriver" class="py-name" href="#" onclick="return doclink('link-27', 'INotifyDriver', 'link-27');">INotifyDriver</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Method circuits.bridge.Bridge.__init__()=circuits.bridge.Bridge-class.html#__init__,Method circuits.core.BaseComponent.__init__()=circuits.core.BaseComponent-class.html#__init__,Method circuits.core.Event.__init__()=circuits.core.Event-class.html#__init__,Method circuits.core.HandlersType.__init__()=circuits.core.HandlersType-class.html#__init__,Method circuits.core.Manager.__init__()=circuits.core.Manager-class.html#__init__,Method circuits.debugger.Debugger.__init__()=circuits.debugger.Debugger-class.html#__init__,Method circuits.lib.ann.Neuron.__init__()=circuits.lib.ann.Neuron-class.html#__init__,Method circuits.lib.ann.Node.__init__()=circuits.lib.ann.Node-class.html#__init__,Method circuits.lib.ann.Output.__init__()=circuits.lib.ann.Output-class.html#__init__,Method circuits.lib.ann.Synapse.__init__()=circuits.lib.ann.Synapse-class.html#__init__,Method circuits.lib.config.Config.__init__()=circuits.lib.config.Config-class.html#__init__,Method circuits.lib.drivers.inotify_driver.INotifyDriver.__init__()=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#__init__,Method circuits.lib.env.Environment.__init__()=circuits.lib.env.Environment-class.html#__init__,Method circuits.lib.io.File.__init__()=circuits.lib.io.File-class.html#__init__,Method circuits.lib.io.StdErr.__init__()=circuits.lib.io.StdErr-class.html#__init__,Method circuits.lib.io.StdIn.__init__()=circuits.lib.io.StdIn-class.html#__init__,Method circuits.lib.io.StdOut.__init__()=circuits.lib.io.StdOut-class.html#__init__,Method circuits.lib.irc.IRC.__init__()=circuits.lib.irc.IRC-class.html#__init__,Method circuits.lib.log.Logger.__init__()=circuits.lib.log.Logger-class.html#__init__,Method circuits.lib.pollers.Poller.__init__()=circuits.lib.pollers.Poller-class.html#__init__,Method circuits.lib.sockets.Client.__init__()=circuits.lib.sockets.Client-class.html#__init__,Method circuits.lib.sockets.Server.__init__()=circuits.lib.sockets.Server-class.html#__init__,Method circuits.lib.sockets.TCPClient.__init__()=circuits.lib.sockets.TCPClient-class.html#__init__,Method circuits.lib.sockets.TCPServer.__init__()=circuits.lib.sockets.TCPServer-class.html#__init__,Method circuits.lib.sockets.UDPServer.__init__()=circuits.lib.sockets.UDPServer-class.html#__init__,Method circuits.lib.web.core.ExposeType.__init__()=circuits.lib.web.core.ExposeType-class.html#__init__,Method circuits.lib.web.dispatchers.DefaultDispatcher.__init__()=circuits.lib.web.dispatchers.DefaultDispatcher-class.html#__init__,Method circuits.lib.web.dispatchers.FileDispatcher.__init__()=circuits.lib.web.dispatchers.FileDispatcher-class.html#__init__,Method circuits.lib.web.errors.Forbidden.__init__()=circuits.lib.web.errors.Forbidden-class.html#__init__,Method circuits.lib.web.errors.HTTPError.__init__()=circuits.lib.web.errors.HTTPError-class.html#__init__,Method circuits.lib.web.errors.NotFound.__init__()=circuits.lib.web.errors.NotFound-class.html#__init__,Method circuits.lib.web.errors.Redirect.__init__()=circuits.lib.web.errors.Redirect-class.html#__init__,Method circuits.lib.web.headers.HeaderElement.__init__()=circuits.lib.web.headers.HeaderElement-class.html#__init__,Method circuits.lib.web.headers.Headers.__init__()=circuits.lib.web.headers.Headers-class.html#__init__,Method circuits.lib.web.http.HTTP.__init__()=circuits.lib.web.http.HTTP-class.html#__init__,Method circuits.lib.web.servers.BaseServer.__init__()=circuits.lib.web.servers.BaseServer-class.html#__init__,Method circuits.lib.web.servers.Server.__init__()=circuits.lib.web.servers.Server-class.html#__init__,Method circuits.lib.web.sessions.Sessions.__init__()=circuits.lib.web.sessions.Sessions-class.html#__init__,Method circuits.lib.web.webob.Host.__init__()=circuits.lib.web.webob.Host-class.html#__init__,Method circuits.lib.web.webob.Request.__init__()=circuits.lib.web.webob.Request-class.html#__init__,Method circuits.lib.web.webob.Response.__init__()=circuits.lib.web.webob.Response-class.html#__init__,Method circuits.lib.web.wsgi.Application.__init__()=circuits.lib.web.wsgi.Application-class.html#__init__,Method circuits.lib.web.wsgi.Middleware.__init__()=circuits.lib.web.wsgi.Middleware-class.html#__init__,Method circuits.timers.Timer.__init__()=circuits.timers.Timer-class.html#__init__,Method circuits.tools.bench.Base.__init__()=circuits.tools.bench.Base-class.html#__init__,Method circuits.workers.Process.__init__()=circuits.workers.Process-class.html#__init__,Method circuits.workers.Thread.__init__()=circuits.workers.Thread-class.html#__init__"><a title="circuits.bridge.Bridge.__init__
+circuits.core.BaseComponent.__init__
+circuits.core.Event.__init__
+circuits.core.HandlersType.__init__
+circuits.core.Manager.__init__
+circuits.debugger.Debugger.__init__
+circuits.lib.ann.Neuron.__init__
+circuits.lib.ann.Node.__init__
+circuits.lib.ann.Output.__init__
+circuits.lib.ann.Synapse.__init__
+circuits.lib.config.Config.__init__
+circuits.lib.drivers.inotify_driver.INotifyDriver.__init__
+circuits.lib.env.Environment.__init__
+circuits.lib.io.File.__init__
+circuits.lib.io.StdErr.__init__
+circuits.lib.io.StdIn.__init__
+circuits.lib.io.StdOut.__init__
+circuits.lib.irc.IRC.__init__
+circuits.lib.log.Logger.__init__
+circuits.lib.pollers.Poller.__init__
+circuits.lib.sockets.Client.__init__
+circuits.lib.sockets.Server.__init__
+circuits.lib.sockets.TCPClient.__init__
+circuits.lib.sockets.TCPServer.__init__
+circuits.lib.sockets.UDPServer.__init__
+circuits.lib.web.core.ExposeType.__init__
+circuits.lib.web.dispatchers.DefaultDispatcher.__init__
+circuits.lib.web.dispatchers.FileDispatcher.__init__
+circuits.lib.web.errors.Forbidden.__init__
+circuits.lib.web.errors.HTTPError.__init__
+circuits.lib.web.errors.NotFound.__init__
+circuits.lib.web.errors.Redirect.__init__
+circuits.lib.web.headers.HeaderElement.__init__
+circuits.lib.web.headers.Headers.__init__
+circuits.lib.web.http.HTTP.__init__
+circuits.lib.web.servers.BaseServer.__init__
+circuits.lib.web.servers.Server.__init__
+circuits.lib.web.sessions.Sessions.__init__
+circuits.lib.web.webob.Host.__init__
+circuits.lib.web.webob.Request.__init__
+circuits.lib.web.webob.Response.__init__
+circuits.lib.web.wsgi.Application.__init__
+circuits.lib.web.wsgi.Middleware.__init__
+circuits.timers.Timer.__init__
+circuits.tools.bench.Base.__init__
+circuits.workers.Process.__init__
+circuits.workers.Thread.__init__" class="py-name" href="#" onclick="return doclink('link-28', '__init__', 'link-28');">__init__</a></tt><tt class="py-op">(</tt><tt id="link-29" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-29', 'channel', 'link-25');">channel</a></tt><tt class="py-op">=</tt><tt id="link-30" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-30', 'channel', 'link-25');">channel</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_freq</tt> <tt class="py-op">=</tt> <tt class="py-name">freq</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_wm</tt> <tt class="py-op">=</tt> <tt class="py-name">WatchManager</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_notifier</tt> <tt class="py-op">=</tt> <tt class="py-name">Notifier</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_wm</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_process</tt><tt class="py-op">,</tt> <tt class="py-name">timeout</tt><tt class="py-op">=</tt><tt class="py-name">timeout</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt>
+<a name="INotifyDriver._sleep"></a><div id="INotifyDriver._sleep-def"><a name="L61"></a><tt class="py-lineno">61</tt> <a class="py-toggle" href="#" id="INotifyDriver._sleep-toggle" onclick="return toggle('INotifyDriver._sleep');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#_sleep">_sleep</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">rtime</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="INotifyDriver._sleep-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="INotifyDriver._sleep-expanded"><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">        <tt class="py-comment"># Only consider sleeping if _freq is &gt; 0</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_freq</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">            <tt class="py-name">ctime</tt> <tt class="py-op">=</tt> <tt id="link-31" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-31', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-32', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_freq</tt> <tt class="py-op">-</tt> <tt class="py-op">(</tt><tt class="py-name">ctime</tt> <tt class="py-op">-</tt> <tt class="py-name">rtime</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">s</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">                <tt id="link-33" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-33', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt class="py-name">sleep</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line"> </tt>
+<a name="INotifyDriver.__tick__"></a><div id="INotifyDriver.__tick__-def"><a name="L69"></a><tt class="py-lineno">69</tt> <a class="py-toggle" href="#" id="INotifyDriver.__tick__-toggle" onclick="return toggle('INotifyDriver.__tick__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#__tick__">__tick__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="INotifyDriver.__tick__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="INotifyDriver.__tick__-expanded"><a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_notifier</tt><tt class="py-op">.</tt><tt class="py-name">process_events</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">        <tt class="py-name">rtime</tt> <tt class="py-op">=</tt> <tt id="link-34" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-34', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-35', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_notifier</tt><tt class="py-op">.</tt><tt class="py-name">check_events</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_sleep</tt><tt class="py-op">(</tt><tt class="py-name">rtime</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_notifier</tt><tt class="py-op">.</tt><tt class="py-name">read_events</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line"> </tt>
+<a name="INotifyDriver._process"></a><div id="INotifyDriver._process-def"><a name="L76"></a><tt class="py-lineno">76</tt> <a class="py-toggle" href="#" id="INotifyDriver._process-toggle" onclick="return toggle('INotifyDriver._process');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#_process">_process</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="INotifyDriver._process-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="INotifyDriver._process-expanded"><a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">        <tt class="py-name">dir</tt> <tt class="py-op">=</tt> <tt id="link-36" class="py-name" targets="Method circuits.debugger.Debugger.event()=circuits.debugger.Debugger-class.html#event,Method circuits.tools.bench.Monitor.event()=circuits.tools.bench.Monitor-class.html#event"><a title="circuits.debugger.Debugger.event
+circuits.tools.bench.Monitor.event" class="py-name" href="#" onclick="return doclink('link-36', 'event', 'link-36');">event</a></tt><tt class="py-op">.</tt><tt class="py-name">dir</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">        <tt class="py-name">mask</tt> <tt class="py-op">=</tt> <tt id="link-37" class="py-name"><a title="circuits.debugger.Debugger.event
+circuits.tools.bench.Monitor.event" class="py-name" href="#" onclick="return doclink('link-37', 'event', 'link-36');">event</a></tt><tt class="py-op">.</tt><tt class="py-name">mask</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">        <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt id="link-38" class="py-name"><a title="circuits.debugger.Debugger.event
+circuits.tools.bench.Monitor.event" class="py-name" href="#" onclick="return doclink('link-38', 'event', 'link-36');">event</a></tt><tt class="py-op">.</tt><tt class="py-name">path</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">        <tt id="link-39" class="py-name" targets="Variable circuits.lib.web.webob.Host.name=circuits.lib.web.webob.Host-class.html#name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-39', 'name', 'link-39');">name</a></tt> <tt class="py-op">=</tt> <tt id="link-40" class="py-name"><a title="circuits.debugger.Debugger.event
+circuits.tools.bench.Monitor.event" class="py-name" href="#" onclick="return doclink('link-40', 'event', 'link-36');">event</a></tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-41', 'name', 'link-39');">name</a></tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">        <tt class="py-name">pathname</tt> <tt class="py-op">=</tt> <tt id="link-42" class="py-name"><a title="circuits.debugger.Debugger.event
+circuits.tools.bench.Monitor.event" class="py-name" href="#" onclick="return doclink('link-42', 'event', 'link-36');">event</a></tt><tt class="py-op">.</tt><tt class="py-name">pathname</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line"> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">k</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt id="link-43" class="py-name"><a title="circuits.lib.drivers.inotify_driver.EVENT_MAP" class="py-name" href="#" onclick="return doclink('link-43', 'EVENT_MAP', 'link-11');">EVENT_MAP</a></tt><tt class="py-op">.</tt><tt class="py-name">iteritems</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">mask</tt> <tt class="py-op">&amp;</tt> <tt class="py-name">k</tt><tt class="py-op">:</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line">                <tt class="py-name">e</tt> <tt class="py-op">=</tt> <tt class="py-name">v</tt><tt class="py-op">(</tt><tt id="link-44" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-44', 'name', 'link-39');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">pathname</tt><tt class="py-op">,</tt> <tt class="py-name">dir</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">                <tt class="py-name">c</tt> <tt class="py-op">=</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-45', 'name', 'link-39');">name</a></tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name" targets="Method circuits.core.Manager.push()=circuits.core.Manager-class.html#push"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-46', 'push', 'link-46');">push</a></tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">,</tt> <tt class="py-name">c</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line"> </tt>
+<a name="INotifyDriver.add"></a><div id="INotifyDriver.add-def"><a name="L89"></a><tt class="py-lineno">89</tt> <a class="py-toggle" href="#" id="INotifyDriver.add-toggle" onclick="return toggle('INotifyDriver.add');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#add">add</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">mask</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">recursive</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="INotifyDriver.add-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="INotifyDriver.add-expanded"><a name="L90"></a><tt class="py-lineno">90</tt>  <tt class="py-line">        <tt class="py-name">mask</tt> <tt class="py-op">=</tt> <tt class="py-name">mask</tt> <tt class="py-keyword">or</tt> <tt id="link-47" class="py-name"><a title="circuits.lib.drivers.inotify_driver.MASK" class="py-name" href="#" onclick="return doclink('link-47', 'MASK', 'link-10');">MASK</a></tt> </tt>
+<a name="L91"></a><tt class="py-lineno">91</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_wm</tt><tt class="py-op">.</tt><tt class="py-name">add_watch</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">,</tt> <tt class="py-name">mask</tt><tt class="py-op">,</tt> <tt class="py-name">rec</tt><tt class="py-op">=</tt><tt class="py-name">recursive</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L92"></a><tt class="py-lineno">92</tt>  <tt class="py-line"> </tt>
+<a name="INotifyDriver.remove"></a><div id="INotifyDriver.remove-def"><a name="L93"></a><tt class="py-lineno">93</tt> <a class="py-toggle" href="#" id="INotifyDriver.remove-toggle" onclick="return toggle('INotifyDriver.remove');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#remove">remove</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">recursive</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="INotifyDriver.remove-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="INotifyDriver.remove-expanded"><a name="L94"></a><tt class="py-lineno">94</tt>  <tt class="py-line">        <tt class="py-name">wd</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_wm</tt><tt class="py-op">.</tt><tt class="py-name">get_wd</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno">95</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">wd</tt><tt class="py-op">:</tt> </tt>
+<a name="L96"></a><tt class="py-lineno">96</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_wm</tt><tt class="py-op">.</tt><tt class="py-name">rm_watch</tt><tt class="py-op">(</tt><tt class="py-name">wd</tt><tt class="py-op">,</tt> <tt class="py-name">rec</tt><tt class="py-op">=</tt><tt class="py-name">recursive</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L97"></a><tt class="py-lineno">97</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:41:54 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

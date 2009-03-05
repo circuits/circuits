@@ -1,6 +1,6 @@
-.PHONY: all clean checks tests
+.PHONY: all clean checks tests docs
 
-all: clean checks tests
+all: clean checks tests docs
 
 clean:
 	@rm -rf build dist circuits.egg-info
@@ -10,6 +10,13 @@ clean:
 
 checks:
 	@find . -name "*.py" -exec pyflakes {} +
+
+docs:
+	@epydoc -v -n circuits -o docs/html/ \
+		--check --html --graph=classtree \
+		--src-code-tab-width=4 --no-frames \
+		--no-private --exclude=.*\.tests.* \
+		--no-sourcecode circuits
 
 tests:
 	@nosetests \

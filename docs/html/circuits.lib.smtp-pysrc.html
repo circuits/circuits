@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.lib.smtp</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
+        Module&nbsp;smtp
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="circuits.lib.smtp-module.html">Module circuits.lib.smtp</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Module:   smtp</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># Date:     13th June 2008</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># Author:   James Mills, prologic at shortcircuit dot net dot au</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">"""Simple Mail Transfer Protocol</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">This module implements the Simple Mail Transfer Protocol</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">or commonly known as SMTP.</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">re</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">socket</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">tempfile</tt> <tt class="py-keyword">import</tt> <tt class="py-name">TemporaryFile</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package circuits=circuits-module.html"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-0', 'circuits', 'link-0');">circuits</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module circuits.core=circuits.core-module.html,Module circuits.lib.web.core=circuits.lib.web.core-module.html"><a title="circuits.core
+circuits.lib.web.core" class="py-name" href="#" onclick="return doclink('link-1', 'core', 'link-1');">core</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Function circuits.core.listener()=circuits.core-module.html#listener"><a title="circuits.core.listener" class="py-name" href="#" onclick="return doclink('link-2', 'listener', 'link-2');">listener</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Class circuits.core.Event=circuits.core.Event-class.html"><a title="circuits.core.Event" class="py-name" href="#" onclick="return doclink('link-3', 'Event', 'link-3');">Event</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Class circuits.core.Component=circuits.core.Component-class.html"><a title="circuits.core.Component" class="py-name" href="#" onclick="return doclink('link-4', 'Component', 'link-4');">Component</a></tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">### Supporting Functions</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable circuits.lib.irc.LINESEP=circuits.lib.irc-module.html#LINESEP,Variable circuits.lib.smtp.LINESEP=circuits.lib.smtp-module.html#LINESEP"><a title="circuits.lib.irc.LINESEP
+circuits.lib.smtp.LINESEP" class="py-name" href="#" onclick="return doclink('link-5', 'LINESEP', 'link-5');">LINESEP</a></tt> <tt class="py-op">=</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">compile</tt><tt class="py-op">(</tt><tt class="py-string">"\r?\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="splitLines"></a><div id="splitLines-def"><a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt> <a class="py-toggle" href="#" id="splitLines-toggle" onclick="return toggle('splitLines');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp-module.html#splitLines">splitLines</a><tt class="py-op">(</tt><tt class="py-param">s</tt><tt class="py-op">,</tt> <tt class="py-param">buffer</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="splitLines-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="splitLines-expanded"><a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">    <tt class="py-docstring">"""splitLines(s, buffer) -&gt; lines, buffer</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-docstring">    Append s to buffer and find any new lines of text in the</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-docstring">    string splitting at the standard IRC delimiter \r\n. Any</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-docstring">    new lines found, return them as a list and the remaining</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-docstring">    buffer for further processing.</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">    <tt class="py-name">lines</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name"><a title="circuits.lib.irc.LINESEP
+circuits.lib.smtp.LINESEP" class="py-name" href="#" onclick="return doclink('link-6', 'LINESEP', 'link-5');">LINESEP</a></tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-name">buffer</tt> <tt class="py-op">+</tt> <tt class="py-name">s</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">lines</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">lines</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="stripAddress"></a><div id="stripAddress-def"><a name="L35"></a><tt class="py-lineno"> 35</tt> <a class="py-toggle" href="#" id="stripAddress-toggle" onclick="return toggle('stripAddress');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp-module.html#stripAddress">stripAddress</a><tt class="py-op">(</tt><tt class="py-param">address</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="stripAddress-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="stripAddress-expanded"><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">    <tt class="py-docstring">"""stripAddress(address) -&gt; address</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">    Strip the leading &amp; trailing &lt;&gt; from an address.</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring">    Handy for getting FROM: addresses.</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">    <tt id="link-7" class="py-name" targets="Method circuits.core.Manager.start()=circuits.core.Manager-class.html#start,Method circuits.workers.Process.start()=circuits.workers.Process-class.html#start,Method circuits.workers.Thread.start()=circuits.workers.Thread-class.html#start"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-7', 'start', 'link-7');">start</a></tt> <tt class="py-op">=</tt> <tt id="link-8" class="py-name" targets="Variable circuits.lib.web.servers.BaseServer.address=circuits.lib.web.servers.BaseServer-class.html#address"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-8', 'address', 'link-8');">address</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Variable circuits.lib.web.webob.Request.index=circuits.lib.web.webob.Request-class.html#index"><a title="circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-9', 'index', 'link-9');">index</a></tt><tt class="py-op">(</tt><tt class="py-string">"&lt;"</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">    <tt class="py-name">end</tt> <tt class="py-op">=</tt> <tt id="link-10" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-10', 'address', 'link-8');">address</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-11', 'index', 'link-9');">index</a></tt><tt class="py-op">(</tt><tt class="py-string">"&gt;"</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-12" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-12', 'address', 'link-8');">address</a></tt><tt class="py-op">[</tt><tt id="link-13" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-13', 'start', 'link-7');">start</a></tt><tt class="py-op">:</tt><tt class="py-name">end</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="splitTo"></a><div id="splitTo-def"><a name="L47"></a><tt class="py-lineno"> 47</tt> <a class="py-toggle" href="#" id="splitTo-toggle" onclick="return toggle('splitTo');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp-module.html#splitTo">splitTo</a><tt class="py-op">(</tt><tt class="py-param">address</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="splitTo-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="splitTo-expanded"><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">    <tt class="py-docstring">"""splitTo(address) -&gt; (host, fulladdress)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">    Return 'address' as undressed (host, fulladdress) tuple.</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">    Handy for use with TO: addresses.</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">    <tt id="link-14" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-14', 'start', 'link-7');">start</a></tt> <tt class="py-op">=</tt> <tt id="link-15" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-15', 'address', 'link-8');">address</a></tt><tt class="py-op">.</tt><tt id="link-16" class="py-name"><a title="circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-16', 'index', 'link-9');">index</a></tt><tt class="py-op">(</tt><tt class="py-string">"&lt;"</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">    <tt class="py-name">sep</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-17', 'address', 'link-8');">address</a></tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-18', 'index', 'link-9');">index</a></tt><tt class="py-op">(</tt><tt class="py-string">"@"</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">    <tt class="py-name">end</tt> <tt class="py-op">=</tt> <tt id="link-19" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-19', 'address', 'link-8');">address</a></tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="circuits.lib.web.webob.Request.index" class="py-name" href="#" onclick="return doclink('link-20', 'index', 'link-9');">index</a></tt><tt class="py-op">(</tt><tt class="py-string">"&gt;"</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt id="link-21" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-21', 'address', 'link-8');">address</a></tt><tt class="py-op">[</tt><tt class="py-name">sep</tt><tt class="py-op">:</tt><tt class="py-name">end</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-22', 'address', 'link-8');">address</a></tt><tt class="py-op">[</tt><tt id="link-23" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-23', 'start', 'link-7');">start</a></tt><tt class="py-op">:</tt><tt class="py-name">end</tt><tt class="py-op">]</tt><tt class="py-op">,</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"> </tt>
+<a name="getAddress"></a><div id="getAddress-def"><a name="L60"></a><tt class="py-lineno"> 60</tt> <a class="py-toggle" href="#" id="getAddress-toggle" onclick="return toggle('getAddress');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp-module.html#getAddress">getAddress</a><tt class="py-op">(</tt><tt class="py-param">keyword</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getAddress-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getAddress-expanded"><a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt id="link-24" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-24', 'address', 'link-8');">address</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">    <tt class="py-name">keylen</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">keyword</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">arg</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-name">keylen</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">upper</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">keyword</tt><tt class="py-op">:</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt id="link-25" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-25', 'address', 'link-8');">address</a></tt> <tt class="py-op">=</tt> <tt class="py-name">arg</tt><tt class="py-op">[</tt><tt class="py-name">keylen</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Function circuits.lib.irc.strip()=circuits.lib.irc-module.html#strip"><a title="circuits.lib.irc.strip" class="py-name" href="#" onclick="return doclink('link-26', 'strip', 'link-26');">strip</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-27" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-27', 'address', 'link-8');">address</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">            <tt class="py-keyword">pass</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt id="link-28" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-28', 'address', 'link-8');">address</a></tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-string">"&lt;"</tt> <tt class="py-keyword">and</tt> <tt id="link-29" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-29', 'address', 'link-8');">address</a></tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-string">"&gt;"</tt> <tt class="py-keyword">and</tt> <tt id="link-30" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-30', 'address', 'link-8');">address</a></tt> <tt class="py-op">!=</tt> <tt class="py-string">"&lt;&gt;"</tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-comment"># Addresses can be in the form &lt;person@dom.com&gt; but watch out</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">            <tt class="py-comment"># for null address, e.g. &lt;&gt;</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt id="link-31" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-31', 'address', 'link-8');">address</a></tt> <tt class="py-op">=</tt> <tt id="link-32" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-32', 'address', 'link-8');">address</a></tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-33" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-33', 'address', 'link-8');">address</a></tt> </tt>
+</div><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"> </tt>
+<a name="Raw"></a><div id="Raw-def"><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-comment">### Events</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt> <a class="py-toggle" href="#" id="Raw-toggle" onclick="return toggle('Raw');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Raw-class.html">Raw</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Helo"></a><div id="Helo-def"><a name="L78"></a><tt class="py-lineno"> 78</tt> <a class="py-toggle" href="#" id="Helo-toggle" onclick="return toggle('Helo');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Helo-class.html">Helo</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Mail"></a><div id="Mail-def"><a name="L79"></a><tt class="py-lineno"> 79</tt> <a class="py-toggle" href="#" id="Mail-toggle" onclick="return toggle('Mail');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Mail-class.html">Mail</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Rcpt"></a><div id="Rcpt-def"><a name="L80"></a><tt class="py-lineno"> 80</tt> <a class="py-toggle" href="#" id="Rcpt-toggle" onclick="return toggle('Rcpt');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Rcpt-class.html">Rcpt</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Data"></a><div id="Data-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="Data-toggle" onclick="return toggle('Data');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Data-class.html">Data</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Rset"></a><div id="Rset-def"><a name="L82"></a><tt class="py-lineno"> 82</tt> <a class="py-toggle" href="#" id="Rset-toggle" onclick="return toggle('Rset');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Rset-class.html">Rset</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Noop"></a><div id="Noop-def"><a name="L83"></a><tt class="py-lineno"> 83</tt> <a class="py-toggle" href="#" id="Noop-toggle" onclick="return toggle('Noop');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Noop-class.html">Noop</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Quit"></a><div id="Quit-def"><a name="L84"></a><tt class="py-lineno"> 84</tt> <a class="py-toggle" href="#" id="Quit-toggle" onclick="return toggle('Quit');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Quit-class.html">Quit</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Message"></a><div id="Message-def"><a name="L85"></a><tt class="py-lineno"> 85</tt> <a class="py-toggle" href="#" id="Message-toggle" onclick="return toggle('Message');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.Message-class.html">Message</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="SMTP"></a><div id="SMTP-def"><a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-comment">### Protocol Class</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt> <a class="py-toggle" href="#" id="SMTP-toggle" onclick="return toggle('SMTP');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html">SMTP</a><tt class="py-op">(</tt><tt class="py-base-class">Component</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SMTP-expanded"><a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">    <tt class="py-docstring">"""SMTP(event) -&gt; new smtp object</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">    Create a new smtp object which implements the SMTP</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">    protocol. Note this doesn't actually do anything</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring">    usefull unless used in conjunction with</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">    circuits.parts.sockets.TCPServer.</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring">    See: examples/net/smtpd.py</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">    <tt id="link-34" class="py-name" targets="Variable circuits.lib.smtp.SMTP.COMMAND=circuits.lib.smtp.SMTP-class.html#COMMAND"><a title="circuits.lib.smtp.SMTP.COMMAND" class="py-name" href="#" onclick="return doclink('link-34', 'COMMAND', 'link-34');">COMMAND</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt id="link-35" class="py-name" targets="Variable circuits.lib.smtp.SMTP.DATA=circuits.lib.smtp.SMTP-class.html#DATA"><a title="circuits.lib.smtp.SMTP.DATA" class="py-name" href="#" onclick="return doclink('link-35', 'DATA', 'link-35');">DATA</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">    <tt id="link-36" class="py-name" targets="Variable circuits.lib.smtp.SMTP.__buffers=circuits.lib.smtp.SMTP-class.html#__buffers"><a title="circuits.lib.smtp.SMTP.__buffers" class="py-name" href="#" onclick="return doclink('link-36', '__buffers', 'link-36');">__buffers</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">    <tt id="link-37" class="py-name" targets="Variable circuits.lib.smtp.SMTP.__states=circuits.lib.smtp.SMTP-class.html#__states"><a title="circuits.lib.smtp.SMTP.__states" class="py-name" href="#" onclick="return doclink('link-37', '__states', 'link-37');">__states</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">    <tt id="link-38" class="py-name" targets="Variable circuits.lib.smtp.SMTP.__greeting=circuits.lib.smtp.SMTP-class.html#__greeting"><a title="circuits.lib.smtp.SMTP.__greeting" class="py-name" href="#" onclick="return doclink('link-38', '__greeting', 'link-38');">__greeting</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">    <tt id="link-39" class="py-name" targets="Variable circuits.lib.smtp.SMTP.__mailfrom=circuits.lib.smtp.SMTP-class.html#__mailfrom"><a title="circuits.lib.smtp.SMTP.__mailfrom" class="py-name" href="#" onclick="return doclink('link-39', '__mailfrom', 'link-39');">__mailfrom</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">    <tt id="link-40" class="py-name" targets="Variable circuits.lib.smtp.SMTP.__rcpttos=circuits.lib.smtp.SMTP-class.html#__rcpttos"><a title="circuits.lib.smtp.SMTP.__rcpttos" class="py-name" href="#" onclick="return doclink('link-40', '__rcpttos', 'link-40');">__rcpttos</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">    <tt id="link-41" class="py-name" targets="Variable circuits.lib.smtp.SMTP.__data=circuits.lib.smtp.SMTP-class.html#__data"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-41', '__data', 'link-41');">__data</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">    <tt id="link-42" class="py-name" targets="Variable circuits.lib.smtp.SMTP.__fqdn=circuits.lib.smtp.SMTP-class.html#__fqdn"><a title="circuits.lib.smtp.SMTP.__fqdn" class="py-name" href="#" onclick="return doclink('link-42', '__fqdn', 'link-42');">__fqdn</a></tt> <tt class="py-op">=</tt> <tt class="py-name">socket</tt><tt class="py-op">.</tt><tt class="py-name">getfqdn</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">    <tt class="py-comment">### Methods</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.reset"></a><div id="SMTP.reset-def"><a name="L120"></a><tt class="py-lineno">120</tt> <a class="py-toggle" href="#" id="SMTP.reset-toggle" onclick="return toggle('SMTP.reset');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#reset">reset</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.reset-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.reset-expanded"><a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="circuits.lib.smtp.SMTP.__buffers" class="py-name" href="#" onclick="return doclink('link-43', '__buffers', 'link-36');">__buffers</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="circuits.lib.smtp.SMTP.__states" class="py-name" href="#" onclick="return doclink('link-44', '__states', 'link-37');">__states</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="circuits.lib.smtp.SMTP.__greeting" class="py-name" href="#" onclick="return doclink('link-45', '__greeting', 'link-38');">__greeting</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="circuits.lib.smtp.SMTP.__mailfrom" class="py-name" href="#" onclick="return doclink('link-46', '__mailfrom', 'link-39');">__mailfrom</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="circuits.lib.smtp.SMTP.__rcpttos" class="py-name" href="#" onclick="return doclink('link-47', '__rcpttos', 'link-40');">__rcpttos</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-48', '__data', 'link-41');">__data</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.processMessage"></a><div id="SMTP.processMessage-def"><a name="L128"></a><tt class="py-lineno">128</tt> <a class="py-toggle" href="#" id="SMTP.processMessage-toggle" onclick="return toggle('SMTP.processMessage');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#processMessage">processMessage</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">mailfrom</tt><tt class="py-op">,</tt> <tt class="py-param">rcpttos</tt><tt class="py-op">,</tt> <tt class="py-param">data</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.processMessage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.processMessage-expanded"><a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-name">r</tt> <tt class="py-op">=</tt>  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method circuits.core.Manager.send()=circuits.core.Manager-class.html#send"><a title="circuits.core.Manager.send" class="py-name" href="#" onclick="return doclink('link-49', 'send', 'link-49');">send</a></tt><tt class="py-op">(</tt><tt id="link-50" class="py-name" targets="Class circuits.lib.irc.Message=circuits.lib.irc.Message-class.html,Class circuits.lib.smtp.Message=circuits.lib.smtp.Message-class.html"><a title="circuits.lib.irc.Message
+circuits.lib.smtp.Message" class="py-name" href="#" onclick="return doclink('link-50', 'Message', 'link-50');">Message</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-name">mailfrom</tt><tt class="py-op">,</tt> <tt class="py-name">rcpttos</tt><tt class="py-op">,</tt> <tt class="py-name">data</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"message"</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-name">data</tt><tt class="py-op">.</tt><tt id="link-51" class="py-name" targets="Method circuits.lib.io.File.close()=circuits.lib.io.File-class.html#close,Method circuits.lib.sockets.Client.close()=circuits.lib.sockets.Client-class.html#close,Method circuits.lib.sockets.Server.close()=circuits.lib.sockets.Server-class.html#close,Method circuits.lib.sockets.UDPServer.close()=circuits.lib.sockets.UDPServer-class.html#close"><a title="circuits.lib.io.File.close
+circuits.lib.sockets.Client.close
+circuits.lib.sockets.Server.close
+circuits.lib.sockets.UDPServer.close" class="py-name" href="#" onclick="return doclink('link-51', 'close', 'link-51');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">r</tt><tt class="py-op">:</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">r</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">    <tt class="py-comment">### Properties</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.getFQDN"></a><div id="SMTP.getFQDN-def"><a name="L139"></a><tt class="py-lineno">139</tt> <a class="py-toggle" href="#" id="SMTP.getFQDN-toggle" onclick="return toggle('SMTP.getFQDN');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#getFQDN">getFQDN</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.getFQDN-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.getFQDN-expanded"><a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">        <tt class="py-docstring">"""I.getFQDN() -&gt; str</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">        Return the fully qualified domain name of this server.</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="circuits.lib.smtp.SMTP.__fqdn" class="py-name" href="#" onclick="return doclink('link-52', '__fqdn', 'link-42');">__fqdn</a></tt> </tt>
+</div><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">    <tt class="py-comment">### Event Processing</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">listener</tt><tt class="py-op">(</tt><tt class="py-string">"raw"</tt><tt class="py-op">)</tt> </tt>
+<a name="SMTP.onRAW"></a><div id="SMTP.onRAW-def"><a name="L152"></a><tt class="py-lineno">152</tt> <a class="py-toggle" href="#" id="SMTP.onRAW-toggle" onclick="return toggle('SMTP.onRAW');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#onRAW">onRAW</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.onRAW-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.onRAW-expanded"><a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-docstring">"""I.onRAW(sock, line) -&gt; None</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring">        Process a line of text and generate the appropiate</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring">        event. This must not be overridden by sub-classes,</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"><tt class="py-docstring">        if it is, this must be explitetly called by the</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"><tt class="py-docstring">        sub-class. Other Components may however listen to</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"><tt class="py-docstring">        this event and process custom SMTP events.</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="circuits.lib.smtp.SMTP.__states" class="py-name" href="#" onclick="return doclink('link-53', '__states', 'link-37');">__states</a></tt><tt class="py-op">[</tt><tt class="py-name">sock</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="circuits.lib.smtp.SMTP.COMMAND" class="py-name" href="#" onclick="return doclink('link-54', 'COMMAND', 'link-34');">COMMAND</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">line</tt><tt class="py-op">:</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method circuits.lib.io.File.write()=circuits.lib.io.File-class.html#write,Variable circuits.lib.pollers.Poller.write=circuits.lib.pollers.Poller-class.html#write,Method circuits.lib.sockets.Client.write()=circuits.lib.sockets.Client-class.html#write,Method circuits.lib.sockets.Server.write()=circuits.lib.sockets.Server-class.html#write,Method circuits.lib.sockets.UDPServer.write()=circuits.lib.sockets.UDPServer-class.html#write"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-55', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"500 Syntax error, command unrecognized\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">            <tt class="py-name">method</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">            <tt class="py-name">i</tt> <tt class="py-op">=</tt> <tt class="py-name">line</tt><tt class="py-op">.</tt><tt class="py-name">find</tt><tt class="py-op">(</tt><tt class="py-string">" "</tt><tt class="py-op">)</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">i</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">                <tt class="py-name">command</tt> <tt class="py-op">=</tt> <tt class="py-name">line</tt><tt class="py-op">.</tt><tt class="py-name">upper</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">                <tt class="py-name">arg</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">                <tt class="py-name">command</tt> <tt class="py-op">=</tt> <tt class="py-name">line</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">upper</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">                <tt class="py-name">arg</tt> <tt class="py-op">=</tt> <tt class="py-name">line</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="circuits.lib.irc.strip" class="py-name" href="#" onclick="return doclink('link-56', 'strip', 'link-26');">strip</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">            <tt class="py-name">method</tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-string">"smtp"</tt> <tt class="py-op">+</tt> <tt class="py-name">command</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">method</tt><tt class="py-op">:</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-57', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"502 Command not implemented\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">                <tt class="py-name">method</tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-name">arg</tt><tt class="py-op">)</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="circuits.lib.smtp.SMTP.__states" class="py-name" href="#" onclick="return doclink('link-58', '__states', 'link-37');">__states</a></tt><tt class="py-op">[</tt><tt class="py-name">sock</tt><tt class="py-op">]</tt> <tt class="py-op">!=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="circuits.lib.smtp.SMTP.DATA" class="py-name" href="#" onclick="return doclink('link-59', 'DATA', 'link-35');">DATA</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-60', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"451 Internal confusion\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line"> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">line</tt> <tt class="py-keyword">and</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">match</tt><tt class="py-op">(</tt><tt class="py-string">"^\.$"</tt><tt class="py-op">,</tt> <tt class="py-name">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-61', '__data', 'link-41');">__data</a></tt><tt class="py-op">.</tt><tt id="link-62" class="py-name" targets="Method circuits.core.Manager.flush()=circuits.core.Manager-class.html#flush"><a title="circuits.core.Manager.flush" class="py-name" href="#" onclick="return doclink('link-62', 'flush', 'link-62');">flush</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-63', '__data', 'link-41');">__data</a></tt><tt class="py-op">.</tt><tt class="py-name">seek</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">                    <tt class="py-name">status</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name" targets="Method circuits.lib.smtp.SMTP.processMessage()=circuits.lib.smtp.SMTP-class.html#processMessage"><a title="circuits.lib.smtp.SMTP.processMessage" class="py-name" href="#" onclick="return doclink('link-64', 'processMessage', 'link-64');">processMessage</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">                            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name"><a title="circuits.lib.smtp.SMTP.__mailfrom" class="py-name" href="#" onclick="return doclink('link-65', '__mailfrom', 'link-39');">__mailfrom</a></tt><tt class="py-op">,</tt>  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="circuits.lib.smtp.SMTP.__rcpttos" class="py-name" href="#" onclick="return doclink('link-66', '__rcpttos', 'link-40');">__rcpttos</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-67', '__data', 'link-41');">__data</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line"> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name" targets="Method circuits.lib.smtp.SMTP.reset()=circuits.lib.smtp.SMTP-class.html#reset,Method circuits.timers.Timer.reset()=circuits.timers.Timer-class.html#reset"><a title="circuits.lib.smtp.SMTP.reset
+circuits.timers.Timer.reset" class="py-name" href="#" onclick="return doclink('link-68', 'reset', 'link-68');">reset</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">status</tt><tt class="py-op">:</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-69', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"250 Ok\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">                    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-70', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-name">status</tt> <tt class="py-op">+</tt> <tt class="py-string">"\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">line</tt> <tt class="py-keyword">and</tt> <tt class="py-name">line</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-string">"."</tt><tt class="py-op">:</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-71', '__data', 'link-41');">__data</a></tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-72', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> <tt class="py-op">+</tt> <tt class="py-string">"\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-73', '__data', 'link-41');">__data</a></tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-74', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">line</tt> <tt class="py-op">+</tt> <tt class="py-string">"\n"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">    <tt class="py-comment">### SMTP and ESMTP Commands</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.smtpHELO"></a><div id="SMTP.smtpHELO-def"><a name="L210"></a><tt class="py-lineno">210</tt> <a class="py-toggle" href="#" id="SMTP.smtpHELO-toggle" onclick="return toggle('SMTP.smtpHELO');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#smtpHELO">smtpHELO</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.smtpHELO-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.smtpHELO-expanded"><a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">arg</tt><tt class="py-op">:</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-75', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"501 Syntax: HELO hostname\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line"> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-76" class="py-name"><a title="circuits.lib.smtp.SMTP.__greeting" class="py-name" href="#" onclick="return doclink('link-76', '__greeting', 'link-38');">__greeting</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-77', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"503 Duplicate HELO/EHLO\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-78" class="py-name"><a title="circuits.lib.smtp.SMTP.__greeting" class="py-name" href="#" onclick="return doclink('link-78', '__greeting', 'link-38');">__greeting</a></tt> <tt class="py-op">=</tt> <tt class="py-name">arg</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-79', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"250 %s\r\n"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="circuits.lib.smtp.SMTP.__fqdn" class="py-name" href="#" onclick="return doclink('link-80', '__fqdn', 'link-42');">__fqdn</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name" targets="Method circuits.core.Manager.push()=circuits.core.Manager-class.html#push"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-81', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-82" class="py-name" targets="Class circuits.lib.smtp.Helo=circuits.lib.smtp.Helo-class.html"><a title="circuits.lib.smtp.Helo" class="py-name" href="#" onclick="return doclink('link-82', 'Helo', 'link-82');">Helo</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-name">arg</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"helo"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name" targets="Variable circuits.core.BaseComponent.channel=circuits.core.BaseComponent-class.html#channel,Variable circuits.lib.config.Config.channel=circuits.lib.config.Config-class.html#channel,Variable circuits.lib.drivers.inotify_driver.INotifyDriver.channel=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#channel,Variable circuits.lib.drivers.pygame_driver.PyGameDriver.channel=circuits.lib.drivers.pygame_driver.PyGameDriver-class.html#channel,Variable circuits.lib.env.Environment.channel=circuits.lib.env.Environment-class.html#channel,Variable circuits.lib.io.File.channel=circuits.lib.io.File-class.html#channel,Variable circuits.lib.io.StdErr.channel=circuits.lib.io.StdErr-class.html#channel,Variable circuits.lib.io.StdIn.channel=circuits.lib.io.StdIn-class.html#channel,Variable circuits.lib.io.StdOut.channel=circuits.lib.io.StdOut-class.html#channel,Variable circuits.lib.log.Logger.channel=circuits.lib.log.Logger-class.html#channel,Variable circuits.lib.web.core.BaseController.channel=circuits.lib.web.core.BaseController-class.html#channel"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-83', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.smtpNOOP"></a><div id="SMTP.smtpNOOP-def"><a name="L222"></a><tt class="py-lineno">222</tt> <a class="py-toggle" href="#" id="SMTP.smtpNOOP-toggle" onclick="return toggle('SMTP.smtpNOOP');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#smtpNOOP">smtpNOOP</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.smtpNOOP-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.smtpNOOP-expanded"><a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">arg</tt><tt class="py-op">:</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-84" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-84', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"501 Syntax: NOOP\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-85', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"250 Ok\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-86', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-87" class="py-name" targets="Class circuits.lib.smtp.Noop=circuits.lib.smtp.Noop-class.html"><a title="circuits.lib.smtp.Noop" class="py-name" href="#" onclick="return doclink('link-87', 'Noop', 'link-87');">Noop</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"noop"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-88" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-88', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.smtpQUIT"></a><div id="SMTP.smtpQUIT-def"><a name="L229"></a><tt class="py-lineno">229</tt> <a class="py-toggle" href="#" id="SMTP.smtpQUIT-toggle" onclick="return toggle('SMTP.smtpQUIT');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#smtpQUIT">smtpQUIT</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.smtpQUIT-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.smtpQUIT-expanded"><a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-89', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"221 Bye\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-90" class="py-name"><a title="circuits.lib.io.File.close
+circuits.lib.sockets.Client.close
+circuits.lib.sockets.Server.close
+circuits.lib.sockets.UDPServer.close" class="py-name" href="#" onclick="return doclink('link-90', 'close', 'link-51');">close</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">)</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-91', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-92" class="py-name" targets="Class circuits.lib.drivers.pygame_driver.Quit=circuits.lib.drivers.pygame_driver.Quit-class.html,Class circuits.lib.irc.Quit=circuits.lib.irc.Quit-class.html,Class circuits.lib.smtp.Quit=circuits.lib.smtp.Quit-class.html"><a title="circuits.lib.drivers.pygame_driver.Quit
+circuits.lib.irc.Quit
+circuits.lib.smtp.Quit" class="py-name" href="#" onclick="return doclink('link-92', 'Quit', 'link-92');">Quit</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"quit"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-93" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-93', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.smtpMAIL"></a><div id="SMTP.smtpMAIL-def"><a name="L234"></a><tt class="py-lineno">234</tt> <a class="py-toggle" href="#" id="SMTP.smtpMAIL-toggle" onclick="return toggle('SMTP.smtpMAIL');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#smtpMAIL">smtpMAIL</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.smtpMAIL-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.smtpMAIL-expanded"><a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">        <tt id="link-94" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-94', 'address', 'link-8');">address</a></tt> <tt class="py-op">=</tt> <tt id="link-95" class="py-name" targets="Function circuits.lib.smtp.getAddress()=circuits.lib.smtp-module.html#getAddress"><a title="circuits.lib.smtp.getAddress" class="py-name" href="#" onclick="return doclink('link-95', 'getAddress', 'link-95');">getAddress</a></tt><tt class="py-op">(</tt><tt class="py-string">"FROM:"</tt><tt class="py-op">,</tt> <tt class="py-name">arg</tt><tt class="py-op">)</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line"> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-96" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-96', 'address', 'link-8');">address</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-97', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"501 Syntax: MAIL FROM:&lt;address&gt;\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line"> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name"><a title="circuits.lib.smtp.SMTP.__mailfrom" class="py-name" href="#" onclick="return doclink('link-98', '__mailfrom', 'link-39');">__mailfrom</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-99', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"503 Error: nested MAIL command\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-100" class="py-name"><a title="circuits.lib.smtp.SMTP.__mailfrom" class="py-name" href="#" onclick="return doclink('link-100', '__mailfrom', 'link-39');">__mailfrom</a></tt> <tt class="py-op">=</tt> <tt id="link-101" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-101', 'address', 'link-8');">address</a></tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-102', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"250 Ok\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-103" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-103', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-104" class="py-name" targets="Class circuits.lib.smtp.Mail=circuits.lib.smtp.Mail-class.html"><a title="circuits.lib.smtp.Mail" class="py-name" href="#" onclick="return doclink('link-104', 'Mail', 'link-104');">Mail</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt id="link-105" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-105', 'address', 'link-8');">address</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"mail"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-106" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-106', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.smtpRCPT"></a><div id="SMTP.smtpRCPT-def"><a name="L250"></a><tt class="py-lineno">250</tt> <a class="py-toggle" href="#" id="SMTP.smtpRCPT-toggle" onclick="return toggle('SMTP.smtpRCPT');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#smtpRCPT">smtpRCPT</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.smtpRCPT-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.smtpRCPT-expanded"><a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="circuits.lib.smtp.SMTP.__mailfrom" class="py-name" href="#" onclick="return doclink('link-107', '__mailfrom', 'link-39');">__mailfrom</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-108" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-108', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"503 Error: need MAIL command\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line"> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">        <tt id="link-109" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-109', 'address', 'link-8');">address</a></tt> <tt class="py-op">=</tt> <tt id="link-110" class="py-name"><a title="circuits.lib.smtp.getAddress" class="py-name" href="#" onclick="return doclink('link-110', 'getAddress', 'link-95');">getAddress</a></tt><tt class="py-op">(</tt><tt class="py-string">"TO:"</tt><tt class="py-op">,</tt> <tt class="py-name">arg</tt><tt class="py-op">)</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line"> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-111" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-111', 'address', 'link-8');">address</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-112" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-112', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"501 Syntax: RCPT TO: &lt;address&gt;\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line"> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="circuits.lib.smtp.SMTP.__rcpttos" class="py-name" href="#" onclick="return doclink('link-113', '__rcpttos', 'link-40');">__rcpttos</a></tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt id="link-114" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-114', 'address', 'link-8');">address</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-115', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"250 Ok\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-116" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-116', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-117" class="py-name" targets="Class circuits.lib.smtp.Rcpt=circuits.lib.smtp.Rcpt-class.html"><a title="circuits.lib.smtp.Rcpt" class="py-name" href="#" onclick="return doclink('link-117', 'Rcpt', 'link-117');">Rcpt</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt id="link-118" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-118', 'address', 'link-8');">address</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"rcpt"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-119" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-119', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.smtpRSET"></a><div id="SMTP.smtpRSET-def"><a name="L265"></a><tt class="py-lineno">265</tt> <a class="py-toggle" href="#" id="SMTP.smtpRSET-toggle" onclick="return toggle('SMTP.smtpRSET');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#smtpRSET">smtpRSET</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.smtpRSET-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.smtpRSET-expanded"><a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">arg</tt><tt class="py-op">:</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-120" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-120', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"501 Syntax: RSET\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line">        <tt class="py-comment"># Resets the sender, recipients, and data, but not the greeting</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-121" class="py-name"><a title="circuits.lib.smtp.SMTP.__mailfrom" class="py-name" href="#" onclick="return doclink('link-121', '__mailfrom', 'link-39');">__mailfrom</a></tt><tt class="py-op">[</tt><tt class="py-name">sock</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-122" class="py-name"><a title="circuits.lib.smtp.SMTP.__rcpttos" class="py-name" href="#" onclick="return doclink('link-122', '__rcpttos', 'link-40');">__rcpttos</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-123', '__data', 'link-41');">__data</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-124" class="py-name"><a title="circuits.lib.smtp.SMTP.__states" class="py-name" href="#" onclick="return doclink('link-124', '__states', 'link-37');">__states</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-125" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-125', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"250 Ok\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-126" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-126', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-127" class="py-name" targets="Class circuits.lib.smtp.Rset=circuits.lib.smtp.Rset-class.html"><a title="circuits.lib.smtp.Rset" class="py-name" href="#" onclick="return doclink('link-127', 'Rset', 'link-127');">Rset</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"rset"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-128" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-128', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line"> </tt>
+<a name="SMTP.smtpDATA"></a><div id="SMTP.smtpDATA-def"><a name="L278"></a><tt class="py-lineno">278</tt> <a class="py-toggle" href="#" id="SMTP.smtpDATA-toggle" onclick="return toggle('SMTP.smtpDATA');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#smtpDATA">smtpDATA</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.smtpDATA-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.smtpDATA-expanded"><a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-129" class="py-name"><a title="circuits.lib.smtp.SMTP.__rcpttos" class="py-name" href="#" onclick="return doclink('link-129', '__rcpttos', 'link-40');">__rcpttos</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-130', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"503 Error: need RCPT command\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line"> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">arg</tt><tt class="py-op">:</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-131', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"501 Syntax: DATA\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line"> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__state</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-132" class="py-name"><a title="circuits.lib.smtp.SMTP.DATA" class="py-name" href="#" onclick="return doclink('link-132', 'DATA', 'link-35');">DATA</a></tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-133" class="py-name"><a title="circuits.lib.smtp.SMTP.__data" class="py-name" href="#" onclick="return doclink('link-133', '__data', 'link-41');">__data</a></tt> <tt class="py-op">=</tt> <tt class="py-name">TemporaryFile</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-134" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-134', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;\r\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-135" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-135', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-136" class="py-name" targets="Class circuits.lib.smtp.Data=circuits.lib.smtp.Data-class.html"><a title="circuits.lib.smtp.Data" class="py-name" href="#" onclick="return doclink('link-136', 'Data', 'link-136');">Data</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"data"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-137" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-137', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">    <tt class="py-comment">### Default Socket Events</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">    <tt class="py-comment">###</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line"> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">listener</tt><tt class="py-op">(</tt><tt class="py-string">"connect"</tt><tt class="py-op">)</tt> </tt>
+<a name="SMTP.onCONNECT"></a><div id="SMTP.onCONNECT-def"><a name="L298"></a><tt class="py-lineno">298</tt> <a class="py-toggle" href="#" id="SMTP.onCONNECT-toggle" onclick="return toggle('SMTP.onCONNECT');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#onCONNECT">onCONNECT</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">host</tt><tt class="py-op">,</tt> <tt class="py-param">port</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.onCONNECT-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.onCONNECT-expanded"><a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-138" class="py-name"><a title="circuits.lib.smtp.SMTP.__states" class="py-name" href="#" onclick="return doclink('link-138', '__states', 'link-37');">__states</a></tt><tt class="py-op">[</tt><tt class="py-name">sock</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-139" class="py-name"><a title="circuits.lib.smtp.SMTP.COMMAND" class="py-name" href="#" onclick="return doclink('link-139', 'COMMAND', 'link-34');">COMMAND</a></tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-140" class="py-name"><a title="circuits.lib.smtp.SMTP.__buffers" class="py-name" href="#" onclick="return doclink('link-140', '__buffers', 'link-36');">__buffers</a></tt><tt class="py-op">[</tt><tt class="py-name">sock</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-141" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-141', 'write', 'link-55');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-string">"220 %s ???\r\n"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-142" class="py-name"><a title="circuits.lib.smtp.SMTP.__fqdn" class="py-name" href="#" onclick="return doclink('link-142', '__fqdn', 'link-42');">__fqdn</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line"> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">listener</tt><tt class="py-op">(</tt><tt class="py-string">"disconnect"</tt><tt class="py-op">)</tt> </tt>
+<a name="SMTP.onDISCONNECT"></a><div id="SMTP.onDISCONNECT-def"><a name="L304"></a><tt class="py-lineno">304</tt> <a class="py-toggle" href="#" id="SMTP.onDISCONNECT-toggle" onclick="return toggle('SMTP.onDISCONNECT');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#onDISCONNECT">onDISCONNECT</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.onDISCONNECT-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.onDISCONNECT-expanded"><a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-143" class="py-name"><a title="circuits.lib.smtp.SMTP.reset
+circuits.timers.Timer.reset" class="py-name" href="#" onclick="return doclink('link-143', 'reset', 'link-68');">reset</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line"> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">listener</tt><tt class="py-op">(</tt><tt class="py-string">"read"</tt><tt class="py-op">)</tt> </tt>
+<a name="SMTP.onREAD"></a><div id="SMTP.onREAD-def"><a name="L308"></a><tt class="py-lineno">308</tt> <a class="py-toggle" href="#" id="SMTP.onREAD-toggle" onclick="return toggle('SMTP.onREAD');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.smtp.SMTP-class.html#onREAD">onREAD</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sock</tt><tt class="py-op">,</tt> <tt class="py-param">data</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SMTP.onREAD-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SMTP.onREAD-expanded"><a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">        <tt class="py-docstring">"""S.onREAD(sock, data) -&gt; None</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"><tt class="py-docstring">        Process any incoming data appending it to an internal</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line"><tt class="py-docstring">        buffer. Split the buffer by the standard line delimiters</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line"><tt class="py-docstring">        \r\n and create a Raw event per line. Any unfinished</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line"><tt class="py-docstring">        lines of text, leave in the buffer.</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line"> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">        <tt class="py-name">lines</tt><tt class="py-op">,</tt> <tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt id="link-144" class="py-name" targets="Function circuits.lib.irc.splitLines()=circuits.lib.irc-module.html#splitLines,Function circuits.lib.smtp.splitLines()=circuits.lib.smtp-module.html#splitLines"><a title="circuits.lib.irc.splitLines
+circuits.lib.smtp.splitLines" class="py-name" href="#" onclick="return doclink('link-144', 'splitLines', 'link-144');">splitLines</a></tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-145" class="py-name"><a title="circuits.lib.smtp.SMTP.__buffers" class="py-name" href="#" onclick="return doclink('link-145', '__buffers', 'link-36');">__buffers</a></tt><tt class="py-op">[</tt><tt class="py-name">sock</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-146" class="py-name"><a title="circuits.lib.smtp.SMTP.__buffers" class="py-name" href="#" onclick="return doclink('link-146', '__buffers', 'link-36');">__buffers</a></tt><tt class="py-op">[</tt><tt class="py-name">sock</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">buffer</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">line</tt> <tt class="py-keyword">in</tt> <tt class="py-name">lines</tt><tt class="py-op">:</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-147" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-147', 'push', 'link-81');">push</a></tt><tt class="py-op">(</tt><tt id="link-148" class="py-name" targets="Class circuits.lib.irc.Raw=circuits.lib.irc.Raw-class.html,Class circuits.lib.smtp.Raw=circuits.lib.smtp.Raw-class.html"><a title="circuits.lib.irc.Raw
+circuits.lib.smtp.Raw" class="py-name" href="#" onclick="return doclink('link-148', 'Raw', 'link-148');">Raw</a></tt><tt class="py-op">(</tt><tt class="py-name">sock</tt><tt class="py-op">,</tt> <tt class="py-name">line</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"raw"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-149" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-149', 'channel', 'link-83');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:41:53 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

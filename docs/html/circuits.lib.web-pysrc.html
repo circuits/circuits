@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.lib.web</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
+        Package&nbsp;web
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="circuits.lib.web-module.html">Package circuits.lib.web</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Module:   __init__</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Date:     3rd October 2008</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"># Author:   James Mills, prologic at shortcircuit dot net dot au</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-docstring">"""Circuits Library - Web</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-docstring">circuits.lib.web contains the circuits full stack web server and wsgi library.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Module circuits.lib.web.loggers=circuits.lib.web.loggers-module.html"><a title="circuits.lib.web.loggers" class="py-name" href="#" onclick="return doclink('link-0', 'loggers', 'link-0');">loggers</a></tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Module circuits.lib.web.sessions=circuits.lib.web.sessions-module.html"><a title="circuits.lib.web.sessions" class="py-name" href="#" onclick="return doclink('link-1', 'sessions', 'link-1');">sessions</a></tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Module circuits.lib.web.dispatchers=circuits.lib.web.dispatchers-module.html"><a title="circuits.lib.web.dispatchers" class="py-name" href="#" onclick="return doclink('link-2', 'dispatchers', 'link-2');">dispatchers</a></tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name" targets="Module circuits.lib.web.errors=circuits.lib.web.errors-module.html"><a title="circuits.lib.web.errors" class="py-name" href="#" onclick="return doclink('link-3', 'errors', 'link-3');">errors</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module circuits.core=circuits.core-module.html,Module circuits.lib.web.core=circuits.lib.web.core-module.html"><a title="circuits.core
+circuits.lib.web.core" class="py-name" href="#" onclick="return doclink('link-4', 'core', 'link-4');">core</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class circuits.lib.web.core.Controller=circuits.lib.web.core.Controller-class.html"><a title="circuits.lib.web.core.Controller" class="py-name" href="#" onclick="return doclink('link-5', 'Controller', 'link-5');">Controller</a></tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name" targets="Module circuits.lib.web.events=circuits.lib.web.events-module.html,Variable circuits.tools.bench.Monitor.events=circuits.tools.bench.Monitor-class.html#events"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-6', 'events', 'link-6');">events</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name" targets="Class circuits.lib.web.events.Request=circuits.lib.web.events.Request-class.html,Class circuits.lib.web.webob.Request=circuits.lib.web.webob.Request-class.html"><a title="circuits.lib.web.events.Request
+circuits.lib.web.webob.Request" class="py-name" href="#" onclick="return doclink('link-7', 'Request', 'link-7');">Request</a></tt><tt class="py-op">,</tt> <tt id="link-8" class="py-name" targets="Class circuits.lib.web.events.Response=circuits.lib.web.events.Response-class.html,Class circuits.lib.web.webob.Response=circuits.lib.web.webob.Response-class.html"><a title="circuits.lib.web.events.Response
+circuits.lib.web.webob.Response" class="py-name" href="#" onclick="return doclink('link-8', 'Response', 'link-8');">Response</a></tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-9" class="py-name" targets="Module circuits.lib.web.servers=circuits.lib.web.servers-module.html"><a title="circuits.lib.web.servers" class="py-name" href="#" onclick="return doclink('link-9', 'servers', 'link-9');">servers</a></tt> <tt class="py-keyword">import</tt> <tt id="link-10" class="py-name" targets="Class circuits.lib.web.servers.BaseServer=circuits.lib.web.servers.BaseServer-class.html"><a title="circuits.lib.web.servers.BaseServer" class="py-name" href="#" onclick="return doclink('link-10', 'BaseServer', 'link-10');">BaseServer</a></tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name" targets="Class circuits.lib.sockets.Server=circuits.lib.sockets.Server-class.html,Class circuits.lib.web.servers.Server=circuits.lib.web.servers.Server-class.html"><a title="circuits.lib.sockets.Server
+circuits.lib.web.servers.Server" class="py-name" href="#" onclick="return doclink('link-11', 'Server', 'link-11');">Server</a></tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-12" class="py-name" targets="Module circuits.lib.web.wsgi=circuits.lib.web.wsgi-module.html"><a title="circuits.lib.web.wsgi" class="py-name" href="#" onclick="return doclink('link-12', 'wsgi', 'link-12');">wsgi</a></tt> <tt class="py-keyword">import</tt> <tt id="link-13" class="py-name" targets="Class circuits.lib.web.wsgi.Application=circuits.lib.web.wsgi.Application-class.html"><a title="circuits.lib.web.wsgi.Application" class="py-name" href="#" onclick="return doclink('link-13', 'Application', 'link-13');">Application</a></tt><tt class="py-op">,</tt> <tt id="link-14" class="py-name" targets="Class circuits.lib.web.wsgi.Middleware=circuits.lib.web.wsgi.Middleware-class.html"><a title="circuits.lib.web.wsgi.Middleware" class="py-name" href="#" onclick="return doclink('link-14', 'Middleware', 'link-14');">Middleware</a></tt><tt class="py-op">,</tt> <tt id="link-15" class="py-name" targets="Class circuits.lib.web.wsgi.Filter=circuits.lib.web.wsgi.Filter-class.html"><a title="circuits.lib.web.wsgi.Filter" class="py-name" href="#" onclick="return doclink('link-15', 'Filter', 'link-15');">Filter</a></tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:41:55 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

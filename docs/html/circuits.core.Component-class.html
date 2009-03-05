@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.core.Component</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.core-module.html">Module&nbsp;core</a> ::
+        Class&nbsp;Component
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Component</h1><p class="nomargin-top"></p>
+<center>
+<center>  <map id="class_hierarchy_for_component" name="class_hierarchy_for_component">
+<area shape="rect" href="circuits.bridge.Bridge-class.html" title="bridge.Bridge" alt="" coords="5,173,109,200"/>
+<area shape="rect" href="circuits.core.BaseComponent-class.html" title="BaseComponent" alt="" coords="2051,61,2176,88"/>
+<area shape="rect" href="circuits.core.Component-class.html" title="Component" alt="" coords="2067,117,2160,144"/>
+<area shape="rect" href="circuits.debugger.Debugger-class.html" title="debugger.Debugger" alt="" coords="133,173,277,200"/>
+<area shape="rect" href="circuits.lib.ann.Node-class.html" title="lib.ann.Node" alt="" coords="301,173,400,200"/>
+<area shape="rect" href="circuits.lib.config.Config-class.html" title="lib.config.Config" alt="" coords="424,173,544,200"/>
+<area shape="rect" href="circuits.lib.drivers.inotify_driver.INotifyDriver-class.html" title="lib.drivers.inotify_driver.INotifyDriver" alt="" coords="568,173,813,200"/>
+<area shape="rect" href="circuits.lib.drivers.pygame_driver.PyGameDriver-class.html" title="lib.drivers.pygame_driver.PyGameDriver" alt="" coords="837,173,1109,200"/>
+<area shape="rect" href="circuits.lib.env.Environment-class.html" title="lib.env.Environment" alt="" coords="1133,173,1275,200"/>
+<area shape="rect" href="circuits.lib.io.File-class.html" title="lib.io.File" alt="" coords="1299,173,1371,200"/>
+<area shape="rect" href="circuits.lib.irc.IRC-class.html" title="lib.irc.IRC" alt="" coords="1395,173,1475,200"/>
+<area shape="rect" href="circuits.lib.log.Logger-class.html" title="lib.log.Logger" alt="" coords="1499,173,1603,200"/>
+<area shape="rect" href="circuits.lib.pollers.Poller-class.html" title="lib.pollers.Poller" alt="" coords="1627,173,1744,200"/>
+<area shape="rect" href="circuits.lib.smtp.SMTP-class.html" title="lib.smtp.SMTP" alt="" coords="1768,173,1877,200"/>
+<area shape="rect" href="circuits.lib.sockets.Client-class.html" title="lib.sockets.Client" alt="" coords="1901,173,2024,200"/>
+<area shape="rect" href="circuits.lib.sockets.Server-class.html" title="lib.sockets.Server" alt="" coords="2048,173,2179,200"/>
+<area shape="rect" href="circuits.lib.web.dispatchers.DefaultDispatcher-class.html" title="lib.web.dispatchers.DefaultDispatcher" alt="" coords="2203,173,2456,200"/>
+<area shape="rect" href="circuits.lib.web.dispatchers.FileDispatcher-class.html" title="lib.web.dispatchers.FileDispatcher" alt="" coords="2480,173,2712,200"/>
+<area shape="rect" href="circuits.lib.web.http.HTTP-class.html" title="lib.web.http.HTTP" alt="" coords="2736,173,2864,200"/>
+<area shape="rect" href="circuits.lib.web.loggers.Logger-class.html" title="lib.web.loggers.Logger" alt="" coords="2888,173,3048,200"/>
+<area shape="rect" href="circuits.lib.web.servers.BaseServer-class.html" title="lib.web.servers.BaseServer" alt="" coords="3072,173,3261,200"/>
+<area shape="rect" href="circuits.lib.web.sessions.Sessions-class.html" title="lib.web.sessions.Sessions" alt="" coords="3285,173,3464,200"/>
+<area shape="rect" href="circuits.lib.web.wsgi.Application-class.html" title="lib.web.wsgi.Application" alt="" coords="3488,173,3653,200"/>
+<area shape="rect" href="circuits.lib.web.wsgi.Filter-class.html" title="lib.web.wsgi.Filter" alt="" coords="3677,173,3805,200"/>
+<area shape="rect" href="circuits.lib.web.wsgi.Middleware-class.html" title="lib.web.wsgi.Middleware" alt="" coords="3829,173,3997,200"/>
+<area shape="rect" href="circuits.timers.Timer-class.html" title="timers.Timer" alt="" coords="4021,173,4120,200"/>
+<area shape="rect" href="circuits.tools.bench.Base-class.html" title="tools.bench.Base" alt="" coords="4144,173,4272,200"/>
+<area shape="rect" href="circuits.workers.Process-class.html" title="workers.Process" alt="" coords="4296,173,4421,200"/>
+<area shape="rect" href="circuits.workers.Thread-class.html" title="workers.Thread" alt="" coords="4445,173,4565,200"/>
+<area shape="rect" href="circuits.core.Manager-class.html" title="Manager" alt="" coords="2075,5,2152,32"/>
+<area shape="rect" href="circuits.lib.ann.Neuron-class.html" title="lib.ann.Neuron" alt="" coords="165,229,275,256"/>
+<area shape="rect" href="circuits.lib.ann.Output-class.html" title="lib.ann.Output" alt="" coords="299,229,403,256"/>
+<area shape="rect" href="circuits.lib.ann.Synapse-class.html" title="lib.ann.Synapse" alt="" coords="427,229,547,256"/>
+<area shape="rect" href="circuits.lib.io.StdErr-class.html" title="lib.io.StdErr" alt="" coords="1179,229,1269,256"/>
+<area shape="rect" href="circuits.lib.io.StdIn-class.html" title="lib.io.StdIn" alt="" coords="1293,229,1376,256"/>
+<area shape="rect" href="circuits.lib.io.StdOut-class.html" title="lib.io.StdOut" alt="" coords="1400,229,1493,256"/>
+<area shape="rect" href="circuits.lib.pollers.Select-class.html" title="lib.pollers.Select" alt="" coords="1625,229,1745,256"/>
+<area shape="rect" href="circuits.lib.sockets.TCPClient-class.html" title="lib.sockets.TCPClient" alt="" coords="1859,229,2011,256"/>
+<area shape="rect" href="circuits.lib.sockets.TCPServer-class.html" title="lib.sockets.TCPServer" alt="" coords="2035,229,2192,256"/>
+<area shape="rect" href="circuits.lib.sockets.UDPServer-class.html" title="lib.sockets.UDPServer" alt="" coords="2216,229,2376,256"/>
+<area shape="rect" href="circuits.lib.web.servers.Server-class.html" title="lib.web.servers.Server" alt="" coords="3088,229,3245,256"/>
+<area shape="rect" href="circuits.tools.bench.LatencyTest-class.html" title="tools.bench.LatencyTest" alt="" coords="3681,229,3855,256"/>
+<area shape="rect" href="circuits.tools.bench.Monitor-class.html" title="tools.bench.Monitor" alt="" coords="3879,229,4023,256"/>
+<area shape="rect" href="circuits.tools.bench.Receiver-class.html" title="tools.bench.Receiver" alt="" coords="4047,229,4199,256"/>
+<area shape="rect" href="circuits.tools.bench.Sender-class.html" title="tools.bench.Sender" alt="" coords="4223,229,4364,256"/>
+<area shape="rect" href="circuits.tools.bench.SpeedTest-class.html" title="tools.bench.SpeedTest" alt="" coords="4388,229,4551,256"/>
+<area shape="rect" href="circuits.tools.bench.State-class.html" title="tools.bench.State" alt="" coords="4575,229,4703,256"/>
+</map>
+  <img src="class_hierarchy_for_component.gif" alt='' usemap="#class_hierarchy_for_component" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Creates a new Component</p>
+  <p>Subclasses of Component define Event Handlers by decorating their 
+  methods with the handler decorator.</p>
+  <p>All Event Handlers found in the Component will automatically be picked
+  up when the Component and registered to it's Manager.</p>
+  <p>All methods defined in a Component are automatically turned into Event
+  Handlers, configured to listen on a channel of the same name as the 
+  method. The exception to this is any method that starts with a single _ 
+  or any method already previously defined as an Event Handlers with the 
+  @handler decorator.</p>
+
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Nested Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.core.HandlersType-class.html" class="summary-name">__metaclass__</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">BaseComponent</a></code></b>:
+      <code><a href="circuits.core.BaseComponent-class.html#__call__">__call__</a></code>,
+      <code><a href="circuits.core.BaseComponent-class.html#__init__">__init__</a></code>,
+      <code><a href="circuits.core.BaseComponent-class.html#__repr__">__repr__</a></code>,
+      <code><a href="circuits.core.BaseComponent-class.html#register">register</a></code>,
+      <code><a href="circuits.core.BaseComponent-class.html#unregister">unregister</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
+      <code><a href="circuits.core.Manager-class.html#__add__">__add__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#__iadd__">__iadd__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#__isub__">__isub__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
+      <code><a href="circuits.core.Manager-class.html#handlers">handlers</a></code>,
+      <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
+      <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
+      <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
+      <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
+      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">a new object with type S, a subtype of T</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Component-class.html#__new__" class="summary-sig-name">__new__</a>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      TODO Work around for Python bug.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">BaseComponent</a></code></b>:
+      <code><a href="circuits.core.BaseComponent-class.html#channel">channel</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
+      <code><a href="circuits.core.Manager-class.html#channels">channels</a></code>,
+      <code><a href="circuits.core.Manager-class.html#components">components</a></code>,
+      <code><a href="circuits.core.Manager-class.html#hidden">hidden</a></code>,
+      <code><a href="circuits.core.Manager-class.html#running">running</a></code>,
+      <code><a href="circuits.core.Manager-class.html#state">state</a></code>,
+      <code><a href="circuits.core.Manager-class.html#ticks">ticks</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__new__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__new__</span>(<span class="sig-arg">cls</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>TODO Work around for Python bug.</p>
+  <p>Bug: http://bugs.python.org/issue5322</p>
+  <dl class="fields">
+    <dt>Returns: a new object with type S, a subtype of T</dt>
+    <dt>Overrides:
+        object.__new__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:47:26 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

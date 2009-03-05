@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.tools.bench</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.tools-module.html">Package&nbsp;tools</a> ::
+        Module&nbsp;bench
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="circuits.tools.bench-module.html">Module circuits.tools.bench</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># vim: set sw=3 sts=3 ts=3</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">"""(Tool) Bench Marking Tool</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">THis tool does some simple benchmaking of the circuits library.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">math</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Method circuits.lib.web.loggers.Logger.time()=circuits.lib.web.loggers.Logger-class.html#time"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-0', 'time', 'link-0');">time</a></tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">optparse</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">hotshot</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">hotshot</tt><tt class="py-op">.</tt><tt class="py-name">stats</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-keyword">except</tt> <tt class="py-name">ImportError</tt><tt class="py-op">:</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">    <tt id="link-1" class="py-name" targets="Variable circuits.tools.bench.hostshot=circuits.tools.bench-module.html#hostshot"><a title="circuits.tools.bench.hostshot" class="py-name" href="#" onclick="return doclink('link-1', 'hostshot', 'link-1');">hostshot</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">psyco</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">except</tt> <tt class="py-name">ImportError</tt><tt class="py-op">:</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">    <tt class="py-name">psyco</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Package circuits=circuits-module.html"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-2', 'circuits', 'link-2');">circuits</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">__version__</tt> <tt class="py-keyword">as</tt> <tt class="py-name">systemVersion</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-3', 'circuits', 'link-2');">circuits</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Function circuits.core.handler()=circuits.core-module.html#handler"><a title="circuits.core.handler" class="py-name" href="#" onclick="return doclink('link-4', 'handler', 'link-4');">handler</a></tt><tt class="py-op">,</tt> <tt id="link-5" class="py-name" targets="Class circuits.core.Event=circuits.core.Event-class.html"><a title="circuits.core.Event" class="py-name" href="#" onclick="return doclink('link-5', 'Event', 'link-5');">Event</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Class circuits.core.Component=circuits.core.Component-class.html"><a title="circuits.core.Component" class="py-name" href="#" onclick="return doclink('link-6', 'Component', 'link-6');">Component</a></tt><tt class="py-op">,</tt> <tt id="link-7" class="py-name" targets="Class circuits.bridge.Bridge=circuits.bridge.Bridge-class.html"><a title="circuits.bridge.Bridge" class="py-name" href="#" onclick="return doclink('link-7', 'Bridge', 'link-7');">Bridge</a></tt><tt class="py-op">,</tt> <tt id="link-8" class="py-name" targets="Class circuits.core.Manager=circuits.core.Manager-class.html"><a title="circuits.core.Manager" class="py-name" href="#" onclick="return doclink('link-8', 'Manager', 'link-8');">Manager</a></tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name" targets="Class circuits.debugger.Debugger=circuits.debugger.Debugger-class.html"><a title="circuits.debugger.Debugger" class="py-name" href="#" onclick="return doclink('link-9', 'Debugger', 'link-9');">Debugger</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt id="link-10" class="py-name" targets="Variable circuits.tools.bench.USAGE=circuits.tools.bench-module.html#USAGE,Variable circuits.tools.sniffer.USAGE=circuits.tools.sniffer-module.html#USAGE"><a title="circuits.tools.bench.USAGE
+circuits.tools.sniffer.USAGE" class="py-name" href="#" onclick="return doclink('link-10', 'USAGE', 'link-10');">USAGE</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"%prog [options]"</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt id="link-11" class="py-name" targets="Variable circuits.lib.env.VERSION=circuits.lib.env-module.html#VERSION,Variable circuits.tools.bench.VERSION=circuits.tools.bench-module.html#VERSION,Variable circuits.tools.sniffer.VERSION=circuits.tools.sniffer-module.html#VERSION"><a title="circuits.lib.env.VERSION
+circuits.tools.bench.VERSION
+circuits.tools.sniffer.VERSION" class="py-name" href="#" onclick="return doclink('link-11', 'VERSION', 'link-11');">VERSION</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"%prog v"</tt> <tt class="py-op">+</tt> <tt class="py-name">systemVersion</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt id="link-12" class="py-name" targets="Variable circuits.tools.bench.ERRORS=circuits.tools.bench-module.html#ERRORS"><a title="circuits.tools.bench.ERRORS" class="py-name" href="#" onclick="return doclink('link-12', 'ERRORS', 'link-12');">ERRORS</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-string">"Cannot listen and connect at the same time!"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-string">"Invalid events spcified. Must be an integer."</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-string">"Invalid time spcified. Must be an integer."</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-number">3</tt><tt class="py-op">,</tt> <tt class="py-string">"Invalid nthreads spcified. Must be an integer."</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-op">]</tt> </tt>
+<a name="duration"></a><div id="duration-def"><a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-comment">### Functions</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt> <a class="py-toggle" href="#" id="duration-toggle" onclick="return toggle('duration');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench-module.html#duration">duration</a><tt class="py-op">(</tt><tt class="py-param">seconds</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="duration-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="duration-expanded"><a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">    <tt class="py-name">days</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">seconds</tt> <tt class="py-op">/</tt> <tt class="py-number">60</tt> <tt class="py-op">/</tt> <tt class="py-number">60</tt> <tt class="py-op">/</tt> <tt class="py-number">24</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">    <tt class="py-name">seconds</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">seconds</tt><tt class="py-op">)</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-number">60</tt> <tt class="py-op">*</tt> <tt class="py-number">60</tt> <tt class="py-op">*</tt> <tt class="py-number">24</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">    <tt class="py-name">hours</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">seconds</tt> <tt class="py-op">/</tt> <tt class="py-number">60</tt> <tt class="py-op">/</tt> <tt class="py-number">60</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt class="py-name">seconds</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">seconds</tt><tt class="py-op">)</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-number">60</tt> <tt class="py-op">*</tt> <tt class="py-number">60</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">    <tt class="py-name">mins</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">seconds</tt> <tt class="py-op">/</tt> <tt class="py-number">60</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">    <tt class="py-name">seconds</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">seconds</tt><tt class="py-op">)</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-number">60</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">days</tt><tt class="py-op">,</tt> <tt class="py-name">hours</tt><tt class="py-op">,</tt> <tt class="py-name">mins</tt><tt class="py-op">,</tt> <tt class="py-name">seconds</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="parse_options"></a><div id="parse_options-def"><a name="L52"></a><tt class="py-lineno"> 52</tt> <a class="py-toggle" href="#" id="parse_options-toggle" onclick="return toggle('parse_options');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench-module.html#parse_options">parse_options</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="parse_options-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="parse_options-expanded"><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">    <tt class="py-docstring">"""parse_options() -&gt; opts, args</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-docstring">    Parse the command-line options given returning both</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-docstring">    the parsed options and arguments.</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">    <tt class="py-name">parser</tt> <tt class="py-op">=</tt> <tt class="py-name">optparse</tt><tt class="py-op">.</tt><tt class="py-name">OptionParser</tt><tt class="py-op">(</tt><tt class="py-name">usage</tt><tt class="py-op">=</tt><tt id="link-13" class="py-name"><a title="circuits.tools.bench.USAGE
+circuits.tools.sniffer.USAGE" class="py-name" href="#" onclick="return doclink('link-13', 'USAGE', 'link-10');">USAGE</a></tt><tt class="py-op">,</tt> <tt id="link-14" class="py-name" targets="Variable circuits.__version__'.version=circuits.__version__%27-module.html#version,Variable circuits.lib.env.Environment.version=circuits.lib.env.Environment-class.html#version,Module circuits.version=circuits.version-module.html"><a title="circuits.__version__'.version
+circuits.lib.env.Environment.version
+circuits.version" class="py-name" href="#" onclick="return doclink('link-14', 'version', 'link-14');">version</a></tt><tt class="py-op">=</tt><tt id="link-15" class="py-name"><a title="circuits.lib.env.VERSION
+circuits.tools.bench.VERSION
+circuits.tools.sniffer.VERSION" class="py-name" href="#" onclick="return doclink('link-15', 'VERSION', 'link-11');">VERSION</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-l"</tt><tt class="py-op">,</tt> <tt class="py-string">"--listen"</tt><tt class="py-op">,</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_true"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"listen"</tt><tt class="py-op">,</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Listen on 0.0.0.0:8000 (UDP) to test remote events"</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-b"</tt><tt class="py-op">,</tt> <tt class="py-string">"--bind"</tt><tt class="py-op">,</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store"</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">"string"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-string">"0.0.0.0"</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"bind"</tt><tt class="py-op">,</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Bind to address:[port] (UDP) to test remote events"</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-c"</tt><tt class="py-op">,</tt> <tt class="py-string">"--concurrency"</tt><tt class="py-op">,</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store"</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">"int"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"concurrency"</tt><tt class="py-op">,</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Set concurrency level"</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-t"</tt><tt class="py-op">,</tt> <tt class="py-string">"--time"</tt><tt class="py-op">,</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store"</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">"int"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"time"</tt><tt class="py-op">,</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Stop after specified elapsed seconds"</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-e"</tt><tt class="py-op">,</tt> <tt class="py-string">"--events"</tt><tt class="py-op">,</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store"</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">"int"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"events"</tt><tt class="py-op">,</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Stop after specified number of events"</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-p"</tt><tt class="py-op">,</tt> <tt class="py-string">"--profile"</tt><tt class="py-op">,</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_true"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"profile"</tt><tt class="py-op">,</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Enable execution profiling support"</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-m"</tt><tt class="py-op">,</tt> <tt class="py-string">"--mode"</tt><tt class="py-op">,</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store"</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">"choice"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-string">"speed"</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"mode"</tt><tt class="py-op">,</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">            <tt class="py-name">choices</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-string">"sync"</tt><tt class="py-op">,</tt> <tt class="py-string">"speed"</tt><tt class="py-op">,</tt> <tt class="py-string">"latency"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Operation mode"</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-f"</tt><tt class="py-op">,</tt> <tt class="py-string">"--fill"</tt><tt class="py-op">,</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store"</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">"int"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"fill"</tt><tt class="py-op">,</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"No. of dummy events to fill queue with"</tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-d"</tt><tt class="py-op">,</tt> <tt class="py-string">"--debug"</tt><tt class="py-op">,</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_true"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"debug"</tt><tt class="py-op">,</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Enable debug mode"</tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-s"</tt><tt class="py-op">,</tt> <tt class="py-string">"--speed"</tt><tt class="py-op">,</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_true"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"speed"</tt><tt class="py-op">,</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Enable psyco (circuits on speed!)"</tt><tt class="py-op">)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-o"</tt><tt class="py-op">,</tt> <tt class="py-string">"--output"</tt><tt class="py-op">,</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"output"</tt><tt class="py-op">,</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Specify output format"</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-q"</tt><tt class="py-op">,</tt> <tt class="py-string">"--quiet"</tt><tt class="py-op">,</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">            <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_false"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"verbose"</tt><tt class="py-op">,</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"Suppress output"</tt><tt class="py-op">)</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">    <tt class="py-name">opts</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">parse_args</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">listen</tt> <tt class="py-keyword">and</tt> <tt class="py-name">args</tt><tt class="py-op">:</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">exit</tt><tt class="py-op">(</tt><tt id="link-16" class="py-name"><a title="circuits.tools.bench.ERRORS" class="py-name" href="#" onclick="return doclink('link-16', 'ERRORS', 'link-12');">ERRORS</a></tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt id="link-17" class="py-name"><a title="circuits.tools.bench.ERRORS" class="py-name" href="#" onclick="return doclink('link-17', 'ERRORS', 'link-12');">ERRORS</a></tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">opts</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt> </tt>
+</div><a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"> </tt>
+<a name="Stop"></a><div id="Stop-def"><a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-comment">### Events</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt> <a class="py-toggle" href="#" id="Stop-toggle" onclick="return toggle('Stop');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Stop-class.html">Stop</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Term"></a><div id="Term-def"><a name="L122"></a><tt class="py-lineno">122</tt> <a class="py-toggle" href="#" id="Term-toggle" onclick="return toggle('Term');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Term-class.html">Term</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Hello"></a><div id="Hello-def"><a name="L123"></a><tt class="py-lineno">123</tt> <a class="py-toggle" href="#" id="Hello-toggle" onclick="return toggle('Hello');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Hello-class.html">Hello</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Received"></a><div id="Received-def"><a name="L124"></a><tt class="py-lineno">124</tt> <a class="py-toggle" href="#" id="Received-toggle" onclick="return toggle('Received');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Received-class.html">Received</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Foo"></a><div id="Foo-def"><a name="L125"></a><tt class="py-lineno">125</tt> <a class="py-toggle" href="#" id="Foo-toggle" onclick="return toggle('Foo');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Foo-class.html">Foo</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"> </tt>
+<a name="Base"></a><div id="Base-def"><a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"><tt class="py-comment">### Components</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt> <a class="py-toggle" href="#" id="Base-toggle" onclick="return toggle('Base');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Base-class.html">Base</a><tt class="py-op">(</tt><tt class="py-base-class">Component</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Base-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Base-expanded"><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"> </tt>
+<a name="Base.__init__"></a><div id="Base.__init__-def"><a name="L133"></a><tt class="py-lineno">133</tt> <a class="py-toggle" href="#" id="Base.__init__-toggle" onclick="return toggle('Base.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.Base-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">opts</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Base.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Base.__init__-expanded"><a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-18" class="py-name" targets="Class circuits.tools.bench.Base=circuits.tools.bench.Base-class.html"><a title="circuits.tools.bench.Base" class="py-name" href="#" onclick="return doclink('link-18', 'Base', 'link-18');">Base</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method circuits.bridge.Bridge.__init__()=circuits.bridge.Bridge-class.html#__init__,Method circuits.core.BaseComponent.__init__()=circuits.core.BaseComponent-class.html#__init__,Method circuits.core.Event.__init__()=circuits.core.Event-class.html#__init__,Method circuits.core.HandlersType.__init__()=circuits.core.HandlersType-class.html#__init__,Method circuits.core.Manager.__init__()=circuits.core.Manager-class.html#__init__,Method circuits.debugger.Debugger.__init__()=circuits.debugger.Debugger-class.html#__init__,Method circuits.lib.ann.Neuron.__init__()=circuits.lib.ann.Neuron-class.html#__init__,Method circuits.lib.ann.Node.__init__()=circuits.lib.ann.Node-class.html#__init__,Method circuits.lib.ann.Output.__init__()=circuits.lib.ann.Output-class.html#__init__,Method circuits.lib.ann.Synapse.__init__()=circuits.lib.ann.Synapse-class.html#__init__,Method circuits.lib.config.Config.__init__()=circuits.lib.config.Config-class.html#__init__,Method circuits.lib.drivers.inotify_driver.INotifyDriver.__init__()=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#__init__,Method circuits.lib.env.Environment.__init__()=circuits.lib.env.Environment-class.html#__init__,Method circuits.lib.io.File.__init__()=circuits.lib.io.File-class.html#__init__,Method circuits.lib.io.StdErr.__init__()=circuits.lib.io.StdErr-class.html#__init__,Method circuits.lib.io.StdIn.__init__()=circuits.lib.io.StdIn-class.html#__init__,Method circuits.lib.io.StdOut.__init__()=circuits.lib.io.StdOut-class.html#__init__,Method circuits.lib.irc.IRC.__init__()=circuits.lib.irc.IRC-class.html#__init__,Method circuits.lib.log.Logger.__init__()=circuits.lib.log.Logger-class.html#__init__,Method circuits.lib.pollers.Poller.__init__()=circuits.lib.pollers.Poller-class.html#__init__,Method circuits.lib.sockets.Client.__init__()=circuits.lib.sockets.Client-class.html#__init__,Method circuits.lib.sockets.Server.__init__()=circuits.lib.sockets.Server-class.html#__init__,Method circuits.lib.sockets.TCPClient.__init__()=circuits.lib.sockets.TCPClient-class.html#__init__,Method circuits.lib.sockets.TCPServer.__init__()=circuits.lib.sockets.TCPServer-class.html#__init__,Method circuits.lib.sockets.UDPServer.__init__()=circuits.lib.sockets.UDPServer-class.html#__init__,Method circuits.lib.web.core.ExposeType.__init__()=circuits.lib.web.core.ExposeType-class.html#__init__,Method circuits.lib.web.dispatchers.DefaultDispatcher.__init__()=circuits.lib.web.dispatchers.DefaultDispatcher-class.html#__init__,Method circuits.lib.web.dispatchers.FileDispatcher.__init__()=circuits.lib.web.dispatchers.FileDispatcher-class.html#__init__,Method circuits.lib.web.errors.Forbidden.__init__()=circuits.lib.web.errors.Forbidden-class.html#__init__,Method circuits.lib.web.errors.HTTPError.__init__()=circuits.lib.web.errors.HTTPError-class.html#__init__,Method circuits.lib.web.errors.NotFound.__init__()=circuits.lib.web.errors.NotFound-class.html#__init__,Method circuits.lib.web.errors.Redirect.__init__()=circuits.lib.web.errors.Redirect-class.html#__init__,Method circuits.lib.web.headers.HeaderElement.__init__()=circuits.lib.web.headers.HeaderElement-class.html#__init__,Method circuits.lib.web.headers.Headers.__init__()=circuits.lib.web.headers.Headers-class.html#__init__,Method circuits.lib.web.http.HTTP.__init__()=circuits.lib.web.http.HTTP-class.html#__init__,Method circuits.lib.web.servers.BaseServer.__init__()=circuits.lib.web.servers.BaseServer-class.html#__init__,Method circuits.lib.web.servers.Server.__init__()=circuits.lib.web.servers.Server-class.html#__init__,Method circuits.lib.web.sessions.Sessions.__init__()=circuits.lib.web.sessions.Sessions-class.html#__init__,Method circuits.lib.web.webob.Host.__init__()=circuits.lib.web.webob.Host-class.html#__init__,Method circuits.lib.web.webob.Request.__init__()=circuits.lib.web.webob.Request-class.html#__init__,Method circuits.lib.web.webob.Response.__init__()=circuits.lib.web.webob.Response-class.html#__init__,Method circuits.lib.web.wsgi.Application.__init__()=circuits.lib.web.wsgi.Application-class.html#__init__,Method circuits.lib.web.wsgi.Middleware.__init__()=circuits.lib.web.wsgi.Middleware-class.html#__init__,Method circuits.timers.Timer.__init__()=circuits.timers.Timer-class.html#__init__,Method circuits.tools.bench.Base.__init__()=circuits.tools.bench.Base-class.html#__init__,Method circuits.workers.Process.__init__()=circuits.workers.Process-class.html#__init__,Method circuits.workers.Thread.__init__()=circuits.workers.Thread-class.html#__init__"><a title="circuits.bridge.Bridge.__init__
+circuits.core.BaseComponent.__init__
+circuits.core.Event.__init__
+circuits.core.HandlersType.__init__
+circuits.core.Manager.__init__
+circuits.debugger.Debugger.__init__
+circuits.lib.ann.Neuron.__init__
+circuits.lib.ann.Node.__init__
+circuits.lib.ann.Output.__init__
+circuits.lib.ann.Synapse.__init__
+circuits.lib.config.Config.__init__
+circuits.lib.drivers.inotify_driver.INotifyDriver.__init__
+circuits.lib.env.Environment.__init__
+circuits.lib.io.File.__init__
+circuits.lib.io.StdErr.__init__
+circuits.lib.io.StdIn.__init__
+circuits.lib.io.StdOut.__init__
+circuits.lib.irc.IRC.__init__
+circuits.lib.log.Logger.__init__
+circuits.lib.pollers.Poller.__init__
+circuits.lib.sockets.Client.__init__
+circuits.lib.sockets.Server.__init__
+circuits.lib.sockets.TCPClient.__init__
+circuits.lib.sockets.TCPServer.__init__
+circuits.lib.sockets.UDPServer.__init__
+circuits.lib.web.core.ExposeType.__init__
+circuits.lib.web.dispatchers.DefaultDispatcher.__init__
+circuits.lib.web.dispatchers.FileDispatcher.__init__
+circuits.lib.web.errors.Forbidden.__init__
+circuits.lib.web.errors.HTTPError.__init__
+circuits.lib.web.errors.NotFound.__init__
+circuits.lib.web.errors.Redirect.__init__
+circuits.lib.web.headers.HeaderElement.__init__
+circuits.lib.web.headers.Headers.__init__
+circuits.lib.web.http.HTTP.__init__
+circuits.lib.web.servers.BaseServer.__init__
+circuits.lib.web.servers.Server.__init__
+circuits.lib.web.sessions.Sessions.__init__
+circuits.lib.web.webob.Host.__init__
+circuits.lib.web.webob.Request.__init__
+circuits.lib.web.webob.Response.__init__
+circuits.lib.web.wsgi.Application.__init__
+circuits.lib.web.wsgi.Middleware.__init__
+circuits.timers.Timer.__init__
+circuits.tools.bench.Base.__init__
+circuits.workers.Process.__init__
+circuits.workers.Thread.__init__" class="py-name" href="#" onclick="return doclink('link-19', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opts</tt> <tt class="py-op">=</tt> <tt class="py-name">opts</tt> </tt>
+</div></div><a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt>
+<a name="Sender"></a><div id="Sender-def"><a name="L138"></a><tt class="py-lineno">138</tt> <a class="py-toggle" href="#" id="Sender-toggle" onclick="return toggle('Sender');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Sender-class.html">Sender</a><tt class="py-op">(</tt><tt class="py-base-class">Base</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Sender-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Sender-expanded"><a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">    <tt id="link-20" class="py-name" targets="Variable circuits.tools.bench.Sender.concurrency=circuits.tools.bench.Sender-class.html#concurrency"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-20', 'concurrency', 'link-20');">concurrency</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt>
+<a name="Sender.recevied"></a><div id="Sender.recevied-def"><a name="L142"></a><tt class="py-lineno">142</tt> <a class="py-toggle" href="#" id="Sender.recevied-toggle" onclick="return toggle('Sender.recevied');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.Sender-class.html#recevied">recevied</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">message</tt><tt class="py-op">=</tt><tt class="py-string">""</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Sender.recevied-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Sender.recevied-expanded"><a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method circuits.core.Manager.push()=circuits.core.Manager-class.html#push"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-21', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-22" class="py-name" targets="Class circuits.tools.bench.Hello=circuits.tools.bench.Hello-class.html"><a title="circuits.tools.bench.Hello" class="py-name" href="#" onclick="return doclink('link-22', 'Hello', 'link-22');">Hello</a></tt><tt class="py-op">(</tt><tt class="py-string">"hello"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"hello"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Variable circuits.core.BaseComponent.channel=circuits.core.BaseComponent-class.html#channel,Variable circuits.lib.config.Config.channel=circuits.lib.config.Config-class.html#channel,Variable circuits.lib.drivers.inotify_driver.INotifyDriver.channel=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#channel,Variable circuits.lib.drivers.pygame_driver.PyGameDriver.channel=circuits.lib.drivers.pygame_driver.PyGameDriver-class.html#channel,Variable circuits.lib.env.Environment.channel=circuits.lib.env.Environment-class.html#channel,Variable circuits.lib.io.File.channel=circuits.lib.io.File-class.html#channel,Variable circuits.lib.io.StdErr.channel=circuits.lib.io.StdErr-class.html#channel,Variable circuits.lib.io.StdIn.channel=circuits.lib.io.StdIn-class.html#channel,Variable circuits.lib.io.StdOut.channel=circuits.lib.io.StdOut-class.html#channel,Variable circuits.lib.log.Logger.channel=circuits.lib.log.Logger-class.html#channel,Variable circuits.lib.web.core.BaseController.channel=circuits.lib.web.core.BaseController-class.html#channel"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-23', 'channel', 'link-23');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"> </tt>
+<a name="Receiver"></a><div id="Receiver-def"><a name="L145"></a><tt class="py-lineno">145</tt> <a class="py-toggle" href="#" id="Receiver-toggle" onclick="return toggle('Receiver');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Receiver-class.html">Receiver</a><tt class="py-op">(</tt><tt class="py-base-class">Base</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Receiver-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Receiver-expanded"><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"> </tt>
+<a name="Receiver.helo"></a><div id="Receiver.helo-def"><a name="L147"></a><tt class="py-lineno">147</tt> <a class="py-toggle" href="#" id="Receiver.helo-toggle" onclick="return toggle('Receiver.helo');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.Receiver-class.html#helo">helo</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">address</tt><tt class="py-op">,</tt> <tt class="py-param">port</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Receiver.helo-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Receiver.helo-expanded"><a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-24', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-25" class="py-name"><a title="circuits.tools.bench.Hello" class="py-name" href="#" onclick="return doclink('link-25', 'Hello', 'link-22');">Hello</a></tt><tt class="py-op">(</tt><tt class="py-string">"hello"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"hello"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-26', 'channel', 'link-23');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"> </tt>
+<a name="Receiver.hello"></a><div id="Receiver.hello-def"><a name="L150"></a><tt class="py-lineno">150</tt> <a class="py-toggle" href="#" id="Receiver.hello-toggle" onclick="return toggle('Receiver.hello');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.Receiver-class.html#hello">hello</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">message</tt><tt class="py-op">=</tt><tt class="py-string">""</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Receiver.hello-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Receiver.hello-expanded"><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-27', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-28" class="py-name" targets="Class circuits.tools.bench.Received=circuits.tools.bench.Received-class.html"><a title="circuits.tools.bench.Received" class="py-name" href="#" onclick="return doclink('link-28', 'Received', 'link-28');">Received</a></tt><tt class="py-op">(</tt><tt class="py-name">message</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"received"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-29', 'channel', 'link-23');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"> </tt>
+<a name="SpeedTest"></a><div id="SpeedTest-def"><a name="L153"></a><tt class="py-lineno">153</tt> <a class="py-toggle" href="#" id="SpeedTest-toggle" onclick="return toggle('SpeedTest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.SpeedTest-class.html">SpeedTest</a><tt class="py-op">(</tt><tt class="py-base-class">Base</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SpeedTest-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SpeedTest-expanded"><a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"> </tt>
+<a name="SpeedTest.hello"></a><div id="SpeedTest.hello-def"><a name="L155"></a><tt class="py-lineno">155</tt> <a class="py-toggle" href="#" id="SpeedTest.hello-toggle" onclick="return toggle('SpeedTest.hello');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.SpeedTest-class.html#hello">hello</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">message</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SpeedTest.hello-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SpeedTest.hello-expanded"><a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-30', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-31" class="py-name"><a title="circuits.tools.bench.Hello" class="py-name" href="#" onclick="return doclink('link-31', 'Hello', 'link-22');">Hello</a></tt><tt class="py-op">(</tt><tt class="py-name">message</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"hello"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-32', 'channel', 'link-23');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"> </tt>
+<a name="LatencyTest"></a><div id="LatencyTest-def"><a name="L158"></a><tt class="py-lineno">158</tt> <a class="py-toggle" href="#" id="LatencyTest-toggle" onclick="return toggle('LatencyTest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.LatencyTest-class.html">LatencyTest</a><tt class="py-op">(</tt><tt class="py-base-class">Base</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LatencyTest-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="LatencyTest-expanded"><a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">    <tt id="link-33" class="py-name" targets="Variable circuits.tools.bench.LatencyTest.t=circuits.tools.bench.LatencyTest-class.html#t"><a title="circuits.tools.bench.LatencyTest.t" class="py-name" href="#" onclick="return doclink('link-33', 't', 'link-33');">t</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"> </tt>
+<a name="LatencyTest.received"></a><div id="LatencyTest.received-def"><a name="L162"></a><tt class="py-lineno">162</tt> <a class="py-toggle" href="#" id="LatencyTest.received-toggle" onclick="return toggle('LatencyTest.received');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.LatencyTest-class.html#received">received</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">message</tt><tt class="py-op">=</tt><tt class="py-string">""</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LatencyTest.received-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="LatencyTest.received-expanded"><a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">"Latency: %0.2f ms"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-op">(</tt><tt id="link-34" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-34', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-35', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="circuits.tools.bench.LatencyTest.t" class="py-name" href="#" onclick="return doclink('link-36', 't', 'link-33');">t</a></tt><tt class="py-op">)</tt> <tt class="py-op">*</tt> <tt class="py-number">1000</tt><tt class="py-op">)</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt id="link-37" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-37', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt class="py-name">sleep</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-38', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-39" class="py-name"><a title="circuits.tools.bench.Hello" class="py-name" href="#" onclick="return doclink('link-39', 'Hello', 'link-22');">Hello</a></tt><tt class="py-op">(</tt><tt class="py-string">"hello"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"hello"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-40', 'channel', 'link-23');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"> </tt>
+<a name="LatencyTest.hello"></a><div id="LatencyTest.hello-def"><a name="L167"></a><tt class="py-lineno">167</tt> <a class="py-toggle" href="#" id="LatencyTest.hello-toggle" onclick="return toggle('LatencyTest.hello');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.LatencyTest-class.html#hello">hello</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">message</tt><tt class="py-op">=</tt><tt class="py-string">""</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LatencyTest.hello-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="LatencyTest.hello-expanded"><a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="circuits.tools.bench.LatencyTest.t" class="py-name" href="#" onclick="return doclink('link-41', 't', 'link-33');">t</a></tt> <tt class="py-op">=</tt> <tt id="link-42" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-42', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-43', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-44', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-45" class="py-name"><a title="circuits.tools.bench.Received" class="py-name" href="#" onclick="return doclink('link-45', 'Received', 'link-28');">Received</a></tt><tt class="py-op">(</tt><tt class="py-name">message</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"received"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-46', 'channel', 'link-23');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">     </tt>
+<a name="State"></a><div id="State-def"><a name="L171"></a><tt class="py-lineno">171</tt> <a class="py-toggle" href="#" id="State-toggle" onclick="return toggle('State');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.State-class.html">State</a><tt class="py-op">(</tt><tt class="py-base-class">Base</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="State-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="State-expanded"><a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">    <tt id="link-47" class="py-name" targets="Variable circuits.tools.bench.State.done=circuits.tools.bench.State-class.html#done"><a title="circuits.tools.bench.State.done" class="py-name" href="#" onclick="return doclink('link-47', 'done', 'link-47');">done</a></tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"> </tt>
+<a name="State.stop"></a><div id="State.stop-def"><a name="L175"></a><tt class="py-lineno">175</tt> <a class="py-toggle" href="#" id="State.stop-toggle" onclick="return toggle('State.stop');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.State-class.html#stop">stop</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="State.stop-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="State.stop-expanded"><a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-48', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-49" class="py-name" targets="Class circuits.tools.bench.Term=circuits.tools.bench.Term-class.html"><a title="circuits.tools.bench.Term" class="py-name" href="#" onclick="return doclink('link-49', 'Term', 'link-49');">Term</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"term"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"> </tt>
+<a name="State.term"></a><div id="State.term-def"><a name="L178"></a><tt class="py-lineno">178</tt> <a class="py-toggle" href="#" id="State.term-toggle" onclick="return toggle('State.term');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.State-class.html#term">term</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="State.term-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="State.term-expanded"><a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="circuits.tools.bench.State.done" class="py-name" href="#" onclick="return doclink('link-50', 'done', 'link-47');">done</a></tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+</div></div><a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"> </tt>
+<a name="Monitor"></a><div id="Monitor-def"><a name="L181"></a><tt class="py-lineno">181</tt> <a class="py-toggle" href="#" id="Monitor-toggle" onclick="return toggle('Monitor');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.tools.bench.Monitor-class.html">Monitor</a><tt class="py-op">(</tt><tt class="py-base-class">Base</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Monitor-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Monitor-expanded"><a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">    <tt id="link-51" class="py-name" targets="Variable circuits.tools.bench.Monitor.sTime=circuits.tools.bench.Monitor-class.html#sTime"><a title="circuits.tools.bench.Monitor.sTime" class="py-name" href="#" onclick="return doclink('link-51', 'sTime', 'link-51');">sTime</a></tt> <tt class="py-op">=</tt> <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">maxint</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">    <tt id="link-52" class="py-name" targets="Module circuits.lib.web.events=circuits.lib.web.events-module.html,Variable circuits.tools.bench.Monitor.events=circuits.tools.bench.Monitor-class.html#events"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-52', 'events', 'link-52');">events</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">    <tt id="link-53" class="py-name" targets="Variable circuits.core.Manager.state=circuits.core.Manager-class.html#state,Variable circuits.tools.bench.Monitor.state=circuits.tools.bench.Monitor-class.html#state"><a title="circuits.core.Manager.state
+circuits.tools.bench.Monitor.state" class="py-name" href="#" onclick="return doclink('link-53', 'state', 'link-53');">state</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"> </tt>
+<a name="Monitor.helo"></a><div id="Monitor.helo-def"><a name="L187"></a><tt class="py-lineno">187</tt> <a class="py-toggle" href="#" id="Monitor.helo-toggle" onclick="return toggle('Monitor.helo');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.Monitor-class.html#helo">helo</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Monitor.helo-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Monitor.helo-expanded"><a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Resetting sTime"</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="circuits.tools.bench.Monitor.sTime" class="py-name" href="#" onclick="return doclink('link-54', 'sTime', 'link-51');">sTime</a></tt> <tt class="py-op">=</tt> <tt id="link-55" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-55', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-56', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">handler</tt><tt class="py-op">(</tt><tt class="py-name">filter</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="Monitor.event"></a><div id="Monitor.event-def"><a name="L193"></a><tt class="py-lineno">193</tt> <a class="py-toggle" href="#" id="Monitor.event-toggle" onclick="return toggle('Monitor.event');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench.Monitor-class.html#event">event</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Monitor.event-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Monitor.event-expanded"><a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-57', 'events', 'link-52');">events</a></tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+</div></div><a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"> </tt>
+<a name="main"></a><div id="main-def"><a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"><tt class="py-comment">### Main</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line"> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt> <a class="py-toggle" href="#" id="main-toggle" onclick="return toggle('main');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.tools.bench-module.html#main">main</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="main-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="main-expanded"><a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">    <tt class="py-name">opts</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt id="link-58" class="py-name" targets="Function circuits.tools.bench.parse_options()=circuits.tools.bench-module.html#parse_options,Function circuits.tools.sniffer.parse_options()=circuits.tools.sniffer-module.html#parse_options"><a title="circuits.tools.bench.parse_options
+circuits.tools.sniffer.parse_options" class="py-name" href="#" onclick="return doclink('link-58', 'parse_options', 'link-58');">parse_options</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">speed</tt> <tt class="py-keyword">and</tt> <tt class="py-name">psyco</tt><tt class="py-op">:</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">        <tt class="py-name">psyco</tt><tt class="py-op">.</tt><tt class="py-name">full</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">    <tt class="py-name">manager</tt> <tt class="py-op">=</tt> <tt id="link-59" class="py-name"><a title="circuits.core.Manager" class="py-name" href="#" onclick="return doclink('link-59', 'Manager', 'link-8');">Manager</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line"> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">    <tt class="py-name">monitor</tt> <tt class="py-op">=</tt> <tt id="link-60" class="py-name" targets="Class circuits.tools.bench.Monitor=circuits.tools.bench.Monitor-class.html"><a title="circuits.tools.bench.Monitor" class="py-name" href="#" onclick="return doclink('link-60', 'Monitor', 'link-60');">Monitor</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">    <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt class="py-name">monitor</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line"> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">    <tt id="link-61" class="py-name"><a title="circuits.core.Manager.state
+circuits.tools.bench.Monitor.state" class="py-name" href="#" onclick="return doclink('link-61', 'state', 'link-53');">state</a></tt> <tt class="py-op">=</tt> <tt id="link-62" class="py-name" targets="Class circuits.tools.bench.State=circuits.tools.bench.State-class.html"><a title="circuits.tools.bench.State" class="py-name" href="#" onclick="return doclink('link-62', 'State', 'link-62');">State</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">    <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-63" class="py-name"><a title="circuits.core.Manager.state
+circuits.tools.bench.Monitor.state" class="py-name" href="#" onclick="return doclink('link-63', 'state', 'link-53');">state</a></tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line"> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name" targets="Method circuits.lib.log.Logger.debug()=circuits.lib.log.Logger-class.html#debug"><a title="circuits.lib.log.Logger.debug" class="py-name" href="#" onclick="return doclink('link-64', 'debug', 'link-64');">debug</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">        <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-65" class="py-name"><a title="circuits.debugger.Debugger" class="py-name" href="#" onclick="return doclink('link-65', 'Debugger', 'link-9');">Debugger</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">listen</tt> <tt class="py-keyword">or</tt> <tt class="py-name">args</tt><tt class="py-op">:</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">        <tt class="py-name">nodes</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">args</tt><tt class="py-op">:</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt class="py-name">args</tt><tt class="py-op">:</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-string">":"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">node</tt><tt class="py-op">:</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">                    <tt class="py-name">host</tt><tt class="py-op">,</tt> <tt id="link-66" class="py-name" targets="Variable circuits.lib.web.servers.BaseServer.port=circuits.lib.web.servers.BaseServer-class.html#port,Variable circuits.lib.web.webob.Host.port=circuits.lib.web.webob.Host-class.html#port"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-66', 'port', 'link-66');">port</a></tt> <tt class="py-op">=</tt> <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">":"</tt><tt class="py-op">)</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">                    <tt id="link-67" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-67', 'port', 'link-66');">port</a></tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt id="link-68" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-68', 'port', 'link-66');">port</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">                    <tt class="py-name">host</tt> <tt class="py-op">=</tt> <tt class="py-name">node</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">                    <tt id="link-69" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-69', 'port', 'link-66');">port</a></tt> <tt class="py-op">=</tt> <tt class="py-number">8000</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">                <tt class="py-name">nodes</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">host</tt><tt class="py-op">,</tt> <tt id="link-70" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-70', 'port', 'link-66');">port</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line"> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">bind</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-string">":"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">bind</tt><tt class="py-op">:</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">                <tt id="link-71" class="py-name" targets="Variable circuits.lib.web.servers.BaseServer.address=circuits.lib.web.servers.BaseServer-class.html#address"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-71', 'address', 'link-71');">address</a></tt><tt class="py-op">,</tt> <tt id="link-72" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-72', 'port', 'link-66');">port</a></tt> <tt class="py-op">=</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">bind</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">":"</tt><tt class="py-op">)</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">                <tt id="link-73" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-73', 'port', 'link-66');">port</a></tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt id="link-74" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-74', 'port', 'link-66');">port</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">                <tt id="link-75" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-75', 'address', 'link-71');">address</a></tt><tt class="py-op">,</tt> <tt id="link-76" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-76', 'port', 'link-66');">port</a></tt> <tt class="py-op">=</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">bind</tt><tt class="py-op">,</tt> <tt class="py-number">8000</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line"> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">        <tt id="link-77" class="py-name" targets="Module circuits.bridge=circuits.bridge-module.html"><a title="circuits.bridge" class="py-name" href="#" onclick="return doclink('link-77', 'bridge', 'link-77');">bridge</a></tt> <tt class="py-op">=</tt> <tt id="link-78" class="py-name"><a title="circuits.bridge.Bridge" class="py-name" href="#" onclick="return doclink('link-78', 'Bridge', 'link-7');">Bridge</a></tt><tt class="py-op">(</tt><tt id="link-79" class="py-name"><a title="circuits.lib.web.servers.BaseServer.port
+circuits.lib.web.webob.Host.port" class="py-name" href="#" onclick="return doclink('link-79', 'port', 'link-66');">port</a></tt><tt class="py-op">,</tt> <tt id="link-80" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-80', 'address', 'link-71');">address</a></tt><tt class="py-op">=</tt><tt id="link-81" class="py-name"><a title="circuits.lib.web.servers.BaseServer.address" class="py-name" href="#" onclick="return doclink('link-81', 'address', 'link-71');">address</a></tt><tt class="py-op">,</tt> <tt class="py-name">nodes</tt><tt class="py-op">=</tt><tt class="py-name">nodes</tt><tt class="py-op">)</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">        <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-82" class="py-name"><a title="circuits.bridge" class="py-name" href="#" onclick="return doclink('link-82', 'bridge', 'link-77');">bridge</a></tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">        <tt id="link-83" class="py-name"><a title="circuits.bridge" class="py-name" href="#" onclick="return doclink('link-83', 'bridge', 'link-77');">bridge</a></tt><tt class="py-op">.</tt><tt id="link-84" class="py-name" targets="Method circuits.core.Manager.start()=circuits.core.Manager-class.html#start,Method circuits.workers.Process.start()=circuits.workers.Process-class.html#start,Method circuits.workers.Thread.start()=circuits.workers.Thread-class.html#start"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-84', 'start', 'link-84');">start</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line"> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-string">"speed"</tt><tt class="py-op">:</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Setting up Speed Test..."</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-85', 'concurrency', 'link-20');">concurrency</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-86', 'concurrency', 'link-20');">concurrency</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">                <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-87" class="py-name" targets="Class circuits.tools.bench.SpeedTest=circuits.tools.bench.SpeedTest-class.html"><a title="circuits.tools.bench.SpeedTest" class="py-name" href="#" onclick="return doclink('link-87', 'SpeedTest', 'link-87');">SpeedTest</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">,</tt> <tt id="link-88" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-88', 'channel', 'link-23');">channel</a></tt><tt class="py-op">=</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line">            <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-89" class="py-name"><a title="circuits.tools.bench.SpeedTest" class="py-name" href="#" onclick="return doclink('link-89', 'SpeedTest', 'link-87');">SpeedTest</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">        <tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-90" class="py-name"><a title="circuits.tools.bench.Monitor.sTime" class="py-name" href="#" onclick="return doclink('link-90', 'sTime', 'link-51');">sTime</a></tt> <tt class="py-op">=</tt> <tt id="link-91" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-91', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-92" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-92', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-string">"latency"</tt><tt class="py-op">:</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Setting up Latency Test..."</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">        <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-93" class="py-name" targets="Class circuits.tools.bench.LatencyTest=circuits.tools.bench.LatencyTest-class.html"><a title="circuits.tools.bench.LatencyTest" class="py-name" href="#" onclick="return doclink('link-93', 'LatencyTest', 'link-93');">LatencyTest</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">        <tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-94" class="py-name"><a title="circuits.tools.bench.Monitor.sTime" class="py-name" href="#" onclick="return doclink('link-94', 'sTime', 'link-51');">sTime</a></tt> <tt class="py-op">=</tt> <tt id="link-95" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-95', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-96', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">listen</tt><tt class="py-op">:</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Setting up Receiver..."</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-97', 'concurrency', 'link-20');">concurrency</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-98', 'concurrency', 'link-20');">concurrency</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">                <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-99" class="py-name" targets="Class circuits.tools.bench.Receiver=circuits.tools.bench.Receiver-class.html"><a title="circuits.tools.bench.Receiver" class="py-name" href="#" onclick="return doclink('link-99', 'Receiver', 'link-99');">Receiver</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">,</tt> <tt id="link-100" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-100', 'channel', 'link-23');">channel</a></tt><tt class="py-op">=</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">            <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-101" class="py-name"><a title="circuits.tools.bench.Receiver" class="py-name" href="#" onclick="return doclink('link-101', 'Receiver', 'link-99');">Receiver</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">args</tt><tt class="py-op">:</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Setting up Sender..."</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-102', 'concurrency', 'link-20');">concurrency</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-103" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-103', 'concurrency', 'link-20');">concurrency</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">                <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-104" class="py-name" targets="Class circuits.tools.bench.Sender=circuits.tools.bench.Sender-class.html"><a title="circuits.tools.bench.Sender" class="py-name" href="#" onclick="return doclink('link-104', 'Sender', 'link-104');">Sender</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">,</tt> <tt id="link-105" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-105', 'channel', 'link-23');">channel</a></tt><tt class="py-op">=</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">            <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-106" class="py-name"><a title="circuits.tools.bench.Sender" class="py-name" href="#" onclick="return doclink('link-106', 'Sender', 'link-104');">Sender</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Setting up Sender..."</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Setting up Receiver..."</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-107', 'concurrency', 'link-20');">concurrency</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-108" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-108', 'concurrency', 'link-20');">concurrency</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">                <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-109" class="py-name"><a title="circuits.tools.bench.Sender" class="py-name" href="#" onclick="return doclink('link-109', 'Sender', 'link-104');">Sender</a></tt><tt class="py-op">(</tt><tt id="link-110" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-110', 'channel', 'link-23');">channel</a></tt><tt class="py-op">=</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">                <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-111" class="py-name"><a title="circuits.tools.bench.Receiver" class="py-name" href="#" onclick="return doclink('link-111', 'Receiver', 'link-99');">Receiver</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">,</tt> <tt id="link-112" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-112', 'channel', 'link-23');">channel</a></tt><tt class="py-op">=</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">            <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-113" class="py-name"><a title="circuits.tools.bench.Sender" class="py-name" href="#" onclick="return doclink('link-113', 'Sender', 'link-104');">Sender</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">            <tt class="py-name">manager</tt> <tt class="py-op">+=</tt> <tt id="link-114" class="py-name"><a title="circuits.tools.bench.Receiver" class="py-name" href="#" onclick="return doclink('link-114', 'Receiver', 'link-99');">Receiver</a></tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">)</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">        <tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="circuits.tools.bench.Monitor.sTime" class="py-name" href="#" onclick="return doclink('link-115', 'sTime', 'link-51');">sTime</a></tt> <tt class="py-op">=</tt> <tt id="link-116" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-116', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-117" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-117', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line"> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">profile</tt><tt class="py-op">:</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">hotshot</tt><tt class="py-op">:</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">            <tt class="py-name">profiler</tt> <tt class="py-op">=</tt> <tt class="py-name">hotshot</tt><tt class="py-op">.</tt><tt class="py-name">Profile</tt><tt class="py-op">(</tt><tt class="py-string">"bench.prof"</tt><tt class="py-op">)</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">            <tt class="py-name">profiler</tt><tt class="py-op">.</tt><tt id="link-118" class="py-name"><a title="circuits.core.Manager.start
+circuits.workers.Process.start
+circuits.workers.Thread.start" class="py-name" href="#" onclick="return doclink('link-118', 'start', 'link-84');">start</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-119" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-119', 'concurrency', 'link-20');">concurrency</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-120" class="py-name"><a title="circuits.tools.bench.Sender.concurrency" class="py-name" href="#" onclick="return doclink('link-120', 'concurrency', 'link-20');">concurrency</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">            <tt class="py-name">manager</tt><tt class="py-op">.</tt><tt id="link-121" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-121', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-122" class="py-name"><a title="circuits.tools.bench.Hello" class="py-name" href="#" onclick="return doclink('link-122', 'Hello', 'link-22');">Hello</a></tt><tt class="py-op">(</tt><tt class="py-string">"hello"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"hello"</tt><tt class="py-op">,</tt> <tt class="py-name">c</tt><tt class="py-op">)</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">        <tt class="py-name">manager</tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-123', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-124" class="py-name"><a title="circuits.tools.bench.Hello" class="py-name" href="#" onclick="return doclink('link-124', 'Hello', 'link-22');">Hello</a></tt><tt class="py-op">(</tt><tt class="py-string">"hello"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"hello"</tt><tt class="py-op">)</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-keyword">not</tt> <tt id="link-125" class="py-name"><a title="circuits.core.Manager.state
+circuits.tools.bench.Monitor.state" class="py-name" href="#" onclick="return doclink('link-125', 'state', 'link-53');">state</a></tt><tt class="py-op">.</tt><tt id="link-126" class="py-name"><a title="circuits.tools.bench.State.done" class="py-name" href="#" onclick="return doclink('link-126', 'done', 'link-47');">done</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">            <tt class="py-name">manager</tt><tt class="py-op">.</tt><tt id="link-127" class="py-name" targets="Method circuits.core.Manager.flush()=circuits.core.Manager-class.html#flush"><a title="circuits.core.Manager.flush" class="py-name" href="#" onclick="return doclink('link-127', 'flush', 'link-127');">flush</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line"> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">fill</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">                <tt class="py-name">manager</tt><tt class="py-op">.</tt><tt id="link-128" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-128', 'push', 'link-21');">push</a></tt><tt class="py-op">(</tt><tt id="link-129" class="py-name" targets="Class circuits.tools.bench.Foo=circuits.tools.bench.Foo-class.html"><a title="circuits.tools.bench.Foo" class="py-name" href="#" onclick="return doclink('link-129', 'Foo', 'link-129');">Foo</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"foo"</tt><tt class="py-op">)</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-130', 'events', 'link-52');">events</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt> <tt class="py-keyword">and</tt> <tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-131', 'events', 'link-52');">events</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-132" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-132', 'events', 'link-52');">events</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">                <tt class="py-name">manager</tt><tt class="py-op">.</tt><tt id="link-133" class="py-name" targets="Method circuits.core.Manager.send()=circuits.core.Manager-class.html#send"><a title="circuits.core.Manager.send" class="py-name" href="#" onclick="return doclink('link-133', 'send', 'link-133');">send</a></tt><tt class="py-op">(</tt><tt id="link-134" class="py-name" targets="Class circuits.tools.bench.Stop=circuits.tools.bench.Stop-class.html"><a title="circuits.tools.bench.Stop" class="py-name" href="#" onclick="return doclink('link-134', 'Stop', 'link-134');">Stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"stop"</tt><tt class="py-op">)</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-135" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-135', 'time', 'link-0');">time</a></tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt> <tt class="py-keyword">and</tt> <tt class="py-op">(</tt><tt id="link-136" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-136', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-137" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-137', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-138" class="py-name"><a title="circuits.tools.bench.Monitor.sTime" class="py-name" href="#" onclick="return doclink('link-138', 'sTime', 'link-51');">sTime</a></tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt id="link-139" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-139', 'time', 'link-0');">time</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">                <tt class="py-name">manager</tt><tt class="py-op">.</tt><tt id="link-140" class="py-name"><a title="circuits.core.Manager.send" class="py-name" href="#" onclick="return doclink('link-140', 'send', 'link-133');">send</a></tt><tt class="py-op">(</tt><tt id="link-141" class="py-name"><a title="circuits.tools.bench.Stop" class="py-name" href="#" onclick="return doclink('link-141', 'Stop', 'link-134');">Stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"stop"</tt><tt class="py-op">)</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line"> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyboardInterrupt</tt><tt class="py-op">:</tt> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">            <tt class="py-name">manager</tt><tt class="py-op">.</tt><tt id="link-142" class="py-name"><a title="circuits.core.Manager.send" class="py-name" href="#" onclick="return doclink('link-142', 'send', 'link-133');">send</a></tt><tt class="py-op">(</tt><tt id="link-143" class="py-name"><a title="circuits.tools.bench.Stop" class="py-name" href="#" onclick="return doclink('link-143', 'Stop', 'link-134');">Stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"stop"</tt><tt class="py-op">)</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line"> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">    <tt class="py-name">eTime</tt> <tt class="py-op">=</tt> <tt id="link-144" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-144', 'time', 'link-0');">time</a></tt><tt class="py-op">.</tt><tt id="link-145" class="py-name"><a title="circuits.lib.web.loggers.Logger.time" class="py-name" href="#" onclick="return doclink('link-145', 'time', 'link-0');">time</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line"> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">    <tt class="py-name">tTime</tt> <tt class="py-op">=</tt> <tt class="py-name">eTime</tt> <tt class="py-op">-</tt> <tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-146" class="py-name"><a title="circuits.tools.bench.Monitor.sTime" class="py-name" href="#" onclick="return doclink('link-146', 'sTime', 'link-51');">sTime</a></tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line">    <tt id="link-147" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-147', 'events', 'link-52');">events</a></tt> <tt class="py-op">=</tt> <tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-148" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-148', 'events', 'link-52');">events</a></tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">    <tt class="py-name">speed</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">math</tt><tt class="py-op">.</tt><tt class="py-name">ceil</tt><tt class="py-op">(</tt><tt class="py-name">float</tt><tt class="py-op">(</tt><tt class="py-name">monitor</tt><tt class="py-op">.</tt><tt id="link-149" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-149', 'events', 'link-52');">events</a></tt><tt class="py-op">)</tt> <tt class="py-op">/</tt> <tt class="py-name">tTime</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line"> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">output</tt><tt class="py-op">:</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">output</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-150" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-150', 'events', 'link-52');">events</a></tt><tt class="py-op">,</tt> <tt class="py-name">speed</tt><tt class="py-op">,</tt> <tt class="py-name">tTime</tt><tt class="py-op">)</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">"Total Events: %d (%d/s after %0.2fs)"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-151" class="py-name"><a title="circuits.lib.web.events
+circuits.tools.bench.Monitor.events" class="py-name" href="#" onclick="return doclink('link-151', 'events', 'link-52');">events</a></tt><tt class="py-op">,</tt> <tt class="py-name">speed</tt><tt class="py-op">,</tt> <tt class="py-name">tTime</tt><tt class="py-op">)</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line"> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">opts</tt><tt class="py-op">.</tt><tt class="py-name">profile</tt> <tt class="py-keyword">and</tt> <tt class="py-name">hotshot</tt><tt class="py-op">:</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line">        <tt class="py-name">profiler</tt><tt class="py-op">.</tt><tt id="link-152" class="py-name" targets="Method circuits.core.Manager.stop()=circuits.core.Manager-class.html#stop,Method circuits.tools.bench.State.stop()=circuits.tools.bench.State-class.html#stop,Method circuits.workers.Process.stop()=circuits.workers.Process-class.html#stop,Method circuits.workers.Thread.stop()=circuits.workers.Thread-class.html#stop"><a title="circuits.core.Manager.stop
+circuits.tools.bench.State.stop
+circuits.workers.Process.stop
+circuits.workers.Thread.stop" class="py-name" href="#" onclick="return doclink('link-152', 'stop', 'link-152');">stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">        <tt class="py-name">profiler</tt><tt class="py-op">.</tt><tt id="link-153" class="py-name" targets="Method circuits.lib.io.File.close()=circuits.lib.io.File-class.html#close,Method circuits.lib.sockets.Client.close()=circuits.lib.sockets.Client-class.html#close,Method circuits.lib.sockets.Server.close()=circuits.lib.sockets.Server-class.html#close,Method circuits.lib.sockets.UDPServer.close()=circuits.lib.sockets.UDPServer-class.html#close"><a title="circuits.lib.io.File.close
+circuits.lib.sockets.Client.close
+circuits.lib.sockets.Server.close
+circuits.lib.sockets.UDPServer.close" class="py-name" href="#" onclick="return doclink('link-153', 'close', 'link-153');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line">        <tt class="py-name">stats</tt> <tt class="py-op">=</tt> <tt class="py-name">hotshot</tt><tt class="py-op">.</tt><tt class="py-name">stats</tt><tt class="py-op">.</tt><tt id="link-154" class="py-name" targets="Function circuits.lib.drivers.load()=circuits.lib.drivers-module.html#load"><a title="circuits.lib.drivers.load" class="py-name" href="#" onclick="return doclink('link-154', 'load', 'link-154');">load</a></tt><tt class="py-op">(</tt><tt class="py-string">"bench.prof"</tt><tt class="py-op">)</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line">        <tt class="py-name">stats</tt><tt class="py-op">.</tt><tt class="py-name">strip_dirs</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line">        <tt class="py-name">stats</tt><tt class="py-op">.</tt><tt class="py-name">sort_stats</tt><tt class="py-op">(</tt><tt class="py-string">"time"</tt><tt class="py-op">,</tt> <tt class="py-string">"calls"</tt><tt class="py-op">)</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line">        <tt class="py-name">stats</tt><tt class="py-op">.</tt><tt class="py-name">print_stats</tt><tt class="py-op">(</tt><tt class="py-number">20</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line"> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line"><tt class="py-comment">### Entry Point</tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line"><tt class="py-comment">###</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line"> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt id="link-155" class="py-name" targets="Variable circuits.__name__=circuits-module.html#__name__"><a title="circuits.__name__" class="py-name" href="#" onclick="return doclink('link-155', '__name__', 'link-155');">__name__</a></tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line">    <tt id="link-156" class="py-name" targets="Function circuits.tools.bench.main()=circuits.tools.bench-module.html#main,Function circuits.tools.sniffer.main()=circuits.tools.sniffer-module.html#main"><a title="circuits.tools.bench.main
+circuits.tools.sniffer.main" class="py-name" href="#" onclick="return doclink('link-156', 'main', 'link-156');">main</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:41:52 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

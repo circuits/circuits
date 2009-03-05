@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.lib.io</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
+        Module&nbsp;io
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="circuits.lib.io-module.html">Module circuits.lib.io</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Module:   io</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># Date:     04th August 2004</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># Author:   James Mills &lt;prologic@shortcircuit.net.au&gt;</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">"""File I/O Components</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">This module implements an Asynchronous File Component that is a wrapper</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">around the standard file object where read/write operations are</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">non-blocking. Three additional convenient components are also provided,</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-docstring">namely Stdin, Stdout and Stderr.</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">fcntl</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">errno</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">select</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">collections</tt> <tt class="py-keyword">import</tt> <tt class="py-name">deque</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package circuits=circuits-module.html"><a title="circuits" class="py-name" href="#" onclick="return doclink('link-0', 'circuits', 'link-0');">circuits</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module circuits.core=circuits.core-module.html,Module circuits.lib.web.core=circuits.lib.web.core-module.html"><a title="circuits.core
+circuits.lib.web.core" class="py-name" href="#" onclick="return doclink('link-1', 'core', 'link-1');">core</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class circuits.core.Event=circuits.core.Event-class.html"><a title="circuits.core.Event" class="py-name" href="#" onclick="return doclink('link-2', 'Event', 'link-2');">Event</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Class circuits.core.Component=circuits.core.Component-class.html"><a title="circuits.core.Component" class="py-name" href="#" onclick="return doclink('link-3', 'Component', 'link-3');">Component</a></tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable circuits.bridge.POLL_INTERVAL=circuits.bridge-module.html#POLL_INTERVAL,Variable circuits.lib.io.POLL_INTERVAL=circuits.lib.io-module.html#POLL_INTERVAL,Variable circuits.lib.sockets.POLL_INTERVAL=circuits.lib.sockets-module.html#POLL_INTERVAL,Variable circuits.workers.POLL_INTERVAL=circuits.workers-module.html#POLL_INTERVAL"><a title="circuits.bridge.POLL_INTERVAL
+circuits.lib.io.POLL_INTERVAL
+circuits.lib.sockets.POLL_INTERVAL
+circuits.workers.POLL_INTERVAL" class="py-name" href="#" onclick="return doclink('link-4', 'POLL_INTERVAL', 'link-4');">POLL_INTERVAL</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0.00001</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable circuits.bridge.BUFFER_SIZE=circuits.bridge-module.html#BUFFER_SIZE,Variable circuits.lib.io.BUFFER_SIZE=circuits.lib.io-module.html#BUFFER_SIZE,Variable circuits.lib.sockets.BUFFER_SIZE=circuits.lib.sockets-module.html#BUFFER_SIZE,Variable circuits.lib.web.constants.BUFFER_SIZE=circuits.lib.web.constants-module.html#BUFFER_SIZE"><a title="circuits.bridge.BUFFER_SIZE
+circuits.lib.io.BUFFER_SIZE
+circuits.lib.sockets.BUFFER_SIZE
+circuits.lib.web.constants.BUFFER_SIZE" class="py-name" href="#" onclick="return doclink('link-5', 'BUFFER_SIZE', 'link-5');">BUFFER_SIZE</a></tt> <tt class="py-op">=</tt> <tt class="py-number">131072</tt> </tt>
+<a name="Opened"></a><div id="Opened-def"><a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt> <a class="py-toggle" href="#" id="Opened-toggle" onclick="return toggle('Opened');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.Opened-class.html">Opened</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Closed"></a><div id="Closed-def"><a name="L27"></a><tt class="py-lineno"> 27</tt> <a class="py-toggle" href="#" id="Closed-toggle" onclick="return toggle('Closed');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.Closed-class.html">Closed</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Read"></a><div id="Read-def"><a name="L28"></a><tt class="py-lineno"> 28</tt> <a class="py-toggle" href="#" id="Read-toggle" onclick="return toggle('Read');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.Read-class.html">Read</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Write"></a><div id="Write-def"><a name="L29"></a><tt class="py-lineno"> 29</tt> <a class="py-toggle" href="#" id="Write-toggle" onclick="return toggle('Write');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.Write-class.html">Write</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="Error"></a><div id="Error-def"><a name="L30"></a><tt class="py-lineno"> 30</tt> <a class="py-toggle" href="#" id="Error-toggle" onclick="return toggle('Error');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.Error-class.html">Error</a><tt class="py-op">(</tt><tt class="py-base-class">Event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"> </tt>
+<a name="_File"></a><div id="_File-def"><a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt> <a class="py-toggle" href="#" id="_File-toggle" onclick="return toggle('_File');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io._File-class.html">_File</a><tt class="py-op">(</tt><tt class="py-base-class">file</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_File-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_File-expanded"><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="_File.setblocking"></a><div id="_File.setblocking-def"><a name="L35"></a><tt class="py-lineno"> 35</tt> <a class="py-toggle" href="#" id="_File.setblocking-toggle" onclick="return toggle('_File.setblocking');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io._File-class.html#setblocking">setblocking</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">flag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_File.setblocking-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_File.setblocking-expanded"><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-docstring">" set/clear blocking mode"</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-comment"># get the file descriptor</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">fd</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fileno</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-comment"># get the file's current flag settings</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-name">fl</tt> <tt class="py-op">=</tt> <tt class="py-name">fcntl</tt><tt class="py-op">.</tt><tt class="py-name">fcntl</tt><tt class="py-op">(</tt><tt class="py-name">fd</tt><tt class="py-op">,</tt> <tt class="py-name">fcntl</tt><tt class="py-op">.</tt><tt class="py-name">F_GETFL</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">flag</tt><tt class="py-op">:</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">            <tt class="py-comment"># clear non-blocking mode from flags</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">            <tt class="py-name">fl</tt> <tt class="py-op">=</tt> <tt class="py-name">fl</tt> <tt class="py-op">&amp;</tt> <tt class="py-op">~</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">O_NONBLOCK</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">            <tt class="py-comment"># set non-blocking mode from flags</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">            <tt class="py-name">fl</tt> <tt class="py-op">=</tt> <tt class="py-name">fl</tt> <tt class="py-op">|</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">O_NONBLOCK</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-comment"># update the file's flags</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-name">fcntl</tt><tt class="py-op">.</tt><tt class="py-name">fcntl</tt><tt class="py-op">(</tt><tt class="py-name">fd</tt><tt class="py-op">,</tt> <tt class="py-name">fcntl</tt><tt class="py-op">.</tt><tt class="py-name">F_SETFL</tt><tt class="py-op">,</tt> <tt class="py-name">fl</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"> </tt>
+<a name="_File.write"></a><div id="_File.write-def"><a name="L50"></a><tt class="py-lineno"> 50</tt> <a class="py-toggle" href="#" id="_File.write-toggle" onclick="return toggle('_File.write');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io._File-class.html#write">write</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">data</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_File.write-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_File.write-expanded"><a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method circuits.lib.io.File.write()=circuits.lib.io.File-class.html#write,Variable circuits.lib.pollers.Poller.write=circuits.lib.pollers.Poller-class.html#write,Method circuits.lib.sockets.Client.write()=circuits.lib.sockets.Client-class.html#write,Method circuits.lib.sockets.Server.write()=circuits.lib.sockets.Server-class.html#write,Method circuits.lib.sockets.UDPServer.write()=circuits.lib.sockets.UDPServer-class.html#write"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-6', 'write', 'link-6');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fileno</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">data</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">OSError</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">IOError</tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">errno</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">strerror</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"> </tt>
+<a name="File"></a><div id="File-def"><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt> <a class="py-toggle" href="#" id="File-toggle" onclick="return toggle('File');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.File-class.html">File</a><tt class="py-op">(</tt><tt class="py-base-class">Component</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="File-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="File-expanded"><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">    <tt id="link-7" class="py-name" targets="Variable circuits.core.BaseComponent.channel=circuits.core.BaseComponent-class.html#channel,Variable circuits.lib.config.Config.channel=circuits.lib.config.Config-class.html#channel,Variable circuits.lib.drivers.inotify_driver.INotifyDriver.channel=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#channel,Variable circuits.lib.drivers.pygame_driver.PyGameDriver.channel=circuits.lib.drivers.pygame_driver.PyGameDriver-class.html#channel,Variable circuits.lib.env.Environment.channel=circuits.lib.env.Environment-class.html#channel,Variable circuits.lib.io.File.channel=circuits.lib.io.File-class.html#channel,Variable circuits.lib.io.StdErr.channel=circuits.lib.io.StdErr-class.html#channel,Variable circuits.lib.io.StdIn.channel=circuits.lib.io.StdIn-class.html#channel,Variable circuits.lib.io.StdOut.channel=circuits.lib.io.StdOut-class.html#channel,Variable circuits.lib.log.Logger.channel=circuits.lib.log.Logger-class.html#channel,Variable circuits.lib.web.core.BaseController.channel=circuits.lib.web.core.BaseController-class.html#channel"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-7', 'channel', 'link-7');">channel</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"file"</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="File.__init__"></a><div id="File.__init__-def"><a name="L61"></a><tt class="py-lineno"> 61</tt> <a class="py-toggle" href="#" id="File.__init__-toggle" onclick="return toggle('File.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.File-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">filename</tt><tt class="py-op">,</tt> <tt class="py-param">mode</tt><tt class="py-op">,</tt> <tt class="py-param">channel</tt><tt class="py-op">=</tt><tt id="link-8" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-8', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="File.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="File.__init__-expanded"><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-9" class="py-name" targets="Class circuits.lib.io.File=circuits.lib.io.File-class.html"><a title="circuits.lib.io.File" class="py-name" href="#" onclick="return doclink('link-9', 'File', 'link-9');">File</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method circuits.bridge.Bridge.__init__()=circuits.bridge.Bridge-class.html#__init__,Method circuits.core.BaseComponent.__init__()=circuits.core.BaseComponent-class.html#__init__,Method circuits.core.Event.__init__()=circuits.core.Event-class.html#__init__,Method circuits.core.HandlersType.__init__()=circuits.core.HandlersType-class.html#__init__,Method circuits.core.Manager.__init__()=circuits.core.Manager-class.html#__init__,Method circuits.debugger.Debugger.__init__()=circuits.debugger.Debugger-class.html#__init__,Method circuits.lib.ann.Neuron.__init__()=circuits.lib.ann.Neuron-class.html#__init__,Method circuits.lib.ann.Node.__init__()=circuits.lib.ann.Node-class.html#__init__,Method circuits.lib.ann.Output.__init__()=circuits.lib.ann.Output-class.html#__init__,Method circuits.lib.ann.Synapse.__init__()=circuits.lib.ann.Synapse-class.html#__init__,Method circuits.lib.config.Config.__init__()=circuits.lib.config.Config-class.html#__init__,Method circuits.lib.drivers.inotify_driver.INotifyDriver.__init__()=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#__init__,Method circuits.lib.env.Environment.__init__()=circuits.lib.env.Environment-class.html#__init__,Method circuits.lib.io.File.__init__()=circuits.lib.io.File-class.html#__init__,Method circuits.lib.io.StdErr.__init__()=circuits.lib.io.StdErr-class.html#__init__,Method circuits.lib.io.StdIn.__init__()=circuits.lib.io.StdIn-class.html#__init__,Method circuits.lib.io.StdOut.__init__()=circuits.lib.io.StdOut-class.html#__init__,Method circuits.lib.irc.IRC.__init__()=circuits.lib.irc.IRC-class.html#__init__,Method circuits.lib.log.Logger.__init__()=circuits.lib.log.Logger-class.html#__init__,Method circuits.lib.pollers.Poller.__init__()=circuits.lib.pollers.Poller-class.html#__init__,Method circuits.lib.sockets.Client.__init__()=circuits.lib.sockets.Client-class.html#__init__,Method circuits.lib.sockets.Server.__init__()=circuits.lib.sockets.Server-class.html#__init__,Method circuits.lib.sockets.TCPClient.__init__()=circuits.lib.sockets.TCPClient-class.html#__init__,Method circuits.lib.sockets.TCPServer.__init__()=circuits.lib.sockets.TCPServer-class.html#__init__,Method circuits.lib.sockets.UDPServer.__init__()=circuits.lib.sockets.UDPServer-class.html#__init__,Method circuits.lib.web.core.ExposeType.__init__()=circuits.lib.web.core.ExposeType-class.html#__init__,Method circuits.lib.web.dispatchers.DefaultDispatcher.__init__()=circuits.lib.web.dispatchers.DefaultDispatcher-class.html#__init__,Method circuits.lib.web.dispatchers.FileDispatcher.__init__()=circuits.lib.web.dispatchers.FileDispatcher-class.html#__init__,Method circuits.lib.web.errors.Forbidden.__init__()=circuits.lib.web.errors.Forbidden-class.html#__init__,Method circuits.lib.web.errors.HTTPError.__init__()=circuits.lib.web.errors.HTTPError-class.html#__init__,Method circuits.lib.web.errors.NotFound.__init__()=circuits.lib.web.errors.NotFound-class.html#__init__,Method circuits.lib.web.errors.Redirect.__init__()=circuits.lib.web.errors.Redirect-class.html#__init__,Method circuits.lib.web.headers.HeaderElement.__init__()=circuits.lib.web.headers.HeaderElement-class.html#__init__,Method circuits.lib.web.headers.Headers.__init__()=circuits.lib.web.headers.Headers-class.html#__init__,Method circuits.lib.web.http.HTTP.__init__()=circuits.lib.web.http.HTTP-class.html#__init__,Method circuits.lib.web.servers.BaseServer.__init__()=circuits.lib.web.servers.BaseServer-class.html#__init__,Method circuits.lib.web.servers.Server.__init__()=circuits.lib.web.servers.Server-class.html#__init__,Method circuits.lib.web.sessions.Sessions.__init__()=circuits.lib.web.sessions.Sessions-class.html#__init__,Method circuits.lib.web.webob.Host.__init__()=circuits.lib.web.webob.Host-class.html#__init__,Method circuits.lib.web.webob.Request.__init__()=circuits.lib.web.webob.Request-class.html#__init__,Method circuits.lib.web.webob.Response.__init__()=circuits.lib.web.webob.Response-class.html#__init__,Method circuits.lib.web.wsgi.Application.__init__()=circuits.lib.web.wsgi.Application-class.html#__init__,Method circuits.lib.web.wsgi.Middleware.__init__()=circuits.lib.web.wsgi.Middleware-class.html#__init__,Method circuits.timers.Timer.__init__()=circuits.timers.Timer-class.html#__init__,Method circuits.tools.bench.Base.__init__()=circuits.tools.bench.Base-class.html#__init__,Method circuits.workers.Process.__init__()=circuits.workers.Process-class.html#__init__,Method circuits.workers.Thread.__init__()=circuits.workers.Thread-class.html#__init__"><a title="circuits.bridge.Bridge.__init__
+circuits.core.BaseComponent.__init__
+circuits.core.Event.__init__
+circuits.core.HandlersType.__init__
+circuits.core.Manager.__init__
+circuits.debugger.Debugger.__init__
+circuits.lib.ann.Neuron.__init__
+circuits.lib.ann.Node.__init__
+circuits.lib.ann.Output.__init__
+circuits.lib.ann.Synapse.__init__
+circuits.lib.config.Config.__init__
+circuits.lib.drivers.inotify_driver.INotifyDriver.__init__
+circuits.lib.env.Environment.__init__
+circuits.lib.io.File.__init__
+circuits.lib.io.StdErr.__init__
+circuits.lib.io.StdIn.__init__
+circuits.lib.io.StdOut.__init__
+circuits.lib.irc.IRC.__init__
+circuits.lib.log.Logger.__init__
+circuits.lib.pollers.Poller.__init__
+circuits.lib.sockets.Client.__init__
+circuits.lib.sockets.Server.__init__
+circuits.lib.sockets.TCPClient.__init__
+circuits.lib.sockets.TCPServer.__init__
+circuits.lib.sockets.UDPServer.__init__
+circuits.lib.web.core.ExposeType.__init__
+circuits.lib.web.dispatchers.DefaultDispatcher.__init__
+circuits.lib.web.dispatchers.FileDispatcher.__init__
+circuits.lib.web.errors.Forbidden.__init__
+circuits.lib.web.errors.HTTPError.__init__
+circuits.lib.web.errors.NotFound.__init__
+circuits.lib.web.errors.Redirect.__init__
+circuits.lib.web.headers.HeaderElement.__init__
+circuits.lib.web.headers.Headers.__init__
+circuits.lib.web.http.HTTP.__init__
+circuits.lib.web.servers.BaseServer.__init__
+circuits.lib.web.servers.Server.__init__
+circuits.lib.web.sessions.Sessions.__init__
+circuits.lib.web.webob.Host.__init__
+circuits.lib.web.webob.Request.__init__
+circuits.lib.web.webob.Response.__init__
+circuits.lib.web.wsgi.Application.__init__
+circuits.lib.web.wsgi.Middleware.__init__
+circuits.timers.Timer.__init__
+circuits.tools.bench.Base.__init__
+circuits.workers.Process.__init__
+circuits.workers.Thread.__init__" class="py-name" href="#" onclick="return doclink('link-10', '__init__', 'link-10');">__init__</a></tt><tt class="py-op">(</tt><tt id="link-11" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-11', 'channel', 'link-7');">channel</a></tt><tt class="py-op">=</tt><tt id="link-12" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-12', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Variable circuits.lib.web.webob.Host.name=circuits.lib.web.webob.Host-class.html#name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-13', 'name', 'link-13');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">filename</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt> <tt class="py-op">=</tt> <tt class="py-name">mode</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_read</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_write</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">deque</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt> <tt class="py-op">=</tt> <tt class="py-name">_File</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-14', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">.</tt><tt class="py-name">setblocking</tt><tt class="py-op">(</tt><tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_read</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method circuits.core.Manager.push()=circuits.core.Manager-class.html#push"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-15', 'push', 'link-15');">push</a></tt><tt class="py-op">(</tt><tt id="link-16" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Opened=circuits.lib.drivers.inotify_driver.Opened-class.html,Class circuits.lib.io.Opened=circuits.lib.io.Opened-class.html"><a title="circuits.lib.drivers.inotify_driver.Opened
+circuits.lib.io.Opened" class="py-name" href="#" onclick="return doclink('link-16', 'Opened', 'link-16');">Opened</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-17', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"opened"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">property</tt> </tt>
+<a name="File.closed"></a><div id="File.closed-def"><a name="L78"></a><tt class="py-lineno"> 78</tt> <a class="py-toggle" href="#" id="File.closed-toggle" onclick="return toggle('File.closed');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.File-class.html#closed">closed</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="File.closed-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="File.closed-expanded"><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Variable circuits.lib.io.File.closed=circuits.lib.io.File-class.html#closed"><a title="circuits.lib.io.File.closed" class="py-name" href="#" onclick="return doclink('link-18', 'closed', 'link-18');">closed</a></tt> <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-string">"_fd"</tt><tt class="py-op">)</tt> <tt class="py-keyword">else</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="File.__tick__"></a><div id="File.__tick__-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="File.__tick__-toggle" onclick="return toggle('File.__tick__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.File-class.html#__tick__">__tick__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="File.__tick__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="File.__tick__-expanded"><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method circuits.bridge.Bridge.poll()=circuits.bridge.Bridge-class.html#poll,Method circuits.lib.drivers.pygame_driver.PyGameDriver.poll()=circuits.lib.drivers.pygame_driver.PyGameDriver-class.html#poll,Method circuits.lib.io.File.poll()=circuits.lib.io.File-class.html#poll,Method circuits.lib.pollers.Select.poll()=circuits.lib.pollers.Select-class.html#poll,Method circuits.lib.sockets.Client.poll()=circuits.lib.sockets.Client-class.html#poll,Method circuits.lib.sockets.Server.poll()=circuits.lib.sockets.Server-class.html#poll,Method circuits.lib.sockets.UDPServer.poll()=circuits.lib.sockets.UDPServer-class.html#poll,Method circuits.timers.Timer.poll()=circuits.timers.Timer-class.html#poll,Method circuits.workers.Process.poll()=circuits.workers.Process-class.html#poll"><a title="circuits.bridge.Bridge.poll
+circuits.lib.drivers.pygame_driver.PyGameDriver.poll
+circuits.lib.io.File.poll
+circuits.lib.pollers.Select.poll
+circuits.lib.sockets.Client.poll
+circuits.lib.sockets.Server.poll
+circuits.lib.sockets.UDPServer.poll
+circuits.timers.Timer.poll
+circuits.workers.Process.poll" class="py-name" href="#" onclick="return doclink('link-19', 'poll', 'link-19');">poll</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"> </tt>
+<a name="File.poll"></a><div id="File.poll-def"><a name="L84"></a><tt class="py-lineno"> 84</tt> <a class="py-toggle" href="#" id="File.poll-toggle" onclick="return toggle('File.poll');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.File-class.html#poll">poll</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">wait</tt><tt class="py-op">=</tt><tt id="link-20" class="py-name"><a title="circuits.bridge.POLL_INTERVAL
+circuits.lib.io.POLL_INTERVAL
+circuits.lib.sockets.POLL_INTERVAL
+circuits.workers.POLL_INTERVAL" class="py-name" href="#" onclick="return doclink('link-20', 'POLL_INTERVAL', 'link-4');">POLL_INTERVAL</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="File.poll-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="File.poll-expanded"><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="circuits.lib.io.File.closed" class="py-name" href="#" onclick="return doclink('link-21', 'closed', 'link-18');">closed</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">                <tt class="py-name">r</tt><tt class="py-op">,</tt> <tt class="py-name">w</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt> <tt class="py-op">=</tt> <tt class="py-name">select</tt><tt class="py-op">.</tt><tt class="py-name">select</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_read</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_write</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">wait</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-name">select</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method circuits.debugger.Debugger.error()=circuits.debugger.Debugger-class.html#error,Method circuits.lib.log.Logger.error()=circuits.lib.log.Logger-class.html#error"><a title="circuits.debugger.Debugger.error
+circuits.lib.log.Logger.error" class="py-name" href="#" onclick="return doclink('link-22', 'error', 'link-22');">error</a></tt><tt class="py-op">,</tt> <tt id="link-23" class="py-name"><a title="circuits.debugger.Debugger.error
+circuits.lib.log.Logger.error" class="py-name" href="#" onclick="return doclink('link-23', 'error', 'link-22');">error</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-24" class="py-name"><a title="circuits.debugger.Debugger.error
+circuits.lib.log.Logger.error" class="py-name" href="#" onclick="return doclink('link-24', 'error', 'link-22');">error</a></tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">4</tt><tt class="py-op">:</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">                    <tt class="py-keyword">pass</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-25', 'push', 'link-15');">push</a></tt><tt class="py-op">(</tt><tt id="link-26" class="py-name" targets="Class circuits.core.Error=circuits.core.Error-class.html,Class circuits.lib.io.Error=circuits.lib.io.Error-class.html,Class circuits.lib.log.Error=circuits.lib.log.Error-class.html,Class circuits.lib.pollers.Error=circuits.lib.pollers.Error-class.html,Class circuits.lib.sockets.Error=circuits.lib.sockets.Error-class.html"><a title="circuits.core.Error
+circuits.lib.io.Error
+circuits.lib.log.Error
+circuits.lib.pollers.Error
+circuits.lib.sockets.Error" class="py-name" href="#" onclick="return doclink('link-26', 'Error', 'link-26');">Error</a></tt><tt class="py-op">(</tt><tt id="link-27" class="py-name"><a title="circuits.debugger.Debugger.error
+circuits.lib.log.Logger.error" class="py-name" href="#" onclick="return doclink('link-27', 'error', 'link-22');">error</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"error"</tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">                    <tt class="py-keyword">return</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">w</tt><tt class="py-op">:</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">                <tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_buffer</tt><tt class="py-op">.</tt><tt class="py-name">popleft</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="circuits.lib.io.File.write
+circuits.lib.pollers.Poller.write
+circuits.lib.sockets.Client.write
+circuits.lib.sockets.Server.write
+circuits.lib.sockets.UDPServer.write" class="py-name" href="#" onclick="return doclink('link-28', 'write', 'link-6');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_buffer</tt><tt class="py-op">:</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_write</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method circuits.lib.drivers.inotify_driver.INotifyDriver.remove()=circuits.lib.drivers.inotify_driver.INotifyDriver-class.html#remove,Method circuits.lib.pollers.Poller.remove()=circuits.lib.pollers.Poller-class.html#remove"><a title="circuits.lib.drivers.inotify_driver.INotifyDriver.remove
+circuits.lib.pollers.Poller.remove" class="py-name" href="#" onclick="return doclink('link-29', 'remove', 'link-29');">remove</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">)</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">r</tt><tt class="py-op">:</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">                    <tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method circuits.lib.irc.IRC.read()=circuits.lib.irc.IRC-class.html#read,Variable circuits.lib.pollers.Poller.read=circuits.lib.pollers.Poller-class.html#read,Method circuits.lib.web.http.HTTP.read()=circuits.lib.web.http.HTTP-class.html#read"><a title="circuits.lib.irc.IRC.read
+circuits.lib.pollers.Poller.read
+circuits.lib.web.http.HTTP.read" class="py-name" href="#" onclick="return doclink('link-30', 'read', 'link-30');">read</a></tt><tt class="py-op">(</tt><tt id="link-31" class="py-name"><a title="circuits.bridge.BUFFER_SIZE
+circuits.lib.io.BUFFER_SIZE
+circuits.lib.sockets.BUFFER_SIZE
+circuits.lib.web.constants.BUFFER_SIZE" class="py-name" href="#" onclick="return doclink('link-31', 'BUFFER_SIZE', 'link-5');">BUFFER_SIZE</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">                <tt class="py-keyword">except</tt> <tt class="py-name">IOError</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt class="py-name">e</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-name">errno</tt><tt class="py-op">.</tt><tt class="py-name">EBADF</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">                        <tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">data</tt><tt class="py-op">:</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-32', 'push', 'link-15');">push</a></tt><tt class="py-op">(</tt><tt id="link-33" class="py-name" targets="Class circuits.lib.io.Read=circuits.lib.io.Read-class.html,Class circuits.lib.pollers.Read=circuits.lib.pollers.Read-class.html,Class circuits.lib.sockets.Read=circuits.lib.sockets.Read-class.html"><a title="circuits.lib.io.Read
+circuits.lib.pollers.Read
+circuits.lib.sockets.Read" class="py-name" href="#" onclick="return doclink('link-33', 'Read', 'link-33');">Read</a></tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"read"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="File.write"></a><div id="File.write-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="File.write-toggle" onclick="return toggle('File.write');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.File-class.html#write">write</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">data</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="File.write-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="File.write-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_write</tt><tt class="py-op">:</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_write</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_buffer</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="File.close"></a><div id="File.close-def"><a name="L116"></a><tt class="py-lineno">116</tt> <a class="py-toggle" href="#" id="File.close-toggle" onclick="return toggle('File.close');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.File-class.html#close">close</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="File.close-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="File.close-expanded"><a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_fd</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name" targets="Method circuits.lib.io.File.close()=circuits.lib.io.File-class.html#close,Method circuits.lib.sockets.Client.close()=circuits.lib.sockets.Client-class.html#close,Method circuits.lib.sockets.Server.close()=circuits.lib.sockets.Server-class.html#close,Method circuits.lib.sockets.UDPServer.close()=circuits.lib.sockets.UDPServer-class.html#close"><a title="circuits.lib.io.File.close
+circuits.lib.sockets.Client.close
+circuits.lib.sockets.Server.close
+circuits.lib.sockets.UDPServer.close" class="py-name" href="#" onclick="return doclink('link-34', 'close', 'link-34');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_read</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_write</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="circuits.core.Manager.push" class="py-name" href="#" onclick="return doclink('link-35', 'push', 'link-15');">push</a></tt><tt class="py-op">(</tt><tt id="link-36" class="py-name" targets="Class circuits.lib.drivers.inotify_driver.Closed=circuits.lib.drivers.inotify_driver.Closed-class.html,Class circuits.lib.io.Closed=circuits.lib.io.Closed-class.html"><a title="circuits.lib.drivers.inotify_driver.Closed
+circuits.lib.io.Closed" class="py-name" href="#" onclick="return doclink('link-36', 'Closed', 'link-36');">Closed</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="circuits.lib.web.webob.Host.name" class="py-name" href="#" onclick="return doclink('link-37', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"closed"</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"> </tt>
+<a name="StdIn"></a><div id="StdIn-def"><a name="L122"></a><tt class="py-lineno">122</tt> <a class="py-toggle" href="#" id="StdIn-toggle" onclick="return toggle('StdIn');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.StdIn-class.html">StdIn</a><tt class="py-op">(</tt><tt class="py-base-class">File</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdIn-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="StdIn-expanded"><a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">    <tt id="link-38" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-38', 'channel', 'link-7');">channel</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"stdin"</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"> </tt>
+<a name="StdIn.__init__"></a><div id="StdIn.__init__-def"><a name="L126"></a><tt class="py-lineno">126</tt> <a class="py-toggle" href="#" id="StdIn.__init__-toggle" onclick="return toggle('StdIn.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.StdIn-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">channel</tt><tt class="py-op">=</tt><tt id="link-39" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-39', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdIn.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="StdIn.__init__-expanded"><a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-40" class="py-name" targets="Class circuits.lib.io.StdIn=circuits.lib.io.StdIn-class.html"><a title="circuits.lib.io.StdIn" class="py-name" href="#" onclick="return doclink('link-40', 'StdIn', 'link-40');">StdIn</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="circuits.bridge.Bridge.__init__
+circuits.core.BaseComponent.__init__
+circuits.core.Event.__init__
+circuits.core.HandlersType.__init__
+circuits.core.Manager.__init__
+circuits.debugger.Debugger.__init__
+circuits.lib.ann.Neuron.__init__
+circuits.lib.ann.Node.__init__
+circuits.lib.ann.Output.__init__
+circuits.lib.ann.Synapse.__init__
+circuits.lib.config.Config.__init__
+circuits.lib.drivers.inotify_driver.INotifyDriver.__init__
+circuits.lib.env.Environment.__init__
+circuits.lib.io.File.__init__
+circuits.lib.io.StdErr.__init__
+circuits.lib.io.StdIn.__init__
+circuits.lib.io.StdOut.__init__
+circuits.lib.irc.IRC.__init__
+circuits.lib.log.Logger.__init__
+circuits.lib.pollers.Poller.__init__
+circuits.lib.sockets.Client.__init__
+circuits.lib.sockets.Server.__init__
+circuits.lib.sockets.TCPClient.__init__
+circuits.lib.sockets.TCPServer.__init__
+circuits.lib.sockets.UDPServer.__init__
+circuits.lib.web.core.ExposeType.__init__
+circuits.lib.web.dispatchers.DefaultDispatcher.__init__
+circuits.lib.web.dispatchers.FileDispatcher.__init__
+circuits.lib.web.errors.Forbidden.__init__
+circuits.lib.web.errors.HTTPError.__init__
+circuits.lib.web.errors.NotFound.__init__
+circuits.lib.web.errors.Redirect.__init__
+circuits.lib.web.headers.HeaderElement.__init__
+circuits.lib.web.headers.Headers.__init__
+circuits.lib.web.http.HTTP.__init__
+circuits.lib.web.servers.BaseServer.__init__
+circuits.lib.web.servers.Server.__init__
+circuits.lib.web.sessions.Sessions.__init__
+circuits.lib.web.webob.Host.__init__
+circuits.lib.web.webob.Request.__init__
+circuits.lib.web.webob.Response.__init__
+circuits.lib.web.wsgi.Application.__init__
+circuits.lib.web.wsgi.Middleware.__init__
+circuits.timers.Timer.__init__
+circuits.tools.bench.Base.__init__
+circuits.workers.Process.__init__
+circuits.workers.Thread.__init__" class="py-name" href="#" onclick="return doclink('link-41', '__init__', 'link-10');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-string">"/dev/stdin"</tt><tt class="py-op">,</tt> <tt class="py-string">"r"</tt><tt class="py-op">,</tt> <tt id="link-42" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-42', 'channel', 'link-7');">channel</a></tt><tt class="py-op">=</tt><tt id="link-43" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-43', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"><tt id="link-44" class="py-name" targets="Variable circuits.lib.io.stdin=circuits.lib.io-module.html#stdin"><a title="circuits.lib.io.stdin" class="py-name" href="#" onclick="return doclink('link-44', 'stdin', 'link-44');">stdin</a></tt> <tt class="py-op">=</tt> <tt id="link-45" class="py-name"><a title="circuits.lib.io.StdIn" class="py-name" href="#" onclick="return doclink('link-45', 'StdIn', 'link-40');">StdIn</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="StdOut"></a><div id="StdOut-def"><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt> <a class="py-toggle" href="#" id="StdOut-toggle" onclick="return toggle('StdOut');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.StdOut-class.html">StdOut</a><tt class="py-op">(</tt><tt class="py-base-class">File</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdOut-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="StdOut-expanded"><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">    <tt id="link-46" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-46', 'channel', 'link-7');">channel</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"stdout"</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"> </tt>
+<a name="StdOut.__init__"></a><div id="StdOut.__init__-def"><a name="L135"></a><tt class="py-lineno">135</tt> <a class="py-toggle" href="#" id="StdOut.__init__-toggle" onclick="return toggle('StdOut.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.StdOut-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">channel</tt><tt class="py-op">=</tt><tt id="link-47" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-47', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdOut.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="StdOut.__init__-expanded"><a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-48" class="py-name" targets="Class circuits.lib.io.StdOut=circuits.lib.io.StdOut-class.html"><a title="circuits.lib.io.StdOut" class="py-name" href="#" onclick="return doclink('link-48', 'StdOut', 'link-48');">StdOut</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name"><a title="circuits.bridge.Bridge.__init__
+circuits.core.BaseComponent.__init__
+circuits.core.Event.__init__
+circuits.core.HandlersType.__init__
+circuits.core.Manager.__init__
+circuits.debugger.Debugger.__init__
+circuits.lib.ann.Neuron.__init__
+circuits.lib.ann.Node.__init__
+circuits.lib.ann.Output.__init__
+circuits.lib.ann.Synapse.__init__
+circuits.lib.config.Config.__init__
+circuits.lib.drivers.inotify_driver.INotifyDriver.__init__
+circuits.lib.env.Environment.__init__
+circuits.lib.io.File.__init__
+circuits.lib.io.StdErr.__init__
+circuits.lib.io.StdIn.__init__
+circuits.lib.io.StdOut.__init__
+circuits.lib.irc.IRC.__init__
+circuits.lib.log.Logger.__init__
+circuits.lib.pollers.Poller.__init__
+circuits.lib.sockets.Client.__init__
+circuits.lib.sockets.Server.__init__
+circuits.lib.sockets.TCPClient.__init__
+circuits.lib.sockets.TCPServer.__init__
+circuits.lib.sockets.UDPServer.__init__
+circuits.lib.web.core.ExposeType.__init__
+circuits.lib.web.dispatchers.DefaultDispatcher.__init__
+circuits.lib.web.dispatchers.FileDispatcher.__init__
+circuits.lib.web.errors.Forbidden.__init__
+circuits.lib.web.errors.HTTPError.__init__
+circuits.lib.web.errors.NotFound.__init__
+circuits.lib.web.errors.Redirect.__init__
+circuits.lib.web.headers.HeaderElement.__init__
+circuits.lib.web.headers.Headers.__init__
+circuits.lib.web.http.HTTP.__init__
+circuits.lib.web.servers.BaseServer.__init__
+circuits.lib.web.servers.Server.__init__
+circuits.lib.web.sessions.Sessions.__init__
+circuits.lib.web.webob.Host.__init__
+circuits.lib.web.webob.Request.__init__
+circuits.lib.web.webob.Response.__init__
+circuits.lib.web.wsgi.Application.__init__
+circuits.lib.web.wsgi.Middleware.__init__
+circuits.timers.Timer.__init__
+circuits.tools.bench.Base.__init__
+circuits.workers.Process.__init__
+circuits.workers.Thread.__init__" class="py-name" href="#" onclick="return doclink('link-49', '__init__', 'link-10');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-string">"/dev/stdout"</tt><tt class="py-op">,</tt> <tt class="py-string">"w"</tt><tt class="py-op">,</tt> <tt id="link-50" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-50', 'channel', 'link-7');">channel</a></tt><tt class="py-op">=</tt><tt id="link-51" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-51', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt id="link-52" class="py-name" targets="Variable circuits.lib.io.stdout=circuits.lib.io-module.html#stdout"><a title="circuits.lib.io.stdout" class="py-name" href="#" onclick="return doclink('link-52', 'stdout', 'link-52');">stdout</a></tt> <tt class="py-op">=</tt> <tt id="link-53" class="py-name"><a title="circuits.lib.io.StdOut" class="py-name" href="#" onclick="return doclink('link-53', 'StdOut', 'link-48');">StdOut</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="StdErr"></a><div id="StdErr-def"><a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt> <a class="py-toggle" href="#" id="StdErr-toggle" onclick="return toggle('StdErr');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="circuits.lib.io.StdErr-class.html">StdErr</a><tt class="py-op">(</tt><tt class="py-base-class">File</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdErr-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="StdErr-expanded"><a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">    <tt id="link-54" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-54', 'channel', 'link-7');">channel</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"stderr"</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"> </tt>
+<a name="StdErr.__init__"></a><div id="StdErr.__init__-def"><a name="L144"></a><tt class="py-lineno">144</tt> <a class="py-toggle" href="#" id="StdErr.__init__-toggle" onclick="return toggle('StdErr.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="circuits.lib.io.StdErr-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">channel</tt><tt class="py-op">=</tt><tt id="link-55" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-55', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StdErr.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="StdErr.__init__-expanded"><a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-56" class="py-name" targets="Class circuits.lib.io.StdErr=circuits.lib.io.StdErr-class.html"><a title="circuits.lib.io.StdErr" class="py-name" href="#" onclick="return doclink('link-56', 'StdErr', 'link-56');">StdErr</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="circuits.bridge.Bridge.__init__
+circuits.core.BaseComponent.__init__
+circuits.core.Event.__init__
+circuits.core.HandlersType.__init__
+circuits.core.Manager.__init__
+circuits.debugger.Debugger.__init__
+circuits.lib.ann.Neuron.__init__
+circuits.lib.ann.Node.__init__
+circuits.lib.ann.Output.__init__
+circuits.lib.ann.Synapse.__init__
+circuits.lib.config.Config.__init__
+circuits.lib.drivers.inotify_driver.INotifyDriver.__init__
+circuits.lib.env.Environment.__init__
+circuits.lib.io.File.__init__
+circuits.lib.io.StdErr.__init__
+circuits.lib.io.StdIn.__init__
+circuits.lib.io.StdOut.__init__
+circuits.lib.irc.IRC.__init__
+circuits.lib.log.Logger.__init__
+circuits.lib.pollers.Poller.__init__
+circuits.lib.sockets.Client.__init__
+circuits.lib.sockets.Server.__init__
+circuits.lib.sockets.TCPClient.__init__
+circuits.lib.sockets.TCPServer.__init__
+circuits.lib.sockets.UDPServer.__init__
+circuits.lib.web.core.ExposeType.__init__
+circuits.lib.web.dispatchers.DefaultDispatcher.__init__
+circuits.lib.web.dispatchers.FileDispatcher.__init__
+circuits.lib.web.errors.Forbidden.__init__
+circuits.lib.web.errors.HTTPError.__init__
+circuits.lib.web.errors.NotFound.__init__
+circuits.lib.web.errors.Redirect.__init__
+circuits.lib.web.headers.HeaderElement.__init__
+circuits.lib.web.headers.Headers.__init__
+circuits.lib.web.http.HTTP.__init__
+circuits.lib.web.servers.BaseServer.__init__
+circuits.lib.web.servers.Server.__init__
+circuits.lib.web.sessions.Sessions.__init__
+circuits.lib.web.webob.Host.__init__
+circuits.lib.web.webob.Request.__init__
+circuits.lib.web.webob.Response.__init__
+circuits.lib.web.wsgi.Application.__init__
+circuits.lib.web.wsgi.Middleware.__init__
+circuits.timers.Timer.__init__
+circuits.tools.bench.Base.__init__
+circuits.workers.Process.__init__
+circuits.workers.Thread.__init__" class="py-name" href="#" onclick="return doclink('link-57', '__init__', 'link-10');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-string">"/dev/stderr"</tt><tt class="py-op">,</tt> <tt class="py-string">"w"</tt><tt class="py-op">,</tt> <tt id="link-58" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-58', 'channel', 'link-7');">channel</a></tt><tt class="py-op">=</tt><tt id="link-59" class="py-name"><a title="circuits.core.BaseComponent.channel
+circuits.lib.config.Config.channel
+circuits.lib.drivers.inotify_driver.INotifyDriver.channel
+circuits.lib.drivers.pygame_driver.PyGameDriver.channel
+circuits.lib.env.Environment.channel
+circuits.lib.io.File.channel
+circuits.lib.io.StdErr.channel
+circuits.lib.io.StdIn.channel
+circuits.lib.io.StdOut.channel
+circuits.lib.log.Logger.channel
+circuits.lib.web.core.BaseController.channel" class="py-name" href="#" onclick="return doclink('link-59', 'channel', 'link-7');">channel</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"><tt id="link-60" class="py-name" targets="Variable circuits.lib.io.stderr=circuits.lib.io-module.html#stderr"><a title="circuits.lib.io.stderr" class="py-name" href="#" onclick="return doclink('link-60', 'stderr', 'link-60');">stderr</a></tt> <tt class="py-op">=</tt> <tt id="link-61" class="py-name"><a title="circuits.lib.io.StdErr" class="py-name" href="#" onclick="return doclink('link-61', 'StdErr', 'link-56');">StdErr</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:41:54 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

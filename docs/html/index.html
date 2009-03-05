@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;circuits
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package circuits</h1><p class="nomargin-top"></p>
+<p>Event framework with a Component architecture</p>
+  <p>circuits is an event-driven framework with a focus on Component 
+  Software Architectures where System Functionality is defined in 
+  Components. Components communicate with one another by propagating events
+  throughout the system. Each Component can react to events and expose 
+  events to other parts of the system Components are able to manage their 
+  own events and can also be linked to other Components.</p>
+  <p>circuits has a clean architecture and has no external dependencies on 
+  any other library. It's simplistic design is unmatchable but yet delivers
+  a powerful framework for building large, scalable, maintainable 
+  applications and systems. circuits was a core integral part of the 
+  [http://trac.softcircuit.com.au/pymills pymills] library developed in 
+  2006 and was partly inspired by the [http://trac.edgewall.org Trac] 
+  architecture.</p>
+  <p>Simple Example:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> circuits.core <span class="py-keyword">import</span> Component, Event, Manager
+<span class="py-prompt">&gt;&gt;&gt;</span>
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">class</span> <span class="py-defname">Hello</span>(Component):
+<span class="py-more">... </span>  <span class="py-keyword">def</span> <span class="py-defname">hello</span>(self):
+<span class="py-more">... </span>     <span class="py-keyword">print</span> <span class="py-string">&quot;Hello World!&quot;</span>
+<span class="py-prompt">&gt;&gt;&gt; </span>manager = Manager()
+<span class="py-prompt">&gt;&gt;&gt; </span>manager += Hello()
+<span class="py-prompt">&gt;&gt;&gt; </span>manager.push(Event(), <span class="py-string">&quot;hello&quot;</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>manager.flush()
+<span class="py-output">Hello World!</span></pre>
+
+<hr />
+<div class="fields">      <p><strong>Version:</strong>
+        ffb0f5359181+20090225
+      </p>
+      <p><strong>Author:</strong>
+        James Mills
+      </p>
+      <p><strong>Copyright:</strong>
+        Copyright (C) 2004-2009 by James Mills
+      </p>
+      <p><strong>License:</strong>
+        MIT
+      </p>
+</div><!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Submodules</span></td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li class="private"> <strong class="uidlink"><a href="circuits.__version__%27-module.html">circuits.__version__'</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="circuits.bridge-module.html">circuits.bridge</a></strong>: <em class="summary">Bridge</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.core-module.html">circuits.core</a></strong>: <em class="summary">Core of the circuits library containing all of the essentials for a
+        circuits based application or system.</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.debugger-module.html">circuits.debugger</a></strong>: <em class="summary">Debugger component used to debug each event in a system by printing
+        each event to sys.stderr or to a Logger Component instnace.</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.drivers-module.html">circuits.drivers</a></strong>: <em class="summary">Circuits Library - Drivers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib-module.html">circuits.lib</a></strong>: <em class="summary">Circuits Library</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.lib.ann-module.html">circuits.lib.ann</a></strong>: <em class="summary">Artificial Neural Networking Library</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.config-module.html">circuits.lib.config</a></strong>: <em class="summary">Config</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.drivers-module.html">circuits.lib.drivers</a></strong>: <em class="summary">Circuits Library - Drivers</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver-module.html">circuits.lib.drivers.inotify_driver</a></strong>: <em class="summary">INotify Driver</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.drivers.pygame_driver-module.html">circuits.lib.drivers.pygame_driver</a></strong>: <em class="summary">PyGame Driver</em>    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.env-module.html">circuits.lib.env</a></strong>: <em class="summary">Environment Component</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.io-module.html">circuits.lib.io</a></strong>: <em class="summary">File I/O Components</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.irc-module.html">circuits.lib.irc</a></strong>: <em class="summary">Internet Relay Chat Protocol</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.log-module.html">circuits.lib.log</a></strong>: <em class="summary">Log</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.pollers-module.html">circuits.lib.pollers</a></strong>: <em class="summary">Pollers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.smtp-module.html">circuits.lib.smtp</a></strong>: <em class="summary">Simple Mail Transfer Protocol</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.sockets-module.html">circuits.lib.sockets</a></strong>: <em class="summary">TCP/IP and UDP Sockets</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web-module.html">circuits.lib.web</a></strong>: <em class="summary">Circuits Library - Web</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.cgifs-module.html">circuits.lib.web.cgifs</a></strong>: <em class="summary">CGI Field Storage</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.constants-module.html">circuits.lib.web.constants</a></strong>: <em class="summary">Global Constants</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.core-module.html">circuits.lib.web.core</a></strong>: <em class="summary">Core Web Components</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.dispatchers-module.html">circuits.lib.web.dispatchers</a></strong>: <em class="summary">Dispatchers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.errors-module.html">circuits.lib.web.errors</a></strong>: <em class="summary">Errors</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.events-module.html">circuits.lib.web.events</a></strong>: <em class="summary">Events</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.headers-module.html">circuits.lib.web.headers</a></strong>: <em class="summary">Headers Support</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.http-module.html">circuits.lib.web.http</a></strong>: <em class="summary">Hyper Text Transfer Protocol</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.loggers-module.html">circuits.lib.web.loggers</a></strong>: <em class="summary">Logger Component</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.servers-module.html">circuits.lib.web.servers</a></strong>: <em class="summary">Web Server</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.sessions-module.html">circuits.lib.web.sessions</a></strong>: <em class="summary">Session Components</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.tools-module.html">circuits.lib.web.tools</a></strong>: <em class="summary">Tools</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.utils-module.html">circuits.lib.web.utils</a></strong>: <em class="summary">Utilities</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.webob-module.html">circuits.lib.web.webob</a></strong>: <em class="summary">Web Objects</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.web.wsgi-module.html">circuits.lib.web.wsgi</a></strong>: <em class="summary">WSGI Components</em>    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.timers-module.html">circuits.timers</a></strong>: <em class="summary">Timers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.tools-module.html">circuits.tools</a></strong>: <em class="summary">Circuits Tools</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.tools.bench-module.html">circuits.tools.bench</a></strong>: <em class="summary">(Tool) Bench Marking Tool</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.tools.sniffer-module.html">circuits.tools.sniffer</a></strong>: <em class="summary">(Tool) Event Sniffer</em>    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.version-module.html">circuits.version</a></strong>: <em class="summary">Circuits Version</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web-module.html">circuits.web</a></strong>: <em class="summary">Circuits Library - Web</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.workers-module.html">circuits.workers</a></strong>    </li>
+  </ul></td></tr>
+</table>
+
+<br />
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__name__"></a><span class="summary-name">__name__</span> = <code title="&quot;circuits&quot;">&quot;circuits&quot;</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__description__"></a><span class="summary-name">__description__</span> = <code title="'Event framework with a Component architecture'"><code class="variable-quote">'</code><code class="variable-string">Event framework with a Component architecture</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits-module.html#__author_email__" class="summary-name">__author_email__</a> = <code title="'James Mills, prologic at shortcircuit dot net dot au'"><code class="variable-quote">'</code><code class="variable-string">James Mills, prologic at shortcircuit dot </code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__maintainer__"></a><span class="summary-name">__maintainer__</span> = <code title="'James Mills'"><code class="variable-quote">'</code><code class="variable-string">James Mills</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits-module.html#__maintainer_email__" class="summary-name">__maintainer_email__</a> = <code title="'James Mills, prologic at shortcircuit dot net dot au'"><code class="variable-quote">'</code><code class="variable-string">James Mills, prologic at shortcircuit </code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__url__"></a><span class="summary-name">__url__</span> = <code title="'http://trac.shortcircuit.net.au/circuits/'"><code class="variable-quote">'</code><code class="variable-string">http://trac.shortcircuit.net.au/circuits/</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits-module.html#__download_url__" class="summary-name">__download_url__</a> = <code title="'http://trac.softcircuit.com.au/circuits/downloads/circuits-ffb0f53591\
+81+20090225.tar.gz'"><code class="variable-quote">'</code><code class="variable-string">http://trac.softcircuit.com.au/circuits/do</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__platforms__"></a><span class="summary-name">__platforms__</span> = <code title="'POSIX'"><code class="variable-quote">'</code><code class="variable-string">POSIX</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits-module.html#__keywords__" class="summary-name">__keywords__</a> = <code title="'circuits event library framework component architecture'"><code class="variable-quote">'</code><code class="variable-string">circuits event library framework component arc</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits-module.html#__classifiers__" class="summary-name">__classifiers__</a> = <code title="['Development Status :: 4 - Beta',
+ 'Environment :: Console',
+ 'Environment :: No Input/Output (Daemon)',
+ 'Environment :: Other Environment',
+ 'Environment :: Plugins',
+ 'Environment :: Web Environment',
+ 'Intended Audience :: Developers',
+ 'Intended Audience :: Information Technology',
+..."><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">Development Status :: 4 - Beta</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Environm</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__str__"></a><span class="summary-name">__str__</span> = <code title="'circuits-ffb0f5359181+20090225'"><code class="variable-quote">'</code><code class="variable-string">circuits-ffb0f5359181+20090225</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package_data__"></a><span class="summary-name">__package_data__</span> = <code title="{}"><code class="variable-group">{</code><code class="variable-group">}</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__install_requires__"></a><span class="summary-name">__install_requires__</span> = <code title="[]"><code class="variable-group">[</code><code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__setup_requires__"></a><span class="summary-name">__setup_requires__</span> = <code title="[]"><code class="variable-group">[</code><code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__extras_require__"></a><span class="summary-name">__extras_require__</span> = <code title="{}"><code class="variable-group">{</code><code class="variable-group">}</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits-module.html#__entry_points__" class="summary-name">__entry_points__</a> = <code title="'''[console_scripts]
+circuits.bench = circuits.tools.bench:main
+circuits.sniffer = circuits.tools.sniffer:main
+'''"><code class="variable-quote">'</code><code class="variable-string">[console_scripts]\ncircuits.bench = circui</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'circuits'"><code class="variable-quote">'</code><code class="variable-string">circuits</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables Details</span></td>
+</tr>
+</table>
+<a name="__author_email__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__author_email__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">James Mills, prologic at shortcircuit dot net dot au</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__maintainer_email__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__maintainer_email__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">James Mills, prologic at shortcircuit dot net dot au</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__download_url__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__download_url__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">http://trac.softcircuit.com.au/circuits/downloads/circuits-ffb0f53591</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">81+20090225.tar.gz</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__keywords__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__keywords__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">circuits event library framework component architecture</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__classifiers__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__classifiers__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">Development Status :: 4 - Beta</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">Environment :: Console</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">Environment :: No Input/Output (Daemon)</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">Environment :: Other Environment</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">Environment :: Plugins</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">Environment :: Web Environment</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">Intended Audience :: Developers</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">Intended Audience :: Information Technology</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__entry_points__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__entry_points__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'''</code><code class="variable-string">[console_scripts]</code>
+<code class="variable-string">circuits.bench = circuits.tools.bench:main</code>
+<code class="variable-string">circuits.sniffer = circuits.tools.sniffer:main</code>
+<code class="variable-string"></code><code class="variable-quote">'''</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >circuits</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Mar  5 14:47:25 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
