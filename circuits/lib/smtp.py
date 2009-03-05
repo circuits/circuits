@@ -12,7 +12,7 @@ import re
 import socket
 from tempfile import TemporaryFile
 
-from circuits import listener, Event, Component
+from circuits import handler, Event, Component
 
 ###
 ### Supporting Functions
@@ -148,7 +148,7 @@ class SMTP(Component):
 	### Event Processing
 	###
 
-	@listener("raw")
+	@handler("raw")
 	def onRAW(self, sock, line):
 		"""I.onRAW(sock, line) -> None
 
@@ -294,17 +294,17 @@ class SMTP(Component):
 	### Default Socket Events
 	###
 
-	@listener("connect")
+	@handler("connect")
 	def onCONNECT(self, sock, host, port):
 		self.__states[sock] = self.COMMAND
 		self.__buffers[sock] = ""
 		self.write(sock, "220 %s ???\r\n" % self.__fqdn)
 
-	@listener("disconnect")
+	@handler("disconnect")
 	def onDISCONNECT(self, sock):
 		self.reset()
 
-	@listener("read")
+	@handler("read")
 	def onREAD(self, sock, data):
 		"""S.onREAD(sock, data) -> None
 
