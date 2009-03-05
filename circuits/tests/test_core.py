@@ -16,11 +16,11 @@ class Test(Event):
 
 class FilterComponent(Component):
 
-    @handler("foo", type="filter")
+    @handler("foo", filter=True)
     def onFOO(self, msg=""):
         return True
 
-    @handler("bar", type="filter")
+    @handler("bar", filter=True)
     def onBAR(self, msg=""):
         if msg.lower() == "hello world":
             return True
@@ -142,7 +142,7 @@ class EventTestCase(unittest.TestCase):
             def a1(self):
                 pass
 
-            @handler("a", type="filter")
+            @handler("a", filter=True)
             def a2(self):
                 pass
 
@@ -169,7 +169,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @handler(type="filter")
+            @handler(filter=True)
             def onALL(self, event, *args, **kwargs):
                 self.flag = True
                 return True
@@ -570,7 +570,7 @@ class EventTestCase(unittest.TestCase):
         a specific channel.
         """
 
-        @handler("foo", type="filter")
+        @handler("foo", filter=True)
         def onFOO():
             pass
 
@@ -634,7 +634,7 @@ class EventTestCase(unittest.TestCase):
         def onBAR(test, time):
             pass
 
-        @handler(type="filter")
+        @handler(filter=True)
         def onSTOP(*args, **kwargs):
             return kwargs.get("stop", False)
 
