@@ -121,10 +121,73 @@ class Error(Event):
     @type traceback: traceback
     """
 
-class Started(Event): pass
-class Stopped(Event): pass
-class Registered(Event): pass
-class Unregistered(Event): pass
+    def __init__(self, type, value, traceback):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Error, self).__init__(type, value, traceback)
+
+
+class Started(Event):
+    """Started Event
+
+    This Event is sent when a Component has started running.
+
+    @param component: The component that was started
+    @type  component: Component or Manager
+    """
+
+    def __init__(self, component):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Started, self).__init__(component)
+
+
+class Stopped(Event):
+    """Stopped Event
+
+    This Event is sent when a Component has stopped running.
+
+    @param component: The component that has stopped
+    @type  component: Component or Manager
+    """
+
+    def __init__(self, component):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Stopped, self).__init__(component)
+
+
+class Registered(Event):
+    """Registered Event
+
+    This Event is sent when a Component has registered with another Component
+    or Manager. This Event is only sent iif the Component or Manager being
+    registered with is not itself.
+
+    @param component: The Component being registered
+    @type  component: Component
+
+    @param manager: The Component or Manager being registered with
+    @type  manager: Component or Manager
+    """
+
+    def __init__(self, component, manager):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Registered, self).__init__(component, manager)
+
+class Unregistered(Event):
+    """Unregistered Event
+
+    This Event is sent when a Component has been unregistered from it's
+    Component or Manager.
+    """
+
+    def __init__(self, component, manager):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Unregistered, self).__init__(component, manager)
+
 
 def handler(*channels, **kwargs):
     """Creates an Event Handler of a callable object
