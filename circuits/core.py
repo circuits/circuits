@@ -771,7 +771,13 @@ class BaseComponent(Manager):
         self.manager._ticks.update(self._getTicks())
 
     def unregister(self):
-        "Unregister all registered event handlers from the manager."
+        """Unregister all registered Event Handlers
+        
+        This will unregister all registered Event Handlers of this Component
+        from it's registered Component or Manager.
+
+        @note: It's possible to unregister a Component from itself!
+        """
 
         manager = self.manager
 
