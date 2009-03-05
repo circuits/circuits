@@ -7,6 +7,8 @@
 circuits.lib.web contains the circuits full stack web server and wsgi library.
 """
 
+import wsgi
+import tools
 import loggers
 import sessions
 import dispatchers
@@ -14,4 +16,3 @@ from errors import *
 from core import Controller
 from events import Request, Response
 from servers import BaseServer, Server
-from wsgi import Application, Middleware, Filter
