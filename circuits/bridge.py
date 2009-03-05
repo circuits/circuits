@@ -106,7 +106,7 @@ class Bridge(Component):
                 self.push(Error(self._sock, e), "error", self.channel)
                 self.__close__()
 
-    @listener(type="filter")
+    @handler(filter=True)
     def onEVENTS(self, event, *args, **kwargs):
         channel = event.channel
         if True in [event.name == name for name in self.IgnoreEvents]:
@@ -130,7 +130,7 @@ class Bridge(Component):
         else:
             self.__write__(("<broadcast>", self.port), s)
 
-    @listener("helo", type="filter")
+    @handler("helo", filter=True)
     def onHELO(self, event, address, port):
         source = event.source
 
@@ -141,7 +141,7 @@ class Bridge(Component):
             self.nodes.add((address, port))
             self.push(Helo(*self.ourself), "helo")
 
-    @listener("read", type="filter")
+    @handler("read", filter=True)
     def onREAD(self, address, data):
         event = unpickle(data)
 
@@ -154,7 +154,7 @@ class Bridge(Component):
 
         self.send(event, channel, target)
 
-    @listener("close", type="filter")
+    @handler("close", filter=True)
     def onCLOSE(self):
         """Close Event
 
@@ -170,7 +170,7 @@ class Bridge(Component):
         except socket.error, error:
             self.push(Error(error), "error", self.channel)
 
-    @listener("write", type="filter")
+    @handler("write", filter=True)
     def onWRITE(self, address, data):
         """Write Event
 
