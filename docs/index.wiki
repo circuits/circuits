@@ -44,18 +44,7 @@ be sure to check out the Examples and the classic [source:examples/hello.py Hell
 
 == Documentation ==
  * [./DevelopersGuide Developers Guide]
-
-== References ==
- * [./core Core Library]
- * [./bridge Bridge]
- * [./debugger Debugger]
- * [./drivers Drivers] ''Drivers for foreign event systems''
- * [./timers Timers]
- * [./workers Worekrs] ''Thread and Process workers''
- * [./web Web] ''circuits.web''
- * [./lib Component Library]
-
-== Miscellaneous ==
+ * [export:/docs/html/index.html Library Documentation]
  * [./Performance Performance]
  * [./tools Development Tools]
 
