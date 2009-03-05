@@ -794,6 +794,18 @@ class BaseComponent(Manager):
         return ticks
 
     def register(self, manager):
+        """Register all Event Handlers with the given Manager
+        
+        This will register all Event Handlers of this Component to the
+        given Manager. By default, every Component (Base Component) is
+        registered with itself.
+        
+        Iif the Component or Manager being registered
+        with is not the current Component, then any Hidden Components
+        in registered to this Component will also be regsitered with the
+        given Manager. A Registered Event will also be sent.
+        """
+
         p = lambda x: callable(x) and getattr(x, "handler", False)
         handlers = [v for k, v in getmembers(self, p)]
 
