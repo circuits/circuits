@@ -2,11 +2,13 @@
 # Date:     2nd April 2006
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""
-Core of the circuits library containing all of the essentials for a
-circuits based application or system. Normal usage of circuits:
+"""Building Blocks
 
->>> from circuits import handler, Manager, Component, Event
+This module contains the most basic building blocks of all Components.
+It's important to note that a Component is also a Manager.
+
+The following import statement is commonly used:
+   >>> from circuits import handler, Event, Component, Manager
 """
 
 import new
