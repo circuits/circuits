@@ -105,7 +105,7 @@ class Request(object):
         host = self.headers.get("Host", None)
         if not host:
             host = self.local.name or self.local.ip
-        self.base = "%s://%s" % (self.scheme, host)
+        self.base = self.script_name = "%s://%s" % (self.scheme, host)
 
     headers = property(_getHeaders, _setHeaders)
 
