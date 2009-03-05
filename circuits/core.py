@@ -611,7 +611,7 @@ class Manager(object):
 
         self._running = True
 
-        self.push(Started(), "started")
+        self.push(Started(self), "started")
 
         try:
             while self._running or (self._running and self._task is not None and self._task.is_alive()):
@@ -632,7 +632,7 @@ class Manager(object):
                     else:
                         _exc_clear()
         finally:
-            self.push(Stopped(), "stopped")
+            self.push(Stopped(self), "stopped")
             rtime = time.time()
             while len(self) > 0 and (time.time() - rtime) < 3:
                 [f() for f in self.ticks.copy()]
