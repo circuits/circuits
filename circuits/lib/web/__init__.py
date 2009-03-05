@@ -19,4 +19,4 @@ from errors import *
 from core import Controller
 from events import Request, Response
 from servers import BaseServer, Server
-from wsgi import Application, Middleware, Filter
+from wsgi import Application, Middleware
