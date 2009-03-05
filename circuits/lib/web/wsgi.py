@@ -160,6 +160,8 @@ class Middleware(Component):
 
         env("REQUEST_METHOD", req.method)
         env("PATH_INFO", req.path)
+        env("SERVER_NAME", req.server.address)
+        env("SERVER_PORT", str(req.server.port))
         env("SERVER_PROTOCOL", req.server_protocol)
         env("QUERY_STRING", req.qs)
         env("SCRIPT_NAME", req.script_name)
