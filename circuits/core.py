@@ -467,13 +467,25 @@ class Manager(object):
 
 
     def push(self, event, channel, target=None):
-        """E.push(event, channel, target=None) -> None
+        """Push a new Event into the queue
 
-        Push the given event onto the given channel.
-        This will queue the event up to be processed later
-        by flushEvents. If target is given, the event will
-        be queued for processing by the component given by
-        target.
+        This will push the given Event, Channel and Target onto the
+        Event Queue for later processing.
+
+        if target is None, then target will be set as the Channel of
+        the current Component, self.channel (defaulting back to None).
+
+        If this Component's Manager is itself, enqueue on this Component's
+        Event Queue, otherwise enqueue on this Component's Manager.
+
+        @param event: The Event Object
+        @type  event: Event
+
+        @param channel: The Channel this Event is bound for
+        @type  channel: str
+
+        @keyword target: The target Component's channel this Event is bound for
+        @type    target: str or Component
         """
 
         if target is None:
