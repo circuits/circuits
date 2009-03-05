@@ -149,7 +149,7 @@ class Application(Component):
 class Gateway(Component):
 
     def __init__(self, app, path=None):
-        super(Middleware, self).__init__(channel=path)
+        super(Gateway, self).__init__(channel=path)
 
         self.app = app
         self.request = self.response = None
