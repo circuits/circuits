@@ -60,41 +60,26 @@ def inspect(x):
 
     write("%s\n" % x)
 
-    write(" Registered Components:")
-    if x.components:
-        for component in x.components:
-            write("\n  %s" % component)
-    else:
-        write(" None")
+    write(" Registered Components: %d\n" % len(x.components))
+    for component in x.components:
+        write("  %s\n" % component)
     write("\n")
 
-    write(" Hidden Components:")
-    if x.hidden:
-        for component in x.hidden:
-            write("\n  %s" % component)
-    else:
-        write(" None")
+    write(" Hidden Components: %d\n" % len(x.hidden))
+    for component in x.hidden:
+        write("  %s\n" % component)
     write("\n")
 
-    write(" Tick Functions:")
-    if x.ticks:
-        for tick in x.ticks:
-            write("\n  %s" % tick)
-    else:
-        write(" None")
+    write(" Tick Functions: %d\n" % len(x.ticks))
+    for tick in x.ticks:
+        write("  %s\n" % tick)
     write("\n")
 
-    write(" Channels and Event Handlers:")
-    if x.channels:
-        for channel in x.channels:
-            write("\n  %s:" % channel)
-            if x.channels[channel]:
-                for handler in x.channels[channel]:
-                    write("\n   %s" % reprhandler(handler))
-            else:
-                write(" None")
-    else:
-        write(" None")
+    write(" Channels and Event Handlers: %d\n" % len(x.channels))
+    for channel in x.channels:
+        write("  %s: %d\n" % (channel, len(x.channels[channel])))
+        for handler in x.channels[channel]:
+            write("   %s\n" % reprhandler(handler))
     write("\n")
 
     return "".join(s)
