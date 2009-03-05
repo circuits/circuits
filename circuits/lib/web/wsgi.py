@@ -54,7 +54,7 @@ class Application(Component):
                 env("REQUEST_METHOD"),
                 env("wsgi.url_scheme"),
                 env("PATH_INFO"),
-                env("SERVER_PROTOCOL"),
+                protocol,
                 env("QUERY_STRING"))
 
         request.headers = headers
