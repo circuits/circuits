@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>circuits.lib.smtp.SMTP</title>
+  <title>circuits.lib.web.wsgi.Gateway</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -44,8 +44,9 @@
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
         <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
-        <a href="circuits.lib.smtp-module.html">Module&nbsp;smtp</a> ::
-        Class&nbsp;SMTP
+        <a href="circuits.lib.web-module.html">Package&nbsp;web</a> ::
+        <a href="circuits.lib.web.wsgi-module.html">Module&nbsp;wsgi</a> ::
+        Class&nbsp;Gateway
       </span>
     </td>
     <td>
@@ -56,7 +57,7 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class SMTP</h1><p class="nomargin-top"></p>
+<h1 class="epydoc">Class Gateway</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
     object --+            
              |            
@@ -66,16 +67,10 @@
                      |    
         <a href="circuits.core.Component-class.html">core.Component</a> --+
                          |
-                        <strong class="uidshort">SMTP</strong>
+                        <strong class="uidshort">Gateway</strong>
 </pre>
 
 <hr />
-<p>SMTP(event) -&gt; new smtp object</p>
-  <p>Create a new smtp object which implements the SMTP protocol. Note this
-  doesn't actually do anything usefull unless used in conjunction with 
-  circuits.parts.sockets.TCPServer.</p>
-  <p>See: examples/net/smtpd.py</p>
-
 <!-- ==================== NESTED CLASSES ==================== -->
 <a name="section-NestedClasses"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -106,7 +101,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="reset"></a><span class="summary-sig-name">reset</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="circuits.lib.web.wsgi.Gateway-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">app</span>,
+        <span class="summary-sig-arg">path</span>=<span class="summary-sig-default">None</span>)</span><br />
+      initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             
             
@@ -122,47 +120,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="processMessage"></a><span class="summary-sig-name">processMessage</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">mailfrom</span>,
-        <span class="summary-sig-arg">rcpttos</span>,
-        <span class="summary-sig-arg">data</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">str</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getFQDN"></a><span class="summary-sig-name">getFQDN</span>(<span class="summary-sig-arg">I</span>)</span><br />
-      Return the fully qualified domain name of this server.</td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">None</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="circuits.lib.smtp.SMTP-class.html#onRAW" class="summary-sig-name">onRAW</a>(<span class="summary-sig-arg">I</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">line</span>)</span><br />
-      Process a line of text and generate the appropiate event.</td>
+          <td><span class="summary-sig"><a name="environ"></a><span class="summary-sig-name">environ</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -178,9 +136,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="smtpHELO"></a><span class="summary-sig-name">smtpHELO</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">arg</span>)</span></td>
+          <td><span class="summary-sig"><a name="start_response"></a><span class="summary-sig-name">start_response</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">status</span>,
+        <span class="summary-sig-arg">headers</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -196,154 +154,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="smtpNOOP"></a><span class="summary-sig-name">smtpNOOP</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">arg</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="smtpQUIT"></a><span class="summary-sig-name">smtpQUIT</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">arg</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="smtpMAIL"></a><span class="summary-sig-name">smtpMAIL</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">arg</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="smtpRCPT"></a><span class="summary-sig-name">smtpRCPT</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">arg</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="smtpRSET"></a><span class="summary-sig-name">smtpRSET</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">arg</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="smtpDATA"></a><span class="summary-sig-name">smtpDATA</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">arg</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="circuits.lib.smtp.SMTP-class.html#onCONNECT" class="summary-sig-name">onCONNECT</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">host</span>,
-        <span class="summary-sig-arg">port</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="circuits.lib.smtp.SMTP-class.html#onDISCONNECT" class="summary-sig-name">onDISCONNECT</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">sock</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">None</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="circuits.lib.smtp.SMTP-class.html#onREAD" class="summary-sig-name">onREAD</a>(<span class="summary-sig-arg">S</span>,
-        <span class="summary-sig-arg">sock</span>,
-        <span class="summary-sig-arg">data</span>)</span><br />
-      Process any incoming data appending it to an internal buffer.</td>
+          <td><span class="summary-sig"><a href="circuits.lib.web.wsgi.Gateway-class.html#onREQUEST" class="summary-sig-name">onREQUEST</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">response</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -357,7 +172,6 @@
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
       <code><a href="circuits.core.BaseComponent-class.html#__call__">__call__</a></code>,
-      <code><a href="circuits.core.BaseComponent-class.html#__init__">__init__</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#__repr__">__repr__</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#register">register</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#unregister">unregister</a></code>
@@ -403,29 +217,6 @@
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
       <code><a href="circuits.core.Component-class.html#__new__">__new__</a></code>
       </p>
-    </td>
-  </tr>
-</table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Class Variables</span></td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="COMMAND"></a><span class="summary-name">COMMAND</span> = <code title="0">0</code>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="DATA"></a><span class="summary-name">DATA</span> = <code title="1">1</code>
     </td>
   </tr>
 </table>
@@ -481,46 +272,44 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
-<a name="onRAW"></a>
+<a name="__init__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">onRAW</span>(<span class="sig-arg">I</span>,
-        <span class="sig-arg">sock</span>,
-        <span class="sig-arg">line</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">app</span>,
+        <span class="sig-arg">path</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
     >&nbsp;
     </td>
   </tr></table>
   
-  <p>Process a line of text and generate the appropiate event. This must 
-  not be overridden by sub-classes, if it is, this must be explitetly 
-  called by the sub-class. Other Components may however listen to this 
-  event and process custom SMTP events.</p>
+  <p>initializes x; see x.__class__.__doc__ for signature</p>
   <dl class="fields">
-    <dt>Returns: None</dt>
-    <dt>Decorators:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code>@listener("raw")</code></li>
-    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
   </dl>
 </td></tr></table>
 </div>
-<a name="onCONNECT"></a>
+<a name="onREQUEST"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">onCONNECT</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">sock</span>,
-        <span class="sig-arg">host</span>,
-        <span class="sig-arg">port</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">onREQUEST</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>,
+        <span class="sig-arg">response</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     >&nbsp;
@@ -531,59 +320,7 @@
   <dl class="fields">
     <dt>Decorators:</dt>
     <dd><ul class="nomargin-top">
-        <li><code>@listener("connect")</code></li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="onDISCONNECT"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">onDISCONNECT</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">sock</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  
-  <dl class="fields">
-    <dt>Decorators:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code>@listener("disconnect")</code></li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="onREAD"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">onREAD</span>(<span class="sig-arg">S</span>,
-        <span class="sig-arg">sock</span>,
-        <span class="sig-arg">data</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Process any incoming data appending it to an internal buffer. Split 
-  the buffer by the standard line delimiters CRLF and create a Raw event 
-  per line. Any unfinished lines of text, leave in the buffer.</p>
-  <dl class="fields">
-    <dt>Returns: None</dt>
-    <dt>Decorators:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code>@listener("read")</code></li>
+        <li><code>@handler("request", filter= True)</code></li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -620,7 +357,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Mar  6 05:08:03 2009
+    Generated by Epydoc 3.0.1 on Fri Mar  6 05:08:04 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
