@@ -40,13 +40,29 @@ class Host(object):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
 
 class Request(object):
-    """Request(sock, method, scheme, path, protocol, qa, headers) -> ...
-        new HTTP Request object
+    """Creates a new Request object to hold information about a request.
+    
+    @param sock: The socket object of the request.
+    @type  sock: socket.socket
 
-    Request object that holds an incoming request.
+    @param method: The requsted method.
+    @type  method: str
+
+    @param scheme: The requsted scheme.
+    @type  scheme: str
+
+    @param path: The requsted path.
+    @type  path: str
+
+    @param protocol: The requsted protocol.
+    @type  protocol: str
+
+    @param qs: The query string of the request.
+    @type  qs: str
     """
 
     server = None
+    """@cvar: A reference to the underlying server"""
 
     scheme = "http"
     protocol = (1, 1)

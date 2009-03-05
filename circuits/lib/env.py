@@ -99,11 +99,11 @@ class Environment(Component):
     This component can be extended to provide more complex
     system and application environments. This component will
     expose the following events:
-    - Created
-    - Loaded
-    - Invalid
-    - NeedsUpgrade
-    - Upgraded
+       - Created
+       - Loaded
+       - Invalid
+       - NeedsUpgrade
+       - Upgraded
     """
 
     channel = "env"

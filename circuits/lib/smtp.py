@@ -24,7 +24,7 @@ def splitLines(s, buffer):
 	"""splitLines(s, buffer) -> lines, buffer
 
 	Append s to buffer and find any new lines of text in the
-	string splitting at the standard IRC delimiter \r\n. Any
+	string splitting at the standard IRC delimiter CRLF. Any
 	new lines found, return them as a list and the remaining
 	buffer for further processing.
 	"""
@@ -310,7 +310,7 @@ class SMTP(Component):
 
 		Process any incoming data appending it to an internal
 		buffer. Split the buffer by the standard line delimiters
-		\r\n and create a Raw event per line. Any unfinished
+		CRLF and create a Raw event per line. Any unfinished
 		lines of text, leave in the buffer.
 		"""
 

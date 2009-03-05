@@ -33,8 +33,8 @@ def expires(request, response, secs=0, force=False):
     
     If 'secs' is zero, the 'Expires' header is set one year in the past, and
     the following "cache prevention" headers are also set:
-       'Pragma': 'no-cache'
-       'Cache-Control': 'no-cache, must-revalidate'
+       - 'Pragma': 'no-cache'
+       - 'Cache-Control': 'no-cache, must-revalidate'
     
     If 'force' is False (the default), the following headers are checked:
     'Etag', 'Last-Modified', 'Age', 'Expires'. If any are already present,

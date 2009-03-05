@@ -2,14 +2,14 @@
 # Date:     15th September 2008
 # Author:   James Mills <prologic@shortcircuit.net.au>
 
-"""Pollers
+"""Poller Components for asynchronous file and socket I/O.
 
 This module contains Poller components that enable polling of file or socket
 descriptors for read/write events. Pollers:
- * Select
- * Poll
- * EPoll
- * KQueue
+   - Select
+   - Poll
+   - EPoll
+   - KQueue
 """
 
 try:

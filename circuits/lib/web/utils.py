@@ -75,9 +75,9 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
     """Create an absolute URL for the given path.
     
     If 'path' starts with a slash ('/'), this will return
-        (base + script_name + path + qs).
+       - (base + script_name + path + qs).
     If it does not start with a slash, this returns
-        (base + script_name [+ request.path] + path + qs).
+       - (base + script_name [+ request.path] + path + qs).
     
     If script_name is None, request will be used
     to find a script_name, if available.
