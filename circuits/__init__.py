@@ -39,7 +39,7 @@ __download_url__ = "http://trac.softcircuit.com.au/circuits/downloads/%s-%s.tar.
 __copyright__ = "Copyright (C) 2004-2009 by %s" % __author__
 __license__ = "MIT"
 __platforms__ = "POSIX"
-__keywords__ = "circuits event library framework component architecture"
+__keywords__ = "circuits Event Library Framework Component Architecture"
 __classifiers__ = [
 	"Development Status :: 4 - Beta",
 	"Environment :: Console",
