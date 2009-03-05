@@ -308,14 +308,6 @@ circuits.tools.sniffer.VERSION	circuits.tools.sniffer-module.html#VERSION
 circuits.tools.sniffer.parse_options	circuits.tools.sniffer-module.html#parse_options
 circuits.tools.sniffer.USAGE	circuits.tools.sniffer-module.html#USAGE
 circuits.tools.sniffer.main	circuits.tools.sniffer-module.html#main
-circuits.version	circuits.version-module.html
-circuits.version.forget_version	circuits.version-module.html#forget_version
-circuits.version.remembered_version	circuits.version-module.html#remembered_version
-circuits.version.remember_version	circuits.version-module.html#remember_version
-circuits.version.get_version	circuits.version-module.html#get_version
-circuits.version.__package__	circuits.version-module.html#__package__
-circuits.version.write_version	circuits.version-module.html#write_version
-circuits.version.unknown_version	circuits.version-module.html#unknown_version
 circuits.web	circuits.web-module.html
 circuits.web.__package__	circuits.web-module.html#__package__
 circuits.workers	circuits.workers-module.html
