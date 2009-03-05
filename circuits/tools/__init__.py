@@ -56,6 +56,15 @@ def graph(x):
     return "".join(s)
 
 def reprhandler(x):
+    """Display a nicely formatted Event Handler, x
+
+    @param x: An Event Handler
+    @type  x: function or method
+
+    @return: A nicely formatted representation of the Event Handler, x
+    @rtype:  str
+    """
+
     if not hasattr(x, "handler"):
         raise TypeError("%r is not an Event Handler" % x)
 
