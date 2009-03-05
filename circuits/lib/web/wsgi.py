@@ -52,6 +52,7 @@ class Application(Component):
         protocol = tuple(map(int, env("SERVER_PROTOCOL")[5:].split(".")))
         request = webob.Request(None,
                 env("REQUEST_METHOD"),
+                env("wsgi.url_scheme"),
                 env("PATH_INFO"),
                 env("SERVER_PROTOCOL"),
                 env("QUERY_STRING"))
