@@ -202,8 +202,6 @@ def handler(*channels, **kwargs):
     spcified Target Component's Channel.
     
     Examples:
-
-    >>> from circuits.core import handler
     >>> @handler("foo")
     ... def foo():
     ...     pass
