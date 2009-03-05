@@ -245,6 +245,8 @@ def handler(*channels, **kwargs):
     return wrapper
 
 def listener(*channels, **kwargs):
+    "@deprecated: This is planned to be deprecated in 1.2 Use handlers instead"
+
     warnings.warn("Please use @handler, @listener will be deprecated in 1.2")
     return handler(*channels, **kwargs)
 
