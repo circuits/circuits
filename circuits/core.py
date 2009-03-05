@@ -37,16 +37,23 @@ except ImportError:
 class Event(object):
     """Create a new Event Object
 
-    Create a new event object populating it with the given
-    list of arguments and keyword arguments.
+    Create a new Event Object populating it with the given list of arguments
+    and keyword arguments.
 
-    :param args: list of arguments for this event
-    :type args: list/tuple or iterable
-    :param kwargs: keyword arguments for this event
-    :type kwargs: dict
+    @ivar name:    The name of the Event
+    @ivar channel: The channel this Event is bound for
+    @ivar target:  The target Component's channel this Event is bound for
+
+    @param args: list of arguments
+    @type  args: tuple
+
+    @param kwargs: dct of keyword arguments
+    @type  kwargs: dict
     """
 
     def __init__(self, *args, **kwargs):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
         self.args = args
         self.kwargs = kwargs
 
@@ -57,8 +64,8 @@ class Event(object):
     def __eq__(self, y):
         """ x.__eq__(y) <==> x==y
 
-        Tests the equality of event self against event y.
-        Two events are considered "equal" iif the name,
+        Tests the equality of Event self against Event y.
+        Two Events are considered "equal" iif the name,
         channel and target are identical as well as their
         args and kwargs passed.
         """
@@ -83,7 +90,7 @@ class Event(object):
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
 
-        Get and return data from the event object requested by "x".
+        Get and return data from the Event object requested by "x".
         If an int is passed to x, the requested argument from self.args
         is returned index by x. If a str is passed to x, the requested
         keyword argument from self.kwargs is returned keyed by x.
