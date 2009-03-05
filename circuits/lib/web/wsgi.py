@@ -175,7 +175,7 @@ class Middleware(Component):
         return environ
 
     def start_response(self, status, headers):
-        self.response.stats = status
+        self.response.status = status
         for header in headers:
             self.response.headers.add_header(*header)
 
