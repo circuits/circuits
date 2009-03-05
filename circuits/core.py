@@ -683,7 +683,6 @@ class BaseComponent(Manager):
        - target is the Component's Channel
        - channel is the Event Handler's Channel
 
-    @cvar channel: The Component's default Channel
     @ivar channel: The Component's Channel
     """
 
