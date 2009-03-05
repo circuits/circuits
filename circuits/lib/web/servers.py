@@ -21,15 +21,18 @@ from dispatchers import Dispatcher
 
 class BaseServer(Component):
 
-    def __init__(self, port, address="", docroot=None, **kwargs):
-        super(BaseServer, self).__init__(**kwargs)
+    channel = "web"
 
-        self.server = TCPServer(port, address, **kwargs) + HTTP(self, **kwargs)
+    def __init__(self, port, address="", docroot=None, channel=channel):
+        super(BaseServer, self).__init__(channel=channel)
+
+        self.server = TCPServer(port, address, channel=channel)
+        HTTP(self, channel=channel).register(self.server)
 
         Request.server = self
         Request.local = Host(self.server.address, self.server.port)
 
-        self += self.server
+        self.server.register(self)
 
         print "%s listening on %s" % (SERVER_VERSION, self.base())
 
