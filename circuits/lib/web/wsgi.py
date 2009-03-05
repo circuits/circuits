@@ -32,11 +32,7 @@ class Application(Component):
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
 
-        self.dispatcher = Dispatcher(**kwargs)
-        self.manager += self.dispatcher
-
-    def registered(self, component, manager):
-        manager += self.dispatcher
+        Dispatcher(**kwargs).register(self)
 
     def translateHeaders(self, environ):
         for cgiName in environ:
