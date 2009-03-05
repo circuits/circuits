@@ -9,6 +9,15 @@ tools are installed as executables with a prefix of "circuits."
 """
 
 def graph(x):
+    """Display a directed graph of the Component structure of x
+
+    @param x; A Component or Manager to graph
+    @type  x: Component or Manager
+
+    @return: A directed graph representing x's Component sturcture.
+    @rtype:  str
+    """
+
     s = []
     write = s.append
 
