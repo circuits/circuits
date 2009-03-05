@@ -311,7 +311,7 @@ class Manager(object):
     def __len__(self):
         """x.__len__() <==> len(x)
 
-        Returns the number of Events in the x's queue.
+        Returns the number of events in the Event Queue.
         """
 
         return len(self._queue)
