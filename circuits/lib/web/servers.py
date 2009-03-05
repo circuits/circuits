@@ -38,16 +38,11 @@ class BaseServer(Component):
 
     @property
     def address(self):
-        if hasattr(self, "server"):
-            return self.server.address
-        else:
-            return None
+        return self.server.address if hasattr(self, "server") else None
 
     @property
     def port(self):
-        if hasattr(self, "server"):
-            return self.server.port
-        return None
+        return self.server.port if hasattr(self, "server") else None
 
     def base(self):
         host = self.server.address
@@ -79,16 +74,13 @@ class Server(BaseServer):
         self.dispatcher = Dispatcher(docroot=docroot, **kwargs)
         self += self.dispatcher
 
-    def _getDocRoot(self):
-        if hasattr(self, "dispatcher"):
-            return self.dispatcher.docroot
-        else:
-            return None
+    @property
+    def docroot(self):
+        return self.dispatcher.docroot if hasattr(self, "dispatcher") else None
 
-    def _setDocRoot(self, docroot):
+    @docroot.setter
+    def __set_docroot(self, docroot):
         if os.path.exists(docroot):
             self.dispatcher.docroot = docroot
         else:
             raise IOError(2, "Invalid docroot path", docroot)
-
-    docroot = property(_getDocRoot, _setDocRoot, "Document Root")
