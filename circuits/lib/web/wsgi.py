@@ -30,10 +30,10 @@ class Application(Component):
             "REMOTE_ADDR": "Remote-Addr",
             }
 
-    def __init__(self, *args, **kwargs):
-        super(Application, self).__init__(*args, **kwargs)
+    def __init__(self):
+        super(Application, self).__init__()
 
-        Dispatcher(**kwargs).register(self)
+        Dispatcher().register(self)
 
     def translateHeaders(self, environ):
         for cgiName in environ:
