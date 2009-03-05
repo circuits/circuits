@@ -52,7 +52,7 @@ class Debugger(Component):
         else:
             self.file = file
 
-    @handler("error", type="filter")
+    @handler("error", filter=True)
     def error(self, *args, **kwargs):
         if not self.errors:
             return
@@ -79,7 +79,7 @@ class Debugger(Component):
 
         s.close()
 
-    @handler(type="filter")
+    @handler(filter=True)
     def event(self, event, *args, **kwargs):
         """Global Event Handler
 
