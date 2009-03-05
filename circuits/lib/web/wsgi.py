@@ -9,7 +9,7 @@ This module implements WSGI Components.
 
 from traceback import format_exc
 
-from circuits import listener, Component
+from circuits import handler, Component
 
 import webob
 from events import Request
@@ -129,8 +129,8 @@ class Middleware(Component):
         for header in headers:
             self.response.headers.add_header(*header)
 
-    @listener("request", type="filter")
-    def onREQUEST(self, request, response):
+    @handler("request", filter=True)
+    def onREQUEST(self, request, response, *args, **kwargs):
         self.request = request
         self.response = response
 
@@ -138,7 +138,7 @@ class Middleware(Component):
 
 class Filter(Component):
 
-    @listener("response", type="filter")
+    @handler("response", filter=True)
     def onRESPONSE(self, request, response):
         self.request = request
         self.response = response
