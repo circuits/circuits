@@ -716,6 +716,17 @@ class BaseComponent(Manager):
         return format % (name, channel, q, c, h, state)
 
     def __call__(self, channel, *args, **kwargs):
+        """x.__call__(...) <==> x(...)
+
+        (Optional) Convenience callable to send an arbitary Event to
+        the given Channel populating the Event OBject with the given
+        *args and **kwargs and returning the result.
+
+        @return: Result of sending Event to Channel with (*args, **kwargs)
+        @rtype object
+        """
+
+
         e = Event(*args, **kwargs)
         e.name = channel.title()
         return self.send(e, channel, self.channel)
