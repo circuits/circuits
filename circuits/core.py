@@ -676,7 +676,9 @@ class BaseComponent(Manager):
     Channel (None), then any Event Handlers will actually listen on a Channel
     that is a combination of the Component's Channel prefixed with the Event
     Handler's Channel. The form becomes:
-       C{target:channel}
+
+    C{target:channel}
+
     Where:
        - target is the Component's Channel
        - channel is the Event Handler's Channel
