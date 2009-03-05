@@ -5,6 +5,9 @@
 """Circuits Library - Web
 
 circuits.lib.web contains the circuits full stack web server and wsgi library.
+
+@deprecated: The wsgi Components will be going away in 1.2 in favour of just
+             importing the wsgo module. Post 1.2 please use circutis.web.wsgi
 """
 
 import wsgi
@@ -16,3 +19,4 @@ from errors import *
 from core import Controller
 from events import Request, Response
 from servers import BaseServer, Server
+from wsgi import Application, Middleware, Filter
