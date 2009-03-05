@@ -190,16 +190,16 @@ class Unregistered(Event):
 
 
 def handler(*channels, **kwargs):
-    """Creates an Event Handler of a callable object
+    """Creates an Event Handler
 
-    Decorator to wrap a callable into an event Handler that
+    Decorator to wrap a callable into an Event Handler that
     listens on a set of channels defined by channels. The type
-    of the handler defaults to "listener". If kwargs["filter"]
+    of the Event Handler defaults to "listener". If kwargs["filter"]
     is defined and is True, the Event Handler is defined as a
-    filter and has priority over non-filter Event Handlers.
-    If kwargs["target"] is defined and and is not None, the
+    Filter and has priority over Listener Event Handlers.
+    If kwargs["target"] is defined and is not None, the
     Event Handler will listen for the spcified channels on the
-    spcified target Component's channel.
+    spcified Target Component's Channel.
     
     Examples:
 
@@ -260,7 +260,7 @@ class HandlersType(type):
 class Manager(object):
     """Creates a new Manager
 
-    Create a new event manager which manages Components and Events.
+    Create a new Event manager which manages Components and Events.
     """
 
     def __init__(self, *args, **kwargs):
@@ -293,7 +293,7 @@ class Manager(object):
     def __len__(self):
         """x.__len__() <==> len(x)
 
-        Returns the number of events in the x's queue.
+        Returns the number of Events in the x's queue.
         """
 
         return len(self._queue)
