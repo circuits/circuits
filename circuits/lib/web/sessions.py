@@ -11,7 +11,7 @@ and access persistent information.
 from uuid import uuid4 as uuid
 from collections import defaultdict
 
-from circuits import listener, Component
+from circuits import handler, Component
 
 class Sessions(Component):
 
@@ -21,7 +21,7 @@ class Sessions(Component):
         self.name = name
         self.sessions = defaultdict(dict)
 
-    @listener("request", type="filter")
+    @handler("request", filter=True)
     def request(self, request, response):
         if self.name in request.cookie:
             id = request.cookie[self.name].value
