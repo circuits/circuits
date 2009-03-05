@@ -90,14 +90,56 @@ class Application(Component):
         response.status = "%s %s" % (status, message)
         response.headers.add_header("Connection", "close")
 
+    def _handleError(self, error):
+        response = error.response
+
+        try:
+            v = self.send(error, "httperror", self.channel)
+        except TypeError:
+            v = None
+
+        if v is not None:
+            if isinstance(v, basestring):
+                response.body = v
+                res = Response(response)
+                self.send(res, "response", self.channel)
+            elif isinstance(v, HTTPError):
+                self.send(Response(v.response), "response", self.channel)
+            else:
+                raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
+
+    def response(self, response):
+        response.done = True
+
     def __call__(self, environ, start_response):
         request, response = self.getRequestResponse(environ)
 
         try:
-            self.send(Request(request, response), "request", self.channel)
+            req = Request(request, response)
+
+            try:
+                v = self.send(req, "request", self.channel, True, False)
+            except TypeError:
+                v = None
+
+            if v is not None:
+                if isinstance(v, basestring):
+                    response.body = v
+                    res = Response(response)
+                    self.send(res, "response", self.channel)
+                elif isinstance(v, HTTPError):
+                    self._handleError(v)
+                elif isinstance(v, webob.Response):
+                    res = Response(v)
+                    self.send(res, "response", self.channel)
+                else:
+                    raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
+            else:
+                error = NotFound(request, response)
+                self._handleError(error)
         except:
             error = HTTPError(request, response, 500, error=format_exc())
-            self.send(error, "httperror", self.channel)
+            self._handleError(error)
         finally:
             body = response.process()
             start_response(response.status, response.headers.items())
