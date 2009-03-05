@@ -20,7 +20,7 @@ try:
 except ImportError:
     import select
 
-from circuits import listener, Event, Component
+from circuits import handler, Event, Component
 
 POLL_INTERVAL = 0.00001
 CONNECT_TIMEOUT = 4
@@ -212,7 +212,7 @@ class Client(Component):
             self._write.append(self._sock)
         self._buffer.append(data)
 
-    @listener("shutdown", type="filter")
+    @handler("shutdown", filter=True)
     def onSHUTDOWN(self):
         """Close Event (Private)
 
@@ -260,7 +260,7 @@ class TCPClient(Client):
 
         self._socks.append(self._sock)
 
-    @listener("send", type="filter")
+    @handler("send", filter=True)
     def onSEND(self, data):
         """Send Event
 
@@ -411,7 +411,7 @@ class Server(Component):
         for sock in self._socks[1:]:
             self.write(sock, data)
 
-    @listener("send", type="filter")
+    @handler("send", filter=True)
     def onSEND(self, sock, data):
         """Send Event
 
@@ -433,7 +433,7 @@ class Server(Component):
                 self.push(Error(sock, e), "error", self.channel)
                 self.close()
 
-    @listener("shutdown", type="filter")
+    @handler("shutdown", filter=True)
     def onSHUTDOWN(self, sock=None):
         """Close Event (Private)
 
@@ -550,7 +550,7 @@ class UDPServer(Server):
         if self._socks:
             self.send(Shutdown(), "shutdown", self.channel)
 
-    @listener("shutdown", type="filter")
+    @handler("shutdown", filter=True)
     def onSHUTDOWN(self):
         """Close Event (Private)
 
@@ -567,7 +567,7 @@ class UDPServer(Server):
         except socket.error, error:
             self.push(Error(error), "error", self.channel)
 
-    @listener("send", type="filter")
+    @handler("send", filter=True)
     def onSEND(self, address, data):
         """Send Event
 
