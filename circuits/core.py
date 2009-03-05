@@ -251,8 +251,19 @@ def listener(*channels, **kwargs):
     return handler(*channels, **kwargs)
 
 class HandlersType(type):
+    """Handlers metaclass
+
+    metaclass used by the Component to pick up any methods defined in the new
+    Component and turn them into Event Handlers by applying the @handlers
+    decorator on them. This is done for all methods defined in the Component
+    that:
+     - Do not start with a single '_'. or
+     - Have previously been decorated with the @handlers decorator
+    """
 
     def __init__(cls, name, bases, dct):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
         super(HandlersType, cls).__init__(name, bases, dct)
 
         for k, v in dct.iteritems():
