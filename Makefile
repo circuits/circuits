@@ -17,6 +17,7 @@ docs:
 		--check --html --src-code-tab-width=4 --no-frames \
 		--no-private --exclude=.*\.tests.* \
 		--exclude=circuits\.__version__ \
+		--exclude=circuits\.version \
 		--no-sourcecode circuits
 
 tests:
