@@ -57,6 +57,8 @@ class Application(Component):
                 protocol,
                 env("QUERY_STRING"))
 
+        request.remote = webob.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
+
         request.headers = headers
         request.script_name = env("SCRIPT_NAME")
         request.wsgi_environ = environ
