@@ -159,11 +159,11 @@ class Gateway(Component):
         super(Gateway, self).__init__(channel=channel)
 
         self.app = app
-        self.request = self.response = None
+        self._request = self._response = None
 
     def environ(self):
         environ = {}
-        req = self.request
+        req = self._request
         env = environ.__setitem__
 
         env("REQUEST_METHOD", req.method)
@@ -183,14 +183,14 @@ class Gateway(Component):
         return environ
 
     def start_response(self, status, headers):
-        self.response.status = status
+        self._response.status = status
         for header in headers:
-            self.response.headers.add_header(*header)
+            self._response.headers.add_header(*header)
 
     @handler("request", filter=True)
-    def onREQUEST(self, request, response, *args, **kwargs):
-        self.request = request
-        self.response = response
+    def request(self, request, response):
+        self._request = request
+        self._response = response
 
         return "".join(self.app(self.environ(), self.start_response))
 
