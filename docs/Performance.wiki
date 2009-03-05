@@ -1,8 +1,8 @@
-= General Performance =
+﻿= General Performance =
 
 [[TOC]]
 
-||**Status**||Work in Progress||
+||'''Status'''||Work in Progress||
 
 -----
 [.. Up]
