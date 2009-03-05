@@ -15,7 +15,6 @@ from cgifs import FieldStorage
 from tools import expires, serve_file
 from errors import HTTPError, NotFound
 from utils import parseQueryString, dictform
-from events import Request
 
 class DefaultDispatcher(Component):
 
@@ -123,7 +122,8 @@ class DefaultDispatcher(Component):
 
         return channel, vpath
 
-    def request(self, request, response):
+    def request(self, event, request, response):
+        req = event
         path = request.path.strip("/")
 
         filename = None
@@ -143,15 +143,14 @@ class DefaultDispatcher(Component):
         channel, vpath = self._getChannel(request)
 
         if channel:
-            if channel.endswith(":request"):
-                req = Request(request, response)
-            else:
-                params = parseQueryString(request.qs)
-                v = self._parseBody(request, response, params)
+            if not channel.endswith(":request"):
+                req.kwargs = parseQueryString(request.qs)
+                v = self._parseBody(request, response, req.kwargs)
                 if not v:
                     return v # MaxSizeExceeded (return the HTTPError)
 
-                req = Request(request, response, *vpath, **params)
+                if vpath:
+                    req.args += (vpath,)
 
             try:
                 v = self.send(req, channel, errors=True, log=False)
