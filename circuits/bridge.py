@@ -4,8 +4,8 @@
 
 """Bridge
 
-Brige component to bridge one or more components in a single system.
-That is, events in system A bridged to system B are shared. For exampe:
+Bridge Component to Bridge one or more components in a single System.
+That is, events in System A bridged to System B are shared. For example:
 
 A <--> Bridge <--> B
 
@@ -13,9 +13,10 @@ Events that propagate in A, will propagate to B across the Bridge.
 Events that propagate in B, will propagate to A across the Bridge.
 
 When the Bridge is created, it will automatically attempt to send a
-Helo event to any configured nodes. The default Bridge uses the UDP
-as it's transmission protocol. Events thus cannot be guaranteed of
-their order or delivery.
+Helo Event to any configured nodes or on a broadcast address if no
+nodes are initially configured. The default Bridge implementation
+uses the UDP protocol and as such events cannot be guaranteed of their
+order or delivery.
 """
 
 import socket
