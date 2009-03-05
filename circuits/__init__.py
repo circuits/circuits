@@ -2,33 +2,24 @@
 # Date:		3rd October 2008
 # Author:	James Mills, prologic at shortcircuit dot net dot au
 
-"""Event framework with a Component architecture
+"""A Lightweight, Event driven Framework with a strong Component Architecture.
 
-circuits is an event-driven framework with a focus on Component Software
-Architectures where System Functionality is defined in Components.
-Components communicate with one another by propagating events throughout
-the system. Each Component can react to events and expose events to other
-parts of the system Components are able to manage their own events and
-can also be linked to other Components.
+Components communicate with one another by propagating Events on Channels
+throughout the System. Each Component has a set of Event Handlers that
+can listen for or filter Events on one or more Channels. Components react to Events and in turn expose further Events into the System. Each Component
+is capable of managing it's own Events as well as those of other Components.
+Complex directed graph structures can be created with Component Registrations,
+this gives a level of hierarchy and separation of concern.
 
-circuits has a clean architecture and has no external dependencies on any
-other library. It's simplistic design is unmatchable but yet delivers a
-powerful framework for building large, scalable, maintainable applications
-and systems. circuits was a core integral part of the
-[http://trac.softcircuit.com.au/pymills pymills] library developed in 2006
-and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
-
-Simple Example:
-
->>> from circuits.core import Component, Event, Manager
+Example:
+>>> from circuits import Event, Component
 >>>
->>> class Hello(Component):
+>>> class App(Component):
 ...   def hello(self):
 ...      print "Hello World!"
->>> manager = Manager()
->>> manager += Hello()
->>> manager.push(Event(), "hello")
->>> manager.flush()
+>>> app = App()
+>>> app.start()
+>>> app.push(Event(), "hello")
 Hello World!
 """
 
