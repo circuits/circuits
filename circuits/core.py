@@ -322,7 +322,8 @@ class Manager(object):
         (Optional) Convenience operator to register y with x
         Equivalent to: y.register(x)
 
-        Returns x
+        @return: x
+        @rtype Component or Manager
         """
 
         y.register(self)
@@ -334,7 +335,8 @@ class Manager(object):
         (Optional) Convenience operator to register y with x
         Equivalent to: y.register(x)
 
-        Returns and Assigns to x
+        @return: x
+        @rtype Component or Manager
         """
 
         y.register(self)
@@ -346,7 +348,8 @@ class Manager(object):
         (Optional) Convenience operator to unregister y from x.manager
         Equivalent to: y.unregister()
 
-        Returns x
+        @return: x
+        @rtype Component or Manager
         """
 
         if y.manager == self:
@@ -361,7 +364,8 @@ class Manager(object):
         (Optional) Convenience operator to unregister y from x
         Equivalent to: y.unregister()
 
-        Returns and Assigns to x
+        @return: x
+        @rtype Component or Manager
         """
 
         if y.manager == self:
