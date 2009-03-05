@@ -272,9 +272,13 @@ class HandlersType(type):
 
 
 class Manager(object):
-    """Creates a new Manager
+    """Manager
 
-    Create a new Event manager which manages Components and Events.
+    This is the base Manager of the BaseComponent which manages an Event Queue,
+    a set of Event Handlers, Channels, Tick Functions, Registered and Hidden
+    Components, a Task and the Running State.
+
+    @ivar manager: The Manager of this Component or Manager
     """
 
     def __init__(self, *args, **kwargs):
