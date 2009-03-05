@@ -80,7 +80,7 @@ class Request(object):
 
         self.sock = sock
         self.method = method
-        self.scheme = scheme
+        self.scheme = scheme or Request.scheme
         self.path = path
         self.protocol = protocol
         self.qs = qs
