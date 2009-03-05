@@ -664,6 +664,26 @@ class Manager(object):
                 rtime = time.time()
 
 class BaseComponent(Manager):
+    """Base Component
+
+    This is the Base of the Component which manages registrations to other
+    components or managers. Every Base Component and thus Component has a
+    unique Channel that is used as a separation of concern for it's registered
+    Event Handlers. By default, this Channels is None (or also known as the
+    Global Channel).
+
+    When a Component (Base Component) has a set Channel that is not the Global
+    Channel (None), then any Event Handlers will actually listen on a Channel
+    that is a combination of the Component's Channel prefixed with the Event
+    Handler's Channel. The form becomes:
+       C{target:channel}
+    Where:
+       - target is the Component's Channel
+       - channel is the Event Handler's Channel
+
+    @cvar channel: The Component's default Channel
+    @ivar channel: The Component's Channel
+    """
 
     channel = None
 
