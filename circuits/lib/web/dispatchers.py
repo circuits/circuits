@@ -61,32 +61,6 @@ class DefaultDispatcher(Component):
 
         If a channel cannot be found for a given path, but there is
         a default channel, then this will be used.
-
-        The following is an example mappiny of path to channel given
-        the following channels:
-
-        Channels:
-         /:index
-         /foo:index
-         /foo:hello
-         /bar:GET
-         /bar:POST
-         /foo/bar/hello
-
-        Method    Path                   Channel            VPath
-        ---------------------------------------------------------
-        GET       /                      /                  []
-        GET       /1/2/3                 /                  [1, 2, 3]
-        GET       /foo                   /foo               []
-        GET       /foo/hello             /foo/hello         []
-        GET       /foo/1/2/3             /foo               [1, 2, 3]
-        GET       /foo/hello/1/2/3       /foo/hello         [1, 2, 3]
-        GET       /bar                   /bar               []
-        GET       /bar/1/2/3             /bar               [1, 2, 3]
-        POST      /bar                   /bar               []
-        POST      /bar/1/2/3             /bar               [1, 2, 3]
-        GET       /foo/bar/hello         /foo/bar/hello     []
-        GET       /foo/bar/hello/1/2/3   /foo/bar/hello     [1, 2, 3]
         """
 
         path = request.path

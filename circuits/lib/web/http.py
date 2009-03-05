@@ -77,12 +77,11 @@ class HTTP(Component):
         response.done = True
 
     def read(self, sock, data):
-        """H.read(sock, data) -> None
+        """Read Event Handler
 
-        Process any incoming data appending it to an internal
-        buffer. Split the buffer by the standard HTTP delimiter
-        \r\n and create a RawEvent per line. Any unfinished
-        lines of text, leave in the buffer.
+        Process any incoming data appending it to an internal buffer.
+        Split the buffer by the standard HTTP delimiter CRLF and create
+        Raw Event per line. Any unfinished lines of text, leave in the buffer.
         """
 
         if sock in self._requests:

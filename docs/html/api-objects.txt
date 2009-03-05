@@ -18,9 +18,6 @@ circuits.__description__	circuits-module.html#__description__
 circuits.__entry_points__	circuits-module.html#__entry_points__
 circuits.__package_data__	circuits-module.html#__package_data__
 circuits.__maintainer_email__	circuits-module.html#__maintainer_email__
-circuits.__version__'	circuits.__version__%27-module.html
-circuits.__version__'.version	circuits.__version__%27-module.html#version
-circuits.__version__'.__package__	circuits.__version__%27-module.html#__package__
 circuits.bridge	circuits.bridge-module.html
 circuits.bridge.POLL_INTERVAL	circuits.bridge-module.html#POLL_INTERVAL
 circuits.bridge.listener	circuits.core-module.html#listener

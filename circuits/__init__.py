@@ -12,18 +12,15 @@ Complex directed graph structures can be created with Component Registrations,
 this gives a level of hierarchy and separation of concern.
 
 Example:
-{{{
-#!python
->>> from circuits import Event, Component
->>>
->>> class App(Component):
-...   def hello(self):
-...      print "Hello World!"
->>> app = App()
->>> app.start()
->>> app.push(Event(), "hello")
-Hello World!
-}}}
+   >>> from circuits import Event, Component
+   >>>
+   >>> class App(Component):
+   ...   def hello(self):
+   ...      print "Hello World!"
+   >>> app = App()
+   >>> app.start()
+   >>> app.push(Event(), "hello")
+   Hello World!
 """
 
 try:

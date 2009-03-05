@@ -41,10 +41,10 @@ class Connected(Event):
     """Connected(Event) -> Connected Event
 
    if Client:
-      args: host, port
+      - args: host, port
 
    if Server:
-      args: sock, host, port
+      - args: sock, host, port
    """
 
 class Disconnected(Event):
@@ -53,33 +53,33 @@ class Disconnected(Event):
    if Client, no args.
 
    If Server:
-      args: sock
+      - args: sock
    """
 
 class Read(Event):
     """Read(Event) -> Read Event
 
    if Client:
-      args: data
+      - args: data
 
    If Server:
-      args: sock, data
+      - args: sock, data
 
    if UDP Client or Server:
-      args: address, data
+      - args: address, data
    """
 
 class Write(Event):
     """Write(Event) -> Write Event
 
    If Client:
-      args: data
+      - args: data
 
    if Server:
-      args: sock, data
+      - args: sock, data
 
    if UDP Client or Server:
-      args: address, data
+      - args: address, data
     """
 
 class Error(Event):
@@ -96,7 +96,7 @@ class Close(Event):
    If Client, no args.
 
    if Server:
-      args: sock
+      - args: sock
     """
 
 class Shutdown(Event):
@@ -105,7 +105,7 @@ class Shutdown(Event):
    If Client, no args.
 
    if Server:
-      args: sock
+      - args: sock
     """
 
 class Client(Component):

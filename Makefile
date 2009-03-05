@@ -16,6 +16,7 @@ docs:
 		--check --html --graph=classtree \
 		--src-code-tab-width=4 --no-frames \
 		--no-private --exclude=.*\.tests.* \
+		--exclude=circuits\.__version__ \
 		--no-sourcecode circuits
 
 tests:
