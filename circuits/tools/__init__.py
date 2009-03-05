@@ -64,6 +64,15 @@ def reprhandler(x):
     return format % (x.channels, x.filter, x.target, component)
 
 def inspect(x):
+    """Display an inspection report of the Component or Manager x
+
+    @param x; A Component or Manager to graph
+    @type  x: Component or Manager
+
+    @return: A detailed inspection report of x
+    @rtype:  str
+    """
+
     s = []
     write = s.append
 
