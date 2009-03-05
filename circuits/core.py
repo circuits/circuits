@@ -214,6 +214,9 @@ def handler(*channels, **kwargs):
     >>> @handler("x", target="other")
     ... def x():
     ...     pass
+
+    @deprecated: The use of 'type' in kwargs will be deprecated in 1.2
+                 Use 'filter' instead.
     """
 
     def wrapper(f):
