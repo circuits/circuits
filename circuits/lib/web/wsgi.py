@@ -196,16 +196,3 @@ def Middleware(*args, **kwargs):
     warnings.warn("Please use Gateway, Middleware will be deprecated in 1.2")
 
     return Gateway(*args, **kwargs)
-
-class Filter(Component):
-
-    @handler("response", filter=True)
-    def onRESPONSE(self, request, response):
-        self.request = request
-        self.response = response
-
-        try:
-            response.body = self.process()
-        finally:
-            del self.request
-            del self.response
