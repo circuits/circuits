@@ -202,18 +202,18 @@ def handler(*channels, **kwargs):
     spcified Target Component's Channel.
     
     Examples:
-    >>> @handler("foo")
-    ... def foo():
-    ...     pass
-    >>> @handler("bar", filter=True)
-    ... def bar():
-    ...     pass
-    >>> @handler("foo", "bar")
-    ... def foobar():
-    ...     pass
-    >>> @handler("x", target="other")
-    ... def x():
-    ...     pass
+       >>> @handler("foo")
+       ... def foo():
+       ...     pass
+       >>> @handler("bar", filter=True)
+       ... def bar():
+       ...     pass
+       >>> @handler("foo", "bar")
+       ... def foobar():
+       ...     pass
+       >>> @handler("x", target="other")
+       ... def x():
+       ...     pass
 
     @deprecated: The use of 'type' in kwargs will be deprecated in 1.2
                  Use 'filter' instead.
