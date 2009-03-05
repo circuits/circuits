@@ -497,9 +497,11 @@ class Manager(object):
             self.manager.push(event, channel, target)
 
     def flush(self):
-        """E.flush() -> None
+        """Flush all Events in the Event Queue
 
-        Flush and Send all Events waiting on the Queue.
+        This will flush all Events in the Event Queue. If this Component's
+        Manager is itself, flush all Events from this Component's Event Queue,
+        otherwise, flush all Events from this Component's Manager's Event Queue.
         """
 
         if self.manager == self:
