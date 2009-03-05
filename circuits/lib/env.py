@@ -13,7 +13,7 @@ from __future__ import with_statement
 
 import os
 
-from circuits.core import listener, Event, Component
+from circuits import listener, Event, Component
 
 from log import Logger
 from config import (

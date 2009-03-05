@@ -12,7 +12,7 @@ import re
 import socket
 from tempfile import TemporaryFile
 
-from circuits.core import listener, Event, Component
+from circuits import listener, Event, Component
 
 ###
 ### Supporting Functions

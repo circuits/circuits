@@ -12,7 +12,7 @@ import unittest
 from StringIO import StringIO
 
 from circuits import Debugger
-from circuits import listener, Event, Component, Manager
+from circuits import handler, Event, Component, Manager
 
 
 class Test(Event):
@@ -20,11 +20,11 @@ class Test(Event):
 
 class Foo(Component):
 
-    @listener("foo")
+    @handler("foo")
     def onFOO(self):
         pass
 
-    @listener("bar")
+    @handler("bar")
     def onBAR(self):
         pass
 

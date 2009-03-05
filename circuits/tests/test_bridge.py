@@ -10,7 +10,7 @@ Test all functionality of the bridge module.
 import unittest
 
 from circuits import Bridge
-from circuits import listener, Event, Component, Manager
+from circuits import handler, Event, Component, Manager
 
 
 def wait():
@@ -22,11 +22,11 @@ class Foo(Component):
 
     flag = False
 
-    @listener("foo")
+    @handler("foo")
     def onFOO(self):
         self.flag = True
 
-    @listener("dummy")
+    @handler("dummy")
     def onDUMMY(self):
         pass
 
@@ -34,11 +34,11 @@ class Bar(Component):
 
     flag = False
 
-    @listener("bar")
+    @handler("bar")
     def onBAR(self):
         self.flag = True
 
-    @listener("dummy")
+    @handler("dummy")
     def onDUMMY(self):
         pass
 

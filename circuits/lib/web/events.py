@@ -7,7 +7,7 @@
 This module implements the necessary Events needed.
 """
 
-from circuits.core import Event
+from circuits import Event
 
 class Request(Event):
     """Request(Event) -> Request Event

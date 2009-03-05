@@ -16,7 +16,7 @@ import errno
 import select
 from collections import deque
 
-from circuits.core import Event, Component
+from circuits import Event, Component
 
 
 POLL_INTERVAL = 0.00001

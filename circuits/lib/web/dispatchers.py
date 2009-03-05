@@ -9,7 +9,7 @@ This module implements URL dispatchers.
 
 import os
 
-from circuits.core import Component
+from circuits import Component
 
 from cgifs import FieldStorage
 from tools import expires, serve_file

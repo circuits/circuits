@@ -17,7 +17,7 @@ try:
 except ImportError:
     from select import select as _select
 
-from circuits.core import Event, Component
+from circuits import Event, Component
 
 TIMEOUT=0.00001
 READ = 1

@@ -10,7 +10,7 @@ Test all functionality of the workers module.
 import unittest
 
 from circuits.workers import Thread
-from circuits.core import listener, Event, Manager
+from circuits import handler, Event, Manager
 
 class Test(Event):
    """Test(Event) -> Test Event"""
@@ -21,7 +21,7 @@ class Foo(Thread):
    flag = False
    done = False
 
-   @listener("foo")
+   @handler("foo")
    def onFOO(self):
       self.flag = True
 

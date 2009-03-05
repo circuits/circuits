@@ -25,7 +25,7 @@ from cPickle import dumps as pickle
 from cPickle import loads as unpickle
 from socket import gethostname, gethostbyname
 
-from circuits.core import handler, Event, Component
+from circuits import handler, Event, Component
 
 
 POLL_INTERVAL = 0.00001

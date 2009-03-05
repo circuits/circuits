@@ -19,7 +19,7 @@ try:
 except ImportError:
     raise DriverError("No pyinotify support available.")
 
-from circuits.core import Event, Component
+from circuits import Event, Component
 
 MASK = ALL_EVENTS
 

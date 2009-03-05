@@ -19,7 +19,7 @@ except ImportError:
     except ImportError:
         raise DriverError("No pygame support available.")
 
-from circuits.core import Event, Component
+from circuits import Event, Component
 
 class Key(Event): pass
 class Quit(Event): pass

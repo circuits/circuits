@@ -9,19 +9,18 @@ Test all functionality of the event library.
 
 import unittest
 
-from circuits.core import listener
-from circuits.core import Manager, Component, Event
+from circuits import handler, Manager, Component, Event
 
 class Test(Event):
     """Test(Event) -> Test Event"""
 
 class FilterComponent(Component):
 
-    @listener("foo", type="filter")
+    @handler("foo", type="filter")
     def onFOO(self, msg=""):
         return True
 
-    @listener("bar", type="filter")
+    @handler("bar", type="filter")
     def onBAR(self, msg=""):
         if msg.lower() == "hello world":
             return True
@@ -41,22 +40,22 @@ class Foo(Component):
     flag = False
     gotbar = False
 
-    @listener("test")
+    @handler("test")
     def onTEST(self, event, *args, **kwargs):
         self.flag = True
 
-    @listener("foo")
+    @handler("foo")
     def onFOO(self, event):
         self.send(Test(), "bar")
 
-    @listener("gotbar")
+    @handler("gotbar")
     def onGOTBAR(self, event, *args):
         self.gotbar = True
 
 
 class Bar(Component):
 
-    @listener("bar")
+    @handler("bar")
     def onBAR(self, event, *args, **kwargs):
         self.send(Test(), "gotbar")
 
@@ -139,15 +138,15 @@ class EventTestCase(unittest.TestCase):
 
         class Foo(Component):
 
-            @listener("a")
+            @handler("a")
             def a1(self):
                 pass
 
-            @listener("a", type="filter")
+            @handler("a", type="filter")
             def a2(self):
                 pass
 
-            @listener("a")
+            @handler("a")
             def a3(self):
                 pass
 
@@ -170,12 +169,12 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener(type="filter")
+            @handler(type="filter")
             def onALL(self, event, *args, **kwargs):
                 self.flag = True
                 return True
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self):
                 self.flag = False
 
@@ -183,7 +182,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("bar")
+            @handler("bar")
             def onBAR(self):
                 self.flag = True
 
@@ -212,7 +211,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo", "bar")
+            @handler("foo", "bar")
             def onFOOBAR(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -243,7 +242,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -253,7 +252,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -261,7 +260,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -296,7 +295,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -306,7 +305,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("bar")
+            @handler("bar")
             def onBAR(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -314,7 +313,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -349,7 +348,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -359,7 +358,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("bar")
+            @handler("bar")
             def onBAR(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -367,7 +366,7 @@ class EventTestCase(unittest.TestCase):
 
             flag = False
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self, event, *args, **kwargs):
                 self.flag = True
 
@@ -419,17 +418,17 @@ class EventTestCase(unittest.TestCase):
             varargs = None
             kwargs = None
 
-            @listener("args")
+            @handler("args")
             def onARGS(self, a, b, c):
                 self.a = a
                 self.b = b
                 self.c = c
 
-            @listener("varargs")
+            @handler("varargs")
             def onVARARGS(self, *varargs):
                 self.varargs = varargs
 
-            @listener("kwargs")
+            @handler("kwargs")
             def onKWARGS(self, **kwargs):
                 self.kwargs = kwargs
 
@@ -571,11 +570,11 @@ class EventTestCase(unittest.TestCase):
         a specific channel.
         """
 
-        @listener("foo", type="filter")
+        @handler("foo", type="filter")
         def onFOO():
             pass
 
-        @listener("bar")
+        @handler("bar")
         def onBAR():
             pass
 
@@ -623,19 +622,19 @@ class EventTestCase(unittest.TestCase):
         self.flag = False
         self.foo = False
 
-        @listener("test")
+        @handler("test")
         def onTEST(test, time, stop=False):
             test.flag = True
 
-        @listener("test")
+        @handler("test")
         def onFOO(test, time, stop=False):
             test.foo = True
 
-        @listener("bar")
+        @handler("bar")
         def onBAR(test, time):
             pass
 
-        @listener(type="filter")
+        @handler(type="filter")
         def onSTOP(*args, **kwargs):
             return kwargs.get("stop", False)
 
@@ -694,7 +693,7 @@ class EventTestCase(unittest.TestCase):
             flag = False
             channel = "foo"
 
-            @listener("foo")
+            @handler("foo")
             def onFOO(self):
                 self.flag = True
 
@@ -703,7 +702,7 @@ class EventTestCase(unittest.TestCase):
             flag = False
             channel = "bar"
 
-            @listener("foo", target="*")
+            @handler("foo", target="*")
             def onFOO2(self):
                 self.flag = True
 
@@ -711,7 +710,7 @@ class EventTestCase(unittest.TestCase):
 
             foo = False
 
-            @listener("foo", target="*")
+            @handler("foo", target="*")
             def onFOO(self):
                 self.foo = True
 

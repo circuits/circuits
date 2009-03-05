@@ -13,7 +13,7 @@ from urlparse import urlparse
 from cStringIO import StringIO
 from traceback import format_exc
 
-from circuits.core import Component
+from circuits import Component
 
 import webob
 from utils import quoted_slash

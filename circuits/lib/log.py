@@ -11,7 +11,7 @@
 import sys
 import logging
 
-from circuits.core import Event, Component
+from circuits import Event, Component
 
 ###
 ### Events

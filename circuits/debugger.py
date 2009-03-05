@@ -11,7 +11,7 @@ import sys
 from cStringIO import StringIO
 from traceback import format_tb
 
-from circuits.core import listener, Event, Component
+from circuits import handler, Event, Component
 
 
 class Debug(Event):
@@ -52,7 +52,7 @@ class Debugger(Component):
         else:
             self.file = file
 
-    @listener("error", type="filter")
+    @handler("error", type="filter")
     def error(self, *args, **kwargs):
         if not self.errors:
             return
@@ -79,7 +79,7 @@ class Debugger(Component):
 
         s.close()
 
-    @listener(type="filter")
+    @handler(type="filter")
     def event(self, event, *args, **kwargs):
         """Global Event Handler
 

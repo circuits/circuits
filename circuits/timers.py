@@ -9,7 +9,7 @@ Timers component to facilitate timed eventd.
 
 from time import time
 
-from circuits.core import Component
+from circuits import Component
 
 class Timer(Component):
     """Timer(s, e, c, t, persist) -> new timer component

@@ -9,7 +9,7 @@ This module implements WSGI Components.
 
 from traceback import format_exc
 
-from circuits.core import listener, Component
+from circuits import listener, Component
 
 import webob
 from events import Request

@@ -11,7 +11,7 @@ import unittest
 from time import sleep
 
 from circuits import Timer
-from circuits import listener, Event, Component, Manager
+from circuits import handler, Event, Component, Manager
 
 
 class Test(Event):
@@ -22,7 +22,7 @@ class Foo(Component):
 
     flag = False
 
-    @listener("timer")
+    @handler("timer")
     def onTIMER(self):
         self.flag = True
 

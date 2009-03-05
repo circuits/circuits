@@ -24,7 +24,7 @@ except ImportError:
         HAS_MULTIPROCESSING = 0
 
 
-from circuits.core import Component as _Component
+from circuits import Component as _Component
 
 POLL_INTERVAL = 0.00001
 
