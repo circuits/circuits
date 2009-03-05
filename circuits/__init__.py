@@ -12,6 +12,7 @@ Complex directed graph structures can be created with Component Registrations,
 this gives a level of hierarchy and separation of concern.
 
 Example:
+   >>> from time import sleep
    >>> from circuits import Event, Component
    >>>
    >>> class App(Component):
@@ -20,6 +21,7 @@ Example:
    >>> app = App()
    >>> app.start()
    >>> app.push(Event(), "hello")
+   >>> sleep(1)
    Hello World!
 """
 
