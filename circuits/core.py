@@ -514,11 +514,34 @@ class Manager(object):
             self.manager.flush()
 
     def send(self, event, channel, target=None, errors=False, log=True):
-        """E.send(event, channel, target=None, errors=False) -> None
+        """Send a new Event to Event Handlers for the Target and Channel
 
-        Send the given Event to all Event Handlers on the channel
-        specified. If target is not None, send this event to
-        Event Handlers of the spcified target Component's channel.
+        This will send the given Event, to the spcified CHannel on the
+        Target Component's Channel.
+
+        if target is None, then target will be set as the Channel of
+        the current Component, self.channel (defaulting back to None).
+
+        If this Component's Manager is itself, enqueue on this Component's
+        Event Queue, otherwise enqueue on this Component's Manager.
+
+        @param event: The Event Object
+        @type  event: Event
+
+        @param channel: The Channel this Event is bound for
+        @type  channel: str
+
+        @keyword target: The target Component's channel this Event is bound for
+        @type    target: str or Component
+
+        @keyword errors: True to raise errors, False otherwise
+        @type    errors: bool
+
+        @keyword log: True to log errors, False otherwise
+        @type    log: bool
+
+        @return: The return value of the last executed Event Handler
+        @rtype:  object
         """
 
         if target is None:
