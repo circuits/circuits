@@ -143,7 +143,7 @@ class DefaultDispatcher(Component):
         channel, vpath = self._getChannel(request)
 
         if channel:
-            if channel == "request":
+            if channel.endswith(":request"):
                 req = Request(request, response)
             else:
                 params = parseQueryString(request.qs)
