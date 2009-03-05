@@ -148,15 +148,8 @@ class Application(Component):
 
 class Gateway(Component):
 
-    channel = "web"
-
     def __init__(self, app, path=None):
-        if path:
-            channel = "%s:%s" % (Gateway.channel, path)
-        else:
-            channel = Gateway.channel
-
-        super(Gateway, self).__init__(channel=channel)
+        super(Gateway, self).__init__(channel=path)
 
         self.app = app
         self.request = self.response = None
