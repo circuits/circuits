@@ -13,8 +13,8 @@ checks:
 
 docs:
 	@epydoc -v -n circuits -o docs/html/ \
-		--check --html --graph=classtree \
-		--src-code-tab-width=4 --no-frames \
+		-u http://trac.softcircuit.com.au/circuits/ \
+		--check --html --src-code-tab-width=4 --no-frames \
 		--no-private --exclude=.*\.tests.* \
 		--exclude=circuits\.__version__ \
 		--no-sourcecode circuits

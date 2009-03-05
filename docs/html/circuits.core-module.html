@@ -34,7 +34,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >circuits</th>
+            ><a class="navbar" target="_top" href="http://trac.softcircuit.com.au/circuits/">circuits</a></th>
           </tr></table></th>
   </tr>
 </table>
@@ -55,10 +55,12 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module core</h1><p class="nomargin-top"></p>
-<p>Core of the circuits library containing all of the essentials for a 
-  circuits based application or system. Normal usage of circuits:</p>
+<p>Building Blocks</p>
+  <p>This module contains the most basic building blocks of all Components.
+  It's important to note that a Component is also a Manager.</p>
+  <p>The following import statement is commonly used:</p>
 <pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> circuits <span class="py-keyword">import</span> handler, Manager, Component, Event</pre>
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> circuits <span class="py-keyword">import</span> handler, Event, Component, Manager</pre>
 
 <!-- ==================== CLASSES ==================== -->
 <a name="section-Classes"></a>
@@ -81,35 +83,39 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="circuits.core.Error-class.html" class="summary-name">Error</a><br />
-      Error(type, value, traceback) -&gt; Error Event
+      Error Event
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits.core.Started-class.html" class="summary-name">Started</a>
+        <a href="circuits.core.Started-class.html" class="summary-name">Started</a><br />
+      Started Event
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits.core.Stopped-class.html" class="summary-name">Stopped</a>
+        <a href="circuits.core.Stopped-class.html" class="summary-name">Stopped</a><br />
+      Stopped Event
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits.core.Registered-class.html" class="summary-name">Registered</a>
+        <a href="circuits.core.Registered-class.html" class="summary-name">Registered</a><br />
+      Registered Event
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits.core.Unregistered-class.html" class="summary-name">Unregistered</a>
+        <a href="circuits.core.Unregistered-class.html" class="summary-name">Unregistered</a><br />
+      Unregistered Event
     </td>
   </tr>
 <tr>
@@ -159,7 +165,7 @@
         <tr>
           <td><span class="summary-sig"><a href="circuits.core-module.html#handler" class="summary-sig-name">handler</a>(<span class="summary-sig-arg">*channels</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span><br />
-      Creates an Event Handler of a callable object</td>
+      Creates an Event Handler</td>
           <td align="right" valign="top">
             
             
@@ -215,10 +221,10 @@
     </td><td class="summary">
         <a href="circuits.core-module.html#__warningregistry__" class="summary-name">__warningregistry__</a> = <code title="{('Please use \'filter\', \'type\' will be deprecated in 1.2',
   &lt;type 'exceptions.UserWarning'&gt;,
-  145): True,
+  225): True,
  ('Please use @handler, @listener will be deprecated in 1.2',
   &lt;type 'exceptions.UserWarning'&gt;,
-  167): True}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use \'filter\', \'type\' will </code><code class="variable-ellipsis">...</code></code>
+  247): True}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use \'filter\', \'type\' will </code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 </table>
@@ -246,14 +252,14 @@
     </td>
   </tr></table>
   
-  <p>Creates an Event Handler of a callable object</p>
-  <p>Decorator to wrap a callable into an event Handler that listens on a 
-  set of channels defined by channels. The type of the handler defaults to 
-  &quot;listener&quot;. If kwargs[&quot;filter&quot;] is defined and is 
-  True, the Event Handler is defined as a filter and has priority over 
-  non-filter Event Handlers. If kwargs[&quot;target&quot;] is defined and 
-  and is not None, the Event Handler will listen for the spcified channels 
-  on the spcified target Component's channel.</p>
+  <p>Creates an Event Handler</p>
+  <p>Decorator to wrap a callable into an Event Handler that listens on a 
+  set of channels defined by channels. The type of the Event Handler 
+  defaults to &quot;listener&quot;. If kwargs[&quot;filter&quot;] is 
+  defined and is True, the Event Handler is defined as a Filter and has 
+  priority over Listener Event Handlers. If kwargs[&quot;target&quot;] is 
+  defined and is not None, the Event Handler will listen for the spcified 
+  channels on the spcified Target Component's Channel.</p>
   <p>Examples:</p>
 <pre class="py-doctest">
 <span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> circuits.core <span class="py-keyword">import</span> handler
@@ -297,10 +303,10 @@
       <dd><table><tr><td><pre class="variable">
 <code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use \'filter\', \'type\' will be deprecated in 1.2</code><code class="variable-quote">'</code><code class="variable-op">,</code>
   &lt;type 'exceptions.UserWarning'&gt;<code class="variable-op">,</code>
-  145<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-op">,</code>
+  225<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-op">,</code>
  <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Please use @handler, @listener will be deprecated in 1.2</code><code class="variable-quote">'</code><code class="variable-op">,</code>
   &lt;type 'exceptions.UserWarning'&gt;<code class="variable-op">,</code>
-  167<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-group">}</code>
+  247<code class="variable-group">)</code><code class="variable-op">: </code>True<code class="variable-group">}</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -331,14 +337,14 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >circuits</th>
+            ><a class="navbar" target="_top" href="http://trac.softcircuit.com.au/circuits/">circuits</a></th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Mar  5 18:00:19 2009
+    Generated by Epydoc 3.0.1 on Thu Mar  5 19:52:48 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

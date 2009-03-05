@@ -34,7 +34,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >circuits</th>
+            ><a class="navbar" target="_top" href="http://trac.softcircuit.com.au/circuits/">circuits</a></th>
           </tr></table></th>
   </tr>
 </table>
@@ -125,30 +125,30 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.smtp.Data-class.html">circuits.lib.smtp.Data</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.log.Debug-class.html">circuits.lib.log.Debug</a></strong>:
-      <em class="summary">Debug(Event) -&gt; Debug Log Event</em>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.debugger.Debug-class.html">circuits.debugger.Debug</a></strong>:
       <em class="summary">Debug Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.log.Debug-class.html">circuits.lib.log.Debug</a></strong>:
+      <em class="summary">Debug(Event) -&gt; Debug Log Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver.Deleted-class.html">circuits.lib.drivers.inotify_driver.Deleted</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.sockets.Disconnected-class.html">circuits.lib.sockets.Disconnected</a></strong>:
       <em class="summary">Disconnected(Event) -&gt; Disconnected Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.io.Error-class.html">circuits.lib.io.Error</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Error-class.html">circuits.lib.pollers.Error</a></strong>:
-      <em class="summary">Error(fd) -&gt; Error Event</em>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.core.Error-class.html">circuits.core.Error</a></strong>:
-      <em class="summary">Error(type, value, traceback) -&gt; Error Event</em>
+    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Error-class.html">circuits.lib.sockets.Error</a></strong>:
+      <em class="summary">Error(Event) -&gt; Error Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.log.Error-class.html">circuits.lib.log.Error</a></strong>:
       <em class="summary">Error(Event) -&gt; Error Log Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Error-class.html">circuits.lib.sockets.Error</a></strong>:
-      <em class="summary">Error(Event) -&gt; Error Event</em>
+    <li> <strong class="uidlink"><a href="circuits.core.Error-class.html">circuits.core.Error</a></strong>:
+      <em class="summary">Error Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Error-class.html">circuits.lib.pollers.Error</a></strong>:
+      <em class="summary">Error(fd) -&gt; Error Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.io.Error-class.html">circuits.lib.io.Error</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.log.Exception-class.html">circuits.lib.log.Exception</a></strong>:
       <em class="summary">Exception(Event) -&gt; Exception Log Event</em>
@@ -193,10 +193,10 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.smtp.Mail-class.html">circuits.lib.smtp.Mail</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.smtp.Message-class.html">circuits.lib.smtp.Message</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Message-class.html">circuits.lib.irc.Message</a></strong>:
       <em class="summary">Message(Event) -&gt; Message Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.smtp.Message-class.html">circuits.lib.smtp.Message</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver.Modified-class.html">circuits.lib.drivers.inotify_driver.Modified</a></strong>
     </li>
@@ -224,9 +224,9 @@
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Numeric-class.html">circuits.lib.irc.Numeric</a></strong>:
       <em class="summary">Numeric(Event) -&gt; Numeric Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.io.Opened-class.html">circuits.lib.io.Opened</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver.Opened-class.html">circuits.lib.drivers.inotify_driver.Opened</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.io.Opened-class.html">circuits.lib.io.Opened</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Part-class.html">circuits.lib.irc.Part</a></strong>:
       <em class="summary">Part(Event) -&gt; Part Event</em>
@@ -239,31 +239,32 @@
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Pong-class.html">circuits.lib.irc.Pong</a></strong>:
       <em class="summary">Pong(Event) -&gt; Pong Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.drivers.pygame_driver.Quit-class.html">circuits.lib.drivers.pygame_driver.Quit</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Quit-class.html">circuits.lib.irc.Quit</a></strong>:
       <em class="summary">Quit(Event) -&gt; Quit Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.smtp.Quit-class.html">circuits.lib.smtp.Quit</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.smtp.Raw-class.html">circuits.lib.smtp.Raw</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.lib.drivers.pygame_driver.Quit-class.html">circuits.lib.drivers.pygame_driver.Quit</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.irc.Raw-class.html">circuits.lib.irc.Raw</a></strong>:
       <em class="summary">Raw(Event) -&gt; Raw Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.smtp.Raw-class.html">circuits.lib.smtp.Raw</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.smtp.Rcpt-class.html">circuits.lib.smtp.Rcpt</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.io.Read-class.html">circuits.lib.io.Read</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Read-class.html">circuits.lib.pollers.Read</a></strong>:
-      <em class="summary">Read(fd) -&gt; Read Event</em>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.lib.sockets.Read-class.html">circuits.lib.sockets.Read</a></strong>:
       <em class="summary">Read(Event) -&gt; Read Event</em>
     </li>
+    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Read-class.html">circuits.lib.pollers.Read</a></strong>:
+      <em class="summary">Read(fd) -&gt; Read Event</em>
+    </li>
     <li> <strong class="uidlink"><a href="circuits.tools.bench.Received-class.html">circuits.tools.bench.Received</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.core.Registered-class.html">circuits.core.Registered</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.core.Registered-class.html">circuits.core.Registered</a></strong>:
+      <em class="summary">Registered Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.web.events.Request-class.html">circuits.lib.web.events.Request</a></strong>:
       <em class="summary">Request(Event) -&gt; Request Event</em>
@@ -281,11 +282,13 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.ann.Signal-class.html">circuits.lib.ann.Signal</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.core.Started-class.html">circuits.core.Started</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.core.Started-class.html">circuits.core.Started</a></strong>:
+      <em class="summary">Started Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.tools.bench.Stop-class.html">circuits.tools.bench.Stop</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.core.Stopped-class.html">circuits.core.Stopped</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.core.Stopped-class.html">circuits.core.Stopped</a></strong>:
+      <em class="summary">Stopped Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.web.events.Stream-class.html">circuits.lib.web.events.Stream</a></strong>:
       <em class="summary">Stream(Event) -&gt; Stream Event</em>
@@ -299,7 +302,8 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver.Unmounted-class.html">circuits.lib.drivers.inotify_driver.Unmounted</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.core.Unregistered-class.html">circuits.core.Unregistered</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.core.Unregistered-class.html">circuits.core.Unregistered</a></strong>:
+      <em class="summary">Unregistered Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.env.Upgrade-class.html">circuits.lib.env.Upgrade</a></strong>:
       <em class="summary">Upgrade(Event) -&gt; Upgrade Event</em>
@@ -315,16 +319,16 @@
     <li> <strong class="uidlink"><a href="circuits.lib.log.Warning-class.html">circuits.lib.log.Warning</a></strong>:
       <em class="summary">Warning(Event) -&gt; Warning Log Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Write-class.html">circuits.lib.sockets.Write</a></strong>:
-      <em class="summary">Write(Event) -&gt; Write Event</em>
+    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Write-class.html">circuits.lib.pollers.Write</a></strong>:
+      <em class="summary">Write(fd) -&gt; Write Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.lib.web.events.Write-class.html">circuits.lib.web.events.Write</a></strong>:
       <em class="summary">Write(Event) -&gt; Write Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.io.Write-class.html">circuits.lib.io.Write</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.lib.sockets.Write-class.html">circuits.lib.sockets.Write</a></strong>:
+      <em class="summary">Write(Event) -&gt; Write Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.pollers.Write-class.html">circuits.lib.pollers.Write</a></strong>:
-      <em class="summary">Write(fd) -&gt; Write Event</em>
+    <li> <strong class="uidlink"><a href="circuits.lib.io.Write-class.html">circuits.lib.io.Write</a></strong>
     </li>
     </ul>
     </li>
@@ -521,14 +525,14 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >circuits</th>
+            ><a class="navbar" target="_top" href="http://trac.softcircuit.com.au/circuits/">circuits</a></th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Mar  5 18:00:19 2009
+    Generated by Epydoc 3.0.1 on Thu Mar  5 19:52:48 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
