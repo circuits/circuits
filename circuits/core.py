@@ -106,11 +106,19 @@ class Event(object):
 
 
 class Error(Event):
-    """Error(type, value, traceback) -> Error Event
+    """Error Event
 
-    type:      Exception type      -> sys.exc_type
-    value:     Exception value     -> sys.exc_value
-    traceback: Exception traceback -> sys.exc_traceback
+    This Event is sent for any exceptions that occur during the execution
+    of an Event Handler that is not SystemExit or KeyboardInterrupt.
+
+    @param type: type of exception
+    @type type: type
+
+    @param value: exception object
+    @type value: exceptions.TypeError
+
+    @param traceback: traceback of exception
+    @type traceback: traceback
     """
 
 class Started(Event): pass
