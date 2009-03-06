@@ -190,6 +190,9 @@ class Gateway(Component):
         env("wsgi.url_scheme", req.scheme)
 
         if req.path:
+            i = req.path.find(self.path) + len(self.path)
+            req.script_name, req.path = req.path[:i], req.path[i:]
+            env("SCRIPT_NAME", req.script_name)
             env("PATH_INFO", unquote(req.path))
 
         for k, v in req.headers.items():
