@@ -31,6 +31,7 @@ class BaseServer(Component):
 
         Request.server = self
         Request.local = Host(self.server.address, self.server.port)
+        Request.host = self.host
 
         self.server.register(self)
 
