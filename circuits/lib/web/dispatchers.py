@@ -66,7 +66,7 @@ class DefaultDispatcher(Component):
         method = request.method.upper()
         request.index = path.endswith("/")
 
-        defaults = "index", method, "request"
+        defaults = "index", method, "default"
 
         if not "/" in path:
             for default in defaults:
@@ -99,9 +99,9 @@ class DefaultDispatcher(Component):
         i, candidate = candidates.pop()
 
         if i < len(names):
-            channels = [names[i], "index", method, "request"]
+            channels = [names[i], "index", method, "default"]
         else:
-            channels = ["index", method, "request"]
+            channels = ["index", method, "default"]
 
         vpath = []
         channel = None
