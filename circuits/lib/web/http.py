@@ -29,10 +29,9 @@ class HTTP(Component):
     HTTP messages creating and sending an appropriate response.
     """
 
-    def __init__(self, server, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(HTTP, self).__init__(*args, **kwargs)
 
-        self.server = server
         self._buffered = {}
 
     def _handleError(self, error):
