@@ -159,6 +159,7 @@ class Gateway(Component):
         super(Gateway, self).__init__(channel=path)
 
         self.app = app
+        self.path = path
 
         self._errors = WSGIErrors("/dev/stderr", "a")
         self._errors.register(self)
