@@ -114,7 +114,7 @@ class Application(Component):
     def response(self, response):
         response.done = True
 
-    def __call__(self, environ, start_response):
+    def __call__(self, environ, start_response, exc_info=None):
         request, response = self.getRequestResponse(environ)
 
         try:
@@ -145,7 +145,7 @@ class Application(Component):
             self._handleError(error)
         finally:
             body = response.process()
-            start_response(response.status, response.headers.items())
+            start_response(response.status, response.headers.items(), exc_info)
             return [body]
 
 class WSGIErrors(File):
@@ -196,7 +196,7 @@ class Gateway(Component):
 
         return environ
 
-    def start_response(self, status, headers):
+    def start_response(self, status, headers, exc_info=None):
         self._response.status = status
         for header in headers:
             self._response.headers.add_header(*header)
