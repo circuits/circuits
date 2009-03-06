@@ -144,14 +144,13 @@ class DefaultDispatcher(Component):
         channel, vpath = self._getChannel(request)
 
         if channel:
-            if not channel.endswith(":request"):
-                req.kwargs = parseQueryString(request.qs)
-                v = self._parseBody(request, response, req.kwargs)
-                if not v:
-                    return v # MaxSizeExceeded (return the HTTPError)
+            req.kwargs = parseQueryString(request.qs)
+            v = self._parseBody(request, response, req.kwargs)
+            if not v:
+                return v # MaxSizeExceeded (return the HTTPError)
 
-                if vpath:
-                    req.args += (vpath,)
+            if vpath:
+                req.args += (vpath,)
 
             return self.send(req, channel, errors=True)
 
