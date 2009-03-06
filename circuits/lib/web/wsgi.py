@@ -8,9 +8,12 @@ This module implements WSGI Components.
 """
 
 import warnings
+from urllib import unquote
 from traceback import format_exc
 
 from circuits import handler, Component
+
+from circuits.lib.io import File
 
 import webob
 from headers import Headers
@@ -146,12 +149,21 @@ class Application(Component):
             start_response(response.status, response.headers.items())
             return [body]
 
+class WSGIErrors(File):
+
+    def write(self, data):
+        pass # Not doing anything with wsgi.errors yet
+
 class Gateway(Component):
 
     def __init__(self, app, path=None):
         super(Gateway, self).__init__(channel=path)
 
         self.app = app
+
+        self._errors = WSGIErrors("/dev/stderr", "a")
+        self._errors.register(self)
+
         self._request = self._response = None
 
     def environ(self):
@@ -160,18 +172,28 @@ class Gateway(Component):
         env = environ.__setitem__
 
         env("REQUEST_METHOD", req.method)
-        env("PATH_INFO", req.path)
-        env("SERVER_NAME", req.server.address)
-        env("SERVER_PORT", str(req.server.port))
-        env("SERVER_PROTOCOL", req.server_protocol)
+        env("SERVER_NAME", req.host.split(":", 1)[0])
+        env("SERVER_PORT", "%i" % req.server.port)
+        env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server_protocol)
         env("QUERY_STRING", req.qs)
         env("SCRIPT_NAME", req.script_name)
-        env("wsgi.input", req.body)
+        env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
+        env("CONTENT_LENGTH", req.headers.get("Content-Length", ""))
+        env("REMOTE_ADDR", req.remote.ip)
+        env("REMOTE_PORT", "%i" % req.remote.port)
         env("wsgi.version", (1, 0))
-        env("wsgi.errors", None)
-        env("wsgi.multithread", True)
-        env("wsgi.multiprocess", True)
+        env("wsgi.input", req.body)
+        env("wsgi.errors", self._errors)
+        env("wsgi.multithread", False)
+        env("wsgi.multiprocess", False)
         env("wsgi.run_once", False)
+        env("wsgi.url_scheme", req.scheme)
+
+        if req.path:
+            env("PATH_INFO", unquote(req.path))
+
+        for k, v in req.headers.items():
+            env("HTTP_%s" % k.upper().replace("-", "_"), v)
 
         return environ
 
