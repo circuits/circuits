@@ -165,7 +165,7 @@ class Gateway(Component):
 
         self._request = self._response = None
 
-    def environ(self):
+    def _createEnviron(self):
         environ = {}
         req = self._request
         env = environ.__setitem__
@@ -206,7 +206,7 @@ class Gateway(Component):
         self._request = request
         self._response = response
 
-        return "".join(self.app(self.environ(), self.start_response))
+        return "".join(self.app(self._createEnviron(), self.start_response))
 
 def Middleware(*args, **kwargs):
     """Alias to Gateway for backward compatibility.
