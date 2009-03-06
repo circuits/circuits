@@ -48,24 +48,37 @@ class BaseServer(Component):
     def port(self):
         return self.server.port if hasattr(self, "server") else None
 
-    def base(self):
-        host = self.server.address
+    @property
+    def ssl(self):
+        return self.server.ssl if hasattr(self, "server") else None
+
+    @property
+    def scheme(self):
+        return "https" if self.ssl else "http"
+
+    @property
+    def host(self):
+        host = self.address
+
         if host in ("0.0.0.0", "::", ""):
             # 0.0.0.0 is INADDR_ANY and :: is IN6ADDR_ANY.
             # Look up the host name, which should be the
             # safest thing to spit out in a URL.
             host = _gethostname()
-        
-        port = self.server.port
-        
-        if self.server.ssl:
-            scheme = "https"
-            if port != 443:
-                host += ":%s" % port
-        else:
-            scheme = "http"
-            if port != 80:
-                host += ":%s" % port
+
+        ssl = self.ssl
+        port = self.port
+
+        if not ((ssl and port == 433) or (not ssl and port == 80)):
+            host = "%s:%s" % (host, port)
+
+        return host
+
+    @property
+    def base(self):
+        host = self.host
+        port = self.port
+        scheme = self.scheme
         
         return "%s://%s" % (scheme, host)
 
