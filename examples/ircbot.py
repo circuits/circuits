@@ -28,7 +28,7 @@ class Bot(Component):
             self.push(Nick("%s_" % self("getNick")), "NICK")
 
     def message(self, source, target, message):
-        self.push(Message(source, message), "PRIVMSG")
+        self.push(Message(source[0], message), "PRIVMSG")
 
 if __name__ == "__main__":
     bot = Bot("irc.freenode.net", channel="bot") + Debugger()
