@@ -158,7 +158,7 @@ class HTTP(Component):
         try:
             req = Request(request, response)
 
-            v = self.send(req, "request", self.channel)#, errors=True)
+            v = self.send(req, "request", self.channel, errors=True)
 
             if v:
                 if issubclass(type(v), basestring):
