@@ -9,7 +9,7 @@ This module implements URL dispatchers.
 
 import os
 
-from circuits import Component
+from circuits import handler, Component
 
 from cgifs import FieldStorage
 from tools import expires, serve_file
@@ -122,6 +122,7 @@ class DefaultDispatcher(Component):
 
         return channel, vpath
 
+    @handler("request", filter=True)
     def request(self, event, request, response):
         req = event
         path = request.path.strip("/")
