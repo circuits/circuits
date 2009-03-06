@@ -470,7 +470,7 @@ class IRC(Component):
                     "netinfo", self.channel)
 
         elif re.match("[0-9]+", tokens[1]):
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             target = tokens[2].lower()
 
             numeric = int(tokens[1])
@@ -529,7 +529,7 @@ class IRC(Component):
                     "numeric", self.channel)
 
         elif tokens[1] == "PRIVMSG":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             target = tokens[2].lower()
             message = strip(" ".join(tokens[3:]))
 
@@ -551,7 +551,7 @@ class IRC(Component):
                         "message", self.channel)
 
         elif tokens[1] == "NOTICE":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             target = tokens[2].lower()
             message = strip(" ".join(tokens[3:]))
             self.push(Notice(
@@ -559,7 +559,7 @@ class IRC(Component):
                     "notice", self.channel)
 
         elif tokens[1] == "JOIN":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             channels = strip(tokens[2]).lower()
             for channel in channels.split(","):
                 self.push(Join(
@@ -567,7 +567,7 @@ class IRC(Component):
                         "join", self.channel)
 
         elif tokens[1] == "PART":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             channel = strip(tokens[2]).lower()
             message = strip(" ".join(tokens[3:]))
             self.push(Part(
@@ -575,14 +575,14 @@ class IRC(Component):
                     "part", self.channel)
 
         elif tokens[1] == "QUIT":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             message = strip(" ".join(tokens[2:]))
             self.push(Quit(
                     source, message),
                     "quit", self.channel)
 
         elif tokens[1] == "NICK":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             newNick = strip(tokens[2]).lower()
 
             if self.getNick() is not None:
@@ -599,7 +599,7 @@ class IRC(Component):
                     "nick", self.channel)
 
         elif tokens[1] == "PONG":
-            source = sourceSplit(strip(tokens[0].lower()))[0]
+            source = sourceSplit(strip(tokens[0].lower()))
             args = [strip(x) for x in tokens[2:]]
             self.push(Pong(source, *args), "pong", self.channel)
 
