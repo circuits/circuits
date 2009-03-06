@@ -11,9 +11,9 @@ import os
 
 from circuits import handler, Component
 
+from errors import HTTPError
 from cgifs import FieldStorage
 from tools import expires, serve_file
-from errors import HTTPError, NotFound
 from utils import parseQueryString, dictform
 
 class DefaultDispatcher(Component):
