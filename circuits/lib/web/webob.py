@@ -151,7 +151,7 @@ class Response(object):
             ("Date", strftime("%a, %d %b %Y %H:%M:%S %Z")),
             ("X-Powered-By", self.request.server.version)])
 
-        self.cookie = SimpleCookie()
+        self.cookie = self.request.cookie
 
         self.stream = False
         self.gzip = False
