@@ -26,7 +26,6 @@ circuits.bridge.__package__	circuits.bridge-module.html#__package__
 circuits.core	circuits.core-module.html
 circuits.core.__package__	circuits.core-module.html#__package__
 circuits.core.handler	circuits.core-module.html#handler
-circuits.core.__warningregistry__	circuits.core-module.html#__warningregistry__
 circuits.core.HAS_MULTIPROCESSING	circuits.core-module.html#HAS_MULTIPROCESSING
 circuits.core.listener	circuits.core-module.html#listener
 circuits.debugger	circuits.debugger-module.html
@@ -231,6 +230,7 @@ circuits.lib.web.core.expose	circuits.lib.web.core-module.html#expose
 circuits.lib.web.dispatchers	circuits.lib.web.dispatchers-module.html
 circuits.lib.web.dispatchers.expires	circuits.lib.web.tools-module.html#expires
 circuits.lib.web.dispatchers.__package__	circuits.lib.web.dispatchers-module.html#__package__
+circuits.lib.web.dispatchers.handler	circuits.core-module.html#handler
 circuits.lib.web.dispatchers.serve_file	circuits.lib.web.tools-module.html#serve_file
 circuits.lib.web.dispatchers.parseQueryString	circuits.lib.web.utils-module.html#parseQueryString
 circuits.lib.web.dispatchers.dictform	circuits.lib.web.utils-module.html#dictform
@@ -2321,7 +2321,6 @@ circuits.core.Manager.run	circuits.core.Manager-class.html#run
 circuits.lib.web.http.HTTP.read	circuits.lib.web.http.HTTP-class.html#read
 circuits.core.BaseComponent._registerHidden	circuits.core.BaseComponent-class.html#_registerHidden
 circuits.core.Manager.stop	circuits.core.Manager-class.html#stop
-circuits.lib.web.http.HTTP._requests	circuits.lib.web.http.HTTP-class.html#_requests
 circuits.core.Manager.running	circuits.core.Manager-class.html#running
 circuits.core.BaseComponent._getTicks	circuits.core.BaseComponent-class.html#_getTicks
 circuits.core.Manager._getHandlers	circuits.core.Manager-class.html#_getHandlers
