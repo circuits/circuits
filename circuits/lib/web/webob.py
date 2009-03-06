@@ -146,8 +146,10 @@ class Response(object):
         self.close = False
         
         self.headers = Headers([
-            ("Server", SERVER_VERSION),
-            ("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))])
+            ("Server", self.request.server.version),
+            ("Date", strftime("%a, %d %b %Y %H:%M:%S %Z")),
+            ("X-Powered-By", self.request.server.version)])
+
         self.cookie = SimpleCookie()
 
         self.stream = False
