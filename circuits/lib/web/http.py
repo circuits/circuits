@@ -29,23 +29,19 @@ class HTTP(Component):
     HTTP messages creating and sending an appropriate response.
     """
 
-    _requests = {}
-
     def __init__(self, server, *args, **kwargs):
         super(HTTP, self).__init__(*args, **kwargs)
 
         self.server = server
+        self._buffered = {}
 
     def _handleError(self, error):
         response = error.response
 
-        try:
-            v = self.send(error, "httperror", self.channel)
-        except TypeError:
-            v = None
+        v = self.send(error, "httperror", self.channel)
 
-        if v is not None:
-            if isinstance(v, basestring):
+        if v:
+            if issubclass(type(v), basestring):
                 response.body = v
                 res = Response(response)
                 self.send(res, "response", self.channel)
@@ -84,8 +80,8 @@ class HTTP(Component):
         Raw Event per line. Any unfinished lines of text, leave in the buffer.
         """
 
-        if sock in self._requests:
-            request = self._requests[sock]
+        if sock in self._buffered:
+            request, response = self._buffered[sock]
             request.body.write(data)
             contentLength = int(request.headers.get("Content-Length", "0"))
             if not request.body.tell() == contentLength:
@@ -136,12 +132,12 @@ class HTTP(Component):
             request.body.write(body)
 
             if headers.get("Expect", "") == "100-continue":
-                self._requests[sock] = request
+                self._buffered[sock] = request, response
                 return self.simple(sock, 100)
 
             contentLength = int(headers.get("Content-Length", "0"))
             if not request.body.tell() == contentLength:
-                self._requests[sock] = request
+                self._buffered[sock] = request, response
                 return
 
         response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
@@ -187,8 +183,8 @@ class HTTP(Component):
             error = HTTPError(request, response, 500, error=format_exc())
             self._handleError(error)
         finally:
-            if sock in self._requests:
-                del self._requests[sock]
+            if sock in self._buffered:
+                del self._buffered[sock]
 
     def simple(self, sock, code, message=""):
         """Simple Response Events Handler
