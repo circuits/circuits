@@ -67,6 +67,7 @@ class Request(object):
     scheme = "http"
     protocol = (1, 1)
     server_protocol = (1, 1)
+    host = ""
     local = Host("127.0.0.1", 80)
     remote = Host("127.0.0.1", 1111)
 
