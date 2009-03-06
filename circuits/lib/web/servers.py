@@ -34,7 +34,11 @@ class BaseServer(Component):
 
         self.server.register(self)
 
-        print "%s listening on %s" % (SERVER_VERSION, self.base())
+        print "%s listening on %s" % (self.version, self.base)
+
+    @property
+    def version(self):
+        return SERVER_VERSION
 
     @property
     def address(self):
