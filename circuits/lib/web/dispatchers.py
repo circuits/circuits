@@ -152,17 +152,7 @@ class DefaultDispatcher(Component):
                 if vpath:
                     req.args += (vpath,)
 
-            try:
-                v = self.send(req, channel, errors=True, log=False)
-            except TypeError:
-                v = None
-
-            if v is not None:
-                return v
-            else:
-                return NotFound(request, response)
-        else:
-            return NotFound(request, response)
+            return self.send(req, channel, errors=True)
 
 class FileDispatcher(Component):
 
