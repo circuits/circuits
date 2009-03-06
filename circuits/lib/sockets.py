@@ -356,8 +356,7 @@ class Server(Component):
                 try:
                     newsock, host = self._sock.accept()
                 except socket.error, e:
-                    if e.args[0] in (EWOULDBLOCK, EAGAIN):
-                        self.numberAccepts = i
+                    if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                         return
                     elif e.args[0] == EPERM:
                         # Netfilter on Linux may have rejected the
