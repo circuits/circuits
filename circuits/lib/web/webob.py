@@ -146,10 +146,15 @@ class Response(object):
         self.done = False
         self.close = False
         
+        if self.request.server:
+            server_version = self.request.server.version
+        else:
+            server_version = SERVER_VERSION
+
         self.headers = Headers([
-            ("Server", self.request.server.version),
+            ("Server", server_version),
             ("Date", strftime("%a, %d %b %Y %H:%M:%S %Z")),
-            ("X-Powered-By", self.request.server.version)])
+            ("X-Powered-By", server_version)])
 
         self.cookie = self.request.cookie
 
