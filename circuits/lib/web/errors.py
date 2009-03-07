@@ -24,7 +24,6 @@ class HTTPError(Event):
 
         response.clear()
         response.close = True
-        response.headers.add_header("Connection", "close")
 
         self.request = request
         self.response = response
