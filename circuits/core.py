@@ -222,6 +222,8 @@ def handler(*channels, **kwargs):
     def wrapper(f):
         f.handler = True
 
+        f.override = kwargs.get("override", False)
+
         if "type" in kwargs:
             warnings.warn("Please use 'filter', 'type' will be deprecated in 1.2")
             f.filter = kwargs.get("type", "listener") == "filter"
@@ -866,10 +868,17 @@ class Component(BaseComponent):
 
     def __new__(cls, *args, **kwargs):
         self = BaseComponent.__new__(cls, *args, **kwargs)
+        handlers = [x for x in cls.__dict__.itervalues() \
+                if getattr(x, "handler", False)]
+        overridden = lambda x: [h for h in handlers \
+                if x.channels == h.channels and getattr(h, "override", False)]
         for base in cls.__bases__:
             if issubclass(cls, base):
                 for k, v in base.__dict__.iteritems():
-                    if callable(v) and getattr(v, "handler", False):
+                    p1 = callable(v)
+                    p2 = getattr(v, "handler", False)
+                    predicate = p1 and p2 and not overridden(v)
+                    if predicate:
                         name = "%s_%s" % (base.__name__, k)
                         method = new.instancemethod(v, self, cls)
                         setattr(self, name, method)
