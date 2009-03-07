@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>circuits.lib.pollers.Poller</title>
+  <title>circuits.lib.pollers.EPoll</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -45,7 +45,7 @@
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
         <a href="circuits.lib-module.html">Package&nbsp;lib</a> ::
         <a href="circuits.lib.pollers-module.html">Module&nbsp;pollers</a> ::
-        Class&nbsp;Poller
+        Class&nbsp;EPoll
       </span>
     </td>
     <td>
@@ -56,7 +56,7 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Poller</h1><p class="nomargin-top"></p>
+<h1 class="epydoc">Class EPoll</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
     object --+            
              |            
@@ -64,39 +64,16 @@
                  |        
 <a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+    
                      |    
-        <a href="circuits.core.Component-class.html">core.Component</a> --+
+               _Poller --+
                          |
-                        <strong class="uidshort">Poller</strong>
+                        <strong class="uidshort">EPoll</strong>
 </pre>
 
-<dl><dt>Known Subclasses:</dt>
-<dd>
-      <ul class="subclass-list">
-<li><a href="circuits.lib.pollers.Select-class.html">Select</a></li>  </ul>
-</dd></dl>
-
 <hr />
-<p>Poller(...) -&gt; new Poller Component</p>
-  <p>Creates a new Poller Component that can be used to poll file 
-  descriptors for read and write events. This is a base component and 
-  should be extended to implement the desired poller implementation.</p>
+<p>EPoll(...) -&gt; new EPoll Poller Component</p>
+  <p>Creates a new EPoll Poller Component that uses the epoll poller 
+  implementation.</p>
 
-<!-- ==================== NESTED CLASSES ==================== -->
-<a name="section-NestedClasses"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Nested Classes</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.HandlersType-class.html">__metaclass__</a></code>
-      </p>
-    </td>
-  </tr>
-</table>
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -107,11 +84,11 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">new Poller Component</span>
+      <span class="summary-type">new EPoll Poller Component</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="circuits.lib.pollers.Poller-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">...</span>)</span><br />
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.EPoll-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">...</span>)</span><br />
       initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             
@@ -128,7 +105,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="add"></a><span class="summary-sig-name">add</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.EPoll-class.html#addReader" class="summary-sig-name">addReader</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">fd</span>)</span></td>
           <td align="right" valign="top">
             
@@ -145,8 +122,75 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="remove"></a><span class="summary-sig-name">remove</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.EPoll-class.html#addWriter" class="summary-sig-name">addWriter</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">fd</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.EPoll-class.html#removeReader" class="summary-sig-name">removeReader</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">fd</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.EPoll-class.html#removeWriter" class="summary-sig-name">removeWriter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">fd</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.EPoll-class.html#discard" class="summary-sig-name">discard</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">fd</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.EPoll-class.html#poll" class="summary-sig-name">poll</a>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -158,6 +202,11 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>_Poller</code></b>:
+      <code>__tick__</code>,
+      <code>isReading</code>,
+      <code>isWriting</code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
       <code><a href="circuits.core.BaseComponent-class.html#__call__">__call__</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#__repr__">__repr__</a></code>,
@@ -202,8 +251,24 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.Component-class.html#__new__">__new__</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
+      <code><a href="circuits.core.BaseComponent-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>_Poller</code></b>:
+      <code>channel</code>
       </p>
     </td>
   </tr>
@@ -218,9 +283,6 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
-      <code><a href="circuits.core.BaseComponent-class.html#channel">channel</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
       </p>
@@ -235,27 +297,6 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Properties</span></td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="circuits.lib.pollers.Poller-class.html#read" class="summary-name">read</a>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="circuits.lib.pollers.Poller-class.html#write" class="summary-name">write</a>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="circuits.lib.pollers.Poller-class.html#all" class="summary-name">all</a>
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
@@ -298,7 +339,7 @@
   
   <p>initializes x; see x.__class__.__doc__ for signature</p>
   <dl class="fields">
-    <dt>Returns: new Poller Component</dt>
+    <dt>Returns: new EPoll Poller Component</dt>
     <dt>Overrides:
         object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
@@ -306,55 +347,140 @@
   </dl>
 </td></tr></table>
 </div>
-<br />
-<!-- ==================== PROPERTY DETAILS ==================== -->
-<a name="section-PropertyDetails"></a>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Property Details</span></td>
-</tr>
-</table>
-<a name="read"></a>
+<a name="addReader"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <h3 class="epydoc">read</h3>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addReader</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">fd</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
   
   <dl class="fields">
-    <dt>Get Method:</dt>
-    <dd class="value"><span class="summary-sig"><i>unreachable</i>.read(<span class="summary-sig-arg">self</span>)</span>
-    </dd>
+    <dt>Overrides:
+        _Poller.addReader
+    </dt>
   </dl>
 </td></tr></table>
 </div>
-<a name="write"></a>
+<a name="addWriter"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <h3 class="epydoc">write</h3>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addWriter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">fd</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
   
   <dl class="fields">
-    <dt>Get Method:</dt>
-    <dd class="value"><span class="summary-sig"><i>unreachable</i>.write(<span class="summary-sig-arg">self</span>)</span>
-    </dd>
+    <dt>Overrides:
+        _Poller.addWriter
+    </dt>
   </dl>
 </td></tr></table>
 </div>
-<a name="all"></a>
+<a name="removeReader"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <h3 class="epydoc">all</h3>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeReader</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">fd</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
   
   <dl class="fields">
-    <dt>Get Method:</dt>
-    <dd class="value"><span class="summary-sig"><i>unreachable</i>.all(<span class="summary-sig-arg">self</span>)</span>
-    </dd>
+    <dt>Overrides:
+        _Poller.removeReader
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeWriter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeWriter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">fd</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        _Poller.removeWriter
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="discard"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">discard</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">fd</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        _Poller.discard
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="poll"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">poll</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        _Poller.poll
+    </dt>
   </dl>
 </td></tr></table>
 </div>
@@ -390,7 +516,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Mar  7 04:39:41 2009
+    Generated by Epydoc 3.0.1 on Sun Mar  8 07:18:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

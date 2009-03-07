@@ -58,17 +58,15 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Select</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
-    object --+                
-             |                
-  <a href="circuits.core.Manager-class.html">core.Manager</a> --+            
-                 |            
-<a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+        
-                     |        
-        <a href="circuits.core.Component-class.html">core.Component</a> --+    
-                         |    
-                    <a href="circuits.lib.pollers.Poller-class.html">Poller</a> --+
-                             |
-                            <strong class="uidshort">Select</strong>
+    object --+            
+             |            
+  <a href="circuits.core.Manager-class.html">core.Manager</a> --+        
+                 |        
+<a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+    
+                     |    
+               _Poller --+
+                         |
+                        <strong class="uidshort">Select</strong>
 </pre>
 
 <hr />
@@ -78,22 +76,6 @@
   legacy reasons as most systems implement select-based polling for 
   backwards compatibility.</p>
 
-<!-- ==================== NESTED CLASSES ==================== -->
-<a name="section-NestedClasses"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Nested Classes</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.HandlersType-class.html">__metaclass__</a></code>
-      </p>
-    </td>
-  </tr>
-</table>
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -108,24 +90,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__tick__"></a><span class="summary-sig-name">__tick__</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="poll"></a><span class="summary-sig-name">poll</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">timeout</span>=<span class="summary-sig-default">1e-05</span>)</span></td>
+          <td><span class="summary-sig"><a href="circuits.lib.pollers.Select-class.html#poll" class="summary-sig-name">poll</a>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -137,10 +102,16 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.lib.pollers.Poller-class.html">Poller</a></code></b>:
-      <code><a href="circuits.lib.pollers.Poller-class.html#__init__">__init__</a></code>,
-      <code><a href="circuits.lib.pollers.Poller-class.html#add">add</a></code>,
-      <code><a href="circuits.lib.pollers.Poller-class.html#remove">remove</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>_Poller</code></b>:
+      <code>__init__</code>,
+      <code>__tick__</code>,
+      <code>addReader</code>,
+      <code>addWriter</code>,
+      <code>discard</code>,
+      <code>isReading</code>,
+      <code>isWriting</code>,
+      <code>removeReader</code>,
+      <code>removeWriter</code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
       <code><a href="circuits.core.BaseComponent-class.html#__call__">__call__</a></code>,
@@ -186,8 +157,24 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.Component-class.html#__new__">__new__</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
+      <code><a href="circuits.core.BaseComponent-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>_Poller</code></b>:
+      <code>channel</code>
       </p>
     </td>
   </tr>
@@ -202,9 +189,6 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
-      <code><a href="circuits.core.BaseComponent-class.html#channel">channel</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
       </p>
@@ -221,11 +205,6 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.lib.pollers.Poller-class.html">Poller</a></code></b>:
-      <code><a href="circuits.lib.pollers.Poller-class.html#all">all</a></code>,
-      <code><a href="circuits.lib.pollers.Poller-class.html#read">read</a></code>,
-      <code><a href="circuits.lib.pollers.Poller-class.html#write">write</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#channels">channels</a></code>,
       <code><a href="circuits.core.Manager-class.html#components">components</a></code>,
@@ -240,6 +219,38 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="poll"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">poll</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        _Poller.poll
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -271,7 +282,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Mar  7 04:39:41 2009
+    Generated by Epydoc 3.0.1 on Sun Mar  8 07:18:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

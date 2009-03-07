@@ -103,9 +103,6 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="circuits.lib.sockets.TCPClient-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">host</span>,
-        <span class="summary-sig-arg">port</span>,
-        <span class="summary-sig-arg">ssl</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">bind</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span><br />
       initializes x; see x.__class__.__doc__ for signature</td>
@@ -124,9 +121,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="circuits.lib.sockets.TCPClient-class.html#onSEND" class="summary-sig-name">onSEND</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">data</span>)</span><br />
-      Send Event</td>
+          <td><span class="summary-sig"><a name="connect"></a><span class="summary-sig-name">connect</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">host</span>,
+        <span class="summary-sig-arg">port</span>,
+        <span class="summary-sig-arg">ssl</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -139,11 +137,7 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.lib.sockets.Client-class.html">Client</a></code></b>:
-      <code><a href="circuits.lib.sockets.Client-class.html#__tick__">__tick__</a></code>,
       <code><a href="circuits.lib.sockets.Client-class.html#close">close</a></code>,
-      <code><a href="circuits.lib.sockets.Client-class.html#connect">connect</a></code>,
-      <code><a href="circuits.lib.sockets.Client-class.html#onSHUTDOWN">onSHUTDOWN</a></code>,
-      <code><a href="circuits.lib.sockets.Client-class.html#poll">poll</a></code>,
       <code><a href="circuits.lib.sockets.Client-class.html#write">write</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
@@ -196,6 +190,22 @@
     </td>
   </tr>
 </table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.lib.sockets.Client-class.html">Client</a></code></b>:
+      <code><a href="circuits.lib.sockets.Client-class.html#channel">channel</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
 <!-- ==================== INSTANCE VARIABLES ==================== -->
 <a name="section-InstanceVariables"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -206,9 +216,6 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
-      <code><a href="circuits.core.BaseComponent-class.html#channel">channel</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
       </p>
@@ -259,9 +266,6 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">host</span>,
-        <span class="sig-arg">port</span>,
-        <span class="sig-arg">ssl</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">bind</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">**kwargs</span>)</span>
     <br /><em class="fname">(Constructor)</em>
@@ -277,32 +281,6 @@
         object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="onSEND"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">onSEND</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">data</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Send Event</p>
-  <p>Typically this should NOT be overridden by sub-classes. If it is, this
-  should be called by the sub-class first.</p>
-  <dl class="fields">
-    <dt>Decorators:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code>@handler("send", filter= True)</code></li>
-    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -338,7 +316,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Mar  7 04:39:41 2009
+    Generated by Epydoc 3.0.1 on Sun Mar  8 07:18:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
