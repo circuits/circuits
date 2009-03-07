@@ -23,11 +23,14 @@ class BaseServer(Component):
 
     channel = "web"
 
-    def __init__(self, port, address="", docroot=None, channel=channel):
-        super(BaseServer, self).__init__(channel=channel)
+    def __init__(self, port, address="", docroot=None, **kwargs):
+        super(BaseServer, self).__init__(**kwargs)
 
-        self.server = TCPServer(port, address, channel=channel)
-        HTTP(self, channel=channel).register(self.server)
+        if "channel" not in kwargs:
+            kwargs["channel"] = self.channel
+
+        self.server = TCPServer(port, address, **kwargs)
+        HTTP(self, **kwargs).register(self.server)
 
         Request.server = self
         Request.local = Host(self.server.address, self.server.port)
