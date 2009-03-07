@@ -8,21 +8,21 @@ Test all functionality of the sockets module.
 """
 
 import unittest
+from time import sleep
 
-from circuits import Component
-from circuits.lib.sockets import TCPServer, TCPClient, UDPServer, UDPClient
+from circuits.tools import inspect
+from circuits import Component, Debugger
+from circuits.lib.sockets import *
 
 def wait():
-    for x in xrange(100000):
-        pass
+    sleep(0.1)
 
 class Client(Component):
 
-    def __init__(self, client):
-        super(Client, self).__init__()
+    channel = "client"
 
-        self.client = client
-        self.manager += self.client
+    def __init__(self):
+        super(Client, self).__init__()
 
         self.connected = False
         self.disconnected = False
@@ -39,16 +39,21 @@ class Client(Component):
 
 class Server(Component):
 
-    def __init__(self, server):
+    channel = "server"
+
+    def __init__(self):
         super(Server, self).__init__()
 
-        self.server = server
-        self.manager += self.server
-
+        self.connected = False
+        self.disconnected = False
         self.data = ""
 
-    def connected(self, sock, host, port):
-        self.server.write(sock, "Ready")
+    def connect(self, sock, host, port):
+        self.connected = True
+        self.push(Write(sock, "Ready"), "write")
+
+    def disconnect(self, sock):
+        self.disconnected = True
 
     def read(self, sock, data):
         self.data = data
@@ -62,28 +67,30 @@ class SocketsTestCase(unittest.TestCase):
         TCPServer work correctly.
         """
 
-        server = Server(TCPServer(9999))
-        client = Client(TCPClient("localhost", 9999))
+        server = Server() + TCPServer(9999)
+        client = Client() + TCPClient()
 
         server.start()
         client.start()
 
         try:
-            client.client.connect()
+            client.push(Connect("127.0.0.1", 9999), "connect")
             wait()
 
             self.assertTrue(client.connected)
+            self.assertTrue(server.connected)
             self.assertTrue(client.data == "Ready")
 
-            client.client.write("foo")
+            client.push(Write("foo"), "write")
             wait()
 
             self.assertTrue(server.data == "foo")
 
-            client.client.close()
+            client.push(Close(), "close")
             wait()
 
             self.assertTrue(client.disconnected)
+            self.assertTrue(server.disconnected)
         finally:
             server.stop()
             client.stop()
@@ -95,16 +102,18 @@ class SocketsTestCase(unittest.TestCase):
         UDPServer work correctly.
         """
 
-        server = Server(UDPServer(9999))
-        client = Client(UDPClient(10000))
+        server = Server() + UDPServer(9999)# + Debugger()
+        client = Client() + UDPClient(10000)# + Debugger()
 
         server.start()
         client.start()
 
         try:
-            client.client.write(("localhost", 9999), "foo")
+            client.push(Write(("127.0.0.1", 9999), "foo"), "write")
             wait()
-
+            client.push(Write(("127.0.0.1", 9999), "foo"), "write")
+            sleep(1)
+            print repr(server.data)
             self.assertTrue(server.data == "foo")
         finally:
             server.stop()
