@@ -22,7 +22,7 @@ This example makes use of:
 
 import optparse
 
-from circuits.lib.io import Stdin
+from circuits.lib.io import stdin
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
 from circuits.lib.sockets import TCPClient, Connect, Write
@@ -92,7 +92,8 @@ def main():
         port = 23
 
     print "Trying %s..." % host
-    (Telnet(host, port) + Stdin()).run()
+
+    (Telnet(host, port) + stdin).run()
 
 ###
 ### Entry Point
