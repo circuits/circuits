@@ -72,6 +72,9 @@ class Telnet(Component):
     def connected(self, host, port):
         print "Connected to %s" % host
 
+    def error(self, e):
+        print "ERROR: %r" % e
+
     def read(self, data):
         print data.strip()
 
