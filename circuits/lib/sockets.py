@@ -14,22 +14,20 @@ event-driven and should be sub-classed to do something usefull.
 
 import errno
 import socket
+from errno import *
+from collections import defaultdict, deque
 
 try:
     import select26 as select
 except ImportError:
     import select
 
-from circuits import handler, Event, Component
+from circuits.core import handler, Event, Component
+from circuits.lib.pollers import Select, Poll, EPoll
 
-POLL_INTERVAL = 0.00001
-CONNECT_TIMEOUT = 4
-BUFFER_SIZE = 131072
-BACKLOG = 512
-
-###
-### Events
-###
+TIMEOUT = 0.001
+BUFSIZE = 4096
+BACKLOG = 128
 
 class Connect(Event):
     """Connect(host, port, ssl=False) -> Connect Event
@@ -46,6 +44,8 @@ class Connected(Event):
    if Server:
       - args: sock, host, port
    """
+
+class Disconnect(Event): pass
 
 class Disconnected(Event):
     """Disconnected(Event) -> Disconnected Event
@@ -110,146 +110,111 @@ class Shutdown(Event):
 
 class Client(Component):
 
-    _connected = False
+    channel = "client"
 
-    def __init__(self, *args, **kwargs):
-        super(Client, self).__init__(*args, **kwargs)
+    def __init__(self, bind=None, channel=channel, **kwargs):
+        super(Client, self).__init__(channel=channel, **kwargs)
 
-        self.host = ""
-        self.port = 0
-        self.ssl = False
+        self.bind = bind
+
         self.server = {}
         self.issuer = {}
 
-        self._sock = None
-        self._buffer = []
-        self._socks = []
-        self._read = []
-        self._write = []
-        self._close = False
-        self._connected = False
+        Poller = kwargs.get("poller", Select)
+        timeout = kwargs.get("timeout", TIMEOUT)
 
-    def __tick__(self):
-        self.poll()
+        self._poller = Poller(self, timeout)
+        self._poller.register(self)
+
+        self._sock = None
+        self._sslsock = None
+        self._buffer = deque()
+        self._closeflag = False
+        self._connected = False
 
     @property
     def connected(self):
-        return self._connected
+        return getattr(self, "_connected", None)
 
-    def poll(self, wait=POLL_INTERVAL):
-        try:
-            r, w, e = select.select(self._read, self._write, [], wait)
-        except socket.error, error:
-            if error[0] == errno.EBADF:
-                self._connected = False
-                return
-        except select.error, error:
-            if error[0] == 4:
-                pass
-            else:
-                self.push(Error(error), "error", self.channel)
-                return
+    def _close(self):
+        self._poller.discard(self._sock)
 
-        if r:
-            try:
-                if self.ssl and hasattr(self, "_ssock"):
-                    data = self._ssock.read(BUFFER_SIZE)
-                else:
-                    data = self._sock.recv(BUFFER_SIZE)
-                if data:
-                    self.push(Read(data), "read", self.channel)
-                else:
-                    self.close()
-                    return
-            except socket.error, error:
-                self.push(Error(error), "error", self.channel)
-                self.close()
-                return
-
-        if w:
-            if self._buffer:
-                data = self._buffer[0]
-                self.send(Write(data), "send", self.channel)
-            else:
-                if self._close:
-                    self.close()
-                else:
-                    self._write.remove(self._sock)
-
-    def connect(self, host=None, port=None, ssl=None):
-        self.host = host = (host if host is not None else self.host)
-        self.port = port = (port if port is not None else self.port)
-        self.ssl = ssl = (ssl if ssl is not None else self.ssl)
-
-        try:
-            try:
-                self._sock.connect((host, port))
-            except socket.error, error:
-                if error[0] == errno.EINPROGRESS:
-                    pass
-
-            if self.ssl:
-                self._ssock = socket.ssl(self._sock)
-            
-            r, w, e = select.select([], self._socks, [], CONNECT_TIMEOUT)
-            if w:
-                self._connected = True
-                self._read.append(self._sock)
-                self.push(Connected(host, port), "connected", self.channel)
-            else:
-                self.push(Error("Connection timed out"), "error", self.channel)
-                self.close()
-        except socket.error, error:
-            self.push(Error(error), "error", self.channel)
-            self.close()
-
-    def close(self):
-        if self._socks:
-            self.send(Shutdown(), "shutdown", self.channel)
-
-    def write(self, data):
-        if not self._sock in self._write:
-            self._write.append(self._sock)
-        self._buffer.append(data)
-
-    @handler("shutdown", filter=True)
-    def onSHUTDOWN(self):
-        """Close Event (Private)
-
-        Typically this should NOT be overridden by sub-classes.
-        If it is, this should be called by the sub-class first.
-        """
-
-        if self._buffer:
-            self._close = True
-            return
+        self._buffer.clear()
+        self._closeflag = False
 
         try:
             self._sock.shutdown(2)
             self._sock.close()
-            self.push(Disconnected(), "disconnected", self.channel)
-        except socket.error, error:
-            self.push(Error(error), "error", self.channel)
-        finally:
-            self._connected = False
+        except socket.error:
+            pass
 
-            if self._sock in self._socks:
-                self._socks.remove(self._sock)
-            if self._sock in self._read:
-                self._read.remove(self._sock)
-            if self._sock in self._write:
-                self._write.remove(self._sock)
+        self.push(Disconnected(), "disconnected", self.channel)
 
+    def close(self):
+        if not self._buffer:
+            self._close()
+        elif not self._closeflag:
+            self._closeflag = True
+
+    def _read(self):
+        try:
+            if self.ssl and self._sslsock:
+                data = self._sslsock.read(BUFSIZE)
+            else:
+                data = self._sock.recv(BUFSIZE)
+
+            if data:
+                self.push(Read(data), "read", self.channel)
+            else:
+                self.close()
+        except socket.error, e:
+            self.push(Error(e), "error", self.channel)
+            self._close()
+
+    def _write(self, data):
+        try:
+            if self.ssl and self._sslsock:
+                bytes = self._sslsock.write(data)
+            else:
+                bytes = self._sock.send(data)
+
+            if bytes < len(data):
+                self._buffer.appendleft(data[bytes:])
+        except socket.error, e:
+            if e[0] in (EPIPE, ENOTCONN):
+                self._close(self._sock)
+            else:
+                self.push(Error(e), "error", self.channel)
+
+    def write(self, data):
+        if not self._poller.isWriting(self._sock):
+            self._poller.addWriter(self._sock)
+        self._buffer.append(data)
+
+    @handler("_disconnect", filter=True)
+    def __on_disconnect(self, sock):
+        self.push(Disconnect(sock), "disconnect", self.channel)
+
+    @handler("_read", filter=True)
+    def __on_read(self, sock):
+        self._read()
+
+    @handler("_write", filter=True)
+    def __on_write(self, sock):
+        if self._buffer:
+            data = self._buffer.popleft()
+            self._write(data)
+
+        if not self._buffer:
+            if self._closeflag:
+                self._close(self._sock)
+            elif self._poller.isWriting(self._sock):
+                self._poller.removeWriter(self._sock)
 
 class TCPClient(Client):
 
-    def __init__(self, host, port, ssl=False, bind=None, **kwargs):
-        super(TCPClient, self).__init__(**kwargs)
-
-        self.host = host
-        self.port = port
-        self.ssl = ssl
-        self.bind = bind
+    def __init__(self, bind=None, **kwargs):
+        super(TCPClient, self).__init__(bind, **kwargs)
 
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.setblocking(False)
@@ -258,331 +223,270 @@ class TCPClient(Client):
         if bind is not None:
             self._sock.bind((bind, 0))
 
-        self._socks.append(self._sock)
-
-    @handler("send", filter=True)
-    def onSEND(self, data):
-        """Send Event
-
-        Typically this should NOT be overridden by sub-classes.
-        If it is, this should be called by the sub-class first.
-        """
+    def connect(self, host, port, ssl=False):
+        self.host = host
+        self.port = port
+        self.ssl  = ssl
 
         try:
-            if self.ssl:
-                bytes = self._ssock.write(data)
-            else:
-                bytes = self._sock.send(data)
+            r = self._sock.connect_ex((host, port))
+        except socket.error, e:
+            r = e[0]
 
-            if bytes < len(data):
-                self._buffer[0] = data[bytes:]
+        if r:
+            if r == EISCONN:
+                self._connected = True
+            elif r in (EWOULDBLOCK, EINPROGRESS, EALREADY):
+                self._connected = True
             else:
-                del self._buffer[0]
-        except socket.error, error:
-            if error[0] in [32, 107]:
-                self.close()
-            else:
-                self.push(Error(error), "error", self.channel)
-                self.close()
+                self.push(Error(r), "error", self.channel)
+                return
 
+        self._connected = True
+
+        self._poller.addReader(self._sock)
+
+        if self.ssl:
+            self._sslsock = socket.ssl(self._sock)
+        
+        self.push(Connected(host, port), "connected", self.channel)
 
 class Server(Component):
 
-    def __init__(self, *args, **kwargs):
-        super(Server, self).__init__(*args, **kwargs)
+    channel = "server"
 
-        self.address = ""
-        self.port = 0
-        self.ssl = False
+    def __init__(self, port, address="", ssl=False, channel=channel, **kwargs):
+        super(Server, self).__init__(channel=channel)
 
-        self._buffers = {}
+        self.port = port
+        self.address = address
+        self.ssl = ssl
 
-        self._socks = []
-        self._read = []
-        self._write = []
-        self._close = []
+        Poller = kwargs.get("poller", Select)
+        timeout = kwargs.get("timeout", TIMEOUT)
 
-    def __getitem__(self, y):
-        "x.__getitem__(y) <==> x[y]"
+        self._poller = Poller(self, timeout)
+        self._poller.register(self)
 
-        return self._socks[y]
+        self._sock = None
+        self._buffers = defaultdict(deque)
+        self._closeq = []
+        self._clients = []
 
-    def __contains__(self, y):
-        "x.__contains__(y) <==> y in x"
-    
-        return y in self._socks
+    def _close(self, sock):
+        if sock not in self._clients:
+            return
 
-    def __tick__(self):
-        self.poll()
+        self._poller.discard(sock)
 
-    def poll(self, wait=POLL_INTERVAL):
+        if sock in self._buffers:
+            del self._buffers[sock]
+
+        if sock in self._clients:
+            self._clients.remove(sock)
+
         try:
-            r, w, _ = select.select(self._read, self._write, [], wait)
-        except ValueError, ve:
-            # Possibly a file descriptor has gone negative?
-            return self._pruneSocks()
-        except TypeError, te:
-            # Something *totally* invalid (object w/o fileno, non-integral
-            # result) was passed
-            return self._pruneSocks()
-        except (select.error, IOError), se:
-            # select(2) encountered an error
-            if se.args[0] in (0, 2):
-                # windows does this if it got an empty list
-                if (not self._reads) and (not self._writes):
-                    return
-                else:
-                    raise
-            elif se.args[0] == EINTR:
-                return
-            elif se.args[0] == EBADF:
-                return self._pruneSocks()
-            else:
-                # OK, I really don't know what's going on.  Blow up.
-                raise
+            sock.shutdown(2)
+            sock.close()
+        except socket.error:
+            pass
 
-        for sock in w:
-            if self._buffers[sock]:
-                data = self._buffers[sock][0]
-                self.send(Write(sock, data), "send", self.channel)
-            else:
-                if sock in self._close:
-                    self.close(sock)
-                else:
-                    self._write.remove(sock)
-            
-        for sock in r:
-            if sock == self._sock:
-                try:
-                    newsock, host = self._sock.accept()
-                except socket.error, e:
-                    if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
-                        return
-                    elif e.args[0] == EPERM:
-                        # Netfilter on Linux may have rejected the
-                        # connection, but we get told to try to accept()
-                        # anyway.
-                        continue
-                    elif e.args[0] in (EMFILE, ENOBUFS, ENFILE, ENOMEM, ECONNABORTED):
-
-                        # Linux gives EMFILE when a process is not allowed
-                        # to allocate any more file descriptors.  *BSD and
-                        # Win32 give (WSA)ENOBUFS.  Linux can also give
-                        # ENFILE if the system is out of inodes, or ENOMEM
-                        # if there is insufficient memory to allocate a new
-                        # dentry.  ECONNABORTED is documented as possible on
-                        # both Linux and Windows, but it is not clear
-                        # whether there are actually any circumstances under
-                        # which it can happen (one might expect it to be
-                        # possible if a client sends a FIN or RST after the
-                        # server sends a SYN|ACK but before application code
-                        # calls accept(2), however at least on Linux this
-                        # _seems_ to be short-circuited by syncookies.
-
-                        continue
-                    raise
-                newsock.setblocking(False)
-                self._socks.append(newsock)
-                self._read.append(newsock)
-                self._buffers[newsock] = []
-                self.push(Connected(newsock, *host), "connected", self.channel)
-            else:
-                try:
-                    data = sock.recv(BUFFER_SIZE)
-                    if data:
-                        self.push(Read(sock, data), "read", self.channel)
-                    else:
-                        self.close(sock)
-                except socket.error, e:
-                    self.push(Error(sock, e), "error", self.channel)
-                    self.close(sock)
+        self.push(Disconnect(sock), "disconnect", self.channel)
 
     def close(self, sock=None):
-        if sock in self:
-            self.send(Shutdown(sock), "shutdown", self.channel)
+        if not self._buffers[sock]:
+            self._close(sock)
+        elif sock not in self._closeq:
+            self._closeq.append(sock)
 
-    def write(self, sock, data):
-        if not sock in self._write:
-            self._write.append(sock)
-        self._buffers[sock].append(data)
+    def _read(self, sock):
+        if sock not in self._clients:
+            return
 
-    def broadcast(self, data):
-        for sock in self._socks[1:]:
-            self.write(sock, data)
+        try:
+            data = sock.recv(BUFSIZE)
+            if data:
+                self.push(Read(sock, data), "read", self.channel)
+            else:
+                self.close(sock)
+        except socket.error, e:
+            self.push(Error(sock, e), "error", self.channel)
+            self._close(sock)
 
-    @handler("send", filter=True)
-    def onSEND(self, sock, data):
-        """Send Event
-
-
-        Typically this should NOT be overridden by sub-classes.
-        If it is, this should be called by the sub-class first.
-        """
+    def _write(self, sock, data):
+        if sock not in self._clients:
+            return
 
         try:
             bytes = sock.send(data)
             if bytes < len(data):
-                self._buffers[sock][0] = data[bytes:]
-            else:
-                del self._buffers[sock][0]
+                self._buffers[sock].appendleft(data[bytes:])
         except socket.error, e:
-            if e[0] in [32, 107]:
-                self.close(sock)
+            if e[0] in (EPIPE, ENOTCONN):
+                self._close(sock)
             else:
                 self.push(Error(sock, e), "error", self.channel)
-                self.close()
 
-    @handler("shutdown", filter=True)
-    def onSHUTDOWN(self, sock=None):
-        """Close Event (Private)
+    def write(self, sock, data):
+        if not self._poller.isWriting(sock):
+            self._poller.addWriter(sock)
+        self._buffers[sock].append(data)
 
-        Typically this should NOT be overridden by sub-classes.
-        If it is, this should be called by the sub-class first.
-        """
-
-        if sock:
-            if sock not in self._socks:
-                # Invalid/Closed socket
+    def _accept(self):
+        try:
+            newsock, host = self._sock.accept()
+        except socket.error, e:
+            assert not e[0] == ECONNRESET
+            if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
+            elif e[0] == EPERM:
+                # Netfilter on Linux may have rejected the
+                # connection, but we get told to try to accept()
+                # anyway.
+                return
+            elif e[0] in (EMFILE, ENOBUFS, ENFILE, ENOMEM, ECONNABORTED):
+                # Linux gives EMFILE when a process is not allowed
+                # to allocate any more file descriptors.  *BSD and
+                # Win32 give (WSA)ENOBUFS.  Linux can also give
+                # ENFILE if the system is out of inodes, or ENOMEM
+                # if there is insufficient memory to allocate a new
+                # dentry.  ECONNABORTED is documented as possible on
+                # both Linux and Windows, but it is not clear
+                # whether there are actually any circumstances under
+                # which it can happen (one might expect it to be
+                # possible if a client sends a FIN or RST after the
+                # server sends a SYN|ACK but before application code
+                # calls accept(2), however at least on Linux this
+                # _seems_ to be short-circuited by syncookies.
+                return
+            else:
+                raise
 
-            if not sock == self._sock:
-                if self._buffers[sock]:
-                    self._close.append(sock)
-                    return
+        newsock.setblocking(False)
+        self._poller.addReader(newsock)
+        self._clients.append(newsock)
+        self.push(Connect(newsock, *host), "connect", self.channel)
 
-            try:
-                sock.shutdown(2)
-                sock.close()
-                self.push(Disconnected(sock), "disconnect", self.channel)
-            except socket.error, e:
-                self.push(Error(sock, e), "error", self.channel)
-            finally:
-                if sock in self._socks:
-                    self._socks.remove(sock)
-                if sock in self._read:
-                    self._read.remove(sock)
-                if sock in self._write:
-                    self._write.remove(sock)
-                if sock in self._close:
-                    self._close.remove(sock)
-                if sock in self._buffers:
-                    del self._buffers[sock]
+    @handler("_disconnect", filter=True)
+    def _on_disconnect(self, sock):
+        self.push(Disconnect(sock), "disconnect", self.channel)
 
+    @handler("_read", filter=True)
+    def _on_read(self, sock):
+        if sock == self._sock:
+            self._accept()
         else:
-            for sock in self._socks:
-                self.close(sock)
+            self._read(sock)
 
+    @handler("_write", filter=True)
+    def _on_write(self, sock):
+        if self._buffers[sock]:
+            data = self._buffers[sock].popleft()
+            self._write(sock, data)
+
+        if not self._buffers[sock]:
+            if sock in self._closeq:
+                self._closeq.remove(sock)
+                self._close(sock)
+            elif self._poller.isWriting(sock):
+                self._poller.removeWriter(sock)
 
 class TCPServer(Server):
 
-    def __init__(self, port, address="", **kwargs):
-        super(TCPServer, self).__init__(**kwargs)
+    def __init__(self, port, address="", ssl=False, **kwargs):
+        super(TCPServer, self).__init__(port, address, ssl, **kwargs)
 
-        self._sock = socket.socket(
-                socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.setsockopt(
-                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setblocking(False)
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         self._sock.bind((address, port))
         self._sock.listen(BACKLOG)
 
-        self._socks.append(self._sock)
-        self._read.append(self._sock)
-
-        self.address = address
-        self.port = port
+        self._poller.addReader(self._sock)
 
 class UDPServer(Server):
 
-    def __init__(self, port, address="", **kwargs):
-        super(UDPServer, self).__init__(**kwargs)
+    def __init__(self, port, address="", ssl=False, **kwargs):
+        super(UDPServer, self).__init__(port, address, ssl, **kwargs)
 
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._sock.setsockopt(socket.SOL_SOCKET,    socket.SO_BROADCAST, 1)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self._sock.setblocking(False)
         self._sock.bind((address, port))
 
-        self._socks.append(self._sock)
-        self._read = [self._sock]
+        self._poller.addReader(self._sock)
 
-        self.address = address
-        self.port = port
+    def _close(self):
+        self._poller.discard(self._sock)
 
-    def poll(self, wait=POLL_INTERVAL):
-        r, w, e = select.select(self._read, self._write, [], wait)
+        if self._sock in self._buffers:
+            del self._buffers[sock]
 
-        if w:
-            for address, data in self._buffers.iteritems():
-                if data:
-                    self.send(Write(address, data[0]), "send", self.channel)
-                else:
-                    if self._close:
-                        self.close()
-            self._write.remove(w[0])
+        try:
+            sock.shutdown(2)
+            sock.close()
+        except socket.error:
+            pass
 
-        if r:
-            try:
-                data, address = self._sock.recvfrom(BUFFER_SIZE)
+        self.push(Disconnect(sock), "disconnect", self.channel)
 
-                if not data:
-                    self.close()
-                else:
-                    self.push(Read(address, data), "read", self.channel)
-            except socket.error, e:
+    @handler("close", override=True)
+    def close(self):
+        if self._sock not in self._closeq:
+            self._closeq.append(self._sock)
+
+    def _read(self):
+        try:
+            data, address = self._sock.recvfrom(BUFSIZE)
+            if data:
+                self.push(Read(address, data), "read", self.channel)
+            else:
+                self.close(self._sock)
+        except socket.error, e:
+            self.push(Error(self._sock, e), "error", self.channel)
+            self._close(self._sock)
+
+    def _write(self, address, data):
+        try:
+            print repr(address), repr(data)
+            self._sock.sendto(data, address)
+        except socket.error, e:
+            if e[0] in (EPIPE, ENOTCONN):
+                self._close(self._sock)
+            else:
                 self.push(Error(self._sock, e), "error", self.channel)
-                self.close()
 
+    @handler("write", override=True)
     def write(self, address, data):
-        if not self._write:
-            self._write.append(self._sock)
-        if not self._buffers.has_key(address):
-            self._buffers[address] = []
-        self._buffers[address].append(data)
+        if not self._poller.isWriting(self._sock):
+            self._poller.addWriter(self._sock)
+        self._buffers[self._sock].append((address, data))
 
     def broadcast(self, data):
-        self.write("<broadcast", data)
+        self.write("<broadcast>", data)
 
-    def close(self):
-        if self._socks:
-            self.send(Shutdown(), "shutdown", self.channel)
+    @handler("_disconnect", filter=True, override=True)
+    def _on_disconnect(self, sock):
+        self.push(Disconnected(), "disconnected", self.channel)
 
-    @handler("shutdown", filter=True)
-    def onSHUTDOWN(self):
-        """Close Event (Private)
+    @handler("_read", filter=True, override=True)
+    def _on_read(self, sock):
+        self._read()
 
-        Typically this should NOT be overridden by sub-classes.
-        If it is, this should be called by the sub-class first.
-        """
+    @handler("_write", filter=True, override=True)
+    def _on_write(self, sock):
+        if self._buffers[self._sock]:
+            address, data = self._buffers[self._sock].popleft()
+            self._write(address, data)
 
-        try:
-            self._socks.remove(self._sock)
-            self._read.remove(self._sock)
-            self._write.remove(self._sock)
-            self._sock.shutdown(2)
-            self._sock.close()
-        except socket.error, error:
-            self.push(Error(error), "error", self.channel)
-
-    @handler("send", filter=True)
-    def onSEND(self, address, data):
-        """Send Event
-
-
-        Typically this should NOT be overridden by sub-classes.
-        If it is, this should be called by the sub-class first.
-        """
-
-        try:
-            self._sock.sendto(data, address)
-            del self._buffers[address][0]
-        except socket.error, e:
-            if e[0] in [32, 107]:
-                self.close()
-            else:
-                self.push(Error(e), "error", self.channel)
-                self.close()
+        if not self._buffers[self._sock]:
+            if self._sock in self._closeq:
+                self._closeq.remove(self._sock)
+                self._close(self._sock)
+            elif self._poller.isWriting(self._sock):
+                self._poller.removeWriter(self._sock)
 
 UDPClient = UDPServer
