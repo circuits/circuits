@@ -22,7 +22,7 @@ This example makes use of:
 import optparse
 
 from circuits import handler
-from circuits.lib.io import Stdin
+from circuits.lib.io import stdin
 from circuits.lib.sockets import UDPClient
 from circuits import __version__ as systemVersion
 
@@ -91,7 +91,7 @@ def main():
     else:
         dest = args[0], 8000
 
-    (Client(port, address, dest=dest) + Stdin()).run()
+    (Client(port, address, dest=dest) + stdin).run()
 
 ###
 ### Entry Point
