@@ -14,7 +14,7 @@ class FieldStorage(cgi.FieldStorage):
     def read_lines_to_eof(self):
         """Internal: read lines until EOF."""
         while 1:
-            line = self.fp.readline(1<<16)
+            line = self.fp.readline()
             if not line:
                 self.done = -1
                 break
@@ -27,7 +27,7 @@ class FieldStorage(cgi.FieldStorage):
         delim = ""
         last_line_lfend = True
         while 1:
-            line = self.fp.readline(1<<16)
+            line = self.fp.readline()
             if not line:
                 self.done = -1
                 break
@@ -60,7 +60,7 @@ class FieldStorage(cgi.FieldStorage):
         last = next + "--"
         last_line_lfend = True
         while 1:
-            line = self.fp.readline(1<<16)
+            line = self.fp.readline()
             if not line:
                 self.done = -1
                 break
