@@ -64,9 +64,10 @@ class Telnet(Component):
     channel = "telnet"
 
     def __init__(self, host, port):
-        super(Telnet, self).__init__() 
-        self += TCPClient(host, port)
-        self.push(Connect(), "connect")
+        super(Telnet, self).__init__()
+
+        self += TCPClient(channel=self.channel)
+        self.push(Connect(host, port), "connect")
 
     def connected(self, host, port):
         print "Connected to %s" % host
