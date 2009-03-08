@@ -22,13 +22,24 @@ from collections import defaultdict
 from sys import exc_info as _exc_info
 from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
+from threading import enumerate as threads
+from signal import signal, SIGHUP, SIGINT, SIGTERM
+
+try:
+    from threading import current_thread as thread
+except ImportError:
+    from threading import currentThread as thread
 
 try:
     from multiprocessing import Process
+    from multiprocessing import current_process as process
+    from multiprocessing import active_children as processes
     HAS_MULTIPROCESSING = 2
 except ImportError:
     try:
         from processing import Process
+        from processing import currentProcess as process
+        from processing import activeChildren as processes
         HAS_MULTIPROCESSING = 1
     except ImportError:
         HAS_MULTIPROCESSING = 0
@@ -159,6 +170,23 @@ class Stopped(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Stopped, self).__init__(component)
+
+class Signal(Event):
+    """Signal Event
+
+    This Event is sent when a Component receives a signal.
+
+    @param signal: The signal number received.
+    @type  int:    An int value for the signal
+
+    @param stack:  The interrupted stack frame.
+    @type  object: A stack frame
+    """
+
+    def __init__(self, signal, stack):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Signal, self).__init__(signal, stack)
 
 
 class Registered(Event):
@@ -300,6 +328,10 @@ class Manager(object):
 
         self._task = None
         self._running = False
+
+        signal(SIGHUP, self._signal)
+        signal(SIGINT, self._signal)
+        signal(SIGTERM, self._signal)
 
         self.manager = self
 
@@ -607,7 +639,14 @@ class Manager(object):
         else:
             return self.manager.send(event, channel, target, errors, log)
 
-    def start(self, sleep=0, errors=False, log=True, process=False):
+    def _signal(self, signal, stack):
+        if not self.send(Signal(signal, stack), "signal"):
+            if signal == SIGINT:
+                raise KeyboardInterrupt
+            elif signal == SIGTERM:
+                raise SystemExit
+
+    def start(self, sleep=0, errors=True, log=True, process=False):
         group = None
         target = self.run
         name = self.__class__.__name__
@@ -634,7 +673,18 @@ class Manager(object):
             self._task.join(5)
         self._task = None
 
-    def run(self, sleep=0, mode=None, errors=True, log=True, __self=None):
+    def _terminate(self):
+        for t in threads():
+            if not t == thread():
+                t.stop()
+                t.join(3)
+        if HAS_MULTIPROCESSING:
+            for p in processes():
+                if not p == process():
+                    p.terminate()
+                    p.join(3)
+
+    def run(self, sleep=0, mode=None, errors=False, log=True, __self=None):
         if __self is not None:
             self = __self
 
@@ -662,6 +712,7 @@ class Manager(object):
                     else:
                         _exc_clear()
         finally:
+            self._terminate()
             self.push(Stopped(self), "stopped")
             rtime = time.time()
             while len(self) > 0 and (time.time() - rtime) < 3:
