@@ -22,7 +22,7 @@ class DefaultDispatcher(Component):
         super(DefaultDispatcher, self).__init__(**kwargs)
 
         self.docroot = docroot or os.getcwd()
-        self.defaults = defaults or ["index.html"]
+        self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
 
     def _parseBody(self, request, response, params):
         body = request.body
