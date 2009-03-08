@@ -232,6 +232,7 @@ circuits.lib.pollers.EPERM	circuits.lib.pollers-module.html#EPERM
 circuits.lib.pollers.ENOTUNIQ	circuits.lib.pollers-module.html#ENOTUNIQ
 circuits.lib.pollers._EPOLL_DISCONNECTED	circuits.lib.pollers-module.html#_EPOLL_DISCONNECTED
 circuits.lib.pollers.ELNRNG	circuits.lib.pollers-module.html#ELNRNG
+circuits.lib.pollers.HAS_EPOLL	circuits.lib.pollers-module.html#HAS_EPOLL
 circuits.lib.pollers.ENOSPC	circuits.lib.pollers-module.html#ENOSPC
 circuits.lib.pollers.ENOTNAM	circuits.lib.pollers-module.html#ENOTNAM
 circuits.lib.pollers.EISCONN	circuits.lib.pollers-module.html#EISCONN
@@ -2732,6 +2733,7 @@ circuits.lib.web.servers.BaseServer.base	circuits.lib.web.servers.BaseServer-cla
 circuits.core.BaseComponent._getTicks	circuits.core.BaseComponent-class.html#_getTicks
 circuits.core.Manager._getHandlers	circuits.core.Manager-class.html#_getHandlers
 circuits.lib.web.servers.BaseServer.address	circuits.lib.web.servers.BaseServer-class.html#address
+circuits.lib.web.servers.Server.__get_docroot	circuits.lib.web.servers.Server-class.html#__get_docroot
 circuits.lib.web.servers.Server.docroot	circuits.lib.web.servers.Server-class.html#docroot
 circuits.core.Manager._add	circuits.core.Manager-class.html#_add
 circuits.core.BaseComponent.unregister	circuits.core.BaseComponent-class.html#unregister
