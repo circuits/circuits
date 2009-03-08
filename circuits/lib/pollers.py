@@ -148,7 +148,6 @@ class Poll(_Poller):
     implementation.
     """
 
-
     def __init__(self, *args, **kwargs):
         super(Poll, self).__init__(*args, **kwargs)
 
@@ -159,8 +158,9 @@ class Poll(_Poller):
         self._poller = poll()
 
     def _updateRegistration(self, fd):
+        fileno = fd.fileno()
+
         try:
-            fileno = fd.fileno()
             self._poller.unregister(fileno)
         except KeyError:
             pass
@@ -171,8 +171,6 @@ class Poll(_Poller):
             mask = mask | POLLIN
         if fd in self._write:
             mask = mask | POLLOUT
-
-        fileno = fd.fileno()
 
         if mask:
             self._poller.register(fd, mask)
@@ -190,11 +188,11 @@ class Poll(_Poller):
         self._updateRegistration(fd)
 
     def removeReader(self, fd):
-        super(Poll, self).addReader(fd)
+        super(Poll, self).removeReader(fd)
         self._updateRegistration(fd)
 
     def removeWriter(self, fd):
-        super(Poll, self).addWriter(fd)
+        super(Poll, self).removeWriter(fd)
         self._updateRegistration(fd)
 
     def discard(self, fd):
@@ -214,14 +212,16 @@ class Poll(_Poller):
             self._process(fileno, event)
 
     def _process(self, fileno, event):
-        if not fileno in self._map:
-            return fileno.close()
+        if fileno not in self._map:
+            return
 
         fd = self._map[fileno]
 
         if event & _POLL_DISCONNECTED and not (event & POLLIN):
-            self.discard(fd)
             self.send(Disconnect(fd), "_disconnect", self.target)
+            self._poller.unregister(fileno)
+            super(Poll, self).discard(fd)
+            del self._map[fileno]
         else:
             try:
                 if event & POLLIN:
@@ -231,7 +231,9 @@ class Poll(_Poller):
             except Exception, e:
                 self.send(Error(fd, e), "_error", self.target)
                 self.send(Disconnect(fd), "_disconnect", self.target)
-                self.discard(fd)
+                self._poller.unregister(fileno)
+                super(Poll, self).discard(fd)
+                del self._map[fileno]
 
 class EPoll(_Poller):
     """EPoll(...) -> new EPoll Poller Component
@@ -274,7 +276,6 @@ class EPoll(_Poller):
             self._map[fileno] = fd
         else:
             super(EPoll, self).discard(fd)
-            del self._map[fileno]
 
     def addReader(self, fd):
         super(EPoll, self).addReader(fd)
@@ -285,11 +286,11 @@ class EPoll(_Poller):
         self._updateRegistration(fd)
 
     def removeReader(self, fd):
-        super(EPoll, self).addReader(fd)
+        super(EPoll, self).removeReader(fd)
         self._updateRegistration(fd)
 
     def removeWriter(self, fd):
-        super(EPoll, self).addWriter(fd)
+        super(EPoll, self).removeWriter(fd)
         self._updateRegistration(fd)
 
     def discard(self, fd):
@@ -309,14 +310,16 @@ class EPoll(_Poller):
             self._process(fileno, event)
 
     def _process(self, fileno, event):
-        if not fileno in self._map:
-            return fileno.close()
+        if fileno not in self._map:
+            return
 
         fd = self._map[fileno]
 
         if event & _EPOLL_DISCONNECTED and not (event & POLLIN):
-            self.discard(fd)
             self.send(Disconnect(fd), "_disconnect", self.target)
+            self._poller.unregister(fileno)
+            super(EPoll, self).discard(fd)
+            del self._map[fileno]
         else:
             try:
                 if event & EPOLLIN:
@@ -326,7 +329,9 @@ class EPoll(_Poller):
             except Exception, e:
                 self.send(Error(fd, e), "_error", self.target)
                 self.send(Disconnect(fd), "_disconnect", self.target)
-                self.discard(fd)
+                self._poller.unregister(fileno)
+                super(EPoll, self).discard(fd)
+                del self._map[fileno]
 
 if not HAS_EPOLL:
     del EPoll
