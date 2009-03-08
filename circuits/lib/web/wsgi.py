@@ -95,20 +95,17 @@ class Application(Component):
     def _handleError(self, error):
         response = error.response
 
-        try:
-            v = self.send(error, "httperror", self.channel)
-        except TypeError:
-            v = None
+        v = self.send(error, "httperror", self.channel)
 
-        if v is not None:
-            if isinstance(v, basestring):
+        if v:
+            if issubclass(type(v), basestring):
                 response.body = v
                 res = Response(response)
                 self.send(res, "response", self.channel)
             elif isinstance(v, HTTPError):
                 self.send(Response(v.response), "response", self.channel)
             else:
-                raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
+                assert v, "type(v) == %s" % type(v)
 
     def response(self, response):
         response.done = True
@@ -119,13 +116,10 @@ class Application(Component):
         try:
             req = Request(request, response)
 
-            try:
-                v = self.send(req, "request", self.channel, True, False)
-            except TypeError:
-                v = None
+            v = self.send(req, "request", self.channel, errors=True)
 
-            if v is not None:
-                if isinstance(v, basestring):
+            if v:
+                if issubclass(type(v), basestring):
                     response.body = v
                     res = Response(response)
                     self.send(res, "response", self.channel)
@@ -135,7 +129,7 @@ class Application(Component):
                     res = Response(v)
                     self.send(res, "response", self.channel)
                 else:
-                    raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
+                    assert v, "type(v) == %s" % type(v)
             else:
                 error = NotFound(request, response)
                 self._handleError(error)
