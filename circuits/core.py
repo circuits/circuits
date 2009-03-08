@@ -670,7 +670,7 @@ class Manager(object):
         if hasattr(self._task, "terminate"):
             self._task.terminate()
         if hasattr(self._task, "join"):
-            self._task.join(5)
+            self._task.join(3)
         self._task = None
 
     def _terminate(self):
