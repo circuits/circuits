@@ -31,7 +31,7 @@ except ImportError:
         HAS_EPOLL = 0
         warnings.warn("No epoll support available! But that's ok :)")
 
-from circuits.core import Event, BaseComponent
+from circuits.core import handler, Event, BaseComponent
 
 _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
 
@@ -248,6 +248,11 @@ class EPoll(_Poller):
 
         self._map = {}
         self._poller = epoll()
+
+    @handler("started", target="*")
+    def started(self, component, mode):
+        if mode in ("P", "T"):
+            self._poller = epoll()
 
     def _updateRegistration(self, fd):
         fileno = fd.fileno()
