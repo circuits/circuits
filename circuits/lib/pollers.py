@@ -12,16 +12,31 @@ descriptors for read/write events. Pollers:
    - KQueue
 """
 
+import warnings
 from errno import *
-from select import select, poll, epoll
+from select import select, poll
 from select import error as SelectError
-from select import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
 from select import POLLIN, POLLOUT, POLLHUP, POLLERR, POLLNVAL
+
+try:
+    from select import epoll
+    from select import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+    HAS_EPOLL = 2
+except ImportError:
+    try:
+        from select26 import epoll
+        from select26 import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+        HAS_EPOLL = 1
+    except ImportError:
+        HAS_EPOLL = 0
+        warnings.warn("No epoll support available! But that's ok :)")
 
 from circuits.core import Event, BaseComponent
 
 _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
-_EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
+
+if HAS_EPOLL:
+    _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
 
 TIMEOUT=0.00001
 
@@ -301,3 +316,6 @@ class EPoll(_Poller):
                 self.send(Error(fd, e), "_error", self.target)
                 self.send(Disconnect(fd), "_disconnect", self.target)
                 self.discard(fd)
+
+if not HAS_EPOLL:
+    del EPoll
