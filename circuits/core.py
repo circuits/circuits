@@ -643,7 +643,10 @@ class Manager(object):
                     [f() for f in self.ticks.copy()]
                     self.flush()
                     if sleep:
-                        time.sleep(sleep)
+                        try:
+                            time.sleep(sleep)
+                        except:
+                            pass
                 except (KeyboardInterrupt, SystemExit):
                     self._running = False
                     if hasattr(self._task, "terminate"):
