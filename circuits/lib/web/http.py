@@ -47,7 +47,7 @@ class HTTP(Component):
             elif isinstance(v, HTTPError):
                 self.send(Response(v.response), "response", self.channel)
             else:
-                raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
+                assert v, "type(v) == %s" % type(v)
 
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
