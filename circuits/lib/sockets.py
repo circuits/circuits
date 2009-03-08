@@ -16,13 +16,8 @@ import socket
 from errno import *
 from collections import defaultdict, deque
 
-try:
-    import select26 as select
-except ImportError:
-    import select
-
+from circuits.lib.pollers import Select
 from circuits.core import handler, Event, Component
-from circuits.lib.pollers import Select, Poll, EPoll
 
 TIMEOUT = 0.001
 BUFSIZE = 4096
