@@ -148,8 +148,9 @@ class WSGIErrors(File):
 
 class Gateway(Component):
 
-    def __init__(self, app, path=None):
-        super(Gateway, self).__init__(channel=path)
+    def __init__(self, app, path=""):
+        channel = None if not path else path
+        super(Gateway, self).__init__(channel=channel)
 
         self.app = app
         self.path = path
