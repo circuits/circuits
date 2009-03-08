@@ -134,12 +134,16 @@ class Started(Event):
 
     @param component: The component that was started
     @type  component: Component or Manager
+
+    @param mode: The mode in which the Component was started,
+                 P (Process), T (Thread) or None (Main Thread / Main Process).
+    @type  str:  str or None
     """
 
-    def __init__(self, component):
+    def __init__(self, component, mode):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Started, self).__init__(component)
+        super(Started, self).__init__(component, mode)
 
 
 class Stopped(Event):
