@@ -95,13 +95,14 @@ class Server(BaseServer):
         self.dispatcher = Dispatcher(docroot=docroot, **kwargs)
         self += self.dispatcher
 
-    @property
-    def docroot(self):
+    def __get_docroot(self):
         return self.dispatcher.docroot if hasattr(self, "dispatcher") else None
 
-    @docroot.setter
     def __set_docroot(self, docroot):
         if os.path.exists(docroot):
             self.dispatcher.docroot = docroot
         else:
             raise IOError(2, "Invalid docroot path", docroot)
+
+    docroot = property(__get_docroot, __set_docroot, None, """\
+            Document Root of this Server's Dispatcher.""")
