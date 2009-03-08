@@ -649,8 +649,6 @@ class Manager(object):
                             pass
                 except (KeyboardInterrupt, SystemExit):
                     self._running = False
-                    if hasattr(self._task, "terminate"):
-                        self._task.terminate()
                 except:
                     if log:
                         self.push(Error(*_exc_info()), "error")
