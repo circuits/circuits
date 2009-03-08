@@ -214,6 +214,9 @@ class Poll(_Poller):
             self._process(fileno, event)
 
     def _process(self, fileno, event):
+        if not fileno in self._map:
+            return fileno.close()
+
         fd = self._map[fileno]
 
         if event & _POLL_DISCONNECTED and not (event & POLLIN):
@@ -301,6 +304,9 @@ class EPoll(_Poller):
             self._process(fileno, event)
 
     def _process(self, fileno, event):
+        if not fileno in self._map:
+            return fileno.close()
+
         fd = self._map[fileno]
 
         if event & _EPOLL_DISCONNECTED and not (event & POLLIN):
