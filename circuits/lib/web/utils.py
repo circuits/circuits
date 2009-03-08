@@ -9,9 +9,13 @@ This module implements utility functions.
 
 import re
 from gzip import GzipFile
-from urlparse import parse_qs
 from cStringIO import StringIO
 from urlparse import urljoin as _urljoin
+
+try:
+    from urlparse import parse_qs
+except ImportError:
+    from cgi import parse_qs
 
 from constants import RESPONSES
 
