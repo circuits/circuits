@@ -12,7 +12,6 @@ and as such the implementations in this module are all
 event-driven and should be sub-classed to do something usefull.
 """
 
-import errno
 import socket
 from errno import *
 from collections import defaultdict, deque
