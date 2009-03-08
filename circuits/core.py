@@ -22,7 +22,6 @@ from collections import defaultdict
 from sys import exc_info as _exc_info
 from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
-from threading import enumerate as threads
 from signal import signal, SIGHUP, SIGINT, SIGTERM
 
 try:
@@ -674,10 +673,6 @@ class Manager(object):
         self._task = None
 
     def _terminate(self):
-        for t in threads():
-            if not t == thread():
-                t.stop()
-                t.join(3)
         if HAS_MULTIPROCESSING:
             for p in processes():
                 if not p == process():
