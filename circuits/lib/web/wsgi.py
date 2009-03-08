@@ -17,10 +17,10 @@ from circuits.lib.io import File
 
 import webob
 from headers import Headers
-from errors import HTTPError
 from utils import quoteHTML, url
 from dispatchers import Dispatcher
 from events import Request, Response
+from errors import HTTPError, NotFound
 from constants import RESPONSES, DEFAULT_ERROR_MESSAGE, SERVER_VERSION
 
 class Application(Component):
