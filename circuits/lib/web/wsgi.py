@@ -155,7 +155,7 @@ class Gateway(Component):
         self.app = app
         self.path = path
 
-        self._errors = WSGIErrors("/dev/stderr", "a")
+        self._errors = WSGIErrors("/dev/null", "a")
         self._errors.register(self)
 
         self._request = self._response = None
