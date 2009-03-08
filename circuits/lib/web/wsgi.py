@@ -91,7 +91,6 @@ class Application(Component):
 
         response.body = content
         response.status = "%s %s" % (status, message)
-        response.headers.add_header("Connection", "close")
 
     def _handleError(self, error):
         response = error.response
