@@ -611,7 +611,8 @@ class Manager(object):
         group = None
         target = self.run
         name = self.__class__.__name__
-        args = (sleep, errors, log,)
+        mode = "P" if process else "T"
+        args = (sleep, mode, errors, log,)
 
         if process and HAS_MULTIPROCESSING:
             args += (self,)
@@ -633,13 +634,13 @@ class Manager(object):
             self._task.join(5)
         self._task = None
 
-    def run(self, sleep=0, errors=False, log=True, __self=None):
+    def run(self, sleep=0, mode=None, errors=True, log=True, __self=None):
         if __self is not None:
             self = __self
 
         self._running = True
 
-        self.push(Started(self), "started")
+        self.push(Started(self, mode), "started")
 
         try:
             while self._running or (self._running and self._task is not None and self._task.is_alive()):
