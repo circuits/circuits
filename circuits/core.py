@@ -328,10 +328,6 @@ class Manager(object):
         self._task = None
         self._running = False
 
-        signal(SIGHUP, self._signal)
-        signal(SIGINT, self._signal)
-        signal(SIGTERM, self._signal)
-
         self.manager = self
 
     def __repr__(self):
@@ -682,6 +678,11 @@ class Manager(object):
     def run(self, sleep=0, mode=None, errors=False, log=True, __self=None):
         if __self is not None:
             self = __self
+
+        if not mode == "T":
+            signal(SIGHUP, self._signal)
+            signal(SIGINT, self._signal)
+            signal(SIGTERM, self._signal)
 
         self._running = True
 
