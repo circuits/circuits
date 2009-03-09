@@ -150,7 +150,7 @@ class DefaultDispatcher(Component):
                 return v # MaxSizeExceeded (return the HTTPError)
 
             if vpath:
-                req.args += (vpath,)
+                req.args += tuple(vpath)
 
             return self.send(req, channel, errors=True)
 
