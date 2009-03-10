@@ -26,9 +26,6 @@ class BaseServer(Component):
     def __init__(self, port, address="", docroot=None, **kwargs):
         super(BaseServer, self).__init__(**kwargs)
 
-        if "channel" not in kwargs:
-            kwargs["channel"] = self.channel
-
         self.server = TCPServer(port, address, **kwargs)
         self.server += HTTP(**kwargs)
         self += self.server
