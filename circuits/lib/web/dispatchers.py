@@ -18,6 +18,8 @@ from utils import parseQueryString, dictform
 
 class DefaultDispatcher(Component):
 
+    channel = "web"
+
     def __init__(self, docroot=None, defaults=None, **kwargs):
         super(DefaultDispatcher, self).__init__(**kwargs)
 
