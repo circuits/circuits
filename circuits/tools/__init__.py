@@ -8,6 +8,11 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
+def kill(x):
+    for c in x.components.copy():
+        kill(c)
+    x.unregister()
+
 def graph(x):
     """Display a directed graph of the Component structure of x
 
