@@ -30,13 +30,12 @@ class BaseServer(Component):
             kwargs["channel"] = self.channel
 
         self.server = TCPServer(port, address, **kwargs)
-        HTTP(self, **kwargs).register(self.server)
+        self.server += HTTP(**kwargs)
+        self += self.server
 
         Request.server = self
         Request.local = Host(self.server.address, self.server.port)
         Request.host = self.host
-
-        self.server.register(self)
 
         print "%s listening on %s" % (self.version, self.base)
 
