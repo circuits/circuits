@@ -918,6 +918,9 @@ class BaseComponent(Manager):
             manager._components.remove(self)
 
         manager._ticks.difference_update(self._getTicks())
+        pmanager = manager.manager
+        if self in pmanager._hidden:
+            pmanager._hidden.remove(self)
 
         self.push(Unregistered(self, manager), "unregistered", self.channel)
 
