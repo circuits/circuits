@@ -13,7 +13,7 @@ from urlparse import urlparse
 from cStringIO import StringIO
 from traceback import format_exc
 
-from circuits import Component
+from circuits import handler, Component
 
 import webob
 from utils import quoted_slash
@@ -28,6 +28,8 @@ class HTTP(Component):
     Implements the HTTP server protocol and parses and processes incoming
     HTTP messages creating and sending an appropriate response.
     """
+
+    channel = "http"
 
     def __init__(self, *args, **kwargs):
         super(HTTP, self).__init__(*args, **kwargs)
@@ -52,25 +54,26 @@ class HTTP(Component):
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
         if data:
-            self.send(Write(response.sock, data), "write", self.channel)
+            self.send(Write(response.sock, data), "write", "server")
             self.push(Stream(response), "stream", self.channel)
         else:
             response.body.close()
             if response.close:
-                self.send(Close(response.sock), "close", self.channel)
+                self.send(Close(response.sock), "close", "server")
             response.done = True
         
     def response(self, response):
-        self.send(Write(response.sock, str(response)), "write", self.channel)
+        self.send(Write(response.sock, str(response)), "write", "server")
         if response.stream:
-            self.push(Stream(response), "stream", self.channel)
+            self.push(Stream(response), "stream", "server")
             return
 
         if response.close:
-            self.send(Close(response.sock), "close", self.channel)
+            self.send(Close(response.sock), "close", "server")
 
         response.done = True
 
+    @handler("read", target="server")
     def read(self, sock, data):
         """Read Event Handler
 
@@ -158,7 +161,7 @@ class HTTP(Component):
         try:
             req = Request(request, response)
 
-            v = self.send(req, "request", self.channel, errors=True)
+            v = self.send(req, "request", "web", errors=True)
 
             if v:
                 if issubclass(type(v), basestring):
