@@ -38,7 +38,7 @@ _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
 if HAS_EPOLL:
     _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
 
-TIMEOUT=0.00001
+TIMEOUT = 0.001
 
 ###
 ### Events
@@ -151,9 +151,6 @@ class Poll(_Poller):
     def __init__(self, *args, **kwargs):
         super(Poll, self).__init__(*args, **kwargs)
 
-        if self.timeout is not None:
-            self.timeout = int(self.timeout * 1000)
-
         self._map = {}
         self._poller = poll()
 
@@ -244,9 +241,6 @@ class EPoll(_Poller):
 
     def __init__(self, *args, **kwargs):
         super(EPoll, self).__init__(*args, **kwargs)
-
-        if self.timeout is not None:
-            self.timeout = int(self.timeout * 1000)
 
         self._map = {}
         self._poller = epoll()
