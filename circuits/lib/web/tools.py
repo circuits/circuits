@@ -1,6 +1,6 @@
-# Module:	tools
-# Date:		16th February 2009
-# Author:	James Mills, prologic at shortcircuit dot net dot au
+# Module:   tools
+# Date:     16th February 2009
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
 """Tools
 
@@ -21,8 +21,9 @@ mimetypes.init()
 mimetypes.types_map['.dwg']='image/x-dwg'
 mimetypes.types_map['.ico']='image/x-icon'
 
+import httpauth
 from utils import url, valid_status, get_ranges
-from errors import HTTPError, NotFound, Redirect
+from errors import HTTPError, NotFound, Redirect, Unauthorized
 
 def expires(request, response, secs=0, force=False):
     """Tool for influencing cache mechanisms using the 'Expires' header.
@@ -301,3 +302,82 @@ def flatten(request, response):
 
     response.body = flattener(response.body)
     return response
+
+def check_auth(request, response, users, encrypt=None, realm=None):
+    """Check Authentication
+
+    If an authorization header contains credentials, return True, else False.
+    """
+
+    if 'authorization' in request.headers:
+        # make sure the provided credentials are correctly set
+        ah = httpauth.parseAuthorization(request.headers['authorization'])
+        if ah is None:
+            return HTTPError(request, response, 400)
+        
+        if not encrypt:
+            encrypt = httpauth.DIGEST_AUTH_ENCODERS[httpauth.MD5]
+        
+        if callable(users):
+            try:
+                # backward compatibility
+                users = users() # expect it to return a dictionary
+
+                if not isinstance(users, dict):
+                    raise ValueError, "Authentication users must be a dict"
+                
+                # fetch the user password
+                password = users.get(ah["username"], None)
+            except TypeError:
+                # returns a password (encrypted or clear text)
+                password = users(ah["username"])
+        else:
+            if not isinstance(users, dict):
+                raise ValueError, "Authentication users must be a dict"
+            
+            # fetch the user password
+            password = users.get(ah["username"], None)
+        
+        # validate the authorization by re-computing it here
+        # and compare it with what the user-agent provided
+        if httpauth.checkResponse(ah, password, method=request.method,
+                                  encrypt=encrypt, realm=realm):
+            request.login = ah["username"]
+            return True
+    
+        request.login = False
+    return False
+
+def basic_auth(request, response, realm, users, encrypt=None):
+    """If auth fails, returns an Unauthorized error  with a
+    basic authentication header.
+    
+    realm: a string containing the authentication realm.
+    users: a dict of the form: {username: password} or a callable
+           returning a dict.
+    encrypt: callable used to encrypt the password returned from the user-agent.
+             if None it defaults to a md5 encryption.
+    """
+    if check_auth(request, response, users, encrypt):
+        return
+    
+    # inform the user-agent this path is protected
+    response.headers["WWW-Authenticate"] = httpauth.basicAuth(realm)
+
+    return Unauthorized(request, response)
+    
+def digest_auth(request, response, realm, users):
+    """If auth fails, raise 401 with a digest authentication header.
+    
+    realm: a string containing the authentication realm.
+    users: a dict of the form: {username: password} or a callable
+           returning a dict.
+    """
+
+    if check_auth(request, response, users, realm=realm):
+        return
+    
+    # inform the user-agent this path is protected
+    response.headers["WWW-Authenticate"] = httpauth.digestAuth(realm)
+    
+    return Unauthorized(request, response)
