@@ -174,7 +174,7 @@ class HTTP(Component):
                     res = Response(v)
                     self.send(res, "response", self.channel)
                 else:
-                    raise TypeError("wtf is %s (%s) response ?!" % (v, type(v)))
+                    assert v, "type(v) == %s" % type(v)
             else:
                 error = NotFound(request, response)
                 self._handleError(error)
