@@ -827,16 +827,21 @@ class BaseComponent(Manager):
                     done = True
 
         for x in hidden:
+            oldmanager = x.manager
             x.register(self.manager)
+            x.manager = oldmanager
 
         self.manager._hidden.update(hidden)
 
+        oldmanager = self.manager
         pmanager = self.manager.manager
         if self.manager is not pmanager:
-            hidden.add(self)
             self.register(pmanager)
+            pmanager._hidden.add(self)
+            pmanager._components.remove(self)
 
         self.manager._components.difference_update(hidden)
+        self.manager = oldmanager
 
     def _getTicks(self):
         ticks = set()
