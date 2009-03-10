@@ -66,9 +66,9 @@ class ExposeType(type):
     def __init__(cls, name, bases, dct):
         super(ExposeType, cls).__init__(name, bases, dct)
 
-        for name, f in dct.iteritems():
-            if callable(f) and not (name[0] == "_" or hasattr(f, "type")):
-                setattr(cls, name, expose(name, type="listener")(f))
+        for k, v in dct.iteritems():
+            if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
+                setattr(cls, k, expose(k)(v))
 
 class BaseController(BaseComponent):
 
