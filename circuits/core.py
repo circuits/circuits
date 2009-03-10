@@ -18,6 +18,7 @@ from itertools import chain
 from threading import Thread
 from functools import partial
 from collections import deque
+from operator import attrgetter
 from collections import defaultdict
 from sys import exc_info as _exc_info
 from sys import exc_clear as _exc_clear
@@ -254,6 +255,7 @@ def handler(*channels, **kwargs):
         f.handler = True
 
         f.override = kwargs.get("override", False)
+        f.priority = kwargs.get("priority", 0)
 
         if "type" in kwargs:
             warnings.warn("Please use 'filter', 'type' will be deprecated in 1.2")
@@ -493,7 +495,9 @@ class Manager(object):
         if channel in self.channels:
             if handler not in self.channels[channel]:
                 self._channels[channel].append(handler)
-                self._channels[channel].sort(key=lambda x: not x.filter)
+                self._channels[channel].sort(
+                        key=attrgetter("priority", "filter"))
+                self._channels[channel].reverse()
         else:
             self._channels[channel] = [handler]
 
