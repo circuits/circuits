@@ -22,7 +22,6 @@ class HTTPError(Event):
         super(HTTPError, self).__init__(request, response,
                 status, message=message, error=error)
 
-        response.clear()
         response.close = True
 
         self.request = request
