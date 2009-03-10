@@ -41,9 +41,6 @@ class HTTPError(Event):
             "traceback": error or "",
             "version": SERVER_VERSION}
 
-    def __nonzero__(self):
-        return True
-
     def __repr__(self):
         name = self.__class__.__name__
         return "<%s (%d, %s)>" % (name, self.status, repr(self.message))
