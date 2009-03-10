@@ -50,6 +50,11 @@ class Forbidden(HTTPError):
     def __init__(self, request, response, message=None):
         super(Forbidden, self).__init__(request, response, 403, message)
 
+class Unauthorized(HTTPError):
+
+    def __init__(self, request, response, message=None):
+        super(Unauthorized, self).__init__(request, response, 401, message)
+
 class NotFound(HTTPError):
 
     def __init__(self, request, response, message=None):
