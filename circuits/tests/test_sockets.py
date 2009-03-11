@@ -111,9 +111,6 @@ class SocketsTestCase(unittest.TestCase):
         try:
             client.push(Write(("127.0.0.1", 9999), "foo"), "write")
             wait()
-            client.push(Write(("127.0.0.1", 9999), "foo"), "write")
-            sleep(1)
-            print repr(server.data)
             self.assertTrue(server.data == "foo")
         finally:
             server.stop()
