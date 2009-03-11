@@ -119,6 +119,8 @@ class DefaultDispatcher(Component):
                 vpath = []
 
         handler = self.manager.channels[(candidate, channel)][0]
+        print handler
+        print handler.varargs
         if vpath and not handler.varargs:
             return None, None, None,
         else:

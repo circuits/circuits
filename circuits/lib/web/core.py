@@ -14,16 +14,16 @@ and keyword arguments, filtering, url dispatching and more.
 from inspect import getargspec
 from functools import update_wrapper
 
-from circuits.core import BaseComponent
+from circuits.core import handler, BaseComponent
 
 import tools
 from errors import Forbidden, NotFound, Redirect
 
 def expose(*channels, **config):
    def decorate(f):
+      @handler(*channels, **config)
       def wrapper(self, *args, **kwargs):
          try:
-
             if not hasattr(self, "request"):
                 (self.request, self.response), args = args[:2], args[2:]
                 self.cookie = self.request.cookie
@@ -38,28 +38,7 @@ def expose(*channels, **config):
             if hasattr(self, "session"):
                del self.session
  
-      wrapper.handler = True
-
-      wrapper.override = config.get("override", False)
-      wrapper.priority = config.get("priority", 0)
-
-      if "type" in config:
-         wrapper.filter = config.get("type", "listener") == "filter"
-      else:
-         wrapper.filter = config.get("filter", False)
-      wrapper.target = config.get("target", None)
-      wrapper.channels = channels
-
-      wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
-      if wrapper.args and wrapper.args[0] == "self":
-          del wrapper.args[0]
-      if wrapper.args and wrapper.args[0] == "event":
-          wrapper._passEvent = True
-      else:
-          wrapper._passEvent = False
-
-      wrapper.args.insert(0, "response")
-      wrapper.args.insert(0, "request")
+      wrapper.varargs = getargspec(f)[1]
 
       return update_wrapper(wrapper, f)
 
