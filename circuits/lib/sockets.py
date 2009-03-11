@@ -12,6 +12,7 @@ and as such the implementations in this module are all
 event-driven and should be sub-classed to do something usefull.
 """
 
+import os
 import socket
 from errno import *
 from collections import defaultdict, deque
@@ -249,11 +250,10 @@ class Server(Component):
 
     channel = "server"
 
-    def __init__(self, port, address="", ssl=False, channel=channel, **kwargs):
+    def __init__(self, bind, ssl=False, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
-        self.port = port
-        self.address = address
+        self.bind = bind
         self.ssl = ssl
 
         Poller = kwargs.get("poller", Select)
@@ -387,18 +387,37 @@ class Server(Component):
 
 class TCPServer(Server):
 
-    def __init__(self, port, address="", ssl=False, **kwargs):
+    def __init__(self, bind, ssl=False, **kwargs):
         super(TCPServer, self).__init__(port, address, ssl, **kwargs)
 
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        oldUmask = None
+        if type(bind) == str:
+            self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                os.unlink(self.bind)
+            except OSError:
+                pass
+            umask = kwargs.get("umask", None)
+            if umask:
+                oldUmask = os.umask(umask)
+        else:
+            assert type(self.bind) is tuple
+            if len(self.bind) == 1:
+                self.bind += ("0.0.0.0",)
+
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setblocking(False)
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-        self._sock.bind((address, port))
+        self._sock.bind(self.bind)
         self._sock.listen(BACKLOG)
 
         self._poller.addReader(self._sock)
+
+        if oldUmask is not None:
+            os.umask(oldUmask)
 
 class UDPServer(Server):
 
