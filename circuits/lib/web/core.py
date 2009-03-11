@@ -39,6 +39,10 @@ def expose(*channels, **config):
                del self.session
  
       wrapper.handler = True
+
+      wrapper.override = config.get("override", False)
+      wrapper.priority = config.get("priority", 0)
+
       if "type" in config:
          wrapper.filter = config.get("type", "listener") == "filter"
       else:
@@ -46,16 +50,16 @@ def expose(*channels, **config):
       wrapper.target = config.get("target", None)
       wrapper.channels = channels
 
-      _argspec = getargspec(f)
-      _args = _argspec[0]
-      _args.insert(0, "response")
-      _args.insert(0, "request")
-      if _args and _args[0] == "self":
-         del _args[0]
-      if _args and _args[0] == "event":
-         wrapper._passEvent = True
+      wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
+      if wrapper.args and wrapper.args[0] == "self":
+          del wrapper.args[0]
+      if wrapper.args and wrapper.args[0] == "event":
+          wrapper._passEvent = True
       else:
-         wrapper._passEvent = False
+          wrapper._passEvent = False
+
+      wrapper.args.insert(0, "response")
+      wrapper.args.insert(0, "request")
 
       return update_wrapper(wrapper, f)
 

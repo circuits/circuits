@@ -123,7 +123,7 @@ class EventTestCase(unittest.TestCase):
         manager += debugger
         manager += foo
 
-        debugger.IgnoreChannels.extend(["bar"])
+        debugger.IgnoreChannels.extend([("*", "bar")])
         debugger.events = True
 
         e = Event()

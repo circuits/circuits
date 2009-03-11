@@ -14,12 +14,12 @@ The following import statement is commonly used:
 import new
 import time
 import warnings
-from itertools import chain
 from threading import Thread
 from functools import partial
 from collections import deque
 from operator import attrgetter
 from collections import defaultdict
+from itertools import chain, ifilter
 from sys import exc_info as _exc_info
 from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
@@ -44,7 +44,6 @@ except ImportError:
     except ImportError:
         HAS_MULTIPROCESSING = 0
 
-
 class Event(object):
     """Create a new Event Object
 
@@ -53,7 +52,6 @@ class Event(object):
 
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
-    @ivar target:  The target Component's channel this Event is bound for
 
     @param args: list of arguments
     @type  args: tuple
@@ -70,7 +68,6 @@ class Event(object):
 
         self.name = self.__class__.__name__
         self.channel = None
-        self.target = None
 
     def __eq__(self, y):
         """ x.__eq__(y) <==> x==y
@@ -81,22 +78,18 @@ class Event(object):
         args and kwargs passed.
         """
 
-        attrs = ("name", "args", "kwargs", "channel", "target")
+        attrs = ("name", "args", "kwargs", "channel")
         return all([getattr(self, a) == getattr(y, a) for a in attrs])
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        if self.channel is not None and self.target is not None:
-            channelStr = "%s:%s" % (self.target, self.channel)
-        elif self.channel is not None:
-            channelStr = self.channel
-        else:
-            channelStr = ""
-        argsStr = ", ".join([("%s" % repr(arg)) for arg in self.args])
-        kwargsStr = ", ".join(
-                [("%s=%s" % kwarg) for kwarg in self.kwargs.iteritems()])
-        return "<%s[%s] (%s, %s)>" % (self.name, channelStr, argsStr, kwargsStr)
+        name = self.name
+        channel = "%s:%s" % self.channel if self.channel else ""
+        args = ", ".join([("%r" % arg) for arg in self.args])
+        kwargs = ", ".join([("%s=%r" % kw) for kw in self.kwargs.items()])
+        data = "%s %s" % (args, kwargs)  if args and kwargs else args or kwargs
+        return "<%s[%s] (%s)>" % (name, channel, data)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
@@ -220,6 +213,7 @@ class Unregistered(Event):
 
         super(Unregistered, self).__init__(component, manager)
 
+_sortkey = attrgetter("priority", "filter")
 
 def handler(*channels, **kwargs):
     """Creates an Event Handler
@@ -266,11 +260,10 @@ def handler(*channels, **kwargs):
         f.target = kwargs.get("target", None)
         f.channels = channels
 
-        _argspec = getargspec(f)
-        _args = _argspec[0]
-        if _args and _args[0] == "self":
-            del _args[0]
-        if _args and _args[0] == "event":
+        f.args, f.varargs, f.varkw, f.defaults = getargspec(f)
+        if f.args and f.args[0] == "self":
+            del f.args[0]
+        if f.args and f.args[0] == "event":
             f._passEvent = True
         else:
             f._passEvent = False
@@ -321,7 +314,8 @@ class Manager(object):
 
         self._queue = deque()
         self._handlers = set()
-        self._channels = defaultdict(list)
+        self._globals = []
+        self._channels = dict()
 
         self._ticks = set()
         self._hidden = set()
@@ -409,41 +403,40 @@ class Manager(object):
         else:
             raise TypeError("No registration found for %r" % y)
 
-    def _getHandlers(self, s):
-        if s == "*:*":
-            return self._handlers
+    def _getHandlers(self, _channel):
+        target, channel = _channel
 
-        if ":" in s:
-            target, channel = s.split(":", 1)
-        else:
-            channel = s
-            target = None
+        channels = self._channels
+        exists = self._channels.has_key
+        get = self._channels.get
 
-        channels = self.channels
-        globals = channels["*"]
-
-        if target == "*":
-            c = ":%s" % channel
-            x = [channels[k] for k in channels if k == channel or k.endswith(c)]
-            all = [i for y in x for i in y]
-            return chain(globals, all)
-
+        # Global Channels
+        handlers = self._globals
+  
+        # This channel on all targets
         if channel == "*":
-            c = "%s:" % target
-            x = [channels[k] for k in channels if k.startswith(c) or ":" not in k]
+            x = [get((t, c)) for (t, c) in channels if t in ("*", target)]
             all = [i for y in x for i in y]
-            return chain(globals, all)
+            return chain(handlers, all)
 
-        handlers = globals
-        if channel in channels:
-            handlers = chain(handlers, channels[channel])
-        if target and "%s:*" % target in channels:
-            handlers = chain(handlers, channels["%s:*" % target])
-        if "*:%s" % channel in channels:
-            handlers = chain(handlers, channels["*:%s" % channel])
-        if target:
-            handlers = chain(handlers, channels[s])
+        # Every channel on this target
+        if target == "*":
+            x = [get((t, c)) for (t, c) in channels if c in ("*", channel)]
+            all = [i for y in x for i in y]
+            return chain(handlers, all)
 
+        # Any global channels
+        if exists(("*", channel)):
+            handlers = chain(handlers, get(("*", channel)))
+ 
+        # Any global channels for this target
+        if exists((channel, "*")):
+            handlers = chain(handlers, get((channel, "*")))
+
+        # The actual channel and target
+        if exists(_channel):
+            handlers = chain(handlers, get((_channel)))
+  
         return handlers
 
     @property
@@ -487,19 +480,22 @@ class Manager(object):
         given, add it to the global channel.
         """
 
-        self._handlers.add(handler)
-
         if channel is None:
-            channel = "*"
+            self._globals.append(handler)
+            self._globals.sort(key=_sortkey)
+            self._globals.reverse()
+        else:
+            assert type(channel) is tuple and len(channel) == 2
 
-        if channel in self.channels:
+            self._handlers.add(handler)
+
+            if channel not in self._channels:
+                self._channels[channel] = []
+
             if handler not in self.channels[channel]:
                 self._channels[channel].append(handler)
-                self._channels[channel].sort(
-                        key=attrgetter("priority", "filter"))
+                self._channels[channel].sort(key=_sortkey)
                 self._channels[channel].reverse()
-        else:
-            self._channels[channel] = [handler]
 
     def _remove(self, handler, channel=None):
         """E._remove(handler, channel=None) -> None
@@ -511,6 +507,8 @@ class Manager(object):
         """
 
         if channel is None:
+            if handler in self._globals:
+                self._globals.remove(handler)
             channels = self.channels.keys()
         else:
             channels = [channel]
@@ -524,8 +522,13 @@ class Manager(object):
             if not self._channels[channel]:
                 del self._channels[channel]
 
+    def _push(self, event, channel):
+        if self.manager == self:
+            self._queue.append((event, channel))
+        else:
+            self.manager._push(event, channel)
 
-    def push(self, event, channel, target=None):
+    def push(self, event, channel=None, target=None):
         """Push a new Event into the queue
 
         This will push the given Event, Channel and Target onto the
@@ -547,13 +550,12 @@ class Manager(object):
         @type    target: str or Component
         """
 
-        if target is None:
-            target = getattr(self, "channel", None)
+        channel = channel or event.name.lower()
+        target = target or getattr(self, "channel", "*")
+        if isinstance(target, Component):
+            target = getattr(target, "channel", "*")
 
-        if self.manager == self:
-            self._queue.append((event, channel, target))
-        else:
-            self.manager.push(event, channel, target)
+        self._push(event, (target, channel))
 
     def flush(self):
         """Flush all Events in the Event Queue
@@ -566,13 +568,39 @@ class Manager(object):
         if self.manager == self:
             q = self._queue
             self._queue = deque()
-            while q:
-                event, channel, target = q.popleft()
-                self.send(event, channel, target)
+            while q: self._send(*q.popleft())
         else:
             self.manager.flush()
 
-    def send(self, event, channel, target=None, errors=False, log=True):
+    def _send(self, event, channel, errors=False, log=True):
+        if self.manager == self:
+            event.channel = channel
+            eargs = event.args
+            ekwargs = event.kwargs
+
+            r = False
+            for handler in self._getHandlers(channel):
+                try:
+                    if handler._passEvent:
+                        r = handler(event, *eargs, **ekwargs)
+                    else:
+                        r = handler(*eargs, **ekwargs)
+                except (KeyboardInterrupt, SystemExit):
+                    raise
+                except:
+                    if log:
+                        self.push(Error(*_exc_info()))
+                    if errors:
+                        raise
+                    else:
+                        _exc_clear()
+                if r is not None and r and handler.filter:
+                    return r
+            return r
+        else:
+            return self.manager._send(event, channel, errors, log)
+
+    def send(self, event, channel=None, target=None, errors=False, log=True):
         """Send a new Event to Event Handlers for the Target and Channel
 
         This will send the given Event, to the spcified CHannel on the
@@ -603,40 +631,12 @@ class Manager(object):
         @rtype:  object
         """
 
-        if target is None:
-            target = getattr(self, "channel", None)
+        channel = channel or event.name.lower()
+        target = target or getattr(self, "channel", "*")
+        if isinstance(target, Component):
+            target = getattr(target, "channel", "*")
 
-        if self.manager == self:
-            event.channel = channel
-            event.target = target
-            eargs = event.args
-            ekwargs = event.kwargs
-            if target is not None and isinstance(target, Component):
-                target = getattr(target, "channel", None)
-            if target is not None and type(target) == str:
-                channel = "%s:%s" % (target, channel)
-
-            r = False
-            for handler in self._getHandlers(channel):
-                try:
-                    if handler._passEvent:
-                        r = partial(handler, event, *eargs, **ekwargs)()
-                    else:
-                        r = partial(handler, *eargs, **ekwargs)()
-                except (KeyboardInterrupt, SystemExit):
-                    raise
-                except:
-                    if log:
-                        self.push(Error(*_exc_info()), "error")
-                    if errors:
-                        raise
-                    else:
-                        _exc_clear()
-                if r is not None and r and handler.filter:
-                    return r
-            return r
-        else:
-            return self.manager.send(event, channel, target, errors, log)
+        return self._send(event, (target, channel), errors, log)
 
     def _signal(self, signal, stack):
         if not self.send(Signal(signal, stack), "signal"):
@@ -690,7 +690,7 @@ class Manager(object):
 
         self._running = True
 
-        self.push(Started(self, mode), "started")
+        self.push(Started(self, mode))
 
         try:
             while self._running or (self._running and self._task is not None and self._task.is_alive()):
@@ -706,14 +706,14 @@ class Manager(object):
                     self._running = False
                 except:
                     if log:
-                        self.push(Error(*_exc_info()), "error")
+                        self.push(Error(*_exc_info()))
                     if errors:
                         raise
                     else:
                         _exc_clear()
         finally:
             self._terminate()
-            self.push(Stopped(self), "stopped")
+            self.push(Stopped(self))
             rtime = time.time()
             while len(self) > 0 and (time.time() - rtime) < 3:
                 [f() for f in self.ticks.copy()]
@@ -745,7 +745,7 @@ class BaseComponent(Manager):
     @ivar channel: The Component's Channel
     """
 
-    channel = None
+    channel = "*"
 
     def __new__(cls, *args, **kwargs):
         """TODO Work around for Python bug.
@@ -878,24 +878,24 @@ class BaseComponent(Manager):
             if handler.channels:
                 channels = handler.channels
             else:
-                channels = ["*"]
+                channels = [None]
 
             for channel in channels:
                 if handler.target is not None:
                     target = handler.target
                 else:
-                    target = self.channel
-
-                if target is not None:
-                    channel = "%s:%s" % (target, channel)
-
+                    target = getattr(self, "channel", None)
+                if not all([channel, target]):
+                    channel = None
+                else:
+                    channel = (target, channel or "*")
                 manager._add(handler, channel)
 
         self.manager = manager
 
         if manager is not self:
             manager._components.add(self)
-            self.push(Registered(self, manager), "registered", self.channel)
+            self.push(Registered(self, manager), target=self)
             self._registerHidden()
 
         self.manager._ticks.update(self._getTicks())
@@ -922,7 +922,7 @@ class BaseComponent(Manager):
         if self in pmanager._hidden:
             pmanager._hidden.remove(self)
 
-        self.push(Unregistered(self, manager), "unregistered", self.channel)
+        self.push(Unregistered(self, manager), target=self)
 
         self.manager = self
 

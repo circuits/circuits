@@ -66,21 +66,20 @@ class DefaultDispatcher(Component):
 
         path = request.path
         method = request.method.upper()
-        request.index = path.endswith("/")
+        request.index = request.path.endswith("/")
 
         defaults = "index", method, "default"
 
         if not "/" in path:
             for default in defaults:
-                k = "/:%s" % default
+                k = ("/", default)
                 if k in self.manager.channels:
-                    return k, []
+                    return default, "/", []
             return None, []
 
         names = [x for x in path.strip("/").split("/") if x]
 
-        targets = set([x.split(":")[0] for x in self.manager.channels if x and \
-                ":" in x and x[0] == "/"])
+        targets = [t for (t, c) in self.manager.channels if t[0] == "/"]
 
         i = 0
         matches = [""]
@@ -96,7 +95,7 @@ class DefaultDispatcher(Component):
             i += 1
 
         if not candidates:
-            return None, []
+            return None, None, []
 
         i, candidate = candidates.pop()
 
@@ -107,13 +106,10 @@ class DefaultDispatcher(Component):
 
         vpath = []
         channel = None
-        for ch in channels:
-            x = "%s:%s" % (candidate, ch)
-            found = x in self.manager.channels
-            if found:
-                if i < len(names) and ch == names[i]:
+        for channel in channels:
+            if (candidate, channel) in self.manager.channels:
+                if i < len(names) and channel == names[i]:
                     i += 1
-                channel = x
                 break
 
         if channel is not None:
@@ -122,7 +118,11 @@ class DefaultDispatcher(Component):
             else:
                 vpath = []
 
-        return channel, vpath
+        handler = self.manager.channels[(candidate, channel)][0]
+        if vpath and not handler.varargs:
+            return None, None, None,
+        else:
+            return channel, candidate, vpath
 
     @handler("request", filter=True)
     def request(self, event, request, response):
@@ -143,9 +143,9 @@ class DefaultDispatcher(Component):
             expires(request, response, 3600*24*30)
             return serve_file(request, response, filename)
 
-        channel, vpath = self._getChannel(request)
+        channel, target, vpath = self._getChannel(request)
 
-        if channel:
+        if channel and target:
             req.kwargs = parseQueryString(request.qs)
             v = self._parseBody(request, response, req.kwargs)
             if not v:
@@ -154,7 +154,7 @@ class DefaultDispatcher(Component):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.send(req, channel, errors=True)
+            return self.send(req, channel, target, errors=True)
 
 class FileDispatcher(Component):
 

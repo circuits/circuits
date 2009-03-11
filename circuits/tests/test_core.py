@@ -59,182 +59,13 @@ class Bar(Component):
     def onBAR(self, event, *args, **kwargs):
         self.send(Test(), "gotbar")
 
-class EventTestCase(unittest.TestCase):
+class TestAllChannels(unittest.TestCase):
+    """Test All Channels
 
-    def testManagerRepr(self):
-        """Test Manager.__repr__
+    Test that Events can be sent to all channels.
+    """
 
-        Test Manager's representation string.
-        """
-
-        x = Manager()
-        self.assertEquals(repr(x), "<Manager (q: 0 c: 0 h: 0) [S]>")
-
-        a = Foo()
-        x += a
-        self.assertEquals(repr(x), "<Manager (q: 1 c: 3 h: 3) [S]>")
-
-        x.flush()
-        self.assertEquals(repr(x), "<Manager (q: 0 c: 4 h: 3) [S]>")
-
-        x.push(Test(), "foo")
-        self.assertEquals(repr(x), "<Manager (q: 1 c: 4 h: 3) [S]>")
-
-        x.flush()
-        self.assertEquals(repr(x), "<Manager (q: 0 c: 4 h: 3) [S]>")
-
-        x -= a
-        self.assertEquals(repr(x), "<Manager (q: 1 c: 0 h: 0) [S]>")
-
-
-    def testComponentRepr(self):
-        """Test Component.__repr__
-
-        Test Component's representation string.
-        """
-
-        a = Foo()
-        self.assertEquals(repr(a), "<Foo/ (q: 0 c: 3 h: 3) [S]>")
-
-        a.push(Test(), "foo")
-        self.assertEquals(repr(a), "<Foo/ (q: 1 c: 3 h: 3) [S]>")
-
-        a.flush()
-        self.assertEquals(repr(a), "<Foo/ (q: 0 c: 4 h: 3) [S]>")
-
-
-    def testComponentSetup(self):
-        """Test Component Setup
-
-        Tests that filters and listeners of a Component are
-        automatically added to the event manager instnace
-        given.
-        """
-
-        manager = Manager()
-
-        filter = FilterComponent()
-        manager += filter
-        listener = ListenerComponent()
-        manager += listener
-
-        self.assertTrue(filter.onFOO in manager.channels["foo"])
-        self.assertTrue(listener.foo in manager.channels["foo"])
-        self.assertTrue(filter.onBAR in manager.channels["bar"])
-        self.assertTrue(listener.bar in manager.channels["bar"])
-
-        filter.unregister()
-        listener.unregister()
-
-        self.assertEquals(len(manager._handlers), 0)
-
-
-    def testFilterOrder(self):
-        """Test Filter Order
-
-        Test that Events Handlers set as Filters are added and sorted
-        such that Filters preceed non-filters.
-        """
-
-        class Foo(Component):
-
-            @handler("a")
-            def a1(self):
-                pass
-
-            @handler("a", filter=True)
-            def a2(self):
-                pass
-
-            @handler("a")
-            def a3(self):
-                pass
-
-        foo = Foo()
-        self.assertTrue(foo.channels["a"][0] == foo.a2)
-
-    def testTargetsAndChannels(self):
-        """Test Components, Targets and Channels
-
-        Test that Components can be set up with a channel
-        and that event handlers of that Component work
-        correctly. That is, Components that have their
-        own channel, have their own global channel and
-        each channel is unique to that Component.
-        """
-
-        class Foo(Component):
-
-            channel = "foo"
-
-            flag = False
-
-            @handler(filter=True)
-            def onALL(self, event, *args, **kwargs):
-                self.flag = True
-                return True
-
-            @handler("foo")
-            def onFOO(self):
-                self.flag = False
-
-        class Bar(Component):
-
-            flag = False
-
-            @handler("bar")
-            def onBAR(self):
-                self.flag = True
-
-        manager = Manager()
-        foo = Foo()
-        bar = Bar()
-        manager += foo
-        manager += bar
-
-        manager.send(Event(), "foo", foo.channel)
-        self.assertTrue(foo.flag)
-        manager.send(Event(), "bar")
-        self.assertTrue(bar.flag)
-
-        foo.unregister()
-        bar.unregister()
-
-    def testMultipleChannels(self):
-        """Test Multiple Channels
-
-        Test that Event Handlers can listen on Multiple
-        Channels.
-        """
-
-        class Foo(Component):
-
-            flag = False
-
-            @handler("foo", "bar")
-            def onFOOBAR(self, event, *args, **kwargs):
-                self.flag = True
-
-        manager = Manager()
-        foo = Foo()
-        manager += foo
-
-        manager.send(Event(), "foo")
-        self.assertTrue(foo.flag)
-        foo.flag = False
-
-        manager.send(Event(), "bar")
-        self.assertTrue(foo.flag)
-        foo.flag = False
-
-        foo.unregister()
-
-
-    def testAllChannels(self):
-        """Test All Channels
-
-        Test that Events can be sent to all channels.
-        """
+    def runTest(self):
 
         class A(Component):
 
@@ -282,13 +113,187 @@ class EventTestCase(unittest.TestCase):
         x -= b
         x -= c
 
+class TestManagerRepr(unittest.TestCase):
+    """Test Manager.__repr__
 
-    def testAllTargets(self):
-        """Test All Targets
+    Test Manager's representation string.
+    """
 
-        Test that Events can be sent to all targets.
-        """
+    def runTest(self):
+        x = Manager()
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 0 h: 0) [S]>")
 
+        a = Foo()
+        x += a
+        self.assertEquals(repr(x), "<Manager (q: 1 c: 3 h: 3) [S]>")
+
+        x.flush()
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 3 h: 3) [S]>")
+
+        x.push(Test(), "foo")
+        self.assertEquals(repr(x), "<Manager (q: 1 c: 3 h: 3) [S]>")
+
+        x.flush()
+        self.assertEquals(repr(x), "<Manager (q: 0 c: 3 h: 3) [S]>")
+
+        x -= a
+        self.assertEquals(repr(x), "<Manager (q: 1 c: 0 h: 0) [S]>")
+
+
+class TestComponentRepr(unittest.TestCase):
+    """Test Component.__repr__
+
+    Test Component's representation string.
+    """
+
+    def runTest(self):
+        a = Foo()
+        self.assertEquals(repr(a), "<Foo/* (q: 0 c: 3 h: 3) [S]>")
+
+        a.push(Test(), "foo")
+        self.assertEquals(repr(a), "<Foo/* (q: 1 c: 3 h: 3) [S]>")
+
+        a.flush()
+        self.assertEquals(repr(a), "<Foo/* (q: 0 c: 3 h: 3) [S]>")
+
+
+class TestComponentSetup(unittest.TestCase):
+    """Test Component Setup
+
+    Tests that filters and listeners of a Component are
+    automatically added to the event manager instnace
+    given.
+    """
+
+    def runTest(self):
+        manager = Manager()
+
+        filter = FilterComponent()
+        manager += filter
+        listener = ListenerComponent()
+        manager += listener
+
+        self.assertTrue(filter.onFOO in manager.channels[("*", "foo")])
+        self.assertTrue(listener.foo in manager.channels[("*", "foo")])
+        self.assertTrue(filter.onBAR in manager.channels[("*", "bar")])
+        self.assertTrue(listener.bar in manager.channels[("*", "bar")])
+
+        filter.unregister()
+        listener.unregister()
+
+        self.assertEquals(len(manager._handlers), 0)
+
+
+class TestFilterOrder(unittest.TestCase):
+    """Test Filter Order
+
+    Test that Events Handlers set as Filters are added and sorted
+    such that Filters preceed non-filters.
+    """
+
+    def runTest(self):
+        class Foo(Component):
+
+            @handler("a")
+            def a1(self):
+                pass
+
+            @handler("a", filter=True)
+            def a2(self):
+                pass
+
+            @handler("a")
+            def a3(self):
+                pass
+
+        foo = Foo()
+        self.assertTrue(foo.channels[("*", "a")][0] == foo.a2)
+
+class TestTargetsAndChannels(unittest.TestCase):
+    """Test Components, Targets and Channels
+
+    Test that Components can be set up with a channel
+    and that event handlers of that Component work
+    correctly. That is, Components that have their
+    own channel, have their own global channel and
+    each channel is unique to that Component.
+    """
+
+    def runTest(self):
+        class Foo(Component):
+
+            channel = "foo"
+
+            flag = False
+
+            @handler(filter=True)
+            def onALL(self, event, *args, **kwargs):
+                self.flag = True
+                return True
+
+            @handler("foo")
+            def onFOO(self):
+                self.flag = False
+
+        class Bar(Component):
+
+            flag = False
+
+            @handler("bar")
+            def onBAR(self):
+                self.flag = True
+
+        manager = Manager()
+        foo = Foo()
+        bar = Bar()
+        manager += foo
+        manager += bar
+
+        manager.send(Event(), "foo", foo.channel)
+        self.assertTrue(foo.flag)
+        manager.send(Event(), "bar")
+        self.assertFalse(bar.flag) ### (NEW) Behavioural Change
+
+        foo.unregister()
+        bar.unregister()
+
+class TestMultipleChannels(unittest.TestCase):
+    """Test Multiple Channels
+
+    Test that Event Handlers can listen on Multiple
+    Channels.
+    """
+
+    def runTest(self):
+        class Foo(Component):
+
+            flag = False
+
+            @handler("foo", "bar")
+            def onFOOBAR(self, event, *args, **kwargs):
+                self.flag = True
+
+        manager = Manager()
+        foo = Foo()
+        manager += foo
+
+        manager.send(Event(), "foo")
+        self.assertTrue(foo.flag)
+        foo.flag = False
+
+        manager.send(Event(), "bar")
+        self.assertTrue(foo.flag)
+        foo.flag = False
+
+        foo.unregister()
+
+class TestAllTargets(unittest.TestCase):
+    """Test All Targets
+
+    Test that Events can be sent to all targets.
+    """
+
+    def runTest(self):
         class A(Component):
 
             channel = "A"
@@ -336,65 +341,13 @@ class EventTestCase(unittest.TestCase):
         x -= c
 
 
-    def testAllTargetsAndChannels(self):
-        """Test All Targets and Channels
+class TestComponentAsManager(unittest.TestCase):
+    """Test Component
 
-        Test that Events can be sent to all channels on all targets.
-        """
+    Test that Components can manage their own events.
+    """
 
-        class A(Component):
-
-            channel = "A"
-
-            flag = False
-
-            @handler("foo")
-            def onFOO(self, event, *args, **kwargs):
-                self.flag = True
-
-        class B(Component):
-
-            channel = "B"
-
-            flag = False
-
-            @handler("bar")
-            def onBAR(self, event, *args, **kwargs):
-                self.flag = True
-
-        class C(Component):
-
-            flag = False
-
-            @handler("foo")
-            def onFOO(self, event, *args, **kwargs):
-                self.flag = True
-
-        x = Manager()
-        a = A()
-        b = B()
-        c = C()
-
-        x += a
-        x += b
-        x += c
-
-        x.send(Event(), "*", "*")
-        self.assertTrue(a.flag)
-        self.assertTrue(b.flag)
-        self.assertTrue(c.flag)
-
-        x -= a
-        x -= b
-        x -= c
-
-
-    def testComponentAsManager(self):
-        """Test Component
-
-        Test that Components can manage their own events.
-        """
-
+    def runTest(self):
         x = Manager()
         a = Foo()
         x += a
@@ -403,12 +356,13 @@ class EventTestCase(unittest.TestCase):
         self.assertTrue(a.flag)
 
 
-    def testHandlerArgs(self):
-        """Test Handler Args
+class TestHandlerArgs(unittest.TestCase):
+    """Test Handler Args
 
-        Test sending events to event handlers that accept positional arguments.
-        """
+    Test sending events to event handlers that accept positional arguments.
+    """
 
+    def runTest(self):
         class A(Component):
 
             a = None
@@ -452,13 +406,14 @@ class EventTestCase(unittest.TestCase):
         self.assertEquals(a.kwargs["c"], 3)
 
 
-    def testComponentLinks(self):
-        """Test Component Links
+class TestComponentLinks(unittest.TestCase):
+    """Test Component Links
 
-        Test that components can be linked together and
-        events can be sent to linked components.
-        """
+    Test that components can be linked together and
+    events can be sent to linked components.
+    """
 
+    def runTest(self):
         foo = Foo()
         bar = Bar()
         foo + bar
@@ -476,49 +431,50 @@ class EventTestCase(unittest.TestCase):
         self.assertTrue(bar.onBAR not in foo._handlers)
         self.assertTrue(foo.onGOTBAR in foo._handlers)
 
-    def testEvent(self):
-        """Test Event
+class TestEvent(unittest.TestCase):
+    """Test Event
 
-        Test new Event construction and that it's associated
-        arguments and keyword arguments are stored correctly.
-        """
+    Test new Event construction and that it's associated
+    arguments and keyword arguments are stored correctly.
+    """
 
+    def runTest(self):
         e = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
 
         self.assertEquals(e.name, "Test")
-        self.assertEquals(e.channel, None)
-        self.assertEquals(e.target, None)
 
         self.assertTrue((1, 2, 3, "foo", "bar") == e.args)
 
         self.assertEquals(e.kwargs["foo"], "1")
         self.assertEquals(e.kwargs["bar"], "2")
 
-    def testEventRepr(self):
-        """Test Event.__repr__
+class TestEventRepr(unittest.TestCase):
+    """Test Event.__repr__
 
-        Test Event's representation string.
-        """
+    Test Event's representation string.
+    """
 
+    def runTest(self):
         e = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
 
         self.assertEquals(repr(e),
-                "<Test[] (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+                "<Test[] (1, 2, 3, 'foo', 'bar' foo='1', bar='2')>")
 
-        e.channel = "bar"
+        e.channel = ("*", "bar")
         self.assertEquals(repr(e),
-                "<Test[bar] (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+                "<Test[*:bar] (1, 2, 3, 'foo', 'bar' foo='1', bar='2')>")
 
-        e.target = "foo"
+        e.channel = ("foo", "bar")
         self.assertEquals(repr(e),
-                "<Test[foo:bar] (1, 2, 3, 'foo', 'bar', foo=1, bar=2)>")
+                "<Test[foo:bar] (1, 2, 3, 'foo', 'bar' foo='1', bar='2')>")
 
-    def testEventGetItem(self):
-        """Test Event.__getitem__
+class TestEventGetItem(unittest.TestCase):
+    """Test Event.__getitem__
 
-        Test Event's multi attribute accessor.
-        """
+    Test Event's multi attribute accessor.
+    """
 
+    def runTest(self):
         e = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
 
         self.assertEquals(e[0], 1)
@@ -538,38 +494,41 @@ class EventTestCase(unittest.TestCase):
             pass
 
 
-    def testEventEquality(self):
-        """Test Event.__eq__
+class TestEventEquality(unittest.TestCase):
+    """Test Event.__eq__
 
-        Test Event equality.
-        """
+    Test Event equality.
+    """
 
+    def runTest(self):
         a = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
         b = Test(1, 2, 3, "foo", "bar", foo="1", bar="2")
         self.assertEquals(a, b)
 
-    def testManager(self):
-        """Test Manager
+class TestManager(unittest.TestCase):
+    """Test Manager
 
-        Test Manager construction. Test that the event queue is
-        empty.
-        """
+    Test Manager construction. Test that the event queue is
+    empty.
+    """
 
+    def runTest(self):
         manager = Manager()
         self.assertEquals(len(manager), 0)
         self.assertEquals(len(manager._handlers), 0)
 
-    def testManagerAddRemove(self):
-        """Test Manager.add & Manager.remove
+class TestManagerAddRemove(unittest.TestCase):
+    """Test Manager.add & Manager.remove
 
-        Test that filters and listeners can be added to
-        the global channel. Test that filters and listeners
-        can be added to specific channels. Test that filters
-        and listeners can be removed from all channels.
-        Test that filters and listeners can be removed from
-        a specific channel.
-        """
+    Test that filters and listeners can be added to
+    the global channel. Test that filters and listeners
+    can be added to specific channels. Test that filters
+    and listeners can be removed from all channels.
+    Test that filters and listeners can be removed from
+    a specific channel.
+    """
 
+    def runTest(self):
         @handler("foo", filter=True)
         def onFOO():
             pass
@@ -585,38 +544,39 @@ class EventTestCase(unittest.TestCase):
 
         manager._add(onFOO)
         manager._add(onBAR)
-        self.assertTrue(onFOO in manager.channels["*"])
-        self.assertTrue(onBAR in manager.channels["*"])
+        self.assertTrue(onFOO in manager._globals)
+        self.assertTrue(onBAR in manager._globals)
 
-        manager._add(onFOO, "foo")
-        manager._add(onBAR, "bar")
-        self.assertTrue(onFOO in manager.channels["foo"])
-        self.assertTrue(onBAR in manager.channels["bar"])
+        manager._add(onFOO, ("*", "foo"))
+        manager._add(onBAR, ("*", "bar"))
+        self.assertTrue(onFOO in manager.channels[("*", "foo")])
+        self.assertTrue(onBAR in manager.channels[("*", "bar")])
 
-        self.assertFalse(onTEST in manager.channels["*"])
+        self.assertFalse(onTEST in manager._globals)
 
         manager._remove(onFOO)
         self.assertTrue(onFOO not in manager._handlers)
 
-        manager._remove(onBAR, "bar")
-        self.assertTrue(onBAR not in manager.channels["bar"])
-        self.assertTrue(onBAR in manager.channels["*"])
+        manager._remove(onBAR, ("*", "bar"))
+        self.assertTrue(("*", "bar") not in manager.channels)
+        self.assertTrue(onBAR in manager._globals)
         manager._remove(onBAR)
         self.assertTrue(onBAR not in manager._handlers)
 
         self.assertEquals(len(manager._handlers), 0)
 
-    def testManagerPushFlushSend(self):
-        """Test Manager's push, flush and send
+class TestManagerPushFlushSend(unittest.TestCase):
+    """Test Manager's push, flush and send
 
-        Test that events can be pushed, fluahsed and that
-        the event queue is empty after flushing. Test that
-        events can be sent directly without queuing.
+    Test that events can be pushed, fluahsed and that
+    the event queue is empty after flushing. Test that
+    events can be sent directly without queuing.
 
-        Test that a filter will filter an event and prevent
-        any further processing of this event.
-        """
+    Test that a filter will filter an event and prevent
+    any further processing of this event.
+    """
 
+    def runTest(self):
         import time
 
         self.flag = False
@@ -641,15 +601,15 @@ class EventTestCase(unittest.TestCase):
         manager = Manager()
 
         manager._add(onSTOP)
-        manager._add(onTEST, "test")
-        manager._add(onFOO, "test")
-        manager._add(onBAR, "bar")
+        manager._add(onTEST, ("*", "test"))
+        manager._add(onFOO, ("*", "test"))
+        manager._add(onBAR, ("*", "bar"))
 
-        self.assertTrue(onSTOP in manager.channels["*"])
-        self.assertTrue(onTEST in manager.channels["test"])
-        self.assertTrue(onFOO in manager.channels["test"])
-        self.assertTrue(onBAR in manager.channels["bar"])
-        self.assertEquals(len(manager._handlers), 4)
+        self.assertTrue(onSTOP in manager._globals)
+        self.assertTrue(onTEST in manager.channels[("*", "test")])
+        self.assertTrue(onFOO in manager.channels[("*", "test")])
+        self.assertTrue(onBAR in manager.channels[("*", "bar")])
+        self.assertEquals(len(manager._handlers), 3)
 
         manager.push(Test(self, time.time()), "test")
         manager.flush()
@@ -672,22 +632,23 @@ class EventTestCase(unittest.TestCase):
         self.assertTrue(self.flag == False)
 
         manager._remove(onSTOP)
-        manager._remove(onTEST, "test")
-        manager._remove(onFOO, "test")
-        manager._remove(onBAR, "bar")
+        manager._remove(onTEST, ("*", "test"))
+        manager._remove(onFOO, ("*", "test"))
+        manager._remove(onBAR, ("*", "bar"))
 
         self.assertEquals(len(manager._handlers), 0)
 
 
-    def testHandlerTarget(self):
-        """Test Handler Targets
+class TestHandlerTargets(unittest.TestCase):
+    """Test Handler Targets
 
-        Test that event handlers can be registered with a custom
-        target and that the event handler recieves the event
-        even though it may be in a Component that defines a
-        channel.
-        """
+    Test that event handlers can be registered with a custom
+    target and that the event handler recieves the event
+    even though it may be in a Component that defines a
+    channel.
+    """
 
+    def runTest(self):
         class Foo(Component):
 
             flag = False
@@ -733,9 +694,6 @@ class EventTestCase(unittest.TestCase):
         foo.unregister()
         bar.unregister()
         foobar.unregister()
-
-def suite():
-    return unittest.makeSuite(EventTestCase, "test")
 
 if __name__ == "__main__":
     unittest.main()
