@@ -23,15 +23,15 @@ class BaseServer(Component):
 
     channel = "web"
 
-    def __init__(self, port, address="", docroot=None, **kwargs):
+    def __init__(self, bind, docroot=None, **kwargs):
         super(BaseServer, self).__init__(**kwargs)
 
-        self.server = TCPServer(port, address, **kwargs)
+        self.server = TCPServer(bind, **kwargs)
         self.server += HTTP(**kwargs)
         self += self.server
 
         Request.server = self
-        Request.local = Host(self.server.address, self.server.port)
+        Request.local = Host(self.server.bind[0], self.server.bind[1])
         Request.host = self.host
 
         print "%s listening on %s" % (self.version, self.base)
@@ -42,11 +42,11 @@ class BaseServer(Component):
 
     @property
     def address(self):
-        return self.server.address if hasattr(self, "server") else None
+        return self.server.bind[0] if hasattr(self, "server") else None
 
     @property
     def port(self):
-        return self.server.port if hasattr(self, "server") else None
+        return self.server.bind[1] if hasattr(self, "server") else None
 
     @property
     def ssl(self):

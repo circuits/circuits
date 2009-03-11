@@ -388,7 +388,7 @@ class Server(Component):
 class TCPServer(Server):
 
     def __init__(self, bind, ssl=False, **kwargs):
-        super(TCPServer, self).__init__(port, address, ssl, **kwargs)
+        super(TCPServer, self).__init__(bind, ssl, **kwargs)
 
         oldUmask = None
         if type(bind) == str:
@@ -401,9 +401,10 @@ class TCPServer(Server):
             if umask:
                 oldUmask = os.umask(umask)
         else:
-            assert type(self.bind) is tuple
-            if len(self.bind) == 1:
-                self.bind += ("0.0.0.0",)
+            if type(bind) is int:
+                self.bind = ("0.0.0.0", self.bind)
+            else:
+                assert type(self.bind) is tuple
 
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
