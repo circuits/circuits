@@ -85,7 +85,10 @@ class Event(object):
         "x.__repr__() <==> repr(x)"
 
         name = self.name
-        channel = "%s:%s" % self.channel if self.channel else ""
+        if type(self.channel) is tuple:
+            channel = "%s:%s" % self.channel
+        else:
+            channel = self.channel or ""
         args = ", ".join([("%r" % arg) for arg in self.args])
         kwargs = ", ".join([("%s=%r" % kw) for kw in self.kwargs.items()])
         data = "%s %s" % (args, kwargs)  if args and kwargs else args or kwargs
