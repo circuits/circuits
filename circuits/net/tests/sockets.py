@@ -2,17 +2,13 @@
 # Date:     26th June 2006
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Sockets Test Suite
-
-Test all functionality of the sockets module.
-"""
+"""Sockets Test Suite"""
 
 import unittest
 from time import sleep
 
-from circuits.tools import inspect
-from circuits import Component, Debugger
-from circuits.lib.sockets import *
+from circuits.net.sockets import *
+from circuits.core import Component, Debugger
 
 def wait():
     sleep(0.1)
