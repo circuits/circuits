@@ -35,13 +35,13 @@ try:
     from multiprocessing import current_process as process
     from multiprocessing import active_children as processes
     HAS_MULTIPROCESSING = 2
-except ImportError:
+except:
     try:
         from processing import Process
         from processing import currentProcess as process
         from processing import activeChildren as processes
         HAS_MULTIPROCESSING = 1
-    except ImportError:
+    except:
         HAS_MULTIPROCESSING = 0
 
 class Event(object):
