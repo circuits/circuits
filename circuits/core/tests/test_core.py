@@ -446,14 +446,14 @@ class TestEvent(unittest.TestCase):
         self.assertEquals(e.kwargs["foo"], "1")
         self.assertEquals(e.kwargs["bar"], "2")
 
-        self.assertEquals(e[0] == 1)
-        self.assertEquals(e[0] == 2)
-        self.assertEquals(e[0] == 3)
-        self.assertEquals(e[0] == "foo")
-        self.assertEquals(e[0] == "bar")
+        self.assertEquals(e[0], 1)
+        self.assertEquals(e[1], 2)
+        self.assertEquals(e[2], 3)
+        self.assertEquals(e[3], "foo")
+        self.assertEquals(e[4], "bar")
 
-        self.assertEquals(e["foo"] == 1)
-        self.assertEquals(e["bar"] == 2)
+        self.assertEquals(e["foo"], "1")
+        self.assertEquals(e["bar"], "2")
 
 class TestEventRepr(unittest.TestCase):
     """Test Event.__repr__
