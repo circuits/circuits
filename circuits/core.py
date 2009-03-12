@@ -13,7 +13,6 @@ The following import statement is commonly used:
 
 import new
 import time
-import warnings
 from threading import Thread
 from functools import partial
 from collections import deque
@@ -240,9 +239,6 @@ def handler(*channels, **kwargs):
        >>> @handler("x", target="other")
        ... def x():
        ...     pass
-
-    @deprecated: The use of 'type' in kwargs will be deprecated in 1.2
-                 Use 'filter' instead.
     """
 
     def wrapper(f):
@@ -251,11 +247,7 @@ def handler(*channels, **kwargs):
         f.override = kwargs.get("override", False)
         f.priority = kwargs.get("priority", 0)
 
-        if "type" in kwargs:
-            warnings.warn("Please use 'filter', 'type' will be deprecated in 1.2")
-            f.filter = kwargs.get("type", "listener") == "filter"
-        else:
-            f.filter = kwargs.get("filter", False)
+        f.filter = kwargs.get("filter", False)
 
         f.target = kwargs.get("target", None)
         f.channels = channels
@@ -271,12 +263,6 @@ def handler(*channels, **kwargs):
         return f
 
     return wrapper
-
-def listener(*channels, **kwargs):
-    "@deprecated: This is planned to be deprecated in 1.2 Use handlers instead"
-
-    warnings.warn("Please use @handler, @listener will be deprecated in 1.2")
-    return handler(*channels, **kwargs)
 
 class HandlersType(type):
     """Handlers metaclass
