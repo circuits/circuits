@@ -8,13 +8,10 @@ from traclib import Trac, NotModified
 def main():
 	opts = object()
 	trac = Trac(opts)
-	docs = [x for x in os.listdir(os.getcwd()) if x.endswith(".wiki")]
-	for doc in docs:
+	pages = [x for x in os.listdir(os.getcwd()) if x.endswith(".wiki")]
+	for page in pages:
 		name, ext = os.path.splitext(doc)
-		if name == "index":
-			page = "docs"
-		else:
-			page = "docs/%s" % name
+        name = name.replace("_", "/")
 
 		sys.stdout.write("Updating %s ... " % name)
 		sys.stdout.flush()
