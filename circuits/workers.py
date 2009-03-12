@@ -11,7 +11,7 @@ try:
     from multiprocessing import cpu_count as cpus
     from multiprocessing import active_children as processes
     HAS_MULTIPROCESSING = 2
-except ImportError:
+except:
     try:
         from processing import Pipe as _Pipe
         from processing import Value as _Value
@@ -20,7 +20,7 @@ except ImportError:
         from processing import cpuCount as cpus
         from processing import activeChildren as processes
         HAS_MULTIPROCESSING = 1
-    except ImportError:
+    except:
         HAS_MULTIPROCESSING = 0
 
 
