@@ -59,6 +59,8 @@ class Event(object):
     @type  kwargs: dict
     """
 
+    channel = None
+
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
@@ -66,7 +68,6 @@ class Event(object):
         self.kwargs = kwargs
 
         self.name = self.__class__.__name__
-        self.channel = None
 
     def __eq__(self, y):
         """ x.__eq__(y) <==> x==y
