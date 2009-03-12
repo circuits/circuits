@@ -7,7 +7,7 @@
 import unittest
 from time import sleep
 
-from circuits.core import Timer
+from circuits import Timer
 from circuits.core import handler, Event, Component, Manager
 
 

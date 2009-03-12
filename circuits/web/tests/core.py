@@ -1,12 +1,12 @@
-#!/usr/bin/env python
-# Module:       test_core
-# Date:         16th February 2009
-# Author:       James Mills, prologic at shortcircuit dot net dot au
+# Module:   test_core
+# Date:     16th February 2009
+# Author:   James Mills, prologic at shortcircuit dot net dot au
+
+"""Core Test Suite"""
 
 import httplib
 import unittest
 
-from circuits.workers import Thread
 from circuits.web import Server, Controller
 
 from webtest import WebCase
@@ -55,9 +55,6 @@ class CoreTestCase(WebCase):
 
         # Make another request on the same connection, which should error.
         self.assertRaises(httplib.NotConnected, self.getPage, "/")
-
-def suite():
-    return unittest.makeSuite(CoreTestCase, "test")
 
 if __name__ == "__main__":
     unittest.main()

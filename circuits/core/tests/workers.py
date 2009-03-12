@@ -6,7 +6,7 @@
 
 import unittest
 
-from circuits.core.workers import Thread
+from circuits import Thread
 from circuits.core import handler, Event, Manager
 
 class Test(Event):

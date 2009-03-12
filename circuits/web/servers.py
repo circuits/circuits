@@ -12,7 +12,7 @@ from socket import gethostname as _gethostname
 
 from circuits import Component
 
-from circuits.lib.sockets import TCPServer
+from circuits.net.sockets import TCPServer
 
 from http import HTTP
 from webob import Request, Host

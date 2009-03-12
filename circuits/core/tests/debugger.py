@@ -8,7 +8,7 @@ import sys
 import unittest
 from StringIO import StringIO
 
-from circuits.core import Debugger
+from circuits import Debugger
 from circuits.core import handler, Event, Component, Manager
 
 

@@ -8,7 +8,7 @@ import unittest
 from time import sleep
 
 from circuits.net.sockets import *
-from circuits.core import Component, Debugger
+from circuits import Component, Debugger
 
 def wait():
     sleep(0.1)

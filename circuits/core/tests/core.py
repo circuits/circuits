@@ -8,7 +8,7 @@ import unittest
 from os import kill
 from signal import SIGHUP, SIGINT, SIGTERM
 
-from circutis.core import HAS_MULTIPROCESSING
+from circuits.core import HAS_MULTIPROCESSING
 from circuits.core import handler, Manager, Component, Event
 
 if HAS_MULTIPROCESSING == 2:

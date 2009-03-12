@@ -6,7 +6,7 @@
 
 import unittest
 
-from circuits.core import Bridge
+from circuits import Bridge
 from circuits.core import handler, Event, Component, Manager
 
 
