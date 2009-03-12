@@ -5,17 +5,9 @@
 """Core Test Suite"""
 
 import unittest
-from os import kill
-from signal import SIGHUP, SIGINT, SIGTERM
 
 from circuits.core import HAS_MULTIPROCESSING
 from circuits.core import handler, Manager, Component, Event
-
-if HAS_MULTIPROCESSING == 2:
-    from multiprocessing import Value
-else:
-    from processing import Value
-
 
 class Test(Event):
     """Test(Event) -> Test Event"""
@@ -64,45 +56,6 @@ class Bar(Component):
     @handler("bar")
     def onBAR(self, event, *args, **kwargs):
         self.send(Test(), "gotbar")
-
-if HAS_MULTIPROCESSING:
-
-    class TestSignals(unittest.TestCase):
-        """Test Signal Handling
-
-        Test that the OS signals SIGHUP, SIGINT and SIGTERM are handled
-        and Signal events are fired for each.
-        """
-
-        def runTest(self):
-
-            class SignalTester(Component):
-
-                def __init__(self):
-                    super(SignalTester, self).__init__()
-
-                    self.signal = Value("I", 0)
-
-                @handler("signa", filter=True)
-                def signal(self, signal, stack):
-                    self.signal = signal
-                    return True
-
-            tester = SignalTester()
-            tester.start(process=True)
-
-            pid = tester._task.pid
-
-            kill(pid, SIGHUP)
-            self.assertEquals(tester.signal.value, SIGHUP)
-
-            #kill(pid, SIGINT)
-            #self.assertEquals(tester.signal.value, SIGINT)
-
-            #kill(pid, SIGTERM)
-            #self.assertEquals(tester.signal.value, SIGTERM)
-
-            tester.stop()
 
 class TestAllChannels(unittest.TestCase):
     """Test All Channels
