@@ -92,7 +92,7 @@ circuits.bench = circuits.tools.bench:main
 circuits.sniffer = circuits.tools.sniffer:main
 """
 
-from core import listener, handler, Event, Component,  Manager
+from core import handler, Event, Component,  Manager
 
 from bridge import Bridge
 from workers import Thread
