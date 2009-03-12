@@ -895,7 +895,7 @@ class BaseComponent(Manager):
 
         if manager is not self:
             manager._components.add(self)
-            self.push(Registered(self, manager), "registered", self.channel)
+            self.push(Registered(self, self, manager), "registered", self.channel)
             self._registerHidden()
 
         self.manager._ticks.update(self._getTicks())
@@ -922,7 +922,7 @@ class BaseComponent(Manager):
         if self in pmanager._hidden:
             pmanager._hidden.remove(self)
 
-        self.push(Unregistered(self, manager), "unregistered", self.channel)
+        self.push(Unregistered(self, self, manager), "unregistered", self.channel)
 
         self.manager = self
 
