@@ -43,10 +43,11 @@ class F(Component):
         print "F!"
 
 class TestKill(unittest.TestCase):
-    """Test sockets.TCPClient and sockets.TCPServer
+    """Test kill() function
 
-    Test that communication between a TCPClient and
-    TCPServer work correctly.
+    Test the kill function and ensure that the entire structure of x
+    is completely destroyed and they all becoems separate isolated
+    components with no associations with any other component.
     """
 
     def runTest(self):
@@ -88,9 +89,7 @@ class TestKill(unittest.TestCase):
         self.assertFalse(f._hidden)
         self.assertFalse(e._hidden)
 
-        kill(d)
-
-        print inspect(a)
+        self.assertEquals(kill(d), None)
 
         self.assertEquals(a.manager, a)
         self.assertEquals(b.manager, a)
