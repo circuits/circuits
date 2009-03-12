@@ -1,16 +1,13 @@
-# Module:   test_workers
+# Module:   workers
 # Date:     7th October 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Workers Test Suite
-
-Test all functionality of the workers module.
-"""
+"""Workers Test Suite"""
 
 import unittest
 
-from circuits.workers import Thread
-from circuits import handler, Event, Manager
+from circuits.core.workers import Thread
+from circuits.core import handler, Event, Manager
 
 class Test(Event):
    """Test(Event) -> Test Event"""

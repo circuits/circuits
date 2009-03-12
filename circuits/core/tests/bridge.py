@@ -1,16 +1,13 @@
-# Module:   test_bridge
+# Module:   bridge
 # Date:     5th November 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Debugger Test Suite
-
-Test all functionality of the bridge module.
-"""
+"""Debugger Test Suite"""
 
 import unittest
 
-from circuits import Bridge
-from circuits import handler, Event, Component, Manager
+from circuits.core import Bridge
+from circuits.core import handler, Event, Component, Manager
 
 
 def wait():

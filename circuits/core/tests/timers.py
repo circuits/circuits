@@ -1,17 +1,14 @@
-# Module:   test_timers
+# Module:   timers
 # Date:     7th October 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Timers Test Suite
-
-Test all functionality of the wtimersorkers module.
-"""
+"""Timers Test Suite"""
 
 import unittest
 from time import sleep
 
-from circuits import Timer
-from circuits import handler, Event, Component, Manager
+from circuits.core import Timer
+from circuits.core import handler, Event, Component, Manager
 
 
 class Test(Event):

@@ -1,18 +1,15 @@
-# Module:   event
+# Module:   core
 # Date:     23rd June 2006
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Core Test Suite
-
-Test all functionality of the event library.
-"""
+"""Core Test Suite"""
 
 import unittest
 from os import kill
 from signal import SIGHUP, SIGINT, SIGTERM
 
-from circutis import HAS_MULTIPROCESSING
-from circuits import handler, Manager, Component, Event
+from circutis.core import HAS_MULTIPROCESSING
+from circuits.core import handler, Manager, Component, Event
 
 if HAS_MULTIPROCESSING == 2:
     from multiprocessing import Value
