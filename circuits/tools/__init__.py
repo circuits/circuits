@@ -111,6 +111,5 @@ def inspect(x):
         write("  %s: %d\n" % (channel, len(x.channels[channel])))
         for handler in x.channels[channel]:
             write("   %s\n" % reprhandler(handler))
-    write("\n")
 
     return "".join(s)
