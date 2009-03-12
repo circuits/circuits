@@ -1,0 +1,119 @@
+= Welcome to circuits =
+
+[[BlogList(recent=3, max_size=250, format=float, heading=Latest News)]]
+
+== Overview ==
+'''circuits''' is a '''Lightweight''', '''Event''' driven '''Framework'''
+with a strong '''Component''' Architecture.
+
+Components communicate with one another by propagating Events on Channels
+throughout the System. Each Component has a set of Event Handlers that
+can listen for or filter Events on one or more Channels. Components react to Events and in turn expose further Events into the System. Each Component
+is capable of managing it's own Events as well as those of other Components.
+Complex directed graph structures can be created with Component Registrations,
+this gives a level of hierarchy and separation of concern.
+
+circuits' has a clean architecture and has no external dependencies on any
+other library. It's simplistic design is unmatchable and delivers a
+powerful framework for building large, scalable, maintainable applications
+and systems. circuits' comes with a host of library of standard components
+that can be quickly used to build your application or system, whether it be
+an IRC Bot, Desktop Application, Web Server, Web Application, Network Server,
+Distributed Application or just a simple script! There is also a collection
+of [/recipes Community Recipes and Components].
+
+=== Quick Examples ===
+
+==== Hello World! ====
+{{{
+#!python
+>>> from circuits import Event, Component
+>>>
+>>> class App(Component):
+...   def hello(self):
+...      print "Hello World!"
+>>> app = App()
+>>> app.start()
+>>> app.push(Event(), "hello")
+Hello World!
+}}}
+
+See: [source:examples/hello.py Hello World Source]
+
+==== Hello Web! ====
+{{{
+#!python
+from circuits.web import Server, Controller
+
+class Root(Controller):
+
+   def index(self):
+      return "Hello World!"
+
+server = Server(8000)
+server.register(Root())
+server.run()
+}}}
+
+This will serve {{{Hello World!}}} on http://127.0.0.1:8000/
+
+See:
+ * [source:examples/helloweb.py Half Stack Hello World Server]
+ * [source:examples/simpleweb.py Full Stack Hello World Server]
+ * [source:examples/simpleweb.wsgi Hello World WSGI]
+
+== [/downloads Downloads] ==
+ * [/downloads Latest Release]
+  * [http://pypi.python.org/pypi/circuits/ Latest Release from Python Packages]
+ * [http://hg.softcircuit.com.au/projects/circuits/archive/tip.tar.gz Latest Development Snapshot]
+
+=== [http://hg.softcircuit.com.au/projects/circuits/ Development Branch] ===
+Download the latest development branch by using
+[http://www.selenic.com/mercurial/wiki/ Mercurial]:
+{{{
+#!sh
+$ hg clone http://hg.softcircuit.com.au/projects/circuits/
+}}}
+
+==== Mirrors (Other Branches) ====
+The circuits development branch is mirrored by the
+folks at [http://freehg.org FreeHg]:
+ * [http://freehg.org/u/prologic/circuits FreeHg Mirror]
+
+== [wiki:docs Documentation] ==
+ * [wiki:docs/ChangeLog ChangeLog]
+ * [wiki:docs/DownloadInstall Downloading and Installing]
+ * [wiki:docs/Tutorial Circuits Tutorial]
+ * [export:/docs/html/index.html Library Documentation]
+ * [wiki:docs/FrequentlyAskedQuestions Frequently Asked Questions]
+ * [wiki:docs/Contributing Contributing]
+ * [wiki:docs/License License]
+ * SandBox <-- Play Area!
+
+=== Examples ===
+ * [source:examples/hello.py Hello World]
+ * [source:examples/helloweb.py Half Stack Hello World Web Server]
+ * [source:examples/simpleweb.py Full Stack Hello World Web Server]
+ * [source:examples/simpleweb.wsgi Hello World WSGI]
+ * [source:examples/echoserer.py Simple Echo Server]
+ * [source:examples/telnet.py Telnet Client]
+ * [source:examples/ More Examples ...]
+
+== Community ==
+ * '''IRC''': [irc://irc.freenode.net/circuits #circuits on irc.freenode.net]
+ * '''Google Groups''':
+  * ''Home'': http://groups.google.com.au/group/circuits-users
+  * ''Email'': circuits-users@googlegroups.com
+ * '''Trac''' [/ Trac/Wiki]
+ * [/recipes Community Recipes and Components]
+
+=== Reviews ===
+JesseNoller blogged about circuits and gave a really good review [http://jessenoller.com/2009/01/31/circuits-event-driven-components/ here].
+
+== Author(s) ==
+ * James Mills (''Author and Lead Developer''), E: prologic@shortcircuit.net.au
+----
+Help using this site:
+ * TracGuide --  Built-in Documentation
+
+Log in as guest/circuits to create tickets.
