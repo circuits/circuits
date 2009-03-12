@@ -1,0 +1,340 @@
+﻿= !ChangeLog =
+
+[[TOC]]
+
+== 1.1 ==
+ Released:: ... (''...'')
+ Revision:: [411]
+
+=== Documentation ===
+ * In [263]: [source:circuits/__init__.py circuits]: Updated sample example in main docstring - simplified.
+ * In [311]: [source:LICENSE LICENSE]: Added copy of LICENSE
+
+=== NEW ===
+
+=== Enhancements ===
+ * In [312]: [source:MANIFEST.in MANIFEST.in]: Added MANIFEST.in to include other files for distribution
+ * In [367]: Fixed unused imports and undefined names as found by pyflaes
+ * In [370]: Fixed unused imports and undefined names as found by pyflaes
+
+ * In [264]: [source:circuits/core.py core]: Removed unused Registered Event
+ * In [273]: [source:circuits/core.py core]: Allow send(...) to actually return a value if required
+ * In [314]: [source:circuits/workers.py workers]: isAlive() should evaluate: self.running and self.thread.isAlive() - Call self.thread.join() after setting self.running to False.
+ * In [322]: [source:circuits/workers.py workers]: Added join() method - Removed self.thread.join() from stop() - causes problems :)
+ * In [342]: [source:circuits/core.py core]: Modifed repr of Event objects - channels are in [ ]
+ * In [344]: [source:circuits/core.py core]: Removed Error exception type. Use Exception as subclass for InvalidHandler exception.
+ * In [345]: [source:circuits/core.py core]: Added Error Event class for pushing exceptions that occur in event handlers.
+ * In [346]: [source:circuits/core.py core]: Raise TypeError instead.
+ * In [347]: [source:circuits/core.py core]: try/except calls to handlers. If an Exception occurs, push the exception to the global "error" channel and continue on...
+ * In [352]: [source:circuits/core.py core]: Push the actual type, value and treaceback (from sys) o fhte exception that occured.
+ * In [353]: [source:circuits/debugger.py debugger]: Retabbed and added error handler
+ * In [354]: [source:circuits/core.py core]: Use partial function calling. Greatly simplifies listener and send/iter.
+ * In [355]: [source:circuits/core.py core]: If kwarg _raiseErrors is passed and True, re-raise the exception.
+ * In [380]: [source:circuits/core.py core]: Simplified forcing send to raise errors. Changed keyword to 'errors'. (Defaults to False)
+ * In [381]: [source:circuits/core.py core]: Deprecated iter()
+ * In [383]: [source:circuits/core.py core]: Fixed calling manager.send - Passed in wrong arg
+ * In [384]: [source:circuits/debugger.py debugger]: This event handler doesn't need to be a filter. Refactored to handle any generic event thrown at it, but specifically this only handles exception erros that pass a tuple of length 3, (type, value, traceback).
+ * In [385]: [source:circuits/debugger.py debugger]: Renamed event handler to 'event'.
+ * In [398]: [source:circuits/debugger.py debugger]: Improved constructor allowing logging of errors/events to be toggled
+ * In [399]: [source:circuits/core.py core]: Push the error first then check of errors=True and re-raise.
+ * In [400]: [source:circuits/core.py core]: Removed __new__ from Event class, changed to __init__. Moved class attributes to __init__.
+ * In [401]: [source:circuits/core.py core]: Simplified __eq__ by using all()
+ * In [408]: [source:circuits/core.py core]: Only log errors if log=True (Default: True). Use sys.exc_info() to get the exception's type, value and traceback.
+ * In [409]: [source:circuits/core.py core]: If errors is not True, clear exception.
+
+=== Fixes ===
+
+=== Library ===
+
+==== New ====
+
+==== Updated ====
+ * In [278]: [source:circuits/lib/sockets.py lib.sockets]: send Shutdown events
+ * In [291]: [source:circuits/lib/sockets.py lib.sockets]: Added ssl (unused) attribute to Server base component
+ * In [328]: [source:circuits/lib/irc.py lib.irc]; Forgot to call parent constructor :/
+ * In [348]: [source:circuits/lib/sockets.py lib.sockets]: Retabbed
+ * In [349]: [source:circuits/lib/sockets.py lib.sockets]: Moved Client and Server class attributes into __init__. Class attributes are bad when using multiple instances I've discovered :)
+ * In [368]: [source:circuits/lib/sockets.py lib.sockets]: Fixed call to super __new__
+ * In [369]: [source:circuits/lib/sockets.py lib.sockets]: Renamed connected attribute to _connected and added isConnected() method - Having 'connected' would conflict with the event handler 'connected'.
+ * In [265]: [source:circuits/drivers.py drivers]: New drivers module importing from lib.drivers.*
+ * In [266]: [source:circuits/lib/drivers.py lib.drivers]: New drivers package. New PyGameDriver
+ * In [267]: [source:circuits/lib/pygamepump.py lib.pygamepump]: Removed - Moved to circuits.lib.drivers.pygame_driver as PyGameDriver
+ * In [268]: [source:circuits/lib/web.py lib.web]: Removed - Moved to circuits.lib.web
+ * In [269]: [source:circuits/lib/http.py lib.http]: Removed - Moved to circuits.lib.web
+ * In [270]: [source:circuits/web.py web]: New web module importing from lib.web.*
+ * In [271]: [source:circuits/lib/sockets.py lib.sockets]: Refactored close, write and shutdown events
+ * In [275]: [source:circuits/web.py circuits.web]: NEW refactored Web Components (100% event driven), no external dependencies
+
+=== Examples ===
+
+==== New ====
+
+==== Updated ====
+ * In [272]: [source:examples/echoserver.py examples/echoserver.py]: Fixed tabs. Simplified read event
+ * In [276]: [source:examples/simpleweb.py examples/simpleweb.py]: Fixed
+ * In [327]: [source:examples/ircbot.py examples/ircbot.py]: Fixed event handlers
+ * In [340]: [source:examples/ircbot.py examples/ircbot.py]: Integrated circuits.web just as a show-off demo of circuits and circutis.web capability
+ * In [350]: [source:examples/ircbot.py examples/ircbot.py]: Modified to demonstrate multiple bots (2 or more) plus web server all at teh same time
+ * In [364]: [source:examples/helloweb.py examples/helloweb.py]: Simplified and added psyco
+ * In [365]: [source:examples/simpleweb.py examples/simpleweb.py]: Retabbed and added psyco
+ * In [366]: [source:examples/echoserver.py examples/echoserver.py]: Removed unused imports and use of Manager
+ * In [375]: [source:examples/simpleweb.py examples/simpleweb.py]: Just showing off Manager's __add__ features
+ * In [377]: [source:circuits/tests/test_sockets.py tests.test_sockets] and [source:examples/ircbot.py examples/ircbot.py]: Use isConnected() - connected attribute is deprecated
+
+=== Tools ===
+
+==== New ====
+
+==== Updated ====
+
+=== Tests ===
+ * In [261]: [source:circuits/tests/test_workers.py tests.test_workers]: Fixed test by waiting until worker has finished
+ * In [324]: [source:circuits/tests/test_sockets.py tests.test_sockets]: Added test suite for sockets - Fixed channels in sockets
+ * In [343]: [source:circuits/tests/test.core.py tests.test_core]: tests.test_core: Fixed testing of Event repr due to 67a17a037fe7
+ * In [377]: [source:circuits/tests/test_sockets.py tests.test_sockets] and [source:examples/ircbot.py examples/ircbot.py]: Use isConnected() - connected attribute is deprecated
+ * In [382]: [source:circuits/tests/test_core tests.test_core]: iter() is deprecated - removing test
+ * In [412]: [source:circuits/tests/test_sockets tests.test_sockets]: Fixed Manager by not calling isConnected on client which may be a Server component that doesn't have isConnected
+ * In [413]: [source:circuits/tests/test_debugger tests.test_debugger]: enabled attribute changed to events. Fixed tests.
+ * In [414]: [source:circuits/tests/test_core tests.tests_core]: This test no longer applies - removed.
+
+=== circuits.web ===
+
+==== NEW ====
+
+==== Enhancements ====
+ * In [277]: [source:circuits/lib/web lib.web.dispatchers: Minor simplificiation
+ * In [279]: [source:circuits/lib/web lib.web.core: Removed unused imported modules
+ * In [280]: [source:circuits/lib/web lib.web.http: Simplified simple and httperror handlers
+ * In [281]: [source:circuits/lib/web lib.web.http: Adapted dispatcher code to iter through possible request handlers - request handlers only need to return now
+ * In [283]: [source:circuits/lib/web lib.web.servers: Added base() to return the base url the server listens on.
+ * In [284]: [source:circuits/lib/web lib.web.servers: Pass a copy of BaseServer to HTTP for reference
+ * In [285]: [source:circuits/lib/web/ lib.web.webob: Added server attribute to store a reference to the underlying server component (servers.BaseServer)
+ * In [286]: [source:circuits/lib/web/ lib.web.http: Store server. Pass a copy to reach webob.Request object created for reference.
+ * In [287]: [source:circuits/lib/web/ lib.web.utils: Added url() function to calculate an absolute url given a request object and optional parameters
+ * In [288]: [source:circuits/lib/web/ lib.web.http: Get a list of all non None objects from iterating trough all possible request handlers. Only set response.body if the first result is a string
+ * In [289]: [source:circuits/lib/web/ lib.web.errors: Error module implementing error objects that modify response objects
+ * In [290]: [source:circuits/lib/web/ lib.web: Added import of error.Redirect
+ * In [292]: [source:circuits/lib/web/ lib.web.dispatchers: Get a list of all non None objects from iterating trough all possible request handlers. Only set response.body if the first result is a string
+ * In [293]: [source:circuits/lib/web/ lib.web.core: Added redirect() method to Controller component
+ * In [294]: [source:circuits/lib/web/ lib.web: Greatly improved error template and handlnig
+ * In [295]: [source:circuits/lib/web/ lib.web: Import Logger
+ * In [296]: [source:circuits/lib/web/ lib.web.tools: New tools modules
+ * In [297]: [source:circuits/lib/web/ lib.web.wsgi: Forgot to import Dispatcher
+ * In [298]: [source:circuits/lib/web/ lib.web.webob: Forgot to import BUFFER_SIZE
+ * In [299]: [source:circuits/lib/web/ lib.web.webob: Added request as an attribute of Response
+ * In [300]: [source:circuits/lib/web/ lib.web.utils: Added valid_status() and get_ranges() functions - borrowed from CherryPy-3.1
+ * In [301]: [source:circuits/lib/web/ lib.web.constants: As taken from CherryPy-3.1, removed RESPONSESin favor of importing and copying from BaseHTTPServer
+ * In [302]: [source:circuits/lib/web/ lib.web.errors: Added __nonzero__(), Always defaults to False for any error (subclass of BaseError).
+ * In [303]: [source:circuits/lib/web/ lib.web.errors: Added NotFound error.
+ * In [304]: [source:circuits/lib/web/ lib.web.http: Set response.request to request - keeping a copy of the original request in response
+ * In [305]: [source:circuits/lib/web/ lib.web.loggers: Log the response instead of the request
+ * In [306]: [source:circuits/lib/web/ lib.web.dispatchers: Added FileServer/FileDispatcher. Return responses - Don't send as this is done by HTTP.
+ * In [307]: [source:circuits/lib/web/ lib.web.servers: Use Dispatcher (alias of DefaultDispatcher)
+ * In [308]: [source:circuits/lib/web/ lib.web: import FileServer (from dispatchers)
+ * In [310]: [source:circuits/lib/web/ lib.web.http: Use errors.HTTPError to build the actual error resposne.
+ * In [313]: [source:circuits/lib/web/ lib.web.tests: Added test suite. Added one test.
+ * In [315]: [source:circuits/lib/web/ lib.web.constants: protocol should be tuple (major, minor).
+ * In [316]: [source:circuits/lib/web/ lib.web.webob: Use self.request.protocol
+ * In [318]: [source:circuits/lib/web/ lib.web.servers: Added poll() in BaseServer
+ * In [325]: [source:circuits/lib/web/ lib.web.servers: Added address and port propertoes.
+ * In [326]: [source:circuits/lib/web/ lib.web.http: Set webob.Request local_host and remote_host appropriately.
+ * In [330]: [source:circuits/lib/web/ lib.web.errors: Added Forbidden error class.
+ * In [331]: [source:circuits/lib/web/ lib.web.core: Added forbidden() and notfound() methods.
+ * In [332]: [source:circuits/lib/web/ lib.web.core: Created BaseController - moved convenience methods to BaseController - cleaning up Controller.
+ * In [333]: [source:circuits/lib/web/ lib.web.dispatchers: Return a list of all possible responses that are not None - allowing for Error responses which evaluate to False. Also return the first item regardless
+ * In [334]: [source:circuits/lib/web/ lib.web.http: Return a list of all possible responses that are not None - allowing for Error responses which evaluate to False.
+ * In [336]: [source:circuits/lib/web/ lib.web.errors: Allow a custom message to be passed for NotFound errors.
+ * In [337]: [source:circuits/lib/web/ lib.web.core: Allow a custom message to be passed.
+ * In [338]: [source:circuits/lib/web/ lib.web.errors: Set status's message to short, not message which may be longer or custom
+ * In [339]: Respect unique channels allowing mixing with other componets with similar events
+ * In [341]: [source:circuits/lib/web/ lib.web.dispatchers: Dispatcher doesn't need to iterate through Controller based web requests by respecting the channel the Controller is registered with
+ * In [351]: [source:circuits/lib/web/ lib.web.servers: Forgot to import os
+ * In [356]: [source:circuits/lib/web/ lib.web.core: Updated expose decorator to match listener change in circuits.core @ 893e0b9862ac
+ * In [357]: [source:circuits/lib/web/ lib.web.dispatchers: Renamed methods for readability.
+ * In [358]: [source:circuits/lib/web/ lib.web.dispatchers: Minor optimizations.
+ * In [360]: [source:circuits/lib/web/ lib.web.dispatchers: Rewrote to use self.send vs. self.iter
+ * In [361]: [source:circuits/lib/web/ lib.web.http: Rewrote to use self.send vs. self.iter
+ * In [362]: [source:circuits/lib/web/ lib.web.http: raise will do.
+ * In [363]: [source:circuits/lib/web/ lib.web.http: str.split is faster than re.split
+ * In [371]: [source:circuits/lib/web/ lib.web.servers: Removed docroot kw, can be put in kwargs
+ * In [372]: [source:circuits/lib/web/ lib.web.tools: Use hashlib.md5 (md5 is deprecated).
+ * In [378]: [source:circuits/lib/web/ lib.web.errors: Return True when evaluated as a bool (__nonzero__)
+ * In [379]: [source:circuits/lib/web/ lib.web.errors: Set response.close = True for errors
+ * In [388]: [source:circuits/lib/web/ lib.web.webob: Added done attribute to Response to indicate whether the response has been written and -is- done.
+ * In [389]: [source:circuits/lib/web/ lib.web.http: Set response.done when the response has been completely written.
+ * In [390]: [source:circuits/lib/web/ lib.web.errors: Improved BaseError, and mvoed some of HTTPError code to BaseError. Added appropriate __repr__ methods for BaseError and HTTPError. Fixed subclass of Redirect to be HTTPError.
+ * In [392]: [source:circuits/lib/web/ lib.web.events: Renamed "HTTP Error" event to Error.
+ * In [393]: [source:circuits/lib/web/ lib.web.events: Error (was HTTPError) event now only contains a single argument: An error object (errors.BaseError instance).
+ * In [394]: [source:circuits/lib/web/ lib.web.servers: Moved docroot out of kwargs to make it more obvious.
+ * In [395]: [source:circuits/lib/web/ lib.web.servers: Check if we have a 'server' attribute first.
+ * In [396]: [source:circuits/lib/web/ lib.web.http: Refactored error handling.
+ * In [402]: [source:circuits/lib/web/ lib.web.events: Removed Error event - deprecated
+ * In [403]: [source:circuits/lib/web/ lib.web.errors: BaseError deprecated. HTTPError is now an Event. Tidied up constructor
+ * In [404]: [source:circuits/lib/web/ lib.web.core: Moved setting attributes into try/finally. Tidied up. Added session support if available.
+ * In [405]: [source:circuits/lib/web/ lib.web.http: BaseError deprecated. Use HTTPError. Changed channel back to 'httperror' and update HTTP Erorr Event Handler
+ * In [406]: [source:circuits/lib/web/ lib.web: Import loggers, sessions and dispatchers but just the modules. Import all errors.
+ * In [407]: [source:circuits/lib/web/ lib.web.sessions: New sessions module adding very basic (optional) session handling
+ * In [410]: [source:circuits/lib/web/ lib.web.dispatcher: Raise errors, but don't log
+ * In [411]: [source:circuits/lib/web/ lib.web.http: Raise errors, but don't log
+
+==== Fixes ====
+ * In [282]: [source:circuits/lib/web/dispatchers.py lib.web.dispatcher]: Fixed channel http errors go to
+ * In [309]: [source:circuits/lib/web/errors.py lib.web.errors]: Fixed HTTPError
+ * In [317]: [source:circuits/lib/web/webob.py lib.web.webob]: Fixed protocol attributes and repr.
+ * In [319]: [source:circuits/lib/web/http.py lib.web.http]: Fixed doc.
+ * In [320]: [source:circuits/lib/web/http.py lib.web.http]: Fixed protocol.
+ * In [321]: [source:circuits/lib/web/http.py lib.web.http]: Fixed checking for "Conenction" "close" header and setting "Connection" "close" response headers.
+ * In [329]: [source:circuits/lib/web/errors.py lib.web.errors]: Fixed status in HTTPError response output.
+ * In [335]: [source:circuits/lib/web/tests/test_core.py lib.web.tests.test_core]: Fixed name of test case. Fixed tearDown to join and wait for server to finish
+ * In [359]: [source:circuits/lib/web/dispatchers.py lib.web.dispatchers]: Fixed expiry.
+ * In [373]: [source:circuits/lib/web/tools.py lib.web.tools]: Fixed import of Redirect.
+ * In [374]: [source:circuits/lib/web/utils.py lib.web.utils]: Fixed import of _urljoin
+ * In [376]: [source:circuits/lib/web/dispatchers.py lib.web.dispatchers]: Fixed setting of docroot and defaults
+ * In [386]: [source:circuits/lib/web/wsgi.py lib.web.wsgi]: Fixed import of HTTPError
+ * In [387]: [source:circuits/lib/web/wsgi.py lib.web.wsgi]: Fixed tabs. Some minor fixed (untested)
+ * In [391]: [source:circuits/lib/web/dispatchers.py lib.web.dispatchers]: Fixed call to use proper keyword argument of 'erros'
+ * In [397]: [source:circuits/lib/web/http.py lib.web.http]: Fixed requestline by strippig any left over whitespace
+
+
+== 1.0b1 ==
+ Released:: 20081231 (''31st December 2008'')
+ Revision:: [261]
+
+=== Documentation ===
+ * In [208]: [source:circuits/debugger.py debugger]: Removed useless docstring examples/test
+ * In [210]: [source:docs/cl docs/cl], Fixed cl script to accept an argument rather than hard coding the revision in
+ * In [211]: [source:circuits/core.py core]: Fixed spelling error
+
+=== NEW ===
+ * In [225]: [source:circuits/workers.py workers]: Renamed Worket to Thread. Implemented Process component for multiprocessing support - requried multiprocessing module
+ * In [243]: [source:circuits/core.py core]: Call "registered" function if available in y (component being registered) when adding (+).
+ * In [244]: [source:circuits/core.py core]: Better sub (-) and isub (-=) support; checks if y (component being unregistered) is registered with this manager/component and calls "unregistered" function of y (component being unregistered) if available.
+ * In [245]: [source:circuits/timers.py timers]: Added new Timers component to manage Timer (individual) components.
+ * In [246]: [source:circuits/__init__.py circuits]: Import new Timers component into circuits namespace.
+ * In [253]: [source:circuits/core.py core]: Even though there is 1 error and 1 failure - this is by far the best attempt at merging and deprecating SimpleComponent into Component. Now any method defined (that isn't already an event handler or doesn't start with a _) automatically becomes an event handler listening on a channel that reflects the method's name
+
+=== Enhancements ===
+ * In [217]: [source:circuits/core.py core]: Slightly improved performance of handlers function by 2%
+ * In [218]: [source:circuits/core.py core]: Slightly improved performance of handlers function by 1%
+ * In [219]: [source:circuits/core.py core]: Removed superfluous handler variable - not used anymore
+ * In [221]: [source:circuits/core.py core]: Improved event queuing improving performance by 6%
+ * In [222]: [source:circuits/core.py core]: Event Handler functions don't need the argspec stored
+ * In [223]: [source:circuits/core.py core]: Improved performance by 10% by caching handler branch points for send/iter
+ * In [224]: [source:circuits/core.py core]: Simplified no. of brnaches for calling handlers in send/iter
+ * In [230]: [source:circuits/core.py core]: Improved performance of flush() by using an iter vs. a while and popping the events
+ * Breaks Bridge - test_bridge fails on L71
+ * In [249]: [source:circuits/core.py core]: Simplified and flattened handlers()
+ * In [251]: [source:circuits/timers.py timers]: Changed add method to addTimer (conflicts with Component class)
+
+=== Fixes ===
+ * In [215]: [source:circuits/core.py core]: Fixed defect in handlers for default case - where the handlers for that channel itself were not being picked up (with no target part)
+ * In [220]: [source:circuits/core.py core]: Fixed doc string tests - bad indentation
+ * In [237]: [source:circuits/workers.py workers]: Fixed Process to share running state properly so the process can be stopped properly
+ * In [257]: [source:circuits/workers.py workers]: Fixed Process component and moved Thread that runs the actual function inside the process
+ * In [259]: [source:circuits/bridge.py bridge]: Fixed bridge by fixing public methods that were getting confused as existing event handlers
+
+=== Library ===
+
+==== New ====
+ * In [233]: [source:circuits/lib/pygamepump.py lib.pygamepump]: Added new PyGamePump component to pump pygame events into a system - See [source:examples/pygameex.py examples/pygamex.py]
+
+==== Updated ====
+ * In [207]: [source:circuits/lib/ann.py lib.ann]: Fixed bad import of Worker
+ * In [212]: [source:circuits/lib/irc.py lib.irc]: Added event handlers for all implemented irc commands
+ * In [226]: [source:circuits/lib/irc.py lib.irc]; Added NAMES command
+ * In [227]: [source:circuits/lib/ann.py lib/ann]: Fixed __init__ to properly call their base class
+ * In [229]: [source:circuits/lib/ann.py lib.ann]: Fixed bad indentation
+ * In [235]: [source:circuits/lib/ann.py lib.ann]: Compatibility fixes
+ * In [236]: [source:circuits/lib/web.py lib.web]: Fixed expose decorator to match changes in core's listener changes in 1b08204a9763
+ * In [239]: [source:circuits/lib/sockets.py lib].sockets: Documented events
+ * In [240]: [source:circuits/lib/irc.py lib.irc]; Documented events
+ * In [241]: [source:circuits/lib/irc.py lib.irc]; Added WHOIS command
+ * In [250]: [source:circuits/lib/web.py lib.web]: Changed _AutoListener metaclass to ExposeType - Also don't setup previously setup event handlers as exposed handlers
+ * In [255]: [source:circuits/lib/web.py lib.web]: Fixed Controller by subclassing BaseComponent instead (fixes metaclass error being thrown)
+ * In [256]: [source:circuits/lib/web.py lib.web]: Fixed expose (re-added request, response args - 237 had removed them)
+
+=== Examples ===
+
+==== New ====
+ * In [213]: [source:examples/circ.py examples/circ.py]: Added new example circ - An urwid/circuits irc client
+ * In [232]: [source:examples/ examples]: New Examples
+ * In [234]: [source:examples/ai/ examples/ai/: AI and ANN examples added
+
+==== Updated ====
+ * In [258]: [source:examples/workertest.py examples/workertest.py]: Fixed checking of running state (use isAlive())
+
+=== Tools ===
+
+==== New ====
+
+==== Updated ====
+ * In [204]: [source:circuits/tools/bench.py tools.bench]: Removed pymills dependancy on misc.duration (imported this function)
+ * In [205]: [source:circuits/tools/sniffer.py tools.sniffer]: Fixed improper usage of {{{debugger.Debugger}}}. {{{Debugger.enable()}}} and friends are deprecated.
+ * In [242]: [source:circuits/tools/bench.py tools.bench]: Fixed broken condition checking mode. Changed default mode to Speed Test
+
+=== Tests ===
+ * In [214]: [source:circuits/tests/tests/test_debugger.py tests.test_debugger]: Fixed Debugger tests
+ * In [216]: [source:circuits/tests/tests/test_core.py tests.test_core]: Fixed event handler target test
+ * In [228]: [source:circuits/tests/tests/test_workers.py tests.test_workers]: Fixed tests to adapt to recent workers revamp
+ * In [247]: [source:circuits/tests/tests.test_timers.py tests.test_timers]: Modified to use new Timers component which in turn uses Timer
+ * In [248]: [source:circuits/tests/test_timers.py tests.test_timers]: Fixed indentation
+ * In [252]: [source:circuits/tests/tests.test_timers.py tests.test_timers]: Updated to use addTimer method vs. add
+ * In [260]: [source:circuits/tests/tests.test_bridge.py tests.test_bridge]: Removed close() - deprecated
+ * In [261]: [source:circuits/tests/tests.test_workers.py tests.test_workers]: Fixed test by waiting until worker has finished
+
+
+== 1.0a2 ==
+ Released:: 20081120 (''20th November 2008'')
+ Revision:: [200]
+
+=== Documentation ===
+ * Documentation Improvements: See: [wiki:docs Documentation]
+ * Documentation moved to Trac (''Dropped use of Sphinx''). #1
+
+=== NEW ===
+ * Basic WSGI Support:
+ * Added in [115]
+ * Improved in [174]
+ * In [143]: [source:circuits/tools/sniffer.py tools.sniffer]: Added sniffer tool used to debug/sniff Events of another system that has an instnace of the [source:circuits/bridge.py Bridge] Component.
+ * In [128]: [source:circuits/lib/web.py lib.web]: Addded very simple FileServer Component
+ * In [126]: [source:circuits/lib/http.py lib.http]: Added traceback support to sendError for more meaningful HTTP Errors.
+ * In [118]: [source:circuits/lib/web.py lib.web]: Added very very simple Logger to log requests (''prints to stderr'').
+
+=== Enhancements ===
+ * In [184]: [source:circuits/debugger.py debugger]: If logger is not None, treat it as a logging.Logger instance and log incoming events as debug messages.
+ * In [183]: [source:circuits/debugger.py debugger]: Removed useless methods - Juset set enabled attribute appropiately.
+ * In [168]: [source:circuits/lib/http.py lib.http]: Removed _Request.__call__ in favor of {{{process()}}} followed by {{{str(response)}}}
+ * In [163]: [source:circuits/lib/web.py lib.web]: Better consistent docroot settings. docroot is __always__ the current path unless explicitly set.
+ * In [150], [151]: [source:circuits/lib/irc.py lib.irc]: Added nick property to IRC Component. Setting a new nick causes a new nick to be sent to the connected server. Also set our own record of our nick when ircNICK is called.
+
+=== Fixes ===
+ * In [192]: [source:circuits/lib/web.py lib.web]: Fix registration and polling to work independantly within other Systems and Components. ie: The run() method doesn't have to be utilized.
+ * In [175]: [source:circuits/lib/http.py lib.http]: Fixed bug on Content-Length header in HTTP Component ensuring the value is a str. Required by WSGI.
+ * In [164]: [source:circuits/lib/http.py lib.http]: Fixed a bug in HTTP Component where body could be None (''due to caching'').
+ * In [149]: [source:circuits/lib/irc.py lib.irc]: Fixed a bug in IRC Component where writing to client failed.
+ * In [131]: [source:circuits/lib/config.py lib.config]: Fixed getint, getfloat and getboolean functions to call their respective super counterparts.
+ * In [122]: [source:circuits/lib/web.py lib.web]: Print Server version and tell user where we're listening.
+ * In [117]: [source:circuits/lib/web.py lib.web]: Fixed cookie support.
+
+=== Examples ===
+
+==== New ====
+ * In [159]: [source:examples/primes.py examples/primes.py]: Added (Distributed) Prime Number finder example
+ * In [148]: [source:examples/ircbot.py examples/ircbot.py]: Added simple IRC Bot example
+ * In [116]: [source:examples/simpleweb.wsgi examples/simpleweb.wsgi]: Added simple WSGI example using the new WSGI support.
+ * In [146]: [source:examples/eventclient.py examples/eventclient.py]: Added simple event client example demonstrating the Bridge Component and basic request/reponse
+ * In [145]: [source:examples/eventserver.py examples/eventserver.py]: Added simple event server example demonstrating the Bridge Component and basic request/reponse
+ * In [140]: [source:examples/timers.py examples/timers.py]: Added simple timers example showing the use of the Timer Component
+
+==== Updated ====
+ * In [158]: [source:examples/helloweb.py examples/helloweb.py]: Greatly simplified and documented
+ * In [157], [156]: [source:examples/hello.py examples/hello.py]: Greatly simplified and documented
+
+
+== 1.0a1 ==
+ Released:: 2008-11-06 (''6th November 2008'')
+ Revision:: [112]
+
+First official release.
+----
+[.. Up]

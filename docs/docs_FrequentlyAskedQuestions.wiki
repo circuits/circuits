@@ -1,0 +1,83 @@
+= circuits FAQ =
+[[TOC]]
+
+== General ==
+
+=== How do you use circuits? ===
+ * Have you read the website ?
+ * Have you looked at the various examples ?
+
+See: http://trac.softcircuit.com.au/circuits/
+
+=== What is circuits ? ===
+ * circuits is an event-driven framework with a high focus on Component architectures making your life as a software developer much easier
+ * circuits allows you to write maintainable and scalable systems easily
+
+=== Would you consider writing networking based programs using circuits versus [http://twistedmatrix.org Twisted matrix ] ? ===
+ * YES absolutely. I always have.
+
+Twisted (''to be perfectly honest'') is:
+ * Complicated
+ * Hard to understand
+ * Not light weight
+
+circuits is:
+ * Simple
+ * Consistent
+ * Robust
+ * Easy to understand
+ * Very light weight.
+
+=== GUI programming: Would circuits integrate with some GUI frameworks ? ===
+ * This is definitely possible.
+ * Currently I have no adapters for any GUI frameworks. but please feel free to write and submit a Component :)
+
+=== What are the concepts behind circuits ? ===
+ a) Everything is a Component
+ b) Components communicate by propagating Events
+
+Also:
+ * Components can be interlinked
+ * Components are capable of managing their own Events and the Events of other Components.
+
+=== How would you compare circuits to Twisted ? ===
+ * circuits is simpler
+ * circuits is maintainable
+ * circuits has a nicer cleaner architecture: See [source:docs/graphs/ Dependency Graphs]
+ * circuits is Component based.
+ * circuits is purely 100% Event and asynchronous.
+
+=== Can Components reside in different processes and talk to each others ? ===
+ * YES
+ * Currently in the works:
+  * Process Component using the Python multiprocessing library.
+
+=== Is there any restriction on the OS that circuits can run on ? ===
+ * No. Although:
+  * I only test on Linux and Mac OS X (''I don't have Windows to test on'').
+ * Testers Welcome!
+
+=== What version of Python does circuits work with ? ===
+ * Currently circuits is tested with:
+  * Python 2.5
+
+=== Since circuits is an event-driven framework, how are you handling unit/integration tests ? ===
+
+> I'm lead to understand that unit-testing with event-driven software is often difficult if actually possible.
+
+> Are you using something akin to [http://twistedmatrix.com/trac/wiki/TwistedTrial TwistedTrial] ?
+
+> Are you running unit-tests across distributed test environments ?
+
+ * circuits is not only a very good event-driven framework, but also a great Component framework.
+ * Have a look at the [source:circuits/tests/ unit tests] that test the core of circuits.
+
+=== Can circuits be used for concurrent or distributed programming ? ===
+
+YES absolutely. See the [source:examples/primes.py Distributed Prime number finder]
+
+----
+Got a question ?
+ * Send an email to: circuits at shortcircuit dot net dot au
+ * Post your question on this page.
+ * Visit irc;//irc.freenode.net#circuits

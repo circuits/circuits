@@ -1,0 +1,92 @@
+= Downloading and Installing Circuits =
+
+[[TOC]]
+
+Circuits can be installed in any number of ways; using setuptools'
+{{{easy_install}}}, from source, or using a binary installer. It's
+highly recommended that you try to install circuits using setuptools
+or from source.
+
+== Setuptools ==
+To install Circuits using setuptools' {{{easy_install}}}
+run the following command in your terminal/console:
+
+{{{
+#!sh
+$ easy_install circuits
+}}}
+
+''Windows Users'': Run the above in your __Command Prompt__.
+
+== Source ==
+To install Circuits from source:
+
+ 1. Download Circuits from either:
+  * [http://pypi.python.org/pypi/circuits/> Python Package Index]
+  * [http://trac.softcircuit.com.au/circuits/downloads> Circuits Website]
+
+ 2. Extract archive and Install:
+{{{
+#!sh
+$ tar zxvf circuits--xxx.tar.gz
+$ python setup.py build install
+}}}
+
+''Windows Users'':
+ * Use your favorite tool to extract the archive, eg: Winzip
+ * Open your __Command Prompt__ to the extracted path.
+ * Type: {{{python setup.py build install}}}
+
+=== Specifying an alternative installation path ===
+To specify an alternative installation path, use one of the following options:
+ * {{{--prefix=<path>}}} to install to <path>
+ * {{{--home=<home>}}} to install to home directory <home>
+
+=== Installing in Development mode ===
+To install circuits in development mode, use the {{{develop}}} command
+instead of {{{install}}} This allows you to easily update/upgrade circuits
+and not have to worry about re-installing.
+
+== Prerequisites ==
+ * Python 2.5 or greater (''Also works with Python 3.x``)
+
+=== Setting up setuptools: ===
+On Windows:
+ download http://peak.telecommunity.com/dist/ez_setup.py and then run it from
+ the command line.
+
+On UNIX:
+ If you have curl or  wget installed you can do this with a single command:
+
+{{{
+#!/sh
+$ curl http://peak.telecommunity.com/dist/ez_setup.py | sudo python
+}}}
+
+== Validate the installation: ==
+To check your installation of circuits, type:
+
+{{{
+#!sh
+$ python -c "import circuits"
+}}}
+
+If everything worked, nothing should be displayed.
+
+Also try and run the [source:examples/hello.py Hello World!] example:
+
+{{{
+#!sh
+cd examples
+python hello.py
+}}}
+
+You should get the following output:
+
+{{{
+~/circuits/examples
+$ python hello.py
+Hello World
+}}}
+----
+[.. Up]
