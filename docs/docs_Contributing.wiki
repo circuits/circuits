@@ -11,7 +11,7 @@ might have.
 == Installing the Development Version of Circuits ==
 
 === Pre-requisites ===
- 1. [http://python.org/ Python] 2.5 or better.
+ 1. [http://python.org/ Python] 2.5 or better. ''We recommend at least 2.6''
  1. [http://peak.telecommunity.com/DevCenter/setuptools setuptools]
  1. [http://www.selenic.com/mercurial/ Mercurial]
 
@@ -22,7 +22,7 @@ instructions for each of the aboave required software for your platform.
  1. Get the latest source code from the Mercurial respository:
 {{{
 #!sh
-$ hg clone http://hg.softcircuit.com.au/projects/circuits/
+$ hg clone http://hg.softcircuit.com.au/projects/circuits-dev/
 }}}
 
  1. (Optionally) create a new branch:
@@ -46,12 +46,7 @@ Happy Hacking!
 == Coding style ==
 Since it's hard to argue with someone who's already written a code style
 document, Circuits follows
-[http://www.python.org/peps/pep-0008.html PEP 8] conventions with some minor
-exceptions:
-
- 1. Use tabs instead of spaces. ('''Tab Spacing''': 3)
- 1. No line of code must exceed 70 characters in length.
- 1. Double-Quotes must be used for all strings. {{{"}}} not {{{'}}}.
+[http://www.python.org/peps/pep-0008.html PEP 8] conventions.
 
 == Testing ==
 Automated unit tests are better than good. They make future growth of the
