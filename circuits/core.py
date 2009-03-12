@@ -540,7 +540,7 @@ class Manager(object):
         @type    target: str or Component
         """
 
-        channel = channel or event.name.lower()
+        channel = channel or event.channel or event.name.lower()
         target = target or getattr(self, "channel", "*")
         if isinstance(target, Component):
             target = getattr(target, "channel", "*")
@@ -621,7 +621,7 @@ class Manager(object):
         @rtype:  object
         """
 
-        channel = channel or event.name.lower()
+        channel = channel or event.channel or event.name.lower()
         target = target or getattr(self, "channel", "*")
         if isinstance(target, Component):
             target = getattr(target, "channel", "*")
