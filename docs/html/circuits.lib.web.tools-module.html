@@ -225,6 +225,69 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.web.tools-module.html#check_auth" class="summary-sig-name">check_auth</a>(<span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">response</span>,
+        <span class="summary-sig-arg">users</span>,
+        <span class="summary-sig-arg">encrypt</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">realm</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Check Authentication</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.web.tools-module.html#basic_auth" class="summary-sig-name">basic_auth</a>(<span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">response</span>,
+        <span class="summary-sig-arg">realm</span>,
+        <span class="summary-sig-arg">users</span>,
+        <span class="summary-sig-arg">encrypt</span>=<span class="summary-sig-default">None</span>)</span><br />
+      If auth fails, returns an Unauthorized error  with a
+basic authentication header.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.lib.web.tools-module.html#digest_auth" class="summary-sig-name">digest_auth</a>(<span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">response</span>,
+        <span class="summary-sig-arg">realm</span>,
+        <span class="summary-sig-arg">users</span>)</span><br />
+      If auth fails, raise 401 with a digest authentication header.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
@@ -398,6 +461,93 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="check_auth"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">check_auth</span>(<span class="sig-arg">request</span>,
+        <span class="sig-arg">response</span>,
+        <span class="sig-arg">users</span>,
+        <span class="sig-arg">encrypt</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">realm</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Check Authentication</p>
+  <p>If an authorization header contains credentials, return True, else 
+  False.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="basic_auth"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">basic_auth</span>(<span class="sig-arg">request</span>,
+        <span class="sig-arg">response</span>,
+        <span class="sig-arg">realm</span>,
+        <span class="sig-arg">users</span>,
+        <span class="sig-arg">encrypt</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+If auth fails, returns an Unauthorized error  with a
+basic authentication header.
+
+realm: a string containing the authentication realm.
+users: a dict of the form: {username: password} or a callable
+       returning a dict.
+encrypt: callable used to encrypt the password returned from the user-agent.
+         if None it defaults to a md5 encryption.
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="digest_auth"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">digest_auth</span>(<span class="sig-arg">request</span>,
+        <span class="sig-arg">response</span>,
+        <span class="sig-arg">realm</span>,
+        <span class="sig-arg">users</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+If auth fails, raise 401 with a digest authentication header.
+
+realm: a string containing the authentication realm.
+users: a dict of the form: {username: password} or a callable
+       returning a dict.
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -430,7 +580,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Mar  9 00:45:33 2009
+    Generated by Epydoc 3.0.1 on Thu Mar 12 14:10:14 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
