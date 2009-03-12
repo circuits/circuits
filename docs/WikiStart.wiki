@@ -1,4 +1,4 @@
-= Welcome to circuits =
+﻿= Welcome to circuits =
 
 [[BlogList(recent=3, max_size=250, format=float, heading=Latest News)]]
 
@@ -50,9 +50,7 @@ class Root(Controller):
    def index(self):
       return "Hello World!"
 
-server = Server(8000)
-server.register(Root())
-server.run()
+(Server(8000) + Root()).run()
 }}}
 
 This will serve {{{Hello World!}}} on http://127.0.0.1:8000/
