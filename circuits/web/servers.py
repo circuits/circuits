@@ -27,7 +27,7 @@ class BaseServer(Component):
         super(BaseServer, self).__init__(**kwargs)
 
         self.server = TCPServer(bind, **kwargs)
-        self.server += HTTP(**kwargs)
+        self.server += HTTP()
         self += self.server
 
         Request.server = self
@@ -88,7 +88,7 @@ class Server(BaseServer):
     def __init__(self, port, address="", docroot=None, **kwargs):
         super(Server, self).__init__(port, address, docroot, **kwargs)
 
-        self.dispatcher = Dispatcher(docroot=docroot, **kwargs)
+        self.dispatcher = Dispatcher(docroot=docroot)
         self += self.dispatcher
 
     def __get_docroot(self):
