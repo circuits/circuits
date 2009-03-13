@@ -8,18 +8,14 @@ A driver for the inotify system using the pyinotify library.
 """
 
 import time
-from circuits.lib.drivers import DriverError
 
-try:
-    from pyinotify import IN_UNMOUNT
-    from pyinotify import WatchManager, Notifier, ALL_EVENTS
-    from pyinotify import IN_ACCESS, IN_MODIFY, IN_ATTRIB, IN_CLOSE_WRITE
-    from pyinotify import IN_CREATE, IN_DELETE, IN_DELETE_SELF, IN_MOVE_SELF
-    from pyinotify import IN_CLOSE_NOWRITE, IN_OPEN, IN_MOVED_FROM, IN_MOVED_TO
-except ImportError:
-    raise DriverError("No pyinotify support available.")
+from pyinotify import IN_UNMOUNT
+from pyinotify import WatchManager, Notifier, ALL_EVENTS
+from pyinotify import IN_ACCESS, IN_MODIFY, IN_ATTRIB, IN_CLOSE_WRITE
+from pyinotify import IN_CREATE, IN_DELETE, IN_DELETE_SELF, IN_MOVE_SELF
+from pyinotify import IN_CLOSE_NOWRITE, IN_OPEN, IN_MOVED_FROM, IN_MOVED_TO
 
-from circuits import Event, Component
+from circuits.core import Event, Component
 
 MASK = ALL_EVENTS
 

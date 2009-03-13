@@ -7,19 +7,14 @@
 A driver for the pygame library.
 """
 
-from circuits.lib.drivers import DriverError
+import pygame
 
 try:
-    import pygame
     from pygame import fastevent as event
 except ImportError:
-    try:
-        import pygame
-        from pygame import event
-    except ImportError:
-        raise DriverError("No pygame support available.")
+    from pygame import event
 
-from circuits import Event, Component
+from circuits.core import Event, Component
 
 class Key(Event): pass
 class Quit(Event): pass
