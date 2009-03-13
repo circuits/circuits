@@ -1,14 +1,10 @@
-# Module:   core
+# Package:  core
 # Date:     2nd April 2006
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Building Blocks
+"""Core Building Blocks
 
-This module contains the most basic building blocks of all Components.
-It's important to note that a Component is also a Manager.
-
-The following import statement is commonly used:
-   >>> from circuits import handler, Event, Component, Manager
+This package contains the most basic building blocks of all Components.
 """
 
 import new

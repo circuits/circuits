@@ -1,13 +1,12 @@
-# Module:   io
-# Date:     04th August 2004
+# Module:   file
+# Date:     4th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
 
 """File I/O Components
 
 This module implements an Asynchronous File Component that is a wrapper
 around the standard file object where read/write operations are
-non-blocking. Three additional convenient components are also provided,
-namely Stdin, Stdout and Stderr.
+non-blocking.
 """
 
 import os
@@ -16,7 +15,7 @@ import errno
 import select
 from collections import deque
 
-from circuits import Event, Component
+from circuits.core import Event, Component
 
 
 POLL_INTERVAL = 0.00001
@@ -118,30 +117,3 @@ class File(Component):
         self._read = []
         self._write = []
         self.push(Closed(self.name), "closed")
-
-class StdIn(File):
-
-    channel = "stdin"
-
-    def __init__(self, channel=channel):
-        super(StdIn, self).__init__("/dev/stdin", "r", channel=channel)
-
-stdin = StdIn()
-
-class StdOut(File):
-
-    channel = "stdout"
-
-    def __init__(self, channel=channel):
-        super(StdOut, self).__init__("/dev/stdout", "w", channel=channel)
-
-stdout = StdOut()
-
-class StdErr(File):
-
-    channel = "stderr"
-
-    def __init__(self, channel=channel):
-        super(StdErr, self).__init__("/dev/stderr", "w", channel=channel)
-
-stderr = StdErr()

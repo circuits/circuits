@@ -6,10 +6,12 @@
 
 Components communicate with one another by propagating Events on Channels
 throughout the System. Each Component has a set of Event Handlers that
-can listen for or filter Events on one or more Channels. Components react to Events and in turn expose further Events into the System. Each Component
+can listen for or filter Events on one or more Channels. Components react
+to Events and in turn expose further Events into the System. Each Component
 is capable of managing it's own Events as well as those of other Components.
-Complex directed graph structures can be created with Component Registrations,
-this gives a level of hierarchy and separation of concern.
+Complex directed graph structures can be created with
+Component Registrations, this gives a level of hierarchy and separation
+of concern.
 
 Example:
    >>> from time import sleep
