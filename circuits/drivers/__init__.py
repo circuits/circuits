@@ -14,7 +14,7 @@ from os.path import splitext as _splitext
 from traceback import format_exc as _format_exc
 from inspect import getmembers as _getmembers, isclass as _isclass
 
-from circuits import Component as _Component
+from circuits.core import Component as _Component
 
 class DriverError(Exception): pass
 
