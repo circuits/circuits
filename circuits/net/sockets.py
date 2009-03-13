@@ -12,7 +12,7 @@ import socket
 from errno import *
 from collections import defaultdict, deque
 
-from circuits.lib.pollers import Select
+from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
 
 TIMEOUT = 0.001
