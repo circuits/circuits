@@ -769,7 +769,6 @@ class TestStructures(unittest.TestCase):
         for x in [a, b, c, d, e, f]:
             self.assertEquals(x.manager, x)
             self.assertFalse(x.components)
-            self.assertFalse(x._hidden)
             self.assertTrue(x. __tick__ in x._ticks)
 
         a += b
@@ -780,8 +779,6 @@ class TestStructures(unittest.TestCase):
         self.assertFalse(b.components)
         self.assertFalse(a in a.components)
         self.assertTrue(b in a.components)
-        self.assertFalse(a._hidden)
-        self.assertFalse(b._hidden)
         self.assertEquals(len(a._ticks), 2)
         self.assertEquals(len(b._ticks), 1)
         self.assertTrue(a. __tick__ in a._ticks)
@@ -799,10 +796,6 @@ class TestStructures(unittest.TestCase):
         self.assertFalse(a in a.components)
         self.assertTrue(b in a.components)
         self.assertFalse(c in a.components)
-        self.assertTrue(a._hidden)
-        self.assertTrue(c in a._hidden)
-        self.assertFalse(b._hidden)
-        self.assertFalse(c._hidden)
         self.assertEquals(len(a._ticks), 3)
         self.assertEquals(len(b._ticks), 2)
         self.assertEquals(len(c._ticks), 1)
