@@ -26,8 +26,7 @@ class BaseServer(Component):
     def __init__(self, bind, docroot=None, **kwargs):
         super(BaseServer, self).__init__(**kwargs)
 
-        self.server = TCPServer(bind, **kwargs)
-        self.server += HTTP()
+        self.server = (TCPServer(bind, **kwargs) + HTTP())
         self += self.server
 
         Request.server = self
