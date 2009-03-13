@@ -11,7 +11,8 @@ tools are installed as executables with a prefix of "circuits."
 def walk(x, f, d=0):
     yield f(d, x)
     for c in x.components.copy():
-        yield walk(c, f, d + 1)
+        for r in walk(c, f, d + 1):
+            yield r
 
 def root(x):
     if x.manager == x:
@@ -35,11 +36,9 @@ def graph(x):
     """
 
     def printer(d, x):
-        yield " " * d, "* ", x
+        return "%s* %s" % (" " * d, x)
 
-    r = list(walk(x, printer))
-    print type(r), repr(r)
-    #return "\n".join(list(walk(x, printer)))
+    return "\n".join(walk(x, printer))
     
 def reprhandler(x):
     """Display a nicely formatted Event Handler, x
