@@ -69,7 +69,6 @@ GRAPH = """\
    * <F/* (q: 0 c: 1 h: 1) [S]>"""
 
 INSPECT = """\
-<A/* (q: 3 c: 1 h: 6) [S]>
  Registered Components: 2
   <D/* (q: 1 c: 1 h: 3) [S]>
   <B/* (q: 0 c: 1 h: 2) [S]>
