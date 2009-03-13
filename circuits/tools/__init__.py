@@ -70,8 +70,6 @@ def inspect(x):
     s = []
     write = s.append
 
-    write("%s\n" % x)
-
     write(" Registered Components: %d\n" % len(x.components))
     for component in x.components:
         write("  %s\n" % component)
