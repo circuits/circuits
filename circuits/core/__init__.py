@@ -302,6 +302,8 @@ class Manager(object):
         self._handlers = set()
         self._globals = []
         self._channels = dict()
+        self._cmap = dict()
+        self._tmap = dict()
 
         self._ticks = set()
         self._hidden = set()
@@ -395,20 +397,20 @@ class Manager(object):
         channels = self._channels
         exists = self._channels.has_key
         get = self._channels.get
+        tmap = self._tmap.get
+        cmap = self._cmap.get
 
         # Global Channels
         handlers = self._globals
   
         # This channel on all targets
         if channel == "*":
-            x = [get((t, c)) for (t, c) in channels if t in ("*", target)]
-            all = [i for y in x for i in y]
+            all = tmap(target, [])
             return chain(handlers, all)
 
         # Every channel on this target
         if target == "*":
-            x = [get((t, c)) for (t, c) in channels if c in ("*", channel)]
-            all = [i for y in x for i in y]
+            all = cmap(channel, [])
             return chain(handlers, all)
 
         # Any global channels
@@ -483,6 +485,16 @@ class Manager(object):
                 self._channels[channel].sort(key=_sortkey)
                 self._channels[channel].reverse()
 
+            (target, channel) = channel
+
+            if target not in self._tmap:
+                self._tmap[target] = []
+            self._tmap[target].append(handler)
+
+            if channel not in self._cmap:
+                self._cmap[channel] = []
+            self._cmap[channel].append(handler)
+
     def _remove(self, handler, channel=None):
         """E._remove(handler, channel=None) -> None
 
@@ -507,6 +519,18 @@ class Manager(object):
                 self._channels[channel].remove(handler)
             if not self._channels[channel]:
                 del self._channels[channel]
+
+            (target, channel) = channel
+
+            if target in self._tmap and handler in self._tmap:
+                self._tmap[target].remove(handler)
+                if not self._tmap[target]:
+                    del self._tmap[target]
+
+            if channel in self._cmap and handler in self._cmap:
+                self._cmap[channel].remove(handler)
+                if not self._cmap[channel]:
+                    del self._cmap[channel]
 
     def _push(self, event, channel):
         if self.manager == self:
