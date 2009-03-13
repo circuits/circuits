@@ -86,7 +86,7 @@ class Event(object):
         else:
             channel = self.channel or ""
         args = ", ".join([("%s" % repr(arg)) for arg in self.args])
-        kwargs = ", ".join([("%s=%s" % repr(kw)) for kw in self.kwargs.items()])
+        kwargs = ", ".join([("%s=%r" % kw) for kw in self.kwargs.items()])
         data = "%s %s" % (args, kwargs)  if args and kwargs else args or kwargs
         return "<%s[%s] (%s)>" % (name, channel, data)
 
