@@ -796,7 +796,7 @@ class TestStructures(unittest.TestCase):
         self.assertFalse(a in a.components)
         self.assertTrue(b in a.components)
         self.assertFalse(c in a.components)
-        self.assertEquals(len(a._ticks), 3)
+        self.assertEquals(len(a._ticks), 3) # Failing
         self.assertEquals(len(b._ticks), 2)
         self.assertEquals(len(c._ticks), 1)
         self.assertTrue(a. __tick__ in a._ticks)
