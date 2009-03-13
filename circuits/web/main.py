@@ -134,7 +134,7 @@ def main():
         Poller = Select
 
     if opts.server.lower() == "base":
-        manager += (BaseServer(bind, poller=Poller) + Root())
+        manager += (BaseServer(bind, poller=Poller) + HelloWorld())
     else:
         manager += (Server(bind, poller=Poller) + Root())
 
