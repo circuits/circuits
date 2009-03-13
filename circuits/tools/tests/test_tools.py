@@ -61,39 +61,33 @@ class F(Component):
         print "F!"
 
 GRAPH = """\
- * <A/* (q: 6 c: 1 h: 6) [S]>
-  * <B/* (q: 0 c: 1 h: 2) [S]>
-   * <C/* (q: 0 c: 1 h: 1) [S]>
-  * <D/* (q: 2 c: 1 h: 3) [S]>
-   * <E/* (q: 1 c: 1 h: 2) [S]>
-    * <F/* (q: 0 c: 1 h: 1) [S]>
-"""
+* <A/* (q: 3 c: 1 h: 6) [S]>
+ * <B/* (q: 0 c: 1 h: 2) [S]>
+  * <C/* (q: 0 c: 1 h: 1) [S]>
+ * <D/* (q: 1 c: 1 h: 3) [S]>
+  * <E/* (q: 1 c: 1 h: 2) [S]>
+   * <F/* (q: 0 c: 1 h: 1) [S]>"""
 
 INSPECT = """\
-<A/* (q: 6 c: 1 h: 6) [S]>
+<A/* (q: 3 c: 1 h: 6) [S]>
  Registered Components: 2
+  <D/* (q: 1 c: 1 h: 3) [S]>
   <B/* (q: 0 c: 1 h: 2) [S]>
-  <D/* (q: 2 c: 1 h: 3) [S]>
-
- Hidden Components: 3
-  <F/* (q: 0 c: 1 h: 1) [S]>
-  <C/* (q: 0 c: 1 h: 1) [S]>
-  <E/* (q: 1 c: 1 h: 2) [S]>
 
  Tick Functions: 6
-  <bound method A.__tick__ of <A/* (q: 6 c: 1 h: 6) [S]>>
   <bound method F.__tick__ of <F/* (q: 0 c: 1 h: 1) [S]>>
-  <bound method E.__tick__ of <E/* (q: 1 c: 1 h: 2) [S]>>
   <bound method B.__tick__ of <B/* (q: 0 c: 1 h: 2) [S]>>
-  <bound method D.__tick__ of <D/* (q: 2 c: 1 h: 3) [S]>>
   <bound method C.__tick__ of <C/* (q: 0 c: 1 h: 1) [S]>>
+  <bound method E.__tick__ of <E/* (q: 1 c: 1 h: 2) [S]>>
+  <bound method D.__tick__ of <D/* (q: 1 c: 1 h: 3) [S]>>
+  <bound method A.__tick__ of <A/* (q: 3 c: 1 h: 6) [S]>>
 
  Channels and Event Handlers: 1
-  ('*', 'foo'): 6
+  *:foo; 6
    <handler ('foo',) {filter: False, target: None) of <F/* (q: 0 c: 1 h: 1) [S]>>
-   <handler ('foo',) {filter: False, target: None) of <D/* (q: 2 c: 1 h: 3) [S]>>
+   <handler ('foo',) {filter: False, target: None) of <D/* (q: 1 c: 1 h: 3) [S]>>
    <handler ('foo',) {filter: False, target: None) of <B/* (q: 0 c: 1 h: 2) [S]>>
-   <handler ('foo',) {filter: False, target: None) of <A/* (q: 6 c: 1 h: 6) [S]>>
+   <handler ('foo',) {filter: False, target: None) of <A/* (q: 3 c: 1 h: 6) [S]>>
    <handler ('foo',) {filter: False, target: None) of <C/* (q: 0 c: 1 h: 1) [S]>>
    <handler ('foo',) {filter: False, target: None) of <E/* (q: 1 c: 1 h: 2) [S]>>
 """
@@ -235,7 +229,7 @@ class TestInspect(unittest.TestCase):
         self.assertTrue(e in d.components)
         self.assertFalse(f._components)
 
-        self.assertEquals(len(inspect(a)), len(INSPECT))
+        self.assertEquals(inspect(a), INSPECT)
 
 if __name__ == "__main__":
     unittest.main()
