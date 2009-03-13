@@ -813,7 +813,7 @@ class BaseComponent(Manager):
                 manager._add(handler, channel)
 
     def _unregisterHandlers(self, manager):
-        for handler in self._handlers:
+        for handler in self._handlers.copy():
             manager._remove(handler)
 
     def register(self, manager):
