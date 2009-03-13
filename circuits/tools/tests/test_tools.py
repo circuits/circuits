@@ -160,7 +160,7 @@ class TestKill(unittest.TestCase):
         self.assertFalse(f in e.components)
         self.assertTrue(c in a._hidden)
         self.assertFalse(e in a._hidden)
-        #self.assertFalse(f in a._hidden) # Failing
+        self.assertFalse(f in a._hidden) # Failing
 
         self.assertEquals(d.manager, d)
         self.assertEquals(e.manager, e)
