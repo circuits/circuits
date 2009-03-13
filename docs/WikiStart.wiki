@@ -1,4 +1,4 @@
-﻿= Welcome to circuits =
+= Welcome to circuits =
 
 [[BlogList(recent=3, max_size=250, format=float, heading=Latest News)]]
 
