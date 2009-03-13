@@ -2,9 +2,9 @@
 # Date:     1st February 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Circuits Library - Drivers
+"""Drivers
 
-circuits.lib.drivers contains drivers for other sources of events.
+This package contains drivers for other sources of events and foreign systems.
 """
 
 from os import listdir as _listdir
