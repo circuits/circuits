@@ -8,6 +8,11 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
+def walk(x, f, d=0):
+    yield f(d, x)
+    for c in x.components.copy():
+        yield walk(c, f, d + 1)
+
 def root(x):
     if x.manager == x:
         return x
@@ -29,42 +34,13 @@ def graph(x):
     @rtype:  str
     """
 
-    s = []
-    write = s.append
+    def printer(d, x):
+        yield " " * d, "* ", x
 
-    d = 0
-    i = 0
-    done = False
-    stack = []
-    visited = set()
-    children = list(x.components)
-    while not done:
-        if x not in visited:
-            if d:
-                write(" %s* %s\n" % (" " * d, x))
-            else:
-                write(" * %s\n" % x)
-
-            if x.components:
-                d += 1
-
-            visited.add(x)
-
-        if i < len(children):
-            x = children[i]
-            i += 1
-            if x.components:
-                stack.append((i, d, children))
-                children = list(x.components)
-                i = 0
-        else:
-            if stack:
-                i, d, children = stack.pop()
-            else:
-                done = True
-
-    return "".join(s)
-
+    r = list(walk(x, printer))
+    print type(r), repr(r)
+    #return "\n".join(list(walk(x, printer)))
+    
 def reprhandler(x):
     """Display a nicely formatted Event Handler, x
 
