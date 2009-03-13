@@ -22,6 +22,7 @@ try:
 except ImportError:
     psyco = None
 
+from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
 from circuits.net.pollers import Select, Poll, EPoll
@@ -139,6 +140,11 @@ def main():
         if hotshot:
             profiler = hotshot.Profile(".profile")
             profiler.start()
+
+    if opts.debug:
+        print graph(manager)
+        print
+        print inspect(manager)
 
     manager.run()
 
