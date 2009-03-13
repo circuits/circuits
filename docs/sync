@@ -3,7 +3,7 @@
 import os
 import sys
 
-from traclib import Trac, NotModified
+from traclib import Trac
 
 def main():
     opts = object()
@@ -13,13 +13,10 @@ def main():
         page, _ = os.path.splitext(file)
         page = page.replace("_", "/")
 
-        sys.stdout.write("Updating %s ... " % page)
+        sys.stdout.write("Sycning %s ... " % page)
         sys.stdout.flush()
-        try:
-            trac.upload(page, file, "Updated")
-            print "DONE"
-        except NotModified:
-            print "DONE (already up-to-date!)"
+        trac.save(page)
+        print "DONE"
 
 if __name__ == "__main__":
     main()
