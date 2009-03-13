@@ -27,15 +27,13 @@ class Connect(Event):
     """Connect Event
 
     This Event is sent when a new client connection has arrived on a server.
+    This event is also used for client's to initiate a new connection to
+    a remote host.
 
-    @param sock:   The socket of the new connecting client.
-    @type  Socket: Socket
+    @note: This event is used for both Client and Server Components.
 
-    @param host: The new client's hostname
-    @type  str:  str
-
-    @param port: The nwe client's connecting port.
-    @type  int:  int
+    @param args:  Client: (host, port, ssl=False) Server: (sock, host, port)
+    @type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -47,15 +45,18 @@ class Disconnect(Event):
     """Disconnect Event
 
     This Event is sent when a client connection has closed on a server.
+    This event is also used for client's to disconnect from a remote host.
 
-    @param sock:   The socket of the new connecting client.
-    @type  Socket: Socket
+    @note: This event is used for both Client and Server Components.
+
+    @param args:  Client: () Server: (sock)
+    @type  tuple: tuple
     """
 
-    def __init__(self, sock):
+    def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Disconnect, self).__init__(sock)
+        super(Disconnect, self).__init__(*args)
 
 class Connected(Event):
     """Connected Event
@@ -96,11 +97,8 @@ class Read(Event):
 
     @note: This event is used for both Client and Server Components.
 
-    @param sock:   The socket of the client connection. (Server(s) only).
-    @type  Socket: Socket (Server(s) only).
-
-    @param data: The new data that was read for this client or connection.
-    @type  str:  str
+    @param args:  Client: (data) Server: (sock, data)
+    @type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -115,11 +113,8 @@ class Error(Event):
 
     @note: This event is used for both Client and Server Components.
 
-    @param sock:   The socket of the client connection. (Server(s) only).
-    @type  Socket: Socket (Server(s) only).
-
-    @param error:         The socket error that occured.
-    @type  socket.error:  socket.error
+    @param args:  Client: (error) Server: (sock, error)
+    @type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -136,9 +131,8 @@ class Write(Event):
     @hote: This event is never sent, it is used to send data.
     @note: This event is used for both Client and Server Components.
 
-    @param sock:   The socket of the client connection to send data to.
-                   (Server(s) only).
-    @type  Socket: Socket (Server(s) only).
+    @param args:  Client: (data) Server: (sock, data)
+    @type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -156,9 +150,8 @@ class Close(Event):
     @hote: This event is never sent, it is used to close.
     @note: This event is used for both Client and Server Components.
 
-    @param sock:   The socket of the client connection to close.
-                   (Server(s) only).
-    @type  Socket: Socket (Server(s) only).
+    @param args:  Client: () Server: (sock)
+    @type  tuple: tuple
     """
 
     def __init__(self, *args):
