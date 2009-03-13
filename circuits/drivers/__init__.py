@@ -1,6 +1,6 @@
-# Module:	__init__
-# Date:		1st February 2009
-# Author:	James Mills, prologic at shortcircuit dot net dot au
+# Package:  drivers
+# Date:     1st February 2009
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
 """Circuits Library - Drivers
 
