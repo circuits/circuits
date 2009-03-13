@@ -24,83 +24,151 @@ BACKLOG = 128       # 128 Concurrent Connections
 ###
 
 class Connect(Event):
-    """Connect(host, port, ssl=False) -> Connect Event
+    """Connect Event
 
-    Connect event used for Client components to initiate a new connection.
+    This Event is sent when a new client connection has arrived on a server.
+
+    @param sock:   The socket of the new connecting client.
+    @type  Socket: Socket
+
+    @param host: The new client's hostname
+    @type  str:  str
+
+    @param port: The nwe client's connecting port.
+    @type  int:  int
     """
+
+    def __init__(self, sock, host, port):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Connect, self).__init__(sock, host, port)
+
+class Disconnect(Event):
+    """Disconnect Event
+
+    This Event is sent when a client connection has closed on a server.
+
+    @param sock:   The socket of the new connecting client.
+    @type  Socket: Socket
+    """
+
+    def __init__(self, sock):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Disconnect, self).__init__(sock)
 
 class Connected(Event):
-    """Connected(Event) -> Connected Event
+    """Connected Event
 
-   if Client:
-      - args: host, port
+    This Event is sent when a client has successfully connected.
 
-   if Server:
-      - args: sock, host, port
-   """
+    @note: This event is for Client Components.
 
-class Disconnect(Event): pass
+    @param host: The hostname connected to.
+    @type  str:  str
+
+    @param port: The port connected to
+    @type  int:  int
+    """
+
+    def __init__(self, host, port):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Connected, self).__init__(host, port)
 
 class Disconnected(Event):
-    """Disconnected(Event) -> Disconnected Event
+    """Disconnected Event
 
-   if Client, no args.
+    This Event is sent when a client has disconnected
 
-   If Server:
-      - args: sock
-   """
+    @note: This event is for Client Components.
+    """
+
+    def __init__(self):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Disconnected, self).__init__()
 
 class Read(Event):
-    """Read(Event) -> Read Event
+    """Read Event
 
-   if Client:
-      - args: data
+    This Event is sent when a client or server connection has read any data.
 
-   If Server:
-      - args: sock, data
+    @note: This event is used for both Client and Server Components.
 
-   if UDP Client or Server:
-      - args: address, data
-   """
+    @param sock:   The socket of the client connection. (Server(s) only).
+    @type  Socket: Socket (Server(s) only).
 
-class Write(Event):
-    """Write(Event) -> Write Event
-
-   If Client:
-      - args: data
-
-   if Server:
-      - args: sock, data
-
-   if UDP Client or Server:
-      - args: address, data
+    @param data: The new data that was read for this client or connection.
+    @type  str:  str
     """
+
+    def __init__(self, *args):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Read, self).__init__(*args)
 
 class Error(Event):
-    """Error(Event) -> Error Event
+    """Error Event
 
-   if Client: error
+    This Event is sent when a client or server connection has an error.
 
-   if Server: sock, error
-   """
+    @note: This event is used for both Client and Server Components.
+
+    @param sock:   The socket of the client connection. (Server(s) only).
+    @type  Socket: Socket (Server(s) only).
+
+    @param error:         The socket error that occured.
+    @type  socket.error:  socket.error
+    """
+
+    def __init__(self, *args):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Error, self).__init__(*args)
+
+class Write(Event):
+    """Write Event
+
+    This Event is used to notify a client, client connection or server that
+    we have data to be written.
+
+    @hote: This event is never sent, it is used to send data.
+    @note: This event is used for both Client and Server Components.
+
+    @param sock:   The socket of the client connection to send data to.
+                   (Server(s) only).
+    @type  Socket: Socket (Server(s) only).
+    """
+
+    def __init__(self, *args):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Write, self).__init__(*args)
+
 
 class Close(Event):
-    """Close(Event) -> Close Event
+    """Close Event
 
-   If Client, no args.
+    This Event is used to notify a client, client connection or server that
+    we want to close.
 
-   if Server:
-      - args: sock
+    @hote: This event is never sent, it is used to close.
+    @note: This event is used for both Client and Server Components.
+
+    @param sock:   The socket of the client connection to close.
+                   (Server(s) only).
+    @type  Socket: Socket (Server(s) only).
     """
 
-class Shutdown(Event):
-    """Shutdown(Event) -> Shutdown Event
+    def __init__(self, *args):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-   If Client, no args.
+        super(Write, self).__init__(*args)
 
-   if Server:
-      - args: sock
-    """
+###
+### Components
+###
 
 class Client(Component):
 
@@ -503,3 +571,5 @@ class UDPServer(Server):
                 self._poller.removeWriter(self._sock)
 
 UDPClient = UDPServer
+
+
