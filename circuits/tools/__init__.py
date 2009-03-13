@@ -8,6 +8,12 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
+def root(x):
+    if x.manager == x:
+        return x
+    else:
+        return root(x.manager)
+
 def kill(x):
     for c in x.components.copy():
         kill(c)
