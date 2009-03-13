@@ -53,6 +53,10 @@ def parse_options():
             action="store_true", default=False, dest="jit",
             help="Use python HIT (psyco)")
 
+    parser.add_option("-m", "--multiprocessing",
+            action="store_true", default=False, dest="mp",
+            help="Start in multiprocessing mode")
+
     parser.add_option("-t", "--type",
             action="store", type="string", default="select", dest="type",
             help="Specify type of poller to use")
@@ -147,6 +151,11 @@ def main():
         print graph(manager)
         print
         print inspect(manager)
+
+    if opts.mp:
+        from circuits.core.workers import cpus
+        for i in xrange(cpus() - 1):
+            manager.start(process=True)
 
     manager.run()
 
