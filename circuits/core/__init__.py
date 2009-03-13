@@ -770,7 +770,7 @@ class BaseComponent(Manager):
 
         super(BaseComponent, self).__init__(*args, **kwargs)
 
-        self.channel = kwargs.get("channel", self.channel)
+        self.channel = kwargs.get("channel", self.channel) or "*"
         self.register(self)
 
     def __repr__(self):
