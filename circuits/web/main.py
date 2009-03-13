@@ -8,6 +8,8 @@ circutis.web Web Server and Testing Tool.
 """
 
 import optparse
+from wsgiref.validate import validator
+from wsgiref.simple_server import make_server
 
 try:
     import hotshot
@@ -23,7 +25,7 @@ except ImportError:
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
 from circuits.net.pollers import Select, Poll, EPoll
-from circuits.web import BaseServer, Server, Controller
+from circuits.web import BaseServer, Server, Application, Controller
 
 
 USAGE = "%prog [options]"
@@ -66,6 +68,10 @@ def parse_options():
             action="store_true", default=False, dest="debug",
             help="Enable debug mode")
 
+    parser.add_option("-v", "--validate",
+            action="store_true", default=False, dest="validate",
+            help="Enable WSGI validation mode")
+
     opts, args = parser.parse_args()
 
     return opts, args
@@ -93,6 +99,23 @@ def main():
 
     if opts.jit and psyco:
         psyco.full()
+
+    if ":" in opts.bind:
+        address, port = opts.bind.split(":")
+        port = int(port)
+    else:
+        address, port = opts.bind, 8000
+
+    bind = (address, port)
+
+    if opts.validate:
+        application = (Application() + Root())
+        app = validator(application)
+
+        httpd = make_server(bind, app)
+        httpd.serve_forever()
+        
+        raise SystemExit, 0
 
     manager = Manager()
 
