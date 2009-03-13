@@ -96,12 +96,12 @@ circuits.sniffer = circuits.tools.sniffer:main
 
 from core import handler, Event, Component,  Manager
 
-from bridge import Bridge
-from workers import Thread
-from debugger import Debugger
-from timers import Timer, Timer
+from core.bridge import Bridge
+from core.workers import Thread
+from core.debugger import Debugger
+from core.timers import Timer, Timer
 
 try:
-    from workers import Process
-except ImportError:
+    from core.workers import Process
+except:
     pass
