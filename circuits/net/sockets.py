@@ -182,7 +182,7 @@ class Client(Component):
         self.server = {}
         self.issuer = {}
 
-        Poller = kwargs.get("poller", Select)
+        Poller = kwargs.get("poller", DefaultPoller)
         timeout = kwargs.get("timeout", TIMEOUT)
 
         self._poller = Poller(self, timeout)
@@ -323,7 +323,7 @@ class Server(Component):
         self.bind = bind
         self.ssl = ssl
 
-        Poller = kwargs.get("poller", Select)
+        Poller = kwargs.get("poller", DefaultPoller)
         timeout = kwargs.get("timeout", TIMEOUT)
 
         self._poller = Poller(self, timeout)
