@@ -919,13 +919,13 @@ class Component(BaseComponent):
 
     def __new__(cls, *args, **kwargs):
         self = BaseComponent.__new__(cls, *args, **kwargs)
-        handlers = [x for x in cls.__dict__.itervalues() \
+        handlers = [x for x in cls.__dict__.values() \
                 if getattr(x, "handler", False)]
         overridden = lambda x: [h for h in handlers \
                 if x.channels == h.channels and getattr(h, "override", False)]
         for base in cls.__bases__:
             if issubclass(cls, base):
-                for k, v in base.__dict__.iteritems():
+                for k, v in base.__dict__.items():
                     p1 = callable(v)
                     p2 = getattr(v, "handler", False)
                     predicate = p1 and p2 and not overridden(v)
