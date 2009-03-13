@@ -58,7 +58,7 @@ def parse_options():
             help="Specify type of poller to use")
 
     parser.add_option("-s", "--server",
-            action="store", type="string", default="base", dest="server",
+            action="store", type="string", default="server", dest="server",
             help="Specify server to use")
 
     parser.add_option("-p", "--profile",
