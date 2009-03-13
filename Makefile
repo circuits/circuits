@@ -22,7 +22,7 @@ docs:
 		--no-sourcecode circuits
 
 tests:
-	@nosetests \
+	@nosetests -w circuits/core \
 		--with-coverage \
 		--cover-package=circuits \
 		--cover-erase \

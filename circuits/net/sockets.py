@@ -38,10 +38,10 @@ class Connect(Event):
     @type  int:  int
     """
 
-    def __init__(self, sock, host, port):
+    def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Connect, self).__init__(sock, host, port)
+        super(Connect, self).__init__(*args)
 
 class Disconnect(Event):
     """Disconnect Event
