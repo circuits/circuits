@@ -679,7 +679,7 @@ class Manager(object):
         self.push(Started(self, mode))
 
         try:
-            while self._running or (self._running and self._task is not None and self._task.is_alive()):
+            while self._running:
                 try:
                     [f() for f in self.ticks.copy()]
                     self.flush()
@@ -691,22 +691,27 @@ class Manager(object):
                 except (KeyboardInterrupt, SystemExit):
                     self._running = False
                 except:
-                    if log:
-                        self.push(Error(*_exc_info()))
-                    if errors:
-                        raise
-                    else:
-                        _exc_clear()
+                    try:
+                        if log:
+                            self.push(Error(*_exc_info()))
+                        if errors:
+                            raise
+                        else:
+                            _exc_clear()
+                    except:
+                        pass
         finally:
-            self._terminate()
-            self.push(Stopped(self))
-            rtime = time.time()
-            while len(self) > 0 and (time.time() - rtime) < 3:
-                [f() for f in self.ticks.copy()]
-                self.flush()
-                if sleep:
-                    time.sleep(sleep)
+            try:
+                self.push(Stopped(self))
                 rtime = time.time()
+                while len(self) > 0 and (time.time() - rtime) < 3:
+                    [f() for f in self.ticks.copy()]
+                    self.flush()
+                    if sleep:
+                        time.sleep(sleep)
+                    rtime = time.time()
+            except:
+                pass
 
 class BaseComponent(Manager):
     """Base Component
