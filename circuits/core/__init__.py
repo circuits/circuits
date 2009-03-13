@@ -893,7 +893,7 @@ class BaseComponent(Manager):
 
         _unregister(self, self.manager, _root(self.manager))
 
-        self.manager._components.add(self)
+        self.manager._components.remove(self)
         self.push(Unregistered(self, self.manager), target=self)
 
         self.manager = self
