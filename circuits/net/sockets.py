@@ -2,14 +2,9 @@
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
 
-"""TCP/IP and UDP Sockets
+"""Socket Components
 
-This module contains classes for TCP/IP and UDP sockets for
-both servers and clients. All classes are thin layers on-top
-of the standard socket library. All implementations are
-non-blocking. This module relies heavily on the event module
-and as such the implementations in this module are all
-event-driven and should be sub-classed to do something usefull.
+This module contains various Socket Components for use with Networking.
 """
 
 import os
