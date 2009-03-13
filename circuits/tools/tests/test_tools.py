@@ -123,16 +123,11 @@ class TestKill(unittest.TestCase):
 
         self.assertEquals(a.manager, a)
         self.assertEquals(b.manager, a)
-        self.assertFalse(b._hidden)
         self.assertEquals(c.manager, b)
         self.assertFalse(c.components)
-        self.assertFalse(c._hidden)
 
         self.assertTrue(b in a.components)
         self.assertTrue(d in a.components)
-        self.assertTrue(c in a._hidden)
-        self.assertTrue(e in a._hidden)
-        self.assertTrue(f in a._hidden)
 
         self.assertEquals(d.manager, a)
         self.assertEquals(e.manager, d)
@@ -140,27 +135,19 @@ class TestKill(unittest.TestCase):
 
         self.assertTrue(f in e.components)
         self.assertTrue(e in d.components)
-        self.assertTrue(f in d._hidden)
         self.assertFalse(f._components)
-        self.assertFalse(f._hidden)
-        self.assertFalse(e._hidden)
 
         self.assertEquals(kill(d), None)
 
         self.assertEquals(a.manager, a)
         self.assertEquals(b.manager, a)
-        self.assertFalse(b._hidden)
         self.assertEquals(c.manager, b)
         self.assertFalse(c.components)
-        self.assertFalse(c._hidden)
 
         self.assertTrue(b in a.components)
         self.assertFalse(d in a.components)
         self.assertFalse(e in d.components)
         self.assertFalse(f in e.components)
-        self.assertTrue(c in a._hidden)
-        self.assertFalse(e in a._hidden)
-        self.assertFalse(f in a._hidden) # Failing
 
         self.assertEquals(d.manager, d)
         self.assertEquals(e.manager, e)
@@ -169,9 +156,6 @@ class TestKill(unittest.TestCase):
         self.assertFalse(d.components)
         self.assertFalse(e.components)
         self.assertFalse(f.components)
-        self.assertFalse(d._hidden)
-        self.assertFalse(e._hidden)
-        self.assertFalse(f._hidden)
 
 class TestGraph(unittest.TestCase):
     """Test graph() function
@@ -197,16 +181,11 @@ class TestGraph(unittest.TestCase):
 
         self.assertEquals(a.manager, a)
         self.assertEquals(b.manager, a)
-        self.assertFalse(b._hidden)
         self.assertEquals(c.manager, b)
         self.assertFalse(c.components)
-        self.assertFalse(c._hidden)
 
         self.assertTrue(b in a.components)
         self.assertTrue(d in a.components)
-        self.assertTrue(c in a._hidden)
-        self.assertTrue(e in a._hidden)
-        self.assertTrue(f in a._hidden)
 
         self.assertEquals(d.manager, a)
         self.assertEquals(e.manager, d)
@@ -214,10 +193,7 @@ class TestGraph(unittest.TestCase):
 
         self.assertTrue(f in e.components)
         self.assertTrue(e in d.components)
-        self.assertTrue(f in d._hidden)
         self.assertFalse(f._components)
-        self.assertFalse(f._hidden)
-        self.assertFalse(e._hidden)
 
         self.assertEquals(graph(a), GRAPH)
 
@@ -245,16 +221,11 @@ class TestInspect(unittest.TestCase):
 
         self.assertEquals(a.manager, a)
         self.assertEquals(b.manager, a)
-        self.assertFalse(b._hidden)
         self.assertEquals(c.manager, b)
         self.assertFalse(c.components)
-        self.assertFalse(c._hidden)
 
         self.assertTrue(b in a.components)
         self.assertTrue(d in a.components)
-        self.assertTrue(c in a._hidden)
-        self.assertTrue(e in a._hidden)
-        self.assertTrue(f in a._hidden)
 
         self.assertEquals(d.manager, a)
         self.assertEquals(e.manager, d)
@@ -262,10 +233,7 @@ class TestInspect(unittest.TestCase):
 
         self.assertTrue(f in e.components)
         self.assertTrue(e in d.components)
-        self.assertTrue(f in d._hidden)
         self.assertFalse(f._components)
-        self.assertFalse(f._hidden)
-        self.assertFalse(e._hidden)
 
         self.assertEquals(len(inspect(a)), len(INSPECT))
 
