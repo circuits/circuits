@@ -131,9 +131,9 @@ def main():
         Poller = Select
 
     if opts.server.lower() == "base":
-        manager += (BaseServer(opts.bind, poller=Poller) + Root())
+        manager += (BaseServer(bind, poller=Poller) + Root())
     else:
-        manager += (Server(opts.bind, poller=Poller) + Root())
+        manager += (Server(bind, poller=Poller) + Root())
 
     if opts.profile:
         if hotshot:
