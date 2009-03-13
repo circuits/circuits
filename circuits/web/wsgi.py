@@ -13,7 +13,7 @@ from traceback import format_exc
 
 from circuits import handler, Component
 
-from circuits.lib.io import File
+from circuits.io import File
 
 import webob
 from headers import Headers
