@@ -848,11 +848,11 @@ class BaseComponent(Manager):
 
         _register(self, manager)
 
+        self.manager = manager
+
         if manager is not self:
             manager._components.add(self)
             self.push(Registered(self, manager), target=self)
-
-        self.manager = manager
 
     def unregister(self):
         """Unregister all registered Event Handlers
