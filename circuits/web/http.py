@@ -55,7 +55,7 @@ class HTTP(Component):
         data = response.body.read(BUFFER_SIZE)
         if data:
             self.send(Write(response.sock, data), "write", "server")
-            self.push(Stream(response), "stream", self.channel)
+            self.push(Stream(response))
         else:
             response.body.close()
             if response.close:
@@ -65,7 +65,7 @@ class HTTP(Component):
     def response(self, response):
         self.send(Write(response.sock, str(response)), "write", "server")
         if response.stream:
-            self.push(Stream(response), "stream", "server")
+            self.push(Stream(response))
             return
 
         if response.close:
