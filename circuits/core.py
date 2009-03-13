@@ -829,14 +829,24 @@ class BaseComponent(Manager):
         given Manager. A Registered Event will also be sent.
         """
 
-        def _register(c, m):
+        def _root(x):
+            if x.manager == x:
+                return x
+            else:
+                return _root(x.manager)
+
+        def _register(c, m, r):
             c._registerHandlers(m)
+            if m is not r:
+                c._registerHandlers(r)
             if hasattr(c, "__tick__"):
                 m._ticks.add(getattr(c, "__tick__"))
+                if m is not r:
+                    r._ticks.add(getattr(c, "__tick__"))
             for x in c.components:
-                _register(x, m)
+                _register(x, m, r)
 
-        _register(self, manager)
+        _register(self, manager, _root(manager))
 
         self.manager = manager
 
@@ -853,15 +863,25 @@ class BaseComponent(Manager):
         @note: It's possible to unregister a Component from itself!
         """
 
-        def _unregister(c, m):
+        def _root(x):
+            if x.manager == x:
+                return x
+            else:
+                return _root(x.manager)
+
+        def _unregister(c, m, r):
             c._unregisterHandlers(m)
+            if m is not r:
+                c._unregisterHandlers(r)
             if hasattr(c, "__tick__"):
                 m._ticks.remove(getattr(c, "__tick__"))
+                if m is not r:
+                    r._ticks.remove(getattr(c, "__tick__"))
 
             for x in c.components:
-                _unregister(x, m)
+                _unregister(x, m, r)
 
-        _unregister(self, self.manager)
+        _unregister(self, self.manager, _root(self.manager))
 
         self.manager._components.add(self)
         self.push(Unregistered(self, manager), "unregistered", self.channel)
