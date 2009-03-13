@@ -9,6 +9,7 @@ import unittest
 from circuits.core import HAS_MULTIPROCESSING
 from circuits.core import handler, Manager, Component, Event
 
+
 class Test(Event):
     """Test(Event) -> Test Event"""
 
@@ -56,6 +57,54 @@ class Bar(Component):
     @handler("bar")
     def onBAR(self, event, *args, **kwargs):
         self.send(Test(), "gotbar")
+
+class A(Component):
+
+    def __tick__(self):
+        pass
+
+    def foo(self):
+        print "A!"
+
+class B(Component):
+
+    def __tick__(self):
+        pass
+
+    def foo(self):
+        print "B!"
+
+class C(Component):
+
+    def __tick__(self):
+        pass
+
+    def foo(self):
+        print "C!"
+
+class D(Component):
+
+    def __tick__(self):
+        pass
+
+    def foo(self):
+        print "D!"
+
+class E(Component):
+
+    def __tick__(self):
+        pass
+
+    def foo(self):
+        print "E!"
+
+class F(Component):
+
+    def __tick__(self):
+        pass
+
+    def foo(self):
+        print "F!"
 
 class TestAllChannels(unittest.TestCase):
     """Test All Channels
@@ -701,6 +750,77 @@ class TestHandlerTargets(unittest.TestCase):
         foo.unregister()
         bar.unregister()
         foobar.unregister()
+
+class TestStructures(unittest.TestCase):
+    """Test Component Structures
+
+    Test that components maintain their sturcture when registered and
+    unregistered and re-registered to other components.
+    """
+
+    def runTest(self):
+        a = A()
+        b = B()
+        c = C()
+        d = D()
+        e = E()
+        f = F()
+
+        for x in [a, b, c, d, e, f]:
+            self.assertEquals(x.manager, x)
+            self.assertFalse(x.components)
+            self.assertFalse(x._hidden)
+            self.assertTrue(x. __tick__ in x._ticks)
+
+        a += b
+
+        self.assertEquals(a.manager, a)
+        self.assertEquals(b.manager, a)
+        self.assertTrue(a.components)
+        self.assertFalse(b.components)
+        self.assertFalse(a in a.components)
+        self.assertTrue(b in a.components)
+        self.assertFalse(a._hidden)
+        self.assertFalse(b._hidden)
+        self.assertEquals(len(a._ticks), 2)
+        self.assertEquals(len(b._ticks), 1)
+        self.assertTrue(a. __tick__ in a._ticks)
+        self.assertTrue(b. __tick__ in a._ticks)
+        self.assertTrue(b. __tick__ in b._ticks)
+
+        b += c
+
+        self.assertEquals(a.manager, a)
+        self.assertEquals(b.manager, a)
+        self.assertEquals(c.manager, b)
+        self.assertTrue(a.components)
+        self.assertTrue(b.components)
+        self.assertFalse(c.components)
+        self.assertFalse(a in a.components)
+        self.assertTrue(b in a.components)
+        self.assertFalse(c in a.components)
+        self.assertTrue(a._hidden)
+        self.assertTrue(c in a._hidden)
+        self.assertFalse(b._hidden)
+        self.assertFalse(c._hidden)
+        self.assertEquals(len(a._ticks), 3)
+        self.assertEquals(len(b._ticks), 2)
+        self.assertEquals(len(c._ticks), 1)
+        self.assertTrue(a. __tick__ in a._ticks)
+        self.assertTrue(b. __tick__ in a._ticks)
+        self.assertTrue(b. __tick__ in b._ticks)
+        self.assertTrue(c. __tick__ in a._ticks)
+        self.assertTrue(c. __tick__ in b._ticks)
+        self.assertTrue(c. __tick__ in c._ticks)
+
+        from circuits.tools import graph, inspect
+        print
+        print graph(a)
+        print inspect(a)
+
+        e += f
+        d += e
+        a += d
 
 if __name__ == "__main__":
     unittest.main()
