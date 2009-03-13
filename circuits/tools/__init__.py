@@ -77,11 +77,6 @@ def inspect(x):
         write("  %s\n" % component)
     write("\n")
 
-    write(" Hidden Components: %d\n" % len(x.hidden))
-    for component in x.hidden:
-        write("  %s\n" % component)
-    write("\n")
-
     write(" Tick Functions: %d\n" % len(x.ticks))
     for tick in x.ticks:
         write("  %s\n" % tick)
