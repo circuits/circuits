@@ -83,6 +83,8 @@ def parse_options():
 
 class HelloWorld(Component):
 
+    channel = "web"
+
     def request(self, request, response):
         return "Hello World!"
 
