@@ -6,3 +6,5 @@
 
 This package contains drivers for other sources of events and foreign systems.
 """
+
+class DriverError(Exception): pass

@@ -65,7 +65,7 @@ class HTTP(Component):
     def response(self, response):
         self.send(Write(response.sock, str(response)), "write", "server")
         if response.stream:
-            self.push(Stream(response))
+            self.push(Stream(response), "stream", self.channel)
             return
 
         if response.close:
