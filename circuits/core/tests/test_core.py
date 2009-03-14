@@ -105,6 +105,59 @@ class F(Component):
     def foo(self):
         print "F!"
 
+class TestErrorHandling(unittest.TestCase):
+    """Test Error Handling
+
+    Test that exceptions are handled and an Error event is pushed.
+    """
+
+    def runTest(self):
+
+        class ErrorHandler(Component):
+
+            def __init__(self):
+                super(ErrorHandler, self).__init__()
+
+                self.type = None
+                self.value = None
+                self.traceback = None
+
+            def error(self, type, value, traceback):
+                self.type = type
+                self.value = value
+                self.traceback = traceback
+
+        class TestError(Component):
+
+            def test1(self):
+                return x
+
+            def test2(self):
+                return self.x
+
+            def test3(self):
+                raise RuntimeError()
+
+        m = Manager()
+        e = ErrorHandler()
+        m += e
+        m += TestError()
+
+        m.push(Event(), "test1")
+        m.flush(); m.flush()
+        self.assertTrue(e.type is NameError)
+        self.assertTrue(isinstance(e.value, NameError))
+
+        m.push(Event(), "test2")
+        m.flush(); m.flush()
+        self.assertTrue(e.type is AttributeError)
+        self.assertTrue(isinstance(e.value, AttributeError))
+
+        m.push(Event(), "test3")
+        m.flush(); m.flush()
+        self.assertTrue(e.type is RuntimeError)
+        self.assertTrue(isinstance(e.value, RuntimeError))
+
 class TestAllChannels(unittest.TestCase):
     """Test All Channels
 
@@ -804,11 +857,6 @@ class TestStructures(unittest.TestCase):
         self.assertTrue(c. __tick__ in a._ticks)
         self.assertTrue(c. __tick__ in b._ticks)
         self.assertTrue(c. __tick__ in c._ticks)
-
-        from circuits.tools import graph, inspect
-        print
-        print graph(a)
-        print inspect(a)
 
         e += f
         d += e
