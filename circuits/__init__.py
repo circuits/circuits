@@ -27,10 +27,7 @@ Example:
    Hello World!
 """
 
-try:
-	from __version__ import version as __version__
-except ImportError:
-	__version__ = "unknown"
+from __version__ import version as __version__
 
 __name__ = "circuits"
 __description__ = "Event framework with a Component architecture"
