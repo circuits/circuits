@@ -145,8 +145,7 @@ class Bridge(Component):
     def onREAD(self, address, data):
         event = unpickle(data)
 
-        channel = event.channel
-        target = event.target
+        (target, channel) = event.channel
         source = event.source
 
         if source == self.ourself:
