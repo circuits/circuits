@@ -71,7 +71,7 @@ class B(Component):
         pass
 
     def foo(self):
-        print "B!"
+        pass
 
 class C(Component):
 
@@ -79,31 +79,20 @@ class C(Component):
         pass
 
     def foo(self):
-        print "C!"
+        pass
 
-class D(Component):
+class Z(Component):
+
+    def __init__(self):
+        super(Z, self).__init__(self)
+
+        self += A()
 
     def __tick__(self):
         pass
 
     def foo(self):
-        print "D!"
-
-class E(Component):
-
-    def __tick__(self):
         pass
-
-    def foo(self):
-        print "E!"
-
-class F(Component):
-
-    def __tick__(self):
-        pass
-
-    def foo(self):
-        print "F!"
 
 class TestErrorHandling(unittest.TestCase):
     """Test Error Handling
@@ -814,30 +803,36 @@ class TestStructures(unittest.TestCase):
         a = A()
         b = B()
         c = C()
-        d = D()
-        e = E()
-        f = F()
 
-        for x in [a, b, c, d, e, f]:
+        for x in [a, b, c]:
             self.assertEquals(x.manager, x)
             self.assertFalse(x.components)
             self.assertTrue(x. __tick__ in x._ticks)
+            self.assertEquals(len(x._handlers), 1)
+            self.assertTrue(x.foo in x._handlers)
+            self.assertEquals(len(x.channels), 1)
+            self.assertTrue(("*", "foo") in x.channels)
+            self.assertTrue(x.foo in x.channels[("*", "foo")])
+            self.assertFalse(x._queue)
+            self.assertFalse(x)
+            self.assertEquals(len(x._queue), 0)
+            self.assertEquals(len(x), 0)
 
-        a += b
+        ###
+        ### Test 1
+        ###
 
-        self.assertEquals(a.manager, a)
-        self.assertEquals(b.manager, a)
-        self.assertTrue(a.components)
-        self.assertFalse(b.components)
-        self.assertFalse(a in a.components)
-        self.assertTrue(b in a.components)
-        self.assertEquals(len(a._ticks), 2)
-        self.assertEquals(len(b._ticks), 1)
-        self.assertTrue(a. __tick__ in a._ticks)
-        self.assertTrue(b. __tick__ in a._ticks)
-        self.assertTrue(b. __tick__ in b._ticks)
+        """
+        >>> a + (b + c)
+        <A/* (q: 1 c: 1 h: 3) [S]>
+        >>> print graph(a)
+        * <A/* (q: 1 c: 1 h: 3) [S]>
+         * <B/* (q: 1 c: 1 h: 2) [S]>
+          * <C/* (q: 0 c: 1 h: 1) [S]>
+        >>> 
+        """
 
-        b += c
+        a + (b + c)
 
         self.assertEquals(a.manager, a)
         self.assertEquals(b.manager, a)
@@ -847,8 +842,8 @@ class TestStructures(unittest.TestCase):
         self.assertFalse(c.components)
         self.assertFalse(a in a.components)
         self.assertTrue(b in a.components)
-        self.assertFalse(c in a.components)
-        self.assertEquals(len(a._ticks), 3) # Failing
+        self.assertTrue(c in b.components)
+        self.assertEquals(len(a._ticks), 3)
         self.assertEquals(len(b._ticks), 2)
         self.assertEquals(len(c._ticks), 1)
         self.assertTrue(a. __tick__ in a._ticks)
@@ -857,10 +852,40 @@ class TestStructures(unittest.TestCase):
         self.assertTrue(c. __tick__ in a._ticks)
         self.assertTrue(c. __tick__ in b._ticks)
         self.assertTrue(c. __tick__ in c._ticks)
+        self.assertEquals(len(a._handlers), 3)
+        self.assertTrue(a.foo in a._handlers)
+        self.assertTrue(b.foo in a._handlers)
+        self.assertTrue(c.foo in a._handlers)
+        self.assertEquals(len(b._handlers), 2)
+        self.assertTrue(b.foo in b._handlers)
+        self.assertTrue(c.foo in b._handlers)
+        self.assertEquals(len(c._handlers), 1)
+        self.assertTrue(c.foo in c._handlers)
 
-        e += f
-        d += e
-        a += d
+        self.assertEquals(len(a.channels), 1)
+        self.assertEquals(len(b.channels), 1)
+        self.assertEquals(len(c.channels), 1)
+        self.assertTrue(("*", "foo") in a.channels)
+        self.assertTrue(("*", "foo") in b.channels)
+        self.assertTrue(("*", "foo") in c.channels)
+        self.assertTrue(a.foo in a.channels[("*", "foo")])
+        self.assertTrue(b.foo in a.channels[("*", "foo")])
+        self.assertTrue(b.foo in b.channels[("*", "foo")])
+        self.assertTrue(c.foo in b.channels[("*", "foo")])
+        self.assertTrue(c.foo in c.channels[("*", "foo")])
+
+        self.assertTrue(a._queue)
+        self.assertTrue(a)
+        self.assertEquals(len(a._queue), 1)
+        self.assertEquals(len(a), 1)
+        self.assertTrue(b._queue)
+        self.assertTrue(b)
+        self.assertEquals(len(b._queue), 1)
+        self.assertEquals(len(b), 1)
+        self.assertFalse(c._queue)
+        self.assertFalse(c)
+        self.assertEquals(len(c._queue), 0)
+        self.assertEquals(len(c), 0)
 
 if __name__ == "__main__":
     unittest.main()
