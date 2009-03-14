@@ -133,10 +133,10 @@ class Select(_Poller):
                 raise
 
         for sock in w:
-            self.send(Write(sock), "_write", self.target)
+            self.push(Write(sock), "_write", self.target)
             
         for sock in r:
-            self.send(Read(sock), "_read", self.target)
+            self.push(Read(sock), "_read", self.target)
 
 class Poll(_Poller):
     """Poll(...) -> new Poll Poller Component
@@ -214,19 +214,19 @@ class Poll(_Poller):
         fd = self._map[fileno]
 
         if event & _POLL_DISCONNECTED and not (event & POLLIN):
-            self.send(Disconnect(fd), "_disconnect", self.target)
+            self.push(Disconnect(fd), "_disconnect", self.target)
             self._poller.unregister(fileno)
             super(Poll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & POLLIN:
-                    self.send(Read(fd), "_read", self.target)
+                    self.push(Read(fd), "_read", self.target)
                 if event & POLLOUT:
-                    self.send(Write(fd), "_write", self.target)
+                    self.push(Write(fd), "_write", self.target)
             except Exception, e:
-                self.send(Error(fd, e), "_error", self.target)
-                self.send(Disconnect(fd), "_disconnect", self.target)
+                self.push(Error(fd, e), "_error", self.target)
+                self.push(Disconnect(fd), "_disconnect", self.target)
                 self._poller.unregister(fileno)
                 super(Poll, self).discard(fd)
                 del self._map[fileno]
@@ -311,19 +311,19 @@ class EPoll(_Poller):
         fd = self._map[fileno]
 
         if event & _EPOLL_DISCONNECTED and not (event & POLLIN):
-            self.send(Disconnect(fd), "_disconnect", self.target)
+            self.push(Disconnect(fd), "_disconnect", self.target)
             self._poller.unregister(fileno)
             super(EPoll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & EPOLLIN:
-                    self.send(Read(fd), "_read", self.target)
+                    self.push(Read(fd), "_read", self.target)
                 if event & EPOLLOUT:
-                    self.send(Write(fd), "_write", self.target)
+                    self.push(Write(fd), "_write", self.target)
             except Exception, e:
-                self.send(Error(fd, e), "_error", self.target)
-                self.send(Disconnect(fd), "_disconnect", self.target)
+                self.push(Error(fd, e), "_error", self.target)
+                self.push(Disconnect(fd), "_disconnect", self.target)
                 self._poller.unregister(fileno)
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
