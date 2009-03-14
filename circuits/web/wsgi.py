@@ -17,11 +17,11 @@ from circuits.io import File
 
 import webob
 from headers import Headers
-from utils import quoteHTML, url
+from utils import quoteHTML
 from dispatchers import Dispatcher
 from events import Request, Response
 from errors import HTTPError, NotFound
-from constants import RESPONSES, DEFAULT_ERROR_MESSAGE, SERVER_VERSION
+from constants import RESPONSES, DEFAULT_ERROR_MESSAGE
 
 class Application(Component):
 
