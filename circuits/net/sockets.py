@@ -15,7 +15,7 @@ from collections import defaultdict, deque
 from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
 
-TIMEOUT = 0.00001   # 0.01ms Poller Timeout
+TIMEOUT = 0.001     # 0.1ms Poller Timeout
 BUFSIZE = 4096      # 4KB Buffer
 BACKLOG = 128       # 128 Concurrent Connections
 
