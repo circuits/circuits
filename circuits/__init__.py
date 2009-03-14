@@ -89,7 +89,7 @@ __entry_points__ = """\
 [console_scripts]
 circuits.bench = circuits.tools.bench:main
 circuits.sniffer = circuits.tools.sniffer:main
-circuits.web = circutis.web.main:main
+circuits.web = circuits.web.main:main
 """
 
 from core import handler, Event, Component,  Manager
