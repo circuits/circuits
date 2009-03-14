@@ -11,7 +11,6 @@ or commonly known as HTTP.
 import re
 from urllib import unquote
 from urlparse import urlparse
-from cStringIO import StringIO
 from traceback import format_exc
 
 from circuits import handler, Component
