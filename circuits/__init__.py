@@ -95,11 +95,6 @@ circuits.web = circutis.web.main:main
 from core import handler, Event, Component,  Manager
 
 from core.bridge import Bridge
-from core.workers import Thread
 from core.debugger import Debugger
 from core.timers import Timer, Timer
-
-try:
-    from core.workers import Process
-except:
-    pass
+from core.workers import Thread, Process
