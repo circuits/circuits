@@ -81,10 +81,9 @@ def inspect(x):
     write("\n")
 
     write(" Channels and Event Handlers: %d\n" % len(x.channels))
-    for channel in x.channels:
-        write("  %s: %d\n" % (channel, len(x.channels[channel])))
-        for handler in x.channels[channel]:
+    for (t, c) in x.channels:
+        write("  %s:%s; %d\n" % (t, c, len(x.channels[(t, c)])))
+        for handler in x.channels[(t, c)]:
             write("   %s\n" % reprhandler(handler))
-    write("\n")
 
     return "".join(s)

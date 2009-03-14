@@ -1,0 +1,193 @@
+= Tutorial and Introduction to circuits =
+
+[[TOC]]
+
+||'''Status'''||Work in Progress||
+
+== Overview ==
+This document will serve as a tutorial and introduction to the circuits
+library. Basic concepts will be described and code samples shown to
+illustrate the kinds of things you can do with circuits. For the
+impatient read [wiki:docs/CircuitsNutShell circuits in a nut shell].
+
+== Event Driven Programming ==
+circuits is an Event Framework, and implements a lot
+of Event Driven Programming features. What is Event
+Driven Programming ? It's a technique of programming
+whereby events are scheduled into some kind of a queue
+and handled by event handlers. Some really good
+references and reading material can be found here:
+ * [http://en.wikipedia.org/wiki/Event-driven_programming Event Driven Programming on WikiPedia]
+ * [http://eventdrivenpgm.sourceforge.net/ Event Driven Programming, Introduction, Tutorial, History]
+ * [http://www.google.com/search?hl=en&q=event+driven+programming Google :)]
+
+== Component Architecture ==
+circuits also employs a strong Component Architecture in it's design.
+What is a Component Architecture ? In the context of circuits it's
+best described as a way of completely decoupling every part of the
+system or application. Each Component knows nothing of any of the
+other components in the system. This kind of architecture can be
+a very powerful tool if used properly.
+
+Other articles on the subject describe the Component Architecture
+differently, but nonetheless, here are some good reference and reading
+material:
+ * [http://en.wikipedia.org/wiki/Software_componentry Component based Software Engineering]
+ * [http://trac.edgewall.org/wiki/TracDev/ComponentArchitecture Trac's excellent Component Architecture]
+
+== circuits ==
+Okay, so let's go through all the basic concepts of
+circuits and what it has to offer. circuits consists
+of a core set of BuildingBlocks which are used to
+build up more complex components. They are:
+ * [export:/docs/html/circuits.core.Manager-class.html Manager]
+  * [export:/docs/html/circuits.core.BaseComponent-class.html BaseComponent]
+   * [export:/docs/html/circuits.core.Component-class.html Component]
+
+=== Manager ===
+A Manager is responsible for managing the events of
+components that are registered to it. See ComponentRegistrations
+for more details on how this works. A Manager has the following
+public interface:
+ * [export:/docs/html/circuits.core.Manager-class.html#start start]
+ * [export:/docs/html/circuits.core.Manager-class.html#stop stop]
+ * [export:/docs/html/circuits.core.Manager-class.html#run run]
+ * [export:/docs/html/circuits.core.Manager-class.html#push push]
+ * [export:/docs/html/circuits.core.Manager-class.html#send send]
+ * [export:/docs/html/circuits.core.Manager-class.html#flush flush]
+
+Not only is a Manager capable of managing events, but it is
+also capable of being a self-contained running unit. This is
+called RunnableComponents in circuits. A Component/Manager is
+capable of being started in one of three ways:
+ * [wiki:docs/RunnableComponents#Thread_Mode Thread Mode]
+ * [wiki:docs/RunnableComponents#Process_Mode Process Mode]
+ * [wiki:docs/RunnableComponents#Main Main]
+
+Example(s):
+{{{
+#!python
+from circuits import handler, Event, Component, Manager
+
+# Create a new Manager
+m = Manager()
+
+# Start the Manager in ThreadMode
+m.start()
+
+# To Start the Manager in ProcessMode
+#m.start(process=True)
+
+# Push an Event to a Channel called "foo"
+m.push(Event(), "foo")
+
+# Send an Event to a Channel called "bar"
+x = m.send(Event(), "bar")
+print x # x is the result returned from "bar"'s Event Handler
+
+# Stop the Manager
+m.stop()
+
+# Push a thousand events to a Channel called "foobar"
+for i in xrange(1000):
+    m.push(Event(), "foobar")
+
+# Flush all evvents
+m.flush()
+
+# Run the Manager
+m.run()
+}}}
+
+=== BaseComponent ===
+This is the next building block used in circuits. The Component
+is comprised of the BaseComponent. The BaseComponent has all of the
+features and capabilities of the [#Manager Manager], however a
+BaseComponent (''and all Component(s)'') can be Registered and
+Unregistered to other Manager(s) or Component(s).
+
+'''NB:''' A Manager __cannot__ be registered to anything.
+
+The BasComponent has the following two public interfaces:
+ * [export:/docs/html/circuits.core.BaseComponent-class.html#register register]
+ * [export:/docs/html/circuits.core.BaseComponent-class.html#unregister unregister]
+
+Example(s): ''No examples for BaseComponent''.
+
+'''NB:''' BaseComponent __should not__ be used normally. Use Component.
+
+=== Component ===
+This is the last and final building block of circuits
+and all components, The Component. This is built on top
+of the BaseComponent (which is built on top of the Manager).
+It has no new public interfaces, however, it does one thing
+for you:
+ * Automatically creates Event Handlers.
+
+Any method defined in a Component that:
+ * does '''NOT''' start with a single _
+ * or is '''NOT''' already an Event Handler
+is turned into an Event Handler with the following properties:
+ * channel: The name of the method
+ * filter: False
+
+Example(s):
+{{{
+#!python
+from circuits import handler, Event, Component, Manager
+
+# Create a new Component
+class Foo(Component):
+
+   def a(self):
+      print "Foo's Event Handler for 'a'"
+
+   def b(self):
+      return "Foo's Event Handler for 'b'"
+
+# Create a new Manager
+m = Manager()
+
+# Start the Manager in ThreadMode
+m.start()
+
+# To Start the Manager in ProcessMode
+#m.start(process=True)
+
+# Create a new instance of the Component Foo
+foo = Foo()
+
+# Register foo with the Manager
+m += foo # Equivalent to: foo.register(m)
+
+# Push an Event to a Channel called "a"
+m.push(Event(), "a")
+
+# Send an Event to a Channel called "b"
+x = m.send(Event(), "b")
+print x # x contains: "Foo's Event Handler for 'b'"
+
+# Unregister foo
+foo.unregister() # Or: m -= foo
+
+# Stop the Manager
+m.stop()
+}}}
+
+----
+''More coming...''
+
+TODO:
+ * Event
+ * Event Handler
+  * Listener
+  * Filter
+ * Channel
+ * Target
+
+If you have any further questions please read the
+[wiki:docs/FrequentlyAskedQuestions FAQ] or send an
+email to the [http://groups.google.com.au/group/circuits-users circuits Google Group]
+or simply come see us at the [http://freenode.net FreeNode IRC Network] on [irc://irc.freenode.net/circuits #circuits].
+-----
+[.. Up]
