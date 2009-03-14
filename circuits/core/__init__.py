@@ -9,21 +9,14 @@ This package contains the most basic building blocks of all Components.
 
 import new
 import time
+from itertools import chain
 from threading import Thread
-from functools import partial
 from collections import deque
 from operator import attrgetter
-from collections import defaultdict
-from itertools import chain, ifilter
 from sys import exc_info as _exc_info
 from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
 from signal import signal, SIGHUP, SIGINT, SIGTERM
-
-try:
-    from threading import current_thread as thread
-except ImportError:
-    from threading import currentThread as thread
 
 try:
     from multiprocessing import Process
