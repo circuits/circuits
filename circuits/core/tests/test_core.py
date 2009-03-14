@@ -6,7 +6,6 @@
 
 import unittest
 
-from circuits.core import HAS_MULTIPROCESSING
 from circuits.core import handler, Manager, Component, Event
 
 
