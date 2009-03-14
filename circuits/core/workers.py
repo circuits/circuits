@@ -117,3 +117,6 @@ if HAS_MULTIPROCESSING:
                 channel = event.channel
                 target = event.target
                 self.send(event, channel, target)
+
+else:
+    Process = Thread
