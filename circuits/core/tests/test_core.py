@@ -855,7 +855,7 @@ class TestStructures(unittest.TestCase):
         >>> 
         """
 
-        a + (b + c)
+        self.assertEquals(a + (b + c), a)
 
         #_test(x, c, m, h, ch, q, t):
         self._test(a, [b], a, [a.foo, b.foo, c.foo],
