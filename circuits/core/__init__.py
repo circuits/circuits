@@ -557,6 +557,11 @@ class Manager(object):
 
         self._push(event, (target, channel))
 
+    def _flush(self):
+        q = self._queue
+        self._queue = deque()
+        while q: self._send(*q.popleft())
+
     def flush(self):
         """Flush all Events in the Event Queue
 
@@ -566,9 +571,7 @@ class Manager(object):
         """
 
         if self.manager == self:
-            q = self._queue
-            self._queue = deque()
-            while q: self._send(*q.popleft())
+            self._flush()
         else:
             self.manager.flush()
 
@@ -697,7 +700,7 @@ class Manager(object):
             while self._running:
                 try:
                     [f() for f in self.ticks.copy()]
-                    self.flush()
+                    self._flush()
                     if sleep:
                         try:
                             time.sleep(sleep)
