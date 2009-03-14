@@ -157,7 +157,7 @@ class Close(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Write, self).__init__(*args)
+        super(Close, self).__init__(*args)
 
 ###
 ### Components
