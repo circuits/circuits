@@ -883,7 +883,9 @@ class BaseComponent(Manager):
 
         _unregister(self, self.manager, _root(self.manager))
 
-        self.manager._components.remove(self)
+        if self in self.manager._components:
+            self.manager._components.remove(self)
+
         self.push(Unregistered(self, self.manager), "unregistered", self.channel)
 
         self.manager = self
