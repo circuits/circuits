@@ -29,8 +29,7 @@ class GtkDriver(Component):
 
 def test():
     import gobject
-    from circuits import Manager
-    from circuits import Debugger, handler
+    from circuits import Manager, Debugger
     from circuits.web import BaseServer, wsgi
 
 
@@ -75,8 +74,7 @@ def test():
 
 def test2():
     import gobject
-    from circuits import Manager
-    from circuits import Debugger, handler
+    from circuits import Manager, Debugger
     from circuits.net.sockets import TCPClient, Connect, Write
 
     m = Manager()
