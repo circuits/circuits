@@ -20,12 +20,12 @@ from select import POLLIN, POLLOUT, POLLHUP, POLLERR, POLLNVAL
 
 try:
     from select import epoll
-    from select import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+    from select import EPOLLET, EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
     HAS_EPOLL = 2
 except ImportError:
     try:
         from select26 import epoll
-        from select26 import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+        from select26 import EPOLLET, EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
         HAS_EPOLL = 1
     except ImportError:
         HAS_EPOLL = 0
@@ -38,8 +38,6 @@ _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
 if HAS_EPOLL:
     _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
 
-TIMEOUT = 0.00001 # 0.01ms Default Poller Timeout
-
 ###
 ### Events
 ###
@@ -51,9 +49,9 @@ class Disconnect(Event): pass
 
 class _Poller(BaseComponent):
 
-    channel = "poll"
+    channel = None
 
-    def __init__(self, target, timeout=TIMEOUT, channel=channel):
+    def __init__(self, target, timeout=None, channel=channel):
         super(_Poller, self).__init__(channel=channel)
 
         self.target = target
@@ -94,6 +92,11 @@ class Select(_Poller):
     reasons as most systems implement select-based polling for backwards
     compatibility.
     """
+
+    channel = "select"
+
+    def __init__(self, target, timeout=0.00001, channel=channel):
+        super(Select, self).__init__(target, timeout, channel=channel)
 
     def _preenDescriptors(self):
         for socks in (self._read[:], self._write[:]):
@@ -142,8 +145,10 @@ class Poll(_Poller):
     implementation.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(Poll, self).__init__(*args, **kwargs)
+    channel = "poll"
+
+    def __init__(self, target, timeout=1.0, channel=channel):
+        super(Poll, self).__init__(target, timeout, channel=channel)
 
         self._map = {}
         self._poller = poll()
@@ -233,8 +238,10 @@ class EPoll(_Poller):
     implementation.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(EPoll, self).__init__(*args, **kwargs)
+    channel = "epoll"
+
+    def __init__(self, target, timeout=0.001, channel=channel):
+        super(EPoll, self).__init__(target, timeout, channel=channel)
 
         self._map = {}
         self._poller = epoll()
@@ -255,9 +262,9 @@ class EPoll(_Poller):
         mask = 0
 
         if fd in self._read:
-            mask = mask | EPOLLIN
+            mask = mask | EPOLLIN | EPOLLET
         if fd in self._write:
-            mask = mask | EPOLLOUT
+            mask = mask | EPOLLOUT | EPOLLET
 
         if mask:
             self._poller.register(fd, mask)
