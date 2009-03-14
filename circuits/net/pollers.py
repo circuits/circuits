@@ -86,12 +86,6 @@ class _Poller(BaseComponent):
         if fd in self._write:
             self._write.remove(fd)
 
-    def __tick__(self):
-        self.poll()
-
-    def poll(self):
-        raise NotImplemented
-
 class Select(_Poller):
     """Select(...) -> new Select Poller Component
 
