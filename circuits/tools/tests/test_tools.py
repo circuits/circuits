@@ -9,7 +9,7 @@ Test all functionality of the tools package.
 
 import unittest
 
-from circuits import Event, Component
+from circuits import Component
 from circuits.tools import kill, graph, inspect
 
 class A(Component):
