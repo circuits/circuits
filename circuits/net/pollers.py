@@ -103,7 +103,7 @@ class Select(_Poller):
                 except Exception, e:
                     self.discard(sock)
 
-    def poll(self):
+    def __tick__(self):
         try:
             r, w, _ = select(self._read, self._write, [], self.timeout)
         except ValueError, e:
@@ -190,7 +190,7 @@ class Poll(_Poller):
         super(Poll, self).discard(fd)
         self._updateRegistration(fd)
 
-    def poll(self):
+    def __tick__(self):
         try:
             l = self._poller.poll(self.timeout)
         except SelectError, e:
@@ -285,7 +285,7 @@ class EPoll(_Poller):
         super(EPoll, self).discard(fd)
         self._updateRegistration(fd)
 
-    def poll(self):
+    def __tick__(self):
         try:
             l = self._poller.poll(self.timeout)
         except SelectError, e:
