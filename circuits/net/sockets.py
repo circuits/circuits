@@ -15,9 +15,8 @@ from collections import defaultdict, deque
 from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
 
-TIMEOUT = 0.001     # 0.1ms Poller Timeout
-BUFSIZE = 4096      # 4KB Buffer
-BACKLOG = 128       # 128 Concurrent Connections
+BUFSIZE = 4096 # 4KB Buffer
+BACKLOG = 128  # 128 Concurrent Connections
 
 ###
 ### Event Objects
@@ -176,9 +175,8 @@ class Client(Component):
         self.issuer = {}
 
         Poller = kwargs.get("poller", DefaultPoller)
-        timeout = kwargs.get("timeout", TIMEOUT)
 
-        self._poller = Poller(self, timeout)
+        self._poller = Poller(self)
         self._poller.register(self)
 
         self._sock = None
@@ -317,9 +315,8 @@ class Server(Component):
         self.ssl = ssl
 
         Poller = kwargs.get("poller", DefaultPoller)
-        timeout = kwargs.get("timeout", TIMEOUT)
 
-        self._poller = Poller(self, timeout)
+        self._poller = Poller(self)
         self._poller.register(self)
 
         self._sock = None
