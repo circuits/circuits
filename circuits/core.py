@@ -324,7 +324,6 @@ class Manager(object):
         self._channels = defaultdict(list)
 
         self._ticks = set()
-        self._hidden = set()
         self._components = set()
 
         self._task = None
@@ -470,10 +469,6 @@ class Manager(object):
     @property
     def channels(self):
         return self._channels
-
-    @property
-    def hidden(self):
-        return self._hidden
 
     @property
     def ticks(self):
@@ -796,86 +791,7 @@ class BaseComponent(Manager):
         e.name = channel.title()
         return self.send(e, channel, self.channel)
 
-    def _registerHidden(self):
-        d = 0
-        i = 0
-        x = self
-        stack = []
-        done = False
-        hidden = set()
-        visited = set()
-        children = list(x.components)
-        while not done:
-            if x not in visited:
-                p1 = x is not self
-                p2 = x.manager is not self
-                p3 = x not in self.manager.components
-                p4 = x.manager not in hidden
-                if p1 and (p2 or p3) and p4:
-                    hidden.add(x)
-                visited.add(x)
-                if x.components:
-                    d += 1
-
-            if i < len(children):
-                x = children[i]
-                i += 1
-                if x.components:
-                    stack.append((i, children))
-                    children = list(x.components)
-                    i = 0
-            else:
-                if stack:
-                    i, children = stack.pop()
-                    d -= 1
-                else:
-                    done = True
-
-        for x in hidden:
-            oldmanager = x.manager
-            x.register(self.manager)
-            x.manager = oldmanager
-
-        self.manager._hidden.update(hidden)
-
-        oldmanager = self.manager
-        pmanager = self.manager.manager
-        if self.manager is not pmanager:
-            self.register(pmanager)
-            pmanager._hidden.add(self)
-            pmanager._components.remove(self)
-
-        self.manager._components.difference_update(hidden)
-        self.manager = oldmanager
-
-    def _getTicks(self):
-        ticks = set()
-        if hasattr(self, "__tick__"):
-            ticks.add(self.__tick__)
-        for v in vars(self).itervalues():
-            if isinstance(v, Component) and hasattr(v, "__tick__"):
-                ticks.add(v.__tick__)
-        for component in self.components:
-            if hasattr(component, "__tick__"):
-                ticks.add(component.__tick__)
-        for component in self.hidden:
-            if hasattr(component, "__tick__"):
-                ticks.add(component.__tick__)
-        return ticks
-
-    def register(self, manager):
-        """Register all Event Handlers with the given Manager
-        
-        This will register all Event Handlers of this Component to the
-        given Manager. By default, every Component (Base Component) is
-        registered with itself.
-        
-        Iif the Component or Manager being registered
-        with is not the current Component, then any Hidden Components
-        in registered to this Component will also be regsitered with the
-        given Manager. A Registered Event will also be sent.
-        """
-
+    def _registerHandlers(self, manager):
         p = lambda x: callable(x) and getattr(x, "handler", False)
         handlers = [v for k, v in getmembers(self, p)]
 
@@ -896,14 +812,37 @@ class BaseComponent(Manager):
 
                 manager._add(handler, channel)
 
+    def _unregisterHandlers(self, manager):
+        for handler in self._handlers:
+            manager.remove(handler)
+
+    def register(self, manager):
+        """Register all Event Handlers with the given Manager
+        
+        This will register all Event Handlers of this Component to the
+        given Manager. By default, every Component (Base Component) is
+        registered with itself.
+        
+        Iif the Component or Manager being registered
+        with is not the current Component, then any Hidden Components
+        in registered to this Component will also be regsitered with the
+        given Manager. A Registered Event will also be sent.
+        """
+
+        def _register(c, m):
+            c._registerHandlers(m)
+            if hasattr(c, "__tick__"):
+                m._ticks.add(getattr(c, "__tick__"))
+            for x in c.components:
+                _register(x, m)
+
+        _register(self, manager)
+
         self.manager = manager
 
         if manager is not self:
             manager._components.add(self)
             self.push(Registered(self, manager), "registered", self.channel)
-            self._registerHidden()
-
-        self.manager._ticks.update(self._getTicks())
 
     def unregister(self):
         """Unregister all registered Event Handlers
@@ -914,19 +853,17 @@ class BaseComponent(Manager):
         @note: It's possible to unregister a Component from itself!
         """
 
-        manager = self.manager
+        def _unregister(c, m):
+            c._unregisterHandlers(m)
+            if hasattr(c, "__tick__"):
+                m._ticks.remove(getattr(c, "__tick__"))
 
-        for handler in self._handlers.copy():
-            manager._remove(handler)
+            for x in c.components:
+                _unregister(x, m)
 
-        if self in manager._components.copy():
-            manager._components.remove(self)
+        _unregister(self, self.manager)
 
-        manager._ticks.difference_update(self._getTicks())
-        pmanager = manager.manager
-        if self in pmanager._hidden:
-            pmanager._hidden.remove(self)
-
+        self.manager._components.add(self)
         self.push(Unregistered(self, manager), "unregistered", self.channel)
 
         self.manager = self
