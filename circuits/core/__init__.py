@@ -32,6 +32,8 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
+from circuits.tools import reprhandler
+
 class Event(object):
     """Create a new Event Object
 
@@ -583,10 +585,14 @@ class Manager(object):
             r = False
             for handler in self._getHandlers(channel):
                 try:
+                    #stime = time.time()
                     if handler._passEvent:
                         r = handler(event, *eargs, **ekwargs)
                     else:
                         r = handler(*eargs, **ekwargs)
+                    #etime = time.time()
+                    #ttime = (etime - stime) * 1e3
+                    #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
                 except (KeyboardInterrupt, SystemExit):
                     raise
                 except:
