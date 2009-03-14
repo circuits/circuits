@@ -8,6 +8,7 @@ This module implements the Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
 
+import re
 from urllib import unquote
 from urlparse import urlparse
 from cStringIO import StringIO
@@ -21,6 +22,8 @@ from headers import parseHeaders
 from errors import HTTPError, NotFound
 from constants import RESPONSES, BUFFER_SIZE
 from events import Request, Response, Stream, Write, Close
+
+PARSE_REQUEST = re.compile("^(.*)\r\n\r\n(.*)(?s)")
 
 class HTTP(Component):
     """HTTP Protocol Component
@@ -129,10 +132,10 @@ class HTTP(Component):
                 error = HTTPError(request, response, 505)
                 return self.send(error, "httperror", self.channel)
 
-            headers, body = parseHeaders(StringIO(data))
-            request.headers = headers
-            request.body.write(body)
-
+            m = PARSE_REQUEST.match(data)
+            request.headers = headers = parseHeaders(m.groups()[0])
+            request.body.write(m.groups()[1])
+            
             if headers.get("Expect", "") == "100-continue":
                 self._buffered[sock] = request, response
                 return self.simple(sock, 100)
