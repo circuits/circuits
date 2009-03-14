@@ -553,6 +553,8 @@ class Manager(object):
         if isinstance(target, Component):
             target = getattr(target, "channel", "*")
 
+        event.channel = (target, channel)
+
         self._push(event, (target, channel))
 
     def flush(self):
@@ -572,7 +574,6 @@ class Manager(object):
 
     def _send(self, event, channel, errors=False, log=True):
         if self.manager == self:
-            event.channel = channel
             eargs = event.args
             ekwargs = event.kwargs
 
@@ -633,6 +634,8 @@ class Manager(object):
         target = target or getattr(self, "channel", "*")
         if isinstance(target, Component):
             target = getattr(target, "channel", "*")
+
+        event.channel = (target, channel)
 
         return self._send(event, (target, channel), errors, log)
 
