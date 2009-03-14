@@ -558,9 +558,12 @@ class Manager(object):
         self._push(event, (target, channel))
 
     def _flush(self):
-        q = self._queue
-        self._queue = deque()
-        while q: self._send(*q.popleft())
+        if self.manager == self:
+            q = self._queue
+            self._queue = deque()
+            while q: self._send(*q.popleft())
+        else:
+            self.manager._flush()
 
     def flush(self):
         """Flush all Events in the Event Queue
@@ -570,10 +573,7 @@ class Manager(object):
         otherwise, flush all Events from this Component's Manager's Event Queue.
         """
 
-        if self.manager == self:
-            self._flush()
-        else:
-            self.manager.flush()
+        self._flush()
 
     def _send(self, event, channel, errors=False, log=True):
         if self.manager == self:
