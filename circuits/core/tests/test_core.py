@@ -845,16 +845,6 @@ class TestStructures(unittest.TestCase):
         ### Test 1
         ###
 
-        """
-        >>> a + (b + c)
-        <A/* (q: 1 c: 1 h: 3) [S]>
-        >>> print graph(a)
-        * <A/* (q: 1 c: 1 h: 3) [S]>
-         * <B/* (q: 1 c: 1 h: 2) [S]>
-          * <C/* (q: 0 c: 1 h: 1) [S]>
-        >>> 
-        """
-
         self.assertEquals(a + (b + c), a)
 
         #_test(x, c, m, h, ch, q, t):
@@ -862,6 +852,23 @@ class TestStructures(unittest.TestCase):
             [(("*", "foo"), [a.foo, b.foo, c.foo])],
             1, [a.__tick__, b.__tick__, c.__tick__])
         self._test(b, [c], a, [b.foo, c.foo],
+            [(("*", "foo"), [b.foo, c.foo])],
+            1, [b.__tick__, c.__tick__])
+        self._test(c, [], b, [c.foo],
+            [(("*", "foo"), [c.foo])],
+            0, [c.__tick__])
+
+        ###
+        ### Test 2
+        ###
+
+        self.assertEquals(a - b, a)
+
+        #_test(x, c, m, h, ch, q, t):
+        self._test(a, [], a, [a.foo],
+            [(("*", "foo"), [a.foo])],
+            2, [a.__tick__])
+        self._test(b, [c], b, [b.foo, c.foo],
             [(("*", "foo"), [b.foo, c.foo])],
             1, [b.__tick__, c.__tick__])
         self._test(c, [], b, [c.foo],
