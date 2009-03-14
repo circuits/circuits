@@ -9,11 +9,10 @@ This module implements WSGI Components.
 
 import warnings
 from urllib import unquote
+from cStringIO import StringIO
 from traceback import format_exc
 
 from circuits import handler, Component
-
-from circuits.io import File
 
 import webob
 from headers import Headers
@@ -141,11 +140,6 @@ class Application(Component):
             start_response(response.status, response.headers.items(), exc_info)
             return [body]
 
-class WSGIErrors(File):
-
-    def write(self, data):
-        pass # Not doing anything with wsgi.errors yet
-
 class Gateway(Component):
 
     def __init__(self, app, path=""):
@@ -155,7 +149,7 @@ class Gateway(Component):
         self.app = app
         self.path = path
 
-        self._errors = WSGIErrors("/dev/null", "a")
+        self._errors = StringIO()
         self._errors.register(self)
 
         self._request = self._response = None
