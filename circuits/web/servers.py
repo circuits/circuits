@@ -23,7 +23,7 @@ class BaseServer(Component):
 
     channel = "web"
 
-    def __init__(self, bind, docroot=None, **kwargs):
+    def __init__(self, bind, **kwargs):
         super(BaseServer, self).__init__(**kwargs)
 
         self.server = (TCPServer(bind, **kwargs) + HTTP())

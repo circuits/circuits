@@ -11,6 +11,7 @@ import os
 
 from circuits import handler, Component
 
+from core import Controller
 from errors import HTTPError
 from cgifs import FieldStorage
 from tools import expires, serve_file
@@ -25,6 +26,9 @@ class Dispatcher(Component):
 
         self.docroot = docroot or os.getcwd()
         self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
+
+        self.paths = []
+        self.cache = {}
 
     def _parseBody(self, request, response, params):
         body = request.body
@@ -65,28 +69,29 @@ class Dispatcher(Component):
         """
 
         path = request.path
+        if path in self.cache:
+            return self.cache[path]
+
         method = request.method.upper()
         request.index = request.path.endswith("/")
 
-        defaults = "index", method, "default"
-
-        if not "/" in path:
-            for default in defaults:
-                k = ("/", default)
-                if k in self.manager.channels:
-                    return default, "/", []
-            return None, []
-
         names = [x for x in path.strip("/").split("/") if x]
 
-        targets = [t for (t, c) in self.manager.channels if t[0] == "/"]
+        if not names:
+            for default in ("index", method, "default"):
+                k = ("/", default)
+                if k in self.channels:
+                    self.cache[path] = r = (default, "/", [])
+                    return r
+            self.cache[path] = r = (None, None, [])
+            return r
 
         i = 0
         matches = [""]
         candidates = []
         while i <= len(names):
             x = "/".join(matches) or "/"
-            if x in targets:
+            if x in self.paths:
                 candidates.append([i, x])
                 if i < len(names):
                     matches.append(names[i])
@@ -95,7 +100,8 @@ class Dispatcher(Component):
             i += 1
 
         if not candidates:
-            return None, None, []
+            self.cache[path] = r = (None, None, [])
+            return r
 
         i, candidate = candidates.pop()
 
@@ -107,7 +113,7 @@ class Dispatcher(Component):
         vpath = []
         channel = None
         for channel in channels:
-            if (candidate, channel) in self.manager.channels:
+            if (candidate, channel) in self.channels:
                 if i < len(names) and channel == names[i]:
                     i += 1
                 break
@@ -118,12 +124,26 @@ class Dispatcher(Component):
             else:
                 vpath = []
 
-        handler = self.manager.channels[(candidate, channel)][0]
+        handler = self.channels[(candidate, channel)][0]
 
         if vpath and not handler.varargs:
-            return None, None, None,
+            self.cache[path] = r = (None, None, [])
+            return r
         else:
-            return channel, candidate, vpath
+            self.cache[path] = r = (channel, candidate, vpath)
+            return r
+
+    @handler("registered", target="*")
+    def registered(self, c, m):
+        if isinstance(c, Controller) and c not in self.components:
+            self.paths.append(c.channel)
+            c.unregister()
+            self += c
+
+    @handler("unregistered", target="*")
+    def unregistered(self, c, m):
+        if isinstance(c, Controller) and c in self.components:
+            self.paths.remove(c.channel)
 
     @handler("request", filter=True)
     def request(self, event, request, response):
