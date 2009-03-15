@@ -813,8 +813,9 @@ class BaseComponent(Manager):
         def _register(c, m, r):
             c._registerHandlers(m)
             c.root = r
-            m._queue.extend(c._queue)
-            c._queue.clear()
+            if c._queue:
+                m._queue.extend(c._queue)
+                c._queue.clear()
             if m is not r:
                 c._registerHandlers(r)
             if hasattr(c, "__tick__"):
