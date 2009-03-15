@@ -29,8 +29,6 @@ from circuits import io
 from circuits.core import bridge
 from circuits import handler, Event, Component, Debugger, Manager
 
-from circuits.tools import graph, inspect
-
 USAGE = "%prog [options] [host[:port]]"
 VERSION = "%prog v" + circuits.__version__
 
@@ -111,7 +109,6 @@ class Calc(Component):
 class Adder(Component):
 
     def newinput(self, s):
-        print "Evaluating: %s" % s
         r = eval(s)
         self.push(Result(r), "result")
 
@@ -137,7 +134,7 @@ def main():
             address, port = arg, bind[1]
         nodes.append((address, port))
 
-    manager = Manager() + bridge.Bridge(bind, nodes)
+    manager = Manager() + bridge.Bridge(nodes, bind=bind)
 
     if opts.debug:
         debugger = Debugger()
@@ -153,9 +150,6 @@ def main():
         manager += io.stdout
         manager += Input()
         manager += Calc()
-
-    print graph(manager)
-    print inspect(manager)
 
     manager.run()
 
