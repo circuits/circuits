@@ -51,10 +51,9 @@ class _Poller(BaseComponent):
 
     channel = None
 
-    def __init__(self, target, timeout=None, channel=channel):
+    def __init__(self, timeout=None, channel=channel):
         super(_Poller, self).__init__(channel=channel)
 
-        self.target = target
         self.timeout = timeout
 
         self._read = []
@@ -95,8 +94,8 @@ class Select(_Poller):
 
     channel = "select"
 
-    def __init__(self, target, timeout=0.00001, channel=channel):
-        super(Select, self).__init__(target, timeout, channel=channel)
+    def __init__(self, timeout=0.00001, channel=channel):
+        super(Select, self).__init__(timeout, channel=channel)
 
     def _preenDescriptors(self):
         for socks in (self._read[:], self._write[:]):
@@ -133,10 +132,10 @@ class Select(_Poller):
                 raise
 
         for sock in w:
-            self.push(Write(sock), "_write", self.target)
+            self.push(Write(sock), "_write", self.manager)
             
         for sock in r:
-            self.push(Read(sock), "_read", self.target)
+            self.push(Read(sock), "_read", self.manager)
 
 class Poll(_Poller):
     """Poll(...) -> new Poll Poller Component
@@ -147,8 +146,8 @@ class Poll(_Poller):
 
     channel = "poll"
 
-    def __init__(self, target, timeout=1.0, channel=channel):
-        super(Poll, self).__init__(target, timeout, channel=channel)
+    def __init__(self, timeout=1.0, channel=channel):
+        super(Poll, self).__init__(timeout, channel=channel)
 
         self._map = {}
         self._poller = poll()
@@ -214,19 +213,19 @@ class Poll(_Poller):
         fd = self._map[fileno]
 
         if event & _POLL_DISCONNECTED and not (event & POLLIN):
-            self.push(Disconnect(fd), "_disconnect", self.target)
+            self.push(Disconnect(fd), "_disconnect", self.manager)
             self._poller.unregister(fileno)
             super(Poll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & POLLIN:
-                    self.push(Read(fd), "_read", self.target)
+                    self.push(Read(fd), "_read", self.manager)
                 if event & POLLOUT:
-                    self.push(Write(fd), "_write", self.target)
+                    self.push(Write(fd), "_write", self.manager)
             except Exception, e:
-                self.push(Error(fd, e), "_error", self.target)
-                self.push(Disconnect(fd), "_disconnect", self.target)
+                self.push(Error(fd, e), "_error", self.manager)
+                self.push(Disconnect(fd), "_disconnect", self.manager)
                 self._poller.unregister(fileno)
                 super(Poll, self).discard(fd)
                 del self._map[fileno]
@@ -240,8 +239,8 @@ class EPoll(_Poller):
 
     channel = "epoll"
 
-    def __init__(self, target, timeout=0.001, channel=channel):
-        super(EPoll, self).__init__(target, timeout, channel=channel)
+    def __init__(self, timeout=0.001, channel=channel):
+        super(EPoll, self).__init__(timeout, channel=channel)
 
         self._map = {}
         self._poller = epoll()
@@ -311,19 +310,19 @@ class EPoll(_Poller):
         fd = self._map[fileno]
 
         if event & _EPOLL_DISCONNECTED and not (event & POLLIN):
-            self.push(Disconnect(fd), "_disconnect", self.target)
+            self.push(Disconnect(fd), "_disconnect", self.manager)
             self._poller.unregister(fileno)
             super(EPoll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & EPOLLIN:
-                    self.push(Read(fd), "_read", self.target)
+                    self.push(Read(fd), "_read", self.manager)
                 if event & EPOLLOUT:
-                    self.push(Write(fd), "_write", self.target)
+                    self.push(Write(fd), "_write", self.manager)
             except Exception, e:
-                self.push(Error(fd, e), "_error", self.target)
-                self.push(Disconnect(fd), "_disconnect", self.target)
+                self.push(Error(fd, e), "_error", self.manager)
+                self.push(Disconnect(fd), "_disconnect", self.manager)
                 self._poller.unregister(fileno)
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
