@@ -78,8 +78,8 @@ def inspect(x):
         write("  %s\n" % component)
     write("\n")
 
-    write(" Tick Functions: %d\n" % len(x.ticks))
-    for tick in x.ticks:
+    write(" Tick Functions: %d\n" % len(x._ticks))
+    for tick in x._ticks:
         write("  %s\n" % tick)
     write("\n")
 
