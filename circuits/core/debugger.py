@@ -11,16 +11,7 @@ import sys
 from cStringIO import StringIO
 from traceback import format_tb
 
-from circuits import handler, Event, Component
-
-
-class Debug(Event):
-    """Debug Event
-
-    :param msg: Message to display
-    :type msg: str
-    """
-
+from circuits.core import handler, Component
 
 class Debugger(Component):
     """Create a new Debugger Component
