@@ -58,10 +58,12 @@ class Event(object):
         self.args = args
         self.kwargs = kwargs
 
-        self.name = self.__class__.__name__
+    @property
+    def name(self):
+        return self.__class__.__name__
 
-    def __eq__(self, y):
-        """ x.__eq__(y) <==> x==y
+    def __eq__(self, other):
+        """ x.__eq__(other) <==> x==other
 
         Tests the equality of Event self against Event y.
         Two Events are considered "equal" iif the name,
@@ -69,21 +71,19 @@ class Event(object):
         args and kwargs passed.
         """
 
-        attrs = ("name", "args", "kwargs", "channel")
-        return all([getattr(self, a) == getattr(y, a) for a in attrs])
+        return (self.__class__.__name__ is other.__class__.__name__
+                and self.channel == other.channel
+                and self.args == other.args
+                and self.kwargs == other.kwargs)
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        name = self.name
         if type(self.channel) is tuple:
             channel = "%s:%s" % self.channel
         else:
             channel = self.channel or ""
-        args = ", ".join([("%s" % repr(arg)) for arg in self.args])
-        kwargs = ", ".join([("%s=%r" % kw) for kw in self.kwargs.items()])
-        data = "%s %s" % (args, kwargs)  if args and kwargs else args or kwargs
-        return "<%s[%s] (%s)>" % (name, channel, data)
+        return "<%s[%s] %s %s>" % (self.name, channel, self.args, self.kwargs)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
@@ -95,9 +95,9 @@ class Event(object):
         Otherwise a TypeError is raised as nothing else is valid.
         """
 
-        if type(x) == int:
+        if type(x) is int:
             return self.args[x]
-        elif type(x) == str:
+        elif type(x) is str:
             return self.kwargs[x]
         else:
             raise TypeError("Expected int or str, got %r" % type(x))
