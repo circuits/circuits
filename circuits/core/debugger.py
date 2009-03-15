@@ -81,7 +81,7 @@ class Debugger(Component):
             return
 
         channel = event.channel
-        if True in [event.name == name for name in self.IgnoreEvents]:
+        if True in [event.name == x.__name__ for x in self.IgnoreEvents]:
             return
         elif channel in self.IgnoreChannels:
             return
