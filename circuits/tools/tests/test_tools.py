@@ -61,11 +61,11 @@ class F(Component):
         print "F!"
 
 GRAPH = """\
-* <A/* (q: 3 c: 1 h: 6) [S]>
+* <A/* (q: 5 c: 1 h: 6) [S]>
  * <B/* (q: 0 c: 1 h: 2) [S]>
   * <C/* (q: 0 c: 1 h: 1) [S]>
- * <D/* (q: 1 c: 1 h: 3) [S]>
-  * <E/* (q: 1 c: 1 h: 2) [S]>
+ * <D/* (q: 0 c: 1 h: 3) [S]>
+  * <E/* (q: 0 c: 1 h: 2) [S]>
    * <F/* (q: 0 c: 1 h: 1) [S]>"""
 
 class TestKill(unittest.TestCase):
