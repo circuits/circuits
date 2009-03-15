@@ -71,7 +71,7 @@ class Event(object):
         args and kwargs passed.
         """
 
-        return (self.__class__.__name__ is other.__class__.__name__
+        return (self.__class__ is other.__class__
                 and self.channel == other.channel
                 and self.args == other.args
                 and self.kwargs == other.kwargs)
