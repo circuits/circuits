@@ -850,10 +850,10 @@ class TestStructures(unittest.TestCase):
         #_test(x, c, m, h, ch, q, t):
         self._test(a, [b], a, [a.foo, b.foo, c.foo],
             [(("*", "foo"), [a.foo, b.foo, c.foo])],
-            1, [a.__tick__, b.__tick__, c.__tick__])
+            2, [a.__tick__, b.__tick__, c.__tick__])
         self._test(b, [c], a, [b.foo, c.foo],
             [(("*", "foo"), [b.foo, c.foo])],
-            1, [b.__tick__, c.__tick__])
+            0, [b.__tick__, c.__tick__])
         self._test(c, [], b, [c.foo],
             [(("*", "foo"), [c.foo])],
             0, [c.__tick__])
@@ -867,10 +867,10 @@ class TestStructures(unittest.TestCase):
         #_test(x, c, m, h, ch, q, t):
         self._test(a, [], a, [a.foo],
             [(("*", "foo"), [a.foo])],
-            2, [a.__tick__])
+            3, [a.__tick__])
         self._test(b, [c], b, [b.foo, c.foo],
             [(("*", "foo"), [b.foo, c.foo])],
-            2, [b.__tick__, c.__tick__])
+            1, [b.__tick__, c.__tick__])
         self._test(c, [], b, [c.foo],
             [(("*", "foo"), [c.foo])],
             0, [c.__tick__])
