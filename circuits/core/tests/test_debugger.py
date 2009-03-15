@@ -85,7 +85,7 @@ class EventTestCase(unittest.TestCase):
         manager += debugger
         manager += foo
 
-        debugger.IgnoreEvents.extend(["Test"])
+        debugger.IgnoreEvents.extend([Test])
         debugger.events = True
 
         e = Event()
