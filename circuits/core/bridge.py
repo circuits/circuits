@@ -91,7 +91,7 @@ class Bridge(Component):
             target, channel = channel
             if type(target) is tuple:
                 if type(target[0]) is int:
-                    node = ("0.0.0.0", target[0])
+                    node = ("<broadcast>", target[0])
                 elif type(target[0]) is str and ":" in target[0]:
                     address, port = target[0].split(":", 1)
                     port = int(port)
@@ -101,7 +101,7 @@ class Bridge(Component):
                 else:
                     raise TypeError("Invalid bridge target!")
             else:
-                node = ("0.0.0.0", self.transport.port)
+                node = ("<broadcast>", self.transport.port)
 
             self.transport.write(node, s)
 
