@@ -16,12 +16,12 @@ from cgifs import FieldStorage
 from tools import expires, serve_file
 from utils import parseQueryString, dictform
 
-class DefaultDispatcher(Component):
+class Dispatcher(Component):
 
     channel = "web"
 
     def __init__(self, docroot=None, defaults=None, **kwargs):
-        super(DefaultDispatcher, self).__init__(**kwargs)
+        super(Dispatcher, self).__init__(**kwargs)
 
         self.docroot = docroot or os.getcwd()
         self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
@@ -156,34 +156,3 @@ class DefaultDispatcher(Component):
                 req.args += tuple(vpath)
 
             return self.send(req, channel, target, errors=True)
-
-class FileDispatcher(Component):
-
-   template = """\
-<html>
- <head>
-  <title>Index of %(path)s</title>
- </head>
- <body>
-  <h1>Index of %(path)s</h1>
-%(files)s
- </body>
-</html>"""
-
-   def __init__(self, path=None, **kwargs):
-      super(FileDispatcher, self).__init__(**kwargs)
-
-      if not path:
-         self.path = os.getcwd()
-
-   def request(self, request, response):
-      print request
-      path = request.path.strip("/")
-      print path
-
-      # TODO: Re-implement this...
-
-      return self.template
-
-Dispatcher = DefaultDispatcher
-FileServer = FileDispatcher
