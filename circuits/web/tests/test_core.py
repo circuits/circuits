@@ -23,6 +23,8 @@ class Root(Controller):
 
 class CoreTestCase(WebCase):
 
+    interactive = False
+
     def setUp(self):
         self.server = (Server(8000) + Root())
         self.server.start()
