@@ -535,7 +535,9 @@ class UDPServer(Server):
 
     def _write(self, address, data):
         try:
-            self._sock.sendto(data, address)
+            bytes = self._sock.sendto(data, address)
+            if bytes < len(data):
+                self._buffers[self._sock].appendleft(data[bytes:])
         except socket.error, e:
             if e[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
