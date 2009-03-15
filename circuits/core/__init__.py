@@ -790,22 +790,6 @@ class BaseComponent(Manager):
         format = "<%s/%s (q: %d c: %d h: %d) [%s]>"
         return format % (name, channel, q, c, h, state)
 
-    def __call__(self, channel, *args, **kwargs):
-        """x.__call__(...) <==> x(...)
-
-        (Optional) Convenience callable to send an arbitary Event to
-        the given Channel populating the Event OBject with the given
-        *args and **kwargs and returning the result.
-
-        @return: Result of sending Event to Channel with (*args, **kwargs)
-        @rtype object
-        """
-
-
-        e = Event(*args, **kwargs)
-        e.name = channel.title()
-        return self.send(e, channel, self.channel)
-
     def _registerHandlers(self, manager):
         p = lambda x: callable(x) and getattr(x, "handler", False)
         handlers = [v for k, v in getmembers(self, p)]
