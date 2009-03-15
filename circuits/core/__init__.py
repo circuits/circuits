@@ -296,15 +296,15 @@ class Manager(object):
         self._queue = deque()
         self._handlers = set()
         self._globals = []
-        self._channels = dict()
+        self.channels = dict()
         self._cmap = dict()
         self._tmap = dict()
 
         self._ticks = set()
-        self._components = set()
+        self.components = set()
 
         self._task = None
-        self._running = False
+        self.running = False
 
         self.root = self
         self.manager = self
@@ -314,7 +314,7 @@ class Manager(object):
 
         name = self.__class__.__name__
         q = len(self._queue)
-        c = len(self._channels)
+        c = len(self.channels)
         h = len(self._handlers)
         state = self.state
         format = "<%s (q: %d c: %d h: %d) [%s]>"
@@ -389,9 +389,9 @@ class Manager(object):
     def _getHandlers(self, _channel):
         target, channel = _channel
 
-        channels = self._channels
-        exists = self._channels.has_key
-        get = self._channels.get
+        channels = self.channels
+        exists = self.channels.has_key
+        get = self.channels.get
         tmap = self._tmap.get
         cmap = self._cmap.get
 
@@ -424,7 +424,7 @@ class Manager(object):
 
     @property
     def state(self):
-        if self._running:
+        if self.running:
             if self._task is None:
                 return "R"
             else:
@@ -434,22 +434,6 @@ class Manager(object):
                     return "D"
         else:
             return "S"
-
-    @property
-    def running(self):
-        return self._running
-
-    @property
-    def components(self):
-        return self._components
-
-    @property
-    def channels(self):
-        return self._channels
-
-    @property
-    def ticks(self):
-        return self._ticks
 
     def _add(self, handler, channel=None):
         """E._add(handler, channel) -> None
@@ -468,13 +452,13 @@ class Manager(object):
 
             self._handlers.add(handler)
 
-            if channel not in self._channels:
-                self._channels[channel] = []
+            if channel not in self.channels:
+                self.channels[channel] = []
 
             if handler not in self.channels[channel]:
-                self._channels[channel].append(handler)
-                self._channels[channel].sort(key=_sortkey)
-                self._channels[channel].reverse()
+                self.channels[channel].append(handler)
+                self.channels[channel].sort(key=_sortkey)
+                self.channels[channel].reverse()
 
             (target, channel) = channel
 
@@ -507,9 +491,9 @@ class Manager(object):
 
         for channel in channels:
             if handler in self.channels[channel]:
-                self._channels[channel].remove(handler)
-            if not self._channels[channel]:
-                del self._channels[channel]
+                self.channels[channel].remove(handler)
+            if not self.channels[channel]:
+                del self.channels[channel]
 
             (target, channel) = channel
 
@@ -667,7 +651,7 @@ class Manager(object):
         self._task.start()
 
     def stop(self):
-        self._running = False
+        self.running = False
         if hasattr(self._task, "terminate"):
             self._task.terminate()
         if hasattr(self._task, "join"):
@@ -690,14 +674,14 @@ class Manager(object):
             signal(SIGINT, self._signal)
             signal(SIGTERM, self._signal)
 
-        self._running = True
+        self.running = True
 
         self.push(Started(self, mode))
 
         try:
-            while self._running:
+            while self.running:
                 try:
-                    [f() for f in self.ticks.copy()]
+                    [f() for f in self._ticks.copy()]
                     self._flush()
                     if sleep:
                         try:
@@ -705,7 +689,7 @@ class Manager(object):
                         except:
                             pass
                 except (KeyboardInterrupt, SystemExit):
-                    self._running = False
+                    self.running = False
                 except:
                     try:
                         if log:
@@ -721,7 +705,7 @@ class Manager(object):
                 self.push(Stopped(self))
                 rtime = time.time()
                 while len(self) > 0 and (time.time() - rtime) < 3:
-                    [f() for f in self.ticks.copy()]
+                    [f() for f in self._ticks.copy()]
                     self.flush()
                     if sleep:
                         time.sleep(sleep)
@@ -776,7 +760,7 @@ class BaseComponent(Manager):
         name = self.__class__.__name__
         channel = self.channel or ""
         q = len(self._queue)
-        c = len(self._channels)
+        c = len(self.channels)
         h = len(self._handlers)
         state = self.state
         format = "<%s/%s (q: %d c: %d h: %d) [%s]>"
@@ -843,7 +827,7 @@ class BaseComponent(Manager):
         self.manager = manager
 
         if manager is not self:
-            manager._components.add(self)
+            manager.components.add(self)
             self.push(Registered(self, manager), target=self)
 
     def unregister(self):
@@ -879,7 +863,7 @@ class BaseComponent(Manager):
         root = _root(self.manager)
         _unregister(self, self.manager, root)
 
-        self.manager._components.remove(self)
+        self.manager.components.remove(self)
         self.push(Unregistered(self, self.manager), target=self)
 
         self.manager = self

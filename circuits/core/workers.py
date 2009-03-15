@@ -33,25 +33,24 @@ class Thread(_Component):
     def __init__(self, *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
 
-        self._running = False
         self._thread = _Thread(target=self.run)
 
     def start(self):
-        self._running = True
+        self.running = True
         self._thread.start()
 
     def run(self):
         pass
 
     def stop(self):
-        self._running = False
+        self.running = False
 
     def join(self):
         return self._thread.join()
 
     @property
     def alive(self):
-        return self._running and self._thread.isAlive()
+        return self.running and self._thread.isAlive()
 
 if HAS_MULTIPROCESSING:
 

@@ -105,7 +105,7 @@ class TestKill(unittest.TestCase):
 
         self.assertTrue(f in e.components)
         self.assertTrue(e in d.components)
-        self.assertFalse(f._components)
+        self.assertFalse(f.components)
 
         self.assertEquals(kill(d), None)
 
@@ -163,7 +163,7 @@ class TestGraph(unittest.TestCase):
 
         self.assertTrue(f in e.components)
         self.assertTrue(e in d.components)
-        self.assertFalse(f._components)
+        self.assertFalse(f.components)
 
         self.assertEquals(graph(a), GRAPH)
 

@@ -810,12 +810,12 @@ class TestStructures(unittest.TestCase):
         for _ in h:
             self.assertTrue(_ in x._handlers)
 
-        self.assertEquals(len(x._channels), len(ch))
+        self.assertEquals(len(x.channels), len(ch))
         for k, v in ch:
-            self.assertTrue(k in x._channels)
+            self.assertTrue(k in x.channels)
             for _ in v:
                 self.assertTrue(_ in x._handlers)
-                self.assertTrue(_ in x._channels[k])
+                self.assertTrue(_ in x.channels[k])
 
         if q:
             self.assertTrue(x)
