@@ -306,6 +306,7 @@ class Manager(object):
         self._task = None
         self._running = False
 
+        self.root = self
         self.manager = self
 
     def __repr__(self):
@@ -523,10 +524,7 @@ class Manager(object):
                     del self._cmap[channel]
 
     def _push(self, event, channel):
-        if self.manager == self:
-            self._queue.append((event, channel))
-        else:
-            self.manager._push(event, channel)
+        self._queue.append((event, channel))
 
     def push(self, event, channel=None, target=None):
         """Push a new Event into the queue
@@ -557,15 +555,12 @@ class Manager(object):
 
         event.channel = (target, channel)
 
-        self._push(event, (target, channel))
+        self.root._push(event, (target, channel))
 
     def _flush(self):
-        if self.manager == self:
-            q = self._queue
-            self._queue = deque()
-            while q: self._send(*q.popleft())
-        else:
-            self.manager._flush()
+        q = self._queue
+        self._queue = deque()
+        while q: self._send(*q.popleft())
 
     def flush(self):
         """Flush all Events in the Event Queue
@@ -575,38 +570,35 @@ class Manager(object):
         otherwise, flush all Events from this Component's Manager's Event Queue.
         """
 
-        self._flush()
+        self.root._flush()
 
     def _send(self, event, channel, errors=False, log=True):
-        if self.manager == self:
-            eargs = event.args
-            ekwargs = event.kwargs
+        eargs = event.args
+        ekwargs = event.kwargs
 
-            r = False
-            for handler in self._getHandlers(channel):
-                try:
-                    #stime = time.time()
-                    if handler._passEvent:
-                        r = handler(event, *eargs, **ekwargs)
-                    else:
-                        r = handler(*eargs, **ekwargs)
-                    #etime = time.time()
-                    #ttime = (etime - stime) * 1e3
-                    #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
-                except (KeyboardInterrupt, SystemExit):
+        r = False
+        for handler in self._getHandlers(channel):
+            try:
+                #stime = time.time()
+                if handler._passEvent:
+                    r = handler(event, *eargs, **ekwargs)
+                else:
+                    r = handler(*eargs, **ekwargs)
+                #etime = time.time()
+                #ttime = (etime - stime) * 1e3
+                #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except:
+                if log:
+                    self.push(Error(*_exc_info()))
+                if errors:
                     raise
-                except:
-                    if log:
-                        self.push(Error(*_exc_info()))
-                    if errors:
-                        raise
-                    else:
-                        _exc_clear()
-                if r is not None and r and handler.filter:
-                    return r
-            return r
-        else:
-            return self.manager._send(event, channel, errors, log)
+                else:
+                    _exc_clear()
+            if r is not None and r and handler.filter:
+                return r
+        return r
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
         """Send a new Event to Event Handlers for the Target and Channel
@@ -646,7 +638,7 @@ class Manager(object):
 
         event.channel = (target, channel)
 
-        return self._send(event, (target, channel), errors, log)
+        return self.root._send(event, (target, channel), errors, log)
 
     def _signal(self, signal, stack):
         if not self.send(Signal(signal, stack), "signal"):
@@ -836,6 +828,7 @@ class BaseComponent(Manager):
 
         def _register(c, m, r):
             c._registerHandlers(m)
+            c.root = r
             if m is not r:
                 c._registerHandlers(r)
             if hasattr(c, "__tick__"):
@@ -870,6 +863,7 @@ class BaseComponent(Manager):
 
         def _unregister(c, m, r):
             c._unregisterHandlers(m)
+            c.root = self
             if m is not r:
                 c._unregisterHandlers(r)
             if hasattr(c, "__tick__"):
@@ -880,7 +874,10 @@ class BaseComponent(Manager):
             for x in c.components:
                 _unregister(x, m, r)
 
-        _unregister(self, self.manager, _root(self.manager))
+        self.push(Unregistered(self, self.manager), target=self)
+
+        root = _root(self.manager)
+        _unregister(self, self.manager, root)
 
         self.manager._components.remove(self)
         self.push(Unregistered(self, self.manager), target=self)

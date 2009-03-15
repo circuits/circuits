@@ -870,7 +870,7 @@ class TestStructures(unittest.TestCase):
             2, [a.__tick__])
         self._test(b, [c], b, [b.foo, c.foo],
             [(("*", "foo"), [b.foo, c.foo])],
-            1, [b.__tick__, c.__tick__])
+            2, [b.__tick__, c.__tick__])
         self._test(c, [], b, [c.foo],
             [(("*", "foo"), [c.foo])],
             0, [c.__tick__])
