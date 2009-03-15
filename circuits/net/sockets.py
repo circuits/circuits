@@ -479,14 +479,19 @@ class TCPServer(Server):
 
 class UDPServer(Server):
 
-    def __init__(self, port, address="", ssl=False, **kwargs):
-        super(UDPServer, self).__init__(port, address, ssl, **kwargs)
+    def __init__(self, bind, ssl=False, **kwargs):
+        super(UDPServer, self).__init__(bind, ssl, **kwargs)
+
+        if type(bind) is int:
+            self.bind = ("0.0.0.0", self.bind)
+        else:
+            self.bind = bind
 
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self._sock.setblocking(False)
-        self._sock.bind((address, port))
+        self._sock.bind(self.bind)
 
         self._poller.addReader(self._sock)
 
@@ -522,7 +527,6 @@ class UDPServer(Server):
 
     def _write(self, address, data):
         try:
-            print repr(address), repr(data)
             self._sock.sendto(data, address)
         except socket.error, e:
             if e[0] in (EPIPE, ENOTCONN):
@@ -561,5 +565,3 @@ class UDPServer(Server):
                 self._poller.removeWriter(self._sock)
 
 UDPClient = UDPServer
-
-
