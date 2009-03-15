@@ -324,6 +324,14 @@ class Server(Component):
         self._closeq = []
         self._clients = []
 
+    @property
+    def address(self):
+        return self.bind[0] if hasattr(self, "bind") else None
+
+    @property
+    def port(self):
+        return self.bind[1] if hasattr(self, "bind") else None
+
     def _close(self, sock):
         if sock not in self._clients:
             return
