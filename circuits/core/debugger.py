@@ -29,19 +29,18 @@ class Debugger(Component):
     IgnoreEvents = []
     IgnoreChannels = []
 
-    def __init__(self, errors=True, events=True, file=None, logger=None):
+    def __init__(self, errors=True, events=True, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Debugger, self).__init__()
 
         self.errors = errors
         self.events = events
-        self.logger = logger
 
-        if file is None:
-            self.file = sys.stderr
-        else:
-            self.file = file
+        self.logger = kwargs.get("logger", None)
+        self.file = kwargs.get("file", sys.stderr)
+        self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
+        self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("error", filter=True)
     def error(self, *args, **kwargs):
