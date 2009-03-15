@@ -647,7 +647,7 @@ class Manager(object):
             elif signal == SIGTERM:
                 raise SystemExit
 
-    def start(self, sleep=0, errors=True, log=True, process=False):
+    def start(self, sleep=0, errors=False, log=True, process=False):
         group = None
         target = self.run
         name = self.__class__.__name__
