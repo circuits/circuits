@@ -820,7 +820,7 @@ class BaseComponent(Manager):
             c._registerHandlers(m)
             c.root = r
             if c._queue:
-                m._queue.extend(c._queue)
+                m._queue.extend(list(c._queue))
                 c._queue.clear()
             if m is not r:
                 c._registerHandlers(r)
