@@ -203,21 +203,20 @@ class VirtualHosts(Component):
 
     channel = "web"
 
-    def __init__(self, **domains):
-        super(Dispatcher, self).__init__()
+    def __init__(self, domains):
+        super(VirtualHosts, self).__init__()
 
         self.domains = domains
 
     @handler("request", filter=True)
     def request(self, event, request, response):
-        req = event
         path = request.path.strip("/")
 
-        header = req.headers.get
+        header = request.headers.get
         domain = header("X-Forwarded-Host", header("Host", ""))
         prefix = self.domains.get(domain, "")
+
         if prefix:
             path = _urljoin(prefix, path)
+
         request.path = path
-        
-        return self.send(req, "request")
