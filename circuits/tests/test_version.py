@@ -43,7 +43,7 @@ class TestVersion(unittest.TestCase):
         reload(circuits)
 
         p = Popen(["hg id -i"], stdout=PIPE, shell=True)
-        id = p.communicate()[0].strip()
+        id = p.communicate()[0].rstrip("\n+")
 
         self.assertEquals(circuits.__version__, id)
 
