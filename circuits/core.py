@@ -897,7 +897,7 @@ class Component(BaseComponent):
 
     def __new__(cls, *args, **kwargs):
         self = BaseComponent.__new__(cls, *args, **kwargs)
-        handlers = [x for x in cls.__dict__.itervalues() \
+        handlers = [x for x in cls.__dict__.values() \
                 if getattr(x, "handler", False)]
         overridden = lambda x: [h for h in handlers \
                 if x.channels == h.channels and getattr(h, "override", False)]
