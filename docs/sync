@@ -3,7 +3,7 @@
 import os
 import sys
 
-from traclib import Trac
+from traclib import Trac, NotFound
 
 def main():
     opts = object()
@@ -15,8 +15,11 @@ def main():
 
         sys.stdout.write("Sycning %s ... " % page)
         sys.stdout.flush()
-        trac.save(page)
-        print "DONE"
+        try:
+            trac.save(page)
+            print "DONE"
+        except NotFound:
+            print "Not Found!"
 
 if __name__ == "__main__":
     main()
