@@ -21,7 +21,7 @@ mimetypes.init()
 mimetypes.types_map['.dwg']='image/x-dwg'
 mimetypes.types_map['.ico']='image/x-icon'
 
-import httpauth
+import _httpauth
 from utils import url, valid_status, get_ranges
 from errors import HTTPError, NotFound, Redirect, Unauthorized
 
@@ -322,12 +322,12 @@ def check_auth(request, response, users, encrypt=None, realm=None):
 
     if 'authorization' in request.headers:
         # make sure the provided credentials are correctly set
-        ah = httpauth.parseAuthorization(request.headers['authorization'])
+        ah = _httpauth.parseAuthorization(request.headers['authorization'])
         if ah is None:
             return HTTPError(request, response, 400)
         
         if not encrypt:
-            encrypt = httpauth.DIGEST_AUTH_ENCODERS[httpauth.MD5]
+            encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
         
         if callable(users):
             try:
@@ -351,7 +351,7 @@ def check_auth(request, response, users, encrypt=None, realm=None):
         
         # validate the authorization by re-computing it here
         # and compare it with what the user-agent provided
-        if httpauth.checkResponse(ah, password, method=request.method,
+        if _httpauth.checkResponse(ah, password, method=request.method,
                                   encrypt=encrypt, realm=realm):
             request.login = ah["username"]
             return True
@@ -381,7 +381,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
         return
     
     # inform the user-agent this path is protected
-    response.headers["WWW-Authenticate"] = httpauth.basicAuth(realm)
+    response.headers["WWW-Authenticate"] = _httpauth.basicAuth(realm)
 
     return Unauthorized(request, response)
     
@@ -402,6 +402,6 @@ def digest_auth(request, response, realm, users):
         return
     
     # inform the user-agent this path is protected
-    response.headers["WWW-Authenticate"] = httpauth.digestAuth(realm)
+    response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
     
     return Unauthorized(request, response)
