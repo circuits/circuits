@@ -25,6 +25,7 @@ class TestVersion(unittest.TestCase):
             os.remove(path.join(root, "__version__.pyc"))
 
         import circuits
+        reload(circuits)
 
         self.assertEquals(circuits.__version__, "unknown")
 
