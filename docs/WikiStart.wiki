@@ -38,8 +38,6 @@ of [/recipes Community Recipes and Components].
 Hello World!
 }}}
 
-See: [source:examples/hello.py Hello World Source]
-
 ==== Hello Web! ====
 {{{
 #!python
@@ -54,11 +52,6 @@ class Root(Controller):
 }}}
 
 This will serve {{{Hello World!}}} on http://127.0.0.1:8000/
-
-See:
- * [source:examples/helloweb.py Half Stack Hello World Server]
- * [source:examples/simpleweb.py Full Stack Hello World Server]
- * [source:examples/simpleweb.wsgi Hello World WSGI]
 
 == [/downloads Downloads] ==
  * [/downloads Latest Release]
@@ -89,13 +82,15 @@ folks at [http://freehg.org FreeHg]:
  * SandBox <-- Play Area!
 
 === Examples ===
- * [source:examples/hello.py Hello World]
  * [source:examples/helloweb.py Half Stack Hello World Web Server]
  * [source:examples/simpleweb.py Full Stack Hello World Web Server]
  * [source:examples/simpleweb.wsgi Hello World WSGI]
  * [source:examples/echoserer.py Simple Echo Server]
  * [source:examples/telnet.py Telnet Client]
+ * [source:examples/ircbot.py Simple IRC Bot]
+ * [source:examples/ircclient.py Basic IRC Client]
  * [source:examples/ More Examples ...]
+  * [source:examples/web/ More Web Examples ...]
 
 == Community ==
  * '''IRC''': [irc://irc.freenode.net/circuits #circuits on irc.freenode.net]
@@ -108,8 +103,6 @@ folks at [http://freehg.org FreeHg]:
 === Reviews ===
 JesseNoller blogged about circuits and gave a really good review [http://jessenoller.com/2009/01/31/circuits-event-driven-components/ here].
 
-== Author(s) ==
- * James Mills (''Author and Lead Developer''), E: prologic@shortcircuit.net.au
 ----
 Help using this site:
  * TracGuide --  Built-in Documentation
