@@ -102,8 +102,8 @@ class SocketsTestCase(unittest.TestCase):
         UDPServer work correctly.
         """
 
-        server = Server() + UDPServer(9999)# + Debugger()
-        client = Client() + UDPClient(10000)# + Debugger()
+        server = Server() + UDPServer(9999)
+        client = Client() + UDPClient(10000, channel="client")
 
         server.start()
         client.start()
