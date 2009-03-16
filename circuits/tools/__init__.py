@@ -8,11 +8,15 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
-def walk(x, f, d=0):
+def walk(x, f, d=0, v=None):
+    if not v:
+        v = []
     yield f(d, x)
     for c in x.components.copy():
-        for r in walk(c, f, d + 1):
-            yield r
+        if c not in v:
+            v.append(c)
+            for r in walk(c, f, d + 1, v):
+                yield r
 
 def root(x):
     if x.manager == x:
