@@ -208,7 +208,7 @@ class VirtualHosts(Component):
 
         self.domains = domains
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=10)
     def request(self, event, request, response):
         path = request.path.strip("/")
 
