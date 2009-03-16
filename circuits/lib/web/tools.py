@@ -307,6 +307,17 @@ def check_auth(request, response, users, encrypt=None, realm=None):
     """Check Authentication
 
     If an authorization header contains credentials, return True, else False.
+
+    @param realm: The authentication realm.
+    @type  realm: str
+
+    @param users: A dict of the form: {username: password} or a callable
+                  returning a dict.
+    @type  users: dict or callable
+
+    @param encrypt: Callable used to encrypt the password returned from
+                    the user-agent. if None it defaults to a md5 encryption.
+    @type  encrypt: callable
     """
 
     if 'authorization' in request.headers:
@@ -349,15 +360,23 @@ def check_auth(request, response, users, encrypt=None, realm=None):
     return False
 
 def basic_auth(request, response, realm, users, encrypt=None):
-    """If auth fails, returns an Unauthorized error  with a
+    """Perform Basic Authentication
+    
+    If auth fails, returns an Unauthorized error  with a
     basic authentication header.
     
-    realm: a string containing the authentication realm.
-    users: a dict of the form: {username: password} or a callable
-           returning a dict.
-    encrypt: callable used to encrypt the password returned from the user-agent.
-             if None it defaults to a md5 encryption.
+    @param realm: The authentication realm.
+    @type  realm: str
+
+    @param users: A dict of the form: {username: password} or a callable
+                  returning a dict.
+    @type  users: dict or callable
+
+    @param encrypt: Callable used to encrypt the password returned from
+                    the user-agent. if None it defaults to a md5 encryption.
+    @type  encrypt: callable
     """
+
     if check_auth(request, response, users, encrypt):
         return
     
@@ -367,11 +386,16 @@ def basic_auth(request, response, realm, users, encrypt=None):
     return Unauthorized(request, response)
     
 def digest_auth(request, response, realm, users):
-    """If auth fails, raise 401 with a digest authentication header.
+    """Perform Digest Authentication
     
-    realm: a string containing the authentication realm.
-    users: a dict of the form: {username: password} or a callable
-           returning a dict.
+    If auth fails, raise 401 with a digest authentication header.
+    
+    @param realm: The authentication realm.
+    @type  realm: str
+
+    @param users: A dict of the form: {username: password} or a callable
+                  returning a dict.
+    @type  users: dict or callable
     """
 
     if check_auth(request, response, users, realm=realm):
