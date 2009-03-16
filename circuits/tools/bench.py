@@ -289,7 +289,7 @@ def main():
             profiler = hotshot.Profile("bench.prof")
             profiler.start()
 
-    if opts.listen and not opts.wait:
+    if not opts.wait:
         if opts.concurrency > 1:
             for c in xrange(int(opts.concurrency)):
                 manager.push(Hello("hello"), "hello", c)
