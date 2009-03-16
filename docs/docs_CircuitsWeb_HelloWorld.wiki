@@ -1,0 +1,18 @@
+﻿= Hello World =
+
+Here's your classic "Hello World!" Web Application with circuits.web:
+
+{{{
+#!python
+#!/usr/bin/env python
+
+from circuits.web import Server, Controller
+
+class Root(Controller):
+
+    def index(self):
+        return "Hello World!"
+
+(Server(8000) + Root()).run()
+}}}
+----

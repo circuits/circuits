@@ -1,0 +1,47 @@
+﻿= How to do Virtual Hosting =
+
+circuits.web has a built-in dispatcher for supporting Virtual Hosts.
+
+Put simply this means you can develop an application
+that can serve different parts of itself for different
+virtual hosts. For example, say you have an application
+mounted at '''/''' on http://domain.com/ you could map:
+ * http://foo.domain.com/ -> /foo
+ * http://bar.domain.com/ -> /bar
+
+== Example ==
+
+{{{
+#!python
+#!/usr/bin/env python
+
+from circuits.web import Server, Controller
+from circuits.web.dispatchers import VirtualHosts
+
+class Root(Controller):
+
+   def index(self):
+      return "I am the main vhost"
+
+class Foo(Controller):
+
+   channel = "/foo"
+
+   def index(self):
+      return "I am foo."
+
+class Bar(Controller):
+
+   channel = "/bar"
+
+   def index(self):
+      return "I am bar."
+
+domains = {
+        "foo.localdomain:8000": "foo",
+        "bar.localdomain:8000": "bar",
+        }
+
+(Server(8000) + VirtualHosts(domains) + Root() + Foo() + Bar()).run()
+}}}
+----
