@@ -1,12 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# vim: set sw=3 sts=3 ts=3
-
-"""(Example) IRC Bot
-
-A simple example of using circuits to build a simple IRC Bot.
-This example demonstrates basic networking with circuits.
-"""
 
 from circuits import Component, Debugger
 from circuits.lib.sockets import TCPClient, Connect
@@ -30,6 +22,5 @@ class Bot(Component):
     def message(self, source, target, message):
         self.push(Message(source[0], message), "PRIVMSG")
 
-if __name__ == "__main__":
-    bot = Bot("irc.freenode.net", channel="bot") + Debugger()
-    bot.run()
+bot = Bot("irc.freenode.net", channel="bot") + Debugger()
+bot.run()

@@ -7,13 +7,15 @@
 A basic IRC client with a very basic console interface.
 """
 
+import os
 import optparse
+from socket import gethostname
 
-from circuits.lib.io import stdin
-from circuits import handler, Component, Manager
+from circuits.io import stdin
+from circuits import handler, Component
 from circuits import __version__ as systemVersion
-from circuits.lib.irc import IRC, Message, User, Nick
-from circuits.lib.sockets import TCPClient, Connect, Write
+from circuits.net.sockets import TCPClient, Connect
+from circuits.net.protocols.irc import IRC, Message, User, Nick, Join
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
@@ -60,34 +62,47 @@ class Client(Component):
     channel = "ircclient"
 
     def __init__(self, opts, host, port=6667):
-        super(Bot, self).__init__()
+        super(Client, self).__init__()
 
         self.opts = opts
         self.host = host
         self.port = port
         self.hostname = gethostname()
+
+        self.nick = opts.nick
         self.ircchannel = opts.channel
 
         self += (TCPClient(channel=self.channel) + IRC(channel=self.channel))
         self.push(Connect(self.host, self.port), "connect")
 
     def connected(self, host, port):
-        nick = self.opts.nick
+        print "Connected to %s:%d" % (host, port)
+
+        nick = self.nick
         hostname = self.hostname
         name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
-        ircchannel = self.ircchannel
 
-        self.push(User(self.opts.nick, hostname, host, name), "USER")
+        self.push(User(nick, hostname, host, name), "USER")
         self.push(Nick(nick), "NICK")
-        self.push(Join(channel), "JOIN")
 
     def disconnected(self):
         self.push(Connect(self.opts.host, self.opts.port), "connect")
 
     def numeric(self, source, target, numeric, args, message):
-        if numeric == 433:
+        if numeric == 1:
+            self.push(Join(self.ircchannel), "JOIN")
+        elif numeric == 433:
             self.nick = newnick = "%s_" % self.nick
             self.push(Nick(newnick), "NICK")
+
+    def join(self, source, channel):
+        if source[0].lower() == self.nick.lower():
+            print "Joined %s" % channel
+        else:
+            print "--> %s (%s) has joined %s" % (source[0], source, channel)
+
+    def notice(self, source, target, message):
+        print "-%s- %s" % (source[0], message)
 
     def message(self, source, target, message):
         if target[0] == "#":
@@ -112,7 +127,7 @@ def main():
     else:
         port = 6667
 
-    (Telnet(opts, host, port) + stdin).run()
+    (Client(opts, host, port) + stdin).run()
 
 ###
 ### Entry Point
