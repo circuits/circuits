@@ -22,10 +22,10 @@ This example makes use of:
 
 import optparse
 
-from circuits.lib.io import stdin
+from circuits.io import stdin
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
-from circuits.lib.sockets import TCPClient, Connect, Write
+from circuits.net.sockets import TCPClient, Connect, Write
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
