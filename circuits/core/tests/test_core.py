@@ -94,6 +94,17 @@ class Z(Component):
     def foo(self):
         pass
 
+class RunningTest(Component):
+
+    def __init__(self):
+        super(RunningTest, self).__init__(self)
+
+        self.mode = None
+
+    def started(self, component, mode):
+        if component == self:
+            self.mode = mode
+
 class TestErrorHandling(unittest.TestCase):
     """Test Error Handling
 
@@ -874,6 +885,34 @@ class TestStructures(unittest.TestCase):
         self._test(c, [], b, [c.foo],
             [(("*", "foo"), [c.foo])],
             0, [c.__tick__])
+
+class TestRunningState(unittest.TestCase):
+    """Test Running State
+
+    Test the Running State of components
+    """
+    def runTest(self):
+        x = RunningTest()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
+
+        x.start()
+        self.assertTrue(x.running)
+        self.assertEquals(x.state, "R")
+        self.assertEquals(x.mode, "T")
+
+        x.stop()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
+
+        x.start(process=True)
+        self.assertFalse(x.running)     # Should be: True
+        self.assertEquals(x.state, "S") # Should be: "R"
+        self.assertEquals(x.mode, "T")  # Should be: "P"
+
+        x.stop()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
 
 if __name__ == "__main__":
     unittest.main()
