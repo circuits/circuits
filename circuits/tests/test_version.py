@@ -5,6 +5,7 @@
 """Version Test Suite"""
 
 import os
+import sys
 import unittest
 from os import path
 from os.path import abspath, dirname
@@ -18,6 +19,9 @@ class TestVersion(unittest.TestCase):
 
     def runTest(self):
         root = abspath("%s/../" % dirname(abspath(__file__)))
+
+        if "circuits.__version__" in sys.modules:
+            del sys.modules["circuits.__version__"]
 
         if path.exists(path.join(root, "__version__.py")):
             os.remove(path.join(root, "__version__.py"))
