@@ -62,17 +62,12 @@ def remember_version(version=None):
 			version = ids.pop(0)
 			if version[-1] == '+':
 				version = version[:-1]
-				modified = True
-			else:
-				modified = False
 			if version.isalnum() and ids:
 				for tag in ids[0].split('/'):
 					# is a tag is suitable as a version number?
 					if re.match(r'^(\d+\.)+[\w.-]+$', tag):
 						version = tag
 						break
-			if modified:
-				version += time.strftime('+%Y%m%d')
 	if version:
 		remembered_version = True
 		write_version(version)
