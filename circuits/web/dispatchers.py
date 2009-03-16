@@ -142,7 +142,7 @@ class Dispatcher(Component):
 
     @handler("unregistered", target="*")
     def unregistered(self, c, m):
-        if isinstance(c, Controller) and c in self.components:
+        if isinstance(c, Controller) and c in self.components and m == self:
             self.paths.remove(c.channel)
 
     @handler("request", filter=True)
