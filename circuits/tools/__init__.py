@@ -10,11 +10,11 @@ tools are installed as executables with a prefix of "circuits."
 
 def walk(x, f, d=0, v=None):
     if not v:
-        v = []
+        v = set()
     yield f(d, x)
     for c in x.components.copy():
         if c not in v:
-            v.append(c)
+            v.add(c)
             for r in walk(c, f, d + 1, v):
                 yield r
 
