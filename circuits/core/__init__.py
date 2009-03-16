@@ -652,6 +652,10 @@ class Manager(object):
         self._task.setDaemon(True)
         self._task.start()
 
+    def wait(self, timeout=None):
+        if hasattr(self._task, "join"):
+            self._task.join(timeout)
+
     def stop(self):
         self.running = False
         if hasattr(self._task, "terminate"):
