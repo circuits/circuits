@@ -75,6 +75,7 @@ folks at [http://freehg.org FreeHg]:
  * [wiki:docs/ChangeLog ChangeLog]
  * [wiki:docs/DownloadInstall Downloading and Installing]
  * [wiki:docs/Tutorial Circuits Tutorial]
+ * [wiki:docs/CircuitsWeb circuits.web] ''circuits and the web''
  * [export:/docs/html/index.html Library Documentation]
  * [wiki:docs/FrequentlyAskedQuestions Frequently Asked Questions]
  * [wiki:docs/Contributing Contributing]
