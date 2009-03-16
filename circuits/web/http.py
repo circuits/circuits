@@ -180,6 +180,8 @@ class HTTP(Component):
             else:
                 error = NotFound(request, response)
                 self._handleError(error)
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
             error = HTTPError(request, response, 500, error=format_exc())
             self._handleError(error)
