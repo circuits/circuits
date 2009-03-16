@@ -150,7 +150,6 @@ class Gateway(Component):
         self.path = path
 
         self._errors = StringIO()
-        self._errors.register(self)
 
         self._request = self._response = None
 
