@@ -891,6 +891,7 @@ class TestRunningState(unittest.TestCase):
 
     Test the Running State of components
     """
+
     def runTest(self):
         x = RunningTest()
         self.assertFalse(x.running)
