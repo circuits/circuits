@@ -700,19 +700,25 @@ class Manager(object):
                     try:
                         if log:
                             self.push(Error(*_exc_info()))
-                        _exc_clear()
-                    except:
-                        pass
+                    finally:
+                        self._flush()
         finally:
             try:
                 self.push(Stopped(self))
                 rtime = time.time()
                 while len(self) > 0 and (time.time() - rtime) < 3:
-                    [f() for f in self._ticks.copy()]
-                    self.flush()
-                    if sleep:
-                        time.sleep(sleep)
-                    rtime = time.time()
+                    try:
+                        [f() for f in self._ticks.copy()]
+                        self._flush()
+                        if sleep:
+                            time.sleep(sleep)
+                        rtime = time.time()
+                    except:
+                        try:
+                            if log:
+                                self.push(Error(*_exc_info()))
+                        finally:
+                            self._flush()
             except:
                 pass
 
