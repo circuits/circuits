@@ -633,12 +633,12 @@ class Manager(object):
             elif signal == SIGTERM:
                 raise SystemExit
 
-    def start(self, sleep=0, errors=False, log=True, process=False):
+    def start(self, sleep=0, log=True, process=False):
         group = None
         target = self.run
         name = self.__class__.__name__
         mode = "P" if process else "T"
-        args = (sleep, mode, errors, log,)
+        args = (sleep, mode, log,)
 
         if process and HAS_MULTIPROCESSING:
             args += (self,)
@@ -671,7 +671,7 @@ class Manager(object):
                     p.terminate()
                     p.join(3)
 
-    def run(self, sleep=0, mode=None, errors=False, log=True, __self=None):
+    def run(self, sleep=0, mode=None, log=True, __self=None):
         if __self is not None:
             self = __self
 
@@ -700,10 +700,7 @@ class Manager(object):
                     try:
                         if log:
                             self.push(Error(*_exc_info()))
-                        if errors:
-                            raise
-                        else:
-                            _exc_clear()
+                        _exc_clear()
                     except:
                         pass
         finally:
