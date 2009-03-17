@@ -5,9 +5,12 @@
 """Core Test Suite"""
 
 import unittest
+from time import sleep
 
-from circuits.core import handler, Manager, Component, Event
+from circuits.core import handler, Event, Component, Manager
 
+def wait():
+    sleep(0.1)
 
 class Test(Event):
     """Test(Event) -> Test Event"""
@@ -104,6 +107,9 @@ class RunningTest(Component):
     def started(self, component, mode):
         if component == self:
             self.mode = mode
+
+    def stopped(self, component):
+        self.mode = None
 
 class TestErrorHandling(unittest.TestCase):
     """Test Error Handling
@@ -905,15 +911,206 @@ class TestRunningState(unittest.TestCase):
         x.stop()
         self.assertFalse(x.running)
         self.assertEquals(x.state, "S")
+        self.assertEquals(x.mode, None)
 
         x.start(process=True)
         self.assertFalse(x.running)     # Should be: True
         self.assertEquals(x.state, "S") # Should be: "R"
-        self.assertEquals(x.mode, "T")  # Should be: "P"
+        self.assertEquals(x.mode, None)  # Should be: "P"
 
         x.stop()
         self.assertFalse(x.running)
         self.assertEquals(x.state, "S")
+        self.assertEquals(x.mode, None)
+
+class RunnableComponent(Component):
+
+    def __init__(self):
+        super(RunnableComponent, self).__init__()
+
+        self._count = None
+        self._mode = None
+        self._registered = None
+        self._unregistered = None
+
+        self._event = False
+        self._test = False
+        self._args = None
+        self._kwargs = None
+
+        self._etype = None
+        self._evalue = None
+        self._traceback = None
+
+    def __tick__(self):
+        if self._count is not None:
+            self._count += 1
+
+    def registered(self, component, manager):
+        self._registered = (component, manager)
+
+    def unregistered(self, component, manager):
+        self._unregistered = (component, manager)
+
+    def started(self, component, mode):
+        if component == self:
+            self._mode = mode
+            self._count = 0
+
+    def stopped(self, component):
+        if component == self:
+            self._mode = None
+            self._count = None
+
+    def error(self, type, value, traceback):
+        self._etype = type
+        self._evalue = value
+        self._traceback = traceback
+
+    def blowup(self, error):
+        raise error
+
+    def bad(self):
+        return x
+
+    def event(self):
+        self._event = not self._event
+
+    def test(self, *args, **kwargs):
+        self._test = not self._test
+        self._args = args
+        self._kwargs = kwargs
+
+class TestRunnableComponents(unittest.TestCase):
+    """Test Runnable Components
+
+    Test the functionality of Runnable Components.
+    """
+
+    def runTest(self):
+        #from circuits import Debugger
+        x = RunnableComponent()# + Debugger()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
+
+        # Test Running and Started event
+        x.start()
+        self.assertTrue(x.running)
+        self.assertEquals(x.state, "R")
+        self.assertEquals(x._mode, "T")
+
+        # Test component registration and Registered event
+        a = A()
+        self.assertEquals(x, x + a)
+        wait()
+        self.assertEquals(x._registered, (a, x))
+
+        # Test tick functions
+        self.assertTrue(x._count > 0)
+
+        # Test component unregistration and Unregistered event
+        self.assertEquals(x, x - a)
+        wait()
+        self.assertEquals(x._unregistered, (a, x))
+
+        # Test stopping and Stopped event
+        x.stop()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
+        self.assertEquals(x._mode, None)
+
+        # Test Sleeping
+        x.start(sleep=1)
+        self.assertTrue(x.running)
+        self.assertEquals(x.state, "R")
+        self.assertEquals(x._mode, "T")
+
+        # Test tick functions whiel sleeping
+        sleep(2)
+        self.assertTrue(x._count > 0)
+        self.assertTrue(x._count < 3)
+
+        # Test raising exceptions while sleeping
+        x.send(Event(TypeError), "blowup")
+
+        x.stop()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
+        self.assertEquals(x._mode, None)
+
+        x.start()
+        self.assertTrue(x.running)
+        self.assertEquals(x.state, "R")
+        self.assertEquals(x._mode, "T")
+
+        # Test event pushing and sending
+        x.push(Event())
+        wait()
+        self.assertTrue(x._event)
+        x.send(Event())
+        self.assertFalse(x._event)
+
+        # Test event pushing and sending (2)
+        x.push(Test())
+        wait()
+        self.assertTrue(x._test)
+        x.send(Test())
+        self.assertFalse(x._test)
+
+        # Test event pushing and sending (3)
+        x.push(Test(), "test")
+        wait()
+        self.assertTrue(x._test)
+        x.send(Test(), "test")
+        self.assertFalse(x._test)
+
+        # Test event pushing and sending (4)
+        x.push(Test(), "dummy")
+        wait()
+        self.assertFalse(x._test)
+        x.send(Test(), "dummy")
+        self.assertFalse(x._test)
+
+        # Test event pushing and sending (5)
+        x.push(Test(1, 2, 3, a=1, b=2, c=3))
+        wait()
+        self.assertTrue(x._test)
+        self.assertEquals(x._args, (1, 2, 3))
+        self.assertEquals(x._kwargs, {"a": 1, "b": 2, "c": 3})
+        x.send(Test(4, 5, 6, x=3, y=2, z=1))
+        self.assertFalse(x._test)
+        self.assertEquals(x._args, (4, 5, 6))
+        self.assertEquals(x._kwargs, {"x": 3, "y": 2, "z": 1})
+
+        x.stop()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
+        self.assertEquals(x._mode, None)
+
+        x.start()
+        self.assertTrue(x.running)
+        self.assertEquals(x.state, "R")
+        self.assertEquals(x._mode, "T")
+
+        # Test error logging
+        x.push(Event(), "bad")
+        wait()
+        self.assertEquals(x._etype, NameError)
+        self.assertTrue(isinstance(x._evalue, NameError))
+        x._etype = None
+        x._evalue = None
+        x._traceback = None
+
+        # Test error raising
+        x._count = object()
+        wait()
+        self.assertEquals(x._etype, TypeError)
+        self.assertTrue(isinstance(x._evalue, TypeError))
+
+        x.stop()
+        self.assertFalse(x.running)
+        self.assertEquals(x.state, "S")
+        self.assertEquals(x._mode, None)
 
 if __name__ == "__main__":
     unittest.main()
