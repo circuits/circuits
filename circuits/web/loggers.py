@@ -17,6 +17,12 @@ class Logger(Component):
 
    format = "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
 
+   def __init__(self, file=sys.stderr, logger=None):
+       super(Logger, self).__init__()
+
+       self.file = file
+       self.logger = logger
+
    def response(self, response):
       self.log(response)
 
@@ -48,9 +54,14 @@ class Logger(Component):
          v = repr(v)[1:-1]
          # Escape double-quote.
          atoms[k] = v.replace("\"", "\\\"")
-      
-      print >> sys.stderr, self.format % atoms
-   
+
+      if self.logger is not None:
+         self.logger.info(self.format % atoms)
+      else:
+         self.file.write(self.format % atoms)
+         self.file.write("\n")
+         self.file.flush()
+
    def time(self):
       now = datetime.datetime.now()
       month = rfc822._monthnames[now.month - 1].capitalize()
