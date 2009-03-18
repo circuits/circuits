@@ -834,6 +834,9 @@ class BaseComponent(Manager):
                 c._queue.clear()
             if m is not r:
                 c._registerHandlers(r)
+                if m._queue:
+                    r._queue.extend(list(m._queue))
+                    m._queue.clear()
             if hasattr(c, "__tick__"):
                 m._ticks.add(getattr(c, "__tick__"))
                 if m is not r:
