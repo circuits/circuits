@@ -18,13 +18,16 @@ def walk(x, f, d=0, v=None):
             for r in walk(c, f, d + 1, v):
                 yield r
 
-def edges(x, e=None):
+def edges(x, e=None, v=None):
     if not e:
         e = set()
+    if not v:
+        v = set()
     for c in x.components.copy():
-        if (x.name, c.name) not in e:
+        if c not in v:
+            v.add(c)
             e.add((x.name, c.name))
-            edges(c, e)
+            edges(c, e, v)
     return e
 
 def dotgraph(x, filename=None):
