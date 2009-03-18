@@ -110,11 +110,11 @@ class Environment(Component):
 
     version = VERSION
 
-    def __init__(self, path, name):
+    def __init__(self, path, envname):
         super(Environment, self).__init__()
 
         self.path = os.path.abspath(os.path.expanduser(path))
-        self.name = name
+        self.envname = envname
 
     @handler("create")
     def onCREATE(self):
@@ -134,10 +134,10 @@ class Environment(Component):
         createFile(os.path.join(self.path, "VERSION"), "%d" % self.version)
         createFile(
                 os.path.join(self.path, "README"),
-                "This directory contains a %s Environment." % self.name)
+                "This directory contains a %s Environment." % self.envname)
 
         # Setup the default configuration
-        configfile = os.path.join(self.path, "conf", "%s.ini" % self.name)
+        configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
         createFile(configfile)
         self.config = Config(configfile)
         self.manager += self.config
@@ -147,7 +147,7 @@ class Environment(Component):
                 self.config.add_section(section)
             for option, value in CONFIG[section].iteritems():
                 if type(value) == str:
-                    value = value % {"name": self.name}
+                    value = value % {"name": self.envname}
                 self.config.set(section, option, value)
         self.send(SaveConfig(), "save", "config")
 
@@ -200,17 +200,17 @@ class Environment(Component):
         os.chdir(self.path)
 
         # Create Config Component
-        configfile = os.path.join(self.path, "conf", "%s.ini" % self.name)
+        configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile)
         self.manager += self.config
         self.send(LoadConfig(), "load", "config")
 
         # Create Logger Component
-        logname = self.name
+        logname = self.envname
         logtype = self.config.get("logging", "type", "file")
         loglevel = self.config.get("logging", "level", "INFO")
         logfile = self.config.get("logging", "file", "/dev/null")
-        logfile = logfile % {"name": self.name}
+        logfile = logfile % {"name": self.envname}
         if not os.path.isabs(logfile):
             logfile = os.path.join(self.path, logfile)
         self.log = Logger(logfile, logname, logtype, loglevel)
