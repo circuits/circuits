@@ -18,6 +18,20 @@ def walk(x, f, d=0, v=None):
             for r in walk(c, f, d + 1, v):
                 yield r
 
+def edges(x, e=None):
+    if not e:
+        e = set()
+    for c in x.components.copy():
+        if (x.name, c.name) not in e:
+            e.add((x.name, c.name))
+            edges(c, e)
+    return e
+
+def dotgraph(x, filename=None):
+    import pydot
+    g = pydot.graph_from_edges(edges(x))
+    return g.write_png(filename or "%s.png" % x.name, prog="dot")
+
 def root(x):
     if x.manager == x:
         return x
