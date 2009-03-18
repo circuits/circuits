@@ -448,9 +448,10 @@ class Manager(object):
         """
 
         if channel is None:
-            self._globals.append(handler)
-            self._globals.sort(key=_sortkey)
-            self._globals.reverse()
+            if handler not in self._globals:
+                self._globals.append(handler)
+                self._globals.sort(key=_sortkey)
+                self._globals.reverse()
         else:
             assert type(channel) is tuple and len(channel) == 2
 
@@ -468,11 +469,13 @@ class Manager(object):
 
             if target not in self._tmap:
                 self._tmap[target] = []
-            self._tmap[target].append(handler)
+            if handler not in self._tmap[target]:
+                self._tmap[target].append(handler)
 
             if channel not in self._cmap:
                 self._cmap[channel] = []
-            self._cmap[channel].append(handler)
+            if handler not in self._cmap[channel]:
+                self._cmap[channel].append(handler)
 
     def _remove(self, handler, channel=None):
         """E._remove(handler, channel=None) -> None
