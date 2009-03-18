@@ -57,18 +57,18 @@ class File(Component):
     def __init__(self, filename, mode, channel=channel):
         super(File, self).__init__(channel=channel)
 
-        self.name = filename
+        self.filename = filename
         self.mode = mode
 
         self._read = []
         self._write = []
         self._buffer = deque()
 
-        self._fd = _File(self.name, self.mode)
+        self._fd = _File(self.filename, self.mode)
         self._fd.setblocking(False)
         self._read.append(self._fd)
 
-        self.push(Opened(self.name), "opened")
+        self.push(Opened(self.filename), "opened")
 
     @property
     def closed(self):
@@ -110,7 +110,7 @@ class File(Component):
         self._fd.close()
         self._read = []
         self._write = []
-        self.push(Closed(self.name), "closed")
+        self.push(Closed(self.filename), "closed")
 
 class StdIn(File):
 
