@@ -9,14 +9,17 @@ This module implements URL dispatchers.
 
 import os
 from urlparse import urljoin as _urljoin
+from xmlrpclib import loads, dumps, Fault
 
-from circuits import handler, Component
+from circuits import handler, Event, Component
 
 from core import Controller
 from errors import HTTPError
 from cgifs import FieldStorage
 from tools import expires, serve_file
 from utils import parseQueryString, dictform
+
+class RPC(Event): pass
 
 class Dispatcher(Component):
 
@@ -220,3 +223,34 @@ class VirtualHosts(Component):
             path = _urljoin(prefix, path)
 
         request.path = path
+
+class XMLRPC(Component):
+
+    channel = "web"
+
+    def __init__(self, path=None, encoding=None, allow_none=False):
+        channel = XMLRPC.channel if not path else path
+        super(XMLRPC, self).__init__(channel=channel)
+
+        self.encoding = encoding
+        self.allow_none = allow_none
+
+    @handler("request", filter=True)
+    def request(self, request, response):
+        try:
+            data = request.body.read()
+            params, method = loads(data)
+
+            e = RPC(*params)
+
+            if "." in method:
+                t, c = method.split(".", 1)
+            else:
+                t, c = None, method
+
+            r = dumps(self.send(e, c, t, errors=True))
+        except Exception, e:
+            r = dumps(Fault(1, "%s:%s" % (type(e), e), encoding=self.encoding, allow_none=self.allow_none))
+
+        response.headers["Content-Type"] = "text/xml"
+        return r
