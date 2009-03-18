@@ -143,7 +143,7 @@ class Sender(Base):
 
     concurrency = 1
 
-    def recevied(self, message=""):
+    def received(self, message=""):
         self.push(Hello("hello"), "hello", self.channel)
 
 class Receiver(Base):
