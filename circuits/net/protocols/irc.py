@@ -586,7 +586,7 @@ class IRC(Component):
             newNick = strip(tokens[2]).lower()
 
             if self.getNick() is not None:
-                if source.lower() == self.getNick().lower():
+                if source[0].lower() == self.getNick().lower():
                     self._info["nick"] = newNick
 
             if len(tokens) == 4:
