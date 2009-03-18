@@ -29,7 +29,7 @@ def edges(x, e=None):
 
 def dotgraph(x, filename=None):
     import pydot
-    g = pydot.graph_from_edges(edges(x))
+    g = pydot.graph_from_edges(edges(x), directed=True)
     return g.write_png(filename or "%s.png" % x.name, prog="dot")
 
 def root(x):
