@@ -151,7 +151,7 @@ def main():
         print graph(manager)
         print
         print inspect(manager)
-        dotgraph(manager)
+        dotgraph(manager, filename="circutis.web.png")
 
     if opts.mp:
         from circuits.core.workers import cpus
