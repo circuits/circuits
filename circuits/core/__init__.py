@@ -423,6 +423,10 @@ class Manager(object):
         return handlers
 
     @property
+    def name(self):
+        return self.__class__.__name__
+
+    @property
     def state(self):
         if self.running:
             if self._task is None:
