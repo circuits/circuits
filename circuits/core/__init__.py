@@ -7,6 +7,7 @@
 This package contains the most basic building blocks of all Components.
 """
 
+import os
 import new
 import time
 from itertools import chain
@@ -16,7 +17,13 @@ from operator import attrgetter
 from sys import exc_info as _exc_info
 from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
-from signal import signal, SIGHUP, SIGINT, SIGTERM
+
+if os.name == "posix":
+    from signal import signal, SIGHUP, SIGINT, SIGTERM
+elif os.name == "nt":
+    from signal import signal, SIGINT, SIGTERM
+else:
+    raise RuntimeError("Unsupported platform '%s'" % os.name)
 
 try:
     from multiprocessing import Process
@@ -683,7 +690,8 @@ class Manager(object):
             self = __self
 
         if not mode == "T":
-            signal(SIGHUP, self._signal)
+            if os.name == "posix":
+                signal(SIGHUP, self._signal)
             signal(SIGINT, self._signal)
             signal(SIGTERM, self._signal)
 
