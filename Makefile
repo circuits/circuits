@@ -16,7 +16,7 @@ docs:
 	@epydoc -v -n circuits -o docs/html/ \
 		-u http://trac.softcircuit.com.au/circuits/ \
 		--check --html --src-code-tab-width=4 --no-frames \
-		--no-private --exclude=circuits.lib.web._httpauth \
+		--no-private --exclude=circuits.web._httpauth \
 		--exclude=.*\.tests.* \
 		--exclude=circuits\.__version__ \
 		--exclude=circuits\.version \
