@@ -26,7 +26,7 @@ def edges(x, e=None, v=None):
     for c in x.components.copy():
         if c not in v:
             v.add(c)
-            e.add((x.name, c.name))
+            e.add((x, c))
             edges(c, e, v)
     return e
 
