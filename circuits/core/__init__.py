@@ -58,6 +58,7 @@ class Event(object):
     """
 
     channel = None
+    target = None
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -547,6 +548,7 @@ class Manager(object):
         """
 
         channel = channel or event.channel or event.name.lower()
+        target = target if target is not None else event.target
         if isinstance(target, Component):
             target = getattr(target, "channel", "*")
         else:
@@ -631,6 +633,7 @@ class Manager(object):
         """
 
         channel = channel or event.channel or event.name.lower()
+        target = target if target is not None else event.target
         if isinstance(target, Component):
             target = getattr(target, "channel", "*")
         else:
