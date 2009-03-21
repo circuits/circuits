@@ -30,7 +30,7 @@ def edges(x, e=None, v=None):
             edges(c, e, v)
     return e
 
-def root(x, v=None):
+def findroot(x, v=None):
     if not v:
         v = set()
     if x.manager == x:
@@ -38,7 +38,7 @@ def root(x, v=None):
     else:
         if x.manager not in v:
             v.add(x.manager)
-            return root(x.manager, v)
+            return findroot(x.manager, v)
         else:
             return x.manager
 
