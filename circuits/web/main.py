@@ -22,9 +22,9 @@ try:
 except ImportError:
     psyco = None
 
+from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
-from circuits.tools import inspect, graph, dotgraph
 from circuits.net.pollers import Select, Poll, EPoll
 from circuits.web import BaseServer, Server, Application, Controller
 
@@ -148,10 +148,9 @@ def main():
             profiler.start()
 
     if opts.debug:
-        print graph(manager)
+        print graph(manager, filename="circutis.web.png")
         print
         print inspect(manager)
-        dotgraph(manager, filename="circutis.web.png")
 
     if opts.mp:
         from circuits.core.workers import cpus
