@@ -48,7 +48,7 @@ def kill(x):
     if x.manager != x:
         x.unregister()
 
-def graph(x):
+def graph(x, filename=None):
     """Display a directed graph of the Component structure of x
 
     @param x: A Component or Manager to graph
@@ -57,6 +57,33 @@ def graph(x):
     @return: A directed graph representing x's Component sturcture.
     @rtype:  str
     """
+
+    try:
+        import pydot
+        
+        graph_edges = []
+        nodes = []
+        names = []
+        for (u, v) in edges(x):
+            if v.name in names and v not in nodes:
+                i = 1
+                new_name = "%s-%d" % (v.name, i)
+                while new_name in names:
+                    i += 1
+                    new_name = "%s-%d" % (v.name, i)
+                graph_edges.append((u.name, new_name))
+            else:
+                nodes.append(u)
+                nodes.append(v)
+                names.append(v.name)
+                graph_edges.append((u.name, v.name))
+
+        g = pydot.graph_from_edges(graph_edges, directed=True)
+        g.write_png(filename or "%s.png" % x.name, prog="dot")
+    except ImportError:
+        pass
+    except:
+        raise
 
     def printer(d, x):
         return "%s* %s" % (" " * d, x)
