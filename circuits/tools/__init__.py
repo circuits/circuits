@@ -45,7 +45,8 @@ def root(x, v=None):
 def kill(x):
     for c in x.components.copy():
         kill(c)
-    x.unregister()
+    if x.manager != x:
+        x.unregister()
 
 def graph(x):
     """Display a directed graph of the Component structure of x
