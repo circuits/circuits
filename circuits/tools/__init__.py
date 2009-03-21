@@ -48,11 +48,14 @@ def kill(x):
     if x.manager != x:
         x.unregister()
 
-def graph(x, filename=None):
+def graph(x, name=None):
     """Display a directed graph of the Component structure of x
 
     @param x: A Component or Manager to graph
     @type  x: Component or Manager
+
+    @param name: A name for the graph (defaults to x's name)
+    @type  name: str
 
     @return: A directed graph representing x's Component sturcture.
     @rtype:  str
@@ -79,7 +82,8 @@ def graph(x, filename=None):
                 graph_edges.append((u.name, v.name))
 
         g = pydot.graph_from_edges(graph_edges, directed=True)
-        g.write_png(filename or "%s.png" % x.name, prog="dot")
+        g.write("%s.dot" % (name or x.name))
+        g.write("%s.png" % (name or x.name), format="png")
     except ImportError:
         pass
     except:
