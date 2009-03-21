@@ -80,7 +80,7 @@
 
 <hr />
 <div class="fields">      <p><strong>Version:</strong>
-        c07827b3e70d
+        d8637a5f0c6e
       </p>
       <p><strong>Author:</strong>
         James Mills
@@ -101,58 +101,69 @@
 </tr>
   <tr><td class="summary">
   <ul class="nomargin">
-    <li> <strong class="uidlink"><a href="circuits.bridge-module.html">circuits.bridge</a></strong>: <em class="summary">Bridge</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.core-module.html">circuits.core</a></strong>: <em class="summary">Building Blocks</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.debugger-module.html">circuits.debugger</a></strong>: <em class="summary">Debugger component used to debug each event in a system by printing
+    <li> <strong class="uidlink"><a href="circuits.app-module.html">circuits.app</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.app.config-module.html">circuits.app.config</a></strong>: <em class="summary">Config</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.app.env-module.html">circuits.app.env</a></strong>: <em class="summary">Environment Component</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.app.log-module.html">circuits.app.log</a></strong>: <em class="summary">Log</em>    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.core-module.html">circuits.core</a></strong>: <em class="summary">Core Building Blocks</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.core.bridge-module.html">circuits.core.bridge</a></strong>: <em class="summary">Bridge</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.debugger-module.html">circuits.core.debugger</a></strong>: <em class="summary">Debugger component used to debug each event in a system by printing
         each event to sys.stderr or to a Logger Component instnace.</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.drivers-module.html">circuits.drivers</a></strong>: <em class="summary">Circuits Library - Drivers</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib-module.html">circuits.lib</a></strong>: <em class="summary">Circuits Library</em>
-    <ul>
-    <li> <strong class="uidlink"><a href="circuits.lib.ann-module.html">circuits.lib.ann</a></strong>: <em class="summary">Artificial Neural Networking Library</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.config-module.html">circuits.lib.config</a></strong>: <em class="summary">Config</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.drivers-module.html">circuits.lib.drivers</a></strong>: <em class="summary">Circuits Library - Drivers</em>
-    <ul>
-    <li> <strong class="uidlink"><a href="circuits.lib.drivers.inotify_driver-module.html">circuits.lib.drivers.inotify_driver</a></strong>: <em class="summary">INotify Driver</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.drivers.pygame_driver-module.html">circuits.lib.drivers.pygame_driver</a></strong>: <em class="summary">PyGame Driver</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.timers-module.html">circuits.core.timers</a></strong>: <em class="summary">Timers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.workers-module.html">circuits.core.workers</a></strong>    </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.env-module.html">circuits.lib.env</a></strong>: <em class="summary">Environment Component</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.io-module.html">circuits.lib.io</a></strong>: <em class="summary">File I/O Components</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.irc-module.html">circuits.lib.irc</a></strong>: <em class="summary">Internet Relay Chat Protocol</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.log-module.html">circuits.lib.log</a></strong>: <em class="summary">Log</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.pollers-module.html">circuits.lib.pollers</a></strong>: <em class="summary">Poller Components for asynchronous file and socket I/O.</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.smtp-module.html">circuits.lib.smtp</a></strong>: <em class="summary">Simple Mail Transfer Protocol</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.sockets-module.html">circuits.lib.sockets</a></strong>: <em class="summary">TCP/IP and UDP Sockets</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web-module.html">circuits.lib.web</a></strong>: <em class="summary">Circuits Library - Web</em>
+    <li> <strong class="uidlink"><a href="circuits.drivers-module.html">circuits.drivers</a></strong>: <em class="summary">Drivers</em>
     <ul>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.cgifs-module.html">circuits.lib.web.cgifs</a></strong>: <em class="summary">CGI Field Storage</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.constants-module.html">circuits.lib.web.constants</a></strong>: <em class="summary">Global Constants</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.core-module.html">circuits.lib.web.core</a></strong>: <em class="summary">Core Web Components</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.dispatchers-module.html">circuits.lib.web.dispatchers</a></strong>: <em class="summary">Dispatchers</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.errors-module.html">circuits.lib.web.errors</a></strong>: <em class="summary">Errors</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.events-module.html">circuits.lib.web.events</a></strong>: <em class="summary">Events</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.headers-module.html">circuits.lib.web.headers</a></strong>: <em class="summary">Headers Support</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.http-module.html">circuits.lib.web.http</a></strong>: <em class="summary">Hyper Text Transfer Protocol</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.loggers-module.html">circuits.lib.web.loggers</a></strong>: <em class="summary">Logger Component</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.servers-module.html">circuits.lib.web.servers</a></strong>: <em class="summary">Web Server</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.sessions-module.html">circuits.lib.web.sessions</a></strong>: <em class="summary">Session Components</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.tools-module.html">circuits.lib.web.tools</a></strong>: <em class="summary">Tools</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.utils-module.html">circuits.lib.web.utils</a></strong>: <em class="summary">Utilities</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.webob-module.html">circuits.lib.web.webob</a></strong>: <em class="summary">Web Objects</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.lib.web.wsgi-module.html">circuits.lib.web.wsgi</a></strong>: <em class="summary">WSGI Components</em>    </li>
+    <li class="private"> <strong class="uidlink"><a href="circuits.drivers._gtk-module.html">circuits.drivers._gtk</a></strong>: <em class="summary">GTK Driver</em>    </li>
+    <li class="private"> <strong class="uidlink"><a href="circuits.drivers._inotify-module.html">circuits.drivers._inotify</a></strong>: <em class="summary">INotify Driver</em>    </li>
+    <li class="private"> <strong class="uidlink"><a href="circuits.drivers._pygame-module.html">circuits.drivers._pygame</a></strong>: <em class="summary">PyGame Driver</em>    </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="circuits.io-module.html">circuits.io</a></strong>: <em class="summary">I/O Components</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.net-module.html">circuits.net</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.net.pollers-module.html">circuits.net.pollers</a></strong>: <em class="summary">Poller Components for asynchronous file and socket I/O.</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.protocols-module.html">circuits.net.protocols</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.net.protocols.irc-module.html">circuits.net.protocols.irc</a></strong>: <em class="summary">Internet Relay Chat Protocol</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.protocols.smtp-module.html">circuits.net.protocols.smtp</a></strong>: <em class="summary">Simple Mail Transfer Protocol</em>    </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.timers-module.html">circuits.timers</a></strong>: <em class="summary">Timers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.sockets-module.html">circuits.net.sockets</a></strong>: <em class="summary">Socket Components</em>    </li>
+    </ul>
+    </li>
     <li> <strong class="uidlink"><a href="circuits.tools-module.html">circuits.tools</a></strong>: <em class="summary">Circuits Tools</em>
     <ul>
     <li> <strong class="uidlink"><a href="circuits.tools.bench-module.html">circuits.tools.bench</a></strong>: <em class="summary">(Tool) Bench Marking Tool</em>    </li>
     <li> <strong class="uidlink"><a href="circuits.tools.sniffer-module.html">circuits.tools.sniffer</a></strong>: <em class="summary">(Tool) Event Sniffer</em>    </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.web-module.html">circuits.web</a></strong>: <em class="summary">Circuits Library - Web</em>    </li>
-    <li> <strong class="uidlink"><a href="circuits.workers-module.html">circuits.workers</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web-module.html">circuits.web</a></strong>: <em class="summary">Circuits Library - Web</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.web.cgifs-module.html">circuits.web.cgifs</a></strong>: <em class="summary">CGI Field Storage</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.constants-module.html">circuits.web.constants</a></strong>: <em class="summary">Global Constants</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.core-module.html">circuits.web.core</a></strong>: <em class="summary">Core Web Components</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.dispatchers-module.html">circuits.web.dispatchers</a></strong>: <em class="summary">Dispatchers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.errors-module.html">circuits.web.errors</a></strong>: <em class="summary">Errors</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.events-module.html">circuits.web.events</a></strong>: <em class="summary">Events</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.headers-module.html">circuits.web.headers</a></strong>: <em class="summary">Headers Support</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.http-module.html">circuits.web.http</a></strong>: <em class="summary">Hyper Text Transfer Protocol</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.httpauth-module.html">circuits.web.httpauth</a></strong>: <em class="summary">httpauth modules defines functions to implement HTTP Digest Authentication (RFC 2617).</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.loggers-module.html">circuits.web.loggers</a></strong>: <em class="summary">Logger Component</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.main-module.html">circuits.web.main</a></strong>: <em class="summary">Main</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.servers-module.html">circuits.web.servers</a></strong>: <em class="summary">Web Server</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.sessions-module.html">circuits.web.sessions</a></strong>: <em class="summary">Session Components</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.tools-module.html">circuits.web.tools</a></strong>: <em class="summary">Tools</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.utils-module.html">circuits.web.utils</a></strong>: <em class="summary">Utilities</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.webob-module.html">circuits.web.webob</a></strong>: <em class="summary">Web Objects</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.wsgi-module.html">circuits.web.wsgi</a></strong>: <em class="summary">WSGI Components</em>    </li>
+    </ul>
+    </li>
   </ul></td></tr>
 </table>
 
@@ -211,8 +222,8 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits-module.html#__download_url__" class="summary-name">__download_url__</a> = <code title="'http://trac.softcircuit.com.au/circuits/downloads/circuits-c07827b3e7\
-0d.tar.gz'"><code class="variable-quote">'</code><code class="variable-string">http://trac.softcircuit.com.au/circuits/do</code><code class="variable-ellipsis">...</code></code>
+        <a href="circuits-module.html#__download_url__" class="summary-name">__download_url__</a> = <code title="'http://trac.softcircuit.com.au/circuits/downloads/circuits-d8637a5f0c\
+6e.tar.gz'"><code class="variable-quote">'</code><code class="variable-string">http://trac.softcircuit.com.au/circuits/do</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -248,7 +259,7 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="__str__"></a><span class="summary-name">__str__</span> = <code title="'circuits-c07827b3e70d'"><code class="variable-quote">'</code><code class="variable-string">circuits-c07827b3e70d</code><code class="variable-quote">'</code></code>
+        <a name="__str__"></a><span class="summary-name">__str__</span> = <code title="'circuits-d8637a5f0c6e'"><code class="variable-quote">'</code><code class="variable-string">circuits-d8637a5f0c6e</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 <tr>
@@ -286,6 +297,7 @@
         <a href="circuits-module.html#__entry_points__" class="summary-name">__entry_points__</a> = <code title="'''[console_scripts]
 circuits.bench = circuits.tools.bench:main
 circuits.sniffer = circuits.tools.sniffer:main
+circuits.web = circuits.web.main:main
 '''"><code class="variable-quote">'</code><code class="variable-string">[console_scripts]\ncircuits.bench = circui</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -354,8 +366,8 @@ circuits.sniffer = circuits.tools.sniffer:main
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-quote">'</code><code class="variable-string">http://trac.softcircuit.com.au/circuits/downloads/circuits-c07827b3e7</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string">0d.tar.gz</code><code class="variable-quote">'</code>
+<code class="variable-quote">'</code><code class="variable-string">http://trac.softcircuit.com.au/circuits/downloads/circuits-d8637a5f0c</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">6e.tar.gz</code><code class="variable-quote">'</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -420,6 +432,7 @@ circuits.sniffer = circuits.tools.sniffer:main
 <code class="variable-quote">'''</code><code class="variable-string">[console_scripts]</code>
 <code class="variable-string">circuits.bench = circuits.tools.bench:main</code>
 <code class="variable-string">circuits.sniffer = circuits.tools.sniffer:main</code>
+<code class="variable-string">circuits.web = circuits.web.main:main</code>
 <code class="variable-string"></code><code class="variable-quote">'''</code>
 </pre></td></tr></table>
 </dd>
@@ -458,7 +471,7 @@ circuits.sniffer = circuits.tools.sniffer:main
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar 17 02:00:02 2009
+    Generated by Epydoc 3.0.1 on Sun Mar 22 07:14:24 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

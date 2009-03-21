@@ -127,7 +127,7 @@ class Write(Event):
     This Event is used to notify a client, client connection or server that
     we have data to be written.
 
-    @hote: This event is never sent, it is used to send data.
+    @note: This event is never sent, it is used to send data.
     @note: This event is used for both Client and Server Components.
 
     @param args:  Client: (data) Server: (sock, data)
@@ -146,7 +146,7 @@ class Close(Event):
     This Event is used to notify a client, client connection or server that
     we want to close.
 
-    @hote: This event is never sent, it is used to close.
+    @note: This event is never sent, it is used to close.
     @note: This event is used for both Client and Server Components.
 
     @param args:  Client: () Server: (sock)

@@ -43,7 +43,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
-        Module&nbsp;core
+        Package&nbsp;core
       </span>
     </td>
     <td>
@@ -53,15 +53,31 @@
     </td>
   </tr>
 </table>
-<!-- ==================== MODULE DESCRIPTION ==================== -->
-<h1 class="epydoc">Module core</h1><p class="nomargin-top"></p>
-<p>Building Blocks</p>
-  <p>This module contains the most basic building blocks of all Components.
-  It's important to note that a Component is also a Manager.</p>
-  <p>The following import statement is commonly used:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> circuits <span class="py-keyword">import</span> handler, Event, Component, Manager</pre>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package core</h1><p class="nomargin-top"></p>
+<p>Core Building Blocks</p>
+  <p>This package contains the most basic building blocks of all 
+  Components.</p>
 
+<!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Submodules</span></td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li> <strong class="uidlink"><a href="circuits.core.bridge-module.html">circuits.core.bridge</a></strong>: <em class="summary">Bridge</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.debugger-module.html">circuits.core.debugger</a></strong>: <em class="summary">Debugger component used to debug each event in a system by printing
+        each event to sys.stderr or to a Logger Component instnace.</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.timers-module.html">circuits.core.timers</a></strong>: <em class="summary">Timers</em>    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.workers-module.html">circuits.core.workers</a></strong>    </li>
+  </ul></td></tr>
+</table>
+
+<br />
 <!-- ==================== CLASSES ==================== -->
 <a name="section-Classes"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -185,23 +201,6 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="circuits.core-module.html#listener" class="summary-sig-name">listener</a>(<span class="summary-sig-arg">*channels</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
 </table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
@@ -222,7 +221,7 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'circuits'"><code class="variable-quote">'</code><code class="variable-string">circuits</code><code class="variable-quote">'</code></code>
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'circuits.core'"><code class="variable-quote">'</code><code class="variable-string">circuits.core</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
@@ -274,34 +273,7 @@
 <span class="py-more">... </span>    <span class="py-keyword">pass</span></pre>
   <dl class="fields">
   </dl>
-<div class="fields">      <p><strong>Deprecated:</strong>
-        The use of 'type' in kwargs will be deprecated in 1.2 Use 'filter' 
-    instead.
-      </p>
-</div></td></tr></table>
-</div>
-<a name="listener"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">listener</span>(<span class="sig-arg">*channels</span>,
-        <span class="sig-arg">**kwargs</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  
-  <dl class="fields">
-  </dl>
-<div class="fields">      <p><strong>Deprecated:</strong>
-        This is planned to be deprecated in 1.2 Use handlers instead
-      </p>
-</div></td></tr></table>
+</td></tr></table>
 </div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
@@ -335,7 +307,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar 17 02:00:02 2009
+    Generated by Epydoc 3.0.1 on Sun Mar 22 07:14:24 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

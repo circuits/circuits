@@ -43,7 +43,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
-        <a href="circuits.core-module.html">Module&nbsp;core</a> ::
+        <a href="circuits.core-module.html">Package&nbsp;core</a> ::
         Class&nbsp;BaseComponent
       </span>
     </td>
@@ -67,7 +67,7 @@ object --+
 <dl><dt>Known Subclasses:</dt>
 <dd>
       <ul class="subclass-list">
-<li><a href="circuits.core.Component-class.html">Component</a></li><li class="private">, lib.pollers._Poller</li><li>, <a href="circuits.lib.web.core.BaseController-class.html">lib.web.core.BaseController</a></li>  </ul>
+<li><a href="circuits.core.Component-class.html">Component</a></li><li>, <a href="circuits.web.core.BaseController-class.html">web.core.BaseController</a></li><li class="private">, net.pollers._Poller</li>  </ul>
 </dd></dl>
 
 <hr />
@@ -142,24 +142,6 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="circuits.core.BaseComponent-class.html#__call__" class="summary-sig-name">__call__</a>(<span class="summary-sig-arg">x</span>,
-        <span class="summary-sig-arg">...</span>)</span><br />
-      x(...)</td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a href="circuits.core.BaseComponent-class.html#register" class="summary-sig-name">register</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">manager</span>)</span><br />
       Register all Event Handlers with the given Manager</td>
@@ -202,7 +184,8 @@ object --+
       <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
       <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
       <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
-      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
+      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>,
+      <code><a href="circuits.core.Manager-class.html#wait">wait</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -259,7 +242,7 @@ object --+
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="channel"></a><span class="summary-name">channel</span> = <code title="None">None</code><br />
+        <a name="channel"></a><span class="summary-name">channel</span> = <code title="'*'"><code class="variable-quote">'</code><code class="variable-string">*</code><code class="variable-quote">'</code></code><br />
       The Component's Channel
     </td>
   </tr>
@@ -282,11 +265,8 @@ object --+
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
-      <code><a href="circuits.core.Manager-class.html#channels">channels</a></code>,
-      <code><a href="circuits.core.Manager-class.html#components">components</a></code>,
-      <code><a href="circuits.core.Manager-class.html#running">running</a></code>,
-      <code><a href="circuits.core.Manager-class.html#state">state</a></code>,
-      <code><a href="circuits.core.Manager-class.html#ticks">ticks</a></code>
+      <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
+      <code><a href="circuits.core.Manager-class.html#state">state</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
@@ -378,33 +358,6 @@ object --+
   </dl>
 </td></tr></table>
 </div>
-<a name="__call__"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__call__</span>(<span class="sig-arg">x</span>,
-        <span class="sig-arg">...</span>)</span>
-    <br /><em class="fname">(Call operator)</em>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>x(...)</p>
-  <p>(Optional) Convenience callable to send an arbitary Event to the given
-  Channel populating the Event OBject with the given *args and **kwargs and
-  returning the result.</p>
-  <dl class="fields">
-    <dt>Returns:</dt>
-        <dd>Result of sending Event to Channel with (*args, **kwargs) @rtype 
-          object</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="register"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -488,7 +441,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar 17 02:00:03 2009
+    Generated by Epydoc 3.0.1 on Sun Mar 22 07:14:25 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
