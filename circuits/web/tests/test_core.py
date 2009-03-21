@@ -23,10 +23,13 @@ class Root(Controller):
 
 class CoreTestCase(WebCase):
 
+    HOST = "127.0.0.1"
+    PORT = 10000
+
     interactive = False
 
     def setUp(self):
-        self.server = (Server(8000) + Root())
+        self.server = (Server(10000) + Root())
         self.server.start()
 
     def tearDown(self):
