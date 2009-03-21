@@ -148,7 +148,7 @@ def main():
             profiler.start()
 
     if opts.debug:
-        print graph(manager, filename="circutis.web.png")
+        print graph(manager, name="circuits.web")
         print
         print inspect(manager)
 
