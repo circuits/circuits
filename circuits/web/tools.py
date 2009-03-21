@@ -21,7 +21,7 @@ mimetypes.init()
 mimetypes.types_map['.dwg']='image/x-dwg'
 mimetypes.types_map['.ico']='image/x-icon'
 
-import httpauth
+import _httpauth
 from utils import url, valid_status, get_ranges
 from errors import HTTPError, NotFound, Redirect, Unauthorized
 
@@ -307,16 +307,27 @@ def check_auth(request, response, users, encrypt=None, realm=None):
     """Check Authentication
 
     If an authorization header contains credentials, return True, else False.
+
+    @param realm: The authentication realm.
+    @type  realm: str
+
+    @param users: A dict of the form: {username: password} or a callable
+                  returning a dict.
+    @type  users: dict or callable
+
+    @param encrypt: Callable used to encrypt the password returned from
+                    the user-agent. if None it defaults to a md5 encryption.
+    @type  encrypt: callable
     """
 
     if 'authorization' in request.headers:
         # make sure the provided credentials are correctly set
-        ah = httpauth.parseAuthorization(request.headers['authorization'])
+        ah = _httpauth.parseAuthorization(request.headers['authorization'])
         if ah is None:
             return HTTPError(request, response, 400)
         
         if not encrypt:
-            encrypt = httpauth.DIGEST_AUTH_ENCODERS[httpauth.MD5]
+            encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
         
         if callable(users):
             try:
@@ -340,7 +351,7 @@ def check_auth(request, response, users, encrypt=None, realm=None):
         
         # validate the authorization by re-computing it here
         # and compare it with what the user-agent provided
-        if httpauth.checkResponse(ah, password, method=request.method,
+        if _httpauth.checkResponse(ah, password, method=request.method,
                                   encrypt=encrypt, realm=realm):
             request.login = ah["username"]
             return True
@@ -349,35 +360,48 @@ def check_auth(request, response, users, encrypt=None, realm=None):
     return False
 
 def basic_auth(request, response, realm, users, encrypt=None):
-    """If auth fails, returns an Unauthorized error  with a
+    """Perform Basic Authentication
+    
+    If auth fails, returns an Unauthorized error  with a
     basic authentication header.
     
-    realm: a string containing the authentication realm.
-    users: a dict of the form: {username: password} or a callable
-           returning a dict.
-    encrypt: callable used to encrypt the password returned from the user-agent.
-             if None it defaults to a md5 encryption.
+    @param realm: The authentication realm.
+    @type  realm: str
+
+    @param users: A dict of the form: {username: password} or a callable
+                  returning a dict.
+    @type  users: dict or callable
+
+    @param encrypt: Callable used to encrypt the password returned from
+                    the user-agent. if None it defaults to a md5 encryption.
+    @type  encrypt: callable
     """
+
     if check_auth(request, response, users, encrypt):
         return
     
     # inform the user-agent this path is protected
-    response.headers["WWW-Authenticate"] = httpauth.basicAuth(realm)
+    response.headers["WWW-Authenticate"] = _httpauth.basicAuth(realm)
 
     return Unauthorized(request, response)
     
 def digest_auth(request, response, realm, users):
-    """If auth fails, raise 401 with a digest authentication header.
+    """Perform Digest Authentication
     
-    realm: a string containing the authentication realm.
-    users: a dict of the form: {username: password} or a callable
-           returning a dict.
+    If auth fails, raise 401 with a digest authentication header.
+    
+    @param realm: The authentication realm.
+    @type  realm: str
+
+    @param users: A dict of the form: {username: password} or a callable
+                  returning a dict.
+    @type  users: dict or callable
     """
 
     if check_auth(request, response, users, realm=realm):
         return
     
     # inform the user-agent this path is protected
-    response.headers["WWW-Authenticate"] = httpauth.digestAuth(realm)
+    response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
     
     return Unauthorized(request, response)
