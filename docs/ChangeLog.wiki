@@ -1,10 +1,10 @@
-= !ChangeLog =
+﻿= !ChangeLog =
 
 [[TOC]]
 
 == 1.1 ==
  Released:: ... (''...'')
- Revision:: [411]
+ Revision:: [414]
 
 === Documentation ===
  * In [263]: [source:circuits/__init__.py circuits]: Updated sample example in main docstring - simplified.
