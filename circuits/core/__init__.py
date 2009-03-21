@@ -39,7 +39,7 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
-from circuits.tools import reprhandler
+from circuits.tools import reprhandler, findroot
 
 class Event(object):
     """Create a new Event Object
@@ -828,12 +828,6 @@ class BaseComponent(Manager):
         given Manager. A Registered Event will also be sent.
         """
 
-        def _root(x):
-            if x.manager == x:
-                return x
-            else:
-                return _root(x.manager)
-
         def _register(c, m, r):
             c._registerHandlers(m)
             c.root = r
@@ -852,7 +846,7 @@ class BaseComponent(Manager):
             for x in c.components:
                 _register(x, m, r)
 
-        _register(self, manager, _root(manager))
+        _register(self, manager, findroot(manager))
 
         self.manager = manager
 
@@ -869,12 +863,6 @@ class BaseComponent(Manager):
         @note: It's possible to unregister a Component from itself!
         """
 
-        def _root(x):
-            if x.manager == x:
-                return x
-            else:
-                return _root(x.manager)
-
         def _unregister(c, m, r):
             c._unregisterHandlers(m)
             c.root = self
@@ -890,7 +878,7 @@ class BaseComponent(Manager):
 
         self.push(Unregistered(self, self.manager), target=self)
 
-        root = _root(self.manager)
+        root = findroot(self.manager)
         _unregister(self, self.manager, root)
 
         self.manager.components.remove(self)
