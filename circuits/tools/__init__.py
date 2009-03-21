@@ -30,16 +30,17 @@ def edges(x, e=None, v=None):
             edges(c, e, v)
     return e
 
-def dotgraph(x, filename=None):
-    import pydot
-    g = pydot.graph_from_edges(edges(x), directed=True)
-    return g.write_png(filename or "%s.png" % x.name, prog="dot")
-
-def root(x):
+def root(x, v=None):
+    if not v:
+        v = set()
     if x.manager == x:
         return x
     else:
-        return root(x.manager)
+        if x.manager not in v:
+            v.add(x.manager)
+            return root(x.manager, v)
+        else:
+            return x.manager
 
 def kill(x):
     for c in x.components.copy():
