@@ -2,9 +2,12 @@
 
 [[TOC]]
 
-||**Status**||Work in Progress||
+||'''Status'''||Work in Progress||
 
-Circuits is a reinvention of the event library of pymills, a more coherent library.
+''Circuits is a reinvention of the event library of pymills, a more coherent library.''
+
+ * Everything is an Event.
+ * Everything is a Component.
 
 ----
 [.. Up]

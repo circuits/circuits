@@ -278,5 +278,10 @@ class Root(Controller):
 (Server(8000) + Root()).run()
 }}}
 
+== Other Examples ==
+[[TitleIndex(docs/CircuitsWeb)]]
+
+The source code to all examples can be found here:
+ * [source:examples/web/ Web Examples]
 ----
 [.. Up]

@@ -24,7 +24,7 @@ and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 ==== Hello World! ====
 {{{
 #!python
->>> from circuits.core import Event, Component
+>>> from circuits import Event, Component
 >>>
 >>> class MyApp(Component):
 ...   def hello(self):
@@ -35,20 +35,42 @@ and was partly inspired by the [http://trac.edgewall.org Trac] architecture.
 Hello World!
 }}}
 
+==== Hello World! (Web) ====
+{{{
+#!python
+from circuits.web import Server, Controller
+
+class Root(Controller):
+
+    def index(self):
+        return "Hello World!"
+
+(Server(8000) + Root()).run()
+}}}
+
 == Getting Started ==
 Download and install the circuits library. Learn how to write Components and
 be sure to check out the Examples and the classic [source:examples/hello.py Hello World!]
 
  * [./DownloadInstall Downloading and Installing]
- * [./Tutorial Tutorial]
+ * [./Tutorial Circuits Tutorial]
+ * [./CircuitsWeb circuits.web] ''circuits and the web''
+ * [./FrequentlyAskedQuestions Frequently Asked Questions]
 
 == Documentation ==
- * [./DevelopersGuide Developers Guide]
  * [export:/docs/html/index.html Library Documentation]
  * [./Performance Performance]
  * [./tools Development Tools]
 
+=== 1.1 ===
+[[ListTagged(1.1)]]
+
+=== 1.2 ===
+[[ListTagged(1.2)]]
+
 == Project Information ==
  * [./Philosophy Project Philosophy]
- * [./Contributing How to Contribute]
+ * [./Contributing Contributing]
+  * [./Contributing/OpenWork Open Work]
  * [./License License]
+----

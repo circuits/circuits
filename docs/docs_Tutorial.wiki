@@ -35,14 +35,31 @@ material:
  * [http://en.wikipedia.org/wiki/Software_componentry Component based Software Engineering]
  * [http://trac.edgewall.org/wiki/TracDev/ComponentArchitecture Trac's excellent Component Architecture]
 
-== circuits ==
+== circuits - The Library ==
 Okay, so let's go through all the basic concepts of
 circuits and what it has to offer. circuits consists
 of a core set of BuildingBlocks which are used to
 build up more complex components. They are:
- * [export:/docs/html/circuits.core.Manager-class.html Manager]
-  * [export:/docs/html/circuits.core.BaseComponent-class.html BaseComponent]
-   * [export:/docs/html/circuits.core.Component-class.html Component]
+{{{
+#!graphviz
+    digraph G {
+        Manager [
+            URL="/circuits/export/tip/docs/html/circuits.core.Manager-class.html"
+            fontcolor=red
+        ]
+        BaseComponent [
+            URL="/circuits/export/tip/docs/html/circuits.core.BaseComponent-class.html"
+            fontcolor=red
+        ]
+        Component [
+            URL="/circuits/export/tip/docs/html/circuits.core.Component-class.html"
+            fontcolor=red
+        ]
+
+        Manager -> BaseComponent;
+        BaseComponent -> Component;
+    }
+}}}
 
 === Manager ===
 A Manager is responsible for managing the events of
@@ -99,7 +116,7 @@ m.flush()
 m.run()
 }}}
 
-=== BaseComponent ===
+=== !BaseComponent ===
 This is the next building block used in circuits. The Component
 is comprised of the BaseComponent. The BaseComponent has all of the
 features and capabilities of the [#Manager Manager], however a
@@ -108,7 +125,7 @@ Unregistered to other Manager(s) or Component(s).
 
 '''NB:''' A Manager __cannot__ be registered to anything.
 
-The BasComponent has the following two public interfaces:
+The BaseComponent has the following two public interfaces:
  * [export:/docs/html/circuits.core.BaseComponent-class.html#register register]
  * [export:/docs/html/circuits.core.BaseComponent-class.html#unregister unregister]
 
@@ -174,17 +191,254 @@ foo.unregister() # Or: m -= foo
 m.stop()
 }}}
 
+=== Event ===
+Event objects, or events are simply a container to hold
+information about the event that occurred. Event objects
+can hold any arbitrary information and accept a list of
+arguments and keyword arguments. It is usually recommended
+though to subclass the Event object to create your own
+unique Event objects.
+
+For example:
+{{{
+#!python
+class Foo(Event):
+    """Foo Event
+
+    This event occurs when the system wants to send a
+    message to another part of the system.
+
+    @param message: The message
+    @type  message: str
+    """
+
+    def __init__(self, message):
+        super(Foo, self).__init__(message)
+}}}
+
+Two important things to note here are:
+ * The Event object is documented (''using epydoc'').
+ * The data that can be passed is restricted.
+
+All Event objects have two instance attributes and
+one class attribute. Event objects can also be compared
+with other Event objects for equality and each Event
+object implements the {{{__getitem___}} for accessing
+both arguments and keyword arguments (''data'') of the
+Event object.
+
+==== Class Attributes ====
+The Event object has one class attribute: {{{channel}}}
+
+This is used to define the '''channel''' this Event is
+bound for in a system. An example will demonstrate this:
+
+{{{
+#!python
+>>> class System(Component):
+...     def foo(self):
+...             print "I am foo"
+... 
+>>> class Foo(Event):
+...     channel = "foo"
+... 
+>>> system = System()
+>>> system.start()
+>>> system.push(Foo())
+>>> I am foo
+}}}
+
+'''Note:''' If the Event object doesn't contain a
+{{{channel}}} class attribute, it defaults to {{{None}}}.            
+Also note, that if an event is pushed or sent with the
+{{{Manager.push}}} or {{{Manager.send}}} calls without
+a {{{channel}}}, then the {{{channel}}} name is taken from
+the Event object name lower-cased.
+
+==== Instance Attributes ====
+Event objects contain two instance attributes (''one really''),
+a {{{channel}}} attribute and a {{{name}}} property.
+
+The {{{name}}} property is a read-only property that
+identifies the name of the Event object (''taken from
+it's class name'').
+
+The {{{channel}}} attribute is dynamically set as an
+Event is sent to a destination channel.
+
+==== Event Equality ====
+The equality of event event can be verified by using
+the {{{==}}} operator against two Event objects.
+
+For example:
+{{{
+#!python
+>>> class Foo(Event): pass
+... 
+>>> class Bar(Event): pass
+... 
+>>> foo = Foo()
+>>> bar = Bar()
+>>> foo == bar
+False
+>>> foo2 = Foo()
+>>> foo == foo2
+True
+>>> foo3 = Foo(1,2,3)
+>>> foo == foo3
+False
+}}}
+
+It's important to note that two events are only considered
+equal if and only if:
+ * They are the same type
+ * They have the same channel
+ * They have the same data
+
+=== Event Handlers ===
+An Event Handler is basically a Python callable (''function
+or method'') that handles a specific event or set of events.
+
+In circuits, there are two types of Event Handlers:
+ * Listeners
+ * Filters
+
+Event Handlers can either be defined explicitly or
+implicitly. The [#Component Component] building block
+automatically implicitly creates Event Handlers based
+on the Python methods it finds in that Component,
+with the exception os '_' prefixed methods or methods
+already defined as Event Handlers with the @handler
+decorator.
+
+Event Handlers otherwise are created with the @handler
+decorator and this gives more flexibility and control over
+how the Event Handler is created. Whereas the
+[#Component Component] creates Event Handlers that are
+Listeners that listen on a channel of the same name
+as the method, the @handler decorator can do much more:
+ * Create Event Handlers that listen to more than one channel.
+ * Create Filters
+ * Create prioritized Event Handlers
+ * Override inherited Event Handlers.
+ * Set a different target to be listening to.
+
+Some clarification:
+ * A '''Listener''' is an Event Handler that listens on \
+   a given channel or set of channels.
+ * A '''Filter''' is an Event Handler that also listens on \
+   a given channel or set of channels, but, can also '''filter'''
+   the event from other Event Handlers by returning a non-None
+   and True value (''one that evaluates to True'').
+
+Examples:
+{{{
+#!python
+>>> class System(Component):
+...     def foo(self):
+...             print "I am foo"
+...     @handler("bar")
+...     def bar(self):  
+...             print "I am bar"
+...     @handler()
+...     def all(self):
+...             print "I am all"
+...     @handler("foo", filter=True)
+...     def filter(self, stop=False):
+...             if stop:
+...                     print "I am a filter"
+... 
+>>> system = System()
+>>> system.start()
+>>> system.push(Event(), "foo")
+>>> I am all
+I am foo
+>>> system.push(Event(), "bar")
+>>> I am all
+I am bar
+>>> system.push(Event(stop=True), "bar")
+>>> system.push(Event(stop=True), "foo")
+>>> I am a filter
+}}}
+
+=== Channels and Targets ===
+Every Event Handler of a Component listens on
+a specific channel or set of channels. In the
+previous section Event Handlers can also listen
+to a different target.
+
+Components can also have a channel that they are
+associated with. So to be clear:
+ * Event Handlers listen to channel(s).
+ * Component(s) have a channel.
+
+The Manager's {{{push}}} and {{{send}}} interfaces
+(''which all Component(s) also have'') accept the
+following arguments:
+ * event ('''required''').
+ * channel (''optional'')
+ * target (''optional'')
+
+When '''target''' is specified, this causes that
+event to be destined for the given channel __on__
+the given __target___ Component. The '''target'''
+can in fact be a reference to another Component.
+
+== circuits - The Architecture ==
+The architecture of circuits is such that components
+can be registered and unregistered from the system
+event at run-time (''plugged in and plugged out'').
+
+The best way to understand this is with a visual dirgram
+of an example system. Here is circuits.web (''the tool''):
+{{{
+#!graphviz
+    digraph G {
+        Manager -> Debugger;
+        Manager -> Server;
+        Server -> TCPServer;
+        TCPServer -> HTTP;
+        TCPServer -> Select;
+        Server -> Dispatcher;
+        Dispatcher -> Root;
+    }
+}}}
+
+This same diagram is represented textually as:
+{{{
+* <Manager (q: 7 c: 15 h: 15) [S]>
+ * <Debugger/* (q: 0 c: 1 h: 1) [S]>
+ * <Server/web (q: 0 c: 14 h: 14) [S]>
+  * <TCPServer/server (q: 0 c: 10 h: 10) [S]>
+   * <Select/select (q: 0 c: 0 h: 0) [S]>
+   * <HTTP/http (q: 0 c: 5 h: 5) [S]>
+  * <Dispatcher/web (q: 0 c: 3 h: 3) [S]>
+   * <Root// (q: 0 c: 1 h: 1) [S]>
+}}}
+
+This information is generated by the circuits.tools
+package.
+
+What all this means is that (''for example'') the circuits.web
+Server is comprised of at least 5 components with Root being
+a Controller (''See [wiki:/docs/CircuitsWeb CircuitsWeb]'').
+It's also important to mention that each of these components
+need not be running in the same process, or event the same
+machine.
+
+This kind of architecture (''Component/Event''), allows you
+to (''for example''), replace the {{{Select}}} component with
+any other equivalent component that reacts to and exposes the
+same kind of events that the {{{TCPServer}}} component needs.
+
+''This architecture is very powerful and scalable.''
+
+== Questions ==
+If event {{{Foo}}} has an attribute {{{channel = "bar"}}} but i use {{{self.push(Foo(), "baz")}}} 
+Where would it go ?
+> It will go to the "baz" channel.
+
 ----
-''More coming...''
-
-TODO:
- * Event
- * Event Handler
-  * Listener
-  * Filter
- * Channel
- * Target
-
 If you have any further questions please read the
 [wiki:docs/FrequentlyAskedQuestions FAQ] or send an
 email to the [http://groups.google.com.au/group/circuits-users circuits Google Group]
