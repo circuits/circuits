@@ -304,6 +304,44 @@ class TCPClient(Client):
         
         self.push(Connected(host, port), "connected", self.channel)
 
+class UNIXClient(Client):
+
+    def __init__(self, bind=None, **kwargs):
+        super(UNIXClient, self).__init__(bind, **kwargs)
+
+        self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self._sock.setblocking(False)
+
+        if bind is not None:
+            self._sock.bind(bind)
+
+    def connect(self, path, ssl=False):
+        self.path = path
+
+        try:
+            r = self._sock.connect_ex(path)
+        except socket.error, e:
+            r = e[0]
+
+        if r:
+            if r == EISCONN:
+                self._connected = True
+            elif r in (EWOULDBLOCK, EINPROGRESS, EALREADY):
+                self._connected = True
+            else:
+                self.push(Error(r), "error", self.channel)
+                return
+
+        self._connected = True
+
+        self._poller.addReader(self._sock)
+
+        if self.ssl:
+            self._sslsock = socket.ssl(self._sock)
+        
+        self.push(Connected(path), "connected", self.channel)
+
+
 class Server(Component):
 
     channel = "server"
