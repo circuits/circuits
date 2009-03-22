@@ -10,6 +10,7 @@ This module contains various Socket Components for use with Networking.
 import os
 import socket
 from errno import *
+from socket import gethostname
 from collections import defaultdict, deque
 
 from circuits.net.pollers import Select as DefaultPoller
@@ -317,6 +318,7 @@ class UNIXClient(Client):
 
     def connect(self, path, ssl=False):
         self.path = path
+        self.ssl = ssl
 
         try:
             r = self._sock.connect_ex(path)
@@ -339,7 +341,7 @@ class UNIXClient(Client):
         if self.ssl:
             self._sslsock = socket.ssl(self._sock)
         
-        self.push(Connected(path), "connected", self.channel)
+        self.push(Connected(gethostname(), path), "connected", self.channel)
 
 
 class Server(Component):
