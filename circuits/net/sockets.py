@@ -458,8 +458,6 @@ class TCPServer(Server):
         oldUmask = None
         if type(bind) == str:
             self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self._sock.setblocking(False)
             try:
                 os.unlink(self.bind)
             except OSError:
@@ -474,9 +472,10 @@ class TCPServer(Server):
                 assert type(self.bind) is tuple
 
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self._sock.setblocking(False)
-            self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.setblocking(False)
+        self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         self._sock.bind(self.bind)
         self._sock.listen(BACKLOG)
