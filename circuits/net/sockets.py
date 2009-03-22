@@ -493,27 +493,33 @@ class TCPServer(Server):
     def __init__(self, bind, ssl=False, **kwargs):
         super(TCPServer, self).__init__(bind, ssl, **kwargs)
 
-        oldUmask = None
-        if type(bind) == str:
-            self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            try:
-                os.unlink(self.bind)
-            except OSError:
-                pass
-            umask = kwargs.get("umask", None)
-            if umask:
-                oldUmask = os.umask(umask)
-        else:
-            if type(bind) is int:
-                self.bind = ("0.0.0.0", self.bind)
-            else:
-                assert type(self.bind) is tuple
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self._sock.setblocking(False)
 
-            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.bind(self.bind)
+        self._sock.listen(BACKLOG)
+
+        self._poller.addReader(self._sock)
+
+class UNIXServer(Server):
+
+    def __init__(self, bind, ssl=False, **kwargs):
+        super(UNIXServer, self).__init__(bind, ssl, **kwargs)
+
+        if os.path.exists(bind):
+            os.unlink(self.bind)
+
+        oldUmask = None
+        umask = kwargs.get("umask", None)
+        if umask:
+            oldUmask = os.umask(umask)
+
+        self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setblocking(False)
-        self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         self._sock.bind(self.bind)
         self._sock.listen(BACKLOG)
