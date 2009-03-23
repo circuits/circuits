@@ -1,0 +1,110 @@
+= General Performance =
+
+[[TOC]]
+
+||'''Status'''||Work in Progress||
+
+circuits comes with a general purpose benchmarking
+tool used to benchmark the core of circuits. This
+tool is normally installed as {{{circuits.bench}}}
+
+On the following environment, this is how circuits
+fairs up:
+||'''CPU'''      ||AMD Athlon(tm) 64 Processor 3800+||
+||'''CPU Cores'''||1                                ||
+||'''CPU Speed'' ||2.4Ghz                           ||
+||'''RAM'''      ||1GB                              ||
+||'''OS'''       ||CRUX 2.5 (32bit)                 ||
+||''Python''     ||2.6.1                            ||
+
+== Speed Test ==
+
+=== With JIT (psyco) ===
+{{{
+#!sh
+prologic@daisy
+Wed Mar 18 19:57:30
+~/circuits-dev
+$ circuits.bench -e 100000 -s
+Setting up Speed Test...
+
+Total Events: 100005 (67335/s after 1.49s)
+}}}
+
+=== Without JIT ===
+{{{
+#!sh
+prologic@daisy
+Wed Mar 18 19:59:06
+~/circuits-dev
+$ circuits.bench -e 100000   
+Setting up Speed Test...
+
+Total Events: 100005 (48263/s after 2.07s)
+}}}
+
+== Latency Test ==
+
+=== With JIT (psyco) ===
+{{{
+#!sh
+prologic@daisy
+Wed Mar 18 20:02:13
+~/circuits-dev
+$ circuits.bench -m latency -t 5 -s
+Setting up Latency Test...
+Latency: 0.30 ms
+Latency: 0.02 ms
+Latency: 0.02 ms
+Latency: 0.02 ms
+Latency: 0.02 ms
+
+Total Events: 17 (4/s after 5.01s)
+}}}
+
+=== Without JIT ===
+{{{
+#!sh
+prologic@daisy
+Wed Mar 18 20:01:06
+~/circuits-dev
+$ circuits.bench -m latency -t 5 
+Setting up Latency Test...
+Latency: 0.03 ms
+Latency: 0.02 ms
+Latency: 0.02 ms
+Latency: 0.03 ms
+Latency: 0.02 ms
+
+Total Events: 17 (4/s after 5.01s)
+}}}
+
+== Sync Test ==
+
+=== With JIT (psyco) ===
+{{{
+#!sh
+prologic@daisy
+Wed Mar 18 20:06:16
+~/circuits-dev
+$ circuits.bench -m sync -e 100000 -s   
+Setting up Sender...
+Setting up Receiver...
+
+Total Events: 100005 (64473/s after 1.55s)
+}}}
+
+=== Without JIT ===
+{{{
+#!sh
+prologic@daisy
+Wed Mar 18 20:06:21
+~/circuits-dev
+$ circuits.bench -m sync -e 100000   
+Setting up Sender...
+Setting up Receiver...
+
+Total Events: 100005 (46827/s after 2.14s)
+}}}
+-----
+[.. Up]

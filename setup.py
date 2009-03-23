@@ -3,11 +3,11 @@
 from distutils.filelist import findall
 from setuptools import setup, find_packages
 
-import circuits as pkg
-
 from circuits import version
 version.forget_version()
 version.remember_version()
+
+import circuits as pkg
 
 setup(
 		name=pkg.__name__,

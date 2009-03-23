@@ -6,23 +6,20 @@ import sys
 from traclib import Trac, NotModified
 
 def main():
-	opts = object()
-	trac = Trac(opts)
-	docs = [x for x in os.listdir(os.getcwd()) if x.endswith(".wiki")]
-	for doc in docs:
-		name, ext = os.path.splitext(doc)
-		if name == "index":
-			page = "docs"
-		else:
-			page = "docs/%s" % name
+    opts = object()
+    trac = Trac(opts)
+    files = [x for x in os.listdir(os.getcwd()) if x.endswith(".wiki")]
+    for file in files:
+        page, _ = os.path.splitext(file)
+        page = page.replace("_", "/")
 
-		sys.stdout.write("Updating %s ... " % name)
-		sys.stdout.flush()
-		try:
-			trac.upload(page, doc, "Updated")
-			print "DONE"
-		except NotModified:
-			print "DONE (already up-to-date!)"
+        sys.stdout.write("Updating %s ... " % page)
+        sys.stdout.flush()
+        try:
+            trac.upload(page, file, "Updated")
+            print "DONE"
+        except NotModified:
+            print "DONE (already up-to-date!)"
 
 if __name__ == "__main__":
-	main()
+    main()

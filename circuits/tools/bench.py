@@ -62,6 +62,10 @@ def parse_options():
             action="store_true", default=False, dest="listen",
             help="Listen on 0.0.0.0:8000 (UDP) to test remote events")
 
+    parser.add_option("-w", "--wait",
+            action="store_true", default=False, dest="wait",
+            help="Wait for remove ndoes to conenct")
+
     parser.add_option("-b", "--bind",
             action="store", type="string", default="0.0.0.0", dest="bind",
             help="Bind to address:[port] (UDP) to test remote events")
@@ -139,7 +143,7 @@ class Sender(Base):
 
     concurrency = 1
 
-    def recevied(self, message=""):
+    def received(self, message=""):
         self.push(Hello("hello"), "hello", self.channel)
 
 class Receiver(Base):
@@ -233,7 +237,7 @@ def main():
             else:
                 address, port = opts.bind, 8000
 
-        bridge = Bridge(port, address=address, nodes=nodes)
+        bridge = Bridge(bind=(address, port), nodes=nodes)
         manager += bridge
         bridge.start()
 
@@ -285,11 +289,12 @@ def main():
             profiler = hotshot.Profile("bench.prof")
             profiler.start()
 
-    if opts.concurrency > 1:
-        for c in xrange(int(opts.concurrency)):
-            manager.push(Hello("hello"), "hello", c)
-    else:
-        manager.push(Hello("hello"), "hello")
+    if not opts.wait:
+        if opts.concurrency > 1:
+            for c in xrange(int(opts.concurrency)):
+                manager.push(Hello("hello"), "hello", c)
+        else:
+            manager.push(Hello("hello"), "hello")
 
     while not state.done:
         try:

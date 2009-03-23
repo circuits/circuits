@@ -6,10 +6,12 @@
 
 Components communicate with one another by propagating Events on Channels
 throughout the System. Each Component has a set of Event Handlers that
-can listen for or filter Events on one or more Channels. Components react to Events and in turn expose further Events into the System. Each Component
+can listen for or filter Events on one or more Channels. Components react
+to Events and in turn expose further Events into the System. Each Component
 is capable of managing it's own Events as well as those of other Components.
-Complex directed graph structures can be created with Component Registrations,
-this gives a level of hierarchy and separation of concern.
+Complex directed graph structures can be created with
+Component Registrations, this gives a level of hierarchy and separation
+of concern.
 
 Example:
    >>> from time import sleep
@@ -26,9 +28,9 @@ Example:
 """
 
 try:
-	from __version__ import version as __version__
+    from __version__ import version as __version__
 except ImportError:
-	__version__ = "unknown"
+    __version__ = "unknown"
 
 __name__ = "circuits"
 __description__ = "Event framework with a Component architecture"
@@ -90,16 +92,12 @@ __entry_points__ = """\
 [console_scripts]
 circuits.bench = circuits.tools.bench:main
 circuits.sniffer = circuits.tools.sniffer:main
+circuits.web = circuits.web.main:main
 """
 
-from core import listener, handler, Event, Component,  Manager
+from core import handler, Event, Component,  Manager
 
-from bridge import Bridge
-from workers import Thread
-from debugger import Debugger
-from timers import Timer, Timer
-
-try:
-    from workers import Process
-except ImportError:
-    pass
+from core.bridge import Bridge
+from core.debugger import Debugger
+from core.timers import Timer, Timer
+from core.workers import Thread, Process
