@@ -621,3 +621,16 @@ class UDPServer(Server):
                 self._poller.removeWriter(self._sock)
 
 UDPClient = UDPServer
+
+def Pipe():
+    """Create a new full duplex Pipe
+
+    Returns a pair of UNIXClient instances connected on either side of
+    the pipe.
+    """
+
+    s1, s2 = socket.socketpair()
+    c1 = UNIXClient(os.dup(s1.fileno()))
+    c2 = UNIXClient(os.dup(s2.fileno()))
+    s1.close()
+    s2.close()
