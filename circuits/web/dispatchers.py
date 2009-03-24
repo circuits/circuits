@@ -8,8 +8,9 @@ This module implements URL dispatchers.
 """
 
 import os
+import json
+import xmlrpclib
 from urlparse import urljoin as _urljoin
-from xmlrpclib import loads, dumps, Fault
 
 from circuits import handler, Event, Component
 
@@ -239,7 +240,7 @@ class XMLRPC(Component):
     def request(self, request, response):
         try:
             data = request.body.read()
-            params, method = loads(data)
+            params, method = xmlrpclib.loads(data)
 
             e = RPC(*params)
 
@@ -248,9 +249,68 @@ class XMLRPC(Component):
             else:
                 t, c = None, method
 
-            r = dumps(self.send(e, c, t, errors=True))
+            r = xmlrpclib.dumps(self.send(e, c, t, errors=True))
         except Exception, e:
-            r = dumps(Fault(1, "%s:%s" % (type(e), e), encoding=self.encoding, allow_none=self.allow_none))
+            r = xmlrpclib.dumps(
+                    xmlrpclib.Fault(1, "%s:%s" % (
+                        type(e), e), encoding=self.encoding,
+                        allow_none=self.allow_none))
 
         response.headers["Content-Type"] = "text/xml"
         return r
+
+class JSONRPC(Component):
+
+    channel = "web"
+
+    def __init__(self, path=None, encoding=None):
+        channel = JSONRPC.channel if not path else path
+        super(JSONRPC, self).__init__(channel=channel)
+
+        self.encoding = encoding
+
+    @handler("request", filter=True)
+    def request(self, request, response):
+        try:
+            data = request.body.read()
+            o = json.loads(data)
+            id, method, params = o["id"], o["method"], o["params"]
+
+            e = RPC(*params)
+
+            if "." in method:
+                t, c = method.split(".", 1)
+            else:
+                t, c = None, method
+
+            result = self.send(e, c, t, errors=True)
+            if result:
+                r = self._response(id, result)
+            else:
+                r = self._error(id, 100, "method '%s' does not exist" % method)
+        except Exception, e:
+            return self.error(id, 100, "%s: %s" % (e.__class__.__name__, e))
+
+        response.headers["Content-Type"] = "text/xml"
+        return r
+
+    def _response(self, id, result):
+        data = {
+                "id": id,
+                "version": "1.1",
+                "resutl": result,
+                "error": None
+                }
+        return json.dumps(data, encoding=self.encoding)
+
+    def _error(self, id, code, message):
+        data = {
+                "id": id,
+                "version": "1.1",
+                "error": {
+                    "name": "JSONRPCError",
+                    "code": code,
+                    "message": message
+                    }
+                }
+        return json.dumps(data, encoding=self.encoding)
