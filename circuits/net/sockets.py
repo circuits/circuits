@@ -10,8 +10,8 @@ This module contains various Socket Components for use with Networking.
 import os
 import socket
 from errno import *
-from socket import gethostname
 from collections import defaultdict, deque
+from socket import gethostname, gethostbyname
 
 from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
@@ -170,7 +170,16 @@ class Client(Component):
     def __init__(self, bind=None, channel=channel, **kwargs):
         super(Client, self).__init__(channel=channel, **kwargs)
 
-        self.bind = bind
+        if type(bind) is int:
+            self.bind = (gethostbyname(gethostname()), bind)
+        elif type(bind) is str:
+            assert ":" in bind
+            host, port = bind.split(":")
+            port = int(port)
+            self.bind = (host, port)
+        else:
+            assert type(bind) is tuple
+            self.bind = bind
 
         self.server = {}
         self.issuer = {}
@@ -351,7 +360,16 @@ class Server(Component):
     def __init__(self, bind, ssl=False, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
-        self.bind = bind
+        if type(bind) is int:
+            self.bind = (gethostbyname(gethostname()), bind)
+        elif type(bind) is str:
+            assert ":" in bind
+            host, port = bind.split(":")
+            port = int(port)
+            self.bind = (host, port)
+        else:
+            assert type(bind) is tuple
+            self.bind = bind
         self.ssl = ssl
 
         Poller = kwargs.get("poller", DefaultPoller)
