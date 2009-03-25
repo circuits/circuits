@@ -198,13 +198,3 @@ class Gateway(Component):
         self._response = response
 
         return "".join(self.app(self._createEnviron(), self.start_response))
-
-def Middleware(*args, **kwargs):
-    """Alias to Gateway for backward compatibility.
-
-    @deprecated: Middleware will be deprecated in 1.2 Use Gateway insetad.
-    """
-
-    warnings.warn("Please use Gateway, Middleware will be deprecated in 1.2")
-
-    return Gateway(*args, **kwargs)
