@@ -229,12 +229,11 @@ class XMLRPC(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, encoding=None, allow_none=False):
+    def __init__(self, path=None, encoding=None):
         channel = XMLRPC.channel if not path else path
         super(XMLRPC, self).__init__(channel=channel)
 
         self.encoding = encoding
-        self.allow_none = allow_none
 
     @handler("request", filter=True)
     def request(self, request, response):
