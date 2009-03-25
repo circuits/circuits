@@ -248,15 +248,23 @@ class XMLRPC(Component):
             else:
                 t, c = None, method
 
-            r = xmlrpclib.dumps(self.send(e, c, t, errors=True))
+            result = self.send(e, c, t, errors=True)
+            if result:
+                r = self._response(result)
+            else:
+                r = self._error(1, "method '%s' does not exist" % method)
         except Exception, e:
-            r = xmlrpclib.dumps(
-                    xmlrpclib.Fault(1, "%s:%s" % (
-                        type(e), e), encoding=self.encoding,
-                        allow_none=self.allow_none))
+            r = self._error(1, "%s: %s" % (type(e), e))
 
         response.headers["Content-Type"] = "text/xml"
         return r
+
+    def _response(self, result):
+        return xmlrpclib.dumps(result, encoding=self.encoding, allow_none=True)
+
+    def _error(self, code, message):
+        fault = xmlrpclib.Fault(code, message)
+        return xmlrpclib.dumps(fault, encoding=self.encoding, allow_none=True)
 
 class JSONRPC(Component):
 
