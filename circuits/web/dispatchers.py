@@ -229,14 +229,18 @@ class XMLRPC(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, encoding=None):
-        channel = XMLRPC.channel if not path else path
-        super(XMLRPC, self).__init__(channel=channel)
+    def __init__(self, path=None, target=None, encoding=None):
+        super(XMLRPC, self).__init__()
 
+        self.path = path
+        self.target = target
         self.encoding = encoding
 
     @handler("request", filter=True)
     def request(self, request, response):
+        if self.path is not None and self.path != request.path.rstrip("/"):
+            return
+
         try:
             data = request.body.read()
             params, method = xmlrpclib.loads(data)
@@ -246,7 +250,7 @@ class XMLRPC(Component):
             if "." in method:
                 t, c = method.split(".", 1)
             else:
-                t, c = None, method
+                t, c = self.target, method
 
             result = self.send(e, c, t, errors=True)
             if result:
@@ -270,14 +274,18 @@ class JSONRPC(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, encoding=None):
-        channel = JSONRPC.channel if not path else path
-        super(JSONRPC, self).__init__(channel=channel)
+    def __init__(self, path=None, target=None, encoding=None):
+        super(JSONRPC, self).__init__()
 
+        self.path = path
+        self.target = target
         self.encoding = encoding
 
     @handler("request", filter=True)
     def request(self, request, response):
+        if self.path is not None and self.path != request.path.rstrip("/"):
+            return
+
         try:
             data = request.body.read()
             o = json.loads(data)
@@ -288,7 +296,7 @@ class JSONRPC(Component):
             if "." in method:
                 t, c = method.split(".", 1)
             else:
-                t, c = None, method
+                t, c = self.target, method
 
             result = self.send(e, c, t, errors=True)
             if result:
