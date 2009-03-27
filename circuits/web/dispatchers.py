@@ -264,7 +264,7 @@ class XMLRPC(Component):
         return r
 
     def _response(self, result):
-        return xmlrpclib.dumps(result, encoding=self.encoding, allow_none=True)
+        return xmlrpclib.dumps((result,), encoding=self.encoding, allow_none=True)
 
     def _error(self, code, message):
         fault = xmlrpclib.Fault(code, message)
