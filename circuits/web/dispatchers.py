@@ -306,7 +306,7 @@ class JSONRPC(Component):
         except Exception, e:
             return self._error(id, 100, "%s: %s" % (e.__class__.__name__, e))
 
-        response.headers["Content-Type"] = "text/xml"
+        response.headers["Content-Type"] = "application/javascript"
         return r
 
     def _response(self, id, result):
