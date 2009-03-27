@@ -178,7 +178,6 @@ class Client(Component):
             port = int(port)
             self.bind = (host, port)
         else:
-            assert type(bind) is tuple
             self.bind = bind
 
         self.server = {}
