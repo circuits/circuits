@@ -14,9 +14,16 @@ descriptors for read/write events. Pollers:
 
 import warnings
 from errno import *
-from select import select, poll
+from select import select
 from select import error as SelectError
-from select import POLLIN, POLLOUT, POLLHUP, POLLERR, POLLNVAL
+
+try:
+    from select import poll
+    from select import POLLIN, POLLOUT, POLLHUP, POLLERR, POLLNVAL
+    HAS_POLL = 1
+except ImportError:
+    HAS_POLL = 0
+    warnings.warn("No poll support available.")
 
 try:
     from select import epoll
@@ -29,11 +36,12 @@ except ImportError:
         HAS_EPOLL = 1
     except ImportError:
         HAS_EPOLL = 0
-        warnings.warn("No epoll support available! But that's ok :)")
+        warnings.warn("No epoll support available.")
 
 from circuits.core import handler, Event, BaseComponent
 
-_POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
+if HAS_POLL:
+    _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
 
 if HAS_EPOLL:
     _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
@@ -326,6 +334,9 @@ class EPoll(_Poller):
                 self._poller.unregister(fileno)
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
+
+if not HAS_POLL:
+    del Poll
 
 if not HAS_EPOLL:
     del EPoll
