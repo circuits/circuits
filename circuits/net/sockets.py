@@ -182,6 +182,10 @@ class Client(Component):
         else:
             self.bind = bind
 
+        self.host = "0.0.0.0"
+        self.port = 0
+        self.ssl  = False
+
         self.server = {}
         self.issuer = {}
 
@@ -658,7 +662,7 @@ class UDPServer(Server):
 
 UDPClient = UDPServer
 
-def Pipe():
+def Pipe(channels=("pipe.a", "pipe.b")):
     """Create a new full duplex Pipe
 
     Returns a pair of UNIXClient instances connected on either side of
@@ -666,7 +670,10 @@ def Pipe():
     """
 
     s1, s2 = socket.socketpair()
-    c1 = UNIXClient(os.dup(s1.fileno()))
-    c2 = UNIXClient(os.dup(s2.fileno()))
-    s1.close()
-    s2.close()
+    a = UNIXClient(s1, channel=channels[0])
+    b = UNIXClient(s2, channel=channels[1])
+    a._connected = True
+    a._poller.addReader(a._sock)
+    b._connected = True
+    b._poller.addReader(b._sock)
+    return a, b
