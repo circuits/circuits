@@ -34,14 +34,17 @@ class Connect(Event):
 
     @note: This event is used for both Client and Server Components.
 
-    @param args:  Client: (host, port, ssl=False) Server: (sock, host, port)
-    @type  tuple: tuple
+    @param args:  Client: (host, port) Server: (sock, host, port)
+    @type  args: tuple
+
+    @param kwargs: Client: (ssl)
+    @type  kwargs: dict
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Connect, self).__init__(*args)
+        super(Connect, self).__init__(*args, **kwargs)
 
 class Disconnect(Event):
     """Disconnect Event
