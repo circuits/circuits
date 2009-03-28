@@ -230,8 +230,11 @@ class Client(Component):
             else:
                 self.close()
         except socket.error, e:
-            self.push(Error(e), "error", self.channel)
-            self._close()
+            if e[0] == EWOULDBLOCK:
+                return
+            else:
+                self.push(Error(e), "error", self.channel)
+                self._close()
 
     def _write(self, data):
         try:
@@ -426,8 +429,11 @@ class Server(Component):
             else:
                 self.close(sock)
         except socket.error, e:
-            self.push(Error(sock, e), "error", self.channel)
-            self._close(sock)
+            if e[0] == EWOULDBLOCK:
+                return
+            else:
+                self.push(Error(sock, e), "error", self.channel)
+                self._close(sock)
 
     def _write(self, sock, data):
         if sock not in self._clients:
