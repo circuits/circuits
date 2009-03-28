@@ -330,7 +330,6 @@ class UNIXClient(Client):
     def __init__(self, bind=None, **kwargs):
         super(UNIXClient, self).__init__(bind, **kwargs)
 
-        print bind, type(bind)
         if type(bind) is SocketType:
             self._sock = bind
         else:
