@@ -16,6 +16,8 @@ from socket import gethostname, gethostbyname
 from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
 
+SocketType = socket._socket.socket
+
 BUFSIZE = 4096 # 4KB Buffer
 BACKLOG = 128  # 128 Concurrent Connections
 
@@ -281,12 +283,15 @@ class TCPClient(Client):
     def __init__(self, bind=None, **kwargs):
         super(TCPClient, self).__init__(bind, **kwargs)
 
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if type(bind) is SocketType:
+            self._sock = bind
+        else:
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if bind is not None:
+                self._sock.bind((bind, 0))
+
         self._sock.setblocking(False)
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
-        if bind is not None:
-            self._sock.bind((bind, 0))
 
     def connect(self, host, port, ssl=False):
         self.host = host
@@ -321,11 +326,15 @@ class UNIXClient(Client):
     def __init__(self, bind=None, **kwargs):
         super(UNIXClient, self).__init__(bind, **kwargs)
 
-        self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self._sock.setblocking(False)
+        print bind, type(bind)
+        if type(bind) is SocketType:
+            self._sock = bind
+        else:
+            self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            if bind is not None:
+                self._sock.bind(bind)
 
-        if bind is not None:
-            self._sock.bind(bind)
+        self._sock.setblocking(False)
 
     def connect(self, path, ssl=False):
         self.path = path
@@ -518,12 +527,15 @@ class TCPServer(Server):
     def __init__(self, bind, ssl=False, **kwargs):
         super(TCPServer, self).__init__(bind, ssl, **kwargs)
 
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if type(bind) is SocketType:
+            self._sock = bind
+        else:
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._sock.bind(self.bind)
+
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._sock.setblocking(False)
-
-        self._sock.bind(self.bind)
         self._sock.listen(BACKLOG)
 
         self._poller.addReader(self._sock)
@@ -533,42 +545,43 @@ class UNIXServer(Server):
     def __init__(self, bind, ssl=False, **kwargs):
         super(UNIXServer, self).__init__(bind, ssl, **kwargs)
 
-        if os.path.exists(bind):
-            os.unlink(self.bind)
+        if type(bind) is SocketType:
+            self._sock = bind
+        else:
+            if os.path.exists(bind):
+                os.unlink(self.bind)
 
-        oldUmask = None
-        umask = kwargs.get("umask", None)
-        if umask:
-            oldUmask = os.umask(umask)
+            oldUmask = None
+            umask = kwargs.get("umask", None)
+            if umask:
+                oldUmask = os.umask(umask)
 
-        self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self._sock.bind(self.bind)
+
+            if oldUmask is not None:
+                os.umask(oldUmask)
 
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setblocking(False)
-
-        self._sock.bind(self.bind)
         self._sock.listen(BACKLOG)
 
         self._poller.addReader(self._sock)
-
-        if oldUmask is not None:
-            os.umask(oldUmask)
 
 class UDPServer(Server):
 
     def __init__(self, bind, ssl=False, **kwargs):
         super(UDPServer, self).__init__(bind, ssl, **kwargs)
 
-        if type(bind) is int:
-            self.bind = ("0.0.0.0", self.bind)
+        if type(bind) is SocketType:
+            self._sock = bind
         else:
-            self.bind = bind
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self._sock.bind(self.bind)
 
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self._sock.setblocking(False)
-        self._sock.bind(self.bind)
 
         self._poller.addReader(self._sock)
 
