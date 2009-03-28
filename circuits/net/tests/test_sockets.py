@@ -54,6 +54,106 @@ class Server(Component):
     def read(self, sock, data):
         self.data = data
 
+
+class TestCloseEvent(unittest.TestCase):
+    """Test Close Event"""
+
+    def runTest(self):
+        # Client Mode
+        e = Close()
+        self.assertFalse(e.args)
+
+        # Server Mode
+        e = Close(1)
+        self.assertEquals(e.args[0], 1)
+
+class TestConnectEvent(unittest.TestCase):
+    """Test Connect Event"""
+
+    def runTest(self):
+        # Client Mode (host, port, ssl=False)
+        e = Connect("localhost", 1234, ssl=True)
+        self.assertEquals(e[0], "localhost")
+        self.assertEquals(e[1], 1234)
+        self.assertEquals(e["ssl"], True)
+
+        e = Connect("localhost", 1234, ssl=False)
+        self.assertEquals(e[0], "localhost")
+        self.assertEquals(e[1], 1234)
+        self.assertEquals(e["ssl"], False)
+
+        # Server Mode (sock, host, port)
+        e = Connect(1, "localhost", 1234)
+        self.assertEquals(e[0], 1)
+        self.assertEquals(e[1], "localhost")
+        self.assertEquals(e[2], 1234)
+
+class TestConnectedEvent(unittest.TestCase):
+    """Test Connected Event"""
+
+    def runTest(self):
+        e = Connected("localhost", 1234)
+        self.assertEquals(e[0], "localhost")
+        self.assertEquals(e[1], 1234)
+
+class TestDisconnectEvent(unittest.TestCase):
+    """Test Disconnect Event"""
+
+    def runTest(self):
+        # Client Mode
+        e = Disconnect()
+        self.assertFalse(e.args)
+
+        # Server Mode
+        e = Disconnect(1)
+        self.assertEquals(e.args[0], 1)
+
+class TestDisconnectedEvent(unittest.TestCase):
+    """Test Disconnected Event"""
+
+    def runTest(self):
+        e = Disconnected()
+        self.assertFalse(e.args)
+
+class TestErrorEvent(unittest.TestCase):
+    """Test Error Event"""
+
+    def runTest(self):
+        # Client Mode
+        e = Error("error")
+        self.assertEquals(e[0], "error")
+
+        # Server Mode
+        e = Error(1, "error")
+        self.assertEquals(e[0], 1)
+        self.assertEquals(e[1], "error")
+
+class TestReadEvent(unittest.TestCase):
+    """Test Read Event"""
+
+    def runTest(self):
+        # Client Mode
+        e = Read("data")
+        self.assertEquals(e[0], "data")
+
+        # Server Mode
+        e = Read(1, "data")
+        self.assertEquals(e[0], 1)
+        self.assertEquals(e[1], "data")
+
+class TestWriteEvent(unittest.TestCase):
+    """Test Write Event"""
+
+    def runTest(self):
+        # Client Mode
+        e = Write("data")
+        self.assertEquals(e[0], "data")
+
+        # Server Mode
+        e = Write(1, "data")
+        self.assertEquals(e[0], 1)
+        self.assertEquals(e[1], "data")
+
 class SocketsTestCase(unittest.TestCase):
 
     def testTCPClientServer(self):
