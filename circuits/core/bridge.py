@@ -55,11 +55,14 @@ class Bridge(Component):
 
         self += self.transport
 
-        if self.transport.address in ["", "0.0.0.0"]:
-            address = gethostbyname(gethostname())
-            self.ourself = (address, self.transport.port)
+        if hasattr(self.transport, "address"):
+            if self.transport.address in ["", "0.0.0.0"]:
+                address = gethostbyname(gethostname())
+                self.ourself = (address, self.transport.port)
+            else:
+                self.ourself = self.transport.bind
         else:
-            self.ourself = self.transport.bind
+            self.ourself = (gethostbyname(gethostname()), 0)
 
     def registered(self, c, m):
         if c == self:
