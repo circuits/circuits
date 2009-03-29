@@ -405,6 +405,10 @@ class Server(Component):
         self._clients = []
 
     @property
+    def connected(self):
+        return True
+
+    @property
     def address(self):
         return self.bind[0] if hasattr(self, "bind") else None
 
