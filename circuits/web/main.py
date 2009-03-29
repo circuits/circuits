@@ -26,7 +26,7 @@ from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
 from circuits.net.pollers import Select, Poll, EPoll
-from circuits.web import BaseServer, Server, Application, Controller
+from circuits.web import BaseServer, Server, Controller, wsgi
 
 
 USAGE = "%prog [options]"
@@ -116,7 +116,7 @@ def main():
     bind = (address, port)
 
     if opts.validate:
-        application = (Application() + Root())
+        application = (wsgi.Application() + Root())
         app = validator(application)
 
         httpd = make_server(bind, app)
