@@ -192,6 +192,8 @@ class Client(Component):
         self.server = {}
         self.issuer = {}
 
+        self._bufsize = kwargs.get("bufsize", BUFSIZE)
+
         Poller = kwargs.get("poller", DefaultPoller)
 
         self._poller = Poller()
@@ -230,9 +232,9 @@ class Client(Component):
     def _read(self):
         try:
             if self.ssl and self._sslsock:
-                data = self._sslsock.read(BUFSIZE)
+                data = self._sslsock.read(self._bufsize)
             else:
-                data = self._sock.recv(BUFSIZE)
+                data = self._sock.recv(self._bufsize)
 
             if data:
                 self.push(Read(data), "read", self.channel)
@@ -389,6 +391,9 @@ class Server(Component):
             self.bind = bind
         self.ssl = ssl
 
+        self._bufsize = kwargs.get("bufsize", BUFSIZE)
+        self._backlog = kwargs.get("backlog", BACKLOG)
+
         Poller = kwargs.get("poller", DefaultPoller)
 
         self._poller = Poller()
@@ -438,7 +443,7 @@ class Server(Component):
             return
 
         try:
-            data = sock.recv(BUFSIZE)
+            data = sock.recv(self._bufsize)
             if data:
                 self.push(Read(sock, data), "read", self.channel)
             else:
@@ -542,7 +547,7 @@ class TCPServer(Server):
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._sock.setblocking(False)
-        self._sock.listen(BACKLOG)
+        self._sock.listen(self._backlog)
 
         self._poller.addReader(self._sock)
 
@@ -570,7 +575,7 @@ class UNIXServer(Server):
 
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setblocking(False)
-        self._sock.listen(BACKLOG)
+        self._sock.listen(self._backlog)
 
         self._poller.addReader(self._sock)
 
@@ -612,7 +617,7 @@ class UDPServer(Server):
 
     def _read(self):
         try:
-            data, address = self._sock.recvfrom(BUFSIZE)
+            data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.push(Read(address, data), "read", self.channel)
             else:
@@ -664,7 +669,7 @@ class UDPServer(Server):
 
 UDPClient = UDPServer
 
-def Pipe(channels=("pipe.a", "pipe.b")):
+def Pipe(channels=("pipe.a", "pipe.b"), **kwargs):
     """Create a new full duplex Pipe
 
     Returns a pair of UNIXClient instances connected on either side of
@@ -672,8 +677,8 @@ def Pipe(channels=("pipe.a", "pipe.b")):
     """
 
     s1, s2 = socket.socketpair()
-    a = UNIXClient(s1, channel=channels[0])
-    b = UNIXClient(s2, channel=channels[1])
+    a = UNIXClient(s1, channel=channels[0], **kwargs)
+    b = UNIXClient(s2, channel=channels[1], **kwargs)
     a._connected = True
     a._poller.addReader(a._sock)
     b._connected = True
