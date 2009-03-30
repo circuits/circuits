@@ -15,7 +15,7 @@ from traceback import format_exc
 
 from circuits import handler, Component
 
-import webob
+import wrappers
 from utils import quoted_slash
 from headers import parseHeaders
 from errors import HTTPError, NotFound
@@ -97,8 +97,8 @@ class HTTP(Component):
             scheme, location, path, params, qs, frag = urlparse(path)
 
             protocol = tuple(map(int, protocol[5:].split(".")))
-            request = webob.Request(sock, method, scheme, path, protocol, qs)
-            response = webob.Response(sock, request)
+            request = wrappers.Request(sock, method, scheme, path, protocol, qs)
+            response = wrappers.Response(sock, request)
 
             if frag:
                 error = HTTPError(request, response, 400)
@@ -172,7 +172,7 @@ class HTTP(Component):
                     self.send(res, "response", self.channel)
                 elif isinstance(v, HTTPError):
                     self._handleError(v)
-                elif isinstance(v, webob.Response):
+                elif isinstance(v, wrappers.Response):
                     res = Response(v)
                     self.send(res, "response", self.channel)
                 else:
@@ -198,7 +198,7 @@ class HTTP(Component):
         short, long = RESPONSES.get(code, ("???", "???",))
         message = message or short
 
-        response = webob.Response(sock)
+        response = wrappers.Response(sock)
         response.body = message
         response.status = "%s %s" % (code, message)
 

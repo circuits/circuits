@@ -14,7 +14,7 @@ from traceback import format_exc
 
 from circuits import handler, Component
 
-import webob
+import wrappers
 from headers import Headers
 from utils import quoteHTML
 from dispatchers import Dispatcher
@@ -53,21 +53,21 @@ class Application(Component):
         headers = Headers(list(self.translateHeaders(environ)))
 
         protocol = tuple(map(int, env("SERVER_PROTOCOL")[5:].split(".")))
-        request = webob.Request(None,
+        request = wrappers.Request(None,
                 env("REQUEST_METHOD"),
                 env("wsgi.url_scheme"),
                 env("PATH_INFO"),
                 protocol,
                 env("QUERY_STRING"))
 
-        request.remote = webob.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
+        request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
 
         request.headers = headers
         request.script_name = env("SCRIPT_NAME")
         request.wsgi_environ = environ
         request.body = env("wsgi.input")
 
-        response = webob.Response(None, request)
+        response = wrappers.Response(None, request)
         response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
         return request, response
@@ -124,7 +124,7 @@ class Application(Component):
                     self.send(res, "response", self.channel)
                 elif isinstance(v, HTTPError):
                     self._handleError(v)
-                elif isinstance(v, webob.Response):
+                elif isinstance(v, wrappers.Response):
                     res = Response(v)
                     self.send(res, "response", self.channel)
                 else:

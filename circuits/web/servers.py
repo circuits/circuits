@@ -15,7 +15,7 @@ from circuits import Component
 from circuits.net.sockets import TCPServer
 
 from http import HTTP
-from webob import Request, Host
+from wrappers import Request, Host
 from constants import SERVER_VERSION
 from dispatchers import Dispatcher
 
