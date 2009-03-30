@@ -164,7 +164,7 @@ class LatencyTest(Base):
     t = None
 
     def received(self, message=""):
-        print "Latency: %0.2f ms" % ((time.time() - self.t) * 1000)
+        print "Latency: %0.3f us" % ((time.time() - self.t) * 1e6)
         time.sleep(1)
         self.push(Hello("hello"), "hello", self.channel)
 
