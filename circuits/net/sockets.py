@@ -177,8 +177,7 @@ class Client(Component):
 
         if type(bind) is int:
             self.bind = (gethostbyname(gethostname()), bind)
-        elif type(bind) is str:
-            assert ":" in bind
+        elif type(bind) is str and ":" in bind:
             host, port = bind.split(":")
             port = int(port)
             self.bind = (host, port)
@@ -381,14 +380,13 @@ class Server(Component):
 
         if type(bind) is int:
             self.bind = (gethostbyname(gethostname()), bind)
-        elif type(bind) is str:
-            assert ":" in bind
+        elif type(bind) is str and ":" in bind:
             host, port = bind.split(":")
             port = int(port)
             self.bind = (host, port)
         else:
-            assert type(bind) is tuple
             self.bind = bind
+
         self.ssl = ssl
 
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
@@ -482,7 +480,6 @@ class Server(Component):
         try:
             newsock, host = self._sock.accept()
         except socket.error, e:
-            assert not e[0] == ECONNRESET
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
             elif e[0] == EPERM:
