@@ -41,7 +41,7 @@ def parseQueryString(query_string, keep_blank_values=True):
         return {"x": int(pm[0]), "y": int(pm[1])}
     else:
         pm = parse_qs(query_string, keep_blank_values)
-        return dict((k, v[0]) for k, v in pm.iteritems() if len(v) > 1)
+        return dict((k, v[0]) for k, v in pm.iteritems() if v)
 
 def dictform(form):
     d = {}
