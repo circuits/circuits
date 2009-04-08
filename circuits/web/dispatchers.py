@@ -129,14 +129,16 @@ class Dispatcher(Component):
             else:
                 vpath = []
 
-        handler = self.channels[(candidate, channel)][0]
-
-        if vpath and not handler.varargs:
+        if not (candidate, channel) in self.channels:
             self.cache[path] = r = (None, None, [])
-            return r
         else:
-            self.cache[path] = r = (channel, candidate, vpath)
-            return r
+            handler = self.channels[(candidate, channel)][0]
+            if vpath and not handler.varargs:
+                self.cache[path] = r = (None, None, [])
+            else:
+                self.cache[path] = r = (channel, candidate, vpath)
+
+        return r
 
     @handler("registered", target="*")
     def registered(self, c, m):
