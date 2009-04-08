@@ -77,11 +77,12 @@ class Telnet(Component):
                 raise OSError("Path %s not found" % args[0])
         else:
             self += TCPClient(channel=self.channel)
-            dest = args
             host, port = args
+            port = int(port)
+            dest = host, port
 
         print "Trying %s ..." % host
-        self.push(Connect(dest), "connect")
+        self.push(Connect(*dest), "connect")
 
     def connected(self, host, port=None):
         print "Connected to %s" % host
