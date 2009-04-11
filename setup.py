@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-from distutils.filelist import findall
-from setuptools import setup, find_packages
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils import setup
 
 from circuits import version
 version.forget_version()
@@ -24,7 +26,7 @@ setup(
 		license=pkg.__license__,
 		keywords=pkg.__keywords__,
 		platforms=pkg.__platforms__,
-		packages=find_packages(),
+		packages=[pkg.__name__],
 		install_requires=pkg.__install_requires__,
 		setup_requires=pkg.__setup_requires__,
 		extras_require=pkg.__extras_require__,
