@@ -100,7 +100,9 @@ class Bridge(Component):
                     port = int(port)
                     node = (address, port)
                 elif type(target[0]) is str:
-                    node = (node, self.transport.port)
+                    node = (target, self.transport.port)
+                elif type(target[0]) is int:
+                    node = (self.transport.address, target[0])
                 else:
                     raise TypeError("Invalid bridge target!")
             else:
