@@ -8,9 +8,20 @@ This module implements URL dispatchers.
 """
 
 import os
-import json
+import warnings
 import xmlrpclib
 from urlparse import urljoin as _urljoin
+
+try:
+    import json
+    HAS_JSON = 2
+except ImportError:
+    try:
+        import simplejson as json
+        HAS_JSON = 1
+    except ImportError:
+        HAS_JSON = 0
+        warnings.warn("No json support available.")
 
 from circuits import handler, Event, Component
 
@@ -331,3 +342,6 @@ class JSONRPC(Component):
                     }
                 }
         return json.dumps(data, encoding=self.encoding)
+
+if not HAS_JSON:
+    del JSONRPC
