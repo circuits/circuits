@@ -476,6 +476,10 @@ class Server(Component):
             self._poller.addWriter(sock)
         self._buffers[sock].append(data)
 
+    def broadcast(self, data):
+        for sock in self._clients:
+            self.write(sock, data)
+
     def _accept(self):
         try:
             newsock, host = self._sock.accept()
