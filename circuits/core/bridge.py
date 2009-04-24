@@ -23,7 +23,7 @@ from cPickle import dumps, loads
 from socket import gethostname, gethostbyname
 
 from circuits import handler, Event, Component
-from circuits.net.sockets import UDPServer as DefaultTransport
+from circuits.net.sockets import Client, Server, UDPServer as DefaultTransport
 from circuits.net.sockets import Read, Write, Error, Close
 
 class Helo(Event): pass
@@ -35,23 +35,30 @@ class Bridge(Component):
     IgnoreEvents = [Read, Write, Error, Close]
     IgnoreChannels = []
 
-    def __init__(self, nodes=[], **kwargs):
+    def __init__(self, nodes=[], transport=None, **kwargs):
         super(Bridge, self).__init__(**kwargs)
 
         self.nodes = set(nodes)
 
-        if "transport" in kwargs:
-            if isinstance(kwargs["transport"], Component):
-                self.transport = kwargs["transport"]
-            elif issubclass(kwargs["transport"], Component):
-                Transport = kwargs["transport"]
-                kwargs["channel"] = "transport"
-                self.transport = Transport(**kwargs)
-            else:
-                raise TypeError("Invalid transport")
+        if transport:
+            self.transport = transport
         else:
-            kwargs["channel"] = "transport"
             self.transport = DefaultTransport(**kwargs)
+
+
+        if isinstance(self.transport, DefaultTransport):
+            self.write = self.udp
+        elif isinstance(self.transport, Server):
+            self.write = self.server
+        elif isinstance(self.transport, Client):
+            self.write = self.client
+        else:
+            raise TypeError("Unsupported transport type")
+
+        if isinstance(self.transport, Client):
+            self.server = False
+        else:
+            self.server = True
 
         self += self.transport
 
@@ -83,10 +90,13 @@ class Bridge(Component):
         event.source = self.ourself
 
         try:
-            s = dumps(event, -1)
+            s = dumps(event, -1) + "\x00\x00"
         except:
             return
 
+        self.write(channel, event, s)
+
+    def udp(self, channel, e, s):
         if self.nodes:
             for node in self.nodes:
                 self.transport.write(node, s)
@@ -110,6 +120,12 @@ class Bridge(Component):
 
             self.transport.write(node, s)
 
+    def server(self, channel, e, s):
+        self.transport.broadcast(s)
+
+    def client(self, channel, e, s):
+        self.transport.write(s)
+
     @handler("helo", filter=True)
     def helo(self, event, address, port):
         source = event.source
@@ -121,15 +137,17 @@ class Bridge(Component):
             self.nodes.add((address, port))
             self.push(Helo(*self.ourself))
 
-    @handler("read", filter=True, target="transport")
-    def read(self, address, data):
-        event = loads(data)
+    def read(self, *args):
+        if len(args) == 1: data = args[0]
+        else: data = args[1]
+        data = data.split("\x00\x00")
+        for d in data:
+            if d:
+                self.push_event(loads(d))
 
+    def push_event(self, event):
         (target, channel) = event.channel
         source = event.source
-
-        if source == self.ourself:
-            return
 
         if type(target) is tuple:
             if len(target) == 2:
