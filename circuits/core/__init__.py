@@ -49,6 +49,7 @@ class Event(object):
 
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
+    @ivar result:  The result of this Event (if any).
 
     @param args: list of arguments
     @type  args: tuple
@@ -65,6 +66,7 @@ class Event(object):
 
         self.args = args
         self.kwargs = kwargs
+        self._results = []
 
     @property
     def name(self):
@@ -558,6 +560,41 @@ class Manager(object):
 
         self.root._push(event, (target, channel))
 
+    def _wait(self, _event, timeout=None):
+        done = False
+        results = None
+
+        @handler()
+        def events(event, *args, **kwargs):
+            if type(event) is _event or event == _event:
+                done = True
+                print event
+                print event._results
+                results = event._results
+
+        self._add(events)
+
+        if timeout:
+            time.sleep(timeout)
+        else:
+            while not done and self:
+                time.sleep(1)
+
+        self._remove(events)
+
+        return results
+
+    def wait(self, event, timeout=None):
+        """Wait for an event or event type to occur.
+
+        This will wait for the given Event or Event type for a maximum
+        of timeout seconds (as a floating point) or indefinately (default).
+
+        @note: This is a blocking operation.
+        """
+
+        return self.root._wait(event, timeout)
+
     def _flush(self):
         q = self._queue
         self._queue = deque()
@@ -597,6 +634,7 @@ class Manager(object):
                     raise
                 else:
                     _exc_clear()
+            event._results.append(r)
             if r is not None and r and handler.filter:
                 return r
         return r
@@ -669,7 +707,7 @@ class Manager(object):
         self._task.setDaemon(True)
         self._task.start()
 
-    def wait(self, timeout=None):
+    def join(self, timeout=None):
         if hasattr(self._task, "join"):
             self._task.join(timeout)
 
