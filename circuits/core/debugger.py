@@ -11,6 +11,7 @@ import sys
 from cStringIO import StringIO
 from traceback import format_tb
 
+from circuits.tools import reprhandler
 from circuits.core import handler, Component
 
 class Debugger(Component):
@@ -51,7 +52,9 @@ class Debugger(Component):
 
         if len(args) == 3:
             type, value, traceback = args
-            s.write("ERROR (%s): %s\n" % (type, value))
+            handler = kwargs.get("handler", None)
+            s.write("ERROR in %s (%s): %s\n" % (
+                reprhandler(handler), type, value))
             s.write("%s\n" % "".join(format_tb(traceback)))
         else:
             s.write("Unknown Error\n")

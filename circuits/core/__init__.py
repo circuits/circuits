@@ -127,12 +127,15 @@ class Error(Event):
 
     @param traceback: traceback of exception
     @type traceback: traceback
+
+    @param kwargs: (Optional) Additional Information
+    @type  kwargs: dict
     """
 
-    def __init__(self, type, value, traceback):
+    def __init__(self, type, value, traceback, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Error, self).__init__(type, value, traceback)
+        super(Error, self).__init__(type, value, traceback, **kwargs)
 
 
 class Started(Event):
@@ -629,7 +632,7 @@ class Manager(object):
                 raise
             except:
                 if log:
-                    self.push(Error(*_exc_info()))
+                    self.push(Error(*_exc_info(), handler=handler))
                 if errors:
                     raise
                 else:
