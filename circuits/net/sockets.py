@@ -8,6 +8,7 @@ This module contains various Socket Components for use with Networking.
 """
 
 import os
+import ssl
 import socket
 from errno import *
 from collections import defaultdict, deque
@@ -648,8 +649,8 @@ class UDPServer(Server):
             self._poller.addWriter(self._sock)
         self._buffers[self._sock].append((address, data))
 
-    def broadcast(self, data):
-        self.write("<broadcast>", data)
+    def broadcast(self, data, port):
+        self.write(("<broadcast>", port), data)
 
     @handler("_disconnect", filter=True, override=True)
     def _on_disconnect(self, sock):
