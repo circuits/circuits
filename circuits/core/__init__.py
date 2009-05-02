@@ -120,13 +120,13 @@ class Error(Event):
     of an Event Handler that is not SystemExit or KeyboardInterrupt.
 
     @param type: type of exception
-    @type type: type
+    @type  type: type
 
     @param value: exception object
-    @type value: exceptions.TypeError
+    @type  value: exceptions.TypeError
 
     @param traceback: traceback of exception
-    @type traceback: traceback
+    @type  traceback: traceback
 
     @param kwargs: (Optional) Additional Information
     @type  kwargs: dict
