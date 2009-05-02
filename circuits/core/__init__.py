@@ -563,29 +563,47 @@ class Manager(object):
 
         self.root._push(event, (target, channel))
 
-    def _wait(self, _event, timeout=None):
-        done = False
-        results = None
+    def _wait(self, event, timeout=None):
 
-        @handler()
-        def events(event, *args, **kwargs):
-            if type(event) is _event or event == _event:
-                done = True
-                print event
-                print event._results
-                results = event._results
+        class _Matcher(Component):
 
-        self._add(events)
+            def __init__(self, match):
+                super(_Matcher, self).__init__()
+
+                self._match = match
+                self.event = None
+                self.done = False
+
+            @handler(priority=999, filter=True)
+            def events(self, event, *args, **kwargs):
+                if type(event) is self._match or event == self._match:
+                    self.done = True
+                    self.event = event
+
+        _matcher = _Matcher(event)
+        self += _matcher
 
         if timeout:
-            time.sleep(timeout)
-        else:
-            while not done and self:
-                time.sleep(1)
+            etime = time.time() + timeout
 
-        self._remove(events)
+        while not _matcher.done or (timeout and time.time() >= etime):
+            try:
+                [f() for f in self._ticks.copy()]
+                self._flush()
+            except (KeyboardInterrupt, SystemExit):
+                break
+            except:
+                try:
+                    if log:
+                        self.push(Error(*_exc_info()))
+                finally:
+                    self._flush()
 
-        return results
+        _matcher.unregister()
+
+        if _matcher.event is not None:
+            for r in _matcher.event._results:
+                yield r
 
     def wait(self, event, timeout=None):
         """Wait for an event or event type to occur.
