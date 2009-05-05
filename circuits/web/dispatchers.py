@@ -301,6 +301,7 @@ class JSONRPC(Component):
             data = request.body.read()
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o["params"]
+            params = dict([(str(k), v) for k, v in params.iteritems()])
 
             if "." in method:
                 t, c = method.split(".", 1)
