@@ -650,7 +650,8 @@ class Manager(object):
                 raise
             except:
                 if log:
-                    self.push(Error(*_exc_info(), handler=handler))
+                    etype, evalue, etraceback = _exc_info()
+                    self.push(Error(etype, evalue, etraceback, handler=handler))
                 if errors:
                     raise
                 else:
