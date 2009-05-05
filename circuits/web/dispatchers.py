@@ -242,7 +242,7 @@ class XMLRPC(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, target=None, encoding=None):
+    def __init__(self, path=None, target=None, encoding="utf-8"):
         super(XMLRPC, self).__init__()
 
         self.path = path
@@ -285,7 +285,7 @@ class JSONRPC(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, target=None, encoding=None):
+    def __init__(self, path=None, target=None, encoding="utf-8"):
         super(JSONRPC, self).__init__()
 
         self.path = path
