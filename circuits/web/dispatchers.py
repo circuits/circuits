@@ -307,7 +307,7 @@ class JSONRPC(Component):
             else:
                 t, c = self.target, method
 
-            result = self.send(RPC(*params), c, t, errors=True)
+            result = self.send(RPC(**params), c, t, errors=True)
             if result:
                 r = self._response(id, result)
             else:
