@@ -184,7 +184,7 @@ class Response(object):
                 self.stream = True
             else:
                 body = self.body.read()
-        elif type(self.body) == str:
+        elif issubclass(type(self.body), basestring):
             body = self.body
             if self.gzip:
                 body = compressBuf(body).getvalue()
