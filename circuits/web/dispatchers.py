@@ -301,14 +301,19 @@ class JSONRPC(Component):
             data = request.body.read()
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o["params"]
-            params = dict([(str(k), v) for k, v in params.iteritems()])
+            if type(params) is dict:
+                params = dict([(str(k), v) for k, v in params.iteritems()])
 
             if "." in method:
                 t, c = method.split(".", 1)
             else:
                 t, c = self.target, method
 
-            result = self.send(RPC(**params), c, t, errors=True)
+            if type(params) is dict:
+                result = self.send(RPC(**params), c, t, errors=True)
+            else:
+                result = self.send(RPC(*params), c, t, errors=True)
+
             if result:
                 r = self._response(id, result)
             else:
