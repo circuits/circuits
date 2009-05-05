@@ -8,7 +8,6 @@ This module contains various Socket Components for use with Networking.
 """
 
 import os
-import ssl
 import socket
 from errno import *
 from collections import defaultdict, deque
