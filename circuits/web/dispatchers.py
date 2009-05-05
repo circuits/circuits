@@ -313,7 +313,7 @@ class JSONRPC(Component):
             else:
                 r = self._error(id, 100, "method '%s' does not exist" % method)
         except Exception, e:
-            return self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
+            r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
 
         response.headers["Content-Type"] = "application/javascript"
         return r
