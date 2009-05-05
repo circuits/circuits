@@ -258,14 +258,12 @@ class XMLRPC(Component):
             data = request.body.read()
             params, method = xmlrpclib.loads(data)
 
-            e = RPC(*params)
-
             if "." in method:
                 t, c = method.split(".", 1)
             else:
                 t, c = self.target, method
 
-            result = self.send(e, c, t, errors=True)
+            result = self.send(RPC(*params), c, t, errors=True)
             if result:
                 r = self._response(result)
             else:
@@ -304,14 +302,12 @@ class JSONRPC(Component):
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o["params"]
 
-            e = RPC(*params)
-
             if "." in method:
                 t, c = method.split(".", 1)
             else:
                 t, c = self.target, method
 
-            result = self.send(e, c, t, errors=True)
+            result = self.send(RPC(*params), c, t, errors=True)
             if result:
                 r = self._response(id, result)
             else:
