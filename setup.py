@@ -3,7 +3,7 @@
 try:
     from setuptools import setup
 except ImportError:
-    from distutils import setup
+    from distutils.core import setup
 
 from circuits import version
 version.forget_version()
