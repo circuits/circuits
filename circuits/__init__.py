@@ -32,7 +32,6 @@ try:
 except ImportError:
     __version__ = "unknown"
 
-__name__ = "circuits"
 __description__ = "Event framework with a Component architecture"
 __author__ = "James Mills"
 __author_email__ = "%s, prologic at shortcircuit dot net dot au" % __author__
