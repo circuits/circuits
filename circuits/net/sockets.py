@@ -257,7 +257,7 @@ class Client(Component):
                 self._buffer.appendleft(data[bytes:])
         except socket.error, e:
             if e[0] in (EPIPE, ENOTCONN):
-                self._close(self._sock)
+                self._close()
             else:
                 self.push(Error(e), "error", self.channel)
 
@@ -282,7 +282,7 @@ class Client(Component):
 
         if not self._buffer:
             if self._closeflag:
-                self._close(self._sock)
+                self._close()
             elif self._poller.isWriting(self._sock):
                 self._poller.removeWriter(self._sock)
 
