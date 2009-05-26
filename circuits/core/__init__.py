@@ -20,7 +20,7 @@ from inspect import getargspec, getmembers
 
 if os.name == "posix":
     from signal import signal, SIGHUP, SIGINT, SIGTERM
-elif os.name == "nt":
+elif os.name in ["nt", "java"]:
     from signal import signal, SIGINT, SIGTERM
 else:
     raise RuntimeError("Unsupported platform '%s'" % os.name)
