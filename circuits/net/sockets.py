@@ -10,13 +10,12 @@ This module contains various Socket Components for use with Networking.
 import os
 import socket
 from errno import *
+from _socket import socket as SocketType
 from collections import defaultdict, deque
 from socket import gethostname, gethostbyname
 
 from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
-
-SocketType = socket._socket.socket
 
 BUFSIZE = 4096 # 4KB Buffer
 BACKLOG = 128  # 128 Concurrent Connections
