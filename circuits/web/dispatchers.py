@@ -44,7 +44,6 @@ class Dispatcher(Component):
         self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
 
         self.paths = []
-        self.cache = {}
 
     def _parseBody(self, request, response, params):
         body = request.body
@@ -85,8 +84,6 @@ class Dispatcher(Component):
         """
 
         path = request.path
-        if path in self.cache:
-            return self.cache[path]
 
         method = request.method.upper()
         request.index = request.path.endswith("/")
@@ -97,10 +94,8 @@ class Dispatcher(Component):
             for default in ("index", method, "default"):
                 k = ("/", default)
                 if k in self.channels:
-                    self.cache[path] = r = (default, "/", [])
-                    return r
-            self.cache[path] = r = (None, None, [])
-            return r
+                    return default, "/", []
+            return None, None, []
 
         i = 0
         matches = [""]
@@ -113,8 +108,7 @@ class Dispatcher(Component):
             i += 1
 
         if not candidates:
-            self.cache[path] = r = (None, None, [])
-            return r
+            return None, None, []
 
         i, candidate = candidates.pop()
 
@@ -138,15 +132,13 @@ class Dispatcher(Component):
                 vpath = []
 
         if not (candidate, channel) in self.channels:
-            self.cache[path] = r = (None, None, [])
+            return None, None, []
         else:
             handler = self.channels[(candidate, channel)][0]
             if vpath and not handler.varargs:
-                self.cache[path] = r = (None, None, [])
+                return None, None, []
             else:
-                self.cache[path] = r = (channel, candidate, vpath)
-
-        return r
+                return channel, candidate, vpath
 
     @handler("registered", target="*")
     def registered(self, c, m):
