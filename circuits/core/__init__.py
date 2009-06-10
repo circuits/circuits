@@ -445,7 +445,7 @@ class Manager(object):
             if self._task is None:
                 return "R"
             else:
-                if self._task.is_alive():
+                if self._task.isAlive():
                     return "R"
                 else:
                     return "D"
@@ -720,8 +720,8 @@ class Manager(object):
         if process and HAS_MULTIPROCESSING:
             args += (self,)
             self._task = Process(group, target, name, args)
-            if HAS_MULTIPROCESSING == 1:
-                setattr(self._task, "is_alive", self._task.isAlive)
+            if HAS_MULTIPROCESSING == 2:
+                setattr(self._task, "isAlive", self._task.is_alive)
             self._task.start()
             return
 
