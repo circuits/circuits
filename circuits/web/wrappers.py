@@ -106,8 +106,7 @@ class Request(object):
         host = self.headers.get("Host", None)
         if not host:
             host = self.local.name or self.local.ip
-        port = ":%d" % self.server.port if not self.server.port  == 80 else ""
-        self.base = "%s://%s%s" % (self.scheme, host, port)
+        self.base = "%s://%s" % (self.scheme, host)
 
     headers = property(_getHeaders, _setHeaders)
 
