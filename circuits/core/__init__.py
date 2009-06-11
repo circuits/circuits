@@ -563,59 +563,6 @@ class Manager(object):
 
         self.root._push(event, (target, channel))
 
-    def _wait(self, event, timeout=None):
-
-        class _Matcher(Component):
-
-            def __init__(self, match):
-                super(_Matcher, self).__init__()
-
-                self._match = match
-                self.event = None
-                self.done = False
-
-            @handler(priority=999, filter=True)
-            def events(self, event, *args, **kwargs):
-                if type(event) is self._match or event == self._match:
-                    self.done = True
-                    self.event = event
-
-        _matcher = _Matcher(event)
-        self += _matcher
-
-        if timeout:
-            etime = time.time() + timeout
-
-        while not _matcher.done or (timeout and time.time() >= etime):
-            try:
-                [f() for f in self._ticks.copy()]
-                self._flush()
-            except (KeyboardInterrupt, SystemExit):
-                break
-            except:
-                try:
-                    if log:
-                        self.push(Error(*_exc_info()))
-                finally:
-                    self._flush()
-
-        _matcher.unregister()
-
-        if _matcher.event is not None:
-            for r in _matcher.event._results:
-                yield r
-
-    def wait(self, event, timeout=None):
-        """Wait for an event or event type to occur.
-
-        This will wait for the given Event or Event type for a maximum
-        of timeout seconds (as a floating point) or indefinately (default).
-
-        @note: This is a blocking operation.
-        """
-
-        return self.root._wait(event, timeout)
-
     def _flush(self):
         q = self._queue
         self._queue = deque()
