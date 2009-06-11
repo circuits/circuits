@@ -112,6 +112,9 @@ class File(Component):
         self._write = []
         self.push(Closed(self.filename), "closed")
 
+    def seek(self, offset, whence=0):
+        self._fd.seek(offset, whence)
+
 class StdIn(File):
 
     channel = "stdin"
