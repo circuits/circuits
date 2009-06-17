@@ -102,6 +102,7 @@ object --+
         <tr>
           <td><span class="summary-sig"><a href="circuits.core.bridge.Bridge-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">nodes</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
+        <span class="summary-sig-arg">transport</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span><br />
       initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
@@ -156,6 +157,63 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="udp"></a><span class="summary-sig-name">udp</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">channel</span>,
+        <span class="summary-sig-arg">e</span>,
+        <span class="summary-sig-arg">s</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="server"></a><span class="summary-sig-name">server</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">channel</span>,
+        <span class="summary-sig-arg">e</span>,
+        <span class="summary-sig-arg">s</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="client"></a><span class="summary-sig-name">client</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">channel</span>,
+        <span class="summary-sig-arg">e</span>,
+        <span class="summary-sig-arg">s</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="circuits.core.bridge.Bridge-class.html#helo" class="summary-sig-name">helo</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">event</span>,
         <span class="summary-sig-arg">address</span>,
@@ -175,9 +233,25 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="circuits.core.bridge.Bridge-class.html#read" class="summary-sig-name">read</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">address</span>,
-        <span class="summary-sig-arg">data</span>)</span></td>
+          <td><span class="summary-sig"><a name="read"></a><span class="summary-sig-name">read</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="push_event"></a><span class="summary-sig-name">push_event</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -201,12 +275,12 @@ object --+
       <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
       <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
+      <code><a href="circuits.core.Manager-class.html#join">join</a></code>,
       <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
       <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
       <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
       <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
-      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>,
-      <code><a href="circuits.core.Manager-class.html#wait">wait</a></code>
+      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -327,6 +401,7 @@ object --+
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">nodes</span>=<span class="sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
+        <span class="sig-arg">transport</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">**kwargs</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
@@ -396,31 +471,6 @@ object --+
   </dl>
 </td></tr></table>
 </div>
-<a name="read"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">read</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">address</span>,
-        <span class="sig-arg">data</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  
-  <dl class="fields">
-    <dt>Decorators:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code>@handler("read", filter= True, target= "transport")</code></li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
 <br />
 <!-- ==================== CLASS VARIABLE DETAILS ==================== -->
 <a name="section-ClassVariableDetails"></a>
@@ -484,7 +534,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Mar 22 07:15:52 2009
+    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:00 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

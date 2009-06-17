@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>Deprecation List</title>
+  <title>circuits.web.wrappers</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -23,8 +23,8 @@
         href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Index link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Indices&nbsp;&nbsp;&nbsp;</th>
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Help link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -40,7 +40,13 @@
 </table>
 <table width="100%" cellpadding="0" cellspacing="0">
   <tr valign="top">
-    <td width="100%">&nbsp;</td>
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.web-module.html">Package&nbsp;web</a> ::
+        Module&nbsp;wrappers
+      </span>
+    </td>
     <td>
       <table cellpadding="0" cellspacing="0">
         <!-- hide/show private -->
@@ -48,24 +54,61 @@
     </td>
   </tr>
 </table>
-<center><b>[
- <a href="identifier-index.html">Identifiers</a>
-| <a href="deprecated-index.html">Deprecations</a>
-]</b></center><br />
-<h1 class="epydoc"><a name="deprecated">Deprecation List</a></h1>
-<br />
-<div>
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>Deprecations in <a href="circuits.web-module.html">circuits.web</a></b>    <ul class="nomargin">
-      <li>The wsgi Components will be going away in 1.2 in favour of just 
-    importing the wsgo module. Post 1.2 please use circutis.web.wsgi</li>
-    </ul>
-</table></div>
-<div>
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>Deprecations in <a href="circuits.web.wsgi-module.html#Middleware">circuits.web.wsgi.Middleware</a></b>    <ul class="nomargin">
-      <li>Middleware will be deprecated in 1.2 Use Gateway insetad.</li>
-    </ul>
-</table></div>
-<br /><!-- ==================== NAVIGATION BAR ==================== -->
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module wrappers</h1><p class="nomargin-top"></p>
+<p>Request/Response Wrappers</p>
+  <p>This module implements the Request and Response objects.</p>
+
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.web.wrappers.Host-class.html" class="summary-name">Host</a><br />
+      An internet address.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.web.wrappers.Request-class.html" class="summary-name">Request</a><br />
+      Creates a new Request object to hold information about a request.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.web.wrappers.Response-class.html" class="summary-name">Response</a><br />
+      Response(sock, request) -&gt; new Response object
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'circuits.web'"><code class="variable-quote">'</code><code class="variable-string">circuits.web</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
@@ -78,8 +121,8 @@
         href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Index link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Indices&nbsp;&nbsp;&nbsp;</th>
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Help link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -96,11 +139,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-<<<<<<< /home/prologic/work/circuits-dev/docs/html/deprecated-index.html
-    Generated by Epydoc 3.0.1 on Tue Mar 24 07:58:08 2009
-=======
-    Generated by Epydoc 3.0.1 on Sun Mar 22 07:15:51 2009
->>>>>>> /tmp/deprecated-index.html~other.Zteyhc
+    Generated by Epydoc 3.0.1 on Thu Jun 18 00:49:58 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

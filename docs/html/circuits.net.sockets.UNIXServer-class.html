@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>circuits.web.wsgi.Application</title>
+  <title>circuits.net.sockets.UNIXServer</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -43,9 +43,9 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
-        <a href="circuits.web-module.html">Package&nbsp;web</a> ::
-        <a href="circuits.web.wsgi-module.html">Module&nbsp;wsgi</a> ::
-        Class&nbsp;Application
+        <a href="circuits.net-module.html">Package&nbsp;net</a> ::
+        <a href="circuits.net.sockets-module.html">Module&nbsp;sockets</a> ::
+        Class&nbsp;UNIXServer
       </span>
     </td>
     <td>
@@ -56,17 +56,19 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Application</h1><p class="nomargin-top"></p>
+<h1 class="epydoc">Class UNIXServer</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
-    object --+            
-             |            
-  <a href="circuits.core.Manager-class.html">core.Manager</a> --+        
-                 |        
-<a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+    
-                     |    
-        <a href="circuits.core.Component-class.html">core.Component</a> --+
-                         |
-                        <strong class="uidshort">Application</strong>
+    object --+                
+             |                
+  <a href="circuits.core.Manager-class.html">core.Manager</a> --+            
+                 |            
+<a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+        
+                     |        
+        <a href="circuits.core.Component-class.html">core.Component</a> --+    
+                         |    
+                    <a href="circuits.net.sockets.Server-class.html">Server</a> --+
+                             |
+                            <strong class="uidshort">UNIXServer</strong>
 </pre>
 
 <hr />
@@ -100,98 +102,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="circuits.web.wsgi.Application-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="circuits.net.sockets.UNIXServer-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bind</span>,
+        <span class="summary-sig-arg">ssl</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       initializes x; see x.__class__.__doc__ for signature</td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="translateHeaders"></a><span class="summary-sig-name">translateHeaders</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">environ</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getRequestResponse"></a><span class="summary-sig-name">getRequestResponse</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">environ</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="setError"></a><span class="summary-sig-name">setError</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">response</span>,
-        <span class="summary-sig-arg">status</span>,
-        <span class="summary-sig-arg">message</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">traceback</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="response"></a><span class="summary-sig-name">response</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">response</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="__call__"></a><span class="summary-sig-name">__call__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">environ</span>,
-        <span class="summary-sig-arg">start_response</span>,
-        <span class="summary-sig-arg">exc_info</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -203,6 +118,11 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.net.sockets.Server-class.html">Server</a></code></b>:
+      <code><a href="circuits.net.sockets.Server-class.html#broadcast">broadcast</a></code>,
+      <code><a href="circuits.net.sockets.Server-class.html#close">close</a></code>,
+      <code><a href="circuits.net.sockets.Server-class.html#write">write</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
       <code><a href="circuits.core.BaseComponent-class.html#__repr__">__repr__</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#register">register</a></code>,
@@ -261,15 +181,11 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Class Variables</span></td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="circuits.web.wsgi.Application-class.html#headerNames" class="summary-name">headerNames</a> = <code title="{'CONTENT_LENGTH': 'Content-Length',
- 'CONTENT_TYPE': 'Content-Type',
- 'HTTP_CGI_AUTHORIZATION': 'Authorization',
- 'REMOTE_ADDR': 'Remote-Addr',
- 'REMOTE_HOST': 'Remote-Host'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">CONTENT_LENGTH</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Content-Length</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">CONTENT_TY</code><code class="variable-ellipsis">...</code></code>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.net.sockets.Server-class.html">Server</a></code></b>:
+      <code><a href="circuits.net.sockets.Server-class.html#channel">channel</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -283,9 +199,6 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
-      <code><a href="circuits.core.BaseComponent-class.html#channel">channel</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
       </p>
@@ -302,6 +215,11 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.net.sockets.Server-class.html">Server</a></code></b>:
+      <code><a href="circuits.net.sockets.Server-class.html#address">address</a></code>,
+      <code><a href="circuits.net.sockets.Server-class.html#connected">connected</a></code>,
+      <code><a href="circuits.net.sockets.Server-class.html#port">port</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
       <code><a href="circuits.core.Manager-class.html#state">state</a></code>
@@ -328,7 +246,10 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">bind</span>,
+        <span class="sig-arg">ssl</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -342,38 +263,6 @@
         object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
-  </dl>
-</td></tr></table>
-</div>
-<br />
-<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
-<a name="section-ClassVariableDetails"></a>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Class Variable Details</span></td>
-</tr>
-</table>
-<a name="headerNames"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">headerNames</h3>
-  
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">CONTENT_LENGTH</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Content-Length</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">CONTENT_TYPE</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Content-Type</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">HTTP_CGI_AUTHORIZATION</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Authorization</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">REMOTE_ADDR</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Remote-Addr</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">REMOTE_HOST</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Remote-Host</code><code class="variable-quote">'</code><code class="variable-group">}</code>
-</pre></td></tr></table>
-</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -409,7 +298,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:04 2009
+    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:03 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

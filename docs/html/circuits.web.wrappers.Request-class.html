@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>circuits.net.sockets.Client</title>
+  <title>circuits.web.wrappers.Request</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -43,9 +43,9 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
-        <a href="circuits.net-module.html">Package&nbsp;net</a> ::
-        <a href="circuits.net.sockets-module.html">Module&nbsp;sockets</a> ::
-        Class&nbsp;Client
+        <a href="circuits.web-module.html">Package&nbsp;web</a> ::
+        <a href="circuits.web.wrappers-module.html">Module&nbsp;wrappers</a> ::
+        Class&nbsp;Request
       </span>
     </td>
     <td>
@@ -56,42 +56,16 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Client</h1><p class="nomargin-top"></p>
+<h1 class="epydoc">Class Request</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
-    object --+            
-             |            
-  <a href="circuits.core.Manager-class.html">core.Manager</a> --+        
-                 |        
-<a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+    
-                     |    
-        <a href="circuits.core.Component-class.html">core.Component</a> --+
-                         |
-                        <strong class="uidshort">Client</strong>
+object --+
+         |
+        <strong class="uidshort">Request</strong>
 </pre>
 
-<dl><dt>Known Subclasses:</dt>
-<dd>
-      <ul class="subclass-list">
-<li><a href="circuits.net.sockets.TCPClient-class.html">TCPClient</a></li><li>, <a href="circuits.net.sockets.UNIXClient-class.html">UNIXClient</a></li>  </ul>
-</dd></dl>
-
 <hr />
-<!-- ==================== NESTED CLASSES ==================== -->
-<a name="section-NestedClasses"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Nested Classes</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.HandlersType-class.html">__metaclass__</a></code>
-      </p>
-    </td>
-  </tr>
-</table>
+<p>Creates a new Request object to hold information about a request.</p>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -106,10 +80,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="circuits.net.sockets.Client-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">bind</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">channel</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">client</code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+          <td><span class="summary-sig"><a href="circuits.web.wrappers.Request-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sock</span>,
+        <span class="summary-sig-arg">method</span>,
+        <span class="summary-sig-arg">scheme</span>,
+        <span class="summary-sig-arg">path</span>,
+        <span class="summary-sig-arg">protocol</span>,
+        <span class="summary-sig-arg">qs</span>)</span><br />
       initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             
@@ -126,24 +103,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="close"></a><span class="summary-sig-name">close</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="write"></a><span class="summary-sig-name">write</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">data</span>)</span></td>
+          <td><span class="summary-sig"><a href="circuits.web.wrappers.Request-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      repr(x)</td>
           <td align="right" valign="top">
             
             
@@ -155,52 +116,18 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
-      <code><a href="circuits.core.BaseComponent-class.html#__repr__">__repr__</a></code>,
-      <code><a href="circuits.core.BaseComponent-class.html#register">register</a></code>,
-      <code><a href="circuits.core.BaseComponent-class.html#unregister">unregister</a></code>
-      </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
-      <code><a href="circuits.core.Manager-class.html#__add__">__add__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__iadd__">__iadd__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__isub__">__isub__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
-      <code><a href="circuits.core.Manager-class.html#join">join</a></code>,
-      <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
-      <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
-      <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
-      <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
-      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
       <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
+      <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__setattr__</code>,
       <code>__sizeof__</code>,
       <code>__str__</code>,
       <code>__subclasshook__</code>
-      </p>
-    </td>
-  </tr>
-</table>
-<!-- ==================== STATIC METHODS ==================== -->
-<a name="section-StaticMethods"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Static Methods</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.Component-class.html#__new__">__new__</a></code>
       </p>
     </td>
   </tr>
@@ -217,24 +144,73 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="channel"></a><span class="summary-name">channel</span> = <code title="'client'"><code class="variable-quote">'</code><code class="variable-string">client</code><code class="variable-quote">'</code></code><br />
-      The Component's Channel
+        <a name="server"></a><span class="summary-name">server</span> = <code title="None">None</code><br />
+      A reference to the underlying server
     </td>
   </tr>
-</table>
-<!-- ==================== INSTANCE VARIABLES ==================== -->
-<a name="section-InstanceVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Instance Variables</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
-      <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
-      </p>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="scheme"></a><span class="summary-name">scheme</span> = <code title="'http'"><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="protocol"></a><span class="summary-name">protocol</span> = <code title="(1, 1)"><code class="variable-group">(</code>1<code class="variable-op">, </code>1<code class="variable-group">)</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="server_protocol"></a><span class="summary-name">server_protocol</span> = <code title="(1, 1)"><code class="variable-group">(</code>1<code class="variable-op">, </code>1<code class="variable-group">)</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="host"></a><span class="summary-name">host</span> = <code title="''"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="local"></a><span class="summary-name">local</span> = <code title="Host('127.0.0.1', 80, '127.0.0.1')">Host('127.0.0.1', 80, '127.0.0.1')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="remote"></a><span class="summary-name">remote</span> = <code title="Host('127.0.0.1', 1111, '127.0.0.1')">Host('127.0.0.1', 1111, '127.0.0.1')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="index"></a><span class="summary-name">index</span> = <code title="None">None</code><br />
+      hash(x)
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="script_name"></a><span class="summary-name">script_name</span> = <code title="''"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="login"></a><span class="summary-name">login</span> = <code title="None">None</code><br />
+      hash(x)
     </td>
   </tr>
 </table>
@@ -250,15 +226,11 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="circuits.net.sockets.Client-class.html#connected" class="summary-name">connected</a>
+        <a href="circuits.web.wrappers.Request-class.html#headers" class="summary-name">headers</a>
     </td>
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
-      <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
-      <code><a href="circuits.core.Manager-class.html#state">state</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -282,9 +254,12 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">bind</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">channel</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">client</code><code class="variable-quote">'</code></span>,
-        <span class="sig-arg">**kwargs</span>)</span>
+        <span class="sig-arg">sock</span>,
+        <span class="sig-arg">method</span>,
+        <span class="sig-arg">scheme</span>,
+        <span class="sig-arg">path</span>,
+        <span class="sig-arg">protocol</span>,
+        <span class="sig-arg">qs</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -294,8 +269,40 @@
   
   <p>initializes x; see x.__class__.__doc__ for signature</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sock</code></strong> (socket.socket) - The socket object of the request.</li>
+        <li><strong class="pname"><code>method</code></strong> (str) - The requsted method.</li>
+        <li><strong class="pname"><code>scheme</code></strong> (str) - The requsted scheme.</li>
+        <li><strong class="pname"><code>path</code></strong> (str) - The requsted path.</li>
+        <li><strong class="pname"><code>protocol</code></strong> (str) - The requsted protocol.</li>
+        <li><strong class="pname"><code>qs</code></strong> (str) - The query string of the request.</li>
+    </ul></dd>
     <dt>Overrides:
         object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__repr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>repr(x)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__repr__
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -311,16 +318,20 @@
     <span class="table-header">Property Details</span></td>
 </tr>
 </table>
-<a name="connected"></a>
+<a name="headers"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <h3 class="epydoc">connected</h3>
+  <h3 class="epydoc">headers</h3>
   
   <dl class="fields">
     <dt>Get Method:</dt>
-    <dd class="value"><span class="summary-sig"><i>unreachable</i>.connected(<span class="summary-sig-arg">self</span>)</span>
+    <dd class="value"><span class="summary-sig"><a href="circuits.web.wrappers.Request-class.html#_getHeaders" class="summary-sig-name" onclick="show_private();">_getHeaders</a>(<span class="summary-sig-arg">self</span>)</span>
+    </dd>
+    <dt>Set Method:</dt>
+    <dd class="value"><span class="summary-sig"><a href="circuits.web.wrappers.Request-class.html#_setHeaders" class="summary-sig-name" onclick="show_private();">_setHeaders</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">headers</span>)</span>
     </dd>
   </dl>
 </td></tr></table>
@@ -357,7 +368,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:02 2009
+    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:04 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
