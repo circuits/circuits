@@ -24,11 +24,11 @@ except:
         HAS_MULTIPROCESSING = 0
 
 
-from circuits import Component as _Component
+from circuits.core import BaseComponent as _BaseComponent
 
 POLL_INTERVAL = 0.00001
 
-class Thread(_Component):
+class Thread(_BaseComponent):
 
     def __init__(self, *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
@@ -54,7 +54,7 @@ class Thread(_Component):
 
 if HAS_MULTIPROCESSING:
 
-    class Process(_Component):
+    class Process(_BaseComponent):
 
         def __init__(self, *args, **kwargs):
             super(Process, self).__init__(*args, **kwargs)
