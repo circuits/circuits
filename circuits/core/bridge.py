@@ -82,7 +82,7 @@ class Bridge(Component):
             return
         elif channel in self.IgnoreChannels:
             return
-        elif hasattr(event, "ignore") and event.ignore:
+        elif getattr(event, "ignore", False):
             return
         else:
             event.ignore = True
