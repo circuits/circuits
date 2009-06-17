@@ -49,7 +49,6 @@ class Event(object):
 
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
-    @ivar result:  The result of this Event (if any).
 
     @param args: list of arguments
     @type  args: tuple
@@ -66,7 +65,6 @@ class Event(object):
 
         self.args = args
         self.kwargs = kwargs
-        self._results = []
 
     @property
     def name(self):
@@ -603,7 +601,6 @@ class Manager(object):
                     raise
                 else:
                     _exc_clear()
-            event._results.append(r)
             if r is not None and r and handler.filter:
                 return r
         return r
