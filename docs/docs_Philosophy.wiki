@@ -9,5 +9,7 @@
  * Everything is an Event.
  * Everything is a Component.
 
+ * Less __is__ More
+ * Coding is an Art form
 ----
 [.. Up]

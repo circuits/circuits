@@ -61,16 +61,10 @@ be sure to check out the Examples and the classic [source:examples/hello.py Hell
  * [export:/docs/html/index.html Library Documentation]
  * [./Performance Performance]
  * [./tools Development Tools]
-
-=== 1.1 ===
-[[ListTagged(1.1)]]
-
-=== 1.2 ===
-[[ListTagged(1.2)]]
+ * [wiki:release Releases]
 
 == Project Information ==
  * [./Philosophy Project Philosophy]
  * [./Contributing Contributing]
-  * [./Contributing/OpenWork Open Work]
  * [./License License]
 ----

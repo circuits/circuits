@@ -4,7 +4,8 @@
 
 == Overview ==
 '''circuits''' is a '''Lightweight''', '''Event''' driven '''Framework'''
-with a strong '''Component''' Architecture.
+with a strong '''Component''' Architecture. circuits also includes
+a lightweight web framework (''with some similar features to [http://www.cherrypy.org CherryPy]''). circuits also includes various I/O (''Input/Output') and Networking components useful for networking applications.
 
 Components communicate with one another by propagating Events on Channels
 throughout the System. Each Component has a set of Event Handlers that
@@ -20,7 +21,7 @@ and systems. circuits' comes with a host of library of standard components
 that can be quickly used to build your application or system, whether it be
 an IRC Bot, Desktop Application, Web Server, Web Application, Network Server,
 Distributed Application or just a simple script! There is also a collection
-of [/recipes Community Recipes and Components].
+of [wiki:recipes Community Recipes and Components].
 
 === Quick Examples ===
 

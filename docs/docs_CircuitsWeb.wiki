@@ -278,6 +278,43 @@ class Root(Controller):
 (Server(8000) + Root()).run()
 }}}
 
+== Other Tasks ==
+Performing other tasks in circuits.web such as filtering
+requests and logging are fairly trivial. Here are some
+examples of other tasks you might perform in a web application.
+
+=== Logging ===
+Basic logging can easily be performed by implementing a
+{{{Logger}}} Component that simply prints the response
+before it's sent to the client (''The Browser'').
+
+Example:
+{{{
+#!python
+#!/usr/bin/env python
+
+from circuits import Component
+from circuits.web import Server, Controller
+
+class Logger(Component):
+
+    def response(self, response):
+        print response
+
+class Root(Controller):
+
+    def index(self):
+        return "Hello World!"
+
+(Server(8000) + Root() + Logger()).run()
+}}}
+
+This works be creating and adding a new Component into the system called
+Logger which contains 1 Event Handler. The Event Handler listens for
+{{{Response}}} events on the "response" channel. When it receives such an
+event, it simply prints the {{{response}}} object containing the response
+to be sent to the client (''The Browser'').
+
 == Other Examples ==
 [[TitleIndex(docs/CircuitsWeb)]]
 

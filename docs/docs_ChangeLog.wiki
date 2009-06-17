@@ -2,8 +2,19 @@
 
 [[TOC]]
 
+== 1.1.1 ==
+ Released:: 2008-03-24 (''24th March 2009'')
+ Revision:: [922]
+
+ * In [917]: docs/ChangeLog: Updated for 1.1 - Am not going to categorize ChangeLog entries anymore as it takes way too much time. (Closes #23)
+ * In [918]: Added tag 1.1 for changeset b587c1f60400
+ * In [919]: docs/html: Updated
+ * In [920]: tests.test_bridge: Disabled this test for 1.1 as it will not be fixed, but is fixed in 1.2 (Closes #26)
+ * In [921]: MANIFEST.in: Fixes #31 and #32
+ * In [922]: Added tag 1.1.1 for changeset 9c1e26e6b850
+
 == 1.1 ==
- Released:: ... (''...'')
+ Released:: 2008-03-22 (''22nd March 2009'')
  Revision:: [916]
 
  * In [261]: tests.test_workers: Fixed test by waiting until worker has finished
