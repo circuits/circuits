@@ -128,10 +128,11 @@ class TestErrorHandling(unittest.TestCase):
                 self.value = None
                 self.traceback = None
 
-            def error(self, type, value, traceback):
+            def error(self, type, value, traceback, handler=None):
                 self.type = type
                 self.value = value
                 self.traceback = traceback
+                self.handler = handler
 
         class TestError(Component):
 
@@ -147,22 +148,26 @@ class TestErrorHandling(unittest.TestCase):
         m = Manager()
         e = ErrorHandler()
         m += e
-        m += TestError()
+        t = TestError()
+        m += t
 
         m.push(Event(), "test1")
         m.flush(); m.flush()
         self.assertTrue(e.type is NameError)
         self.assertTrue(isinstance(e.value, NameError))
+        self.assertEquals(e.handler, t.test1)
 
         m.push(Event(), "test2")
         m.flush(); m.flush()
         self.assertTrue(e.type is AttributeError)
         self.assertTrue(isinstance(e.value, AttributeError))
+        self.assertEquals(e.handler, t.test2)
 
         m.push(Event(), "test3")
         m.flush(); m.flush()
         self.assertTrue(e.type is RuntimeError)
         self.assertTrue(isinstance(e.value, RuntimeError))
+        self.assertEquals(e.handler, t.test3)
 
 class TestAllChannels(unittest.TestCase):
     """Test All Channels
@@ -962,10 +967,11 @@ class RunnableComponent(Component):
             self._mode = None
             self._count = None
 
-    def error(self, type, value, traceback):
+    def error(self, type, value, traceback, handler=None):
         self._etype = type
         self._evalue = value
         self._traceback = traceback
+        self._handler = handler
 
     def blowup(self, error):
         raise error
@@ -1097,15 +1103,18 @@ class TestRunnableComponents(unittest.TestCase):
         wait()
         self.assertEquals(x._etype, NameError)
         self.assertTrue(isinstance(x._evalue, NameError))
+        self.assertEquals(x._handler, x.bad)
         x._etype = None
         x._evalue = None
         x._traceback = None
+        x._handler = None
 
         # Test error raising
         x._count = object()
         wait()
         self.assertEquals(x._etype, TypeError)
         self.assertTrue(isinstance(x._evalue, TypeError))
+        self.assertEquals(x._handler, None)
 
         x.stop()
         self.assertFalse(x.running)
