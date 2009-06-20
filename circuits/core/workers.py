@@ -36,14 +36,14 @@ class Thread(_BaseComponent):
         self._thread = _Thread(target=self.run)
 
     def start(self):
-        self.running = True
+        self._running = True
         self._thread.start()
 
     def run(self):
         pass
 
     def stop(self):
-        self.running = False
+        self._running = False
 
     def join(self):
         return self._thread.join()
@@ -59,8 +59,8 @@ if HAS_MULTIPROCESSING:
         def __init__(self, *args, **kwargs):
             super(Process, self).__init__(*args, **kwargs)
 
-            self.running = _Value("b", False)
-            self.process = _Process(target=self._run, args=(self.run, self.running,))
+            self._running = _Value("b", False)
+            self.process = _Process(target=self._run, args=(self.run, self._running,))
             self.parent, self.child = _Pipe()
 
         def _run(self, fn, running):
@@ -94,21 +94,21 @@ if HAS_MULTIPROCESSING:
                 self.flush()
 
         def start(self):
-            self.running.acquire()
-            self.running.value = True
-            self.running.release()
+            self._running.acquire()
+            self._running.value = True
+            self._running.release()
             self.process.start()
 
         def run(self):
             pass
 
         def stop(self):
-            self.running.acquire()
-            self.running.value = False
-            self.running.release()
+            self._running.acquire()
+            self._running.value = False
+            self._running.release()
 
         def isAlive(self):
-            return self.running.value
+            return self._running.value
 
         def poll(self, wait=POLL_INTERVAL):
             if self.parent.poll(POLL_INTERVAL):
