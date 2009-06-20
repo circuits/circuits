@@ -315,7 +315,7 @@ class Manager(object):
         self.components = set()
 
         self._task = None
-        self.running = False
+        self._running = False
 
         self.root = self
         self.manager = self
@@ -436,6 +436,10 @@ class Manager(object):
     @property
     def name(self):
         return self.__class__.__name__
+
+    @property
+    def running(self):
+        return self._running
 
     @property
     def state(self):
@@ -678,7 +682,7 @@ class Manager(object):
             self._task.join(timeout)
 
     def stop(self):
-        self.running = False
+        self._running = False
         if hasattr(self._task, "terminate"):
             self._task.terminate()
         if hasattr(self._task, "join"):
@@ -702,7 +706,7 @@ class Manager(object):
             signal(SIGINT, self._signal)
             signal(SIGTERM, self._signal)
 
-        self.running = True
+        self._running = True
 
         self.push(Started(self, mode))
 
@@ -717,7 +721,7 @@ class Manager(object):
                         except:
                             pass
                 except (KeyboardInterrupt, SystemExit):
-                    self.running = False
+                    self._running = False
                 except:
                     try:
                         if log:
