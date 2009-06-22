@@ -20,6 +20,7 @@ from circuits.core import Event, Component
 TIMEOUT = 0.00001
 BUFSIZE = 131072
 
+class EOF(Event): pass
 class Read(Event): pass
 class Write(Event): pass
 class Error(Event): pass
@@ -79,6 +80,7 @@ class File(Component):
             try:
                 r, w, e = select.select(self._read, self._write, [], wait)
             except select.error, error:
+                print "ERROR: %s" % error
                 if error[0] == 4:
                     pass
                 else:
@@ -100,6 +102,8 @@ class File(Component):
 
                 if data:
                     self.push(Read(data), "read")
+                else:
+                    self.push(EOF(), "eof")
 
     def write(self, data):
         if self._fd not in self._write:
