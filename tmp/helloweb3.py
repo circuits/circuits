@@ -5,14 +5,14 @@ from circuits.tools import kill
 from circuits import Component, Debugger
 from circuits.web import BaseServer, Response
 
-class Task(Component):
+class ReadFileTask(Component):
 
     channel = "task"
 
     def __init__(self, filename, event, **kwargs):
-        channel = kwargs.get("channel", Task.channel)
+        channel = kwargs.get("channel", ReadFileTask.channel)
 
-        super(Task, self).__init__(channel=channel)
+        super(ReadFileTask, self).__init__(channel=channel)
 
         self._event = event
 
@@ -28,6 +28,6 @@ class Task(Component):
 class Root(Component):
 
     def request(self, event, request, response):
-        Task("/proc/cpuinfo", event).register(self)
+        ReadFileTask("/proc/cpuinfo", event).register(self)
 
-(BaseServer(8000) + Debugger() + Root()).run()
+(BaseServer(8000) + Root()).run()
