@@ -35,7 +35,7 @@ class RPC(Event): pass
 
 class Dispatcher(Component):
 
-    channel = "web"
+    channel = "http"
 
     def __init__(self, docroot=None, defaults=None, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
@@ -182,7 +182,8 @@ class Dispatcher(Component):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.send(req, channel, target, errors=True)
+            self.push(req, channel, target)
+            return True
 
 class VirtualHosts(Component):
     """Forward to anotehr Dispatcher based on the Host header.
