@@ -23,11 +23,11 @@ class Task(Component):
         request, response = self._event
         response.body = data
         self.push(Response(response), target="http")
-        kill(self)
+        #kill(self)
 
 class Root(Component):
 
     def request(self, event, request, response):
-        Task("/dev/urandom", event).register(self)
+        Task("/proc/cpuinfo", event).register(self)
 
 (BaseServer(8000) + Debugger() + Root()).run()
