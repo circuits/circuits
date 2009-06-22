@@ -23,7 +23,7 @@ class Task(Component):
         request, response = self._event
         response.body = data
         self.push(Response(response), target="http")
-        #kill(self)
+        kill(self)
 
 class Root(Component):
 
