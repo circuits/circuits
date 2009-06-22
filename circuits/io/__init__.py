@@ -103,6 +103,7 @@ class File(Component):
                     self.push(Read(data), "read")
                 else:
                     self.push(EOF(), "eof")
+                    self.close()
 
     def write(self, data):
         if self._fd not in self._write:
