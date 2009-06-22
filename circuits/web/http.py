@@ -38,42 +38,32 @@ class HTTP(Component):
 
         self._buffered = {}
 
-    def _handleError(self, error):
-        response = error.response
-
-        v = self.send(error, "httperror", self.channel)
-
-        if v:
-            if issubclass(type(v), basestring):
-                response.body = v
-                res = Response(response)
-                self.send(res, "response", self.channel)
-            elif isinstance(v, HTTPError):
-                self.send(Response(v.response), "response", self.channel)
-            else:
-                assert v, "type(v) == %s" % type(v)
-
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
         if data:
-            self.send(Write(response.sock, data), "write", "server")
+            self.push(Write(response.sock, data), "write", "server")
             self.push(Stream(response))
         else:
             response.body.close()
             if response.close:
-                self.send(Close(response.sock), "close", "server")
+                self.push(Close(response.sock), "close", "server")
             response.done = True
         
     def response(self, response):
-        self.send(Write(response.sock, str(response)), "write", "server")
+        self.push(Write(response.sock, str(response)), "write", "server")
         if response.stream:
             self.push(Stream(response), "stream", self.channel)
             return
 
         if response.close:
-            self.send(Close(response.sock), "close", "server")
+            self.push(Close(response.sock), "close", "server")
 
         response.done = True
+
+    @handler("close", target="server")
+    def read(self, sock):
+        if sock in self._buffered:
+            del self._buffered[sock]
 
     @handler("read", target="server")
     def read(self, sock, data):
@@ -102,7 +92,7 @@ class HTTP(Component):
 
             if frag:
                 error = HTTPError(request, response, 400)
-                return self.send(error, "httperror", self.channel)
+                return self.push(error, "httperror", self.channel)
         
             if params:
                 path = "%s;%s" % (path, params)
@@ -129,7 +119,7 @@ class HTTP(Component):
             # only return 505 if the _major_ version is different.
             if not request.protocol[0] == request.server_protocol[0]:
                 error = HTTPError(request, response, 505)
-                return self.send(error, "httperror", self.channel)
+                return self.push(error, "httperror", self.channel)
 
             m = PARSE_REQUEST.match(data)
             request.headers = headers = parseHeaders(m.groups()[0])
@@ -160,34 +150,7 @@ class HTTP(Component):
 
         request.body.seek(0)
 
-        try:
-            req = Request(request, response)
-
-            v = self.send(req, "request", "web", errors=True)
-
-            if v:
-                if issubclass(type(v), basestring):
-                    response.body = v
-                    res = Response(response)
-                    self.send(res, "response", self.channel)
-                elif isinstance(v, HTTPError):
-                    self._handleError(v)
-                elif isinstance(v, wrappers.Response):
-                    res = Response(v)
-                    self.send(res, "response", self.channel)
-                else:
-                    assert v, "type(v) == %s" % type(v)
-            else:
-                error = NotFound(request, response)
-                self._handleError(error)
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
-            error = HTTPError(request, response, 500, error=format_exc())
-            self._handleError(error)
-        finally:
-            if sock in self._buffered:
-                del self._buffered[sock]
+        self.push(Request(request, response))
 
     def simple(self, sock, code, message=""):
         """Simple Response Events Handler
@@ -207,7 +170,7 @@ class HTTP(Component):
             response.close = True
             response.headers.add_header("Connection", "close")
 
-        self.send(Response(response), "response", self.channel)
+        self.push(Response(response), "response", self.channel)
 
     def httperror(self, request, response, status, message=None, error=None):
         """Default HTTP Error Handler
@@ -217,4 +180,4 @@ class HTTP(Component):
         HTTPError instance or a subclass thereof.
         """
 
-        self.send(Response(response), "response", self.channel)
+        self.push(Response(response), "response", self.channel)
