@@ -130,6 +130,8 @@ class Error(Event):
     @type  kwargs: dict
     """
 
+    channel = "exception"
+
     def __init__(self, type, value, traceback, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
