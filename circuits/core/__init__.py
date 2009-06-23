@@ -49,6 +49,9 @@ class Event(object):
 
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
+    @ivar target:  The target Component this Event is bound for
+    @ivar success: A function, event or channel to use for Event success
+    @ivar failure: A function, event or channel to use for Event failure
 
     @param args: list of arguments
     @type  args: tuple
@@ -59,14 +62,19 @@ class Event(object):
 
     channel = None
     target = None
-    on_success = None
-    on_failure = None
+    success = None
+    failure = None
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         self.args = args
         self.kwargs = kwargs
+
+        if type(self.success) == str:
+            self.success = self.success,
+        if type(self.failure) == str:
+            self.failure = self.failure,
 
     @property
     def name(self):
@@ -536,8 +544,7 @@ class Manager(object):
     def _push(self, event, channel):
         self._queue.append((event, channel))
 
-    def push(self, event, channel=None, target=None, on_success=None,
-            on_failure=None):
+    def push(self, event, channel=None, target=None):
         """Push a new Event into the queue
 
         This will push the given Event, Channel and Target onto the
@@ -567,8 +574,6 @@ class Manager(object):
             target = target or getattr(self, "channel", "*")
 
         event.channel = (target, channel)
-        event.on_success = on_success
-        event.on_failure = on_failure
 
         self.root._push(event, (target, channel))
 
@@ -605,11 +610,13 @@ class Manager(object):
             except (KeyboardInterrupt, SystemExit):
                 raise
             except Exception, e:
-                if event.on_failure is not None:
-                    if isinstance(event.on_failure, Event):
-                        self.push(event.on_failure)
+                if event.failure is not None:
+                    if callable(event.failure):
+                        event.failure(e)
+                    elif isinstance(event.failure, Event):
+                        self.push(event.failure)
                     else:
-                        self.push(Event(e), *event.on_failure)
+                        self.push(Event(e), *event.failure)
                 if log:
                     etype, evalue, etraceback = _exc_info()
                     self.push(Error(etype, evalue, etraceback, handler=handler))
@@ -619,11 +626,13 @@ class Manager(object):
                     _exc_clear()
             if r is not None and r and handler.filter:
                 return r
-            if event.on_success is not None and r is not None:
-                if isinstance(event.on_success, Event):
-                    self.push(event.on_success)
+            if event.success is not None and r is not None:
+                if callable(event.success):
+                    event.success(r)
+                elif isinstance(event.success, Event):
+                    self.push(event.success)
                 else:
-                    self.push(Event(r), *event.on_success)
+                    self.push(Event(r), *event.success)
         return r
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
