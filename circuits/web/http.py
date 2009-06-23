@@ -38,6 +38,20 @@ class HTTP(Component):
 
         self._buffered = {}
 
+    def _handleError(self, error):
+        response = error.response
+
+        retval = self.send(error, "httperror", self.channel)
+
+        if retval:
+            if issubclass(type(retval), basestring):
+                response.body = retval
+                self.push(Response(response), "response", self.channel)
+            elif isinstance(retval, HTTPError):
+                self.push(Response(retval.response), "response", self.channel)
+            else:
+                assert retval, "type(retval) == %s" % type(retval)
+
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
         if data:
@@ -181,3 +195,22 @@ class HTTP(Component):
         """
 
         self.push(Response(response), "response", self.channel)
+
+    def request_success(self, evt, handler, retval):
+        request, response = evt.args
+        if retval:
+            if issubclass(type(retval), basestring):
+                response.body = retval
+                self.push(Response(response), "response", self.channel)
+            elif isinstance(retval, HTTPError):
+                self._handleError(retval)
+            elif isinstance(retval, wrappers.Response):
+                self.push(Response(retval), "response", self.channel)
+            else:
+                assert retval, "type(retval) == %s" % type(retval)
+        else:
+            self._handleError(NotFound(request, response))
+
+    def request_failure(self, evt, handler, error):
+        request, response = evt.args
+        self._handleError(HTTPError(request, response, 500, error=error))
