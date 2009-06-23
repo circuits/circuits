@@ -15,6 +15,9 @@ class Request(Event):
     args: request, response
     """
 
+    success = "request_success", "http"
+    failure = "request_failure", "http"
+
 class Response(Event):
     """Response(Event) -> Response Event
 
