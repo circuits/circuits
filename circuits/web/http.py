@@ -212,5 +212,5 @@ class HTTP(Component):
             self._handleError(NotFound(request, response))
 
     def request_failure(self, evt, handler, error):
-        request, response = evt.args
+        request, response = evt.args[:2]
         self._handleError(HTTPError(request, response, 500, error=error))
