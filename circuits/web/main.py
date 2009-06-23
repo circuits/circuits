@@ -119,7 +119,7 @@ def main():
         application = (wsgi.Application() + Root())
         app = validator(application)
 
-        httpd = make_server(bind, app)
+        httpd = make_server(address, port, app)
         httpd.serve_forever()
         
         raise SystemExit, 0
