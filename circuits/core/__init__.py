@@ -148,6 +148,32 @@ class Error(Event):
         super(Error, self).__init__(type, value, traceback, **kwargs)
 
 
+class Success(Event):
+    """Success Event
+
+    This Event is sent when an Event Handler's execution has completed
+    successfully.
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Success, self).__init__(event, handler, retval)
+
+
+class Failure(Event):
+    """Failure Event
+
+    This Event is sent when an error has occured with the execution of an
+    Event Handlers.
+    """
+
+    def __init__(self, event, handler, error):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Failure, self).__init__(event, handler, error)
+
+
 class Started(Event):
     """Started Event
 
