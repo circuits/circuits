@@ -43,8 +43,8 @@ class Debugger(Component):
         self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
-    @handler("error", filter=True)
-    def error(self, *args, **kwargs):
+    @handler("exception", filter=True)
+    def exception(self, *args, **kwargs):
         if not self.errors:
             return
 
