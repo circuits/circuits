@@ -50,8 +50,8 @@ class Event(object):
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
     @ivar target:  The target Component this Event is bound for
-    @ivar success: A function, event or channel to use for Event success
-    @ivar failure: A function, event or channel to use for Event failure
+    @ivar success: An optional channel to use for Event handler success
+    @ivar failure: An optional channel to use for Event handler failure
 
     @param args: list of arguments
     @type  args: tuple
