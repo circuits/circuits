@@ -35,7 +35,7 @@ class RPC(Event): pass
 
 class Dispatcher(Component):
 
-    channel = "http"
+    channel = "web"
 
     def __init__(self, docroot=None, defaults=None, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
