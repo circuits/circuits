@@ -635,11 +635,12 @@ class Manager(object):
                 #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except Exception, error:
+            except:
+                etype, evalue, etraceback = _exc_info()
                 if event.failure is not None:
+                    error = (etype, evalue, etraceback)
                     self.push(Failure(event, handler, error), *event.failure)
                 if log:
-                    etype, evalue, etraceback = _exc_info()
                     self.push(Error(etype, evalue, etraceback, handler=handler))
                 if errors:
                     raise
