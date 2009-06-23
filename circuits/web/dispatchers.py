@@ -105,11 +105,14 @@ class Dispatcher(Component):
         i = 0
         matches = [""]
         candidates = []
-        while i < len(names):
+        while i <= len(names):
             x = "/".join(matches) or "/"
             if x in self.paths:
                 candidates.append([i, x])
-            matches.append(names[i])
+                if i < len(names):
+                    matches.append(names[i])
+            else:
+                break
             i += 1
 
         if not candidates:
