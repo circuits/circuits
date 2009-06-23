@@ -59,6 +59,8 @@ class Event(object):
 
     channel = None
     target = None
+    on_success = None
+    on_failure = None
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -534,7 +536,8 @@ class Manager(object):
     def _push(self, event, channel):
         self._queue.append((event, channel))
 
-    def push(self, event, channel=None, target=None):
+    def push(self, event, channel=None, target=None, on_success=None,
+            on_failure=None):
         """Push a new Event into the queue
 
         This will push the given Event, Channel and Target onto the
@@ -564,6 +567,8 @@ class Manager(object):
             target = target or getattr(self, "channel", "*")
 
         event.channel = (target, channel)
+        event.on_success = on_success
+        event.on_failure = on_failure
 
         self.root._push(event, (target, channel))
 
@@ -599,7 +604,12 @@ class Manager(object):
                 #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except:
+            except Exception, e:
+                if event.on_failure is not None:
+                    if isinstance(event.on_failure, Event):
+                        self.push(event.on_failure)
+                    else:
+                        self.push(Event(e), *event.on_failure)
                 if log:
                     etype, evalue, etraceback = _exc_info()
                     self.push(Error(etype, evalue, etraceback, handler=handler))
@@ -609,6 +619,11 @@ class Manager(object):
                     _exc_clear()
             if r is not None and r and handler.filter:
                 return r
+            if event.on_success is not None and r is not None:
+                if isinstance(event.on_success, Event):
+                    self.push(event.on_success)
+                else:
+                    self.push(Event(r), *event.on_success)
         return r
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
