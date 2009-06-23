@@ -635,14 +635,9 @@ class Manager(object):
                 #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except Exception, e:
+            except Exception, error:
                 if event.failure is not None:
-                    if callable(event.failure):
-                        event.failure(e)
-                    elif isinstance(event.failure, Event):
-                        self.push(event.failure)
-                    else:
-                        self.push(Event(e), *event.failure)
+                    self.push(Failure(event, handler, error), *event.failure)
                 if log:
                     etype, evalue, etraceback = _exc_info()
                     self.push(Error(etype, evalue, etraceback, handler=handler))
@@ -653,12 +648,7 @@ class Manager(object):
             if r is not None and r and handler.filter:
                 return r
             if event.success is not None and r is not None:
-                if callable(event.success):
-                    event.success(r)
-                elif isinstance(event.success, Event):
-                    self.push(event.success)
-                else:
-                    self.push(Event(r), *event.success)
+                self.push(Success(event, handler, r), *event.success)
         return r
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
