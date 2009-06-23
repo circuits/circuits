@@ -49,6 +49,9 @@ class Event(object):
 
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
+    @ivar target:  The target Component this Event is bound for
+    @ivar success: A function, event or channel to use for Event success
+    @ivar failure: A function, event or channel to use for Event failure
 
     @param args: list of arguments
     @type  args: tuple
@@ -59,12 +62,19 @@ class Event(object):
 
     channel = None
     target = None
+    success = None
+    failure = None
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         self.args = args
         self.kwargs = kwargs
+
+        if type(self.success) == str:
+            self.success = self.success,
+        if type(self.failure) == str:
+            self.failure = self.failure,
 
     @property
     def name(self):
@@ -129,6 +139,8 @@ class Error(Event):
     @param kwargs: (Optional) Additional Information
     @type  kwargs: dict
     """
+
+    channel = "exception"
 
     def __init__(self, type, value, traceback, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -597,7 +609,14 @@ class Manager(object):
                 #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except:
+            except Exception, e:
+                if event.failure is not None:
+                    if callable(event.failure):
+                        event.failure(e)
+                    elif isinstance(event.failure, Event):
+                        self.push(event.failure)
+                    else:
+                        self.push(Event(e), *event.failure)
                 if log:
                     etype, evalue, etraceback = _exc_info()
                     self.push(Error(etype, evalue, etraceback, handler=handler))
@@ -607,6 +626,13 @@ class Manager(object):
                     _exc_clear()
             if r is not None and r and handler.filter:
                 return r
+            if event.success is not None and r is not None:
+                if callable(event.success):
+                    event.success(r)
+                elif isinstance(event.success, Event):
+                    self.push(event.success)
+                else:
+                    self.push(Event(r), *event.success)
         return r
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
