@@ -464,7 +464,7 @@ class Manager(object):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-        format = "<%s (q: %d c: %d h: %d) [%s]>"
+        format = "<%s (queued=%d, channels=%d, handlers=%d) [%s]>"
         return format % (name, q, c, h, state)
 
     def __len__(self):
@@ -951,7 +951,7 @@ class BaseComponent(Manager):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-        format = "<%s/%s (q: %d c: %d h: %d) [%s]>"
+        format = "<%s/%s (queued=%d, channels=%d, handlers=%d) [%s]>"
         return format % (name, channel, q, c, h, state)
 
     def _registerHandlers(self, manager):
