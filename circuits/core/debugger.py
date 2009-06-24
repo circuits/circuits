@@ -53,8 +53,11 @@ class Debugger(Component):
         if len(args) == 3:
             type, value, traceback = args
             handler = kwargs.get("handler", None)
-            s.write("ERROR in %s (%s): %s\n" % (
-                reprhandler(handler) or "'Unknown'", type, value))
+            if handler is None:
+                handler = "'Unknown'"
+            else:
+                handler = reprhandler(handler)
+            s.write("ERROR in %s (%s): %s\n" % (handler, type, value))
             s.write("%s\n" % "".join(format_tb(traceback)))
         else:
             s.write("Unknown Error\n")
