@@ -657,7 +657,7 @@ class Manager(object):
                 if event.filter is not None:
                     self.push(Event(event, handler, r), *event.filter)
                 return r
-            if event.success is not None and r is not None:
+            if event.success is not None:
                 self.push(Success(event, handler, r), *event.success)
 
         if event.end is not None:
