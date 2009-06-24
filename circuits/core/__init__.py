@@ -52,6 +52,10 @@ class Event(object):
     @ivar target:  The target Component this Event is bound for
     @ivar success: An optional channel to use for Event handler success
     @ivar failure: An optional channel to use for Event handler failure
+    @ivar before: An optional channel to use before an Event handler execution
+    @ivar filter: An optional channel to use if an Event is filtered
+    @ivar start: An optional channel to use before an Event starts
+    @ivar end: An optional channel to use when an Event ends
 
     @param args: list of arguments
     @type  args: tuple
