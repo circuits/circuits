@@ -6,10 +6,21 @@
 import os
 from subprocess import Popen, PIPE
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 from circuits.io import File
 from circuits.web.events import Write
-from circuits import Component, Debugger
+from circuits.tools import kill, graph, inspect
+from circuits import handler, Event, Component, Debugger
 from circuits.web import Server, Controller, Logger, Sessions
+
+BUFFERING = 1
+STREAMING = 2
+
+class Kill(Event): pass
 
 class Command(Component):
 
@@ -18,17 +29,46 @@ class Command(Component):
     def __init__(self, request, response, command, channel=channel):
         super(Command, self).__init__(channel=channel)
 
-        self.request = request
-        self.response = response
-        self.command = command
+        self._request = request
+        self._response = response
+        self._command = command
 
-        self.p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
+        self._state = BUFFERING
+        self._buffer = None
+
+        self._p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
                 close_fds=True, preexec_fn=os.setsid)
-        self.stdout = File(self.p.stdout, channel=channel)
-        self.stdout.register(self)
+        self._stdout = File(self._p.stdout, channel=channel)
+        self._stdout.register(self)
+
+    @handler("disconnect", target="server")
+    def disconnect(self, sock):
+        if sock == self._request.sock:
+            self.push(Kill(), target=self)
+
+    @handler("response", target="http", priority=-1)
+    def response(self, response):
+        if response == self._response:
+            self._state = STREAMING
+
+    def kill(self):
+        self._p.kill()
+        kill(self)
 
     def read(self, data):
-        self.push(Write(self.response.sock, data), "write", "server")
+        if self._state == BUFFERING:
+            if self._buffer is None:
+                self._buffer = StringIO()
+            self._buffer.write(data)
+        elif self._state == STREAMING:
+            if self._buffer is not None:
+                self._buffer.write(data)
+                self._buffer.flush()
+                data = self._buffer.getvalue()
+                self._buffer = None
+                self.push(Write(self._response.sock, data), "write", "server")
+            else:
+                self.push(Write(self._response.sock, data), "write", "server")
 
 class Comet(Controller):
 
@@ -41,6 +81,12 @@ class Comet(Controller):
         sid = self.request.sid
         command = "ping %s" % host
         self += Command(self.request, self.response, command, channel=sid)
-        return True
+        #print graph(self.root)
+        #print inspect(self.root)
+        return self.response
 
-(Server(10000) + Debugger() + Sessions() + Logger() + Comet()).run()
+app = (Server(10000) + Sessions() + Logger() + Comet())
+app += Debugger()
+#print graph(app)
+#print inspect(app)
+app.run()
