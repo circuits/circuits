@@ -203,11 +203,6 @@ class HTTP(Component):
                 self._handleError(retval)
             elif isinstance(retval, wrappers.Response):
                 self.push(Response(retval), "response", self.channel)
-            else:
-                message = "Request Failued"
-                error = TypeError("Invalid returned request type %r" % retval)
-                self._handleError(
-                        HTTPError(request, response, 500, message, error))
 
     def request_failure(self, evt, handler, error):
         request, response = evt.args[:2]
