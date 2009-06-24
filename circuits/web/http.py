@@ -209,9 +209,9 @@ class HTTP(Component):
         message = "Request Failed"
         self._handleError(HTTPError(request, response, 500, message, error))
 
-    def request_completed(self, evt, retval):
-        request, response = evt.args
-        if not request.handled:
+    def request_completed(self, evt, handler, retval):
+        request, response = evt.args[:2]
+        if not request.handled or handler is None:
             self._handleError(NotFound(request, response))
 
         if request.sock in self._buffered:
