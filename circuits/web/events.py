@@ -17,6 +17,10 @@ class Request(Event):
 
     success = "request_success", "http"
     failure = "request_failure", "http"
+    before = "before_request", "http"
+    filter = "request_filtered", "http"
+    start = "request_started", "http"
+    end = "request_completed", "http"
 
 class Response(Event):
     """Response(Event) -> Response Event
