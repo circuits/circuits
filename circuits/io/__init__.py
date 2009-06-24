@@ -27,46 +27,42 @@ class Error(Event): pass
 class Opened(Event): pass
 class Closed(Event): pass
 
-class _File(file):
+def setblocking(fd, flag):
+    """Set/Clear blocking mode of a file descriptor"""
 
-    def setblocking(self, flag):
-        " set/clear blocking mode"
-        # get the file descriptor
-        fd = self.fileno()
-        # get the file's current flag settings
-        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-        if flag:
-            # clear non-blocking mode from flags
-            fl = fl & ~os.O_NONBLOCK
-        else:
-            # set non-blocking mode from flags
-            fl = fl | os.O_NONBLOCK
-        # update the file's flags
-        fcntl.fcntl(fd, fcntl.F_SETFL, fl)
-
-    def write(self, data):
-        try:
-            return os.write(self.fileno(), data)
-        except OSError, e:
-            raise IOError(e.errno, e.strerror, e.filename)
-
+    # get the file's current flag settings
+    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+    if flag:
+        # clear non-blocking mode from flags
+        fl = fl & ~os.O_NONBLOCK
+    else:
+        # set non-blocking mode from flags
+        fl = fl | os.O_NONBLOCK
+    # update the file's flags
+    fcntl.fcntl(fd, fcntl.F_SETFL, fl)
 
 class File(Component):
 
     channel = "file"
 
-    def __init__(self, filename, mode, channel=channel):
+    def __init__(self, *args, **kwargs):
+        channel = kwargs.get("channel", File.channel)
         super(File, self).__init__(channel=channel)
 
-        self.filename = filename
-        self.mode = mode
+        if len(args) == 1 and type(args[0]) == file:
+            self._fd = args[0]
+        else:
+            self._fd = open(*args)
+
+        self.filename = self._fd.name
+        self.mode = self._fd.mode
+
+        setblocking(self._fd, False)
 
         self._read = []
         self._write = []
         self._buffer = deque()
 
-        self._fd = _File(self.filename, self.mode)
-        self._fd.setblocking(False)
         self._read.append(self._fd)
 
         self.push(Opened(self.filename), "opened")
@@ -80,7 +76,6 @@ class File(Component):
             try:
                 r, w, e = select.select(self._read, self._write, [], wait)
             except select.error, error:
-                print "ERROR: %s" % error
                 if error[0] == 4:
                     pass
                 else:
@@ -89,13 +84,18 @@ class File(Component):
 
             if w:
                 data = self._buffer.popleft()
-                self._fd.write(data)
-                if not self._buffer:
-                    self._write.remove(self._fd)
+                try:
+                    bytes = os.write(self._fd.fileno(), data)
+                    if bytes < len(data):
+                        self._buffer.append(data[bytes:])
+                    elif not self._buffer:
+                        self._write.remove(self._fd)
+                except OSError, error:
+                    self.push(Error(error), "error")
 
             if r:
                 try:
-                    data = self._fd.read(BUFSIZE)
+                    data = os.read(self._fd.fileno(), BUFSIZE)
                 except IOError, e:
                     if e[0] == errno.EBADF:
                         data = None
