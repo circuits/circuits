@@ -138,7 +138,7 @@ class Response(object):
     def __str__(self):
         status = self.status
         headers = self.headers
-        body = self.process()
+        body = self.process() or ""
         protocol = "HTTP/%d.%d" % self.request.server_protocol
         return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
 
@@ -160,7 +160,7 @@ class Response(object):
 
         self.stream = False
         self.gzip = False
-        self.body = ""
+        self.body = None
         self.time = time()
         self.status = "200 OK"
 
@@ -192,9 +192,7 @@ class Response(object):
             cLen = len(body)
             cType = self.headers.get("Content-Type", "text/html")
         else:
-            body = ""
-            cLen = 0
-            cType = "text/plain"
+            return None
 
         self.headers["Content-Type"] = cType
         self.headers["Content-Length"] = str(cLen)
