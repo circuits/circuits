@@ -77,11 +77,6 @@ class Event(object):
         self.args = args
         self.kwargs = kwargs
 
-        if type(self.success) == str:
-            self.success = self.success,
-        if type(self.failure) == str:
-            self.failure = self.failure,
-
     @property
     def name(self):
         return self.__class__.__name__
