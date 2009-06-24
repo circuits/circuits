@@ -216,4 +216,10 @@ class HTTP(Component):
 
     def request_failure(self, evt, handler, error):
         request, response = evt.args[:2]
-        self._handleError(HTTPError(request, response, 500, error=error))
+        message = "Request Failued"
+        self._handleError(HTTPError(request, response, 500, message, error))
+
+    def request_completed(self, evt, retval):
+        request, response = evt.args
+        if not request.handled:
+            self._handleError(NotFound(request, response))
