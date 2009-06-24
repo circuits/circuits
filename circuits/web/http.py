@@ -61,7 +61,6 @@ class HTTP(Component):
             response.body.close()
             if response.close:
                 self.push(Close(response.sock), "close", "server")
-            response.done = True
         
     def response(self, response):
         self.push(Write(response.sock, str(response)), "write", "server")
@@ -71,8 +70,6 @@ class HTTP(Component):
 
         if response.close:
             self.push(Close(response.sock), "close", "server")
-
-        response.done = True
 
     @handler("close", target="server")
     def read(self, sock):
