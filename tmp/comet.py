@@ -7,9 +7,9 @@ import os
 from subprocess import Popen, PIPE
 
 from circuits.io import File
-from circuits import Component
 from circuits.web.events import Write
-from circuits.web import Server, Controller, Logger
+from circuits import Component, Debugger
+from circuits.web import Server, Controller, Logger, Sessions
 
 class Command(Component):
 
@@ -38,7 +38,9 @@ class Comet(Controller):
     def ping(self, host):
         self.response.headers["Content-Type"] = "text/plain"
         self.response.close = False
-        Command(self.request, self.response, "ping %s" % host).register(self)
+        sid = self.request.sid
+        command = "ping %s" % host
+        self += Command(self.request, self.response, command, channel=sid)
         return True
 
-(Server(10000) + Logger() + Comet()).run()
+(Server(10000) + Debugger() + Sessions() + Logger() + Comet()).run()
