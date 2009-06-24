@@ -62,8 +62,14 @@ class Event(object):
 
     channel = None
     target = None
+
+    handler = None
     success = None
     failure = None
+    before = None
+    filter = None
+    start = None
+    end = None
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -622,8 +628,14 @@ class Manager(object):
         eargs = event.args
         ekwargs = event.kwargs
 
+        if event.start is not None:
+            self.push(Event(event), *event.start)
+
         r = False
         for handler in self._getHandlers(channel):
+            event.handler = handler
+            if event.before is not None:
+                self.push(Event(event, handler), *event.before)
             try:
                 #stime = time.time()
                 if handler._passEvent:
@@ -647,9 +659,15 @@ class Manager(object):
                 else:
                     _exc_clear()
             if r is not None and r and handler.filter:
+                if event.filter is not None:
+                    self.push(Event(event, handler, r), *event.filter)
                 return r
             if event.success is not None and r is not None:
                 self.push(Success(event, handler, r), *event.success)
+
+        if event.end is not None:
+            self.push(Event(event, r), *event.end)
+
         return r
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
