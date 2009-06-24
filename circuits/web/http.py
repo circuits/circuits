@@ -74,11 +74,6 @@ class HTTP(Component):
 
         response.done = True
 
-    @handler("close", target="server")
-    def read(self, sock):
-        if sock in self._buffered:
-            del self._buffered[sock]
-
     @handler("read", target="server")
     def read(self, sock, data):
         """Read Event Handler
@@ -223,3 +218,6 @@ class HTTP(Component):
         request, response = evt.args
         if not request.handled:
             self._handleError(NotFound(request, response))
+
+        if request.sock in self._buffered:
+            del self._buffered[sock]
