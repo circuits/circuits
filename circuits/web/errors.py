@@ -33,14 +33,17 @@ class HTTPError(Event):
         self.message = message = message or short
 
         self.error = error
-        self.etype, self.evalue, self.traceback = self.error
+        if self.error is not None:
+            self.etype, self.evalue, self.traceback = self.error
+        else:
+            self.etype, self.evalue, self.traceback = None, None, None
 
         response.status = "%s %s" % (status, short)
 
         response.body = DEFAULT_ERROR_MESSAGE % {
             "status": "%s %s" % (status, short),
             "message": _escape(message),
-            "traceback": "".join(format_tb(self.traceback)),
+            "traceback": "".join(format_tb(self.traceback)) if error else "",
             "version": SERVER_VERSION}
 
     def __repr__(self):
