@@ -721,13 +721,13 @@ class Manager(object):
         ekwargs = event.kwargs
 
         if event.start is not None:
-            self.push(Event(event), *event.start)
+            self.push(Start(event), *event.start)
 
         r = False
         for handler in self._getHandlers(channel):
             event.handler = handler
             if event.before is not None:
-                self.push(Event(event, handler), *event.before)
+                self.push(Before(event, handler), *event.before)
             try:
                 #stime = time.time()
                 if handler._passEvent:
@@ -752,13 +752,14 @@ class Manager(object):
                     _exc_clear()
             if r is not None and r and handler.filter:
                 if event.filter is not None:
-                    self.push(Event(event, handler, r), *event.filter)
-                return r
+                    self.push(Filter(event, handler, retval), *event.filter)
+                return retval
+
             if event.success is not None:
                 self.push(Success(event, handler, r), *event.success)
 
         if event.end is not None:
-            self.push(Event(event, r), *event.end)
+            self.push(End(event, handler, retval), *event.end)
 
         return r
 
