@@ -194,7 +194,7 @@ class Response(object):
         else:
             return None
 
-        self.headers["Content-Type"] = cType
-        self.headers["Content-Length"] = str(cLen)
+        self.headers.setdefault("Content-Type", cType)
+        self.headers.setdefault("Content-Length", str(cLen))
 
         return body
