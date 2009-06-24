@@ -30,7 +30,7 @@ class HTTPError(Event):
         self.status = status
 
         short, long = RESPONSES.get(status, ("???", "???",))
-        self.message = message = message or short
+        self.message = message or short
 
         self.error = error
         if self.error is not None:
