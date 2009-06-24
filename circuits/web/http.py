@@ -200,6 +200,7 @@ class HTTP(Component):
     def request_success_or_filtered(self, evt, handler, retval):
         request, response = evt.args
         if retval:
+            request.handled = True
             if issubclass(type(retval), basestring):
                 response.body = retval
                 self.push(Response(response), "response", self.channel)
