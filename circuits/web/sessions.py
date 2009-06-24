@@ -15,6 +15,8 @@ from circuits import handler, Component
 
 class Sessions(Component):
 
+    channel = "web"
+
     def __init__(self, name="circuits.session", *args, **kwargs):
         super(Sessions, self).__init__(*args, **kwargs)
 
