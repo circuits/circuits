@@ -196,7 +196,8 @@ class HTTP(Component):
 
         self.push(Response(response), "response", self.channel)
 
-    def request_success(self, evt, handler, retval):
+    @handler("request_success", "request_filtered")
+    def request_success_or_filtered(self, evt, handler, retval):
         request, response = evt.args
         if retval:
             if issubclass(type(retval), basestring):
