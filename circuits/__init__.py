@@ -97,7 +97,7 @@ circuits.web = circuits.web.main:main
 
 from core import handler, Event, Component,  Manager
 
+from core.timers import Timer
 from core.bridge import Bridge
 from core.debugger import Debugger
-from core.timers import Timer, Timer
 from core.workers import Thread, Process
