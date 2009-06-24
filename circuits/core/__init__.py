@@ -158,6 +158,15 @@ class Success(Event):
 
     This Event is sent when an Event Handler's execution has completed
     successfully.
+
+    @param evt: The event that succeeded
+    @type  evt: Event
+
+    @param handler: The handler that executed this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the handler
+    @type  retval: object
     """
 
     def __init__(self, event, handler, retval):
@@ -171,12 +180,96 @@ class Failure(Event):
 
     This Event is sent when an error has occured with the execution of an
     Event Handlers.
+
+    @param evt: The event that failued
+    @type  evt: Event
+
+    @param handler: The handler that failed
+    @type  handler: @handler
+
+    @param error: A tuple containing the exception that occured
+    @type  error: (etype, evalue, traceback)
     """
 
     def __init__(self, event, handler, error):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Failure, self).__init__(event, handler, error)
+
+
+class Before(Event):
+    """Before Event
+
+    This Event is sent just before Event Handler's execution.
+
+    @param evt: The event about to occur
+    @type  evt: Event
+
+    @param handler: The handler going to execute this event
+    @type  handler: @handler
+    """
+
+    def __init__(self, event, handler):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Before, self).__init__(event, handler)
+
+
+class Filter(Event):
+    """Filter Event
+
+    This Event is sent when an Event is filtered by some Event Handler.
+
+    @param evt: The event that was filtered
+    @type  evt: Event
+
+    @param handler: The handler that filtered this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Filter, self).__init__(event, handler, retval)
+
+
+class Start(Event):
+    """Start Event
+
+    This Event is sent just before an Event is started
+
+    @param evt: The event about to start
+    @type  evt: Event
+    """
+
+    def __init__(self, event):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Start, self).__init__(event)
+
+
+class End(Event):
+    """End Event
+
+    This Event is sent just after an Event has ended
+
+    @param evt: The event that has finished
+    @type  evt: Event
+
+    @param handler: The last handler that executed this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the last handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(End, self).__init__(event, handler, retval)
 
 
 class Started(Event):
