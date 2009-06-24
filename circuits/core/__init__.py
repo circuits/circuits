@@ -723,20 +723,18 @@ class Manager(object):
         if event.start is not None:
             self.push(Start(event), *event.start)
 
-        r = False
+        retval = None
+        handler = None
+
         for handler in self._getHandlers(channel):
             event.handler = handler
             if event.before is not None:
                 self.push(Before(event, handler), *event.before)
             try:
-                #stime = time.time()
                 if handler._passEvent:
-                    r = handler(event, *eargs, **ekwargs)
+                    retval = handler(event, *eargs, **ekwargs)
                 else:
-                    r = handler(*eargs, **ekwargs)
-                #etime = time.time()
-                #ttime = (etime - stime) * 1e3
-                #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
+                    retval = handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
@@ -750,18 +748,19 @@ class Manager(object):
                     raise
                 else:
                     _exc_clear()
-            if r is not None and r and handler.filter:
+
+            if retval is not None and retval and handler.filter:
                 if event.filter is not None:
                     self.push(Filter(event, handler, retval), *event.filter)
                 return retval
 
             if event.success is not None:
-                self.push(Success(event, handler, r), *event.success)
+                self.push(Success(event, handler, retval), *event.success)
 
         if event.end is not None:
             self.push(End(event, handler, retval), *event.end)
 
-        return r
+        return retval
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
         """Send a new Event to Event Handlers for the Target and Channel
