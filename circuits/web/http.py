@@ -193,7 +193,7 @@ class HTTP(Component):
 
     @handler("request_success", "request_filtered")
     def request_success_or_filtered(self, evt, handler, retval):
-        request, response = evt.args
+        request, response = evt.args[:2]
         if retval:
             request.handled = True
             if issubclass(type(retval), basestring):
