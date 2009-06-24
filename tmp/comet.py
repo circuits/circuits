@@ -4,6 +4,7 @@
 """Comet Examples with circuits.web"""
 
 import os
+import signal
 from subprocess import Popen, PIPE
 
 try:
@@ -52,7 +53,7 @@ class Command(Component):
             self._state = STREAMING
 
     def kill(self):
-        self._p.kill()
+        os.killpg(self._p.pid, signal.SIGINT)
         kill(self)
 
     def read(self, data):
