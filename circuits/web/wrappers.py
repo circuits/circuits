@@ -169,6 +169,21 @@ class Response(object):
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
+        status = int(self.status.split(" ", 1)[0])
+
+        if status == 413:
+            self.close = True
+        elif status < 200 or status in (204, 205, 304):
+            return None
+
+        if "Connection" not in self.headers:
+            if self.protocol == "HTTP/1.1":
+                if self.close:
+                    self.headers.add_header("Connection", "close")
+            else:
+                if not self.close:
+                    self.headers.add_header("Connection", "Keep-Alive")
+
         if type(self.body) == file:
             cType = self.headers.get("Content-Type", "application/octet-stream")
             if self.gzip:
