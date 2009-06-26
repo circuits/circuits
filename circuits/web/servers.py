@@ -10,16 +10,16 @@ This module implements the Web Server Component.
 import os
 from socket import gethostname as _gethostname
 
-from circuits import Component
+from circuits.core import handler, BaseComponent
 
-from circuits.net.sockets import TCPServer
+from circuits.net.sockets import TCPServer, Close
 
 from http import HTTP
 from wrappers import Request, Host
 from constants import SERVER_VERSION
 from dispatchers import Dispatcher
 
-class BaseServer(Component):
+class BaseServer(BaseComponent):
 
     channel = "web"
 
@@ -81,6 +81,9 @@ class BaseServer(Component):
         
         return "%s://%s" % (scheme, host)
 
+    @handler("stopped", target="*")
+    def stopped(self, manager):
+        self.push(Close(), target=self.server)
 
 class Server(BaseServer):
 
