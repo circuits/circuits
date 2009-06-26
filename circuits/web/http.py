@@ -155,11 +155,11 @@ class HTTP(Component):
         # Persistent connection support
         if request.protocol == (1, 1):
             # Both server and client are HTTP/1.1
-            if request.headers.get("Connection", "") == "close":
+            if request.headers.get("Connection", "").lower() == "close":
                 response.close = True
         else:
             # Either the server or client (or both) are HTTP/1.0
-            if request.headers.get("Connection", "") != "Keep-Alive":
+            if request.headers.get("Connection", "").lower() != "keep-alive":
                 response.close = True
 
         request.body.seek(0)

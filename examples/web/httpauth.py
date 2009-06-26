@@ -11,7 +11,7 @@ class Root(Controller):
         encrypt = str
 
         if check_auth(self.request, self.response, realm, users, encrypt):
-            return "Hello World!"
+            return "Hello %s" % self.request.login
 
         return basic_auth(self.request, self.response, realm, users, encrypt)
 
