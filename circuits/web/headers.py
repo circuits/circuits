@@ -282,7 +282,16 @@ class Headers(dict):
 def parseHeaders(data):
 	headers = Headers([])
 		
-	for line in data.split("\r\n"):
+	while True:
+		line = data.readline()
+		if not line:
+			# No more data--illegal end of headers
+			raise ValueError("Illegal end of headers.")
+		
+		if line == "\r\n":
+			# Normal end of headers
+			break
+		
 		if line[0] in " \t":
 			# It's a continuation line.
 			v = line.strip()
@@ -292,4 +301,4 @@ def parseHeaders(data):
 
 		headers.add_header(k, v)
 		
-	return headers
+	return headers, data.read()
