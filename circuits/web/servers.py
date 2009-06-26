@@ -68,7 +68,7 @@ class BaseServer(Component):
         ssl = self.ssl
         port = self.port
 
-        if not ((ssl and port == 433) or (not ssl and port == 80)):
+        if not ((ssl and port == 443) or (not ssl and port == 80)):
             host = "%s:%s" % (host, port)
 
         return host
