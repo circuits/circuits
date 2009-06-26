@@ -426,6 +426,8 @@ class Server(Component):
             self._clients.remove(sock)
 
         try:
+            if sock == self._sock:
+                sock.settimeout(0.1)
             sock.shutdown(2)
             sock.close()
         except socket.error:
@@ -435,7 +437,8 @@ class Server(Component):
 
     def close(self, sock=None):
         if sock is None:
-            socks = self._clients[:]
+            socks = [self._sock]
+            socks.extend(self._clients[:])
         else:
             socks = [sock]
 
