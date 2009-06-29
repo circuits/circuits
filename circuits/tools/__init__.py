@@ -107,7 +107,7 @@ def reprhandler(x):
     if not hasattr(x, "handler"):
         raise TypeError("%r is not an Event Handler" % x)
 
-    format = "<%s on %s {target=%s, priority=%d}>"
+    format = "<%s on %s {target=%s, priority=%0.1f}>"
     channels = repr(x.channels)
     f = "filter" if x.filter else "listener"
     t = repr(x.target)
