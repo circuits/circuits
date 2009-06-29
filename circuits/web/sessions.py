@@ -23,7 +23,7 @@ class Sessions(Component):
         self._name = name
         self._data = defaultdict(dict)
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=10)
     def request(self, request, response):
         if self._name in request.cookie:
             id = request.cookie[self._name].value
