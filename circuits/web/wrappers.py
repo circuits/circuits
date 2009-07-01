@@ -173,8 +173,16 @@ class Response(object):
 
         if status == 413:
             self.close = True
-        elif status < 200 or status in (204, 205, 304):
-            return None
+        elif "Content-Length" not in self.headers:
+            if status < 200 or status in (204, 205, 304):
+                pass
+            else:
+                if self.protocol == "HTTP/1.1" \
+                        and self.request.method != "HEAD":
+                    self.chunked = True
+                    self.headers.add_header("Transfer-Encoding", "chunked")
+                else:
+                    self.close = True
 
         if "Connection" not in self.headers:
             if self.protocol == "HTTP/1.1":
