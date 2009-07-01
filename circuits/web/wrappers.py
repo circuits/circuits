@@ -123,6 +123,8 @@ class Response(object):
     is sent in the correct order.
     """
 
+    chunked = False
+
     def __init__(self, sock, request):
         "initializes x; see x.__class__.__doc__ for signature"
 
