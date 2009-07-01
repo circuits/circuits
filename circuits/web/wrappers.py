@@ -140,6 +140,9 @@ class Response(object):
         status = self.status
         headers = self.headers
         body = self.process() or ""
+        if self.chunked:
+            buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
+            body = "".join(buf)
         protocol = "HTTP/%d.%d" % self.request.server_protocol
         return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
 
