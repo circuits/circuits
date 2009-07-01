@@ -58,10 +58,15 @@ class HTTP(Component):
     def stream(self, response):
         data = response.body.read(BUFFER_SIZE)
         if data:
+            if response.chunked:
+                buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
+                data = "".join(buf)
             self.push(Write(response.sock, data), "write", "server")
             self.push(Stream(response))
         else:
             response.body.close()
+            if response.chunked:
+                self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
             if response.close:
                 self.push(Close(response.sock), "close", "server")
             response.done = True
@@ -71,6 +76,9 @@ class HTTP(Component):
         if response.stream:
             self.push(Stream(response), "stream", self.channel)
             return
+
+        if response.chunked:
+            self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
 
         if response.close:
             self.push(Close(response.sock), "close", "server")
