@@ -83,9 +83,6 @@ class Dispatcher(Component):
         a default channel, then this will be used.
         """
 
-        import pdb
-        pdb.set_trace()
-
         path = request.path
 
         method = request.method.upper()
