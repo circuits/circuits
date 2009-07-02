@@ -1,0 +1,138 @@
+@import url(/css/ext/ext-all.css);
+@import url(/css/ext/xtheme-aero.css);
+
+/* Main Layout */
+
+* {
+	font-family: "Bitstream Vera Sans", "Verdana", sans-serif;
+	font-size: 10pt;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: none rgb(240, 255, 240);
+	min-width: 600px;
+}
+
+h1 {
+	font-size: 18pt;
+}
+
+h2 {
+	font-size: 16pt;
+}
+
+h3 {
+	font-size: 14pt;
+}
+
+h4 {
+	font-size: 12pt;
+}
+
+h5 {
+	font-size: 8pt;
+}
+
+a:link, a:visited {
+	color: #888888;
+	text-decoration: none;
+	border-bottom: 1px dashed;
+}
+
+a:focus, a:hover, a:active {
+	border-bottom: 1px solid;
+}
+
+#window {
+	position: relative;
+	width: 600px;
+	top: 10px;
+	margin: 0 auto;
+	border: 2px solid rgb(100, 155, 100);
+	background: none rgb(255, 255, 255);
+}
+
+#header, #footer {
+	background: none rgb(34, 170, 34);
+	color: rgb(255, 255, 255);
+}
+
+#header {
+	padding: 20px 5px 5px 5px;
+}
+
+#header h1 {
+	text-align: center;
+}
+
+#footer {
+	padding: 5px 10px;
+}
+
+/* Content */
+
+#main {
+	margin: 0 auto;
+	padding: 20px;
+	height: 300px;
+	border: none;
+	background: none rgb(255, 255, 255);
+}
+
+.main h2 {
+	padding: 6px 0;
+}
+
+.main dt {
+	padding: 4px 0:
+}
+
+.main dd {
+	padding: 0 20px;
+}
+
+/* Menu */
+
+#menu {
+	color: rgb(0, 0, 0);
+	background-color: transparent;
+	font-family: arial, helvetica, sans-serif;
+	white-space: nowrap;
+	list-style-type: none;
+	margin-top: 20px;
+}
+
+#menu ul {
+	background: none;
+}
+
+#menu li {
+	display: inline;
+	border: 1px solid rgb(70, 100, 70);
+	background: none rgb(255, 255, 240);
+}
+
+#menu a {
+	padding: 2px;
+	margin: 0px;
+	color: rgb(0, 0, 0);
+	text-decoration: none;
+	border: none;
+}
+
+#menu a:hover {
+	background: rgb(100, 100, 100);
+}
+
+/* validate icons */
+
+#icons {
+	float: right;
+	margin-top: 5px;
+}
+
+#icons img, a:link, a:active, a:focus, a:visited, a:hover {
+	border: none;
+}
