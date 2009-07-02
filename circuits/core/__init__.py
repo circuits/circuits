@@ -849,6 +849,9 @@ class Manager(object):
                     p.terminate()
                     p.join(3)
 
+    def tick(self):
+        [f() for f in self._ticks.copy()]
+
     def run(self, sleep=0, mode=None, log=True, __self=None):
         if __self is not None:
             self = __self
