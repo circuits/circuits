@@ -414,7 +414,7 @@ class Server(Component):
         return self.bind[1] if hasattr(self, "bind") else None
 
     def _close(self, sock):
-        if sock not in self._clients:
+        if not sock == self._sock and sock not in self._clients:
             return
 
         self._poller.discard(sock)
@@ -426,6 +426,8 @@ class Server(Component):
             self._clients.remove(sock)
 
         try:
+            if sock == self._sock:
+                sock.settimeout(0.1)
             sock.shutdown(2)
             sock.close()
         except socket.error:
@@ -434,10 +436,17 @@ class Server(Component):
         self.push(Disconnect(sock), "disconnect", self.channel)
 
     def close(self, sock=None):
-        if not self._buffers[sock]:
-            self._close(sock)
-        elif sock not in self._closeq:
-            self._closeq.append(sock)
+        if sock is None:
+            socks = [self._sock]
+            socks.extend(self._clients[:])
+        else:
+            socks = [sock]
+
+        for sock in socks:
+            if not self._buffers[sock]:
+                self._close(sock)
+            elif sock not in self._closeq:
+                self._closeq.append(sock)
 
     def _read(self, sock):
         if sock not in self._clients:

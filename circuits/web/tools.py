@@ -303,7 +303,7 @@ def flatten(request, response):
     response.body = flattener(response.body)
     return response
 
-def check_auth(request, response, users, encrypt=None, realm=None):
+def check_auth(request, response, realm, users, encrypt=None):
     """Check Authentication
 
     If an authorization header contains credentials, return True, else False.

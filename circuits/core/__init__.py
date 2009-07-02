@@ -49,6 +49,13 @@ class Event(object):
 
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
+    @ivar target:  The target Component this Event is bound for
+    @ivar success: An optional channel to use for Event handler success
+    @ivar failure: An optional channel to use for Event handler failure
+    @ivar before: An optional channel to use before an Event handler execution
+    @ivar filter: An optional channel to use if an Event is filtered
+    @ivar start: An optional channel to use before an Event starts
+    @ivar end: An optional channel to use when an Event ends
 
     @param args: list of arguments
     @type  args: tuple
@@ -59,6 +66,14 @@ class Event(object):
 
     channel = None
     target = None
+
+    handler = None
+    success = None
+    failure = None
+    before = None
+    filter = None
+    start = None
+    end = None
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -136,6 +151,125 @@ class Error(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Error, self).__init__(type, value, traceback, **kwargs)
+
+
+class Success(Event):
+    """Success Event
+
+    This Event is sent when an Event Handler's execution has completed
+    successfully.
+
+    @param evt: The event that succeeded
+    @type  evt: Event
+
+    @param handler: The handler that executed this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Success, self).__init__(event, handler, retval)
+
+
+class Failure(Event):
+    """Failure Event
+
+    This Event is sent when an error has occured with the execution of an
+    Event Handlers.
+
+    @param evt: The event that failued
+    @type  evt: Event
+
+    @param handler: The handler that failed
+    @type  handler: @handler
+
+    @param error: A tuple containing the exception that occured
+    @type  error: (etype, evalue, traceback)
+    """
+
+    def __init__(self, event, handler, error):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Failure, self).__init__(event, handler, error)
+
+
+class Before(Event):
+    """Before Event
+
+    This Event is sent just before Event Handler's execution.
+
+    @param evt: The event about to occur
+    @type  evt: Event
+
+    @param handler: The handler going to execute this event
+    @type  handler: @handler
+    """
+
+    def __init__(self, event, handler):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Before, self).__init__(event, handler)
+
+
+class Filter(Event):
+    """Filter Event
+
+    This Event is sent when an Event is filtered by some Event Handler.
+
+    @param evt: The event that was filtered
+    @type  evt: Event
+
+    @param handler: The handler that filtered this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Filter, self).__init__(event, handler, retval)
+
+
+class Start(Event):
+    """Start Event
+
+    This Event is sent just before an Event is started
+
+    @param evt: The event about to start
+    @type  evt: Event
+    """
+
+    def __init__(self, event):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Start, self).__init__(event)
+
+
+class End(Event):
+    """End Event
+
+    This Event is sent just after an Event has ended
+
+    @param evt: The event that has finished
+    @type  evt: Event
+
+    @param handler: The last handler that executed this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the last handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(End, self).__init__(event, handler, retval)
 
 
 class Started(Event):
@@ -330,7 +464,7 @@ class Manager(object):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-        format = "<%s (q: %d c: %d h: %d) [%s]>"
+        format = "<%s (queued=%d, channels=%d, handlers=%d) [%s]>"
         return format % (name, q, c, h, state)
 
     def __len__(self):
@@ -586,30 +720,47 @@ class Manager(object):
         eargs = event.args
         ekwargs = event.kwargs
 
-        r = False
+        if event.start is not None:
+            self.push(Start(event), *event.start)
+
+        retval = None
+        handler = None
+
         for handler in self._getHandlers(channel):
+            event.handler = handler
+            if event.before is not None:
+                self.push(Before(event, handler), *event.before)
             try:
-                #stime = time.time()
                 if handler._passEvent:
-                    r = handler(event, *eargs, **ekwargs)
+                    retval = handler(event, *eargs, **ekwargs)
                 else:
-                    r = handler(*eargs, **ekwargs)
-                #etime = time.time()
-                #ttime = (etime - stime) * 1e3
-                #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
+                    retval = handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
+                etype, evalue, etraceback = _exc_info()
+                if event.failure is not None:
+                    error = (etype, evalue, etraceback)
+                    self.push(Failure(event, handler, error), *event.failure)
                 if log:
-                    etype, evalue, etraceback = _exc_info()
                     self.push(Error(etype, evalue, etraceback, handler=handler))
                 if errors:
                     raise
                 else:
                     _exc_clear()
-            if r is not None and r and handler.filter:
-                return r
-        return r
+
+            if retval is not None and retval and handler.filter:
+                if event.filter is not None:
+                    self.push(Filter(event, handler, retval), *event.filter)
+                return retval
+
+            if event.success is not None:
+                self.push(Success(event, handler, retval), *event.success)
+
+        if event.end is not None:
+            self.push(End(event, handler, retval), *event.end)
+
+        return retval
 
     def send(self, event, channel=None, target=None, errors=False, log=True):
         """Send a new Event to Event Handlers for the Target and Channel
@@ -800,7 +951,7 @@ class BaseComponent(Manager):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-        format = "<%s/%s (q: %d c: %d h: %d) [%s]>"
+        format = "<%s/%s (queued=%d, channels=%d, handlers=%d) [%s]>"
         return format % (name, channel, q, c, h, state)
 
     def _registerHandlers(self, manager):

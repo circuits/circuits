@@ -75,6 +75,7 @@ class Request(object):
     script_name = ""
 
     login = None
+    handled = False
 
     def __init__(self, sock, method, scheme, path, protocol, qs):
         "initializes x; see x.__class__.__doc__ for signature"
@@ -122,6 +123,8 @@ class Response(object):
     is sent in the correct order.
     """
 
+    chunked = False
+
     def __init__(self, sock, request):
         "initializes x; see x.__class__.__doc__ for signature"
 
@@ -138,7 +141,10 @@ class Response(object):
     def __str__(self):
         status = self.status
         headers = self.headers
-        body = self.process()
+        body = self.process() or ""
+        if self.chunked:
+            buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
+            body = "".join(buf)
         protocol = "HTTP/%d.%d" % self.request.server_protocol
         return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
 
@@ -160,13 +166,36 @@ class Response(object):
 
         self.stream = False
         self.gzip = False
-        self.body = ""
+        self.body = None
         self.time = time()
         self.status = "200 OK"
 
     def process(self):
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
+
+        status = int(self.status.split(" ", 1)[0])
+
+        if status == 413:
+            self.close = True
+        elif "Content-Length" not in self.headers:
+            if status < 200 or status in (204, 205, 304):
+                pass
+            else:
+                if self.protocol == "HTTP/1.1" \
+                        and self.request.method != "HEAD":
+                    self.chunked = True
+                    self.headers.add_header("Transfer-Encoding", "chunked")
+                else:
+                    self.close = True
+
+        if "Connection" not in self.headers:
+            if self.protocol == "HTTP/1.1":
+                if self.close:
+                    self.headers.add_header("Connection", "close")
+            else:
+                if not self.close:
+                    self.headers.add_header("Connection", "Keep-Alive")
 
         if type(self.body) == file:
             cType = self.headers.get("Content-Type", "application/octet-stream")
@@ -192,9 +221,7 @@ class Response(object):
             cLen = len(body)
             cType = self.headers.get("Content-Type", "text/html")
         else:
-            body = ""
-            cLen = 0
-            cType = "text/plain"
+            return None
 
         self.headers["Content-Type"] = cType
         self.headers["Content-Length"] = str(cLen)

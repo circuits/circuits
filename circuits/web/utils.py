@@ -66,7 +66,7 @@ def dictform(form):
 def compressBuf(buf):
     zbuf = StringIO()
     zfile = GzipFile(mode="wb",  fileobj=zbuf, compresslevel=1)
-    zfile.write(buf)
+    zfile.write(buf.encode("utf-8"))
     zfile.close()
     zbuf.flush()
     zbuf.seek(0)

@@ -158,7 +158,7 @@ class Dispatcher(Component):
         if isinstance(c, Controller) and c in self.components and m == self:
             self.paths.remove(c.channel)
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=5)
     def request(self, event, request, response):
         req = event
         path = request.path.strip("/")
@@ -188,7 +188,8 @@ class Dispatcher(Component):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.send(req, channel, target, errors=True)
+            self.push(req, channel, target)
+            return True
 
 class VirtualHosts(Component):
     """Forward to anotehr Dispatcher based on the Host header.
@@ -244,7 +245,7 @@ class XMLRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=5)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
@@ -287,7 +288,7 @@ class JSONRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=5)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
