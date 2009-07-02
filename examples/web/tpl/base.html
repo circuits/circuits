@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US">
+ <head>
+  <title>Basic Templating</title>
+		<meta http-equiv="content-type" content="application/xml+xhtml; charset=utf-8" />
+		<link rel="stylesheet" title="default" media="screen" href="static/css/base.css" type="text/css" />
+</head>
+<body>
+	<div id="window">
+
+		<div id="header">
+			<h1>Basic Templating</h1>
+		</div>
+
+		<div id="menu">
+			% if showMenu and showMenu == True:
+				${buildMenu(menuMap)}
+			% endif
+		</div>
+
+		<div id="main">
+			${self.body()}
+		</div>
+
+		<div id="icons">
+			<a	href="http://validator.w3.org/check/referer">
+				<img src="static/img/valid-xhtml10.png" 
+				alt="Valid XHTML 1.0 Transitional" />
+			</a>
+			<a href="http://jigsaw.w3.org/css-validator/check/referer">
+				<img src="static/img/vcss.gif" alt="Valid CSS" />
+			</a>
+		</div>
+
+	</div>
+
+</body>
+</html>
