@@ -80,7 +80,6 @@ class File(Component):
             try:
                 r, w, e = select.select(self._read, self._write, [], wait)
             except select.error, error:
-                print "ERROR: %s" % error
                 if error[0] == 4:
                     pass
                 else:
