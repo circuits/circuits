@@ -83,6 +83,9 @@ class Dispatcher(Component):
         a default channel, then this will be used.
         """
 
+        import pdb
+        pdb.set_trace()
+
         path = request.path
 
         method = request.method.upper()
@@ -138,7 +141,7 @@ class Dispatcher(Component):
             return None, None, []
         else:
             handler = self.channels[(candidate, channel)][0]
-            if vpath and not (handler.varargs or handler.varkw):
+            if vpath and not (handler.args or handler.varargs or handler.varkw):
                 return None, None, []
             else:
                 return channel, candidate, vpath
