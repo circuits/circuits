@@ -158,8 +158,6 @@ class HTTP(Component):
                 self._buffered[sock] = request, response
                 return
 
-        response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
-
         # Persistent connection support
         if request.protocol == (1, 1):
             # Both server and client are HTTP/1.1
