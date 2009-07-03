@@ -15,7 +15,6 @@ from time import strftime, time
 from Cookie import SimpleCookie
 
 from headers import Headers
-from utils import compressBuf
 from constants import BUFFER_SIZE, SERVER_VERSION
 
 class Host(object):
@@ -165,7 +164,6 @@ class Response(object):
         self.cookie = self.request.cookie
 
         self.stream = False
-        self.gzip = False
         self.body = None
         self.time = time()
         self.status = "200 OK"
@@ -199,14 +197,7 @@ class Response(object):
 
         if type(self.body) == file:
             cType = self.headers.get("Content-Type", "application/octet-stream")
-            if self.gzip:
-                self.body = compressBuf(self.body.read())
-                self.headers["Content-Encoding"] = "gzip"
-                self.body.seek(0, 2)
-                cLen = self.body.tell()
-                self.body.seek(0)
-            else:
-                cLen = os.fstat(self.body.fileno())[stat.ST_SIZE]
+            cLen = os.fstat(self.body.fileno())[stat.ST_SIZE]
 
             if cLen > BUFFER_SIZE:
                 body = self.body.read(BUFFER_SIZE)
@@ -215,9 +206,6 @@ class Response(object):
                 body = self.body.read()
         elif issubclass(type(self.body), basestring):
             body = self.body
-            if self.gzip:
-                body = compressBuf(body).getvalue()
-                self.headers["Content-Encoding"] = "gzip"
             cLen = len(body)
             cType = self.headers.get("Content-Type", "text/html")
         else:
