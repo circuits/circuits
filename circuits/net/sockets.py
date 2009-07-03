@@ -619,10 +619,10 @@ class UDPServer(Server):
 
         self._poller.addReader(self._sock)
 
-    def _close(self):
-        self._poller.discard(self._sock)
+    def _close(self, sock):
+        self._poller.discard(sock)
 
-        if self._sock in self._buffers:
+        if sock in self._buffers:
             del self._buffers[sock]
 
         try:
