@@ -405,3 +405,59 @@ def digest_auth(request, response, realm, users):
     response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
     
     return Unauthorized(request, response)
+
+def gzip(request, response, level=1, mime_types=['text/html', 'text/plain']):
+    """Try to gzip the response body if Content-Type in mime_types.
+    
+    response.headers['Content-Type'] must be set to one of the
+    values in the mime_types arg before calling this function.
+    
+    No compression is performed if any of the following hold:
+        * The client sends no Accept-Encoding request header
+        * No 'gzip' or 'x-gzip' is present in the Accept-Encoding header
+        * No 'gzip' or 'x-gzip' with a qvalue > 0 is present
+        * The 'identity' value is given with a qvalue > 0.
+    """
+
+    if not response.body:
+        # Response body is empty (might be a 304 for instance)
+        return
+    
+    # If returning cached content (which should already have been gzipped),
+    # don't re-zip.
+    if getattr(request, "cached", False):
+        return
+    
+    acceptable = request.headers.elements('Accept-Encoding')
+    if not acceptable:
+        # If no Accept-Encoding field is present in a request,
+        # the server MAY assume that the client will accept any
+        # content coding. In this case, if "identity" is one of
+        # the available content-codings, then the server SHOULD use
+        # the "identity" content-coding, unless it has additional
+        # information that a different content-coding is meaningful
+        # to the client.
+        return
+    
+    ct = response.headers.get('Content-Type').split(';')[0]
+    for coding in acceptable:
+        if coding.value == 'identity' and coding.qvalue != 0:
+            return
+        if coding.value in ('gzip', 'x-gzip'):
+            if coding.qvalue == 0:
+                return
+            if ct in mime_types:
+                # Return a generator that compresses the page
+                varies = response.headers.get("Vary", "")
+                varies = [x.strip() for x in varies.split(",") if x.strip()]
+                if "Accept-Encoding" not in varies:
+                    varies.append("Accept-Encoding")
+                response.headers['Vary'] = ", ".join(varies)
+                
+                response.headers['Content-Encoding'] = 'gzip'
+                response.body = compress(response.body, compress_level)
+                if response.headers.has_key("Content-Length"):
+                    # Delete Content-Length header so finalize() recalcs it.
+                    del response.headers["Content-Length"]
+            return
+    return HTTPError(request, response, 406, "identity, gzip")
