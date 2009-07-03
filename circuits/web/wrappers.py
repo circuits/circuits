@@ -145,11 +145,10 @@ class Response(object):
         yield "%s %s\r\n" % (protocol, status)
         yield str(headers)
         if self.chunked:
-            yield hex(len(body))[2:]
-            yield "\r\n"
-        yield body
-        if self.chunked:
-            yield "\r\n"
+            buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
+            yield "".join(buf)
+        else:
+            yield body
 
     def clear(self):
         self.done = False
