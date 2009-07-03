@@ -113,20 +113,27 @@ class Dispatcher(Component):
         if not candidates:
             return None, None, []
 
-        i, candidate = candidates.pop()
-
-        if i < len(names):
-            channels = [names[i], "index", method, "default"]
-        else:
-            channels = ["index", method, "default"]
-
         vpath = []
         channel = None
-        for channel in channels:
-            if (candidate, channel) in self.channels:
-                if i < len(names) and channel == names[i]:
-                    i += 1
-                break
+        for i, candidate in reversed(candidates):
+            if i < len(names):
+                channels = [names[i], "index", method, "default"]
+            else:
+                channels = ["index", method, "default"]
+
+            found = False
+            for channel in channels:
+                if (candidate, channel) in self.channels:
+                    if i < len(names) and channel == names[i]:
+                        i += 1
+                    found = True
+                    break
+
+            if found:
+                if channel == "index" and not request.index:
+                    continue
+                else:
+                    break
 
         if channel is not None:
             if i < len(names):
