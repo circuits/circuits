@@ -891,7 +891,6 @@ class Manager(object):
                         self._flush()
                         if sleep:
                             time.sleep(sleep)
-                        rtime = time.time()
                     except:
                         try:
                             if log:
