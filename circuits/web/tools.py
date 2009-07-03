@@ -22,7 +22,7 @@ mimetypes.types_map['.dwg']='image/x-dwg'
 mimetypes.types_map['.ico']='image/x-icon'
 
 import _httpauth
-from utils import url, valid_status, get_ranges
+from utils import url, valid_status, get_ranges, compress
 from errors import HTTPError, NotFound, Redirect, Unauthorized
 
 def expires(request, response, secs=0, force=False):
