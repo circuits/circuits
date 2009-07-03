@@ -49,6 +49,8 @@ class File(Component):
         channel = kwargs.get("channel", File.channel)
         super(File, self).__init__(channel=channel)
 
+        self.encoding = kwargs.get("encoding", "utf-8")
+
         if len(args) == 1 and type(args[0]) == file:
             self._fd = args[0]
         else:
@@ -85,6 +87,8 @@ class File(Component):
             if w:
                 data = self._buffer.popleft()
                 try:
+                    if type(data) is unicode:
+                        data = data.encode(self.encoding)
                     bytes = os.write(self._fd.fileno(), data)
                     if bytes < len(data):
                         self._buffer.append(data[bytes:])
