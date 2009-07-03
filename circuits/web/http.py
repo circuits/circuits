@@ -72,7 +72,8 @@ class HTTP(Component):
             response.done = True
         
     def response(self, response):
-        self.push(Write(response.sock, str(response)), "write", "server")
+        for data in response.output():
+            self.push(Write(response.sock, data), "write", "server")
         if response.stream:
             self.push(Stream(response), "stream", self.channel)
             return

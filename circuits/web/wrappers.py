@@ -137,15 +137,19 @@ class Response(object):
                 self.headers["Content-Type"],
                 (len(self.body) if type(self.body) == str else 0))
     
-    def __str__(self):
+    def output(self):
+        protocol = "HTTP/%d.%d" % self.request.server_protocol
         status = self.status
         headers = self.headers
         body = self.process() or ""
+        yield "%s %s\r\n" % (protocol, status)
+        yield str(headers)
         if self.chunked:
-            buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
-            body = "".join(buf)
-        protocol = "HTTP/%d.%d" % self.request.server_protocol
-        return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
+            yield hex(len(body))[2:]
+            yield "\r\n"
+        yield body
+        if self.chunked:
+            yield "\r\n"
 
     def clear(self):
         self.done = False
