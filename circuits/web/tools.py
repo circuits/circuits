@@ -421,12 +421,12 @@ def gzip(response, level=1, mime_types=['text/html', 'text/plain']):
 
     if not response.body:
         # Response body is empty (might be a 304 for instance)
-        return
+        return response
     
     # If returning cached content (which should already have been gzipped),
     # don't re-zip.
     if getattr(response.request, "cached", False):
-        return
+        return response
     
     acceptable = response.request.headers.elements('Accept-Encoding')
     if not acceptable:
@@ -437,7 +437,7 @@ def gzip(response, level=1, mime_types=['text/html', 'text/plain']):
         # the "identity" content-coding, unless it has additional
         # information that a different content-coding is meaningful
         # to the client.
-        return
+        return response
     
     ct = response.headers.get('Content-Type', 'text/html').split(';')[0]
     for coding in acceptable:
