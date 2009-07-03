@@ -406,7 +406,7 @@ def digest_auth(request, response, realm, users):
     
     return Unauthorized(request, response)
 
-def gzip(request, response, level=1, mime_types=['text/html', 'text/plain']):
+def gzip(response, level=1, mime_types=['text/html', 'text/plain']):
     """Try to gzip the response body if Content-Type in mime_types.
     
     response.headers['Content-Type'] must be set to one of the
@@ -425,10 +425,10 @@ def gzip(request, response, level=1, mime_types=['text/html', 'text/plain']):
     
     # If returning cached content (which should already have been gzipped),
     # don't re-zip.
-    if getattr(request, "cached", False):
+    if getattr(response.request, "cached", False):
         return
     
-    acceptable = request.headers.elements('Accept-Encoding')
+    acceptable = response.request.headers.elements('Accept-Encoding')
     if not acceptable:
         # If no Accept-Encoding field is present in a request,
         # the server MAY assume that the client will accept any
@@ -439,13 +439,13 @@ def gzip(request, response, level=1, mime_types=['text/html', 'text/plain']):
         # to the client.
         return
     
-    ct = response.headers.get('Content-Type').split(';')[0]
+    ct = response.headers.get('Content-Type', 'text/html').split(';')[0]
     for coding in acceptable:
         if coding.value == 'identity' and coding.qvalue != 0:
-            return
+            return response
         if coding.value in ('gzip', 'x-gzip'):
             if coding.qvalue == 0:
-                return
+                return response
             if ct in mime_types:
                 # Return a generator that compresses the page
                 varies = response.headers.get("Vary", "")
@@ -455,9 +455,9 @@ def gzip(request, response, level=1, mime_types=['text/html', 'text/plain']):
                 response.headers['Vary'] = ", ".join(varies)
                 
                 response.headers['Content-Encoding'] = 'gzip'
-                response.body = compress(response.body, compress_level)
+                response.body = compress(response.body, level)
                 if response.headers.has_key("Content-Length"):
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
-            return
-    return HTTPError(request, response, 406, "identity, gzip")
+            return response
+    return HTTPError(response.request, response, 406, "identity, gzip")
