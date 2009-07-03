@@ -15,7 +15,6 @@ from threading import Thread
 from collections import deque
 from operator import attrgetter
 from sys import exc_info as _exc_info
-from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
 
 if os.name == "posix":
@@ -746,8 +745,6 @@ class Manager(object):
                     self.push(Error(etype, evalue, etraceback, handler=handler))
                 if errors:
                     raise
-                else:
-                    _exc_clear()
 
             if retval is not None and retval and handler.filter:
                 if event.filter is not None:
