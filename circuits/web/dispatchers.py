@@ -33,6 +33,36 @@ from utils import parseQueryString, dictform
 
 class RPC(Event): pass
 
+
+class Static(Component):
+
+    channel = "web"
+
+    def __init__(self, *args, **kwargs):
+        super(Static, self).__init__(**kwargs)
+
+        self.docroot = kwargs.get("docroot", os.getcwd())
+        self.defaults = kwargs.get("defaults", ("index.html",))
+
+    @handler("request", filter=True, priority=5)
+    def request(self, event, request, response):
+        req = event
+        path = request.path.strip("/")
+
+        filename = None
+
+        if path:
+            filename = os.path.abspath(os.path.join(self.docroot, path))
+        else:
+            for default in self.defaults:
+                filename = os.path.abspath(os.path.join(self.docroot, default))
+                if os.path.exists(filename):
+                    break
+
+        if filename and os.path.exists(filename):
+            expires(request, response, 3600*24*30)
+            return serve_file(request, response, filename)
+
 class Dispatcher(Component):
 
     channel = "web"
