@@ -90,18 +90,4 @@ class Server(BaseServer):
     def __init__(self, bind, **kwargs):
         super(Server, self).__init__(bind, **kwargs)
 
-        docroot = kwargs.get("docroot", None)
-        self.dispatcher = Dispatcher(docroot=docroot)
-        self += self.dispatcher
-
-    def __get_docroot(self):
-        return self.dispatcher.docroot if hasattr(self, "dispatcher") else None
-
-    def __set_docroot(self, docroot):
-        if os.path.exists(docroot):
-            self.dispatcher.docroot = docroot
-        else:
-            raise IOError(2, "Invalid docroot path", docroot)
-
-    docroot = property(__get_docroot, __set_docroot, None, """\
-            Document Root of this Server's Dispatcher.""")
+        Dispatcher().register(self)

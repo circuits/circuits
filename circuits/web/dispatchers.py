@@ -37,11 +37,8 @@ class Dispatcher(Component):
 
     channel = "web"
 
-    def __init__(self, docroot=None, defaults=None, **kwargs):
+    def __init__(self, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
-
-        self.docroot = docroot or os.getcwd()
-        self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
 
         self.paths = []
 
@@ -165,21 +162,6 @@ class Dispatcher(Component):
     @handler("request", filter=True, priority=5)
     def request(self, event, request, response):
         req = event
-        path = request.path.strip("/")
-
-        filename = None
-
-        if path:
-            filename = os.path.abspath(os.path.join(self.docroot, path))
-        else:
-            for default in self.defaults:
-                filename = os.path.abspath(os.path.join(self.docroot, default))
-                if os.path.exists(filename):
-                    break
-
-        if filename and os.path.exists(filename):
-            expires(request, response, 3600*24*30)
-            return serve_file(request, response, filename)
 
         channel, target, vpath = self._getChannel(request)
 
