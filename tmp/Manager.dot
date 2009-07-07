@@ -1,4 +1,0 @@
-digraph G {
-Manager -> Debugger;
-Manager -> Foo;
-}

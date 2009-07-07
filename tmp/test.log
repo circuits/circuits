@@ -1,2 +1,0 @@
-03:59:32 test[log] DEBUG: <Registered[*:registered] (<Debugger/* (q: 0 c: 1 h: 1) [S]>, <Logger/log (q: 0 c: 1 h: 1) [R]>) {}>
-03:59:32 test[log] DEBUG: <Started[log:started] (<Logger/log (q: 1 c: 1 h: 1) [R]>, 'T') {}>
