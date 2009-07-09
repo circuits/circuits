@@ -55,14 +55,15 @@ class HTTP(Component):
             else:
                 assert retval, "type(retval) == %s" % type(retval)
 
-    def stream(self, response):
-        data = response.body.read(BUFFER_SIZE)
+    def stream(self, response, data):
         if data:
             if response.chunked:
                 buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
                 data = "".join(buf)
             self.push(Write(response.sock, data), "write", "server")
-            self.push(Stream(response))
+            if response.body:
+                data = response.body.read(BUFFER_SIZE)
+                self.push(Stream(response, data))
         else:
             response.body.close()
             if response.chunked:
@@ -74,8 +75,9 @@ class HTTP(Component):
     def response(self, response):
         for data in response.output():
             self.push(Write(response.sock, data), "write", "server")
-        if response.stream:
-            self.push(Stream(response), "stream", self.channel)
+        if response.stream and response.body:
+            data = response.body.read(BUFFER_SIZE)
+            self.push(Stream(response, data))
             return
 
         if response.chunked:
