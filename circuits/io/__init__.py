@@ -140,6 +140,17 @@ class StdErr(File):
     def __init__(self, channel=channel):
         super(StdErr, self).__init__("/dev/stderr", "w", channel=channel)
 
-stdin = StdIn()
-stdout = StdOut()
-stderr = StdErr()
+try:
+    stdin = StdIn()
+except IOError:
+    pass
+
+try:
+    stdout = StdOut()
+except IOError:
+    pass
+
+try:
+    stderr = StdErr()
+except IOError:
+    pass
