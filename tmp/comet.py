@@ -13,7 +13,7 @@ except ImportError:
     from StringIO import StringIO
 
 from circuits.io import File
-from circuits.web.events import Write
+from circuits.web.events import Stream
 from circuits.tools import kill, graph, inspect
 from circuits import handler, Event, Component, Debugger
 from circuits.web import Server, Controller, Logger, Sessions
@@ -67,9 +67,9 @@ class Command(Component):
                 self._buffer.flush()
                 data = self._buffer.getvalue()
                 self._buffer = None
-                self.push(Write(self._response.sock, data), "write", "server")
+                self.push(Stream(self._response, data), target="http")
             else:
-                self.push(Write(self._response.sock, data), "write", "server")
+                self.push(Stream(self._response, data), target="http")
 
 class Comet(Controller):
 
@@ -78,7 +78,7 @@ class Comet(Controller):
 
     def ping(self, host):
         self.response.headers["Content-Type"] = "text/plain"
-        self.response.close = False
+        self.response.stream = True
         sid = self.request.sid
         command = "ping %s" % host
         self += Command(self.request, self.response, command, channel=sid)
