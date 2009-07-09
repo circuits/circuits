@@ -113,6 +113,11 @@ class HTTP(Component):
 
         if sock in self._clients:
             request, response = self._clients[sock]
+            if response.done:
+                del self._clients[sock]
+
+        if sock in self._clients:
+            request, response = self._clients[sock]
             request.body.write(data)
             contentLength = int(request.headers.get("Content-Length", "0"))
             if not request.body.tell() == contentLength:
