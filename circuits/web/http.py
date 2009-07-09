@@ -96,6 +96,13 @@ class HTTP(Component):
             self.push(Close(response.sock), "close", "server")
             response.done = True
 
+    @handler("disconnect", target="server")
+    def disconnect(self, sock):
+        if sock in self._clients:
+            request, response = self._clients[sock]
+            response.done = True
+            del self._clients[sock]
+
     @handler("read", target="server")
     def read(self, sock, data):
         """Read Event Handler
