@@ -207,23 +207,20 @@ class Response(object):
                 if not self.close:
                     self.headers.add_header("Connection", "Keep-Alive")
 
-        if type(self.body) is types.FileType:
-            cType = self.headers.get("Content-Type", "application/octet-stream")
-            cLen = os.fstat(self.body.fileno())[stat.ST_SIZE]
-            self.stream = True
-            body = None
-            self.body = file_generator(self.body)
-        elif isinstance(self.body, basestring):
-            body = self.body
-            cLen = len(body)
-            cType = self.headers.get("Content-Type", "text/html")
+        if isinstance(self.body, basestring):
+            self.headers["Content-Length"] = str(len(self.body))
+            self.headers.setdefault("Content-Type", "text/html")
+            return self.body
         elif type(self.body) is types.GeneratorType:
             self.stream = True
             return self.body.next()
+        elif type(self.body) is types.FileType:
+            set = os.fstat(self.body.fileno())
+            self.headers.setdefault("Content-Length", = str(st.st_size))
+            self.headers.setdefault("Content-Type", "application/octet-stream")
+            self.stream = True
+            self.file = self.body
+            self.body = file_generator(self.body)
+            return None
         else:
             return None
-
-        self.headers["Content-Type"] = cType
-        self.headers["Content-Length"] = str(cLen)
-
-        return body
