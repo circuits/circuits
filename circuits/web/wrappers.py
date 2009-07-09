@@ -10,6 +10,7 @@ This module implements the Request and Response objects.
 
 import os
 import stat
+import types
 from cStringIO import StringIO
 from time import strftime, time
 from Cookie import SimpleCookie
@@ -199,7 +200,7 @@ class Response(object):
                 if not self.close:
                     self.headers.add_header("Connection", "Keep-Alive")
 
-        if type(self.body) == file:
+        if type(self.body) is types.FileType:
             cType = self.headers.get("Content-Type", "application/octet-stream")
             cLen = os.fstat(self.body.fileno())[stat.ST_SIZE]
 
