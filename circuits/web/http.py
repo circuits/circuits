@@ -76,7 +76,7 @@ class HTTP(Component):
                             "write", "server")
             if response.close:
                 self.push(Close(response.sock), "close", "server")
-                response.done = True
+            response.done = True
         
     def response(self, response):
         for data in response.output():
@@ -94,13 +94,12 @@ class HTTP(Component):
 
         if response.close:
             self.push(Close(response.sock), "close", "server")
-            response.done = True
+        response.done = True
 
     @handler("disconnect", target="server")
     def disconnect(self, sock):
         if sock in self._clients:
             request, response = self._clients[sock]
-            response.done = True
             del self._clients[sock]
 
     @handler("read", target="server")
