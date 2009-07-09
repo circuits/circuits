@@ -213,6 +213,9 @@ class Response(object):
             body = self.body
             cLen = len(body)
             cType = self.headers.get("Content-Type", "text/html")
+        elif type(self.body) is types.GeneratorType:
+            self.stream = True
+            return self.body.next()
         else:
             return None
 
