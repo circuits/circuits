@@ -215,7 +215,7 @@ class Response(object):
             self.stream = True
             return self.body.next()
         elif type(self.body) is types.FileType:
-            set = os.fstat(self.body.fileno())
+            st = os.fstat(self.body.fileno())
             self.headers.setdefault("Content-Length", str(st.st_size))
             self.headers.setdefault("Content-Type", "application/octet-stream")
             self.stream = True
