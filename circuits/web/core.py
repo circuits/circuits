@@ -81,7 +81,7 @@ class BaseController(BaseComponent):
                 name)
 
     def expires(self, secs=0, force=False):
-        return tools.expires(self.request, self.response, secs, force)
+        tools.expires(self.request, self.response, secs, force)
 
 class Controller(BaseController):
 
