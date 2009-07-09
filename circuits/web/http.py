@@ -62,7 +62,7 @@ class HTTP(Component):
                 buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
                 data = "".join(buf)
             self.push(Write(response.sock, data), "write", "server")
-            if response.body:
+            if response.body and not response.done:
                 try:
                     data = response.body.next()
                 except StopIteration:
