@@ -45,7 +45,7 @@ class Static(Component):
         self.docroot = docroot or os.getcwd()
         self.defaults = defaults
 
-    @handler("request", filter=True, priority=5)
+    @handler("request", filter=True, priority=0.9)
     def request(self, event, request, response):
         if self.path is not None and not request.path.startswith(self.path):
             return
@@ -197,7 +197,7 @@ class Dispatcher(Component):
         if isinstance(c, Controller) and c in self.components and m == self:
             self.paths.remove(c.channel)
 
-    @handler("request", filter=True, priority=5)
+    @handler("request", filter=True, priority=0.1)
     def request(self, event, request, response):
         req = event
 
@@ -245,7 +245,7 @@ class VirtualHosts(Component):
 
         self.domains = domains
 
-    @handler("request", filter=True, priority=10)
+    @handler("request", filter=True, priority=1)
     def request(self, event, request, response):
         path = request.path.strip("/")
 
@@ -269,7 +269,7 @@ class XMLRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True, priority=5)
+    @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
@@ -312,7 +312,7 @@ class JSONRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True, priority=5)
+    @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
