@@ -124,6 +124,23 @@ class Event(object):
         else:
             raise TypeError("Expected int or str, got %r" % type(x))
 
+    def __setitem__(self, i, y):
+        """x.__setitem__(i, y) <==> x[i] = y
+
+        Modify the data in the Event object requested by "x".
+        If i is an int, the ith requested argument from self.args
+        shall be changed to y. If i is a str, the requested value
+        keyed by i from self.kwargs, shall by changed to y.
+        Otherwise a TypeError is raised as nothing else is valid.
+        """
+
+        if type(i) is int:
+            self.args[i] = y
+        elif type(i) is str:
+            self.kwargs[i] = y
+        else:
+            raise TypeError("Expected int or str, got %r" % type(x))
+
 
 class Error(Event):
     """Error Event
