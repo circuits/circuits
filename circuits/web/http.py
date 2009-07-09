@@ -219,18 +219,17 @@ class HTTP(Component):
 
         self.push(Response(response), "response", self.channel)
 
-    @handler("request_success", "request_filtered")
-    def request_success_or_filtered(self, evt, handler, retval):
+    @handler("request_success")
+    def request_success(self, evt, handler, retval):
         request, response = evt.args[:2]
-        if retval:
-            request.handled = True
-            if issubclass(type(retval), basestring):
-                response.body = retval
-                self.push(Response(response), "response", self.channel)
-            elif isinstance(retval, HTTPError):
-                self._handleError(retval)
-            elif isinstance(retval, wrappers.Response):
-                self.push(Response(retval), "response", self.channel)
+        request.handled = True
+        if isinstance(retval, HTTPError):
+            self._handleError(retval)
+        elif isinstance(retval, wrappers.Response):
+            self.push(Response(retval), "response", self.channel)
+        else:
+            response.body = retval
+            self.push(Response(response), "response", self.channel)
 
     def request_failure(self, evt, handler, error):
         request, response = evt.args[:2]
