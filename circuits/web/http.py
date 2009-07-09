@@ -8,10 +8,16 @@ This module implements the Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
 
-import re
+
+import types
 from urllib import unquote
 from urlparse import urlparse
 from traceback import format_exc
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 from circuits import handler, Component
 
@@ -21,8 +27,6 @@ from headers import parseHeaders
 from errors import HTTPError, NotFound
 from constants import RESPONSES, BUFFER_SIZE
 from events import Request, Response, Stream, Write, Close
-
-PARSE_REQUEST = re.compile("^(.*)\r\n\r\n(.*)(?s)")
 
 class HTTP(Component):
     """HTTP Protocol Component
@@ -41,39 +45,56 @@ class HTTP(Component):
     def _handleError(self, error):
         response = error.response
 
-        v = self.send(error, "httperror", self.channel)
+        retval = self.send(error, "httperror", self.channel)
 
-        if v:
-            if issubclass(type(v), basestring):
-                response.body = v
-                res = Response(response)
-                self.send(res, "response", self.channel)
-            elif isinstance(v, HTTPError):
-                self.send(Response(v.response), "response", self.channel)
+        if retval:
+            if issubclass(type(retval), basestring):
+                response.body = retval
+                self.push(Response(response), "response", self.channel)
+            elif isinstance(retval, HTTPError):
+                self.push(Response(retval.response), "response", self.channel)
             else:
-                assert v, "type(v) == %s" % type(v)
+                assert retval, "type(retval) == %s" % type(retval)
 
-    def stream(self, response):
-        data = response.body.read(BUFFER_SIZE)
+    def stream(self, response, data):
         if data:
-            self.send(Write(response.sock, data), "write", "server")
-            self.push(Stream(response))
+            if response.chunked:
+                buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
+                data = "".join(buf)
+            self.push(Write(response.sock, data), "write", "server")
+            if response.body:
+                try:
+                    data = response.body.next()
+                except StopIteration:
+                    data = None
+                self.push(Stream(response, data))
         else:
-            response.body.close()
+            if response.body:
+                response.body.close()
+            if response.chunked:
+                self.push(Write(response.sock, "0\r\n\r\n"),
+                            "write", "server")
             if response.close:
-                self.send(Close(response.sock), "close", "server")
-            response.done = True
+                self.push(Close(response.sock), "close", "server")
+                response.done = True
         
     def response(self, response):
-        self.send(Write(response.sock, str(response)), "write", "server")
-        if response.stream:
-            self.push(Stream(response), "stream", self.channel)
+        for data in response.output():
+            self.push(Write(response.sock, data), "write", "server")
+        if response.stream and response.body:
+            try:
+                data = response.body.next()
+            except StopIteration:
+                data = None
+            self.push(Stream(response, data))
             return
+        else:
+            if response.chunked and not response.stream:
+                self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
 
         if response.close:
-            self.send(Close(response.sock), "close", "server")
-
-        response.done = True
+            self.push(Close(response.sock), "close", "server")
+            response.done = True
 
     @handler("read", target="server")
     def read(self, sock, data):
@@ -102,7 +123,7 @@ class HTTP(Component):
 
             if frag:
                 error = HTTPError(request, response, 400)
-                return self.send(error, "httperror", self.channel)
+                return self.push(error, "httperror", self.channel)
         
             if params:
                 path = "%s;%s" % (path, params)
@@ -129,11 +150,15 @@ class HTTP(Component):
             # only return 505 if the _major_ version is different.
             if not request.protocol[0] == request.server_protocol[0]:
                 error = HTTPError(request, response, 505)
-                return self.send(error, "httperror", self.channel)
+                return self.push(error, "httperror", self.channel)
 
-            m = PARSE_REQUEST.match(data)
-            request.headers = headers = parseHeaders(m.groups()[0])
-            request.body.write(m.groups()[1])
+            rp = request.protocol
+            sp = request.server_protocol
+            response.protocol = "HTTP/%s.%s" % min(rp, sp)
+
+            headers, body = parseHeaders(StringIO(data))
+            request.headers = headers
+            request.body.write(body)
             
             if headers.get("Expect", "") == "100-continue":
                 self._buffered[sock] = request, response
@@ -144,50 +169,19 @@ class HTTP(Component):
                 self._buffered[sock] = request, response
                 return
 
-        response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
-
         # Persistent connection support
         if request.protocol == (1, 1):
             # Both server and client are HTTP/1.1
-            if request.headers.get("Connection", "") == "close":
+            if request.headers.get("Connection", "").lower() == "close":
                 response.close = True
-                response.headers.add_header("Connection", "close")
         else:
             # Either the server or client (or both) are HTTP/1.0
-            if request.headers.get("Connection", "") != "Keep-Alive":
+            if request.headers.get("Connection", "").lower() != "keep-alive":
                 response.close = True
-                response.headers.add_header("Connection", "close")
 
         request.body.seek(0)
 
-        try:
-            req = Request(request, response)
-
-            v = self.send(req, "request", "web", errors=True)
-
-            if v:
-                if issubclass(type(v), basestring):
-                    response.body = v
-                    res = Response(response)
-                    self.send(res, "response", self.channel)
-                elif isinstance(v, HTTPError):
-                    self._handleError(v)
-                elif isinstance(v, wrappers.Response):
-                    res = Response(v)
-                    self.send(res, "response", self.channel)
-                else:
-                    assert v, "type(v) == %s" % type(v)
-            else:
-                error = NotFound(request, response)
-                self._handleError(error)
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
-            error = HTTPError(request, response, 500, error=format_exc())
-            self._handleError(error)
-        finally:
-            if sock in self._buffered:
-                del self._buffered[sock]
+        self.push(Request(request, response), "request", "web")
 
     def simple(self, sock, code, message=""):
         """Simple Response Events Handler
@@ -207,7 +201,7 @@ class HTTP(Component):
             response.close = True
             response.headers.add_header("Connection", "close")
 
-        self.send(Response(response), "response", self.channel)
+        self.push(Response(response), "response", self.channel)
 
     def httperror(self, request, response, status, message=None, error=None):
         """Default HTTP Error Handler
@@ -217,4 +211,30 @@ class HTTP(Component):
         HTTPError instance or a subclass thereof.
         """
 
-        self.send(Response(response), "response", self.channel)
+        self.push(Response(response), "response", self.channel)
+
+    @handler("request_success", "request_filtered")
+    def request_success_or_filtered(self, evt, handler, retval):
+        request, response = evt.args[:2]
+        if retval:
+            request.handled = True
+            if issubclass(type(retval), basestring):
+                response.body = retval
+                self.push(Response(response), "response", self.channel)
+            elif isinstance(retval, HTTPError):
+                self._handleError(retval)
+            elif isinstance(retval, wrappers.Response):
+                self.push(Response(retval), "response", self.channel)
+
+    def request_failure(self, evt, handler, error):
+        request, response = evt.args[:2]
+        message = "Request Failed"
+        self._handleError(HTTPError(request, response, 500, message, error))
+
+    def request_completed(self, evt, handler, retval):
+        request, response = evt.args[:2]
+        if not request.handled or handler is None:
+            self._handleError(NotFound(request, response))
+
+        if request.sock in self._buffered:
+            del self._buffered[sock]
