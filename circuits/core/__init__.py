@@ -77,7 +77,7 @@ class Event(object):
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        self.args = args
+        self.args = list(args)
         self.kwargs = kwargs
 
     @property
