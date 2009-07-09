@@ -65,7 +65,8 @@ class HTTP(Component):
                 data = response.body.read(BUFFER_SIZE)
                 self.push(Stream(response, data))
         else:
-            response.body.close()
+            if response.body:
+                response.body.close()
             if response.chunked:
                 self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
             if response.close:
