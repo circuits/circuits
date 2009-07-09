@@ -18,6 +18,13 @@ from Cookie import SimpleCookie
 from headers import Headers
 from constants import BUFFER_SIZE, SERVER_VERSION
 
+def file_generator(input, chunkSize=BUFFER_SIZE):
+    chunk = input.read(chunkSize)
+    while chunk:
+        yield chunk
+        chunk = input.read(chunkSize)
+    input.close()
+
 class Host(object):
     """An internet address.
 
@@ -203,13 +210,10 @@ class Response(object):
         if type(self.body) is types.FileType:
             cType = self.headers.get("Content-Type", "application/octet-stream")
             cLen = os.fstat(self.body.fileno())[stat.ST_SIZE]
-
-            if cLen > BUFFER_SIZE:
-                body = self.body.read(BUFFER_SIZE)
-                self.stream = True
-            else:
-                body = self.body.read()
-        elif issubclass(type(self.body), basestring):
+            self.stream = True
+            body = None
+            self.body = file_generator(self.body)
+        elif isinstance(self.body, basestring):
             body = self.body
             cLen = len(body)
             cType = self.headers.get("Content-Type", "text/html")
