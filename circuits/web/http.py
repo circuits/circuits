@@ -9,6 +9,7 @@ or commonly known as HTTP.
 """
 
 
+import types
 from urllib import unquote
 from urlparse import urlparse
 from traceback import format_exc
@@ -62,7 +63,10 @@ class HTTP(Component):
                 data = "".join(buf)
             self.push(Write(response.sock, data), "write", "server")
             if response.body:
-                data = response.body.read(BUFFER_SIZE)
+                try:
+                    data = response.body.next()
+                except StopIteration:
+                    data = None
                 self.push(Stream(response, data))
         else:
             if response.body:
@@ -78,7 +82,10 @@ class HTTP(Component):
         for data in response.output():
             self.push(Write(response.sock, data), "write", "server")
         if response.stream and response.body:
-            data = response.body.read(BUFFER_SIZE)
+            try:
+                data = response.body.next()
+            except StopIteration:
+                data = None
             self.push(Stream(response, data))
             return
         else:
