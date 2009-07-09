@@ -68,7 +68,8 @@ class HTTP(Component):
             if response.body:
                 response.body.close()
             if response.chunked:
-                self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
+                self.push(Write(response.sock, "0\r\n\r\n"),
+                            "write", "server")
             if response.close:
                 self.push(Close(response.sock), "close", "server")
             response.done = True
