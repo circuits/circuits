@@ -38,16 +38,24 @@ class Static(Component):
 
     channel = "web"
 
-    def __init__(self, *args, **kwargs):
-        super(Static, self).__init__(**kwargs)
+    def __init__(self, path=None, docroot=None, defaults=("index.html",)):
+        super(Static, self).__init__()
 
-        self.docroot = kwargs.get("docroot", os.getcwd())
-        self.defaults = kwargs.get("defaults", ("index.html",))
+        self.path = path
+        self.docroot = docroot or os.getcwd()
+        self.defaults = defaults
 
     @handler("request", filter=True, priority=5)
     def request(self, event, request, response):
+        if self.path is not None and not request.path.startswith(self.path):
+            return
+
         req = event
-        path = request.path.strip("/")
+        path = request.path
+
+        if self.path is not None:
+            path = path[len(self.path):]
+        path = path.strip("/")
 
         filename = None
 
