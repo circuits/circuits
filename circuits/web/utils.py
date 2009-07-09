@@ -10,6 +10,7 @@ This module implements utility functions.
 import re
 import gzip
 import zlib
+import time
 import struct
 from urlparse import urljoin as _urljoin
 
