@@ -40,7 +40,7 @@ class HTTP(Component):
     def __init__(self, *args, **kwargs):
         super(HTTP, self).__init__(*args, **kwargs)
 
-        self._buffered = {}
+        self._clients = {}
 
     def _handleError(self, error):
         response = error.response
@@ -105,8 +105,8 @@ class HTTP(Component):
         Raw Event per line. Any unfinished lines of text, leave in the buffer.
         """
 
-        if sock in self._buffered:
-            request, response = self._buffered[sock]
+        if sock in self._clients:
+            request, response = self._clients[sock]
             request.body.write(data)
             contentLength = int(request.headers.get("Content-Length", "0"))
             if not request.body.tell() == contentLength:
@@ -120,6 +120,7 @@ class HTTP(Component):
             protocol = tuple(map(int, protocol[5:].split(".")))
             request = wrappers.Request(sock, method, scheme, path, protocol, qs)
             response = wrappers.Response(sock, request)
+            self._clients[sock] = request, response
 
             if frag:
                 error = HTTPError(request, response, 400)
@@ -161,12 +162,10 @@ class HTTP(Component):
             request.body.write(body)
             
             if headers.get("Expect", "") == "100-continue":
-                self._buffered[sock] = request, response
                 return self.simple(sock, 100)
 
             contentLength = int(headers.get("Content-Length", "0"))
             if not request.body.tell() == contentLength:
-                self._buffered[sock] = request, response
                 return
 
         # Persistent connection support
@@ -235,6 +234,3 @@ class HTTP(Component):
         request, response = evt.args[:2]
         if not request.handled or handler is None:
             self._handleError(NotFound(request, response))
-
-        if request.sock in self._buffered:
-            del self._buffered[sock]
