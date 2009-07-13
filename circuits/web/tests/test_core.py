@@ -29,7 +29,7 @@ class CoreTestCase(WebCase):
     interactive = False
 
     def setUp(self):
-        self.server = (Server(10000) + Root())
+        self.server = (Server((self.HOST, self.PORT)) + Root())
         self.server.start()
 
     def tearDown(self):
