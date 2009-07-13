@@ -128,7 +128,7 @@ class TestErrorHandling(unittest.TestCase):
                 self.value = None
                 self.traceback = None
 
-            def error(self, type, value, traceback, handler=None):
+            def exception(self, type, value, traceback, handler=None):
                 self.type = type
                 self.value = value
                 self.traceback = traceback
@@ -967,7 +967,7 @@ class RunnableComponent(Component):
             self._mode = None
             self._count = None
 
-    def error(self, type, value, traceback, handler=None):
+    def exception(self, type, value, traceback, handler=None):
         self._etype = type
         self._evalue = value
         self._traceback = traceback
