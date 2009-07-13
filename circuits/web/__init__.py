@@ -8,8 +8,6 @@ circuits.web contains the circuits full stack web server that is HTTP
 and WSGI compliant.
 """
 
-import wsgi
-import tools
 from loggers import Logger
 from core import Controller
 from sessions import Sessions
@@ -22,4 +20,3 @@ try:
     from dispatchers import JSONRPC
 except ImportError:
     pass
-
