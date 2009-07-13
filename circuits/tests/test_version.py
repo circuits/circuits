@@ -37,6 +37,11 @@ class TestVersion(unittest.TestCase):
         version.forget_version()
         version.remember_version()
 
+        try:
+            import mercurial
+        except ImportError:
+            return
+
         root = abspath("%s/../" % root)
 
         cwd = os.getcwd()
@@ -45,12 +50,12 @@ class TestVersion(unittest.TestCase):
         if path.exists(path.join(root, ".hg")):
             call("python setup.py build &> /dev/null", shell=True)
 
-        reload(circuits)
+            reload(circuits)
 
-        p = Popen(["hg id -i"], stdout=PIPE, shell=True)
-        id = p.communicate()[0].rstrip("\n+")
+            p = Popen(["hg id -i"], stdout=PIPE, shell=True)
+            id = p.communicate()[0].rstrip("\n+")
 
-        self.assertEquals(circuits.__version__, id)
+            self.assertEquals(circuits.__version__, id)
 
         os.chdir(cwd)
 
