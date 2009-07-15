@@ -163,13 +163,10 @@ class HTTP(Component):
                 error = HTTPError(request, response, 505)
                 return self.push(error, "httperror", self.channel)
 
-<<<<<<< local
-=======
             rp = request.protocol
             sp = request.server_protocol
             response.protocol = "HTTP/%s.%s" % min(rp, sp)
 
->>>>>>> other
             headers, body = parseHeaders(StringIO(data))
             request.headers = headers
             request.body.write(body)
