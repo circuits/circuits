@@ -12,8 +12,8 @@ checks:
 	@find . -name "*.py" -exec pyflakes {} +
 
 docs:
-	@rm -rf docs/html/
-	@epydoc -v -n circuits -o docs/html/ \
+	@rm -rf docs/*
+	@epydoc -v -n circuits -o docs/ \
 		-u http://trac.softcircuit.com.au/circuits/ \
 		--check --html --src-code-tab-width=4 --no-frames \
 		--no-private --exclude=circuits.web._httpauth \
