@@ -33,15 +33,50 @@ from utils import parseQueryString, dictform
 
 class RPC(Event): pass
 
+
+class Static(Component):
+
+    channel = "web"
+
+    def __init__(self, path=None, docroot=None, defaults=("index.html",)):
+        super(Static, self).__init__()
+
+        self.path = path
+        self.docroot = docroot or os.getcwd()
+        self.defaults = defaults
+
+    @handler("request", filter=True, priority=0.9)
+    def request(self, event, request, response):
+        if self.path is not None and not request.path.startswith(self.path):
+            return
+
+        req = event
+        path = request.path
+
+        if self.path is not None:
+            path = path[len(self.path):]
+        path = path.strip("/")
+
+        filename = None
+
+        if path:
+            filename = os.path.abspath(os.path.join(self.docroot, path))
+        else:
+            for default in self.defaults:
+                filename = os.path.abspath(os.path.join(self.docroot, default))
+                if os.path.exists(filename):
+                    break
+
+        if filename and os.path.exists(filename):
+            expires(request, response, 3600*24*30)
+            return serve_file(request, response, filename)
+
 class Dispatcher(Component):
 
     channel = "web"
 
-    def __init__(self, docroot=None, defaults=None, **kwargs):
+    def __init__(self, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
-
-        self.docroot = docroot or os.getcwd()
-        self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
 
         self.paths = []
 
@@ -113,20 +148,27 @@ class Dispatcher(Component):
         if not candidates:
             return None, None, []
 
-        i, candidate = candidates.pop()
-
-        if i < len(names):
-            channels = [names[i], "index", method, "default"]
-        else:
-            channels = ["index", method, "default"]
-
         vpath = []
         channel = None
-        for channel in channels:
-            if (candidate, channel) in self.channels:
-                if i < len(names) and channel == names[i]:
-                    i += 1
-                break
+        for i, candidate in reversed(candidates):
+            if i < len(names):
+                channels = [names[i], "index", method, "default"]
+            else:
+                channels = ["index", method, "default"]
+
+            found = False
+            for channel in channels:
+                if (candidate, channel) in self.channels:
+                    if i < len(names) and channel == names[i]:
+                        i += 1
+                    found = True
+                    break
+
+            if found:
+                if channel == "index" and not request.index:
+                    continue
+                else:
+                    break
 
         if channel is not None:
             if i < len(names):
@@ -155,24 +197,9 @@ class Dispatcher(Component):
         if isinstance(c, Controller) and c in self.components and m == self:
             self.paths.remove(c.channel)
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=0.1)
     def request(self, event, request, response):
         req = event
-        path = request.path.strip("/")
-
-        filename = None
-
-        if path:
-            filename = os.path.abspath(os.path.join(self.docroot, path))
-        else:
-            for default in self.defaults:
-                filename = os.path.abspath(os.path.join(self.docroot, default))
-                if os.path.exists(filename):
-                    break
-
-        if filename and os.path.exists(filename):
-            expires(request, response, 3600*24*30)
-            return serve_file(request, response, filename)
 
         channel, target, vpath = self._getChannel(request)
 
@@ -185,7 +212,8 @@ class Dispatcher(Component):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.send(req, channel, target, errors=True)
+            self.push(req, channel, target)
+            return True
 
 class VirtualHosts(Component):
     """Forward to anotehr Dispatcher based on the Host header.
@@ -217,7 +245,7 @@ class VirtualHosts(Component):
 
         self.domains = domains
 
-    @handler("request", filter=True, priority=10)
+    @handler("request", filter=True, priority=1)
     def request(self, event, request, response):
         path = request.path.strip("/")
 
@@ -241,7 +269,7 @@ class XMLRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
@@ -284,7 +312,7 @@ class JSONRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
