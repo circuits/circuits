@@ -29,4 +29,4 @@ server = (Server(8000) + Root())
 server.start()
 
 webbrowser.open("http://127.0.0.1:8000/")
-server.wait()
+server.join()
