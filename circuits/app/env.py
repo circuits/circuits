@@ -30,12 +30,13 @@ VERSION = 1
 CONFIG = {
         "general": {
             "pidfile": os.path.join("log", "%(name)s.pid"),
-            "debug": False
             },
         "logging": {
             "type": "file",
             "file": os.path.join("log", "%(name)s.log"),
-            "level": "INFO"
+            "level": "DEBUG",
+            "debug": True,
+            "verbose": True
             }
         }
 
