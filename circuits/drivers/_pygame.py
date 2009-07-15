@@ -13,6 +13,8 @@ try:
     from pygame import fastevent as event
 except ImportError:
     from pygame import event
+except ImportError:
+    raise Exception("No pygame support available. Is pygame installed?")
 
 from circuits.core import Event, Component
 
