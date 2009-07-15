@@ -5,7 +5,7 @@ from pygame import K_q
 from pygame import DOUBLEBUF, HWSURFACE
 
 from circuits import Component, Debugger
-from circuits.drivers import PyGameDriver
+from circuits.drivers._pygame import PyGameDriver
 
 class Test(Component):
 

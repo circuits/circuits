@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from circuits import Component, Debugger
-from circuits.lib.sockets import TCPClient, Connect
-from circuits.lib.irc import IRC, Message, User, Nick
+from circuits.net.sockets import TCPClient, Connect
+from circuits.net.protocols.irc import IRC, Message, User, Nick
 
 class Bot(Component):
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits.lib.web import Application, Controller
+from circuits.web import Application, Controller
 
 class Root(Controller):
 

@@ -16,14 +16,14 @@ This example makes use of:
     * Component
     * Event
     * Manager
-    * lib.sockets.UDPClient
+    * net.sockets.UDPClient
 """
 
 import optparse
 
 from circuits import handler
-from circuits.lib.io import stdin
-from circuits.lib.sockets import UDPClient
+from circuits.io import stdin
+from circuits.net.sockets import UDPClient
 from circuits import __version__ as systemVersion
 
 USAGE = "%prog [options] address:[port]"
@@ -60,13 +60,13 @@ def parse_options():
 
 class Client(UDPClient):
 
-    def __init__(self, port, address, dest):
-        super(Client, self).__init__(port, address)
+    def __init__(self, bind, dest):
+        super(Client, self).__init__(bind)
 
         self.dest = dest
 
     def read(self, address, data):
-        print "%s: %s" % (address, data.strip())
+        print "%r: %r" % (address, data.strip())
 
     @handler("read", target="stdin")
     def stdin_read(self, data):
@@ -81,9 +81,9 @@ def main():
 
     if ":" in opts.bind:
         address, port = opts.bind.split(":")
-        port = int(port)
+        bind = address, int(port)
     else:
-        address, port = opts.bind, 8000
+        bind = opts.bind, 8000
 
     if ":" in args[0]:
         dest = args[0].split(":")
@@ -91,7 +91,7 @@ def main():
     else:
         dest = args[0], 8000
 
-    (Client(port, address, dest=dest) + stdin).run()
+    (Client(bind, dest=dest) + stdin).run()
 
 ###
 ### Entry Point

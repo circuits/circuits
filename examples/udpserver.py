@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits.lib.sockets import UDPServer
+from circuits.net.sockets import UDPServer
 
 class EchoServer(UDPServer):
 
