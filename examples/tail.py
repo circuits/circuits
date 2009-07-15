@@ -4,10 +4,10 @@ import sys
 from time import sleep
 from circuits import Component
 
-class FileWatcher(Component):
+class Tail(Component):
 
     def __init__(self, filename):
-        super(FileWatcher, self).__init__()
+        super(Tail, self).__init__()
 
         self.filename = filename
         self.fp = open(self.filename, "r")
@@ -18,5 +18,5 @@ class FileWatcher(Component):
             sys.stdout.write(line) 
         sleep(0.1)
 
-filewatcher = FileWatcher(sys.argv[1])
-filewatcher.run()
+tail = Tail(sys.argv[1])
+tail.run()
