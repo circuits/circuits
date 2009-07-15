@@ -320,7 +320,7 @@ class JSONRPC(Component):
         data = {
                 "id": id,
                 "version": "1.1",
-                "resutl": result,
+                "result": result,
                 "error": None
                 }
         return json.dumps(data, encoding=self.encoding)
