@@ -13,6 +13,6 @@ class Root(Controller):
 
     @json
     def getrange(self, limit=4):
-        return range(limit)
+        return range(int(limit))
 
 (Server(8000) + Root()).run()
