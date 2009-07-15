@@ -10,16 +10,16 @@ This module implements the Web Server Component.
 import os
 from socket import gethostname as _gethostname
 
-from circuits import Component
+from circuits.core import handler, BaseComponent
 
-from circuits.net.sockets import TCPServer
+from circuits.net.sockets import TCPServer, Close
 
 from http import HTTP
 from wrappers import Request, Host
 from constants import SERVER_VERSION
 from dispatchers import Dispatcher
 
-class BaseServer(Component):
+class BaseServer(BaseComponent):
 
     channel = "web"
 
@@ -68,7 +68,7 @@ class BaseServer(Component):
         ssl = self.ssl
         port = self.port
 
-        if not ((ssl and port == 433) or (not ssl and port == 80)):
+        if not ((ssl and port == 443) or (not ssl and port == 80)):
             host = "%s:%s" % (host, port)
 
         return host
@@ -81,24 +81,13 @@ class BaseServer(Component):
         
         return "%s://%s" % (scheme, host)
 
+    @handler("stopped", target="*")
+    def stopped(self, manager):
+        self.push(Close(), target=self.server)
 
 class Server(BaseServer):
 
     def __init__(self, bind, **kwargs):
         super(Server, self).__init__(bind, **kwargs)
 
-        docroot = kwargs.get("docroot", None)
-        self.dispatcher = Dispatcher(docroot=docroot)
-        self += self.dispatcher
-
-    def __get_docroot(self):
-        return self.dispatcher.docroot if hasattr(self, "dispatcher") else None
-
-    def __set_docroot(self, docroot):
-        if os.path.exists(docroot):
-            self.dispatcher.docroot = docroot
-        else:
-            raise IOError(2, "Invalid docroot path", docroot)
-
-    docroot = property(__get_docroot, __set_docroot, None, """\
-            Document Root of this Server's Dispatcher.""")
+        Dispatcher().register(self)
