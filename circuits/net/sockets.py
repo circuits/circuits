@@ -542,15 +542,19 @@ class TCPServer(Server):
     def __init__(self, bind, ssl=False, **kwargs):
         super(TCPServer, self).__init__(bind, ssl, **kwargs)
 
+        bound = False
         if type(bind) is SocketType:
             self._sock = bind
+            bound = True
         else:
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self._sock.bind(self.bind)
 
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._sock.setblocking(False)
+        if not bound:
+            print type(self.bind), repr(self.bind)
+            self._sock.bind(self.bind)
         self._sock.listen(self._backlog)
 
         self._poller.addReader(self._sock)
