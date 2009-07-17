@@ -572,7 +572,6 @@ class TCPServer(Server):
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._sock.setblocking(False)
         if not bound:
-            print type(self.bind), repr(self.bind)
             self._sock.bind(self.bind)
         self._sock.listen(self._backlog)
 
