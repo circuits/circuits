@@ -412,9 +412,8 @@ class VirtualHosts(Component):
         prefix = self.domains.get(domain, "")
 
         if prefix:
-            path = _urljoin(prefix, path)
-
-        request.path = path
+            path = _urljoin("/%s/" % prefix, path)
+            request.path = path
 
 class XMLRPC(Component):
 
