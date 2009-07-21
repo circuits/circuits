@@ -173,7 +173,7 @@ class Client(Component):
 
     def __init__(self, bind=None, **kwargs):
         channel = kwargs.get("channel", Client.channel)
-        super(Client, self).__init__(channel=channel, **kwargs)
+        super(Client, self).__init__(channel=channel)
 
         self.encoding = kwargs.get("encoding", "utf-8")
 
