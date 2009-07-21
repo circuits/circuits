@@ -12,6 +12,7 @@ import gzip
 import zlib
 import time
 import struct
+import urllib
 from urlparse import urljoin as _urljoin
 
 try:
@@ -281,3 +282,31 @@ def get_ranges(headervalue, content_length):
             result.append((content_length - int(stop), content_length))
     
     return result
+
+def url_quote(s, charset="utf-8", safe="/:"):
+    """URL encode a single string with a given encoding.
+
+    :param s: the string to quote.
+    :param charset: the charset to be used.
+    :param safe: an optional sequence of safe characters.
+    """
+
+    if isinstance(s, unicode):
+        s = s.encode(charset)
+    elif not isinstance(s, str):
+        s = str(s)
+    return urllib.quote(s, safe=safe)
+
+def url_unquote(s, charset="utf-8", errors="ignore"):
+    """URL decode a single string with a given decoding.
+
+    Per default encoding errors are ignored.  If you want a different behavior
+    you can set `errors` to ``"replace"`` or ``"strict"``.  In strict mode a
+    `HTTPUnicodeError` is raised.
+
+    :param s: the string to unquote.
+    :param charset: the charset to be used.
+    :param errors: the error handling for the charset decoding.
+    """
+
+    return _decode_unicode(urllib.unquote(s), charset, errors)
