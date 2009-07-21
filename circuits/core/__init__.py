@@ -250,6 +250,10 @@ def handler(*channels, **kwargs):
     """
 
     def wrapper(f):
+        if channels and type(channels[0]) is bool and not channels[0]:
+            f.handler = False
+            return f
+
         f.handler = True
 
         f.override = kwargs.get("override", False)
