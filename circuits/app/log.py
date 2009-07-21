@@ -114,7 +114,7 @@ class Logger(Component):
     def error(self, msg, *args, **kwargs):
         self.logger.error(msg, *args, **kwargs)
 
-    def exception(self, msg, *args):
+    def exception(self, msg, *args, **kwargs):
         self.logger.exception(msg, *args)
 
     def critical(self, msg, *args, **kwargs):
