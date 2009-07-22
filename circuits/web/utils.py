@@ -309,4 +309,4 @@ def url_unquote(s, charset="utf-8", errors="ignore"):
     :param errors: the error handling for the charset decoding.
     """
 
-    return _decode_unicode(urllib.unquote(s), charset, errors)
+    return urllib.unquote(s).decode(charset, errors)
