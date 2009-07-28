@@ -403,7 +403,7 @@ class VirtualHosts(Component):
 
         self.domains = domains
 
-    @handler("request", filter=True, priority=1)
+    @handler("request", filter=True, priority=1.0)
     def request(self, event, request, response):
         path = request.path.strip("/")
 
