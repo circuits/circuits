@@ -610,8 +610,8 @@ class Manager(object):
         else:
             return "S"
 
-    def _add(self, handler, channel=None):
-        """E._add(handler, channel) -> None
+    def add(self, handler, channel=None):
+        """E.add(handler, channel) -> None
 
         Add a new Event Handler to the Event Manager
         adding it to the given channel. If no channel is
@@ -648,8 +648,8 @@ class Manager(object):
             if handler not in self._cmap[channel]:
                 self._cmap[channel].append(handler)
 
-    def _remove(self, handler, channel=None):
-        """E._remove(handler, channel=None) -> None
+    def remove(self, handler, channel=None):
+        """E.remove(handler, channel=None) -> None
 
         Remove the given Event Handler from the Event Manager
         removing it from the given channel. if channel is None,
@@ -993,11 +993,11 @@ class BaseComponent(Manager):
                     channel = None
                 else:
                     channel = (target, channel or "*")
-                manager._add(handler, channel)
+                manager.add(handler, channel)
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():
-            manager._remove(handler)
+            manager.remove(handler)
 
     def register(self, manager):
         """Register all Event Handlers with the given Manager
