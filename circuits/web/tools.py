@@ -18,8 +18,9 @@ import mimetools
 from rfc822 import formatdate
 
 mimetypes.init()
-mimetypes.types_map['.dwg']='image/x-dwg'
-mimetypes.types_map['.ico']='image/x-icon'
+mimetypes.add_type("image/x-dwg", ".dwg")
+mimetypes.add_type("image/x-icon", ".ico")
+mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
 import _httpauth
 from utils import url, valid_status, get_ranges, compress
