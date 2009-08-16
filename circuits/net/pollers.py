@@ -12,7 +12,6 @@ descriptors for read/write events. Pollers:
    - KQueue
 """
 
-import warnings
 from errno import *
 from select import select
 from select import error as SelectError
@@ -23,7 +22,6 @@ try:
     HAS_POLL = 1
 except ImportError:
     HAS_POLL = 0
-    warnings.warn("No poll support available.")
 
 try:
     from select import epoll
@@ -36,7 +34,6 @@ except ImportError:
         HAS_EPOLL = 1
     except ImportError:
         HAS_EPOLL = 0
-        warnings.warn("No epoll support available.")
 
 from circuits.core import handler, Event, BaseComponent
 
