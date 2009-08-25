@@ -33,15 +33,50 @@ from utils import parseQueryString, dictform
 
 class RPC(Event): pass
 
+
+class Static(Component):
+
+    channel = "web"
+
+    def __init__(self, path=None, docroot=None, defaults=("index.html",)):
+        super(Static, self).__init__()
+
+        self.path = path
+        self.docroot = docroot or os.getcwd()
+        self.defaults = defaults
+
+    @handler("request", filter=True, priority=0.9)
+    def request(self, event, request, response):
+        if self.path is not None and not request.path.startswith(self.path):
+            return
+
+        req = event
+        path = request.path
+
+        if self.path is not None:
+            path = path[len(self.path):]
+        path = path.strip("/")
+
+        filename = None
+
+        if path:
+            filename = os.path.abspath(os.path.join(self.docroot, path))
+        else:
+            for default in self.defaults:
+                filename = os.path.abspath(os.path.join(self.docroot, default))
+                if os.path.exists(filename):
+                    break
+
+        if filename and os.path.exists(filename):
+            expires(request, response, 3600*24*30)
+            return serve_file(request, response, filename)
+
 class Dispatcher(Component):
 
     channel = "web"
 
-    def __init__(self, docroot=None, defaults=None, **kwargs):
+    def __init__(self, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
-
-        self.docroot = docroot or os.getcwd()
-        self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
 
         self.paths = []
 
@@ -113,20 +148,27 @@ class Dispatcher(Component):
         if not candidates:
             return None, None, []
 
-        i, candidate = candidates.pop()
-
-        if i < len(names):
-            channels = [names[i], "index", method, "default"]
-        else:
-            channels = ["index", method, "default"]
-
         vpath = []
         channel = None
-        for channel in channels:
-            if (candidate, channel) in self.channels:
-                if i < len(names) and channel == names[i]:
-                    i += 1
-                break
+        for i, candidate in reversed(candidates):
+            if i < len(names):
+                channels = [names[i], "index", method, "default"]
+            else:
+                channels = ["index", method, "default"]
+
+            found = False
+            for channel in channels:
+                if (candidate, channel) in self.channels:
+                    if i < len(names) and channel == names[i]:
+                        i += 1
+                    found = True
+                    break
+
+            if found:
+                if channel == "index" and not request.index:
+                    continue
+                else:
+                    break
 
         if channel is not None:
             if i < len(names):
@@ -155,24 +197,9 @@ class Dispatcher(Component):
         if isinstance(c, Controller) and c in self.components and m == self:
             self.paths.remove(c.channel)
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=0.1)
     def request(self, event, request, response):
         req = event
-        path = request.path.strip("/")
-
-        filename = None
-
-        if path:
-            filename = os.path.abspath(os.path.join(self.docroot, path))
-        else:
-            for default in self.defaults:
-                filename = os.path.abspath(os.path.join(self.docroot, default))
-                if os.path.exists(filename):
-                    break
-
-        if filename and os.path.exists(filename):
-            expires(request, response, 3600*24*30)
-            return serve_file(request, response, filename)
 
         channel, target, vpath = self._getChannel(request)
 
@@ -185,7 +212,166 @@ class Dispatcher(Component):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.send(req, channel, target, errors=True)
+            self.push(req, channel, target)
+            return True
+
+class RoutesDispatcherError(Exception):
+    pass
+
+class RoutesDispatcher(Component):
+    """A Routes Dispatcher
+
+    A dispatcher that uses the routes module to perform controller
+    lookups for a url using pattern matching rules (connections).
+
+    See: http://routes.groovie.org/docs/ for more information on Routes.
+    """
+
+    channel = "web"
+
+    def __init__(self, add_default_connection=False, **kwargs):
+        """
+        If add_default_connection is True then a default connection
+        of /{controller}/{action} will be added as part of
+        the instantiation. Note that because Routes are order dependant
+        this could obscure similar connections added at
+        a later date, hence why it is disabled by default.
+        """
+
+        super(RoutesDispatcher, self).__init__(**kwargs)
+
+        import routes
+
+        # An index of controllers used by the Routes Mapper when performing
+        # matches
+        self.controllers = {}
+        self.mapper = routes.Mapper(controller_scan=self.controllers.keys)
+        if add_default_connection:
+            self.connect("default", "/{controller}/{action}")
+
+    def connect(self, name, route, **kwargs):
+        """
+        Connect a route to a controller
+
+        Supply a name for the route and then the route itself.
+        Naming the route allows it to be referred to easily
+        elsewhere in the system (e.g. for generating urls).
+        The route is the url pattern you wish to map.
+        """
+
+        controller = kwargs.pop('controller', None)
+        if controller is not None:
+
+            if not isinstance(controller, basestring):
+                try:
+                    controller = getattr(controller, 'channel')
+                except AttributeError:
+                    raise RoutesDispatcherError("Controller %s must be " + \
+                            "either a string or have a 'channel' property " + \
+                            "defined." % controller)
+
+            controller = controller.strip("/")
+        self.mapper.connect(name, route, controller=controller, **kwargs)
+
+    def _parseBody(self, request, response, params):
+        body = request.body
+        headers = request.headers
+
+        if "Content-Type" not in headers:
+            headers["Content-Type"] = ""
+
+        try:
+            form = FieldStorage(fp=body,
+                headers=headers,
+                environ={"REQUEST_METHOD": "POST"},
+                keep_blank_values=True)
+        except Exception, e:
+            if e.__class__.__name__ == 'MaxSizeExceeded':
+                # Post data is too big
+                return HTTPError(request, response, 413)
+            else:
+                raise
+
+        if form.file:
+            request.body = form.file
+        else:
+            params.update(dictform(form))
+
+        return True
+
+    def _getChannel(self, request):
+        """Find and return an appropriate channel for the given request.
+
+        The channel is found by consulting the Routes mapper to return a
+        matching controller (target) and action (channel) along with a
+        dictionary of additional parameters to be added to the request.
+        """
+
+        import routes
+
+        path = request.path
+        method = request.method.upper()
+        request.index = path.endswith("/")
+
+        # setup routes singleton config instance
+        config = routes.request_config()
+        config.mapper = self.mapper
+        config.host = request.headers.get('Host', None)
+        config.protocol = request.scheme
+
+        # Redirect handler not supported at present
+        config.redirect = None
+
+        result = self.mapper.match(path)
+        config.mapper_dict = result
+        channel = None
+        target = None
+        vpath = []
+        if result:
+            target = self.controllers[result['controller']]
+            channel = result["action"]
+        return channel, target, vpath, result.copy()
+
+    @handler("request", filter=True)
+    def request(self, event, request, response):
+        req = event
+
+        # retrieve a channel (handler) for this request
+        channel, target, vpath, params = self._getChannel(request)
+
+        if channel:
+            # add the params from the routes match
+            req.kwargs = params
+            # update with any query string params
+            req.kwargs.update(parseQueryString(request.qs))
+            v = self._parseBody(request, response, req.kwargs)
+            if not v:
+                return v # MaxSizeExceeded (return the HTTPError)
+
+            if vpath:
+                req.args += tuple(vpath)
+
+            return self.send(req, channel, target=target, errors=True)
+
+    @handler("registered", target="*")
+    def registered(self, event, component, manager):
+        """
+        Listen for controllers being added to the system and add them
+        to the controller index.
+        """
+
+        if component.channel and component.channel.startswith("/"):
+            self.controllers[component.channel.strip("/")] = component.channel
+
+    @handler("unregistered", target="*")
+    def unregistered(self, event, component, manager):
+        """
+        Listen for controllers being removed from the system and remove them
+        from the controller index.
+        """
+
+        if component.channel and component.channel.startswith("/"):
+            self.controllers.pop(component.channel.strip("/"), None)
 
 class VirtualHosts(Component):
     """Forward to anotehr Dispatcher based on the Host header.
@@ -217,7 +403,7 @@ class VirtualHosts(Component):
 
         self.domains = domains
 
-    @handler("request", filter=True, priority=10)
+    @handler("request", filter=True, priority=1.0)
     def request(self, event, request, response):
         path = request.path.strip("/")
 
@@ -226,9 +412,8 @@ class VirtualHosts(Component):
         prefix = self.domains.get(domain, "")
 
         if prefix:
-            path = _urljoin(prefix, path)
-
-        request.path = path
+            path = _urljoin("/%s/" % prefix, path)
+            request.path = path
 
 class XMLRPC(Component):
 
@@ -241,7 +426,7 @@ class XMLRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
@@ -284,7 +469,7 @@ class JSONRPC(Component):
         self.target = target
         self.encoding = encoding
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return

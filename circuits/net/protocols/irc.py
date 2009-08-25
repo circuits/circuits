@@ -497,18 +497,18 @@ class IRC(Component):
                 m = re.match(
                         "Welcome to the (?P<network>.*) "
                         "(IRC|Internet Relay( Chat)?) Network "
-                        "(?P<user>.*)", message)
+                        "(?P<user>.*)(?i)", message)
 
                 if m is None:
                     m = re.match(
                             "Welcome to the Internet Relay Network "
-                            "(?P<user>.*)", message)
+                            "(?P<user>.*)(?i)", message)
 
                 if m is None:
                     m = re.match(
                             "Welcome to the (?P<network>.*) "
                             "IRC Network, "
-                            "(?P<user>.*)", message)
+                            "(?P<user>.*)(?i)", message)
 
                 d = m.groupdict()
 

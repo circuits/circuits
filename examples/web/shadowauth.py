@@ -9,7 +9,9 @@ from commands import getstatusoutput
 from circuits import handler, Component
 from circuits.web import _httpauth, Server, Controller
 from circuits.web.errors import HTTPError, Unauthorized
-    
+
+__author__ = 'Dan McDougall <YouKnowWho@YouKnowWhat.com>'
+
 def check_credentials(user, password):
     """Checks a given user and password against /etc/shadow (or /etc/passwd if
     /etc/shadow doesn't exist).  Returns True on success and False on failure."""

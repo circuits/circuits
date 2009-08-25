@@ -38,7 +38,13 @@ def expose(*channels, **config):
             if hasattr(self, "session"):
                del self.session
  
-      wrapper.varargs = getargspec(f)[1]
+      wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
+      if wrapper.args and wrapper.args[0] == "self":
+          del wrapper.args[0]
+      if wrapper.args and wrapper.args[0] == "event":
+          wrapper._passEvent = True
+      else:
+          wrapper._passEvent = False
 
       return update_wrapper(wrapper, f)
 
@@ -75,7 +81,7 @@ class BaseController(BaseComponent):
                 name)
 
     def expires(self, secs=0, force=False):
-        return tools.expires(self.request, self.response, secs, force)
+        tools.expires(self.request, self.response, secs, force)
 
 class Controller(BaseController):
 
