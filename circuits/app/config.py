@@ -1,3 +1,4 @@
+from __future__ import with_statement
 # Module:	config
 # Date:		13th August 2008
 # Author:	James Mills, prologic at shortcircuit dot net dot au
