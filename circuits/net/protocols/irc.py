@@ -143,6 +143,12 @@ class Pong(Event):
    args: source daemon [daemon2]
    """
 
+class Mode(Event):
+    """Mode(Event) -> Mode Event
+
+   args: source target modes
+   """
+
 class Join(Event):
     """Join(Event) -> Join Event
 
@@ -602,6 +608,12 @@ class IRC(Component):
             source = sourceSplit(strip(tokens[0].lower()))
             args = [strip(x) for x in tokens[2:]]
             self.push(Pong(source, *args), "pong", self.channel)
+
+        elif tokens[1] == "MODE":
+            source = sourceSplit(strip(tokens[0].lower()))
+            target = tokens[2].lower()
+            modes = [strip(x) for x in tokens[3:]]
+            self.push(Mode(source, target, *modes), "mode", self.channel)
 
     ###
     ### Default Events
