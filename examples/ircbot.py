@@ -8,6 +8,7 @@ class Bot(Component):
 
     def __init__(self, host, port=6667, channel=None):
         super(Bot, self).__init__(channel=channel)
+
         self += TCPClient(channel=channel) + IRC(channel=channel)
         self.push(Connect(host, port), "connect")
 
