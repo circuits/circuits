@@ -11,6 +11,7 @@ import warnings
 from urllib import unquote
 from cStringIO import StringIO
 from traceback import format_exc
+from sys import exc_info as _exc_info
 
 from circuits import handler, Component
 
@@ -142,9 +143,10 @@ class Application(Component):
 
 class Gateway(Component):
 
+    channel = "web"
+
     def __init__(self, app, path=""):
-        channel = None if not path else path
-        super(Gateway, self).__init__(channel=channel)
+        super(Gateway, self).__init__()
 
         self.app = app
         self.path = path
@@ -192,9 +194,25 @@ class Gateway(Component):
         for header in headers:
             self._response.headers.add_header(*header)
 
-    @handler("request", filter=True)
-    def request(self, request, response):
+    @handler("request", filter=True, priority=1.0)
+    def request(self, event, request, response):
+        if self.path is not None and not request.path.startswith(self.path):
+            return
+
+        req = event
+        path = request.path
+
+        if self.path is not None:
+            path = path[len(self.path):]
+            req.path = path
+
         self._request = request
         self._response = response
 
-        return "".join(self.app(self._createEnviron(), self.start_response))
+        try:
+            return "".join(self.app(self._createEnviron(), self.start_response))
+        except Exception, error:
+            status = error.code
+            message = error.message
+            error = _exc_info()
+            return HTTPError(request, response, status, message, error)

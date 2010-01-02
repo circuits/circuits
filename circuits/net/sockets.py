@@ -171,8 +171,11 @@ class Client(Component):
 
     channel = "client"
 
-    def __init__(self, bind=None, channel=channel, **kwargs):
-        super(Client, self).__init__(channel=channel, **kwargs)
+    def __init__(self, bind=None, **kwargs):
+        channel = kwargs.get("channel", Client.channel)
+        super(Client, self).__init__(channel=channel)
+
+        self.encoding = kwargs.get("encoding", "utf-8")
 
         if type(bind) is int:
             self.bind = (gethostbyname(gethostname()), bind)
@@ -247,6 +250,9 @@ class Client(Component):
 
     def _write(self, data):
         try:
+            if type(data) is unicode:
+                data = data.encode(self.encoding)
+
             if self.ssl and self._sslsock:
                 bytes = self._sslsock.write(data)
             else:
@@ -374,8 +380,11 @@ class Server(Component):
 
     channel = "server"
 
-    def __init__(self, bind, ssl=False, channel=channel, **kwargs):
+    def __init__(self, bind, ssl=False, **kwargs):
+        channel = kwargs.get("channel", Server.channel)
         super(Server, self).__init__(channel=channel)
+
+        self.encoding = kwargs.get("encoding", "utf-8")
 
         if type(bind) is int:
             self.bind = (gethostbyname(gethostname()), bind)
@@ -414,7 +423,7 @@ class Server(Component):
         return self.bind[1] if hasattr(self, "bind") else None
 
     def _close(self, sock):
-        if sock not in self._clients:
+        if not sock == self._sock and sock not in self._clients:
             return
 
         self._poller.discard(sock)
@@ -434,10 +443,17 @@ class Server(Component):
         self.push(Disconnect(sock), "disconnect", self.channel)
 
     def close(self, sock=None):
-        if not self._buffers[sock]:
-            self._close(sock)
-        elif sock not in self._closeq:
-            self._closeq.append(sock)
+        if sock is None:
+            socks = [self._sock]
+            socks.extend(self._clients[:])
+        else:
+            socks = [sock]
+
+        for sock in socks:
+            if not self._buffers[sock]:
+                self._close(sock)
+            elif sock not in self._closeq:
+                self._closeq.append(sock)
 
     def _read(self, sock):
         if sock not in self._clients:
@@ -461,6 +477,9 @@ class Server(Component):
             return
 
         try:
+            if type(data) is unicode:
+                data = data.encode(self.encoding)
+
             bytes = sock.send(data)
             if bytes < len(data):
                 self._buffers[sock].appendleft(data[bytes:])
@@ -553,7 +572,6 @@ class TCPServer(Server):
         self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._sock.setblocking(False)
         if not bound:
-            print type(self.bind), repr(self.bind)
             self._sock.bind(self.bind)
         self._sock.listen(self._backlog)
 
@@ -604,10 +622,10 @@ class UDPServer(Server):
 
         self._poller.addReader(self._sock)
 
-    def _close(self):
-        self._poller.discard(self._sock)
+    def _close(self, sock):
+        self._poller.discard(sock)
 
-        if self._sock in self._buffers:
+        if sock in self._buffers:
             del self._buffers[sock]
 
         try:
@@ -636,6 +654,9 @@ class UDPServer(Server):
 
     def _write(self, address, data):
         try:
+            if type(data) is unicode:
+                data = data.encode(self.encoding)
+
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
