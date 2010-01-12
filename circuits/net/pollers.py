@@ -300,7 +300,7 @@ class EPoll(_Poller):
 
     def __tick__(self):
         try:
-            l = self._poller.poll(self.timeout)
+            l = self._poller.poll(self.timeout * 1000)
         except SelectError, e:
             if e[0] == EINTR:
                 return
