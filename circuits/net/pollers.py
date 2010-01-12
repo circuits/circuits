@@ -43,6 +43,8 @@ if HAS_POLL:
 if HAS_EPOLL:
     _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
 
+TIMEOUT = 0.2
+
 ###
 ### Events
 ###
@@ -56,7 +58,7 @@ class _Poller(BaseComponent):
 
     channel = None
 
-    def __init__(self, timeout=None, channel=channel):
+    def __init__(self, timeout=TIMEOUT, channel=channel):
         super(_Poller, self).__init__(channel=channel)
 
         self.timeout = timeout
@@ -99,7 +101,7 @@ class Select(_Poller):
 
     channel = "select"
 
-    def __init__(self, timeout=0.00001, channel=channel):
+    def __init__(self, timeout=TIMEOUT, channel=channel):
         super(Select, self).__init__(timeout, channel=channel)
 
     def _preenDescriptors(self):
@@ -151,7 +153,7 @@ class Poll(_Poller):
 
     channel = "poll"
 
-    def __init__(self, timeout=1.0, channel=channel):
+    def __init__(self, timeout=TIMEOUT, channel=channel):
         super(Poll, self).__init__(timeout, channel=channel)
 
         self._map = {}
@@ -244,7 +246,7 @@ class EPoll(_Poller):
 
     channel = "epoll"
 
-    def __init__(self, timeout=0.001, channel=channel):
+    def __init__(self, timeout=TIMEOUT, channel=channel):
         super(EPoll, self).__init__(timeout, channel=channel)
 
         self._map = {}
