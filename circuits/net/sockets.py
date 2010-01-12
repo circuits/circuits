@@ -18,7 +18,7 @@ from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
 
 BUFSIZE = 4096 # 4KB Buffer
-BACKLOG = 128  # 128 Concurrent Connections
+BACKLOG = 5000 #  5K Concurrent Connections
 
 ###
 ### Event Objects
