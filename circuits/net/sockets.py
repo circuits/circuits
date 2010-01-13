@@ -8,6 +8,7 @@ This module contains various Socket Components for use with Networking.
 """
 
 import os
+import ssl
 import socket
 from errno import *
 from _socket import socket as SocketType
@@ -396,6 +397,9 @@ class Server(Component):
             self.bind = bind
 
         self.ssl = ssl
+        if self.ssl:
+            self.certfile = kwargs.get("certfile", None)
+            self.keyfile = kwargs.get("keyfile", None)
 
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
         self._backlog = kwargs.get("backlog", BACKLOG)
@@ -501,6 +505,12 @@ class Server(Component):
     def _accept(self):
         try:
             newsock, host = self._sock.accept()
+            if self.ssl:
+                newsock = ssl.wrap_socket(newsock,
+                    server_side=True,
+                    certfile=self.certfile,
+                    keyfile=self.keyfile,
+                    ssl_version=ssl.PROTOCOL_TLSv1)
         except socket.error, e:
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
