@@ -32,6 +32,7 @@ class BaseServer(BaseComponent):
         Request.server = self
         Request.local = Host(self.server.bind[0], self.server.bind[1])
         Request.host = self.host
+        Request.scheme = "https" if self.server.ssl else "http"
 
         print "%s listening on %s" % (self.version, self.base)
 
