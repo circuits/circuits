@@ -25,12 +25,12 @@ except ImportError:
 
 try:
     from select import epoll
-    from select import EPOLLET, EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+    from select import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
     HAS_EPOLL = 2
 except ImportError:
     try:
         from select26 import epoll
-        from select26 import EPOLLET, EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+        from select26 import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
         HAS_EPOLL = 1
     except ImportError:
         HAS_EPOLL = 0
@@ -268,9 +268,9 @@ class EPoll(_Poller):
         mask = 0
 
         if fd in self._read:
-            mask = mask | EPOLLIN | EPOLLET
+            mask = mask | EPOLLIN
         if fd in self._write:
-            mask = mask | EPOLLOUT | EPOLLET
+            mask = mask | EPOLLOUT
 
         if mask:
             self._poller.register(fd, mask)
