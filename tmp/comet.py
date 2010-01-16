@@ -82,12 +82,7 @@ class Comet(Controller):
         sid = self.request.sid
         command = "ping %s" % host
         self += Command(self.request, self.response, command, channel=sid)
-        #print graph(self.root)
-        #print inspect(self.root)
         return self.response
 
-app = (Server(10000) + Sessions() + Logger() + Comet())
-app += Debugger()
-#print graph(app)
-#print inspect(app)
+app = (Server(8000) + Sessions() + Logger() + Comet())
 app.run()
