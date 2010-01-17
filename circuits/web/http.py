@@ -22,9 +22,9 @@ from circuits import handler, Component
 
 import wrappers
 from utils import quoted_slash
+from constants import RESPONSES
 from headers import parseHeaders
 from errors import HTTPError, NotFound
-from constants import RESPONSES, BUFFER_SIZE
 from events import Request, Response, Stream, Write, Close
 
 class HTTP(Component):

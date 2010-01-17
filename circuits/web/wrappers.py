@@ -16,9 +16,10 @@ from time import strftime, time
 from Cookie import SimpleCookie
 
 from headers import Headers
-from constants import BUFFER_SIZE, SERVER_VERSION
+from constants import SERVER_VERSION
+from circuits.net.sockets import BUFSIZE
 
-def file_generator(input, chunkSize=BUFFER_SIZE):
+def file_generator(input, chunkSize=BUFSIZE):
     chunk = input.read(chunkSize)
     while chunk:
         yield chunk
