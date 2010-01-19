@@ -8,6 +8,8 @@ from __future__ import with_statement
 This package contains components useful for building and deploying applications.
 """
 
+from __future__ import with_statement
+
 import os
 import sys
 
