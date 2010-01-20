@@ -59,6 +59,8 @@ class File(Component):
         self.filename = self._fd.name
         self.mode = self._fd.mode
 
+        self.bufsize = kwargs.get("bufsize", BUFSIZE)
+
         setblocking(self._fd, False)
 
         self._read = []
@@ -99,7 +101,7 @@ class File(Component):
 
             if r:
                 try:
-                    data = os.read(self._fd.fileno(), BUFSIZE)
+                    data = os.read(self._fd.fileno(), self.bufsize)
                 except IOError, e:
                     if e[0] == errno.EBADF:
                         data = None
