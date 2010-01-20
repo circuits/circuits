@@ -147,11 +147,11 @@ class Response(object):
                 (len(self.body) if type(self.body) == str else 0))
     
     def output(self):
-        protocol = "HTTP/%d.%d" % self.request.server_protocol
+        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
         status = self.status
         headers = self.headers
         body = self.process() or ""
-        yield "%s %s\r\n" % (protocol, status)
+        yield "%s %s\r\n" % (self.protocol, status)
         yield str(headers)
         if body:
             if self.chunked:
