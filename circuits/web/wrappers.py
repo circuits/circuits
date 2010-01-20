@@ -147,7 +147,7 @@ class Response(object):
                 (len(self.body) if type(self.body) == str else 0))
     
     def output(self):
-        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
+        protocol = self.protocol
         status = self.status
         headers = self.headers
         body = self.process() or ""
@@ -180,6 +180,7 @@ class Response(object):
         self.body = None
         self.time = time()
         self.status = "200 OK"
+        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
     def process(self):
         for k, v in self.cookie.iteritems():
