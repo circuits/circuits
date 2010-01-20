@@ -126,38 +126,9 @@ class File(Component):
     def seek(self, offset, whence=0):
         self._fd.seek(offset, whence)
 
-class StdIn(File):
-
-    channel = "stdin"
-
-    def __init__(self, channel=channel):
-        super(StdIn, self).__init__("/dev/stdin", "r", channel=channel)
-
-class StdOut(File):
-
-    channel = "stdout"
-
-    def __init__(self, channel=channel):
-        super(StdOut, self).__init__("/dev/stdout", "w", channel=channel)
-
-class StdErr(File):
-
-    channel = "stderr"
-
-    def __init__(self, channel=channel):
-        super(StdErr, self).__init__("/dev/stderr", "w", channel=channel)
-
 try:
-    stdin = StdIn()
-except IOError:
-    pass
-
-try:
-    stdout = StdOut()
-except IOError:
-    pass
-
-try:
-    stderr = StdErr()
+    stdin = File("/dev/stdin", "r", channel="stdin")
+    stdout = File("/dev/stdout", "r", channel="stdout")
+    stderr = File("/dev/stderr", "r", channel="stderr")
 except IOError:
     pass
