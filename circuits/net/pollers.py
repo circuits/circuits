@@ -16,6 +16,7 @@ from errno import *
 from time import time
 from select import select
 from select import error as SelectError
+from socket import error as SocketError
 
 try:
     from select import poll
@@ -137,7 +138,7 @@ class Select(_Poller):
             # Something *totally* invalid (object w/o fileno, non-integral
             # result) was passed
             return self._preenDescriptors()
-        except (SelectError, IOError), e:
+        except (SelectError, SocketError, IOError), e:
             # select(2) encountered an error
             if e[0] in (0, 2):
                 # windows does this if it got an empty list
