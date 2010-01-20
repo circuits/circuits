@@ -17,8 +17,8 @@ from collections import deque
 
 from circuits.core import Event, Component
 
-TIMEOUT = 0.00001
-BUFSIZE = 131072
+TIMEOUT = 0.2
+BUFSIZE = 4096
 
 class EOF(Event): pass
 class Read(Event): pass
