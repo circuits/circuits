@@ -8,12 +8,19 @@ This module contains various Socket Components for use with Networking.
 """
 
 import os
-import ssl
 import socket
 from errno import *
 from _socket import socket as SocketType
 from collections import defaultdict, deque
 from socket import gethostname, gethostbyname
+
+try:
+    import ssl
+    HAS_SSL = 1
+except ImportError:
+    import warnings
+    warnings.warn("No SSL support available. Using python-2.5 ? Try isntalling the ssl module: http://pypi.python.org/pypi/ssl/")
+    HAS_SSL = 0
 
 from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
@@ -505,7 +512,7 @@ class Server(Component):
     def _accept(self):
         try:
             newsock, host = self._sock.accept()
-            if self.ssl:
+            if self.ssl and HAS_SSL:
                 newsock = ssl.wrap_socket(newsock,
                     server_side=True,
                     certfile=self.certfile,
