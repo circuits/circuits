@@ -15,13 +15,15 @@ from circuits import handler, Component
 
 class Sessions(Component):
 
+    channel = "web"
+
     def __init__(self, name="circuits.session", *args, **kwargs):
         super(Sessions, self).__init__(*args, **kwargs)
 
         self._name = name
         self._data = defaultdict(dict)
 
-    @handler("request", filter=True)
+    @handler("request", filter=True, priority=10)
     def request(self, request, response):
         if self._name in request.cookie:
             id = request.cookie[self._name].value

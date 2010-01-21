@@ -11,10 +11,12 @@ import warnings
 from urllib import unquote
 from cStringIO import StringIO
 from traceback import format_exc
+from sys import exc_info as _exc_info
 
 from circuits import handler, Component
 
 import wrappers
+from http import HTTP
 from headers import Headers
 from utils import quoteHTML
 from dispatchers import Dispatcher
@@ -35,6 +37,7 @@ class Application(Component):
     def __init__(self):
         super(Application, self).__init__()
 
+        HTTP().register(self)
         Dispatcher().register(self)
 
     def translateHeaders(self, environ):
@@ -72,82 +75,33 @@ class Application(Component):
 
         return request, response
 
-    def setError(self, response, status, message=None, traceback=None):
-        try:
-            short, long = RESPONSES[status]
-        except KeyError:
-            short, long = "???", "???"
-
-        if message is None:
-            message = short
-
-        explain = long
-
-        content = DEFAULT_ERROR_MESSAGE % {
-            "status": status,
-            "message": quoteHTML(message),
-            "traceback": traceback or ""}
-
-        response.body = content
-        response.status = "%s %s" % (status, message)
-
-    def _handleError(self, error):
-        response = error.response
-
-        v = self.send(error, "httperror", self.channel)
-
-        if v:
-            if issubclass(type(v), basestring):
-                response.body = v
-                res = Response(response)
-                self.send(res, "response", self.channel)
-            elif isinstance(v, HTTPError):
-                self.send(Response(v.response), "response", self.channel)
-            else:
-                assert v, "type(v) == %s" % type(v)
-
-    def response(self, response):
-        response.done = True
-
     def __call__(self, environ, start_response, exc_info=None):
-        while len(self) > 0:
-            self.flush()
+        self.request, self.response = self.getRequestResponse(environ)
+        self.push(Request(self.request, self.response), "request", "web")
 
-        request, response = self.getRequestResponse(environ)
+        self.run()
 
-        try:
-            req = Request(request, response)
+        status = self.response.status
+        headers = self.response.headers.items()
+        body = self.response.process()
 
-            v = self.send(req, "request", self.channel, errors=True)
+        start_response(status, headers, exc_info)
+        return [body]
 
-            if v:
-                if issubclass(type(v), basestring):
-                    response.body = v
-                    res = Response(response)
-                    self.send(res, "response", self.channel)
-                elif isinstance(v, HTTPError):
-                    self._handleError(v)
-                elif isinstance(v, wrappers.Response):
-                    res = Response(v)
-                    self.send(res, "response", self.channel)
-                else:
-                    assert v, "type(v) == %s" % type(v)
-            else:
-                error = NotFound(request, response)
-                self._handleError(error)
-        except:
-            error = HTTPError(request, response, 500, error=format_exc())
-            self._handleError(error)
-        finally:
-            start_response(response.status, response.headers.items(), exc_info)
-            body = response.process()
-            return [body]
+    def response_completed(self, evt, handler, retval):
+        if self.response.done:
+            self.stop()
+
+    def stream_completed(self, evt, handler, retval):
+        if self.response.done:
+            self.stop()
 
 class Gateway(Component):
 
+    channel = "web"
+
     def __init__(self, app, path=""):
-        channel = None if not path else path
-        super(Gateway, self).__init__(channel=channel)
+        super(Gateway, self).__init__()
 
         self.app = app
         self.path = path
@@ -195,9 +149,25 @@ class Gateway(Component):
         for header in headers:
             self._response.headers.add_header(*header)
 
-    @handler("request", filter=True)
-    def request(self, request, response):
+    @handler("request", filter=True, priority=1.0)
+    def request(self, event, request, response):
+        if self.path is not None and not request.path.startswith(self.path):
+            return
+
+        req = event
+        path = request.path
+
+        if self.path is not None:
+            path = path[len(self.path):]
+            req.path = path
+
         self._request = request
         self._response = response
 
-        return "".join(self.app(self._createEnviron(), self.start_response))
+        try:
+            return "".join(self.app(self._createEnviron(), self.start_response))
+        except Exception, error:
+            status = 500
+            message = str(error)
+            error = _exc_info()
+            return HTTPError(request, response, status, message, error)

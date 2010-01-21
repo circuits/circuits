@@ -61,8 +61,8 @@ class Logger(Component):
 
     channel = "log"
 
-    def __init__(self, filename, name, type, level, **kwargs):
-        super(Logger, self).__init__(**kwargs)
+    def __init__(self, filename, name, type, level, channel=channel):
+        super(Logger, self).__init__(channel=channel)
 
         self.logger = logging.getLogger(name)
 
@@ -114,7 +114,7 @@ class Logger(Component):
     def error(self, msg, *args, **kwargs):
         self.logger.error(msg, *args, **kwargs)
 
-    def exception(self, msg, *args):
+    def exception(self, msg, *args, **kwargs):
         self.logger.exception(msg, *args)
 
     def critical(self, msg, *args, **kwargs):
