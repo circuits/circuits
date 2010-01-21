@@ -209,6 +209,9 @@ class Response(object):
                 if not self.close:
                     self.headers.add_header("Connection", "Keep-Alive")
 
+        if self.headers.get("Transfer-Encoding", "") == "chunked":
+            self.chunked = True
+
         if isinstance(self.body, basestring):
             self.headers["Content-Length"] = str(len(self.body))
             self.headers.setdefault("Content-Type", "text/html")
