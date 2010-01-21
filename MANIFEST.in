@@ -1,4 +1,2 @@
-include docs/*.wiki
-include docs/graphs/*
 recursive-include examples *.py
 include LICENSE Makefile
