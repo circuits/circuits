@@ -19,13 +19,14 @@ except ImportError:
     from StringIO import StringIO
 
 from circuits import handler, Component
+from circuits.net.sockets import Close, Write
 
 import wrappers
 from utils import quoted_slash
 from constants import RESPONSES
 from headers import parseHeaders
 from errors import HTTPError, NotFound
-from events import Request, Response, Stream, Write, Close
+from events import Request, Response, Stream
 
 class HTTP(Component):
     """HTTP Protocol Component

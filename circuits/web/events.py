@@ -33,15 +33,3 @@ class Stream(Event):
 
     args: request, response
     """
-
-class Write(Event):
-    """Write(Event) -> Write Event
-
-    args: sock
-    """
-
-class Close(Event):
-    """Close(Event) -> Close Event
-
-    args: sock
-    """
