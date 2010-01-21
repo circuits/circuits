@@ -110,6 +110,9 @@ class Application(Component):
         response.done = True
 
     def __call__(self, environ, start_response, exc_info=None):
+        while len(self) > 0:
+            self.flush()
+
         request, response = self.getRequestResponse(environ)
 
         try:
