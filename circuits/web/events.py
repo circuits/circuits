@@ -28,8 +28,22 @@ class Response(Event):
     args: request, response
     """
 
+    success = "response_success", "http"
+    failure = "response_failure", "http"
+    before = "before_response", "http"
+    filter = "response_filtered", "http"
+    start = "response_started", "http"
+    end = "response_completed", "http"
+
 class Stream(Event):
     """Stream(Event) -> Stream Event
 
     args: request, response
     """
+
+    success = "stream_success", "http"
+    failure = "stream_failure", "http"
+    before = "before_stream", "http"
+    filter = "stream_filtered", "http"
+    start = "stream_started", "http"
+    end = "stream_completed", "http"
