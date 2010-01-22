@@ -81,9 +81,9 @@ class Application(Component):
 
         self.run()
 
+        body = self.response.process()
         status = self.response.status
         headers = self.response.headers.items()
-        body = self.response.process()
 
         start_response(status, headers, exc_info)
         return [body]
