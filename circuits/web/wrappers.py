@@ -170,9 +170,11 @@ class Response(object):
             server_version = SERVER_VERSION
 
         self.headers = Headers([
-            ("Server", server_version),
             ("Date", strftime("%a, %d %b %Y %H:%M:%S %Z")),
             ("X-Powered-By", server_version)])
+
+        if self.request.server is not None:
+            self.headers.add_header("Server", server_version)
 
         self.cookie = self.request.cookie
 
