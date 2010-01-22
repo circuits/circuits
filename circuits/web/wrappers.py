@@ -202,7 +202,7 @@ class Response(object):
                 else:
                     self.close = True
 
-        if "Connection" not in self.headers:
+        if self.request.server is not None and "Connection" not in self.headers:
             if self.protocol == "HTTP/1.1":
                 if self.close:
                     self.headers.add_header("Connection", "close")
