@@ -195,7 +195,8 @@ class Response(object):
                 pass
             else:
                 if self.protocol == "HTTP/1.1" \
-                        and self.request.method != "HEAD":
+                        and self.request.method != "HEAD" \
+                        and self.request.server is not None:
                     self.chunked = True
                     self.headers.add_header("Transfer-Encoding", "chunked")
                 else:
