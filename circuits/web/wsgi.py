@@ -139,8 +139,8 @@ class Application(Component):
             error = HTTPError(request, response, 500, error=format_exc())
             self._handleError(error)
         finally:
-            start_response(response.status, response.headers.items(), exc_info)
             body = response.process()
+            start_response(response.status, response.headers.items(), exc_info)
             return [body]
 
 class Gateway(Component):
