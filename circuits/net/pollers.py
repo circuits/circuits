@@ -12,10 +12,11 @@ descriptors for read/write events. Pollers:
    - KQueue
 """
 
-import warnings
 from errno import *
+from time import time
 from select import select
 from select import error as SelectError
+from socket import error as SocketError
 
 try:
     from select import poll
@@ -23,20 +24,18 @@ try:
     HAS_POLL = 1
 except ImportError:
     HAS_POLL = 0
-    warnings.warn("No poll support available.")
 
 try:
     from select import epoll
-    from select import EPOLLET, EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+    from select import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
     HAS_EPOLL = 2
 except ImportError:
     try:
         from select26 import epoll
-        from select26 import EPOLLET, EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
+        from select26 import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
         HAS_EPOLL = 1
     except ImportError:
         HAS_EPOLL = 0
-        warnings.warn("No epoll support available.")
 
 from circuits.core import handler, Event, BaseComponent
 
@@ -45,6 +44,8 @@ if HAS_POLL:
 
 if HAS_EPOLL:
     _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
+
+TIMEOUT = 0.2
 
 ###
 ### Events
@@ -59,7 +60,7 @@ class _Poller(BaseComponent):
 
     channel = None
 
-    def __init__(self, timeout=None, channel=channel):
+    def __init__(self, timeout=TIMEOUT, channel=channel):
         super(_Poller, self).__init__(channel=channel)
 
         self.timeout = timeout
@@ -102,8 +103,11 @@ class Select(_Poller):
 
     channel = "select"
 
-    def __init__(self, timeout=0.00001, channel=channel):
+    def __init__(self, timeout=0.0, channel=channel):
         super(Select, self).__init__(timeout, channel=channel)
+
+        self._ts = time()
+        self._load = 0.0
 
     def _preenDescriptors(self):
         for socks in (self._read[:], self._write[:]):
@@ -116,6 +120,17 @@ class Select(_Poller):
     def __tick__(self):
         try:
             r, w, _ = select(self._read, self._write, [], self.timeout)
+            if r or w:
+                self.timeout = 0.0
+            load = float(len(r) + len(w)) / (time() - self._ts)
+            self._ts = time()
+            if load > self._load:
+                if self.timeout > 0.1:
+                    self.timeout -= 0.001
+            else:
+                if self.timeout < 0.5:
+                    self.timeout += 0.001
+            self._load = load
         except ValueError, e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
@@ -123,7 +138,7 @@ class Select(_Poller):
             # Something *totally* invalid (object w/o fileno, non-integral
             # result) was passed
             return self._preenDescriptors()
-        except (SelectError, IOError), e:
+        except (SelectError, SocketError, IOError), e:
             # select(2) encountered an error
             if e[0] in (0, 2):
                 # windows does this if it got an empty list
@@ -154,7 +169,7 @@ class Poll(_Poller):
 
     channel = "poll"
 
-    def __init__(self, timeout=1.0, channel=channel):
+    def __init__(self, timeout=TIMEOUT, channel=channel):
         super(Poll, self).__init__(timeout, channel=channel)
 
         self._map = {}
@@ -247,7 +262,7 @@ class EPoll(_Poller):
 
     channel = "epoll"
 
-    def __init__(self, timeout=0.001, channel=channel):
+    def __init__(self, timeout=TIMEOUT, channel=channel):
         super(EPoll, self).__init__(timeout, channel=channel)
 
         self._map = {}
@@ -269,9 +284,9 @@ class EPoll(_Poller):
         mask = 0
 
         if fd in self._read:
-            mask = mask | EPOLLIN | EPOLLET
+            mask = mask | EPOLLIN
         if fd in self._write:
-            mask = mask | EPOLLOUT | EPOLLET
+            mask = mask | EPOLLOUT
 
         if mask:
             self._poller.register(fd, mask)
@@ -301,7 +316,7 @@ class EPoll(_Poller):
 
     def __tick__(self):
         try:
-            l = self._poller.poll(self.timeout)
+            l = self._poller.poll(self.timeout * 1000)
         except SelectError, e:
             if e[0] == EINTR:
                 return

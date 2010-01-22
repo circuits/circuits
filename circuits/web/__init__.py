@@ -8,18 +8,16 @@ circuits.web contains the circuits full stack web server that is HTTP
 and WSGI compliant.
 """
 
-import wsgi
-import tools
+from utils import url
 from loggers import Logger
-from core import Controller
 from sessions import Sessions
+from core import expose, Controller
 from events import Request, Response
 from servers import BaseServer, Server
-from dispatchers import Dispatcher, VirtualHosts, XMLRPC
 from errors import HTTPError, Forbidden, NotFound, Redirect
+from dispatchers import Static, Dispatcher, VirtualHosts, XMLRPC
 
 try:
     from dispatchers import JSONRPC
 except ImportError:
     pass
-

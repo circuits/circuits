@@ -8,9 +8,17 @@ This module implements utility functions.
 """
 
 import re
-from gzip import GzipFile
-from cStringIO import StringIO
+import gzip
+import zlib
+import time
+import struct
+import urllib
 from urlparse import urljoin as _urljoin
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 try:
     from urlparse import parse_qs
@@ -63,14 +71,36 @@ def dictform(form):
             d[key] = value
     return d
 
-def compressBuf(buf):
+def compress(body, compress_level):
+    """Compress 'body' at the given compress_level."""
+    yield '\037\213'      # magic header
+    yield '\010'         # compression method
+    yield '\0'
+    yield struct.pack("<L", long(time.time()))
+    yield '\002'
+    yield '\377'
+    
+    crc = zlib.crc32("")
+    size = 0
+    zobj = zlib.compressobj(compress_level,
+                            zlib.DEFLATED, -zlib.MAX_WBITS,
+                            zlib.DEF_MEM_LEVEL, 0)
+    for line in body:
+        size += len(line)
+        crc = zlib.crc32(line, crc)
+        yield zobj.compress(line)
+    yield zobj.flush()
+    yield struct.pack("<l", crc)
+    yield struct.pack("<L", size & 0xFFFFFFFFL)
+
+def decompress(body):
     zbuf = StringIO()
-    zfile = GzipFile(mode="wb",  fileobj=zbuf, compresslevel=1)
-    zfile.write(buf)
-    zfile.close()
-    zbuf.flush()
+    zbuf.write(body)
     zbuf.seek(0)
-    return zbuf
+    zfile = gzip.GzipFile(mode='rb', fileobj=zbuf)
+    data = zfile.read()
+    zfile.close()
+    return data
 
 def url(request, path="", qs="", script_name=None, base=None, relative=None):
     """Create an absolute URL for the given path.
@@ -252,3 +282,31 @@ def get_ranges(headervalue, content_length):
             result.append((content_length - int(stop), content_length))
     
     return result
+
+def url_quote(s, charset="utf-8", safe="/:"):
+    """URL encode a single string with a given encoding.
+
+    :param s: the string to quote.
+    :param charset: the charset to be used.
+    :param safe: an optional sequence of safe characters.
+    """
+
+    if isinstance(s, unicode):
+        s = s.encode(charset)
+    elif not isinstance(s, str):
+        s = str(s)
+    return urllib.quote(s, safe=safe)
+
+def url_unquote(s, charset="utf-8", errors="ignore"):
+    """URL decode a single string with a given decoding.
+
+    Per default encoding errors are ignored.  If you want a different behavior
+    you can set `errors` to ``"replace"`` or ``"strict"``.  In strict mode a
+    `HTTPUnicodeError` is raised.
+
+    :param s: the string to unquote.
+    :param charset: the charset to be used.
+    :param errors: the error handling for the charset decoding.
+    """
+
+    return urllib.unquote(s).decode(charset, errors)
