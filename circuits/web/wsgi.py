@@ -56,9 +56,9 @@ class Application(Component):
         request = wrappers.Request(None,
                 env("REQUEST_METHOD"),
                 env("wsgi.url_scheme"),
-                env("PATH_INFO"),
+                env("PATH_INFO", ""),
                 protocol,
-                env("QUERY_STRING"))
+                env("QUERY_STRING", ""))
 
         request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
 
