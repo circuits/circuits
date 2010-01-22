@@ -10,13 +10,21 @@ This module implements the Request and Response objects.
 
 import os
 import stat
+import types
 from cStringIO import StringIO
 from time import strftime, time
 from Cookie import SimpleCookie
 
 from headers import Headers
-from utils import compressBuf
-from constants import BUFFER_SIZE, SERVER_VERSION
+from constants import SERVER_VERSION
+from circuits.net.sockets import BUFSIZE
+
+def file_generator(input, chunkSize=BUFSIZE):
+    chunk = input.read(chunkSize)
+    while chunk:
+        yield chunk
+        chunk = input.read(chunkSize)
+    input.close()
 
 class Host(object):
     """An internet address.
@@ -75,6 +83,7 @@ class Request(object):
     script_name = ""
 
     login = None
+    handled = False
 
     def __init__(self, sock, method, scheme, path, protocol, qs):
         "initializes x; see x.__class__.__doc__ for signature"
@@ -122,6 +131,8 @@ class Response(object):
     is sent in the correct order.
     """
 
+    chunked = False
+
     def __init__(self, sock, request):
         "initializes x; see x.__class__.__doc__ for signature"
 
@@ -135,12 +146,19 @@ class Response(object):
                 self.headers["Content-Type"],
                 (len(self.body) if type(self.body) == str else 0))
     
-    def __str__(self):
+    def output(self):
+        protocol = self.protocol
         status = self.status
         headers = self.headers
-        body = self.process()
-        protocol = "HTTP/%d.%d" % self.request.server_protocol
-        return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
+        body = self.process() or ""
+        yield "%s %s\r\n" % (self.protocol, status)
+        yield str(headers)
+        if body:
+            if self.chunked:
+                buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
+                yield "".join(buf)
+            else:
+                yield body
 
     def clear(self):
         self.done = False
@@ -159,44 +177,55 @@ class Response(object):
         self.cookie = self.request.cookie
 
         self.stream = False
-        self.gzip = False
-        self.body = ""
+        self.body = None
         self.time = time()
         self.status = "200 OK"
+        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
     def process(self):
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
-        if type(self.body) == file:
-            cType = self.headers.get("Content-Type", "application/octet-stream")
-            if self.gzip:
-                self.body = compressBuf(self.body.read())
-                self.headers["Content-Encoding"] = "gzip"
-                self.body.seek(0, 2)
-                cLen = self.body.tell()
-                self.body.seek(0)
-            else:
-                cLen = os.fstat(self.body.fileno())[stat.ST_SIZE]
+        status = int(self.status.split(" ", 1)[0])
 
-            if cLen > BUFFER_SIZE:
-                body = self.body.read(BUFFER_SIZE)
-                self.stream = True
+        if status == 413:
+            self.close = True
+        elif "Content-Length" not in self.headers:
+            if status < 200 or status in (204, 205, 304):
+                pass
             else:
-                body = self.body.read()
-        elif issubclass(type(self.body), basestring):
-            body = self.body
-            if self.gzip:
-                body = compressBuf(body).getvalue()
-                self.headers["Content-Encoding"] = "gzip"
-            cLen = len(body)
-            cType = self.headers.get("Content-Type", "text/html")
+                if self.protocol == "HTTP/1.1" \
+                        and self.request.method != "HEAD":
+                    self.chunked = True
+                    self.headers.add_header("Transfer-Encoding", "chunked")
+                else:
+                    self.close = True
+
+        if "Connection" not in self.headers:
+            if self.protocol == "HTTP/1.1":
+                if self.close:
+                    self.headers.add_header("Connection", "close")
+            else:
+                if not self.close:
+                    self.headers.add_header("Connection", "Keep-Alive")
+
+        if self.headers.get("Transfer-Encoding", "") == "chunked":
+            self.chunked = True
+
+        if isinstance(self.body, basestring):
+            self.headers["Content-Length"] = str(len(self.body))
+            self.headers.setdefault("Content-Type", "text/html")
+            return self.body
+        elif type(self.body) is types.GeneratorType:
+            self.stream = True
+            return self.body.next()
+        elif type(self.body) is types.FileType:
+            st = os.fstat(self.body.fileno())
+            self.headers.setdefault("Content-Length", str(st.st_size))
+            self.headers.setdefault("Content-Type", "application/octet-stream")
+            self.stream = True
+            self.file = self.body
+            self.body = file_generator(self.body)
+            return None
         else:
-            body = ""
-            cLen = 0
-            cType = "text/plain"
-
-        self.headers["Content-Type"] = cType
-        self.headers["Content-Length"] = str(cLen)
-
-        return body
+            return None

@@ -107,12 +107,12 @@ def reprhandler(x):
     if not hasattr(x, "handler"):
         raise TypeError("%r is not an Event Handler" % x)
 
-    format = "<handler (%s) {f: %s, t: %r, p: %d}>"
-    channels = ",".join(x.channels)
-    f = x.filter
-    t = x.target or ""
+    format = "<%s on %s {target=%s, priority=%0.1f}>"
+    channels = repr(x.channels)
+    f = "filter" if x.filter else "listener"
+    t = repr(x.target)
     p = x.priority
-    return format % (channels, f, t, p)
+    return format % (f, channels, t, p)
 
 def inspect(x):
     """Display an inspection report of the Component or Manager x

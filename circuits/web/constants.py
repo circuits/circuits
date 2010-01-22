@@ -11,7 +11,6 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 
 from circuits import __version__
 
-BUFFER_SIZE = 4096
 SERVER_PROTOCOL = (1, 1)
 SERVER_VERSION = "circuits/%s" % __version__
 
