@@ -78,7 +78,7 @@ class Dispatcher(Component):
     def __init__(self, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
 
-        self.paths = []
+        self.paths = set(["/"])
 
     def _parseBody(self, request, response, params):
         body = request.body
@@ -188,7 +188,7 @@ class Dispatcher(Component):
     @handler("registered", target="*")
     def registered(self, c, m):
         if isinstance(c, Controller) and c not in self.components:
-            self.paths.append(c.channel)
+            self.paths.add(c.channel)
             c.unregister()
             self += c
 
