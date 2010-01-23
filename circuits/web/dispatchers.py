@@ -43,7 +43,7 @@ class Dispatcher(Component):
         self.docroot = docroot or os.getcwd()
         self.defaults = defaults or ["index.xhtml", "index.html", "index.htm"]
 
-        self.paths = []
+        self.paths = set(["/"])
 
     def _parseBody(self, request, response, params):
         body = request.body
@@ -146,7 +146,7 @@ class Dispatcher(Component):
     @handler("registered", target="*")
     def registered(self, c, m):
         if isinstance(c, Controller) and c not in self.components:
-            self.paths.append(c.channel)
+            self.paths.add(c.channel)
             c.unregister()
             self += c
 
