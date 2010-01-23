@@ -18,11 +18,12 @@ import mimetools
 from rfc822 import formatdate
 
 mimetypes.init()
-mimetypes.types_map['.dwg']='image/x-dwg'
-mimetypes.types_map['.ico']='image/x-icon'
+mimetypes.add_type("image/x-dwg", ".dwg")
+mimetypes.add_type("image/x-icon", ".ico")
+mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
 import _httpauth
-from utils import url, valid_status, get_ranges
+from utils import url, valid_status, get_ranges, compress
 from errors import HTTPError, NotFound, Redirect, Unauthorized
 
 def expires(request, response, secs=0, force=False):
@@ -303,7 +304,7 @@ def flatten(request, response):
     response.body = flattener(response.body)
     return response
 
-def check_auth(request, response, users, encrypt=None, realm=None):
+def check_auth(request, response, realm, users, encrypt=None):
     """Check Authentication
 
     If an authorization header contains credentials, return True, else False.
@@ -405,3 +406,59 @@ def digest_auth(request, response, realm, users):
     response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
     
     return Unauthorized(request, response)
+
+def gzip(response, level=1, mime_types=['text/html', 'text/plain']):
+    """Try to gzip the response body if Content-Type in mime_types.
+    
+    response.headers['Content-Type'] must be set to one of the
+    values in the mime_types arg before calling this function.
+    
+    No compression is performed if any of the following hold:
+        * The client sends no Accept-Encoding request header
+        * No 'gzip' or 'x-gzip' is present in the Accept-Encoding header
+        * No 'gzip' or 'x-gzip' with a qvalue > 0 is present
+        * The 'identity' value is given with a qvalue > 0.
+    """
+
+    if not response.body:
+        # Response body is empty (might be a 304 for instance)
+        return response
+    
+    # If returning cached content (which should already have been gzipped),
+    # don't re-zip.
+    if getattr(response.request, "cached", False):
+        return response
+    
+    acceptable = response.request.headers.elements('Accept-Encoding')
+    if not acceptable:
+        # If no Accept-Encoding field is present in a request,
+        # the server MAY assume that the client will accept any
+        # content coding. In this case, if "identity" is one of
+        # the available content-codings, then the server SHOULD use
+        # the "identity" content-coding, unless it has additional
+        # information that a different content-coding is meaningful
+        # to the client.
+        return response
+    
+    ct = response.headers.get('Content-Type', 'text/html').split(';')[0]
+    for coding in acceptable:
+        if coding.value == 'identity' and coding.qvalue != 0:
+            return response
+        if coding.value in ('gzip', 'x-gzip'):
+            if coding.qvalue == 0:
+                return response
+            if ct in mime_types:
+                # Return a generator that compresses the page
+                varies = response.headers.get("Vary", "")
+                varies = [x.strip() for x in varies.split(",") if x.strip()]
+                if "Accept-Encoding" not in varies:
+                    varies.append("Accept-Encoding")
+                response.headers['Vary'] = ", ".join(varies)
+                
+                response.headers['Content-Encoding'] = 'gzip'
+                response.body = compress(response.body, level)
+                if response.headers.has_key("Content-Length"):
+                    # Delete Content-Length header so finalize() recalcs it.
+                    del response.headers["Content-Length"]
+            return response
+    return HTTPError(response.request, response, 406, "identity, gzip")
