@@ -21,10 +21,41 @@ from constants import SERVER_VERSION
 from dispatchers import Dispatcher
 
 class BaseServer(BaseComponent):
+    """Create a Base Web Server
+
+    Create a Base Web Server (HTTP) bound to the IP Address / Port or
+    UNIX Socket specified by the 'bind' parameter.
+
+    @ivar server: Reference to underlying Server Component
+
+    @param bind: IP Address / Port or UNIX Socket to bind to.
+    @type bind: One of IntType, ListType, TupeType or StringType
+
+    The 'bind' parameter is quite flexible with what valid values it accepts.
+
+    If an IntType is passed, a TCPServer will be created. The Server will be
+    bound to the Port given by the 'bind' argument and the bound interface
+    will default (normally to  "0.0.0.0").
+
+    If a ListType or TupleType is passed, a TCPServer will be created. The
+    Server will be bound to the Port given by the 2nd item in the 'bind'
+    argument and the bound interface will be the 1st item.
+
+    If a StringType is passed and it contains the ':' character, this is
+    assumed to be a request to bind to an IP Address / Port. A TCpServer
+    will thus be created and the IP Address and Port will be determined
+    by splitting the string given by the 'bind' argument.
+
+    Otherwise if a StringType is passed and it does not contain the ':'
+    character, a file path is assumed and a UNIXServer is created and
+    bound to the file given by the 'bind' argument.
+    """
 
     channel = "web"
 
     def __init__(self, bind, **kwargs):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
         super(BaseServer, self).__init__(**kwargs)
 
         if type(bind) in [IntType, ListType, TupleType]:
@@ -96,8 +127,16 @@ class BaseServer(BaseComponent):
         self.push(Close(), target=self.server)
 
 class Server(BaseServer):
+    """Create a Web Server
+
+    Create a Web Server (HTTP) complete with the default Dispatcher to
+    parse requests and posted form data dispatching to appropriate
+    Controller(s).
+    """
 
     def __init__(self, bind, **kwargs):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
         super(Server, self).__init__(bind, **kwargs)
 
         Dispatcher().register(self)
