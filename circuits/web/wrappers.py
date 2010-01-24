@@ -99,7 +99,12 @@ class Request(object):
         self._headers = None
 
         if sock:
-            self.remote = Host(*sock.getpeername())
+            name = sock.getpeername()
+            if name:
+                self.remote = Host(*name)
+            else:
+                name = sock.getsockname()
+                self.remote = Host(name, "", name)
 
         self.body = StringIO()
 
