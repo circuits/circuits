@@ -9,10 +9,11 @@ This module implements the Web Server Component.
 
 import os
 from socket import gethostname as _gethostname
+from types import IntType, ListType, TupleType
 
 from circuits.core import handler, BaseComponent
 
-from circuits.net.sockets import TCPServer, Close
+from circuits.net.sockets import TCPServer, UNIXServer, Close
 
 from http import HTTP
 from wrappers import Request, Host
@@ -26,7 +27,15 @@ class BaseServer(BaseComponent):
     def __init__(self, bind, **kwargs):
         super(BaseServer, self).__init__(**kwargs)
 
-        self.server = (TCPServer(bind, **kwargs) + HTTP())
+        if type(bind) in [IntType, ListType, TupleType]:
+            SocketType = TCPServer
+        else:
+            if ":" in bind:
+                SocketType = TCPServer
+            else:
+                SocketType = UNIXServer
+
+        self.server = (SocketType(bind, **kwargs) + HTTP())
         self += self.server
 
         Request.server = self
