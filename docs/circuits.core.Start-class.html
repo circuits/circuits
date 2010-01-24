@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>circuits.io.StdErr</title>
+  <title>circuits.core.Start</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -43,8 +43,8 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
-        <a href="circuits.io-module.html">Package&nbsp;io</a> ::
-        Class&nbsp;StdErr
+        <a href="circuits.core-module.html">Package&nbsp;core</a> ::
+        Class&nbsp;Start
       </span>
     </td>
     <td>
@@ -55,38 +55,19 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class StdErr</h1><p class="nomargin-top"></p>
+<h1 class="epydoc">Class Start</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
-    object --+                
-             |                
-  <a href="circuits.core.Manager-class.html">core.Manager</a> --+            
-                 |            
-<a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+        
-                     |        
-        <a href="circuits.core.Component-class.html">core.Component</a> --+    
-                         |    
-                      <a href="circuits.io.File-class.html">File</a> --+
-                             |
-                            <strong class="uidshort">StdErr</strong>
+object --+    
+         |    
+     <a href="circuits.core.Event-class.html">Event</a> --+
+             |
+            <strong class="uidshort">Start</strong>
 </pre>
 
 <hr />
-<!-- ==================== NESTED CLASSES ==================== -->
-<a name="section-NestedClasses"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Nested Classes</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.HandlersType-class.html">__metaclass__</a></code>
-      </p>
-    </td>
-  </tr>
-</table>
+<p>Start Event</p>
+  <p>This Event is sent just before an Event is started</p>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -101,9 +82,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="circuits.io.StdErr-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">channel</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">stderr</code><code class="variable-quote">'</code></span>)</span><br />
-      initializes x; see x.__class__.__doc__ for signature</td>
+          <td><span class="summary-sig"><a href="circuits.core.Start-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             
             
@@ -115,58 +96,24 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.io.File-class.html">File</a></code></b>:
-      <code><a href="circuits.io.File-class.html#__tick__">__tick__</a></code>,
-      <code><a href="circuits.io.File-class.html#close">close</a></code>,
-      <code><a href="circuits.io.File-class.html#seek">seek</a></code>,
-      <code><a href="circuits.io.File-class.html#write">write</a></code>
-      </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
-      <code><a href="circuits.core.BaseComponent-class.html#__repr__">__repr__</a></code>,
-      <code><a href="circuits.core.BaseComponent-class.html#register">register</a></code>,
-      <code><a href="circuits.core.BaseComponent-class.html#unregister">unregister</a></code>
-      </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
-      <code><a href="circuits.core.Manager-class.html#__add__">__add__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__iadd__">__iadd__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__isub__">__isub__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
-      <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
-      <code><a href="circuits.core.Manager-class.html#join">join</a></code>,
-      <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
-      <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
-      <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
-      <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
-      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">Event</a></code></b>:
+      <code><a href="circuits.core.Event-class.html#__eq__">__eq__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__getitem__">__getitem__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__repr__">__repr__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__setitem__">__setitem__</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
       <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
+      <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__setattr__</code>,
       <code>__sizeof__</code>,
       <code>__str__</code>,
       <code>__subclasshook__</code>
-      </p>
-    </td>
-  </tr>
-</table>
-<!-- ==================== STATIC METHODS ==================== -->
-<a name="section-StaticMethods"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Static Methods</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
-      <code><a href="circuits.core.Component-class.html#__new__">__new__</a></code>
       </p>
     </td>
   </tr>
@@ -179,12 +126,11 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Class Variables</span></td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="channel"></a><span class="summary-name">channel</span> = <code title="'stderr'"><code class="variable-quote">'</code><code class="variable-string">stderr</code><code class="variable-quote">'</code></code><br />
-      The Component's Channel
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">Event</a></code></b>:
+      <code><a href="circuits.core.Event-class.html#handler">handler</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -198,8 +144,16 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
-      <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">Event</a></code></b>:
+      <code><a href="circuits.core.Event-class.html#before">before</a></code>,
+      <code><a href="circuits.core.Event-class.html#channel">channel</a></code>,
+      <code><a href="circuits.core.Event-class.html#end">end</a></code>,
+      <code><a href="circuits.core.Event-class.html#failure">failure</a></code>,
+      <code><a href="circuits.core.Event-class.html#filter">filter</a></code>,
+      <code><a href="circuits.core.Event-class.html#name">name</a></code>,
+      <code><a href="circuits.core.Event-class.html#start">start</a></code>,
+      <code><a href="circuits.core.Event-class.html#success">success</a></code>,
+      <code><a href="circuits.core.Event-class.html#target">target</a></code>
       </p>
     </td>
   </tr>
@@ -214,13 +168,6 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.io.File-class.html">File</a></code></b>:
-      <code><a href="circuits.io.File-class.html#closed">closed</a></code>
-      </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
-      <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
-      <code><a href="circuits.core.Manager-class.html#state">state</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -244,7 +191,7 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">channel</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">stderr</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">event</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -252,11 +199,15 @@
     </td>
   </tr></table>
   
-  <p>initializes x; see x.__class__.__doc__ for signature</p>
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>evt</code></strong> (Event) - The event about to start</li>
+    </ul></dd>
     <dt>Overrides:
         object.__init__
-        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -293,7 +244,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:00 2009
+    Generated by Epydoc 3.0.1 on Mon Jan 25 03:44:55 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
