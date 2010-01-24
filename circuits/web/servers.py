@@ -2,9 +2,9 @@
 # Date:     6th November 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Web Server
+"""Web Servers
 
-This module implements the Web Server Component.
+This module implements the several Web Server components.
 """
 
 import os
