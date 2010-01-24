@@ -69,7 +69,7 @@ object --+
 <dl><dt>Known Subclasses:</dt>
 <dd>
       <ul class="subclass-list">
-<li><a href="circuits.app.env.Environment-class.html">app.env.Environment</a></li><li>, <a href="circuits.app.config.Config-class.html">app.config.Config</a></li><li>, <a href="circuits.app.log.Logger-class.html">app.log.Logger</a></li><li>, <a href="circuits.web.wsgi.Application-class.html">web.wsgi.Application</a></li><li>, <a href="circuits.web.wsgi.Gateway-class.html">web.wsgi.Gateway</a></li><li>, <a href="circuits.web.sessions.Sessions-class.html">web.sessions.Sessions</a></li><li>, <a href="circuits.web.dispatchers.Dispatcher-class.html">web.dispatchers.Dispatcher</a></li><li>, <a href="circuits.web.dispatchers.JSONRPC-class.html">web.dispatchers.JSONRPC</a></li><li>, <a href="circuits.web.dispatchers.VirtualHosts-class.html">web.dispatchers.VirtualHosts</a></li><li>, <a href="circuits.web.dispatchers.XMLRPC-class.html">web.dispatchers.XMLRPC</a></li><li>, <a href="circuits.web.servers.BaseServer-class.html">web.servers.BaseServer</a></li><li>, <a href="circuits.web.loggers.Logger-class.html">web.loggers.Logger</a></li><li>, <a href="circuits.web.main.HelloWorld-class.html">web.main.HelloWorld</a></li><li>, <a href="circuits.web.http.HTTP-class.html">web.http.HTTP</a></li><li>, <a href="circuits.io.File-class.html">io.File</a></li><li>, <a href="circuits.tools.bench.Base-class.html">tools.bench.Base</a></li><li>, <a href="circuits.drivers._pygame.PyGameDriver-class.html">drivers._pygame.PyGameDriver</a></li><li>, <a href="circuits.drivers._inotify.INotifyDriver-class.html">drivers._inotify.INotifyDriver</a></li><li>, <a href="circuits.drivers._gtk.GtkDriver-class.html">drivers._gtk.GtkDriver</a></li><li>, <a href="circuits.core.bridge.Bridge-class.html">bridge.Bridge</a></li><li>, <a href="circuits.core.debugger.Debugger-class.html">debugger.Debugger</a></li><li>, <a href="circuits.core.workers.Process-class.html">workers.Process</a></li><li>, <a href="circuits.core.workers.Thread-class.html">workers.Thread</a></li><li>, <a href="circuits.core.timers.Timer-class.html">timers.Timer</a></li><li>, <a href="circuits.net.sockets.Client-class.html">net.sockets.Client</a></li><li>, <a href="circuits.net.sockets.Server-class.html">net.sockets.Server</a></li><li>, <a href="circuits.net.protocols.irc.IRC-class.html">net.protocols.irc.IRC</a></li><li>, <a href="circuits.net.protocols.smtp.SMTP-class.html">net.protocols.smtp.SMTP</a></li>  </ul>
+<li><a href="circuits.app.Daemon-class.html">app.Daemon</a></li><li>, <a href="circuits.app.env.Environment-class.html">app.env.Environment</a></li><li>, <a href="circuits.app.config.Config-class.html">app.config.Config</a></li><li>, <a href="circuits.app.log.Logger-class.html">app.log.Logger</a></li><li>, <a href="circuits.web.wsgi.Application-class.html">web.wsgi.Application</a></li><li>, <a href="circuits.web.wsgi.Gateway-class.html">web.wsgi.Gateway</a></li><li>, <a href="circuits.web.sessions.Sessions-class.html">web.sessions.Sessions</a></li><li>, <a href="circuits.web.dispatchers.Dispatcher-class.html">web.dispatchers.Dispatcher</a></li><li>, <a href="circuits.web.dispatchers.JSONRPC-class.html">web.dispatchers.JSONRPC</a></li><li>, <a href="circuits.web.dispatchers.RoutesDispatcher-class.html">web.dispatchers.RoutesDispatcher</a></li><li>, <a href="circuits.web.dispatchers.Static-class.html">web.dispatchers.Static</a></li><li>, <a href="circuits.web.dispatchers.VirtualHosts-class.html">web.dispatchers.VirtualHosts</a></li><li>, <a href="circuits.web.dispatchers.XMLRPC-class.html">web.dispatchers.XMLRPC</a></li><li>, <a href="circuits.web.main.HelloWorld-class.html">web.main.HelloWorld</a></li><li>, <a href="circuits.web.http.HTTP-class.html">web.http.HTTP</a></li><li>, <a href="circuits.io.File-class.html">io.File</a></li><li>, <a href="circuits.tools.bench.Base-class.html">tools.bench.Base</a></li><li>, <a href="circuits.drivers._pygame.PyGameDriver-class.html">drivers._pygame.PyGameDriver</a></li><li>, <a href="circuits.drivers._inotify.INotifyDriver-class.html">drivers._inotify.INotifyDriver</a></li><li>, <a href="circuits.drivers._gtk.GtkDriver-class.html">drivers._gtk.GtkDriver</a></li><li>, <a href="circuits.core.bridge.Bridge-class.html">bridge.Bridge</a></li><li>, <a href="circuits.core.debugger.Debugger-class.html">debugger.Debugger</a></li><li>, <a href="circuits.core.timers.Timer-class.html">timers.Timer</a></li><li>, <a href="circuits.net.sockets.Client-class.html">net.sockets.Client</a></li><li>, <a href="circuits.net.sockets.Server-class.html">net.sockets.Server</a></li><li>, <a href="circuits.net.protocols.irc.IRC-class.html">net.protocols.irc.IRC</a></li><li>, <a href="circuits.net.protocols.smtp.SMTP-class.html">net.protocols.smtp.SMTP</a></li>  </ul>
 </dd></dl>
 
 <hr />
@@ -114,13 +114,16 @@ object --+
       <code><a href="circuits.core.Manager-class.html#__isub__">__isub__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#add">add</a></code>,
       <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
       <code><a href="circuits.core.Manager-class.html#join">join</a></code>,
       <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
+      <code><a href="circuits.core.Manager-class.html#remove">remove</a></code>,
       <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
       <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
       <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
-      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
+      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>,
+      <code><a href="circuits.core.Manager-class.html#tick">tick</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -196,6 +199,7 @@ object --+
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
+      <code><a href="circuits.core.Manager-class.html#running">running</a></code>,
       <code><a href="circuits.core.Manager-class.html#state">state</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -273,7 +277,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:49:59 2009
+    Generated by Epydoc 3.0.1 on Mon Jan 25 03:44:54 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -151,47 +151,48 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="setError"></a><span class="summary-sig-name">setError</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">response</span>,
-        <span class="summary-sig-arg">status</span>,
-        <span class="summary-sig-arg">message</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">traceback</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="response"></a><span class="summary-sig-name">response</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">response</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a name="__call__"></a><span class="summary-sig-name">__call__</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">environ</span>,
         <span class="summary-sig-arg">start_response</span>,
         <span class="summary-sig-arg">exc_info</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="response_completed"></a><span class="summary-sig-name">response_completed</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">evt</span>,
+        <span class="summary-sig-arg">handler</span>,
+        <span class="summary-sig-arg">retval</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="stream_completed"></a><span class="summary-sig-name">stream_completed</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">evt</span>,
+        <span class="summary-sig-arg">handler</span>,
+        <span class="summary-sig-arg">retval</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -214,13 +215,16 @@
       <code><a href="circuits.core.Manager-class.html#__isub__">__isub__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#add">add</a></code>,
       <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
       <code><a href="circuits.core.Manager-class.html#join">join</a></code>,
       <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
+      <code><a href="circuits.core.Manager-class.html#remove">remove</a></code>,
       <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
       <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
       <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
-      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
+      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>,
+      <code><a href="circuits.core.Manager-class.html#tick">tick</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -304,6 +308,7 @@
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
+      <code><a href="circuits.core.Manager-class.html#running">running</a></code>,
       <code><a href="circuits.core.Manager-class.html#state">state</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -409,7 +414,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:04 2009
+    Generated by Epydoc 3.0.1 on Mon Jan 25 03:44:58 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

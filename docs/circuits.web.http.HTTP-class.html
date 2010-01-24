@@ -124,7 +124,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="stream"></a><span class="summary-sig-name">stream</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">response</span>)</span></td>
+        <span class="summary-sig-arg">response</span>,
+        <span class="summary-sig-arg">data</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -142,6 +143,23 @@
         <tr>
           <td><span class="summary-sig"><a name="response"></a><span class="summary-sig-name">response</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">response</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.web.http.HTTP-class.html#disconnect" class="summary-sig-name">disconnect</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sock</span>)</span></td>
           <td align="right" valign="top">
             
             
@@ -212,6 +230,63 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.web.http.HTTP-class.html#request_success_or_filtered" class="summary-sig-name">request_success_or_filtered</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">evt</span>,
+        <span class="summary-sig-arg">handler</span>,
+        <span class="summary-sig-arg">retval</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="request_failure"></a><span class="summary-sig-name">request_failure</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">evt</span>,
+        <span class="summary-sig-arg">handler</span>,
+        <span class="summary-sig-arg">error</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="request_completed"></a><span class="summary-sig-name">request_completed</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">evt</span>,
+        <span class="summary-sig-arg">handler</span>,
+        <span class="summary-sig-arg">retval</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
@@ -225,13 +300,16 @@
       <code><a href="circuits.core.Manager-class.html#__isub__">__isub__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__len__">__len__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__sub__">__sub__</a></code>,
+      <code><a href="circuits.core.Manager-class.html#add">add</a></code>,
       <code><a href="circuits.core.Manager-class.html#flush">flush</a></code>,
       <code><a href="circuits.core.Manager-class.html#join">join</a></code>,
       <code><a href="circuits.core.Manager-class.html#push">push</a></code>,
+      <code><a href="circuits.core.Manager-class.html#remove">remove</a></code>,
       <code><a href="circuits.core.Manager-class.html#run">run</a></code>,
       <code><a href="circuits.core.Manager-class.html#send">send</a></code>,
       <code><a href="circuits.core.Manager-class.html#start">start</a></code>,
-      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>
+      <code><a href="circuits.core.Manager-class.html#stop">stop</a></code>,
+      <code><a href="circuits.core.Manager-class.html#tick">tick</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -309,6 +387,7 @@
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
+      <code><a href="circuits.core.Manager-class.html#running">running</a></code>,
       <code><a href="circuits.core.Manager-class.html#state">state</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -349,6 +428,30 @@
         object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="disconnect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">disconnect</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sock</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handler("disconnect", target= "server")</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -430,6 +533,32 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="request_success_or_filtered"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">request_success_or_filtered</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">evt</span>,
+        <span class="sig-arg">handler</span>,
+        <span class="sig-arg">retval</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handler("request_success", "request_filtered")</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -462,7 +591,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:04 2009
+    Generated by Epydoc 3.0.1 on Mon Jan 25 03:44:58 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

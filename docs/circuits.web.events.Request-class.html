@@ -83,7 +83,8 @@ object --+
       <code><a href="circuits.core.Event-class.html#__eq__">__eq__</a></code>,
       <code><a href="circuits.core.Event-class.html#__getitem__">__getitem__</a></code>,
       <code><a href="circuits.core.Event-class.html#__init__">__init__</a></code>,
-      <code><a href="circuits.core.Event-class.html#__repr__">__repr__</a></code>
+      <code><a href="circuits.core.Event-class.html#__repr__">__repr__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__setitem__">__setitem__</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -109,10 +110,58 @@ object --+
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Class Variables</span></td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="success"></a><span class="summary-name">success</span> = <code title="('request_success', 'http')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">request_success</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code><code class="variable-group">)</code></code><br />
+      An optional channel to use for Event handler success
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="failure"></a><span class="summary-name">failure</span> = <code title="('request_failure', 'http')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">request_failure</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code><code class="variable-group">)</code></code><br />
+      An optional channel to use for Event handler failure
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="before"></a><span class="summary-name">before</span> = <code title="('before_request', 'http')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">before_request</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code><code class="variable-group">)</code></code><br />
+      An optional channel to use before an Event handler execution
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="filter"></a><span class="summary-name">filter</span> = <code title="('request_filtered', 'http')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">request_filtered</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code><code class="variable-group">)</code></code><br />
+      An optional channel to use if an Event is filtered
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="start"></a><span class="summary-name">start</span> = <code title="('request_started', 'http')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">request_started</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code><code class="variable-group">)</code></code><br />
+      An optional channel to use before an Event starts
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="end"></a><span class="summary-name">end</span> = <code title="('request_completed', 'http')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">request_completed</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code><code class="variable-group">)</code></code><br />
+      An optional channel to use when an Event ends
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">core.Event</a></code></b>:
-      <code><a href="circuits.core.Event-class.html#target">target</a></code>
+      <code><a href="circuits.core.Event-class.html#handler">handler</a></code>
       </p>
     </td>
   </tr>
@@ -130,7 +179,7 @@ object --+
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">core.Event</a></code></b>:
       <code><a href="circuits.core.Event-class.html#channel">channel</a></code>,
       <code><a href="circuits.core.Event-class.html#name">name</a></code>,
-      <code><a href="circuits.core.Event-class.html#result">result</a></code>
+      <code><a href="circuits.core.Event-class.html#target">target</a></code>
       </p>
     </td>
   </tr>
@@ -182,7 +231,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:04 2009
+    Generated by Epydoc 3.0.1 on Mon Jan 25 03:44:58 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

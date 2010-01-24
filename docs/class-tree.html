@@ -80,7 +80,7 @@
     <li> <strong class="uidlink">exceptions.Exception</strong>:
       <em class="summary">Common base class for all non-exit exceptions.</em>
     <ul>
-    <li> <strong class="uidlink"><a href="circuits.drivers.DriverError-class.html">circuits.drivers.DriverError</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.web.dispatchers.RoutesDispatcherError-class.html">circuits.web.dispatchers.RoutesDispatcherError</a></strong>
     </li>
     </ul>
     </li>
@@ -91,17 +91,19 @@
     <ul>
     <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Accessed-class.html">circuits.drivers._inotify.Accessed</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.drivers._pygame.Click-class.html">circuits.drivers._pygame.Click</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.core.Before-class.html">circuits.core.Before</a></strong>:
+      <em class="summary">Before Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.drivers._pygame.ButtonDown-class.html">circuits.drivers._pygame.ButtonDown</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.drivers._pygame.ButtonUp-class.html">circuits.drivers._pygame.ButtonUp</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.net.sockets.Close-class.html">circuits.net.sockets.Close</a></strong>:
       <em class="summary">Close Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.web.events.Close-class.html">circuits.web.events.Close</a></strong>:
-      <em class="summary">Close(Event) -&gt; Close Event</em>
+    <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Closed-class.html">circuits.drivers._inotify.Closed</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.io.Closed-class.html">circuits.io.Closed</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Closed-class.html">circuits.drivers._inotify.Closed</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.net.sockets.Connect-class.html">circuits.net.sockets.Connect</a></strong>:
       <em class="summary">Connect Event</em>
@@ -112,10 +114,10 @@
     <li> <strong class="uidlink"><a href="circuits.app.env.Create-class.html">circuits.app.env.Create</a></strong>:
       <em class="summary">Create(Event) -&gt; Create Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Created-class.html">circuits.drivers._inotify.Created</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.app.env.Created-class.html">circuits.app.env.Created</a></strong>:
       <em class="summary">Created(Event) -&gt; Created Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Created-class.html">circuits.drivers._inotify.Created</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.app.log.Critical-class.html">circuits.app.log.Critical</a></strong>:
       <em class="summary">Critical(Event) -&gt; Critical Log Event</em>
@@ -130,29 +132,40 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Deleted-class.html">circuits.drivers._inotify.Deleted</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.pollers.Disconnect-class.html">circuits.net.pollers.Disconnect</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.net.sockets.Disconnect-class.html">circuits.net.sockets.Disconnect</a></strong>:
       <em class="summary">Disconnect Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.pollers.Disconnect-class.html">circuits.net.pollers.Disconnect</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.net.sockets.Disconnected-class.html">circuits.net.sockets.Disconnected</a></strong>:
       <em class="summary">Disconnected Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.pollers.Error-class.html">circuits.net.pollers.Error</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.io.EOF-class.html">circuits.io.EOF</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.io.Error-class.html">circuits.io.Error</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.core.Error-class.html">circuits.core.Error</a></strong>:
-      <em class="summary">Error Event</em>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.net.sockets.Error-class.html">circuits.net.sockets.Error</a></strong>:
-      <em class="summary">Error Event</em>
+    <li> <strong class="uidlink"><a href="circuits.core.End-class.html">circuits.core.End</a></strong>:
+      <em class="summary">End Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.app.log.Error-class.html">circuits.app.log.Error</a></strong>:
       <em class="summary">Error(Event) -&gt; Error Log Event</em>
     </li>
+    <li> <strong class="uidlink"><a href="circuits.core.Error-class.html">circuits.core.Error</a></strong>:
+      <em class="summary">Error Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.io.Error-class.html">circuits.io.Error</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.sockets.Error-class.html">circuits.net.sockets.Error</a></strong>:
+      <em class="summary">Error Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.pollers.Error-class.html">circuits.net.pollers.Error</a></strong>
+    </li>
     <li> <strong class="uidlink"><a href="circuits.app.log.Exception-class.html">circuits.app.log.Exception</a></strong>:
       <em class="summary">Exception(Event) -&gt; Exception Log Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.Failure-class.html">circuits.core.Failure</a></strong>:
+      <em class="summary">Failure Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.Filter-class.html">circuits.core.Filter</a></strong>:
+      <em class="summary">Filter Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.drivers._pygame.Focus-class.html">circuits.drivers._pygame.Focus</a></strong>
     </li>
@@ -172,9 +185,9 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.tools.bench.Hello-class.html">circuits.tools.bench.Hello</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.protocols.smtp.Helo-class.html">circuits.net.protocols.smtp.Helo</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.core.bridge.Helo-class.html">circuits.core.bridge.Helo</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.protocols.smtp.Helo-class.html">circuits.net.protocols.smtp.Helo</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.app.log.Info-class.html">circuits.app.log.Info</a></strong>:
       <em class="summary">Info(Event) -&gt; Info Log Event</em>
@@ -203,6 +216,9 @@
     <li> <strong class="uidlink"><a href="circuits.net.protocols.irc.Message-class.html">circuits.net.protocols.irc.Message</a></strong>:
       <em class="summary">Message(Event) -&gt; Message Event</em>
     </li>
+    <li> <strong class="uidlink"><a href="circuits.net.protocols.irc.Mode-class.html">circuits.net.protocols.irc.Mode</a></strong>:
+      <em class="summary">Mode(Event) -&gt; Mode Event</em>
+    </li>
     <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Modified-class.html">circuits.drivers._inotify.Modified</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.drivers._pygame.Mouse-class.html">circuits.drivers._pygame.Mouse</a></strong>
@@ -229,9 +245,9 @@
     <li> <strong class="uidlink"><a href="circuits.net.protocols.irc.Numeric-class.html">circuits.net.protocols.irc.Numeric</a></strong>:
       <em class="summary">Numeric(Event) -&gt; Numeric Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Opened-class.html">circuits.drivers._inotify.Opened</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.io.Opened-class.html">circuits.io.Opened</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.drivers._inotify.Opened-class.html">circuits.drivers._inotify.Opened</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.net.protocols.irc.Part-class.html">circuits.net.protocols.irc.Part</a></strong>:
       <em class="summary">Part(Event) -&gt; Part Event</em>
@@ -244,12 +260,12 @@
     <li> <strong class="uidlink"><a href="circuits.net.protocols.irc.Pong-class.html">circuits.net.protocols.irc.Pong</a></strong>:
       <em class="summary">Pong(Event) -&gt; Pong Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.protocols.irc.Quit-class.html">circuits.net.protocols.irc.Quit</a></strong>:
-      <em class="summary">Quit(Event) -&gt; Quit Event</em>
+    <li> <strong class="uidlink"><a href="circuits.net.protocols.smtp.Quit-class.html">circuits.net.protocols.smtp.Quit</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.drivers._pygame.Quit-class.html">circuits.drivers._pygame.Quit</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.protocols.smtp.Quit-class.html">circuits.net.protocols.smtp.Quit</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.net.protocols.irc.Quit-class.html">circuits.net.protocols.irc.Quit</a></strong>:
+      <em class="summary">Quit(Event) -&gt; Quit Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.web.dispatchers.RPC-class.html">circuits.web.dispatchers.RPC</a></strong>
     </li>
@@ -260,12 +276,12 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.net.protocols.smtp.Rcpt-class.html">circuits.net.protocols.smtp.Rcpt</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.sockets.Read-class.html">circuits.net.sockets.Read</a></strong>:
-      <em class="summary">Read Event</em>
+    <li> <strong class="uidlink"><a href="circuits.net.pollers.Read-class.html">circuits.net.pollers.Read</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.io.Read-class.html">circuits.io.Read</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.pollers.Read-class.html">circuits.net.pollers.Read</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.net.sockets.Read-class.html">circuits.net.sockets.Read</a></strong>:
+      <em class="summary">Read Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.tools.bench.Received-class.html">circuits.tools.bench.Received</a></strong>
     </li>
@@ -286,6 +302,9 @@
     <li> <strong class="uidlink"><a href="circuits.core.Signal-class.html">circuits.core.Signal</a></strong>:
       <em class="summary">Signal Event</em>
     </li>
+    <li> <strong class="uidlink"><a href="circuits.core.Start-class.html">circuits.core.Start</a></strong>:
+      <em class="summary">Start Event</em>
+    </li>
     <li> <strong class="uidlink"><a href="circuits.core.Started-class.html">circuits.core.Started</a></strong>:
       <em class="summary">Started Event</em>
     </li>
@@ -296,6 +315,9 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.web.events.Stream-class.html">circuits.web.events.Stream</a></strong>:
       <em class="summary">Stream(Event) -&gt; Stream Event</em>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.Success-class.html">circuits.core.Success</a></strong>:
+      <em class="summary">Success Event</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.tools.bench.Term-class.html">circuits.tools.bench.Term</a></strong>
     </li>
@@ -323,15 +345,12 @@
     <li> <strong class="uidlink"><a href="circuits.app.log.Warning-class.html">circuits.app.log.Warning</a></strong>:
       <em class="summary">Warning(Event) -&gt; Warning Log Event</em>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.net.sockets.Write-class.html">circuits.net.sockets.Write</a></strong>:
-      <em class="summary">Write Event</em>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.io.Write-class.html">circuits.io.Write</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.web.events.Write-class.html">circuits.web.events.Write</a></strong>:
-      <em class="summary">Write(Event) -&gt; Write Event</em>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.net.pollers.Write-class.html">circuits.net.pollers.Write</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.net.sockets.Write-class.html">circuits.net.sockets.Write</a></strong>:
+      <em class="summary">Write Event</em>
     </li>
     </ul>
     </li>
@@ -362,6 +381,12 @@
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="circuits.web.servers.BaseServer-class.html">circuits.web.servers.BaseServer</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="circuits.web.servers.Server-class.html">circuits.web.servers.Server</a></strong>
+    </li>
+    </ul>
+    </li>
     <li> <strong class="uidlink"><a href="circuits.core.Component-class.html">circuits.core.Component</a></strong>:
       <em class="summary">Component</em>
     <ul>
@@ -383,12 +408,6 @@
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.web.servers.BaseServer-class.html">circuits.web.servers.BaseServer</a></strong>
-    <ul>
-    <li> <strong class="uidlink"><a href="circuits.web.servers.Server-class.html">circuits.web.servers.Server</a></strong>
-    </li>
-    </ul>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.core.bridge.Bridge-class.html">circuits.core.bridge.Bridge</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.net.sockets.Client-class.html">circuits.net.sockets.Client</a></strong>
@@ -401,6 +420,8 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.app.config.Config-class.html">circuits.app.config.Config</a></strong>
     </li>
+    <li> <strong class="uidlink"><a href="circuits.app.Daemon-class.html">circuits.app.Daemon</a></strong>
+    </li>
     <li> <strong class="uidlink"><a href="circuits.core.debugger.Debugger-class.html">circuits.core.debugger.Debugger</a></strong>:
       <em class="summary">Create a new Debugger Component</em>
     </li>
@@ -411,14 +432,6 @@
         Environment</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.io.File-class.html">circuits.io.File</a></strong>
-    <ul>
-    <li> <strong class="uidlink"><a href="circuits.io.StdErr-class.html">circuits.io.StdErr</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.io.StdIn-class.html">circuits.io.StdIn</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.io.StdOut-class.html">circuits.io.StdOut</a></strong>
-    </li>
-    </ul>
     </li>
     <li> <strong class="uidlink"><a href="circuits.web.wsgi.Gateway-class.html">circuits.web.wsgi.Gateway</a></strong>
     </li>
@@ -438,11 +451,10 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.app.log.Logger-class.html">circuits.app.log.Logger</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.web.loggers.Logger-class.html">circuits.web.loggers.Logger</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="circuits.core.workers.Process-class.html">circuits.core.workers.Process</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="circuits.drivers._pygame.PyGameDriver-class.html">circuits.drivers._pygame.PyGameDriver</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.dispatchers.RoutesDispatcher-class.html">circuits.web.dispatchers.RoutesDispatcher</a></strong>:
+      <em class="summary">A Routes Dispatcher</em>
     </li>
     <li> <strong class="uidlink"><a href="circuits.net.protocols.smtp.SMTP-class.html">circuits.net.protocols.smtp.SMTP</a></strong>:
       <em class="summary">SMTP(event) -&gt; new smtp object</em>
@@ -459,7 +471,7 @@
     </li>
     <li> <strong class="uidlink"><a href="circuits.web.sessions.Sessions-class.html">circuits.web.sessions.Sessions</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="circuits.core.workers.Thread-class.html">circuits.core.workers.Thread</a></strong>
+    <li> <strong class="uidlink"><a href="circuits.web.dispatchers.Static-class.html">circuits.web.dispatchers.Static</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="circuits.core.timers.Timer-class.html">circuits.core.timers.Timer</a></strong>:
       <em class="summary">Timer(s, e, c, t, persist) -&gt; new timer component</em>
@@ -470,6 +482,12 @@
     <li> <strong class="uidlink"><a href="circuits.web.dispatchers.XMLRPC-class.html">circuits.web.dispatchers.XMLRPC</a></strong>
     </li>
     </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.web.loggers.Logger-class.html">circuits.web.loggers.Logger</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.workers.Process-class.html">circuits.core.workers.Process</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="circuits.core.workers.Thread-class.html">circuits.core.workers.Thread</a></strong>
     </li>
     <li> <strong class="uidlink">circuits.net.pollers._Poller</strong>
     <ul>
@@ -547,7 +565,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:49:57 2009
+    Generated by Epydoc 3.0.1 on Mon Jan 25 03:44:53 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
