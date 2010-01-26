@@ -11,7 +11,7 @@ and WSGI compliant.
 from utils import url
 from loggers import Logger
 from sessions import Sessions
-from core import expose, Controller
+from controllers import expose, Controller
 from events import Request, Response
 from servers import BaseServer, Server
 from errors import HTTPError, Forbidden, NotFound, Redirect
@@ -19,5 +19,10 @@ from dispatchers import Static, Dispatcher, VirtualHosts, XMLRPC
 
 try:
     from dispatchers import JSONRPC
+except ImportError:
+    pass
+
+try:
+    from controllers import JSONController
 except ImportError:
     pass

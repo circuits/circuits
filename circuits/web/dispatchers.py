@@ -25,9 +25,9 @@ except ImportError:
 
 from circuits import handler, Event, Component
 
-from core import Controller
 from errors import HTTPError
 from cgifs import FieldStorage
+from controllers import BaseController
 from tools import expires, serve_file
 from utils import parseQueryString, dictform
 
@@ -187,14 +187,14 @@ class Dispatcher(Component):
 
     @handler("registered", target="*")
     def registered(self, c, m):
-        if isinstance(c, Controller) and c not in self.components:
+        if isinstance(c, BaseController) and c not in self.components:
             self.paths.add(c.channel)
             c.unregister()
             self += c
 
     @handler("unregistered", target="*")
     def unregistered(self, c, m):
-        if isinstance(c, Controller) and c in self.components and m == self:
+        if isinstance(c, BaseController) and c in self.components and m == self:
             self.paths.remove(c.channel)
 
     @handler("request", filter=True, priority=0.1)

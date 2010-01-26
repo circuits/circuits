@@ -1,18 +1,25 @@
-# Module:   core
+# Module:   controllers
 # Date:     6th November 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Core Web Components
+"""Controllers
 
-This module implements Core Web Components that can be used to build
-web applications and web systems, be it an AJAX backend, a RESTful
-server or a website. These Components offer a full featured web
-server implementation with support for headers, cookies, positional
-and keyword arguments, filtering, url dispatching and more.
+This module implements ...
 """
 
 from inspect import getargspec
 from functools import update_wrapper
+
+try:
+    import json
+    HAS_JSON = 2
+except ImportError:
+    try:
+        import simplejson as json
+        HAS_JSON = 1
+    except ImportError:
+        HAS_JSON = 0
+        warnings.warn("No json support available.")
 
 from circuits.core import handler, BaseComponent
 
@@ -38,7 +45,8 @@ def expose(*channels, **config):
             if hasattr(self, "session"):
                del self.session
  
-      wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
+      wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
+              getargspec(f)
       if wrapper.args and wrapper.args[0] == "self":
           del wrapper.args[0]
       if wrapper.args and wrapper.args[0] == "event":
@@ -86,3 +94,51 @@ class BaseController(BaseComponent):
 class Controller(BaseController):
 
     __metaclass__ = ExposeType
+
+if HAS_JSON:
+
+    def exposeJSON(*channels, **config):
+       def decorate(f):
+          @handler(*channels, **config)
+          def wrapper(self, *args, **kwargs):
+             try:
+                if not hasattr(self, "request"):
+                    (self.request, self.response), args = args[:2], args[2:]
+                    self.cookie = self.request.cookie
+                    if hasattr(self.request, "session"):
+                       self.session = self.request.session
+                return json.dumps(f(self, *args, **kwargs))
+             finally:
+                if hasattr(self, "request"):
+                   del self.request
+                   del self.response
+                   del self.cookie
+                if hasattr(self, "session"):
+                   del self.session
+ 
+          wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
+                  getargspec(f)
+          if wrapper.args and wrapper.args[0] == "self":
+              del wrapper.args[0]
+          if wrapper.args and wrapper.args[0] == "event":
+              wrapper._passEvent = True
+          else:
+              wrapper._passEvent = False
+
+          return update_wrapper(wrapper, f)
+
+       return decorate
+
+    class ExposeJSONType(type):
+
+        def __init__(cls, name, bases, dct):
+            super(ExposeJSONType, cls).__init__(name, bases, dct)
+
+            for k, v in dct.iteritems():
+                if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
+                    setattr(cls, k, exposeJSON(k)(v))
+
+
+    class JSONController(BaseController):
+
+        __metaclass__ = ExposeJSONType
