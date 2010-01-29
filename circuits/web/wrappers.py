@@ -80,6 +80,8 @@ class Request(object):
     local = Host("127.0.0.1", 80)
     remote = Host("127.0.0.1", 1111)
 
+    xhr = False
+
     index = None
     script_name = ""
 
@@ -122,6 +124,9 @@ class Request(object):
         if not host:
             host = self.local.name or self.local.ip
         self.base = "%s://%s" % (self.scheme, host)
+
+        self.xhr = self.headers.get("X-Requested-With", "").lower() == \
+                "xmlhttprequest"
 
     headers = property(_getHeaders, _setHeaders)
 
