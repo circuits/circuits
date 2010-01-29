@@ -15,6 +15,7 @@ from cStringIO import StringIO
 from time import strftime, time
 from Cookie import SimpleCookie
 
+from utils import url
 from headers import Headers
 from constants import SERVER_VERSION
 from circuits.net.sockets import BUFSIZE
@@ -127,6 +128,9 @@ class Request(object):
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
+
+    def url(self):
+        return url(self)
 
 class Response(object):
     """Response(sock, request) -> new Response object
