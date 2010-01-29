@@ -38,7 +38,8 @@ class Static(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, docroot=None, defaults=("index.html",)):
+    def __init__(self, path=None, docroot=None,
+            defaults=("index.html", "index.xhtml",)):
         super(Static, self).__init__()
 
         self.path = path
