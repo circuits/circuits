@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>circuits.core.Component</title>
+  <title>circuits.app.Daemon</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -43,8 +43,8 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
-        <a href="circuits.core-module.html">Package&nbsp;core</a> ::
-        Class&nbsp;Component
+        <a href="circuits.app-module.html">Package&nbsp;app</a> ::
+        Class&nbsp;Daemon
       </span>
     </td>
     <td>
@@ -55,26 +55,20 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Component</h1><p class="nomargin-top"></p>
+<h1 class="epydoc">Class Daemon</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
-object --+        
-         |        
-   <a href="circuits.core.Manager-class.html">Manager</a> --+    
-             |    
- <a href="circuits.core.BaseComponent-class.html">BaseComponent</a> --+
-                 |
-                <strong class="uidshort">Component</strong>
+    object --+            
+             |            
+  <a href="circuits.core.Manager-class.html">core.Manager</a> --+        
+                 |        
+<a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a> --+    
+                     |    
+        <a href="circuits.core.Component-class.html">core.Component</a> --+
+                         |
+                        <strong class="uidshort">Daemon</strong>
 </pre>
 
-<dl><dt>Known Subclasses:</dt>
-<dd>
-      <ul class="subclass-list">
-<li><a href="circuits.app.Daemon-class.html">app.Daemon</a></li><li>, <a href="circuits.app.config.Config-class.html">app.config.Config</a></li><li>, <a href="circuits.app.log.Logger-class.html">app.log.Logger</a></li><li>, <a href="circuits.app.env.Environment-class.html">app.env.Environment</a></li><li>, <a href="circuits.web.loggers.Logger-class.html">web.loggers.Logger</a></li><li>, <a href="circuits.web.servers.BaseServer-class.html">web.servers.BaseServer</a></li><li>, <a href="circuits.web.http.HTTP-class.html">web.http.HTTP</a></li><li>, <a href="circuits.web.dispatchers.Dispatcher-class.html">web.dispatchers.Dispatcher</a></li><li>, <a href="circuits.web.dispatchers.JSONRPC-class.html">web.dispatchers.JSONRPC</a></li><li>, <a href="circuits.web.dispatchers.VirtualHosts-class.html">web.dispatchers.VirtualHosts</a></li><li>, <a href="circuits.web.dispatchers.XMLRPC-class.html">web.dispatchers.XMLRPC</a></li><li>, <a href="circuits.web.wsgi.Application-class.html">web.wsgi.Application</a></li><li>, <a href="circuits.web.wsgi.Gateway-class.html">web.wsgi.Gateway</a></li><li>, <a href="circuits.web.sessions.Sessions-class.html">web.sessions.Sessions</a></li><li>, <a href="circuits.web.main.HelloWorld-class.html">web.main.HelloWorld</a></li><li>, <a href="circuits.drivers._inotify.INotifyDriver-class.html">drivers._inotify.INotifyDriver</a></li><li>, <a href="circuits.drivers._pygame.PyGameDriver-class.html">drivers._pygame.PyGameDriver</a></li><li>, <a href="circuits.drivers._gtk.GtkDriver-class.html">drivers._gtk.GtkDriver</a></li><li>, <a href="circuits.io.File-class.html">io.File</a></li><li>, <a href="circuits.net.sockets.Client-class.html">net.sockets.Client</a></li><li>, <a href="circuits.net.sockets.Server-class.html">net.sockets.Server</a></li><li>, <a href="circuits.net.protocols.irc.IRC-class.html">net.protocols.irc.IRC</a></li><li>, <a href="circuits.net.protocols.smtp.SMTP-class.html">net.protocols.smtp.SMTP</a></li><li>, <a href="circuits.core.timers.Timer-class.html">timers.Timer</a></li><li>, <a href="circuits.core.debugger.Debugger-class.html">debugger.Debugger</a></li><li>, <a href="circuits.core.bridge.Bridge-class.html">bridge.Bridge</a></li><li>, <a href="circuits.tools.bench.Base-class.html">tools.bench.Base</a></li>  </ul>
-</dd></dl>
-
 <hr />
-<p>Component</p>
-
 <!-- ==================== NESTED CLASSES ==================== -->
 <a name="section-NestedClasses"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -83,12 +77,11 @@ object --+
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Nested Classes</span></td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="circuits.core.HandlersType-class.html" class="summary-name">__metaclass__</a><br />
-      Handlers metaclass
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
+      <code><a href="circuits.core.HandlersType-class.html">__metaclass__</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -100,17 +93,56 @@ object --+
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Instance Methods</span></td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.app.Daemon-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pidfile</span>,
+        <span class="summary-sig-arg">path</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">/</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">stdin</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">/dev/null</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">stdout</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">/dev/null</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">stderr</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">/dev/null</code><code class="variable-quote">'</code></span>)</span><br />
+      initializes x; see x.__class__.__doc__ for signature</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="started"></a><span class="summary-sig-name">started</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">manager</span>,
+        <span class="summary-sig-arg">mode</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">BaseComponent</a></code></b>:
-      <code><a href="circuits.core.BaseComponent-class.html#__init__">__init__</a></code>,
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
       <code><a href="circuits.core.BaseComponent-class.html#__repr__">__repr__</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#link">link</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#register">register</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#unlink">unlink</a></code>,
       <code><a href="circuits.core.BaseComponent-class.html#unregister">unregister</a></code>
       </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#__add__">__add__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__iadd__">__iadd__</a></code>,
       <code><a href="circuits.core.Manager-class.html#__isub__">__isub__</a></code>,
@@ -153,23 +185,11 @@ object --+
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Static Methods</span></td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">a new object with type S, a subtype of T</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="circuits.core.Component-class.html#__new__" class="summary-sig-name">__new__</a>(<span class="summary-sig-arg">cls</span>,
-        <span class="summary-sig-arg">*args</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span><br />
-      TODO Work around for Python bug.</td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Component-class.html">core.Component</a></code></b>:
+      <code><a href="circuits.core.Component-class.html#__new__">__new__</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -183,10 +203,10 @@ object --+
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">BaseComponent</a></code></b>:
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.BaseComponent-class.html">core.BaseComponent</a></code></b>:
       <code><a href="circuits.core.BaseComponent-class.html#channel">channel</a></code>
       </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#manager">manager</a></code>
       </p>
     </td>
@@ -202,7 +222,7 @@ object --+
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">Manager</a></code></b>:
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Manager-class.html">core.Manager</a></code></b>:
       <code><a href="circuits.core.Manager-class.html#name">name</a></code>,
       <code><a href="circuits.core.Manager-class.html#running">running</a></code>,
       <code><a href="circuits.core.Manager-class.html#state">state</a></code>
@@ -222,29 +242,30 @@ object --+
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
-<a name="__new__"></a>
+<a name="__init__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__new__</span>(<span class="sig-arg">cls</span>,
-        <span class="sig-arg">*args</span>,
-        <span class="sig-arg">**kwargs</span>)</span>
-    <br /><em class="fname">Static Method</em>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pidfile</span>,
+        <span class="sig-arg">path</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">/</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">stdin</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">/dev/null</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">stdout</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">/dev/null</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">stderr</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">/dev/null</code><code class="variable-quote">'</code></span>)</span>
+    <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
     >&nbsp;
     </td>
   </tr></table>
   
-  <p>TODO Work around for Python bug.</p>
-  <p>Bug: http://bugs.python.org/issue5322</p>
+  <p>initializes x; see x.__class__.__doc__ for signature</p>
   <dl class="fields">
-    <dt>Returns: a new object with type S, a subtype of T</dt>
     <dt>Overrides:
-        object.__new__
+        object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -282,7 +303,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Feb  2 04:55:26 2010
+    Generated by Epydoc 3.0.1 on Tue Feb  2 04:55:25 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

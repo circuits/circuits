@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>circuits.drivers.DriverError</title>
+  <title>circuits.io.EOF</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -43,8 +43,8 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="circuits-module.html">Package&nbsp;circuits</a> ::
-        <a href="circuits.drivers-module.html">Package&nbsp;drivers</a> ::
-        Class&nbsp;DriverError
+        <a href="circuits.io-module.html">Package&nbsp;io</a> ::
+        Class&nbsp;EOF
       </span>
     </td>
     <td>
@@ -55,15 +55,13 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class DriverError</h1><p class="nomargin-top"></p>
+<h1 class="epydoc">Class EOF</h1><p class="nomargin-top"></p>
 <pre class="base-tree">
-              object --+        
-                       |        
-exceptions.BaseException --+    
-                           |    
-        exceptions.Exception --+
-                               |
-                              <strong class="uidshort">DriverError</strong>
+object --+    
+         |    
+<a href="circuits.core.Event-class.html">core.Event</a> --+
+             |
+            <strong class="uidshort">EOF</strong>
 </pre>
 
 <hr />
@@ -77,28 +75,65 @@ exceptions.BaseException --+
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>exceptions.Exception</code></b>:
-      <code>__init__</code>,
-      <code>__new__</code>
-      </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code>exceptions.BaseException</code></b>:
-      <code>__delattr__</code>,
-      <code>__getattribute__</code>,
-      <code>__getitem__</code>,
-      <code>__getslice__</code>,
-      <code>__reduce__</code>,
-      <code>__repr__</code>,
-      <code>__setattr__</code>,
-      <code>__setstate__</code>,
-      <code>__str__</code>,
-      <code>__unicode__</code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">core.Event</a></code></b>:
+      <code><a href="circuits.core.Event-class.html#__eq__">__eq__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__getitem__">__getitem__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__init__">__init__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__repr__">__repr__</a></code>,
+      <code><a href="circuits.core.Event-class.html#__setitem__">__setitem__</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
       <code>__format__</code>,
+      <code>__getattribute__</code>,
       <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
       <code>__sizeof__</code>,
+      <code>__str__</code>,
       <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">core.Event</a></code></b>:
+      <code><a href="circuits.core.Event-class.html#before">before</a></code>,
+      <code><a href="circuits.core.Event-class.html#end">end</a></code>,
+      <code><a href="circuits.core.Event-class.html#failure">failure</a></code>,
+      <code><a href="circuits.core.Event-class.html#filter">filter</a></code>,
+      <code><a href="circuits.core.Event-class.html#handler">handler</a></code>,
+      <code><a href="circuits.core.Event-class.html#start">start</a></code>,
+      <code><a href="circuits.core.Event-class.html#success">success</a></code>,
+      <code><a href="circuits.core.Event-class.html#target">target</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="circuits.core.Event-class.html">core.Event</a></code></b>:
+      <code><a href="circuits.core.Event-class.html#channel">channel</a></code>,
+      <code><a href="circuits.core.Event-class.html#name">name</a></code>
       </p>
     </td>
   </tr>
@@ -113,10 +148,6 @@ exceptions.BaseException --+
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>exceptions.BaseException</code></b>:
-      <code>args</code>,
-      <code>message</code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -154,7 +185,7 @@ exceptions.BaseException --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 18 00:50:00 2009
+    Generated by Epydoc 3.0.1 on Tue Feb  2 04:55:27 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
