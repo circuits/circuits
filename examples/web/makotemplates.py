@@ -5,7 +5,7 @@ import os
 import mako
 from mako.lookup import TemplateLookup
 
-from circuits.web import Server, Controller
+from circuits.web import Server, Controller, Static
 
 DEFAULTS = {}
 
@@ -33,4 +33,4 @@ class Root(Controller):
 		msg = "Thank you %s %s" % (firstName, lastName)
 		return render(self.tpl, message=msg)
 
-(Server(8000) + Root()).run()
+(Server(8000) + Static() + Root()).run()

@@ -23,10 +23,15 @@ except ImportError:
     psyco = None
 
 from circuits.tools import inspect, graph
+from circuits.net.pollers import Select, Poll
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
-from circuits.net.pollers import Select, Poll, EPoll
 from circuits.web import BaseServer, Server, Controller, wsgi
+
+try:
+    from circuits.net.pollers import EPoll
+except ImportError:
+    EPoll = None
 
 
 USAGE = "%prog [options]"
@@ -133,7 +138,11 @@ def main():
     if poller == "poll":
         Poller = Poll
     elif poller == "epoll":
-        Poller = EPoll
+        if EPoll is None:
+            print "No epoll support available - defaulting to Select..."
+            Poller = Select
+        else:
+            Poller = EPoll
     else:
         Poller = Select
 

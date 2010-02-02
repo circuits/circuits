@@ -8,6 +8,7 @@ This module implements useful decorators that can be used
 to affect the behaviour of request handlers.
 """
 
+import warnings
 from functools import update_wrapper
 
 try:

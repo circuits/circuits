@@ -13,9 +13,12 @@ from __future__ import with_statement
 import os
 import sys
 
-from circuits import Component
+from circuits.core import handler, BaseComponent, Event
 
-class Daemon(Component):
+class Daemonize(Event): pass
+class WritePID(Event): pass
+
+class Daemon(BaseComponent):
 
     def __init__(self, pidfile, path="/", stdin="/dev/null", stdout="/dev/null",
             stderr="/dev/null"):
@@ -27,47 +30,50 @@ class Daemon(Component):
         self._stdout = stdout
         self._stderr = stderr
 
+    @handler("writepid")
     def _writepid(self):
         with open(self._pidfile, "w") as f:
-		    f.write(str(os.getpid()))
+            f.write(str(os.getpid()))
 
+    @handler("daemonize")
     def _daemonize(self):
-	    # Do first fork.
-	    try:
-		    pid = os.fork()
-		    if pid > 0:
-			    # Exit first parent
-			    raise SystemExit, 0
-	    except OSError, e:
-		    print >> sys.stderr, "fork #1 failed: (%d) %s\n" % (errno, str(e))
-		    raise SystemExit, 1
+        # Do first fork.
+        try:
+            pid = os.fork()
+            if pid > 0:
+                # Exit first parent
+                raise SystemExit, 0
+        except OSError, e:
+            print >> sys.stderr, "fork #1 failed: (%d) %s\n" % (errno, str(e))
+            raise SystemExit, 1
 
-	    # Decouple from parent environment.
-	    os.chdir(path)
-	    os.umask(077)
-	    os.setsid()
+        # Decouple from parent environment.
+        os.chdir(path)
+        os.umask(077)
+        os.setsid()
 
-	    # Do second fork.
-	    try:
-		    pid = os.fork()
-		    if pid > 0:
-			    # Exit second parent
-			    raise SystemExit, 0
-	    except OSError, e:
-		    print >> sys.stderr, "fork #2 failed: (%d) %s\n" % (e, str(e))
-		    raise SystemExit, 1
+        # Do second fork.
+        try:
+            pid = os.fork()
+            if pid > 0:
+                # Exit second parent
+                raise SystemExit, 0
+        except OSError, e:
+            print >> sys.stderr, "fork #2 failed: (%d) %s\n" % (e, str(e))
+            raise SystemExit, 1
 
-	    # Now I am a daemon!
+        # Now I am a daemon!
 
-	    # Redirect standard file descriptors.
-	    si = open(os.path.abspath(os.path.expanduser(stdin)), "r")
-	    so = open(os.path.abspath(os.path.expanduser(stdout)), "a+")
-	    se = open(os.path.abspath(os.path.expanduser(stderr)), "a+", 0)
-	    os.dup2(si.fileno(), sys.stdin.fileno())
-	    os.dup2(so.fileno(), sys.stdout.fileno())
-	    os.dup2(se.fileno(), sys.stderr.fileno())
+        # Redirect standard file descriptors.
+        si = open(os.path.abspath(os.path.expanduser(stdin)), "r")
+        so = open(os.path.abspath(os.path.expanduser(stdout)), "a+")
+        se = open(os.path.abspath(os.path.expanduser(stderr)), "a+", 0)
+        os.dup2(si.fileno(), sys.stdin.fileno())
+        os.dup2(so.fileno(), sys.stdout.fileno())
+        os.dup2(se.fileno(), sys.stderr.fileno())
+
+        self.push(WritePID())
 
     def started(self, manager, mode):
         if not manager == self and mode is None:
-            self._daemonize()
-            self._writepid()
+            self.push(Daemonize())
