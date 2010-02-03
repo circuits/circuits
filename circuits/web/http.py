@@ -87,7 +87,6 @@ class HTTP(Component):
             except StopIteration:
                 data = None
             self.push(Stream(response, data))
-            return
         else:
             body = "".join(response.body)
 
@@ -100,9 +99,9 @@ class HTTP(Component):
             if response.chunked:
                 self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
 
-        if response.close:
-            self.push(Close(response.sock), "close", "server")
-        response.done = True
+            if response.close:
+                self.push(Close(response.sock), "close", "server")
+            response.done = True
 
     @handler("disconnect", target="server")
     def disconnect(self, sock):
