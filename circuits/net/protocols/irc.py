@@ -17,23 +17,11 @@ import time
 from circuits.net.sockets import Write
 from circuits.core import Event, Component
 
+from line import LP
+
 ###
 ### Supporting Functions
 ###
-
-LINESEP = re.compile("\r?\n")
-
-def splitLines(s, buffer):
-    """splitLines(s, buffer) -> lines, buffer
-
-    Append s to buffer and find any new lines of text in the
-    string splitting at the standard IRC delimiter CRLF. Any
-    new lines found, return them as a list and the remaining
-    buffer for further processing.
-    """
-
-    lines = LINESEP.split(buffer + s)
-    return lines[:-1], lines[-1]
 
 def strip(s, color=False):
     """strip(s, color=False) -> str
@@ -196,10 +184,11 @@ class IRC(Component):
     """
 
     def __init__(self, *args, **kwargs):
-        self._data = ""
         self._info = {}
 
         super(IRC, self).__init__(*args, **kwargs)
+
+        LP().register(self)
 
     ###
     ### Properties
@@ -421,21 +410,8 @@ class IRC(Component):
     ### Event Processing
     ###
 
-    def read(self, data):
-        """Read Event Handler
-
-           Process any incoming data appending it to an internal
-           buffer. Split the buffer by the standard IRC delimiter
-           CRLF and create a Raw event per line. Any unfinished
-           lines of text, leave in the buffer.
-        """
-
-        lines, self._data = splitLines(data, self._data)
-        for line in lines:
-            self.push(Raw(line), "raw", self.channel)
-
-    def raw(self, line):
-        """I.onRAW(line) -> None
+    def line(self, line):
+        """Line Event Handler
 
         Process a line of text and generate the appropiate
         event. This must not be overridden by sub-classes,
