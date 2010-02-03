@@ -10,6 +10,7 @@ This package contains the most basic building blocks of all Components.
 import os
 import new
 import time
+from types import TupleType
 from itertools import chain
 from threading import Thread
 from collections import deque
@@ -467,6 +468,8 @@ class Manager(object):
         self._cmap = dict()
         self._tmap = dict()
 
+        self._links = set()
+
         self._ticks = set()
         self.components = set()
 
@@ -475,6 +478,8 @@ class Manager(object):
 
         self.root = self
         self.manager = self
+        self.parents = set([self])
+        self.children = set()
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
@@ -552,6 +557,12 @@ class Manager(object):
             return self
         else:
             raise TypeError("No registration found for %r" % y)
+
+    def __lshift__(self, y):
+        return y.link(self)
+
+    def __rshift__(self, y):
+        return self.link(y)
 
     def _getHandlers(self, _channel):
         target, channel = _channel
@@ -721,10 +732,31 @@ class Manager(object):
 
         self.root._push(event, (target, channel))
 
+    def _send(self, event, channel):
+        for child in self.children:
+            child._queue.append((event, channel))
+
+    def send(self, event, channel=None, target=None):
+        if channel is None and target is None:
+            if type(event.channel) is TupleType:
+                target, channel = event.channel
+            else:
+                channel = event.channel or event.name.lower()
+                target = event.target or "*"
+        else:
+            channel = channel or event.channel or event.name.lower()
+            target = target or event.target or self.channel or "*"
+            if isinstance(target, Component):
+                target = getattr(target, "channel", "*")
+
+        event.channel = (target, channel)
+
+        self._send(event, (target, channel))
+
     def _flush(self):
         q = self._queue
         self._queue = deque()
-        while q: self._send(*q.popleft())
+        while q: self.__handle(*q.popleft())
 
     def flush(self):
         """Flush all Events in the Event Queue
@@ -736,7 +768,7 @@ class Manager(object):
 
         self.root._flush()
 
-    def _send(self, event, channel, errors=False, log=True):
+    def __handle(self, event, channel, errors=False, log=True):
         eargs = event.args
         ekwargs = event.kwargs
 
@@ -779,48 +811,6 @@ class Manager(object):
             self.push(End(event, handler, retval), *event.end)
 
         return retval
-
-    def send(self, event, channel=None, target=None, errors=False, log=True):
-        """Send a new Event to Event Handlers for the Target and Channel
-
-        This will send the given Event, to the spcified CHannel on the
-        Target Component's Channel.
-
-        if target is None, then target will be set as the Channel of
-        the current Component, self.channel (defaulting back to None).
-
-        If this Component's Manager is itself, enqueue on this Component's
-        Event Queue, otherwise enqueue on this Component's Manager.
-
-        @param event: The Event Object
-        @type  event: Event
-
-        @param channel: The Channel this Event is bound for
-        @type  channel: str
-
-        @keyword target: The target Component's channel this Event is bound for
-        @type    target: str or Component
-
-        @keyword errors: True to raise errors, False otherwise
-        @type    errors: bool
-
-        @keyword log: True to log errors, False otherwise
-        @type    log: bool
-
-        @return: The return value of the last executed Event Handler
-        @rtype:  object
-        """
-
-        channel = channel or event.channel or event.name.lower()
-        target = target if target is not None else event.target
-        if isinstance(target, Component):
-            target = getattr(target, "channel", "*")
-        else:
-            target = target or getattr(self, "channel", "*")
-
-        event.channel = (target, channel)
-
-        return self.root._send(event, (target, channel), errors, log)
 
     def _signal(self, signal, stack):
         if not self.send(Signal(signal, stack), "signal"):
@@ -887,8 +877,16 @@ class Manager(object):
         try:
             while self.running:
                 try:
-                    [f() for f in self._ticks.copy()]
-                    self._flush()
+                    if self._ticks:
+                        [f() for f in self._ticks.copy()]
+                    if len(self):
+                        self._flush()
+                    if self._links:
+                        for link in self._links.copy():
+                            if link._ticks:
+                                [f() for f in link._ticks.copy()]
+                            if len(link):
+                                link._flush()
                     if sleep:
                         try:
                             time.sleep(sleep)
@@ -1018,17 +1016,18 @@ class BaseComponent(Manager):
             if c._queue:
                 m._queue.extend(list(c._queue))
                 c._queue.clear()
+            m._links.update(c._links)
             if m is not r:
                 c._registerHandlers(r)
                 if m._queue:
                     r._queue.extend(list(m._queue))
                     m._queue.clear()
+                r._links.update(c._links)
             if hasattr(c, "__tick__"):
                 m._ticks.add(getattr(c, "__tick__"))
                 if m is not r:
                     r._ticks.add(getattr(c, "__tick__"))
-            for x in c.components:
-                _register(x, m, r)
+            [_register(x, m, r) for x in c.components if x not in c._links]
 
         _register(self, manager, findroot(manager))
 
@@ -1069,6 +1068,37 @@ class BaseComponent(Manager):
         self.push(Unregistered(self, self.manager), target=self)
 
         self.manager = self
+
+    def link(self, component):
+        component.parents.add(self)
+        if component in component.parents:
+            component.parents.remove(component)
+
+        self.children.add(component)
+
+        self.components.add(component)
+
+        self._links.add(component)
+        self._links.update(component._links)
+
+        root = findroot(self)
+        root._links.add(component)
+        root._links.update(component._links)
+
+        return self
+
+    def unlink(self, component):
+        component.parents.add(component)
+        component.parents.remove(self)
+
+        self.children.remove(component)
+
+        self.components.remove(component)
+
+        self._links.remove(component)
+        self._links.update_difference(component._links)
+
+        return self
 
 class Component(BaseComponent):
     "Component"
