@@ -721,12 +721,17 @@ class Manager(object):
         @type    target: str or Component
         """
 
-        channel = channel or event.channel or event.name.lower()
-        target = target if target is not None else event.target
-        if isinstance(target, Component):
-            target = getattr(target, "channel", "*")
+        if channel is None and target is None:
+            if type(event.channel) is TupleType:
+                target, channel = event.channel
+            else:
+                channel = event.channel or event.name.lower()
+                target = event.target or "*"
         else:
-            target = target or getattr(self, "channel", "*")
+            channel = channel or event.channel or event.name.lower()
+            target = target or event.target or self.channel or "*"
+            if isinstance(target, Component):
+                target = getattr(target, "channel", "*")
 
         event.channel = (target, channel)
 
