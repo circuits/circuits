@@ -60,25 +60,63 @@ class LP(BaseComponent):
     @param splitter: a line splitter function
     @type  splitter: function
 
+    This Component operates in two modes. In normal operation it's expected
+    to be used in conjunction with components that expose a Read Event on
+    a "read" channel with only one argument (data). Some builtin components
+    that expose such events are:
+     * circuits.net.sockets.TCPClient
+     * circuits.io.File
+
+    The second mode of operation works with circuits.net.sockets.Server
+    components such as TCPServer, UNIXServer, etc. It's expected that
+    two arguments exist in the Read Event, sock and data. The following
+    two arguments can be passed to affect how unfinished data is stored
+    and retrieved for such components:
+
+    @params getBuffer: function to retrieve the buffer for a client sock
+    @type getBuffer: function
+
+    This function must accept one argument (sock,) the client socket
+    whoose buffer is to be retrieved.
+
+    @params updateBuffer: function to update the buffer for a client sock
+    @type updateBuffer: function
+
+    This function must accept two arguments (sock, buffer,) the client
+    socket and the left over buffer to be updated.
+
     @note: This Component must be used in conjunction with a Component that
            exposes Read events on a "read" Channel.
     """
 
-    channel = "*"
-
-    def __init__(self, splitter=splitLines, channel=channel):
+    def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(LP, self).__init__(channel=channel)
+        super(LP, self).__init__(*args, **kwargs)
 
-        self.splitter = splitter
+        # Used for Servers
+        self.getBuffer = kwargs.get("getBuffer")
+        self.updateBuffer = kwargs.get("updateBuffer")
+
+        self.splitter = kwargs.get("splitter", splitLines)
+
         self.buffer = ""
 
     @handler("read")
-    def read(self, data):
+    def anyRead(self, data):
         lines, self.buffer = self.splitter(data, self.buffer)
         for line in lines:
             if self.children:
                 self.send(Line(line))
             else:
                 self.push(Line(line))
+
+    @handler("read", target="server")
+    def serverRead(self, sock, data):
+        lines, buffer = self.splitter(data, self.getBuffer(sock))
+        self.updateBuffer(sock, buffer)
+        for line in lines:
+            if self.children:
+                self.send(Line(sock, line))
+            else:
+                self.push(Line(sock, line))
