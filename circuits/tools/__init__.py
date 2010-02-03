@@ -8,6 +8,18 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
+from hashlib import md5
+
+def walklinks(x, f, d=0, v=None):
+    if not v:
+        v = set()
+    yield f(d, x)
+    for c in x.children.copy():
+        if c not in v:
+            v.add(c)
+            for r in walklinks(c, f, d + 1, v):
+                yield r
+
 def walk(x, f, d=0, v=None):
     if not v:
         v = set()
