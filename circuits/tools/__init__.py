@@ -34,23 +34,31 @@ def edges(x, e=None, v=None):
     if not e:
         e = set()
     if not v:
-        v = set()
+        v = []
     for c in x.components.copy():
-        if c not in v:
-            v.add(c)
-            e.add((x, c))
-            edges(c, e, v)
+        e.add((x, c))
+        edges(c, e, v)
     return e
+
+def orphan(x):
+    return len(x.parents) == 1 and list(x.parents)[0] == x
 
 def findroot(x, v=None):
     if not v:
         v = set()
-    if x.manager == x:
+    if x.manager == x and orphan(x):
         return x
     else:
         if x.manager not in v:
             v.add(x.manager)
             return findroot(x.manager, v)
+        elif not all(parent in v for parent in x.parents):
+            parent = None
+            for parent in x.parents:
+                if parent not in v:
+                    break
+            v.add(parent)
+            return findroot(parent, v)
         else:
             return x.manager
 
@@ -73,25 +81,15 @@ def graph(x, name=None):
     @rtype:  str
     """
 
+    def getname(c):
+        return "%s-%s" % (c.name, md5(str(hash(c))).hexdigest()[-4:])
+
     try:
         import pydot
         
         graph_edges = []
-        nodes = []
-        names = []
         for (u, v) in edges(x):
-            if v.name in names and v not in nodes:
-                i = 1
-                new_name = "%s-%d" % (v.name, i)
-                while new_name in names:
-                    i += 1
-                    new_name = "%s-%d" % (v.name, i)
-                graph_edges.append((u.name, new_name))
-            else:
-                nodes.append(u)
-                nodes.append(v)
-                names.append(v.name)
-                graph_edges.append((u.name, v.name))
+            graph_edges.append(("\"%s\"" % getname(u), "\"%s\"" % getname(v)))
 
         g = pydot.graph_from_edges(graph_edges, directed=True)
         g.write("%s.dot" % (name or x.name))
