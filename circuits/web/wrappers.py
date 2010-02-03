@@ -160,19 +160,12 @@ class Response(object):
                 self.headers["Content-Type"],
                 (len(self.body) if type(self.body) == str else 0))
     
-    def output(self):
+    def __str__(self):
+        self.prepare()
         protocol = self.protocol
         status = self.status
         headers = self.headers
-        body = self.process() or ""
-        yield "%s %s\r\n" % (self.protocol, status)
-        yield str(headers)
-        if body:
-            if self.chunked:
-                buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
-                yield "".join(buf)
-            else:
-                yield body
+        return "%s %s\r\n%s" % (protocol, status, headers)
 
     def clear(self):
         self.done = False
@@ -198,7 +191,20 @@ class Response(object):
         self.status = "200 OK"
         self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
-    def process(self):
+    def prepare(self):
+        if isinstance(self.body, basestring):
+            self.headers["Content-Length"] = str(len(self.body))
+            self.headers.setdefault("Content-Type", "text/html")
+        elif type(self.body) is types.GeneratorType:
+            self.stream = True
+        elif type(self.body) is types.FileType:
+            st = os.fstat(self.body.fileno())
+            self.headers.setdefault("Content-Length", str(st.st_size))
+            self.headers.setdefault("Content-Type", "application/octet-stream")
+            self.stream = True
+            self.file = self.body
+            self.body = file_generator(self.body)
+
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
@@ -228,21 +234,3 @@ class Response(object):
 
         if self.headers.get("Transfer-Encoding", "") == "chunked":
             self.chunked = True
-
-        if isinstance(self.body, basestring):
-            self.headers["Content-Length"] = str(len(self.body))
-            self.headers.setdefault("Content-Type", "text/html")
-            return self.body
-        elif type(self.body) is types.GeneratorType:
-            self.stream = True
-            return self.body.next()
-        elif type(self.body) is types.FileType:
-            st = os.fstat(self.body.fileno())
-            self.headers.setdefault("Content-Length", str(st.st_size))
-            self.headers.setdefault("Content-Type", "application/octet-stream")
-            self.stream = True
-            self.file = self.body
-            self.body = file_generator(self.body)
-            return None
-        else:
-            return None

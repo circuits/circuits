@@ -79,8 +79,8 @@ class HTTP(Component):
             response.done = True
         
     def response(self, response):
-        for data in response.output():
-            self.push(Write(response.sock, data), "write", "server")
+        self.push(Write(response.sock, str(response)), "write", "server")
+
         if response.stream and response.body:
             try:
                 data = response.body.next()
@@ -89,7 +89,15 @@ class HTTP(Component):
             self.push(Stream(response, data))
             return
         else:
-            if response.chunked and not response.stream:
+            body = "".join(response.body)
+
+            if response.chunked:
+                buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
+                body = "".join(buf)
+
+            self.push(Write(response.sock, body), "write", "server")
+
+            if response.chunked:
                 self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
 
         if response.close:
