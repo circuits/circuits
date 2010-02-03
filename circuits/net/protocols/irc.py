@@ -74,12 +74,6 @@ def sourceSplit(source):
 ### Evenets
 ###
 
-class Raw(Event):
-    """Raw(Event) -> Raw Event
-
-   args: line
-   """
-
 class Numeric(Event):
     """Numeric(Event) -> Numeric Event
 
