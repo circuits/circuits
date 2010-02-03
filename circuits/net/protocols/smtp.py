@@ -11,26 +11,13 @@ or commonly known as SMTP.
 import re
 import socket
 from tempfile import TemporaryFile
+from collections import defaultdict
 
 from circuits import handler, Event, Component
 
 ###
 ### Supporting Functions
 ###
-
-LINESEP = re.compile("\r?\n")
-
-def splitLines(s, buffer):
-	"""splitLines(s, buffer) -> lines, buffer
-
-	Append s to buffer and find any new lines of text in the
-	string splitting at the standard IRC delimiter CRLF. Any
-	new lines found, return them as a list and the remaining
-	buffer for further processing.
-	"""
-
-	lines = LINESEP.split(buffer + s)
-	return lines[:-1], lines[-1]
 
 def stripAddress(address):
 	"""stripAddress(address) -> address
@@ -74,7 +61,6 @@ def getAddress(keyword, arg):
 ### Events
 ###
 
-class Raw(Event): pass
 class Helo(Event): pass
 class Mail(Event): pass
 class Rcpt(Event): pass
@@ -102,9 +88,9 @@ class SMTP(Component):
 	COMMAND = 0
 	DATA = 1
 
-	__buffers = {}
+	__buffers = defaultdict(str)
 
-	__states = {}
+	__states = defaultdict(COMMAND)
 
 	__greeting = None
 	__mailfrom = None
@@ -112,6 +98,12 @@ class SMTP(Component):
 	__data = None
 
 	__fqdn = socket.getfqdn()
+
+    def __init__(self, *args, **kwargs):
+        super(SMTP, self).__init__(*args, **kwargs)
+
+        LP(getBuffer=self.__buffers.__getitem__,
+                updateBuffer=self.__buffers.__setitem__)
 
 	###
 	### Methods
@@ -303,18 +295,3 @@ class SMTP(Component):
 	@handler("disconnect")
 	def onDISCONNECT(self, sock):
 		self.reset()
-
-	@handler("read")
-	def onREAD(self, sock, data):
-		"""S.onREAD(sock, data) -> None
-
-		Process any incoming data appending it to an internal
-		buffer. Split the buffer by the standard line delimiters
-		CRLF and create a Raw event per line. Any unfinished
-		lines of text, leave in the buffer.
-		"""
-
-		lines, buffer = splitLines(data, self.__buffers[sock])
-		self.__buffers[sock] = buffer
-		for line in lines:
-			self.push(Raw(sock, line), "raw", self.channel)
