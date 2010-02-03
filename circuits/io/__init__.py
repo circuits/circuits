@@ -21,7 +21,9 @@ TIMEOUT = 0.2
 BUFSIZE = 4096
 
 class EOF(Event): pass
+class Seek(Event): pass
 class Read(Event): pass
+class Close(Event): pass
 class Write(Event): pass
 class Error(Event): pass
 class Opened(Event): pass
@@ -49,6 +51,7 @@ class File(Component):
         channel = kwargs.get("channel", File.channel)
         super(File, self).__init__(channel=channel)
 
+        self.autoclose = kwargs.get("autoclose", True)
         self.encoding = kwargs.get("encoding", "utf-8")
 
         if len(args) == 1 and type(args[0]) == file:
@@ -108,8 +111,8 @@ class File(Component):
 
                 if data:
                     self.push(Read(data), "read")
-                else:
-                    self.push(EOF(), "eof")
+                elif self.autoclose:
+                    self.push(EOF())
                     self.close()
 
     def write(self, data):
