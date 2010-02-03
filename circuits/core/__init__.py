@@ -729,9 +729,10 @@ class Manager(object):
                 target = event.target or "*"
         else:
             channel = channel or event.channel or event.name.lower()
-            target = target or event.target or self.channel or "*"
             if isinstance(target, Component):
                 target = getattr(target, "channel", "*")
+            else:
+                target = target or event.target or self.channel or "*"
 
         event.channel = (target, channel)
 
@@ -750,9 +751,10 @@ class Manager(object):
                 target = event.target or "*"
         else:
             channel = channel or event.channel or event.name.lower()
-            target = target or event.target or self.channel or "*"
             if isinstance(target, Component):
                 target = getattr(target, "channel", "*")
+            else:
+                target = target or event.target or self.channel or "*"
 
         event.channel = (target, channel)
 
