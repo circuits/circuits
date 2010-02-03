@@ -818,11 +818,11 @@ class Manager(object):
         return retval
 
     def _signal(self, signal, stack):
-        if not self.send(Signal(signal, stack), "signal"):
-            if signal == SIGINT:
-                raise KeyboardInterrupt
-            elif signal == SIGTERM:
-                raise SystemExit
+        self.push(Signal(signal, stack))
+        if signal == SIGINT:
+            raise KeyboardInterrupt
+        elif signal == SIGTERM:
+            raise SystemExit
 
     def start(self, sleep=0, log=True, process=False):
         group = None
