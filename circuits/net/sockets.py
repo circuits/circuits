@@ -205,7 +205,7 @@ class Client(Component):
 
         Poller = kwargs.get("poller", DefaultPoller)
 
-        self._poller = Poller()
+        self._poller = Poller(channel=self.channel)
         self._poller.register(self)
 
         self._sock = None
@@ -413,7 +413,7 @@ class Server(Component):
 
         Poller = kwargs.get("poller", DefaultPoller)
 
-        self._poller = Poller()
+        self._poller = Poller(channel=self.channel)
         self._poller.register(self)
 
         self._sock = None
