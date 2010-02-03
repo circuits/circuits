@@ -51,6 +51,15 @@ class LP(BaseComponent):
     line of data processed a Line Event is created. Any unfinished lines
     are appended into an internal buffer.
 
+    A custom line splitter function can be passed to customize how data
+    is split into lines. This function must accept two arguments, the data
+    to process and any left over data from a previous invocation of the
+    splitter function. The function must also return a tiple of two items,
+    a list of lines and any left over data.
+
+    @param splitter: a line splitter function
+    @type  splitter: function
+
     @note: This Component must be used in conjunction with a Component that
            exposes Read events on a "read" Channel.
     """
@@ -58,6 +67,8 @@ class LP(BaseComponent):
     channel = "*"
 
     def __init__(self, splitter=splitLines, channel=channel):
+        "initializes x; see x.__class__.__doc__ for signature"
+
         super(LP, self).__init__(channel=channel)
 
         self.splitter = splitter
