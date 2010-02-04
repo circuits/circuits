@@ -19,9 +19,11 @@ from sys import exc_info as _exc_info
 from inspect import getargspec, getmembers
 
 if os.name == "posix":
-    from signal import signal, SIGHUP, SIGINT, SIGTERM
+    from signal import SIGHUP, SIGINT, SIGTERM
+    from signal import signal as _registerSignalHandler
 elif os.name in ["nt", "java"]:
-    from signal import signal, SIGINT, SIGTERM
+    from signal import SIGINT, SIGTERM
+    from signal import signal as _registerSignalHandler
 else:
     raise RuntimeError("Unsupported platform '%s'" % os.name)
 
@@ -430,10 +432,10 @@ def handler(*channels, **kwargs):
 class HandlersType(type):
     """Handlers metaclass
 
-    metaclass used by the Component to pick up any methods defined in the new
-    Component and turn them into Event Handlers by applying the @handlers
-    decorator on them. This is done for all methods defined in the Component
-    that:
+    metaclass used by the Component to pick up any methods defined in the
+    new Component and turn them into Event Handlers by applying the
+    @handlers decorator on them. This is done for all methods defined in
+    the Component that:
      - Do not start with a single '_'. or
      - Have previously been decorated with the @handlers decorator
     """
@@ -461,25 +463,25 @@ class Manager(object):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        self._queue = deque()
-        self._handlers = set()
         self._globals = []
-        self.channels = dict()
         self._cmap = dict()
         self._tmap = dict()
+        self._queue = deque()
+        self.channels = dict()
+        self._handlers = set()
 
         self._links = set()
 
         self._ticks = set()
-        self.components = set()
 
         self._task = None
         self._running = False
 
         self.root = self
         self.manager = self
-        self.parents = set([self])
         self.children = set()
+        self.components = set()
+        self.parents = set([self])
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
@@ -602,14 +604,26 @@ class Manager(object):
 
     @property
     def name(self):
+        """Return the name of this Component/Manager"""
+
         return self.__class__.__name__
 
     @property
     def running(self):
+        """Return the running state of this Component/Manager"""
+
         return self._running
 
     @property
     def state(self):
+        """Return the current state of this Component/Manager
+
+        The state can be one of:
+         - [R]unning
+         - [D]ead
+         - [S]topped
+        """
+
         if self.running:
             if self._task is None:
                 return "R"
@@ -621,8 +635,8 @@ class Manager(object):
         else:
             return "S"
 
-    def add(self, handler, channel=None):
-        """E.add(handler, channel) -> None
+    def addHandler(self, handler, channel=None):
+        """Add a new Event Handler
 
         Add a new Event Handler to the Event Manager
         adding it to the given channel. If no channel is
@@ -659,8 +673,10 @@ class Manager(object):
             if handler not in self._cmap[channel]:
                 self._cmap[channel].append(handler)
 
-    def remove(self, handler, channel=None):
-        """E.remove(handler, channel=None) -> None
+    add = addHandler
+
+    def removeHandler(self, handler, channel=None):
+        """Remove an Event Handler
 
         Remove the given Event Handler from the Event Manager
         removing it from the given channel. if channel is None,
@@ -696,11 +712,13 @@ class Manager(object):
                 if not self._cmap[channel]:
                     del self._cmap[channel]
 
-    def _push(self, event, channel):
+    remove = removeHandler
+
+    def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def push(self, event, channel=None, target=None):
-        """Push a new Event into the queue
+    def fireEvent(self, event, channel=None, target=None):
+        """Fire/Push a new Event into the system (queue)
 
         This will push the given Event, Channel and Target onto the
         Event Queue for later processing.
@@ -736,13 +754,15 @@ class Manager(object):
 
         event.channel = (target, channel)
 
-        self.root._push(event, (target, channel))
+        self.root._fire(event, (target, channel))
+
+    fire = push = fireEvent
 
     def _send(self, event, channel):
         for child in self.children:
             child._queue.append((event, channel))
 
-    def send(self, event, channel=None, target=None):
+    def sendEvent(self, event, channel=None, target=None):
         if channel is None and target is None:
             if type(event.channel) is TupleType:
                 target, channel = event.channel
@@ -760,12 +780,14 @@ class Manager(object):
 
         self._send(event, (target, channel))
 
+    send = sendEvent
+
     def _flush(self):
         q = self._queue
         self._queue = deque()
-        while q: self.__handle(*q.popleft())
+        while q: self.__handleEvent(*q.popleft())
 
-    def flush(self):
+    def flushEvents(self):
         """Flush all Events in the Event Queue
 
         This will flush all Events in the Event Queue. If this Component's
@@ -775,12 +797,14 @@ class Manager(object):
 
         self.root._flush()
 
-    def __handle(self, event, channel, errors=False, log=True):
+    flush = flushEvents
+
+    def __handleEvent(self, event, channel, errors=False, log=True):
         eargs = event.args
         ekwargs = event.kwargs
 
         if event.start is not None:
-            self.push(Start(event), *event.start)
+            self.fire(Start(event), *event.start)
 
         retval = None
         handler = None
@@ -788,7 +812,7 @@ class Manager(object):
         for handler in self._getHandlers(channel):
             event.handler = handler
             if event.before is not None:
-                self.push(Before(event, handler), *event.before)
+                self.fire(Before(event, handler), *event.before)
             try:
                 if handler._passEvent:
                     retval = handler(event, *eargs, **ekwargs)
@@ -800,27 +824,27 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 if event.failure is not None:
                     error = (etype, evalue, etraceback)
-                    self.push(Failure(event, handler, error), *event.failure)
+                    self.fire(Failure(event, handler, error), *event.failure)
                 if log:
-                    self.push(Error(etype, evalue, etraceback, handler=handler))
+                    self.fire(Error(etype, evalue, etraceback, handler=handler))
                 if errors:
                     raise
 
             if retval is not None and retval and handler.filter:
                 if event.filter is not None:
-                    self.push(Filter(event, handler, retval), *event.filter)
+                    self.fire(Filter(event, handler, retval), *event.filter)
                 return retval
 
             if event.success is not None:
-                self.push(Success(event, handler, retval), *event.success)
+                self.fire(Success(event, handler, retval), *event.success)
 
         if event.end is not None:
-            self.push(End(event, handler, retval), *event.end)
+            self.fire(End(event, handler, retval), *event.end)
 
         return retval
 
-    def _signal(self, signal, stack):
-        self.push(Signal(signal, stack))
+    def _signalHandler(self, signal, stack):
+        self.fire(Signal(signal, stack))
         if signal == SIGINT:
             raise KeyboardInterrupt
         elif signal == SIGTERM:
@@ -873,13 +897,13 @@ class Manager(object):
 
         if not mode == "T":
             if os.name == "posix":
-                signal(SIGHUP, self._signal)
-            signal(SIGINT, self._signal)
-            signal(SIGTERM, self._signal)
+                _registerSignalHandler(SIGHUP, self._signalHandler)
+            _registerSignalHandler(SIGINT, self._signalHandler)
+            _registerSignalHandler(SIGTERM, self._signalHandler)
 
         self._running = True
 
-        self.push(Started(self, mode))
+        self.fire(Started(self, mode))
 
         try:
             while self.running:
@@ -904,12 +928,12 @@ class Manager(object):
                 except:
                     try:
                         if log:
-                            self.push(Error(*_exc_info()))
+                            self.fire(Error(*_exc_info()))
                     finally:
                         self._flush()
         finally:
             try:
-                self.push(Stopped(self))
+                self.fire(Stopped(self))
                 rtime = time.time()
                 while len(self) > 0 and (time.time() - rtime) < 3:
                     try:
@@ -920,7 +944,7 @@ class Manager(object):
                     except:
                         try:
                             if log:
-                                self.push(Error(*_exc_info()))
+                                self.fire(Error(*_exc_info()))
                         finally:
                             self._flush()
             except:
@@ -1042,7 +1066,7 @@ class BaseComponent(Manager):
 
         if manager is not self:
             manager.components.add(self)
-            self.push(Registered(self, manager), target=self)
+            self.fire(Registered(self, manager), target=self)
 
     def unregister(self):
         """Unregister all registered Event Handlers
@@ -1066,13 +1090,13 @@ class BaseComponent(Manager):
             for x in c.components:
                 _unregister(x, m, r)
 
-        self.push(Unregistered(self, self.manager), target=self)
+        self.fire(Unregistered(self, self.manager), target=self)
 
         root = findroot(self.manager)
         _unregister(self, self.manager, root)
 
         self.manager.components.remove(self)
-        self.push(Unregistered(self, self.manager), target=self)
+        self.fire(Unregistered(self, self.manager), target=self)
 
         self.manager = self
 
@@ -1108,7 +1132,6 @@ class BaseComponent(Manager):
         return self
 
 class Component(BaseComponent):
-    "Component"
 
     __metaclass__ = HandlersType
 
