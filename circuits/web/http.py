@@ -42,20 +42,6 @@ class HTTP(Component):
 
         self._clients = {}
 
-    def _handleError(self, error):
-        response = error.response
-
-        retval = self.send(error, "httperror", self.channel)
-
-        if retval:
-            if issubclass(type(retval), basestring):
-                response.body = retval
-                self.push(Response(response), "response", self.channel)
-            elif isinstance(retval, HTTPError):
-                self.push(Response(retval.response), "response", self.channel)
-            else:
-                assert retval, "type(retval) == %s" % type(retval)
-
     def stream(self, response, data):
         if data:
             if response.chunked:
@@ -236,7 +222,7 @@ class HTTP(Component):
             request, response = evt.args[:2]
             request.handled = True
             if isinstance(retval, HTTPError):
-                self._handleError(retval)
+                self.push(retval, "httperror", self.channel)
             elif isinstance(retval, wrappers.Response):
                 self.push(Response(retval), "response", self.channel)
             elif type(retval) is not bool:
@@ -246,9 +232,11 @@ class HTTP(Component):
     def request_failure(self, evt, handler, error):
         request, response = evt.args[:2]
         message = "Request Failed"
-        self._handleError(HTTPError(request, response, 500, message, error))
+        error = HTTPError(request, response, 500, message, error)
+        self.push(error, "httperror", self.channel)
 
     def request_completed(self, evt, handler, retval):
         request, response = evt.args[:2]
         if not request.handled or handler is None:
-            self._handleError(NotFound(request, response))
+            error = NotFound(request, response)
+            self.push(error, "httperror", self.channel)
