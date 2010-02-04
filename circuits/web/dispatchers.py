@@ -101,34 +101,35 @@ class Static(Component):
             for default in self.defaults:
                 location = os.path.abspath(os.path.join(self.docroot, default))
                 if os.path.exists(location):
-                    break
-            else:
-                # .. serve a directory listing if allowed to.
-                if self.dirlisting:
-                    directory = os.path.abspath(os.path.join(self.docroot, path))
-                    cur_dir = os.path.join(self.path, path) if self.path else ""
+                    expires(request, response, 3600*24*30)
+                    return serve_file(request, response, location)
 
-                    if not path:
-                        url_up = ""
+            # .. serve a directory listing if allowed to.
+            if self.dirlisting:
+                directory = os.path.abspath(os.path.join(self.docroot, path))
+                cur_dir = os.path.join(self.path, path) if self.path else ""
+
+                if not path:
+                    url_up = ""
+                else:
+                    if self.path is None:
+                        url_up = os.path.join("/", os.path.split(path)[0])
                     else:
-                        if self.path is None:
-                            url_up = os.path.join("/", os.path.split(path)[0])
-                        else:
-                            url_up = os.path.join(cur_dir, "..")
-                        url_up = '<li><a href="%s">%s</a></li>' % (url_up, "..")
+                        url_up = os.path.join(cur_dir, "..")
+                    url_up = '<li><a href="%s">%s</a></li>' % (url_up, "..")
 
-                    listing = []
-                    for item in os.listdir(directory):
-                        if not item.startswith("."):
-                            item_url = os.path.join("/", path, cur_dir, item)
-                            li = '<li><a href="%s">%s</a></li>' % (item_url, item)
-                            listing.append(li)
+                listing = []
+                for item in os.listdir(directory):
+                    if not item.startswith("."):
+                        item_url = os.path.join("/", path, cur_dir, item)
+                        li = '<li><a href="%s">%s</a></li>' % (item_url, item)
+                        listing.append(li)
 
-                    context = {}
-                    context["directory"] = cur_dir or os.path.join("/", cur_dir, path)
-                    context["url_up"] = url_up
-                    context["listing"] = "\n".join(listing)
-                    return _dirlisting_template.safe_substitute(context)
+                ctx = {}
+                ctx["directory"] = cur_dir or os.path.join("/", cur_dir, path)
+                ctx["url_up"] = url_up
+                ctx["listing"] = "\n".join(listing)
+                return _dirlisting_template.safe_substitute(ctx)
 
 class Dispatcher(Component):
 
