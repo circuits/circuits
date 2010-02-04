@@ -799,7 +799,7 @@ class Manager(object):
 
     flush = flushEvents
 
-    def __handleEvent(self, event, channel, errors=False, log=True):
+    def __handleEvent(self, event, channel):
         eargs = event.args
         ekwargs = event.kwargs
 
@@ -822,13 +822,10 @@ class Manager(object):
                 raise
             except:
                 etype, evalue, etraceback = _exc_info()
+                self.fire(Error(etype, evalue, etraceback, handler=handler))
                 if event.failure is not None:
                     error = (etype, evalue, etraceback)
                     self.fire(Failure(event, handler, error), *event.failure)
-                if log:
-                    self.fire(Error(etype, evalue, etraceback, handler=handler))
-                if errors:
-                    raise
 
             if retval is not None and retval and handler.filter:
                 if event.filter is not None:
