@@ -198,7 +198,7 @@ class HTTP(Component):
 
         request.body.seek(0)
 
-        self.push(Request(request, response), "request", "web")
+        self.push(Request(request, response), "request", "web", errors=True)
 
     def simple(self, sock, code, message=""):
         """Simple Response Events Handler
