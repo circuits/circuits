@@ -71,18 +71,15 @@ class Static(Component):
         self.dirlisting = dirlisting
 
     @handler("request", filter=True, priority=0.9)
-    def request(self, event, request, response):
+    def request(self, request, response):
         if self.path is not None and not request.path.startswith(self.path):
             return
 
-        req = event
         path = request.path
 
         if self.path is not None:
             path = path[len(self.path):]
         path = path.strip("/")
-
-        filename = None
 
         if path:
             location = os.path.abspath(os.path.join(self.docroot, path))
