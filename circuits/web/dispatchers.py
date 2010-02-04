@@ -213,7 +213,7 @@ class Dispatcher(Component):
             if vpath:
                 req.args += tuple(vpath)
 
-            self.push(req, channel, target, errors=True)
+            self.push(req, channel, target)
             return True
 
 class RoutesDispatcherError(Exception):
