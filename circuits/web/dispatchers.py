@@ -99,7 +99,8 @@ class Static(Component):
 
             # Try to serve one of default files first..
             for default in self.defaults:
-                location = os.path.abspath(os.path.join(self.docroot, default))
+                location = os.path.abspath(
+                        os.path.join(self.docroot, path, default))
                 if os.path.exists(location):
                     expires(request, response, 3600*24*30)
                     return serve_file(request, response, location)
