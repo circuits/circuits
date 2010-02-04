@@ -122,8 +122,13 @@ class Static(Component):
                 listing = []
                 for item in os.listdir(directory):
                     if not item.startswith("."):
-                        item_url = os.path.join("/", path, cur_dir, item)
-                        li = '<li><a href="%s">%s</a></li>' % (item_url, item)
+                        url = os.path.join("/", path, cur_dir, item)
+                        location = os.path.abspath(
+                                os.path.join(self.docroot, path, item))
+                        if os.path.isdir(location):
+                            li = '<li><a href="%s">%s/</a></li>' % (url, item)
+                        else:
+                            li = '<li><a href="%s">%s</a></li>' % (url, item)
                         listing.append(li)
 
                 ctx = {}
