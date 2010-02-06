@@ -18,8 +18,8 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from circuits import handler, Component
 from circuits.net.sockets import Close, Write
+from circuits.core import handler, Component, Value
 
 import wrappers
 from utils import quoted_slash
@@ -216,6 +216,18 @@ class HTTP(Component):
 
         self.push(Response(response), "response", self.channel)
 
+    def valuechanged(self, value):
+        request, response = value.event.args[:2]
+        if value.result and not value.errors:
+            response.body = value.value
+            self.push(Response(response), "response", self.channel)
+        else:
+            # This possibly never occurs.
+            message = "Request Failed"
+            error = value.value
+            error = HTTPError(request, response, 500, message, error)
+            self.push(error, "httperror", self.channel)
+
     @handler("request_success", "request_filtered")
     def request_success_or_filtered(self, evt, handler, retval):
         if retval:
@@ -225,6 +237,17 @@ class HTTP(Component):
                 self.push(retval, "httperror", self.channel)
             elif isinstance(retval, wrappers.Response):
                 self.push(Response(retval), "response", self.channel)
+            elif isinstance(retval, Value):
+                if retval.errors:
+                    message = "Request Failed"
+                    error = retval.value
+                    error = HTTPError(request, response, 500, message, error)
+                    self.push(error, "httperror", self.channel)
+                else:
+                    retval.manager = self
+                    retval.channel = "valuechanged"
+                    retval.target = self
+                    retval.event = evt
             elif type(retval) is not bool:
                 response.body = retval
                 self.push(Response(response), "response", self.channel)
