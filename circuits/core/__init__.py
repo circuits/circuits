@@ -52,9 +52,8 @@ class Event(object):
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
     @ivar target:  The target Component this Event is bound for
-    @ivar success: An optional channel to use for Event handler success
-    @ivar failure: An optional channel to use for Event handler failure
-    @ivar before: An optional channel to use before an Event handler execution
+    @ivar success: An optional channel to use for Event Handler success
+    @ivar failure: An optional channel to use for Event Handler failure
     @ivar filter: An optional channel to use if an Event is filtered
     @ivar start: An optional channel to use before an Event starts
     @ivar end: An optional channel to use when an Event ends
@@ -72,7 +71,6 @@ class Event(object):
     handler = None
     success = None
     failure = None
-    before = None
     filter = None
     start = None
     end = None
@@ -214,24 +212,6 @@ class Failure(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Failure, self).__init__(event, handler, error)
-
-
-class Before(Event):
-    """Before Event
-
-    This Event is sent just before Event Handler's execution.
-
-    @param evt: The event about to occur
-    @type  evt: Event
-
-    @param handler: The handler going to execute this event
-    @type  handler: @handler
-    """
-
-    def __init__(self, event, handler):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Before, self).__init__(event, handler)
 
 
 class Filter(Event):
@@ -811,8 +791,6 @@ class Manager(object):
 
         for handler in self._getHandlers(channel):
             event.handler = handler
-            if event.before is not None:
-                self.fire(Before(event, handler), *event.before)
             try:
                 if handler._passEvent:
                     retval = handler(event, *eargs, **ekwargs)
