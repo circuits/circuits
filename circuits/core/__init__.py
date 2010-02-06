@@ -800,7 +800,7 @@ class Manager(object):
             if isinstance(target, Component):
                 target = getattr(target, "channel", "*")
             else:
-                target = target or event.target or self.channel or "*"
+                target = target or event.target or getattr(self, "channel", "*")
 
         event.channel = (target, channel)
 
@@ -831,7 +831,7 @@ class Manager(object):
             if isinstance(target, Component):
                 target = getattr(target, "channel", "*")
             else:
-                target = target or event.target or self.channel or "*"
+                target = target or event.target or getattr(self, "channel", "*")
 
         event.channel = (target, channel)
 
