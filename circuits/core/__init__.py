@@ -58,6 +58,8 @@ class Event(object):
     @ivar start: An optional channel to use before an Event starts
     @ivar end: An optional channel to use when an Event ends
 
+    @ivar value: The future Value object used to store the result of an event
+
     @param args: list of arguments
     @type  args: tuple
 
@@ -74,6 +76,8 @@ class Event(object):
     filter = None
     start = None
     end = None
+
+    value = None
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -353,6 +357,18 @@ class Unregistered(Event):
 
         super(Unregistered, self).__init__(component, manager)
 
+class ValueChanged(Event):
+    """Value Changed Event
+
+    This Event is triggered when the return Value of an Event Handler has
+    changed it's value.
+    """
+
+    def __init__(self, value):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(ValueChanged, self).__init__(value)
+
 _sortkey = attrgetter("priority", "filter")
 
 def handler(*channels, **kwargs):
@@ -429,6 +445,60 @@ class HandlersType(type):
             if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, handler(k)(v))
 
+class Value(object):
+    """Create a new future Value Object
+
+    Creates a new future Value Object which is used by Event Objects and the
+    Manager to store the result(s) of an Event Handler's exeuction of some
+    Event in the system.
+
+    @param event: The Event this Value is associated with.
+    @type  event: Event instance
+
+    This is a Future/Promise implementation.
+    """
+
+    def __init__(self, manager, event, channel=None, target=None):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        self.manager = manager
+        self.event = event
+        self.channel = channel
+        self.target = target
+
+        self.result = False
+        self.errors = False
+        self._value = None
+
+    def __repr__(self):
+        "x.__repr__() <==> repr(x)"
+
+        value = ""
+        if self.result:
+            value = repr(self.value)
+
+        format = "<Value (%s) result: %r errors: %r for %r"
+        return format % (value, self.result, self.errors, self.event)
+
+    def __str__(self):
+        "x.__str__() <==> str(x)"
+
+        return str(self.value)
+
+    def getValue(self):
+        value = self._value
+        while isinstance(value, Value):
+            value = value._value
+        return value
+
+    def setValue(self, value):
+        self._value = value
+        self.result = True
+        if self.manager is not None and self.channel:
+            e = ValueChanged(self)
+            self.manager.fireEvent(e, self.channel, self.target)
+
+    value = property(getValue, setValue, None, "Value of this Value")
 
 class Manager(object):
     """Manager
@@ -734,7 +804,14 @@ class Manager(object):
 
         event.channel = (target, channel)
 
+        event.value = Value(self, event)
+
+        if event.start is not None:
+            self.fire(Start(event), *event.start)
+
         self.root._fire(event, (target, channel))
+
+        return event.value
 
     fire = push = fireEvent
 
@@ -783,9 +860,6 @@ class Manager(object):
         eargs = event.args
         ekwargs = event.kwargs
 
-        if event.start is not None:
-            self.fire(Start(event), *event.start)
-
         retval = None
         handler = None
 
@@ -796,10 +870,14 @@ class Manager(object):
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
+                event.value.result = True
+                event.value.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
                 etype, evalue, etraceback = _exc_info()
+                event.value.errors = True
+                event.value.value = etype, evalue, etraceback
                 self.fire(Error(etype, evalue, etraceback, handler=handler))
                 if event.failure is not None:
                     error = (etype, evalue, etraceback)
