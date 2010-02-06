@@ -144,20 +144,20 @@ class Sender(Base):
     concurrency = 1
 
     def received(self, message=""):
-        self.push(Hello("hello"), "hello", self.channel)
+        self.push(Hello("hello"))
 
 class Receiver(Base):
 
     def helo(self, address, port):
-        self.push(Hello("hello"), "hello", self.channel)
+        self.push(Hello("hello"))
 
     def hello(self, message=""):
-        self.push(Received(message), "received", self.channel)
+        self.push(Received(message))
 
 class SpeedTest(Base):
 
     def hello(self, message):
-        self.push(Hello(message), "hello", self.channel)
+        self.push(Hello(message))
 
 class LatencyTest(Base):
 
@@ -166,18 +166,18 @@ class LatencyTest(Base):
     def received(self, message=""):
         print "Latency: %0.3f us" % ((time.time() - self.t) * 1e6)
         time.sleep(1)
-        self.push(Hello("hello"), "hello", self.channel)
+        self.push(Hello("hello"))
 
     def hello(self, message=""):
         self.t = time.time()
-        self.push(Received(message), "received", self.channel)
+        self.push(Received(message))
     
 class State(Base):
 
     done = False
 
     def stop(self):
-        self.push(Term(), "term")
+        self.push(Term())
 
     def term(self):
         self.done = True
@@ -239,7 +239,6 @@ def main():
 
         bridge = Bridge(bind=(address, port), nodes=nodes)
         manager += bridge
-        bridge.start()
 
     if opts.mode.lower() == "speed":
         if opts.verbose:
@@ -294,22 +293,22 @@ def main():
             for c in xrange(int(opts.concurrency)):
                 manager.push(Hello("hello"), "hello", c)
         else:
-            manager.push(Hello("hello"), "hello")
+            manager.push(Hello("hello"))
 
     while not state.done:
         try:
             manager.flush()
 
             for i in xrange(opts.fill):
-                manager.push(Foo(), "foo")
+                manager.push(Foo())
 
             if opts.events > 0 and monitor.events > opts.events:
-                manager.send(Stop(), "stop")
+                manager.push(Stop())
             if opts.time > 0 and (time.time() - monitor.sTime) > opts.time:
-                manager.send(Stop(), "stop")
+                manager.push(Stop())
 
         except KeyboardInterrupt:
-            manager.send(Stop(), "stop")
+            manager.push(Stop())
 
     if opts.verbose:
         print
