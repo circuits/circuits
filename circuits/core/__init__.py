@@ -808,15 +808,12 @@ class Manager(object):
             if retval is not None and retval and handler.filter:
                 if event.filter is not None:
                     self.fire(Filter(event, handler, retval), *event.filter)
-                return retval
 
             if event.success is not None:
                 self.fire(Success(event, handler, retval), *event.success)
 
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
-
-        return retval
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
