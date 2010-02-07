@@ -10,18 +10,20 @@ This package contains the most basic building blocks of all Components.
 import os
 import new
 import time
+from types import TupleType
 from itertools import chain
 from threading import Thread
 from collections import deque
 from operator import attrgetter
 from sys import exc_info as _exc_info
-from sys import exc_clear as _exc_clear
 from inspect import getargspec, getmembers
 
 if os.name == "posix":
-    from signal import signal, SIGHUP, SIGINT, SIGTERM
+    from signal import SIGHUP, SIGINT, SIGTERM
+    from signal import signal as _registerSignalHandler
 elif os.name in ["nt", "java"]:
-    from signal import signal, SIGINT, SIGTERM
+    from signal import SIGINT, SIGTERM
+    from signal import signal as _registerSignalHandler
 else:
     raise RuntimeError("Unsupported platform '%s'" % os.name)
 
@@ -49,6 +51,14 @@ class Event(object):
 
     @ivar name:    The name of the Event
     @ivar channel: The channel this Event is bound for
+    @ivar target:  The target Component this Event is bound for
+    @ivar success: An optional channel to use for Event Handler success
+    @ivar failure: An optional channel to use for Event Handler failure
+    @ivar filter: An optional channel to use if an Event is filtered
+    @ivar start: An optional channel to use before an Event starts
+    @ivar end: An optional channel to use when an Event ends
+
+    @ivar value: The future Value object used to store the result of an event
 
     @param args: list of arguments
     @type  args: tuple
@@ -60,10 +70,19 @@ class Event(object):
     channel = None
     target = None
 
+    handler = None
+    success = None
+    failure = None
+    filter = None
+    start = None
+    end = None
+
+    value = None
+
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        self.args = args
+        self.args = list(args)
         self.kwargs = kwargs
 
     @property
@@ -110,6 +129,23 @@ class Event(object):
         else:
             raise TypeError("Expected int or str, got %r" % type(x))
 
+    def __setitem__(self, i, y):
+        """x.__setitem__(i, y) <==> x[i] = y
+
+        Modify the data in the Event object requested by "x".
+        If i is an int, the ith requested argument from self.args
+        shall be changed to y. If i is a str, the requested value
+        keyed by i from self.kwargs, shall by changed to y.
+        Otherwise a TypeError is raised as nothing else is valid.
+        """
+
+        if type(i) is int:
+            self.args[i] = y
+        elif type(i) is str:
+            self.kwargs[i] = y
+        else:
+            raise TypeError("Expected int or str, got %r" % type(x))
+
 
 class Error(Event):
     """Error Event
@@ -136,6 +172,107 @@ class Error(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Error, self).__init__(type, value, traceback, **kwargs)
+
+
+class Success(Event):
+    """Success Event
+
+    This Event is sent when an Event Handler's execution has completed
+    successfully.
+
+    @param evt: The event that succeeded
+    @type  evt: Event
+
+    @param handler: The handler that executed this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Success, self).__init__(event, handler, retval)
+
+
+class Failure(Event):
+    """Failure Event
+
+    This Event is sent when an error has occured with the execution of an
+    Event Handlers.
+
+    @param evt: The event that failued
+    @type  evt: Event
+
+    @param handler: The handler that failed
+    @type  handler: @handler
+
+    @param error: A tuple containing the exception that occured
+    @type  error: (etype, evalue, traceback)
+    """
+
+    def __init__(self, event, handler, error):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Failure, self).__init__(event, handler, error)
+
+
+class Filter(Event):
+    """Filter Event
+
+    This Event is sent when an Event is filtered by some Event Handler.
+
+    @param evt: The event that was filtered
+    @type  evt: Event
+
+    @param handler: The handler that filtered this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Filter, self).__init__(event, handler, retval)
+
+
+class Start(Event):
+    """Start Event
+
+    This Event is sent just before an Event is started
+
+    @param evt: The event about to start
+    @type  evt: Event
+    """
+
+    def __init__(self, event):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Start, self).__init__(event)
+
+
+class End(Event):
+    """End Event
+
+    This Event is sent just after an Event has ended
+
+    @param evt: The event that has finished
+    @type  evt: Event
+
+    @param handler: The last handler that executed this event
+    @type  handler: @handler
+
+    @param retval: The returned value of the last handler
+    @type  retval: object
+    """
+
+    def __init__(self, event, handler, retval):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(End, self).__init__(event, handler, retval)
 
 
 class Started(Event):
@@ -220,6 +357,18 @@ class Unregistered(Event):
 
         super(Unregistered, self).__init__(component, manager)
 
+class ValueChanged(Event):
+    """Value Changed Event
+
+    This Event is triggered when the return Value of an Event Handler has
+    changed it's value.
+    """
+
+    def __init__(self, value):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(ValueChanged, self).__init__(value)
+
 _sortkey = attrgetter("priority", "filter")
 
 def handler(*channels, **kwargs):
@@ -279,10 +428,10 @@ def handler(*channels, **kwargs):
 class HandlersType(type):
     """Handlers metaclass
 
-    metaclass used by the Component to pick up any methods defined in the new
-    Component and turn them into Event Handlers by applying the @handlers
-    decorator on them. This is done for all methods defined in the Component
-    that:
+    metaclass used by the Component to pick up any methods defined in the
+    new Component and turn them into Event Handlers by applying the
+    @handlers decorator on them. This is done for all methods defined in
+    the Component that:
      - Do not start with a single '_'. or
      - Have previously been decorated with the @handlers decorator
     """
@@ -296,6 +445,60 @@ class HandlersType(type):
             if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, handler(k)(v))
 
+class Value(object):
+    """Create a new future Value Object
+
+    Creates a new future Value Object which is used by Event Objects and the
+    Manager to store the result(s) of an Event Handler's exeuction of some
+    Event in the system.
+
+    @param event: The Event this Value is associated with.
+    @type  event: Event instance
+
+    This is a Future/Promise implementation.
+    """
+
+    def __init__(self, manager, event, channel=None, target=None):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        self.manager = manager
+        self.event = event
+        self.channel = channel
+        self.target = target
+
+        self.result = False
+        self.errors = False
+        self._value = None
+
+    def __repr__(self):
+        "x.__repr__() <==> repr(x)"
+
+        value = ""
+        if self.result:
+            value = repr(self.value)
+
+        format = "<Value (%s) result: %r errors: %r for %r"
+        return format % (value, self.result, self.errors, self.event)
+
+    def __str__(self):
+        "x.__str__() <==> str(x)"
+
+        return str(self.value)
+
+    def getValue(self):
+        value = self._value
+        while isinstance(value, Value):
+            value = value._value
+        return value
+
+    def setValue(self, value):
+        self._value = value
+        self.result = True
+        if self.manager is not None and self.channel:
+            e = ValueChanged(self)
+            self.manager.fireEvent(e, self.channel, self.target)
+
+    value = property(getValue, setValue, None, "Value of this Value")
 
 class Manager(object):
     """Manager
@@ -310,21 +513,25 @@ class Manager(object):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        self._queue = deque()
-        self._handlers = set()
         self._globals = []
-        self.channels = dict()
         self._cmap = dict()
         self._tmap = dict()
+        self._queue = deque()
+        self.channels = dict()
+        self._handlers = set()
+
+        self._links = set()
 
         self._ticks = set()
-        self.components = set()
 
         self._task = None
         self._running = False
 
         self.root = self
         self.manager = self
+        self.children = set()
+        self.components = set()
+        self.parents = set([self])
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
@@ -334,7 +541,7 @@ class Manager(object):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-        format = "<%s (q: %d c: %d h: %d) [%s]>"
+        format = "<%s (queued=%d, channels=%d, handlers=%d) [%s]>"
         return format % (name, q, c, h, state)
 
     def __len__(self):
@@ -403,6 +610,12 @@ class Manager(object):
         else:
             raise TypeError("No registration found for %r" % y)
 
+    def __lshift__(self, y):
+        return y.link(self)
+
+    def __rshift__(self, y):
+        return self.link(y)
+
     def _getHandlers(self, _channel):
         target, channel = _channel
 
@@ -441,14 +654,26 @@ class Manager(object):
 
     @property
     def name(self):
+        """Return the name of this Component/Manager"""
+
         return self.__class__.__name__
 
     @property
     def running(self):
+        """Return the running state of this Component/Manager"""
+
         return self._running
 
     @property
     def state(self):
+        """Return the current state of this Component/Manager
+
+        The state can be one of:
+         - [R]unning
+         - [D]ead
+         - [S]topped
+        """
+
         if self.running:
             if self._task is None:
                 return "R"
@@ -460,8 +685,8 @@ class Manager(object):
         else:
             return "S"
 
-    def _add(self, handler, channel=None):
-        """E._add(handler, channel) -> None
+    def addHandler(self, handler, channel=None):
+        """Add a new Event Handler
 
         Add a new Event Handler to the Event Manager
         adding it to the given channel. If no channel is
@@ -498,8 +723,10 @@ class Manager(object):
             if handler not in self._cmap[channel]:
                 self._cmap[channel].append(handler)
 
-    def _remove(self, handler, channel=None):
-        """E._remove(handler, channel=None) -> None
+    add = addHandler
+
+    def removeHandler(self, handler, channel=None):
+        """Remove an Event Handler
 
         Remove the given Event Handler from the Event Manager
         removing it from the given channel. if channel is None,
@@ -535,11 +762,13 @@ class Manager(object):
                 if not self._cmap[channel]:
                     del self._cmap[channel]
 
-    def _push(self, event, channel):
+    remove = removeHandler
+
+    def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def push(self, event, channel=None, target=None):
-        """Push a new Event into the queue
+    def fireEvent(self, event, channel=None, target=None):
+        """Fire/Push a new Event into the system (queue)
 
         This will push the given Event, Channel and Target onto the
         Event Queue for later processing.
@@ -560,23 +789,62 @@ class Manager(object):
         @type    target: str or Component
         """
 
-        channel = channel or event.channel or event.name.lower()
-        target = target if target is not None else event.target
-        if isinstance(target, Component):
-            target = getattr(target, "channel", "*")
+        if channel is None and target is None:
+            if type(event.channel) is TupleType:
+                target, channel = event.channel
+            else:
+                channel = event.channel or event.name.lower()
+                target = event.target or "*"
         else:
-            target = target or getattr(self, "channel", "*")
+            channel = channel or event.channel or event.name.lower()
+            if isinstance(target, Component):
+                target = getattr(target, "channel", "*")
+            else:
+                target = target or event.target or getattr(self, "channel", "*")
 
         event.channel = (target, channel)
 
-        self.root._push(event, (target, channel))
+        event.value = Value(self, event)
+
+        if event.start is not None:
+            self.fire(Start(event), *event.start)
+
+        self.root._fire(event, (target, channel))
+
+        return event.value
+
+    fire = push = fireEvent
+
+    def _send(self, event, channel):
+        for child in self.children:
+            child._queue.append((event, channel))
+
+    def sendEvent(self, event, channel=None, target=None):
+        if channel is None and target is None:
+            if type(event.channel) is TupleType:
+                target, channel = event.channel
+            else:
+                channel = event.channel or event.name.lower()
+                target = event.target or "*"
+        else:
+            channel = channel or event.channel or event.name.lower()
+            if isinstance(target, Component):
+                target = getattr(target, "channel", "*")
+            else:
+                target = target or event.target or getattr(self, "channel", "*")
+
+        event.channel = (target, channel)
+
+        self._send(event, (target, channel))
+
+    send = sendEvent
 
     def _flush(self):
         q = self._queue
         self._queue = deque()
-        while q: self._send(*q.popleft())
+        while q: self.__handleEvent(*q.popleft())
 
-    def flush(self):
+    def flushEvents(self):
         """Flush all Events in the Event Queue
 
         This will flush all Events in the Event Queue. If this Component's
@@ -586,83 +854,52 @@ class Manager(object):
 
         self.root._flush()
 
-    def _send(self, event, channel, errors=False, log=True):
+    flush = flushEvents
+
+    def __handleEvent(self, event, channel):
         eargs = event.args
         ekwargs = event.kwargs
 
-        r = False
+        retval = None
+        handler = None
+
         for handler in self._getHandlers(channel):
+            event.handler = handler
             try:
-                #stime = time.time()
                 if handler._passEvent:
-                    r = handler(event, *eargs, **ekwargs)
+                    retval = handler(event, *eargs, **ekwargs)
                 else:
-                    r = handler(*eargs, **ekwargs)
-                #etime = time.time()
-                #ttime = (etime - stime) * 1e3
-                #print "%s: %0.02f ms" % (reprhandler(handler), ttime)
+                    retval = handler(*eargs, **ekwargs)
+                event.value.result = True
+                event.value.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
-                if log:
-                    etype, evalue, etraceback = _exc_info()
-                    self.push(Error(etype, evalue, etraceback, handler=handler))
-                if errors:
-                    raise
-                else:
-                    _exc_clear()
-            if r is not None and r and handler.filter:
-                return r
-        return r
+                etype, evalue, etraceback = _exc_info()
+                event.value.errors = True
+                event.value.value = etype, evalue, etraceback
+                self.fire(Error(etype, evalue, etraceback, handler=handler))
+                if event.failure is not None:
+                    error = (etype, evalue, etraceback)
+                    self.fire(Failure(event, handler, error), *event.failure)
 
-    def send(self, event, channel=None, target=None, errors=False, log=True):
-        """Send a new Event to Event Handlers for the Target and Channel
+            if retval is not None and retval and handler.filter:
+                if event.filter is not None:
+                    self.fire(Filter(event, handler, retval), *event.filter)
+                return # Filter
 
-        This will send the given Event, to the spcified CHannel on the
-        Target Component's Channel.
+            if event.success is not None:
+                self.fire(Success(event, handler, retval), *event.success)
 
-        if target is None, then target will be set as the Channel of
-        the current Component, self.channel (defaulting back to None).
+        if event.end is not None:
+            self.fire(End(event, handler, retval), *event.end)
 
-        If this Component's Manager is itself, enqueue on this Component's
-        Event Queue, otherwise enqueue on this Component's Manager.
-
-        @param event: The Event Object
-        @type  event: Event
-
-        @param channel: The Channel this Event is bound for
-        @type  channel: str
-
-        @keyword target: The target Component's channel this Event is bound for
-        @type    target: str or Component
-
-        @keyword errors: True to raise errors, False otherwise
-        @type    errors: bool
-
-        @keyword log: True to log errors, False otherwise
-        @type    log: bool
-
-        @return: The return value of the last executed Event Handler
-        @rtype:  object
-        """
-
-        channel = channel or event.channel or event.name.lower()
-        target = target if target is not None else event.target
-        if isinstance(target, Component):
-            target = getattr(target, "channel", "*")
-        else:
-            target = target or getattr(self, "channel", "*")
-
-        event.channel = (target, channel)
-
-        return self.root._send(event, (target, channel), errors, log)
-
-    def _signal(self, signal, stack):
-        if not self.send(Signal(signal, stack), "signal"):
-            if signal == SIGINT:
-                raise KeyboardInterrupt
-            elif signal == SIGTERM:
-                raise SystemExit
+    def _signalHandler(self, signal, stack):
+        self.fire(Signal(signal, stack))
+        if signal == SIGINT:
+            raise KeyboardInterrupt
+        elif signal == SIGTERM:
+            raise SystemExit
 
     def start(self, sleep=0, log=True, process=False):
         group = None
@@ -702,25 +939,36 @@ class Manager(object):
                     p.terminate()
                     p.join(3)
 
+    def tick(self):
+        [f() for f in self._ticks.copy()]
+
     def run(self, sleep=0, mode=None, log=True, __self=None):
         if __self is not None:
             self = __self
 
         if not mode == "T":
             if os.name == "posix":
-                signal(SIGHUP, self._signal)
-            signal(SIGINT, self._signal)
-            signal(SIGTERM, self._signal)
+                _registerSignalHandler(SIGHUP, self._signalHandler)
+            _registerSignalHandler(SIGINT, self._signalHandler)
+            _registerSignalHandler(SIGTERM, self._signalHandler)
 
         self._running = True
 
-        self.push(Started(self, mode))
+        self.fire(Started(self, mode))
 
         try:
             while self.running:
                 try:
-                    [f() for f in self._ticks.copy()]
-                    self._flush()
+                    if self._ticks:
+                        [f() for f in self._ticks.copy()]
+                    if len(self):
+                        self._flush()
+                    if self._links:
+                        for link in self._links.copy():
+                            if link._ticks:
+                                [f() for f in link._ticks.copy()]
+                            if len(link):
+                                link._flush()
                     if sleep:
                         try:
                             time.sleep(sleep)
@@ -731,12 +979,12 @@ class Manager(object):
                 except:
                     try:
                         if log:
-                            self.push(Error(*_exc_info()))
+                            self.fire(Error(*_exc_info()))
                     finally:
                         self._flush()
         finally:
             try:
-                self.push(Stopped(self))
+                self.fire(Stopped(self))
                 rtime = time.time()
                 while len(self) > 0 and (time.time() - rtime) < 3:
                     try:
@@ -744,11 +992,10 @@ class Manager(object):
                         self._flush()
                         if sleep:
                             time.sleep(sleep)
-                        rtime = time.time()
                     except:
                         try:
                             if log:
-                                self.push(Error(*_exc_info()))
+                                self.fire(Error(*_exc_info()))
                         finally:
                             self._flush()
             except:
@@ -804,7 +1051,7 @@ class BaseComponent(Manager):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-        format = "<%s/%s (q: %d c: %d h: %d) [%s]>"
+        format = "<%s/%s (queued=%d, channels=%d, handlers=%d) [%s]>"
         return format % (name, channel, q, c, h, state)
 
     def _registerHandlers(self, manager):
@@ -826,11 +1073,11 @@ class BaseComponent(Manager):
                     channel = None
                 else:
                     channel = (target, channel or "*")
-                manager._add(handler, channel)
+                manager.add(handler, channel)
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():
-            manager._remove(handler)
+            manager.remove(handler)
 
     def register(self, manager):
         """Register all Event Handlers with the given Manager
@@ -851,17 +1098,18 @@ class BaseComponent(Manager):
             if c._queue:
                 m._queue.extend(list(c._queue))
                 c._queue.clear()
+            m._links.update(c._links)
             if m is not r:
                 c._registerHandlers(r)
                 if m._queue:
                     r._queue.extend(list(m._queue))
                     m._queue.clear()
+                r._links.update(c._links)
             if hasattr(c, "__tick__"):
                 m._ticks.add(getattr(c, "__tick__"))
                 if m is not r:
                     r._ticks.add(getattr(c, "__tick__"))
-            for x in c.components:
-                _register(x, m, r)
+            [_register(x, m, r) for x in c.components if x not in c._links]
 
         _register(self, manager, findroot(manager))
 
@@ -869,7 +1117,7 @@ class BaseComponent(Manager):
 
         if manager is not self:
             manager.components.add(self)
-            self.push(Registered(self, manager), target=self)
+            self.fire(Registered(self, manager), target=self)
 
     def unregister(self):
         """Unregister all registered Event Handlers
@@ -893,18 +1141,48 @@ class BaseComponent(Manager):
             for x in c.components:
                 _unregister(x, m, r)
 
-        self.push(Unregistered(self, self.manager), target=self)
+        self.fire(Unregistered(self, self.manager), target=self)
 
         root = findroot(self.manager)
         _unregister(self, self.manager, root)
 
         self.manager.components.remove(self)
-        self.push(Unregistered(self, self.manager), target=self)
+        self.fire(Unregistered(self, self.manager), target=self)
 
         self.manager = self
 
+    def link(self, component):
+        component.parents.add(self)
+        if component in component.parents:
+            component.parents.remove(component)
+
+        self.children.add(component)
+
+        self.components.add(component)
+
+        self._links.add(component)
+        self._links.update(component._links)
+
+        root = findroot(self)
+        root._links.add(component)
+        root._links.update(component._links)
+
+        return self
+
+    def unlink(self, component):
+        component.parents.add(component)
+        component.parents.remove(self)
+
+        self.children.remove(component)
+
+        self.components.remove(component)
+
+        self._links.remove(component)
+        self._links.update_difference(component._links)
+
+        return self
+
 class Component(BaseComponent):
-    "Component"
 
     __metaclass__ = HandlersType
 

@@ -17,23 +17,11 @@ import time
 from circuits.net.sockets import Write
 from circuits.core import Event, Component
 
+from line import LP
+
 ###
 ### Supporting Functions
 ###
-
-LINESEP = re.compile("\r?\n")
-
-def splitLines(s, buffer):
-    """splitLines(s, buffer) -> lines, buffer
-
-    Append s to buffer and find any new lines of text in the
-    string splitting at the standard IRC delimiter CRLF. Any
-    new lines found, return them as a list and the remaining
-    buffer for further processing.
-    """
-
-    lines = LINESEP.split(buffer + s)
-    return lines[:-1], lines[-1]
 
 def strip(s, color=False):
     """strip(s, color=False) -> str
@@ -86,12 +74,6 @@ def sourceSplit(source):
 ### Evenets
 ###
 
-class Raw(Event):
-    """Raw(Event) -> Raw Event
-
-   args: line
-   """
-
 class Numeric(Event):
     """Numeric(Event) -> Numeric Event
 
@@ -143,6 +125,12 @@ class Pong(Event):
    args: source daemon [daemon2]
    """
 
+class Mode(Event):
+    """Mode(Event) -> Mode Event
+
+   args: source target modes
+   """
+
 class Join(Event):
     """Join(Event) -> Join Event
 
@@ -190,10 +178,11 @@ class IRC(Component):
     """
 
     def __init__(self, *args, **kwargs):
-        self._data = ""
         self._info = {}
 
         super(IRC, self).__init__(*args, **kwargs)
+
+        LP().register(self)
 
     ###
     ### Properties
@@ -415,21 +404,8 @@ class IRC(Component):
     ### Event Processing
     ###
 
-    def read(self, data):
-        """Read Event Handler
-
-           Process any incoming data appending it to an internal
-           buffer. Split the buffer by the standard IRC delimiter
-           CRLF and create a Raw event per line. Any unfinished
-           lines of text, leave in the buffer.
-        """
-
-        lines, self._data = splitLines(data, self._data)
-        for line in lines:
-            self.push(Raw(line), "raw", self.channel)
-
-    def raw(self, line):
-        """I.onRAW(line) -> None
+    def line(self, line):
+        """Line Event Handler
 
         Process a line of text and generate the appropiate
         event. This must not be overridden by sub-classes,
@@ -497,18 +473,18 @@ class IRC(Component):
                 m = re.match(
                         "Welcome to the (?P<network>.*) "
                         "(IRC|Internet Relay( Chat)?) Network "
-                        "(?P<user>.*)", message)
+                        "(?P<user>.*)(?i)", message)
 
                 if m is None:
                     m = re.match(
                             "Welcome to the Internet Relay Network "
-                            "(?P<user>.*)", message)
+                            "(?P<user>.*)(?i)", message)
 
                 if m is None:
                     m = re.match(
                             "Welcome to the (?P<network>.*) "
                             "IRC Network, "
-                            "(?P<user>.*)", message)
+                            "(?P<user>.*)(?i)", message)
 
                 d = m.groupdict()
 
@@ -602,6 +578,12 @@ class IRC(Component):
             source = sourceSplit(strip(tokens[0].lower()))
             args = [strip(x) for x in tokens[2:]]
             self.push(Pong(source, *args), "pong", self.channel)
+
+        elif tokens[1] == "MODE":
+            source = sourceSplit(strip(tokens[0].lower()))
+            target = tokens[2].lower()
+            modes = [strip(x) for x in tokens[3:]]
+            self.push(Mode(source, target, *modes), "mode", self.channel)
 
     ###
     ### Default Events

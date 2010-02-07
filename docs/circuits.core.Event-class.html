@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>circuits.core.Event</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://trac.softcircuit.com.au/circuits/">circuits</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="circuits-module.html">Package&nbsp;circuits</a> ::
+        <a href="circuits.core-module.html">Package&nbsp;core</a> ::
+        Class&nbsp;Event
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Event</h1><p class="nomargin-top"></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">Event</strong>
+</pre>
+
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="circuits.app.Daemonize-class.html">app.Daemonize</a></li><li>, <a href="circuits.app.WritePID-class.html">app.WritePID</a></li><li>, <a href="circuits.app.env.Create-class.html">app.env.Create</a></li><li>, <a href="circuits.app.env.Created-class.html">app.env.Created</a></li><li>, <a href="circuits.app.env.Invalid-class.html">app.env.Invalid</a></li><li>, <a href="circuits.app.env.Load-class.html">app.env.Load</a></li><li>, <a href="circuits.app.env.Loaded-class.html">app.env.Loaded</a></li><li>, <a href="circuits.app.env.NeedsUpgrade-class.html">app.env.NeedsUpgrade</a></li><li>, <a href="circuits.app.env.Upgrade-class.html">app.env.Upgrade</a></li><li>, <a href="circuits.app.env.Upgraded-class.html">app.env.Upgraded</a></li><li>, <a href="circuits.app.env.Verify-class.html">app.env.Verify</a></li><li>, <a href="circuits.app.config.Load-class.html">app.config.Load</a></li><li>, <a href="circuits.app.config.Save-class.html">app.config.Save</a></li><li>, <a href="circuits.app.log.Critical-class.html">app.log.Critical</a></li><li>, <a href="circuits.app.log.Debug-class.html">app.log.Debug</a></li><li>, <a href="circuits.app.log.Error-class.html">app.log.Error</a></li><li>, <a href="circuits.app.log.Exception-class.html">app.log.Exception</a></li><li>, <a href="circuits.app.log.Info-class.html">app.log.Info</a></li><li>, <a href="circuits.app.log.Warning-class.html">app.log.Warning</a></li><li>, <a href="circuits.web.dispatchers.RPC-class.html">web.dispatchers.RPC</a></li><li>, <a href="circuits.web.events.Request-class.html">web.events.Request</a></li><li>, <a href="circuits.web.events.Response-class.html">web.events.Response</a></li><li>, <a href="circuits.web.events.Stream-class.html">web.events.Stream</a></li><li>, <a href="circuits.web.errors.HTTPError-class.html">web.errors.HTTPError</a></li><li>, <a href="circuits.io.Closed-class.html">io.Closed</a></li><li>, <a href="circuits.io.EOF-class.html">io.EOF</a></li><li>, <a href="circuits.io.Error-class.html">io.Error</a></li><li>, <a href="circuits.io.Opened-class.html">io.Opened</a></li><li>, <a href="circuits.io.Read-class.html">io.Read</a></li><li>, <a href="circuits.io.Write-class.html">io.Write</a></li><li>, <a href="circuits.tools.bench.Foo-class.html">tools.bench.Foo</a></li><li>, <a href="circuits.tools.bench.Hello-class.html">tools.bench.Hello</a></li><li>, <a href="circuits.tools.bench.Received-class.html">tools.bench.Received</a></li><li>, <a href="circuits.tools.bench.Stop-class.html">tools.bench.Stop</a></li><li>, <a href="circuits.tools.bench.Term-class.html">tools.bench.Term</a></li><li>, <a href="circuits.drivers._inotify.Accessed-class.html">drivers._inotify.Accessed</a></li><li>, <a href="circuits.drivers._inotify.Closed-class.html">drivers._inotify.Closed</a></li><li>, <a href="circuits.drivers._inotify.Created-class.html">drivers._inotify.Created</a></li><li>, <a href="circuits.drivers._inotify.Deleted-class.html">drivers._inotify.Deleted</a></li><li>, <a href="circuits.drivers._inotify.Modified-class.html">drivers._inotify.Modified</a></li><li>, <a href="circuits.drivers._inotify.Moved-class.html">drivers._inotify.Moved</a></li><li>, <a href="circuits.drivers._inotify.Opened-class.html">drivers._inotify.Opened</a></li><li>, <a href="circuits.drivers._inotify.Unmounted-class.html">drivers._inotify.Unmounted</a></li><li>, <a href="circuits.drivers._pygame.ButtonDown-class.html">drivers._pygame.ButtonDown</a></li><li>, <a href="circuits.drivers._pygame.ButtonUp-class.html">drivers._pygame.ButtonUp</a></li><li>, <a href="circuits.drivers._pygame.Focus-class.html">drivers._pygame.Focus</a></li><li>, <a href="circuits.drivers._pygame.Key-class.html">drivers._pygame.Key</a></li><li>, <a href="circuits.drivers._pygame.Mouse-class.html">drivers._pygame.Mouse</a></li><li>, <a href="circuits.drivers._pygame.Quit-class.html">drivers._pygame.Quit</a></li><li>, <a href="circuits.drivers._pygame.Unknown-class.html">drivers._pygame.Unknown</a></li><li>, <a href="circuits.core.Before-class.html">Before</a></li><li>, <a href="circuits.core.End-class.html">End</a></li><li>, <a href="circuits.core.Error-class.html">Error</a></li><li>, <a href="circuits.core.Failure-class.html">Failure</a></li><li>, <a href="circuits.core.Filter-class.html">Filter</a></li><li>, <a href="circuits.core.Registered-class.html">Registered</a></li><li>, <a href="circuits.core.Signal-class.html">Signal</a></li><li>, <a href="circuits.core.Start-class.html">Start</a></li><li>, <a href="circuits.core.Started-class.html">Started</a></li><li>, <a href="circuits.core.Stopped-class.html">Stopped</a></li><li>, <a href="circuits.core.Success-class.html">Success</a></li><li>, <a href="circuits.core.Unregistered-class.html">Unregistered</a></li><li>, <a href="circuits.core.bridge.Helo-class.html">bridge.Helo</a></li><li>, <a href="circuits.net.pollers.Disconnect-class.html">net.pollers.Disconnect</a></li><li>, <a href="circuits.net.pollers.Error-class.html">net.pollers.Error</a></li><li>, <a href="circuits.net.pollers.Read-class.html">net.pollers.Read</a></li><li>, <a href="circuits.net.pollers.Write-class.html">net.pollers.Write</a></li><li>, <a href="circuits.net.sockets.Close-class.html">net.sockets.Close</a></li><li>, <a href="circuits.net.sockets.Connect-class.html">net.sockets.Connect</a></li><li>, <a href="circuits.net.sockets.Connected-class.html">net.sockets.Connected</a></li><li>, <a href="circuits.net.sockets.Disconnect-class.html">net.sockets.Disconnect</a></li><li>, <a href="circuits.net.sockets.Disconnected-class.html">net.sockets.Disconnected</a></li><li>, <a href="circuits.net.sockets.Error-class.html">net.sockets.Error</a></li><li>, <a href="circuits.net.sockets.Read-class.html">net.sockets.Read</a></li><li>, <a href="circuits.net.sockets.Write-class.html">net.sockets.Write</a></li><li>, <a href="circuits.net.protocols.irc.Ctcp-class.html">net.protocols.irc.Ctcp</a></li><li>, <a href="circuits.net.protocols.irc.Join-class.html">net.protocols.irc.Join</a></li><li>, <a href="circuits.net.protocols.irc.Message-class.html">net.protocols.irc.Message</a></li><li>, <a href="circuits.net.protocols.irc.Mode-class.html">net.protocols.irc.Mode</a></li><li>, <a href="circuits.net.protocols.irc.NetInfo-class.html">net.protocols.irc.NetInfo</a></li><li>, <a href="circuits.net.protocols.irc.NewNick-class.html">net.protocols.irc.NewNick</a></li><li>, <a href="circuits.net.protocols.irc.Nick-class.html">net.protocols.irc.Nick</a></li><li>, <a href="circuits.net.protocols.irc.Notice-class.html">net.protocols.irc.Notice</a></li><li>, <a href="circuits.net.protocols.irc.Numeric-class.html">net.protocols.irc.Numeric</a></li><li>, <a href="circuits.net.protocols.irc.Part-class.html">net.protocols.irc.Part</a></li><li>, <a href="circuits.net.protocols.irc.Pass-class.html">net.protocols.irc.Pass</a></li><li>, <a href="circuits.net.protocols.irc.Ping-class.html">net.protocols.irc.Ping</a></li><li>, <a href="circuits.net.protocols.irc.Pong-class.html">net.protocols.irc.Pong</a></li><li>, <a href="circuits.net.protocols.irc.Quit-class.html">net.protocols.irc.Quit</a></li><li>, <a href="circuits.net.protocols.irc.Raw-class.html">net.protocols.irc.Raw</a></li><li>, <a href="circuits.net.protocols.irc.Topic-class.html">net.protocols.irc.Topic</a></li><li>, <a href="circuits.net.protocols.irc.User-class.html">net.protocols.irc.User</a></li><li>, <a href="circuits.net.protocols.smtp.Data-class.html">net.protocols.smtp.Data</a></li><li>, <a href="circuits.net.protocols.smtp.Helo-class.html">net.protocols.smtp.Helo</a></li><li>, <a href="circuits.net.protocols.smtp.Mail-class.html">net.protocols.smtp.Mail</a></li><li>, <a href="circuits.net.protocols.smtp.Message-class.html">net.protocols.smtp.Message</a></li><li>, <a href="circuits.net.protocols.smtp.Noop-class.html">net.protocols.smtp.Noop</a></li><li>, <a href="circuits.net.protocols.smtp.Quit-class.html">net.protocols.smtp.Quit</a></li><li>, <a href="circuits.net.protocols.smtp.Raw-class.html">net.protocols.smtp.Raw</a></li><li>, <a href="circuits.net.protocols.smtp.Rcpt-class.html">net.protocols.smtp.Rcpt</a></li><li>, <a href="circuits.net.protocols.smtp.Rset-class.html">net.protocols.smtp.Rset</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>Create a new Event Object</p>
+  <p>Create a new Event Object populating it with the given list of 
+  arguments and keyword arguments.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__eq__" class="summary-sig-name">__eq__</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">other</span>)</span><br />
+      x==other</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__getitem__" class="summary-sig-name">__getitem__</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      x[y]</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">x</span>)</span><br />
+      repr(x)</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="circuits.core.Event-class.html#__setitem__" class="summary-sig-name">__setitem__</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">i</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      x[i] = y</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="handler"></a><span class="summary-name">handler</span> = <code title="None">None</code><br />
+      hash(x)
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="before"></a><span class="summary-name">before</span> = <code title="None">None</code><br />
+      An optional channel to use before an Event handler execution
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="channel"></a><span class="summary-name">channel</span> = <code title="None">None</code><br />
+      The channel this Event is bound for
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="end"></a><span class="summary-name">end</span> = <code title="None">None</code><br />
+      An optional channel to use when an Event ends
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="failure"></a><span class="summary-name">failure</span> = <code title="None">None</code><br />
+      An optional channel to use for Event handler failure
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="filter"></a><span class="summary-name">filter</span> = <code title="None">None</code><br />
+      An optional channel to use if an Event is filtered
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="circuits.core.Event-class.html#name" class="summary-name">name</a><br />
+      The name of the Event
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="start"></a><span class="summary-name">start</span> = <code title="None">None</code><br />
+      An optional channel to use before an Event starts
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="success"></a><span class="summary-name">success</span> = <code title="None">None</code><br />
+      An optional channel to use for Event handler success
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="target"></a><span class="summary-name">target</span> = <code title="None">None</code><br />
+      The target Component this Event is bound for
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__eq__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__eq__</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">other</span>)</span>
+    <br /><em class="fname">(Equality operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x==other</p>
+  <p>Tests the equality of Event self against Event y. Two Events are 
+  considered &quot;equal&quot; iif the name, channel and target are 
+  identical as well as their args and kwargs passed.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__getitem__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getitem__</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>)</span>
+    <br /><em class="fname">(Indexing operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x[y]</p>
+  <p>Get and return data from the Event object requested by &quot;x&quot;. 
+  If an int is passed to x, the requested argument from self.args is 
+  returned index by x. If a str is passed to x, the requested keyword 
+  argument from self.kwargs is returned keyed by x. Otherwise a TypeError 
+  is raised as nothing else is valid.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>args</code></strong> (tuple) - list of arguments</li>
+        <li><strong class="pname"><code>kwargs</code></strong> (dict) - dct of keyword arguments</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__repr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">x</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>repr(x)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__repr__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__setitem__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__setitem__</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">i</span>,
+        <span class="sig-arg">y</span>)</span>
+    <br /><em class="fname">(Index assignment operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x[i] = y</p>
+  <p>Modify the data in the Event object requested by &quot;x&quot;. If i 
+  is an int, the ith requested argument from self.args shall be changed to 
+  y. If i is a str, the requested value keyed by i from self.kwargs, shall 
+  by changed to y. Otherwise a TypeError is raised as nothing else is 
+  valid.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== INSTANCE VARIABLE DETAILS ==================== -->
+<a name="section-InstanceVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Variable Details</span></td>
+</tr>
+</table>
+<a name="name"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">name</h3>
+  The name of the Event
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.name(<span class="summary-sig-arg">self</span>)</span>
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="circuits-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://trac.softcircuit.com.au/circuits/">circuits</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Feb  3 05:57:09 2010
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

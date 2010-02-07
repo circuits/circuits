@@ -71,8 +71,8 @@ class Telnet(Component):
         if len(args) == 1:
             if os.path.exists(args[0]):
                 self += UNIXClient(channel=self.channel)
-                host = gethostname()
-                dest = port = args[0]
+                host = dest = port = args[0]
+                dest = (dest,)
             else:
                 raise OSError("Path %s not found" % args[0])
         else:

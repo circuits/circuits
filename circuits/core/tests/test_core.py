@@ -661,25 +661,25 @@ class TestManagerAddRemove(unittest.TestCase):
 
         manager = Manager()
 
-        manager._add(onFOO)
-        manager._add(onBAR)
+        manager.add(onFOO)
+        manager.add(onBAR)
         self.assertTrue(onFOO in manager._globals)
         self.assertTrue(onBAR in manager._globals)
 
-        manager._add(onFOO, ("*", "foo"))
-        manager._add(onBAR, ("*", "bar"))
+        manager.add(onFOO, ("*", "foo"))
+        manager.add(onBAR, ("*", "bar"))
         self.assertTrue(onFOO in manager.channels[("*", "foo")])
         self.assertTrue(onBAR in manager.channels[("*", "bar")])
 
         self.assertFalse(onTEST in manager._globals)
 
-        manager._remove(onFOO)
+        manager.remove(onFOO)
         self.assertTrue(onFOO not in manager._handlers)
 
-        manager._remove(onBAR, ("*", "bar"))
+        manager.remove(onBAR, ("*", "bar"))
         self.assertTrue(("*", "bar") not in manager.channels)
         self.assertTrue(onBAR in manager._globals)
-        manager._remove(onBAR)
+        manager.remove(onBAR)
         self.assertTrue(onBAR not in manager._handlers)
 
         self.assertEquals(len(manager._handlers), 0)
@@ -719,10 +719,10 @@ class TestManagerPushFlushSend(unittest.TestCase):
 
         manager = Manager()
 
-        manager._add(onSTOP)
-        manager._add(onTEST, ("*", "test"))
-        manager._add(onFOO, ("*", "test"))
-        manager._add(onBAR, ("*", "bar"))
+        manager.add(onSTOP)
+        manager.add(onTEST, ("*", "test"))
+        manager.add(onFOO, ("*", "test"))
+        manager.add(onBAR, ("*", "bar"))
 
         self.assertTrue(onSTOP in manager._globals)
         self.assertTrue(onTEST in manager.channels[("*", "test")])
@@ -750,10 +750,10 @@ class TestManagerPushFlushSend(unittest.TestCase):
         manager.send(Test(self, time.time(), stop=True), "test")
         self.assertTrue(self.flag == False)
 
-        manager._remove(onSTOP)
-        manager._remove(onTEST, ("*", "test"))
-        manager._remove(onFOO, ("*", "test"))
-        manager._remove(onBAR, ("*", "bar"))
+        manager.remove(onSTOP)
+        manager.remove(onTEST, ("*", "test"))
+        manager.remove(onFOO, ("*", "test"))
+        manager.remove(onBAR, ("*", "bar"))
 
         self.assertEquals(len(manager._handlers), 0)
 

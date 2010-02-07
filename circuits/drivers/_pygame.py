@@ -22,7 +22,8 @@ class Key(Event): pass
 class Quit(Event): pass
 class Focus(Event): pass
 class Mouse(Event): pass
-class Click(Event): pass
+class ButtonDown(Event): pass
+class ButtonUp(Event): pass
 class Unknown(Event): pass
     
 class PyGameDriver(Component):
@@ -50,8 +51,8 @@ class PyGameDriver(Component):
             elif e.type == pygame.MOUSEMOTION:
                 self.push(Mouse(e.buttons, e.pos, e.rel), "mouse")
             elif e.type == pygame.MOUSEBUTTONDOWN:
-                self.push(Click(e.button, e.pos), "click")
+                self.push(ButtonDown(e.button, e.pos), "buttondown")
             elif e.type == pygame.MOUSEBUTTONUP:
-                self.push(Click(e.button, e.pos), "click")
+                self.push(ButtonUp(e.button, e.pos), "buttonup")
             else:
                 self.push(Unknown(e), "unknown")

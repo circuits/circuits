@@ -14,11 +14,19 @@ from _socket import socket as SocketType
 from collections import defaultdict, deque
 from socket import gethostname, gethostbyname
 
+try:
+    import ssl
+    HAS_SSL = 1
+except ImportError:
+    import warnings
+    warnings.warn("No SSL support available. Using python-2.5 ? Try isntalling the ssl module: http://pypi.python.org/pypi/ssl/")
+    HAS_SSL = 0
+
 from circuits.net.pollers import Select as DefaultPoller
 from circuits.core import handler, Event, Component
 
 BUFSIZE = 4096 # 4KB Buffer
-BACKLOG = 128  # 128 Concurrent Connections
+BACKLOG = 5000 #  5K Concurrent Connections
 
 ###
 ### Event Objects
@@ -171,8 +179,11 @@ class Client(Component):
 
     channel = "client"
 
-    def __init__(self, bind=None, channel=channel, **kwargs):
-        super(Client, self).__init__(channel=channel, **kwargs)
+    def __init__(self, bind=None, **kwargs):
+        channel = kwargs.get("channel", Client.channel)
+        super(Client, self).__init__(channel=channel)
+
+        self.encoding = kwargs.get("encoding", "utf-8")
 
         if type(bind) is int:
             self.bind = (gethostbyname(gethostname()), bind)
@@ -194,7 +205,7 @@ class Client(Component):
 
         Poller = kwargs.get("poller", DefaultPoller)
 
-        self._poller = Poller()
+        self._poller = Poller(channel=self.channel)
         self._poller.register(self)
 
         self._sock = None
@@ -247,6 +258,9 @@ class Client(Component):
 
     def _write(self, data):
         try:
+            if type(data) is unicode:
+                data = data.encode(self.encoding)
+
             if self.ssl and self._sslsock:
                 bytes = self._sslsock.write(data)
             else:
@@ -374,8 +388,11 @@ class Server(Component):
 
     channel = "server"
 
-    def __init__(self, bind, ssl=False, channel=channel, **kwargs):
+    def __init__(self, bind, ssl=False, **kwargs):
+        channel = kwargs.get("channel", Server.channel)
         super(Server, self).__init__(channel=channel)
+
+        self.encoding = kwargs.get("encoding", "utf-8")
 
         if type(bind) is int:
             self.bind = (gethostbyname(gethostname()), bind)
@@ -387,13 +404,16 @@ class Server(Component):
             self.bind = bind
 
         self.ssl = ssl
+        if self.ssl:
+            self.certfile = kwargs.get("certfile", None)
+            self.keyfile = kwargs.get("keyfile", None)
 
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
         self._backlog = kwargs.get("backlog", BACKLOG)
 
         Poller = kwargs.get("poller", DefaultPoller)
 
-        self._poller = Poller()
+        self._poller = Poller(channel=self.channel)
         self._poller.register(self)
 
         self._sock = None
@@ -414,7 +434,7 @@ class Server(Component):
         return self.bind[1] if hasattr(self, "bind") else None
 
     def _close(self, sock):
-        if sock not in self._clients:
+        if not sock == self._sock and sock not in self._clients:
             return
 
         self._poller.discard(sock)
@@ -434,10 +454,17 @@ class Server(Component):
         self.push(Disconnect(sock), "disconnect", self.channel)
 
     def close(self, sock=None):
-        if not self._buffers[sock]:
-            self._close(sock)
-        elif sock not in self._closeq:
-            self._closeq.append(sock)
+        if sock is None:
+            socks = [self._sock]
+            socks.extend(self._clients[:])
+        else:
+            socks = [sock]
+
+        for sock in socks:
+            if not self._buffers[sock]:
+                self._close(sock)
+            elif sock not in self._closeq:
+                self._closeq.append(sock)
 
     def _read(self, sock):
         if sock not in self._clients:
@@ -461,6 +488,9 @@ class Server(Component):
             return
 
         try:
+            if type(data) is unicode:
+                data = data.encode(self.encoding)
+
             bytes = sock.send(data)
             if bytes < len(data):
                 self._buffers[sock].appendleft(data[bytes:])
@@ -482,6 +512,12 @@ class Server(Component):
     def _accept(self):
         try:
             newsock, host = self._sock.accept()
+            if self.ssl and HAS_SSL:
+                newsock = ssl.wrap_socket(newsock,
+                    server_side=True,
+                    certfile=self.certfile,
+                    keyfile=self.keyfile,
+                    ssl_version=ssl.PROTOCOL_TLSv1)
         except socket.error, e:
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
@@ -603,10 +639,10 @@ class UDPServer(Server):
 
         self._poller.addReader(self._sock)
 
-    def _close(self):
-        self._poller.discard(self._sock)
+    def _close(self, sock):
+        self._poller.discard(sock)
 
-        if self._sock in self._buffers:
+        if sock in self._buffers:
             del self._buffers[sock]
 
         try:
@@ -635,6 +671,9 @@ class UDPServer(Server):
 
     def _write(self, address, data):
         try:
+            if type(data) is unicode:
+                data = data.encode(self.encoding)
+
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])

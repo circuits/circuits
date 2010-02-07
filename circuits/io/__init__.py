@@ -17,56 +17,59 @@ from collections import deque
 
 from circuits.core import Event, Component
 
-TIMEOUT = 0.00001
-BUFSIZE = 131072
+TIMEOUT = 0.2
+BUFSIZE = 4096
 
 class EOF(Event): pass
+class Seek(Event): pass
 class Read(Event): pass
+class Close(Event): pass
 class Write(Event): pass
 class Error(Event): pass
 class Opened(Event): pass
 class Closed(Event): pass
 
-class _File(file):
+def setblocking(fd, flag):
+    """Set/Clear blocking mode of a file descriptor"""
 
-    def setblocking(self, flag):
-        " set/clear blocking mode"
-        # get the file descriptor
-        fd = self.fileno()
-        # get the file's current flag settings
-        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-        if flag:
-            # clear non-blocking mode from flags
-            fl = fl & ~os.O_NONBLOCK
-        else:
-            # set non-blocking mode from flags
-            fl = fl | os.O_NONBLOCK
-        # update the file's flags
-        fcntl.fcntl(fd, fcntl.F_SETFL, fl)
-
-    def write(self, data):
-        try:
-            return os.write(self.fileno(), data)
-        except OSError, e:
-            raise IOError(e.errno, e.strerror, e.filename)
-
+    # get the file's current flag settings
+    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+    if flag:
+        # clear non-blocking mode from flags
+        fl = fl & ~os.O_NONBLOCK
+    else:
+        # set non-blocking mode from flags
+        fl = fl | os.O_NONBLOCK
+    # update the file's flags
+    fcntl.fcntl(fd, fcntl.F_SETFL, fl)
 
 class File(Component):
 
     channel = "file"
 
-    def __init__(self, filename, mode, channel=channel):
+    def __init__(self, *args, **kwargs):
+        channel = kwargs.get("channel", File.channel)
         super(File, self).__init__(channel=channel)
 
-        self.filename = filename
-        self.mode = mode
+        self.autoclose = kwargs.get("autoclose", True)
+        self.encoding = kwargs.get("encoding", "utf-8")
+
+        if len(args) == 1 and type(args[0]) == file:
+            self._fd = args[0]
+        else:
+            self._fd = open(*args)
+
+        self.filename = self._fd.name
+        self.mode = self._fd.mode
+
+        self.bufsize = kwargs.get("bufsize", BUFSIZE)
+
+        setblocking(self._fd, False)
 
         self._read = []
         self._write = []
         self._buffer = deque()
 
-        self._fd = _File(self.filename, self.mode)
-        self._fd.setblocking(False)
         self._read.append(self._fd)
 
         self.push(Opened(self.filename), "opened")
@@ -88,21 +91,28 @@ class File(Component):
 
             if w:
                 data = self._buffer.popleft()
-                self._fd.write(data)
-                if not self._buffer:
-                    self._write.remove(self._fd)
+                try:
+                    if type(data) is unicode:
+                        data = data.encode(self.encoding)
+                    bytes = os.write(self._fd.fileno(), data)
+                    if bytes < len(data):
+                        self._buffer.append(data[bytes:])
+                    elif not self._buffer:
+                        self._write.remove(self._fd)
+                except OSError, error:
+                    self.push(Error(error), "error")
 
             if r:
                 try:
-                    data = self._fd.read(BUFSIZE)
+                    data = os.read(self._fd.fileno(), self.bufsize)
                 except IOError, e:
                     if e[0] == errno.EBADF:
                         data = None
 
                 if data:
                     self.push(Read(data), "read")
-                else:
-                    self.push(EOF(), "eof")
+                elif self.autoclose:
+                    self.push(EOF())
                     self.close()
 
     def write(self, data):
@@ -119,38 +129,9 @@ class File(Component):
     def seek(self, offset, whence=0):
         self._fd.seek(offset, whence)
 
-class StdIn(File):
-
-    channel = "stdin"
-
-    def __init__(self, channel=channel):
-        super(StdIn, self).__init__("/dev/stdin", "r", channel=channel)
-
-class StdOut(File):
-
-    channel = "stdout"
-
-    def __init__(self, channel=channel):
-        super(StdOut, self).__init__("/dev/stdout", "w", channel=channel)
-
-class StdErr(File):
-
-    channel = "stderr"
-
-    def __init__(self, channel=channel):
-        super(StdErr, self).__init__("/dev/stderr", "w", channel=channel)
-
 try:
-    stdin = StdIn()
-except IOError:
-    pass
-
-try:
-    stdout = StdOut()
-except IOError:
-    pass
-
-try:
-    stderr = StdErr()
+    stdin = File("/dev/stdin", "r", channel="stdin")
+    stdout = File("/dev/stdout", "r", channel="stdout")
+    stderr = File("/dev/stderr", "r", channel="stderr")
 except IOError:
     pass

@@ -8,6 +8,18 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
+from hashlib import md5
+
+def walklinks(x, f, d=0, v=None):
+    if not v:
+        v = set()
+    yield f(d, x)
+    for c in x.children.copy():
+        if c not in v:
+            v.add(c)
+            for r in walklinks(c, f, d + 1, v):
+                yield r
+
 def walk(x, f, d=0, v=None):
     if not v:
         v = set()
@@ -22,23 +34,31 @@ def edges(x, e=None, v=None):
     if not e:
         e = set()
     if not v:
-        v = set()
+        v = []
     for c in x.components.copy():
-        if c not in v:
-            v.add(c)
-            e.add((x, c))
-            edges(c, e, v)
+        e.add((x, c))
+        edges(c, e, v)
     return e
+
+def orphan(x):
+    return len(x.parents) == 1 and list(x.parents)[0] == x
 
 def findroot(x, v=None):
     if not v:
         v = set()
-    if x.manager == x:
+    if x.manager == x and orphan(x):
         return x
     else:
         if x.manager not in v:
             v.add(x.manager)
             return findroot(x.manager, v)
+        elif not all(parent in v for parent in x.parents):
+            parent = None
+            for parent in x.parents:
+                if parent not in v:
+                    break
+            v.add(parent)
+            return findroot(parent, v)
         else:
             return x.manager
 
@@ -61,25 +81,15 @@ def graph(x, name=None):
     @rtype:  str
     """
 
+    def getname(c):
+        return "%s-%s" % (c.name, md5(str(hash(c))).hexdigest()[-4:])
+
     try:
         import pydot
         
         graph_edges = []
-        nodes = []
-        names = []
         for (u, v) in edges(x):
-            if v.name in names and v not in nodes:
-                i = 1
-                new_name = "%s-%d" % (v.name, i)
-                while new_name in names:
-                    i += 1
-                    new_name = "%s-%d" % (v.name, i)
-                graph_edges.append((u.name, new_name))
-            else:
-                nodes.append(u)
-                nodes.append(v)
-                names.append(v.name)
-                graph_edges.append((u.name, v.name))
+            graph_edges.append(("\"%s\"" % getname(u), "\"%s\"" % getname(v)))
 
         g = pydot.graph_from_edges(graph_edges, directed=True)
         g.write("%s.dot" % (name or x.name))
@@ -107,12 +117,12 @@ def reprhandler(x):
     if not hasattr(x, "handler"):
         raise TypeError("%r is not an Event Handler" % x)
 
-    format = "<handler (%s) {f: %s, t: %r, p: %d}>"
-    channels = ",".join(x.channels)
-    f = x.filter
-    t = x.target or ""
+    format = "<%s on %s {target=%s, priority=%0.1f}>"
+    channels = repr(x.channels)
+    f = "filter" if x.filter else "listener"
+    t = repr(x.target)
     p = x.priority
-    return format % (channels, f, t, p)
+    return format % (f, channels, t, p)
 
 def inspect(x):
     """Display an inspection report of the Component or Manager x

@@ -10,13 +10,22 @@ This module implements the Request and Response objects.
 
 import os
 import stat
+import types
 from cStringIO import StringIO
 from time import strftime, time
 from Cookie import SimpleCookie
 
+from utils import url
 from headers import Headers
-from utils import compressBuf
-from constants import BUFFER_SIZE, SERVER_VERSION
+from constants import SERVER_VERSION
+from circuits.net.sockets import BUFSIZE
+
+def file_generator(input, chunkSize=BUFSIZE):
+    chunk = input.read(chunkSize)
+    while chunk:
+        yield chunk
+        chunk = input.read(chunkSize)
+    input.close()
 
 class Host(object):
     """An internet address.
@@ -71,10 +80,13 @@ class Request(object):
     local = Host("127.0.0.1", 80)
     remote = Host("127.0.0.1", 1111)
 
+    xhr = False
+
     index = None
     script_name = ""
 
     login = None
+    handled = False
 
     def __init__(self, sock, method, scheme, path, protocol, qs):
         "initializes x; see x.__class__.__doc__ for signature"
@@ -90,7 +102,12 @@ class Request(object):
         self._headers = None
 
         if sock:
-            self.remote = Host(*sock.getpeername())
+            name = sock.getpeername()
+            if name:
+                self.remote = Host(*name)
+            else:
+                name = sock.getsockname()
+                self.remote = Host(name, "", name)
 
         self.body = StringIO()
 
@@ -108,11 +125,17 @@ class Request(object):
             host = self.local.name or self.local.ip
         self.base = "%s://%s" % (self.scheme, host)
 
+        self.xhr = self.headers.get("X-Requested-With", "").lower() == \
+                "xmlhttprequest"
+
     headers = property(_getHeaders, _setHeaders)
 
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
+
+    def url(self):
+        return url(self)
 
 class Response(object):
     """Response(sock, request) -> new Response object
@@ -121,6 +144,8 @@ class Response(object):
     send back to the client. This ensure that the correct data
     is sent in the correct order.
     """
+
+    chunked = False
 
     def __init__(self, sock, request):
         "initializes x; see x.__class__.__doc__ for signature"
@@ -136,11 +161,11 @@ class Response(object):
                 (len(self.body) if type(self.body) == str else 0))
     
     def __str__(self):
+        self.prepare()
+        protocol = self.protocol
         status = self.status
         headers = self.headers
-        body = self.process()
-        protocol = "HTTP/%d.%d" % self.request.server_protocol
-        return "%s %s\r\n%s%s" % (protocol, status, headers, body or "")
+        return "%s %s\r\n%s" % (protocol, status, headers)
 
     def clear(self):
         self.done = False
@@ -152,51 +177,60 @@ class Response(object):
             server_version = SERVER_VERSION
 
         self.headers = Headers([
-            ("Server", server_version),
             ("Date", strftime("%a, %d %b %Y %H:%M:%S %Z")),
             ("X-Powered-By", server_version)])
+
+        if self.request.server is not None:
+            self.headers.add_header("Server", server_version)
 
         self.cookie = self.request.cookie
 
         self.stream = False
-        self.gzip = False
-        self.body = ""
+        self.body = None
         self.time = time()
         self.status = "200 OK"
+        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
-    def process(self):
+    def prepare(self):
+        if isinstance(self.body, basestring):
+            self.headers["Content-Length"] = str(len(self.body))
+            self.headers.setdefault("Content-Type", "text/html")
+        elif type(self.body) is types.GeneratorType:
+            self.stream = True
+        elif type(self.body) is types.FileType:
+            st = os.fstat(self.body.fileno())
+            self.headers.setdefault("Content-Length", str(st.st_size))
+            self.headers.setdefault("Content-Type", "application/octet-stream")
+            self.stream = True
+            self.file = self.body
+            self.body = file_generator(self.body)
+
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
-        if type(self.body) == file:
-            cType = self.headers.get("Content-Type", "application/octet-stream")
-            if self.gzip:
-                self.body = compressBuf(self.body.read())
-                self.headers["Content-Encoding"] = "gzip"
-                self.body.seek(0, 2)
-                cLen = self.body.tell()
-                self.body.seek(0)
+        status = int(self.status.split(" ", 1)[0])
+
+        if status == 413:
+            self.close = True
+        elif "Content-Length" not in self.headers:
+            if status < 200 or status in (204, 205, 304):
+                pass
             else:
-                cLen = os.fstat(self.body.fileno())[stat.ST_SIZE]
+                if self.protocol == "HTTP/1.1" \
+                        and self.request.method != "HEAD" \
+                        and self.request.server is not None:
+                    self.chunked = True
+                    self.headers.add_header("Transfer-Encoding", "chunked")
+                else:
+                    self.close = True
 
-            if cLen > BUFFER_SIZE:
-                body = self.body.read(BUFFER_SIZE)
-                self.stream = True
+        if self.request.server is not None and "Connection" not in self.headers:
+            if self.protocol == "HTTP/1.1":
+                if self.close:
+                    self.headers.add_header("Connection", "close")
             else:
-                body = self.body.read()
-        elif issubclass(type(self.body), basestring):
-            body = self.body
-            if self.gzip:
-                body = compressBuf(body).getvalue()
-                self.headers["Content-Encoding"] = "gzip"
-            cLen = len(body)
-            cType = self.headers.get("Content-Type", "text/html")
-        else:
-            body = ""
-            cLen = 0
-            cType = "text/plain"
+                if not self.close:
+                    self.headers.add_header("Connection", "Keep-Alive")
 
-        self.headers["Content-Type"] = cType
-        self.headers["Content-Length"] = str(cLen)
-
-        return body
+        if self.headers.get("Transfer-Encoding", "") == "chunked":
+            self.chunked = True

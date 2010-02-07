@@ -1,6 +1,6 @@
-# Module:	smtp
-# Date:		13th June 2008
-# Author:	James Mills, prologic at shortcircuit dot net dot au
+# Module:   smtp
+# Date:     13th June 2008
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
 """Simple Mail Transfer Protocol
 
@@ -11,6 +11,7 @@ or commonly known as SMTP.
 import re
 import socket
 from tempfile import TemporaryFile
+from collections import defaultdict
 
 from circuits import handler, Event, Component
 
@@ -18,63 +19,48 @@ from circuits import handler, Event, Component
 ### Supporting Functions
 ###
 
-LINESEP = re.compile("\r?\n")
-
-def splitLines(s, buffer):
-	"""splitLines(s, buffer) -> lines, buffer
-
-	Append s to buffer and find any new lines of text in the
-	string splitting at the standard IRC delimiter CRLF. Any
-	new lines found, return them as a list and the remaining
-	buffer for further processing.
-	"""
-
-	lines = LINESEP.split(buffer + s)
-	return lines[:-1], lines[-1]
-
 def stripAddress(address):
-	"""stripAddress(address) -> address
+    """stripAddress(address) -> address
 
-	Strip the leading & trailing <> from an address.
-	Handy for getting FROM: addresses.
-	"""
+    Strip the leading & trailing <> from an address.
+    Handy for getting FROM: addresses.
+    """
 
-	start = address.index("<") + 1
-	end = address.index(">")
+    start = address.index("<") + 1
+    end = address.index(">")
 
-	return address[start:end]
+    return address[start:end]
 
 def splitTo(address):
-	"""splitTo(address) -> (host, fulladdress)
+    """splitTo(address) -> (host, fulladdress)
 
-	Return 'address' as undressed (host, fulladdress) tuple.
-	Handy for use with TO: addresses.
-	"""
+    Return 'address' as undressed (host, fulladdress) tuple.
+    Handy for use with TO: addresses.
+    """
 
-	start = address.index("<") + 1
-	sep = address.index("@") + 1
-	end = address.index(">")
+    start = address.index("<") + 1
+    sep = address.index("@") + 1
+    end = address.index(">")
 
-	return (address[sep:end], address[start:end],)
+    return (address[sep:end], address[start:end],)
 
 def getAddress(keyword, arg):
-	address = None
-	keylen = len(keyword)
-	if arg[:keylen].upper() == keyword:
-		address = arg[keylen:].strip()
-		if not address:
-			pass
-		elif address[0] == "<" and address[-1] == ">" and address != "<>":
-			# Addresses can be in the form <person@dom.com> but watch out
-			# for null address, e.g. <>
-			address = address[1:-1]
-	return address
+    address = None
+    keylen = len(keyword)
+    if arg[:keylen].upper() == keyword:
+        address = arg[keylen:].strip()
+        if not address:
+            pass
+        elif address[0] == "<" and address[-1] == ">" and address != "<>":
+            # Addresses can be in the form <person@dom.com> but watch out
+            # for null address, e.g. <>
+            address = address[1:-1]
+    return address
 
 ###
 ### Events
 ###
 
-class Raw(Event): pass
 class Helo(Event): pass
 class Mail(Event): pass
 class Rcpt(Event): pass
@@ -89,232 +75,223 @@ class Message(Event): pass
 ###
 
 class SMTP(Component):
-	"""SMTP(event) -> new smtp object
+    """SMTP(event) -> new smtp object
 
-	Create a new smtp object which implements the SMTP
-	protocol. Note this doesn't actually do anything
-	usefull unless used in conjunction with
-	circuits.parts.sockets.TCPServer.
+    Create a new smtp object which implements the SMTP
+    protocol. Note this doesn't actually do anything
+    usefull unless used in conjunction with
+    circuits.parts.sockets.TCPServer.
 
-	See: examples/net/smtpd.py
-	"""
+    See: examples/net/smtpd.py
+    """
 
-	COMMAND = 0
-	DATA = 1
+    COMMAND = 0
+    DATA = 1
 
-	__buffers = {}
+    __buffers = defaultdict(str)
 
-	__states = {}
+    __states = defaultdict(lambda : COMMAND)
 
-	__greeting = None
-	__mailfrom = None
-	__rcpttos = []
-	__data = None
+    __greeting = None
+    __mailfrom = None
+    __rcpttos = []
+    __data = None
 
-	__fqdn = socket.getfqdn()
+    __fqdn = socket.getfqdn()
 
-	###
-	### Methods
-	###
+    def __init__(self, *args, **kwargs):
+        super(SMTP, self).__init__(*args, **kwargs)
 
-	def reset(self):
-		self.__buffers = {}
-		self.__states = {}
-		self.__greeting = None
-		self.__mailfrom = None
-		self.__rcpttos = []
-		self.__data = None
+        LP(getBuffer=self.__buffers.__getitem__,
+                updateBuffer=self.__buffers.__setitem__)
 
-	def processMessage(self, sock, mailfrom, rcpttos, data):
-		r =  self.send(Message(sock, mailfrom, rcpttos, data), "message")
-		data.close()
+    ###
+    ### Methods
+    ###
 
-		if r:
-			return r[-1]
+    def reset(self):
+        self.__buffers = {}
+        self.__states = {}
+        self.__greeting = None
+        self.__mailfrom = None
+        self.__rcpttos = []
+        self.__data = None
 
-	###
-	### Properties
-	###
+    def processMessage(self, sock, mailfrom, rcpttos, data):
+        r =  self.send(Message(sock, mailfrom, rcpttos, data), "message")
+        data.close()
 
-	def getFQDN(self):
-		"""I.getFQDN() -> str
+        if r:
+            return r[-1]
 
-		Return the fully qualified domain name of this server.
-		"""
+    ###
+    ### Properties
+    ###
 
-		return self.__fqdn
+    def getFQDN(self):
+        """I.getFQDN() -> str
 
-	###
-	### Event Processing
-	###
+        Return the fully qualified domain name of this server.
+        """
 
-	@handler("raw")
-	def onRAW(self, sock, line):
-		"""I.onRAW(sock, line) -> None
+        return self.__fqdn
 
-		Process a line of text and generate the appropiate
-		event. This must not be overridden by sub-classes,
-		if it is, this must be explitetly called by the
-		sub-class. Other Components may however listen to
-		this event and process custom SMTP events.
-		"""
+    ###
+    ### Event Processing
+    ###
 
-		if self.__states[sock] == self.COMMAND:
-			if not line:
-				self.write(sock, "500 Syntax error, command unrecognized\r\n")
-				return
+    @handler("raw")
+    def onRAW(self, sock, line):
+        """I.onRAW(sock, line) -> None
 
-			method = None
+        Process a line of text and generate the appropiate
+        event. This must not be overridden by sub-classes,
+        if it is, this must be explitetly called by the
+        sub-class. Other Components may however listen to
+        this event and process custom SMTP events.
+        """
 
-			i = line.find(" ")
-			if i < 0:
-				command = line.upper()
-				arg = None
-			else:
-				command = line[:i].upper()
-				arg = line[i+1:].strip()
+        if self.__states[sock] == self.COMMAND:
+            if not line:
+                self.write(sock, "500 Syntax error, command unrecognized\r\n")
+                return
 
-			method = getattr(self, "smtp" + command, None)
+            method = None
 
-			if not method:
-				self.write(sock, "502 Command not implemented\r\n")
-			else:
-				method(sock, arg)
-		else:
-			if self.__states[sock] != self.DATA:
-				self.write(sock, "451 Internal confusion\r\n")
-				return
+            i = line.find(" ")
+            if i < 0:
+                command = line.upper()
+                arg = None
+            else:
+                command = line[:i].upper()
+                arg = line[i+1:].strip()
 
-			if line and re.match("^\.$", line):
-					self.__data.flush()
-					self.__data.seek(0)
-					status = self.processMessage(sock,
-							self.__mailfrom,  self.__rcpttos, self.__data)
+            method = getattr(self, "smtp" + command, None)
 
-					self.reset()
+            if not method:
+                self.write(sock, "502 Command not implemented\r\n")
+            else:
+                method(sock, arg)
+        else:
+            if self.__states[sock] != self.DATA:
+                self.write(sock, "451 Internal confusion\r\n")
+                return
 
-					if not status:
-						self.write(sock, "250 Ok\r\n")
-					else:
-						self.write(sock, status + "\r\n")
-			else:
-				if line and line[0] == ".":
-					self.__data.write(line[1:] + "\n")
-				else:
-					self.__data.write(line + "\n")
+            if line and re.match("^\.$", line):
+                    self.__data.flush()
+                    self.__data.seek(0)
+                    status = self.processMessage(sock,
+                            self.__mailfrom,  self.__rcpttos, self.__data)
 
-	###
-	### SMTP and ESMTP Commands
-	###
+                    self.reset()
 
-	def smtpHELO(self, sock, arg):
-		if not arg:
-			self.write(sock, "501 Syntax: HELO hostname\r\n")
-			return
+                    if not status:
+                        self.write(sock, "250 Ok\r\n")
+                    else:
+                        self.write(sock, status + "\r\n")
+            else:
+                if line and line[0] == ".":
+                    self.__data.write(line[1:] + "\n")
+                else:
+                    self.__data.write(line + "\n")
 
-		if self.__greeting:
-			self.write(sock, "503 Duplicate HELO/EHLO\r\n")
-		else:
-			self.__greeting = arg
-			self.write(sock, "250 %s\r\n" % self.__fqdn)
-			self.push(Helo(sock, arg), "helo", self.channel)
+    ###
+    ### SMTP and ESMTP Commands
+    ###
 
-	def smtpNOOP(self, sock, arg):
-		if arg:
-			self.write(sock, "501 Syntax: NOOP\r\n")
-		else:
-			self.write(sock, "250 Ok\r\n")
-			self.push(Noop(sock), "noop", self.channel)
+    def smtpHELO(self, sock, arg):
+        if not arg:
+            self.write(sock, "501 Syntax: HELO hostname\r\n")
+            return
 
-	def smtpQUIT(self, sock, arg):
-		self.write(sock, "221 Bye\r\n")
-		self.close(sock)
-		self.push(Quit(sock), "quit", self.channel)
+        if self.__greeting:
+            self.write(sock, "503 Duplicate HELO/EHLO\r\n")
+        else:
+            self.__greeting = arg
+            self.write(sock, "250 %s\r\n" % self.__fqdn)
+            self.push(Helo(sock, arg), "helo", self.channel)
 
-	def smtpMAIL(self, sock, arg):
-		address = getAddress("FROM:", arg)
+    def smtpNOOP(self, sock, arg):
+        if arg:
+            self.write(sock, "501 Syntax: NOOP\r\n")
+        else:
+            self.write(sock, "250 Ok\r\n")
+            self.push(Noop(sock), "noop", self.channel)
 
-		if not address:
-			self.write(sock, "501 Syntax: MAIL FROM:<address>\r\n")
-			return
+    def smtpQUIT(self, sock, arg):
+        self.write(sock, "221 Bye\r\n")
+        self.close(sock)
+        self.push(Quit(sock), "quit", self.channel)
 
-		if self.__mailfrom:
-			self.write(sock, "503 Error: nested MAIL command\r\n")
-			return
+    def smtpMAIL(self, sock, arg):
+        address = getAddress("FROM:", arg)
 
-		self.__mailfrom = address
+        if not address:
+            self.write(sock, "501 Syntax: MAIL FROM:<address>\r\n")
+            return
 
-		self.write(sock, "250 Ok\r\n")
-		self.push(Mail(sock, address), "mail", self.channel)
+        if self.__mailfrom:
+            self.write(sock, "503 Error: nested MAIL command\r\n")
+            return
 
-	def smtpRCPT(self, sock, arg):
-		if not self.__mailfrom:
-			self.write(sock, "503 Error: need MAIL command\r\n")
-			return
+        self.__mailfrom = address
 
-		address = getAddress("TO:", arg)
+        self.write(sock, "250 Ok\r\n")
+        self.push(Mail(sock, address), "mail", self.channel)
 
-		if not address:
-			self.write(sock, "501 Syntax: RCPT TO: <address>\r\n")
-			return
+    def smtpRCPT(self, sock, arg):
+        if not self.__mailfrom:
+            self.write(sock, "503 Error: need MAIL command\r\n")
+            return
 
-		self.__rcpttos.append(address)
-		self.write(sock, "250 Ok\r\n")
-		self.push(Rcpt(sock, address), "rcpt", self.channel)
+        address = getAddress("TO:", arg)
 
-	def smtpRSET(self, sock, arg):
-		if arg:
-			self.write(sock, "501 Syntax: RSET\r\n")
-			return
+        if not address:
+            self.write(sock, "501 Syntax: RCPT TO: <address>\r\n")
+            return
 
-		# Resets the sender, recipients, and data, but not the greeting
-		self.__mailfrom[sock] = None
-		self.__rcpttos = []
-		self.__data = None
-		self.__states = {}
-		self.write(sock, "250 Ok\r\n")
-		self.push(Rset(sock), "rset", self.channel)
+        self.__rcpttos.append(address)
+        self.write(sock, "250 Ok\r\n")
+        self.push(Rcpt(sock, address), "rcpt", self.channel)
 
-	def smtpDATA(self, sock, arg):
-		if not self.__rcpttos:
-			self.write(sock, "503 Error: need RCPT command\r\n")
-			return
+    def smtpRSET(self, sock, arg):
+        if arg:
+            self.write(sock, "501 Syntax: RSET\r\n")
+            return
 
-		if arg:
-			self.write(sock, "501 Syntax: DATA\r\n")
-			return
+        # Resets the sender, recipients, and data, but not the greeting
+        self.__mailfrom[sock] = None
+        self.__rcpttos = []
+        self.__data = None
+        self.__states = {}
+        self.write(sock, "250 Ok\r\n")
+        self.push(Rset(sock), "rset", self.channel)
 
-		self.__state = self.DATA
-		self.__data = TemporaryFile()
+    def smtpDATA(self, sock, arg):
+        if not self.__rcpttos:
+            self.write(sock, "503 Error: need RCPT command\r\n")
+            return
 
-		self.write(sock, "354 End data with <CR><LF>.<CR><LF>\r\n")
-		self.push(Data(sock), "data", self.channel)
+        if arg:
+            self.write(sock, "501 Syntax: DATA\r\n")
+            return
 
-	###
-	### Default Socket Events
-	###
+        self.__state = self.DATA
+        self.__data = TemporaryFile()
 
-	@handler("connect")
-	def onCONNECT(self, sock, host, port):
-		self.__states[sock] = self.COMMAND
-		self.__buffers[sock] = ""
-		self.write(sock, "220 %s ???\r\n" % self.__fqdn)
+        self.write(sock, "354 End data with <CR><LF>.<CR><LF>\r\n")
+        self.push(Data(sock), "data", self.channel)
 
-	@handler("disconnect")
-	def onDISCONNECT(self, sock):
-		self.reset()
+    ###
+    ### Default Socket Events
+    ###
 
-	@handler("read")
-	def onREAD(self, sock, data):
-		"""S.onREAD(sock, data) -> None
+    @handler("connect")
+    def onCONNECT(self, sock, host, port):
+        self.__states[sock] = self.COMMAND
+        self.__buffers[sock] = ""
+        self.write(sock, "220 %s ???\r\n" % self.__fqdn)
 
-		Process any incoming data appending it to an internal
-		buffer. Split the buffer by the standard line delimiters
-		CRLF and create a Raw event per line. Any unfinished
-		lines of text, leave in the buffer.
-		"""
-
-		lines, buffer = splitLines(data, self.__buffers[sock])
-		self.__buffers[sock] = buffer
-		for line in lines:
-			self.push(Raw(sock, line), "raw", self.channel)
+    @handler("disconnect")
+    def onDISCONNECT(self, sock):
+        self.reset()
