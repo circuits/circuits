@@ -455,16 +455,25 @@ class Value(object):
     @param event: The Event this Value is associated with.
     @type  event: Event instance
 
+    @param manager: The Manager/Component used to trigger notifications.
+    @type  manager: A Manager/Component instance.
+
+    @param onSet: The channel used when triggering ValueChagned events.
+    @type  onSet: A (channel, target) tuple.
+
+    @ivar result: True if this value has been changed.
+    @ivar errors: True if while setting this value an exception occured.
+
     This is a Future/Promise implementation.
     """
 
-    def __init__(self, manager, event, channel=None, target=None):
+    def __init__(self, event, manager, onSet=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        self.manager = manager
         self.event = event
-        self.channel = channel
-        self.target = target
+        self.manager = manager
+
+        self.onSet = onSet
 
         self.result = False
         self.errors = False
@@ -494,9 +503,8 @@ class Value(object):
     def setValue(self, value):
         self._value = value
         self.result = True
-        if self.manager is not None and self.channel:
-            e = ValueChanged(self)
-            self.manager.fireEvent(e, self.channel, self.target)
+        if self.manager is not None and self.onSet is not None:
+            self.manager.fireEvent(ValueChanged(self), *self.onSet)
 
     value = property(getValue, setValue, None, "Value of this Value")
 
@@ -804,7 +812,7 @@ class Manager(object):
 
         event.channel = (target, channel)
 
-        event.value = Value(self, event)
+        event.value = Value(event, self)
 
         if event.start is not None:
             self.fire(Start(event), *event.start)
