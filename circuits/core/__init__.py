@@ -479,6 +479,9 @@ class Value(object):
         self.errors = False
         self._value = None
 
+    def __iter__(self):
+        return iter(self.value)
+
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 

@@ -1,18 +1,14 @@
 #!/usr/bin/python -i
 
-from time import sleep
 from types import TracebackType
 
-from circuits import future, Event, Component, Manager, Debugger
+from circuits import Event, Component, Manager
 
 class Hello(Event):
     "Hello Event"
 
 class Test(Event):
     "Test Event"
-
-class Delay(Event):
-    "Delay Event"
 
 class Error(Event):
     "Error Event"
@@ -23,11 +19,6 @@ class App(Component):
         return "Hello World!"
 
     def test(self):
-        return self.push(Hello())
-
-    @future()
-    def delay(self, n=1):
-        sleep(n)
         return self.push(Hello())
 
     def error(self):
@@ -46,12 +37,6 @@ def test_value():
 def test_nested_value():
     x = m.push(Test())
     m.flush(); m.flush()
-    assert x.value == "Hello World!"
-
-def test_future_value():
-    x = m.push(Delay(2))
-    sleep(3)
-    m.flush()
     assert x.value == "Hello World!"
 
 def test_error_value():
