@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import py
 import urllib2
 from cookielib import CookieJar
 from circuits.web import Controller
@@ -14,12 +13,12 @@ class Root(Controller):
             self.cookie["visited"] = True
             return "Hello World!"
 
-def test(app):
+def test(webapp):
     cj = CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
-    f = opener.open(app.base)
+    f = opener.open(webapp.server.base)
     assert f.read() == "Hello World!"
 
-    f = opener.open(app.base)
+    f = opener.open(webapp.server.base)
     assert f.read() == "Hello again!"

@@ -2,7 +2,7 @@
 
 from urllib2 import urlopen
 
-from circuits.web import Server, Controller, Sessions
+from circuits.web import Controller
 
 class Root(Controller):
 
@@ -10,6 +10,6 @@ class Root(Controller):
         yield "Hello "
         yield "World!"
 
-def test(app):
-    f = urlopen(app.base)
+def test(webapp):
+    f = urlopen(webapp.server.base)
     assert f.read() == "Hello World!"

@@ -3,7 +3,7 @@
 from urllib2 import urlopen
 from urllib import urlencode
 
-from circuits.web import Server, Controller, Sessions
+from circuits.web import Controller
 
 class Root(Controller):
 
@@ -16,14 +16,14 @@ class Root(Controller):
     def test_redirect(self):
         return self.redirect("/")
 
-def test(app):
-    f = urlopen(app.base)
+def test(webapp):
+    f = urlopen(webapp.server.base)
     assert f.read() == "Hello World!"
 
-def test_args(app):
+def test_args(webapp):
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
-    url = "%s/test_args/%s" % (app.base, "/".join(args))
+    url = "%s/test_args/%s" % (webapp.server.base, "/".join(args))
     data = urlencode(kwargs)
 
     f = urlopen(url, data)
@@ -31,6 +31,6 @@ def test_args(app):
     assert data[0] == repr(args)
     assert data[1] == repr(kwargs)
 
-def test_redirect(app):
-    f = urlopen("%s/test_redirect" % app.base)
+def test_redirect(webapp):
+    f = urlopen("%s/test_redirect" % webapp.server.base)
     assert f.read() == "Hello World!"

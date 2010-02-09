@@ -1,0 +1,34 @@
+# Module:   conftest
+# Date:     10 February 2010
+# Author:   James Mills, prologic at shortcircuit dot net dot au
+
+"""py.test config"""
+
+from circuits import Component
+from circuits.web import Server
+
+BIND = ("127.0.0.1", 8000)
+
+class WebApp(Component):
+
+    def __init__(self):
+        super(WebApp, self).__init__()
+
+        self.server = Server(BIND)
+        self.server.register(self)
+
+def pytest_funcarg__webapp(request):
+    return request.cached_setup(
+            setup=lambda: setupwebapp(request),
+            teardown=lambda webapp: teardownwebapp(webapp),
+            scope="module")
+
+def setupwebapp(request):
+    webapp = WebApp()
+    Root = getattr(request.module, "Root")
+    Root().register(webapp)
+    webapp.start()
+    return webapp
+
+def teardownwebapp(webapp):
+    webapp.stop()

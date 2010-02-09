@@ -13,15 +13,15 @@ except ImportError:
         HAS_JSON = 0
 
 if HAS_JSON:
-    from circuits.web import Server, JSONController
+    from circuits.web import JSONController
 
     class Root(JSONController):
 
         def index(self):
             return {"success": True, "message": "Hello World!"}
 
-    def test(app):
-        f = urlopen(app.base)
+    def test(webapp):
+        f = urlopen(webapp.server.base)
         data = f.read()
         d = json.loads(data)
         assert d["success"]
