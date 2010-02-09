@@ -238,7 +238,10 @@ class HTTP(Component):
             elif isinstance(retval, wrappers.Response):
                 self.push(Response(retval), "response", self.channel)
             elif isinstance(retval, Value):
-                if retval.errors:
+                if retval.result and not retval.errors:
+                    response.body = retval.value
+                    self.push(Response(response), "response", self.channel)
+                elif retval.errors:
                     message = "Request Failed"
                     error = retval.value
                     error = HTTPError(request, response, 500, message, error)
