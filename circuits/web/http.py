@@ -247,10 +247,8 @@ class HTTP(Component):
                     error = HTTPError(request, response, 500, message, error)
                     self.push(error, "httperror", self.channel)
                 else:
-                    retval.manager = self
-                    retval.channel = "valuechanged"
-                    retval.target = self
                     retval.event = evt
+                    retval.onSet = "valuechanged", self
             elif type(retval) is not bool:
                 response.body = retval
                 self.push(Response(response), "response", self.channel)
