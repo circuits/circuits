@@ -10,11 +10,6 @@ class Root(Controller):
         yield "Hello "
         yield "World!"
 
-app = Server(8000) + Sessions() + Root()
-
-def test():
-    f = urlopen("http://localhost:8000/test_generators")
+def test(app):
+    f = urlopen(app.base)
     assert f.read() == "Hello World!"
-
-def pytest_session_finish():
-    app.stop()

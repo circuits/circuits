@@ -15,20 +15,16 @@ class Root(Controller):
 
         return "Hello %s" % name
 
-app = Server(8000) + Sessions() + Root()
-
-def test():
+def test(app):
     cj = CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
-    f = opener.open("http://localhost:8000/test_sessions")
-    assert f.read() == "Hello World!"
+    f = opener.open(app.base + "/test_sessions")
+    s = f.read() 
+    assert s == "Hello World!"
 
-    f = opener.open("http://localhost:8000/test_sessions/test")
+    f = opener.open(app.base + "/test_sessions/test")
     assert f.read() == "Hello test"
 
-    f = opener.open("http://localhost:8000/test_sessions")
+    f = opener.open(app.base + "/test_sessions")
     assert f.read() == "Hello test"
-
-def pytest_session_finish():
-    app.stop()

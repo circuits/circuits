@@ -1,18 +1,14 @@
 #!/usr/bin/env python
 
 from httplib import HTTPConnection
-
-from circuits.web import Server, Controller
+from circuits.web import Controller
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
-app = Server(8000) + Root()
-
-def test():
-    connection = HTTPConnection("localhost", 8000)
+def test(app):
+    connection = HTTPConnection(*app.hostport)
     connection.auto_open = False
     connection.connect()
 
@@ -24,6 +20,3 @@ def test():
         assert response.read() == "Hello World!"
 
     connection.close()
-
-def pytest_session_finish():
-    app.stop()

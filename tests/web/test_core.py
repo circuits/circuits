@@ -16,16 +16,14 @@ class Root(Controller):
     def test_redirect(self):
         return self.redirect("/")
 
-app = Server(8000) + Sessions() + Root()
-
-def test():
-    f = urlopen("http://localhost:8000/")
+def test(app):
+    f = urlopen(app.base)
     assert f.read() == "Hello World!"
 
-def test_args():
+def test_args(app):
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
-    url = "http://localhost:8000/test_args/%s" % "/".join(args)
+    url = "%s/test_args/%s" % (app.base, "/".join(args))
     data = urlencode(kwargs)
 
     f = urlopen(url, data)
@@ -33,9 +31,6 @@ def test_args():
     assert data[0] == repr(args)
     assert data[1] == repr(kwargs)
 
-def test_redirect():
-    f = urlopen("http://localhost:8000/test_redirect")
+def test_redirect(app):
+    f = urlopen("%s/test_redirect" % app.base)
     assert f.read() == "Hello World!"
-
-def pytest_session_finish():
-    app.stop()

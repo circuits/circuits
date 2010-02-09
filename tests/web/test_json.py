@@ -20,14 +20,9 @@ if HAS_JSON:
         def index(self):
             return {"success": True, "message": "Hello World!"}
 
-    app = Server(8000) + Root()
-
-    def test():
-        f = urlopen("http://localhost:8000/")
+    def test(app):
+        f = urlopen(app.base)
         data = f.read()
         d = json.loads(data)
         assert d["success"]
         assert d["message"] == "Hello World!"
-
-def pytest_session_finish():
-    app.stop()
