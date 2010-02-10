@@ -24,9 +24,6 @@ docs:
 		--no-sourcecode circuits
 
 tests:
-	@nosetests \
-		--with-coverage \
-		--cover-package=circuits \
-		--cover-erase \
-		--cover-inclusive \
-		--with-doctest
+	@py.test -x --ignore=tmp \
+		--cover-action=report \
+		--cover-package=circuits
