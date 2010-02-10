@@ -16,7 +16,7 @@ from circuits.core import Value
 class Future(Value):
 
     def __init__(self, f, args, kwargs):
-        super(Future, self).__init__(None, self)
+        super(Future, self).__init__(None, None)
 
         self.f = f
         self.args = args
