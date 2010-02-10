@@ -3,7 +3,7 @@
 all: clean checks tests docs
 
 clean:
-	@rm -rf build dist circuits.egg-info
+	@rm -rf build dist circuits.egg-info circuits/__version__.py
 	@find . -name '*.pyc' -delete
 	@find . -name '*.pyo' -delete
 	@find . -name '*~' -delete
