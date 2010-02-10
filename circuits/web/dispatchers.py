@@ -26,6 +26,7 @@ except ImportError:
 
 from circuits import handler, Event, Component
 
+from events import Response
 from errors import HTTPError
 from cgifs import FieldStorage
 from controllers import BaseController
@@ -417,7 +418,7 @@ class RoutesDispatcher(Component):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.send(req, channel, target=target, errors=True)
+            return self.push(req, channel, target=target)
 
     @handler("registered", target="*")
     def registered(self, event, component, manager):
@@ -492,10 +493,17 @@ class XMLRPC(Component):
         self.target = target
         self.encoding = encoding
 
+    def rpcvalue(self, value):
+        response = value.response
+        response.body = self._response(value.value)
+        self.push(Response(response))
+
     @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
+
+        response.headers["Content-Type"] = "text/xml"
 
         try:
             data = request.body.read()
@@ -506,19 +514,22 @@ class XMLRPC(Component):
             else:
                 t, c = self.target, method
 
-            result = self.send(RPC(*params), c, t, errors=True)
-            if result:
-                r = self._response(result)
-            else:
-                r = self._error(1, "method '%s' does not exist" % method)
+            value = self.push(RPC(*params), c, t)
+            value.response = response
+            value.onSet = ("rpcvalue", self)
+
+            #TODO: How do we implement this ?
+            #else:
+            #    r = self._error(1, "method '%s' does not exist" % method)
         except Exception, e:
             r = self._error(1, "%s: %s" % (type(e), e))
-
-        response.headers["Content-Type"] = "text/xml"
-        return r
+            return r
+        else:
+            return True
 
     def _response(self, result):
-        return xmlrpclib.dumps((result,), encoding=self.encoding, allow_none=True)
+        return xmlrpclib.dumps((result,), encoding=self.encoding,
+            allow_none=True)
 
     def _error(self, code, message):
         fault = xmlrpclib.Fault(code, message)
@@ -535,10 +546,18 @@ class JSONRPC(Component):
         self.target = target
         self.encoding = encoding
 
+    def rpcvalue(self, value):
+        id = value.id
+        response = value.response
+        response.body = self._response(id, value.value)
+        self.push(Response(response))
+
     @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
+
+        response.headers["Content-Type"] = "application/javascript"
 
         try:
             data = request.body.read()
@@ -553,19 +572,22 @@ class JSONRPC(Component):
                 t, c = self.target, method
 
             if type(params) is dict:
-                result = self.send(RPC(**params), c, t, errors=True)
+                value = self.push(RPC(**params), c, t)
             else:
-                result = self.send(RPC(*params), c, t, errors=True)
+                value = self.push(RPC(*params), c, t)
 
-            if result:
-                r = self._response(id, result)
-            else:
-                r = self._error(id, 100, "method '%s' does not exist" % method)
+            value.id = id
+            value.response = response
+            value.onSet = ("rpcvalue", self)
+
+            #TODO: How do we implement this ?
+            #else:
+            #    r = self._error(id, 100, "method '%s' does not exist" % method)
         except Exception, e:
             r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
-
-        response.headers["Content-Type"] = "application/javascript"
-        return r
+            return r
+        else:
+            return True
 
     def _response(self, id, result):
         data = {
