@@ -715,7 +715,7 @@ class UDPServer(Server):
 
 UDPClient = UDPServer
 
-def Pipe(channels=("pipe.a", "pipe.b"), **kwargs):
+def Pipe(channels=("pipe", "pipe"), **kwargs):
     """Create a new full duplex Pipe
 
     Returns a pair of UNIXClient instances connected on either side of
