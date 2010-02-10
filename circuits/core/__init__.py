@@ -881,7 +881,6 @@ class Manager(object):
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
-                event.value.result = True
                 event.value.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
