@@ -477,6 +477,7 @@ class Value(object):
 
         self.result = False
         self.errors = False
+        self._parent = self
         self._value = None
 
     def __iter__(self):
@@ -504,10 +505,20 @@ class Value(object):
         return value
 
     def setValue(self, value):
+        if isinstance(value, Value):
+            value._parent = self
+
         self._value = value
-        self.result = True
-        if self.manager is not None and self.onSet is not None:
-            self.manager.fireEvent(ValueChanged(self), *self.onSet)
+
+        def notify(o, v):
+            if not isinstance(v, Value) and v is not None:
+                o.result = True
+                if o.manager is not None and o.onSet is not None:
+                    o.manager.fireEvent(ValueChanged(o), *o.onSet)
+            if not o._parent == o:
+                notify(o._parent, v)
+        
+        notify(self, value)
 
     value = property(getValue, setValue, None, "Value of this Value")
 
