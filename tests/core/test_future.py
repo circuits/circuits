@@ -2,7 +2,7 @@
 
 from time import sleep
 
-from circuits import future, Event, Component, Manager
+from circuits import future, Event, Component
 
 class Hello(Event):
     "Hello Event"
@@ -20,13 +20,11 @@ class App(Component):
         sleep(n)
         return self.push(Hello())
 
-m = Manager()
 app = App()
-app.register(m)
-m.start()
+app.start()
 
 def test_future_value():
-    x = m.push(Delay(2))
+    x = app.push(Delay(2))
     sleep(3)
-    m.flush()
+    app.flush()
     assert x.value == "Hello World!"
