@@ -27,5 +27,4 @@ tests:
 	@py.test -x --ignore=tmp \
 		--pastebin=all \
 		--report=skipped \
-		--cover-action=report \
-		--cover-package=circuits
+		--cover=circuits
