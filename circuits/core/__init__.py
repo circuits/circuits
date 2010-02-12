@@ -557,8 +557,6 @@ class Manager(object):
         self.channels = dict()
         self._handlers = set()
 
-        self._links = set()
-
         self._ticks = set()
 
         self._task = None
@@ -566,9 +564,7 @@ class Manager(object):
 
         self.root = self
         self.manager = self
-        self.children = set()
         self.components = set()
-        self.parents = set([self])
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
@@ -852,30 +848,6 @@ class Manager(object):
 
     fire = push = fireEvent
 
-    def _send(self, event, channel):
-        for child in self.children:
-            child._queue.append((event, channel))
-
-    def sendEvent(self, event, channel=None, target=None):
-        if channel is None and target is None:
-            if type(event.channel) is TupleType:
-                target, channel = event.channel
-            else:
-                channel = event.channel or event.name.lower()
-                target = event.target or "*"
-        else:
-            channel = channel or event.channel or event.name.lower()
-            if isinstance(target, Component):
-                target = getattr(target, "channel", "*")
-            else:
-                target = target or event.target or getattr(self, "channel", "*")
-
-        event.channel = (target, channel)
-
-        self._send(event, (target, channel))
-
-    send = sendEvent
-
     def _flush(self):
         q = self._queue
         self._queue = deque()
@@ -999,12 +971,6 @@ class Manager(object):
                         [f() for f in self._ticks.copy()]
                     if len(self):
                         self._flush()
-                    if self._links:
-                        for link in self._links.copy():
-                            if link._ticks:
-                                [f() for f in link._ticks.copy()]
-                            if len(link):
-                                link._flush()
                     if sleep:
                         try:
                             time.sleep(sleep)
@@ -1134,18 +1100,16 @@ class BaseComponent(Manager):
             if c._queue:
                 m._queue.extend(list(c._queue))
                 c._queue.clear()
-            m._links.update(c._links)
             if m is not r:
                 c._registerHandlers(r)
                 if m._queue:
                     r._queue.extend(list(m._queue))
                     m._queue.clear()
-                r._links.update(c._links)
             if hasattr(c, "__tick__"):
                 m._ticks.add(getattr(c, "__tick__"))
                 if m is not r:
                     r._ticks.add(getattr(c, "__tick__"))
-            [_register(x, m, r) for x in c.components if x not in c._links]
+            [_register(x, m, r) for x in c.components]
 
         _register(self, manager, findroot(manager))
 
@@ -1186,37 +1150,6 @@ class BaseComponent(Manager):
         self.fire(Unregistered(self, self.manager), target=self)
 
         self.manager = self
-
-    def link(self, component):
-        component.parents.add(self)
-        if component in component.parents:
-            component.parents.remove(component)
-
-        self.children.add(component)
-
-        self.components.add(component)
-
-        self._links.add(component)
-        self._links.update(component._links)
-
-        root = findroot(self)
-        root._links.add(component)
-        root._links.update(component._links)
-
-        return self
-
-    def unlink(self, component):
-        component.parents.add(component)
-        component.parents.remove(self)
-
-        self.children.remove(component)
-
-        self.components.remove(component)
-
-        self._links.remove(component)
-        self._links.update_difference(component._links)
-
-        return self
 
 class Component(BaseComponent):
 

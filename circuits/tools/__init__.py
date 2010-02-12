@@ -10,16 +10,6 @@ tools are installed as executables with a prefix of "circuits."
 
 from hashlib import md5
 
-def walklinks(x, f, d=0, v=None):
-    if not v:
-        v = set()
-    yield f(d, x)
-    for c in x.children.copy():
-        if c not in v:
-            v.add(c)
-            for r in walklinks(c, f, d + 1, v):
-                yield r
-
 def walk(x, f, d=0, v=None):
     if not v:
         v = set()
@@ -40,25 +30,15 @@ def edges(x, e=None, v=None):
         edges(c, e, v)
     return e
 
-def orphan(x):
-    return len(x.parents) == 1 and list(x.parents)[0] == x
-
 def findroot(x, v=None):
     if not v:
         v = set()
-    if x.manager == x and orphan(x):
+    if x.manager == x:
         return x
     else:
         if x.manager not in v:
             v.add(x.manager)
             return findroot(x.manager, v)
-        elif not all(parent in v for parent in x.parents):
-            parent = None
-            for parent in x.parents:
-                if parent not in v:
-                    break
-            v.add(parent)
-            return findroot(parent, v)
         else:
             return x.manager
 
