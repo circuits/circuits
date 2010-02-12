@@ -139,8 +139,10 @@ class Bridge(Component):
 
     @handler("read", target="*")
     def read(self, *args):
-        if len(args) == 1: data = args[0]
-        else: data = args[1]
+        if len(args) == 1:
+            data = args[0]
+        else:
+            data = args[1]
         data = data.split("\x00\x00")
         for d in data:
             if d:
