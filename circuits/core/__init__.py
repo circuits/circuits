@@ -472,7 +472,7 @@ class Value(object):
     This is a Future/Promise implementation.
     """
 
-    def __init__(self, event, manager, onSet=None):
+    def __init__(self, event=None, manager=None, onSet=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         self.event = event
