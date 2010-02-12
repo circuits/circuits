@@ -8,6 +8,7 @@ This module implements the several Web Server components.
 """
 
 import os
+from types import TupleType
 from socket import gethostname as _gethostname
 from types import IntType, ListType, TupleType
 
@@ -70,7 +71,10 @@ class BaseServer(BaseComponent):
         self += self.server
 
         Request.server = self
-        Request.local = Host(self.server.bind[0], self.server.bind[1])
+        if type(self.server.bind) is TupleType:
+            Request.local = Host(self.server.bind[0], self.server.bind[1])
+        else:
+            Request.local = Host(self.server.bind, None)
         Request.host = self.host
         Request.scheme = "https" if self.server.ssl else "http"
 
@@ -82,11 +86,17 @@ class BaseServer(BaseComponent):
 
     @property
     def address(self):
-        return self.server.bind[0] if hasattr(self, "server") else None
+        if hasattr(self, "server"):
+            if type(self.server.bind) is TupleType:
+                return self.server.bind[0]
+            else:
+                return self.server.bind
 
     @property
     def port(self):
-        return self.server.bind[1] if hasattr(self, "server") else None
+        if hasattr(self, "server"):
+            if type(self.server.bind) is TupleType:
+                return self.server.bind[1]
 
     @property
     def ssl(self):
@@ -110,14 +120,14 @@ class BaseServer(BaseComponent):
         port = self.port
 
         if not ((ssl and port == 443) or (not ssl and port == 80)):
-            host = "%s:%s" % (host, port)
+            if port is not None:
+                host = "%s:%s" % (host, port)
 
         return host
 
     @property
     def base(self):
         host = self.host
-        port = self.port
         scheme = self.scheme
         
         return "%s://%s" % (scheme, host)
