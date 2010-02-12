@@ -34,7 +34,7 @@ def test_baseserver():
     server.stop()
 
 def test_server():
-    server = Server(("0.0.0.0", 8001))
+    server = Server("0.0.0.0:8001")
     Root().register(server)
     server.start()
 
