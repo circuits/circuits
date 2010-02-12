@@ -17,10 +17,11 @@ class App(Component):
     def future(self):
         return self.push(Hello())
 
-app = App()
-app.start()
-
 def test_future_value():
+    app = App()
+    while app:
+        app.flush()
     x = app.push(Future())
-    while app: pass
+    app.flush()
+    app.flush()
     assert x.value == "Hello World!"

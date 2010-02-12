@@ -25,7 +25,7 @@ def test_timer():
     timer = Timer(0.1, Test(), "timer")
     timer.register(app)
     sleep(0.1)
-    app.flush()
+    while app: pass
     assert app.flag
 
 def test_persistentTimer():
@@ -34,7 +34,7 @@ def test_persistentTimer():
 
     for i in xrange(2):
         sleep(0.1)
-        app.flush()
+        while app: pass
         assert app.flag
         app.flag = False
 
