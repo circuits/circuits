@@ -22,5 +22,5 @@ app.start()
 
 def test_future_value():
     x = app.push(Future())
-    app.flush()
+    while app: pass
     assert x.value == "Hello World!"
