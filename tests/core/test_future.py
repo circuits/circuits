@@ -1,14 +1,12 @@
 #!/usr/bin/python -i
 
-from time import sleep
-
 from circuits import future, Event, Component
 
 class Hello(Event):
     "Hello Event"
 
-class Delay(Event):
-    "Delay Event"
+class Future(Event):
+    "Future Event"
 
 class App(Component):
 
@@ -16,15 +14,13 @@ class App(Component):
         return "Hello World!"
 
     @future()
-    def delay(self, n=1):
-        sleep(n)
+    def future(self):
         return self.push(Hello())
 
 app = App()
 app.start()
 
 def test_future_value():
-    x = app.push(Delay(2))
-    sleep(3)
+    x = app.push(Future())
     app.flush()
     assert x.value == "Hello World!"

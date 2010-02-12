@@ -24,15 +24,17 @@ app.start()
 def test_timer():
     timer = Timer(0.1, Test(), "timer")
     timer.register(app)
-    sleep(1)
+    sleep(0.1)
+    app.flush()
     assert app.flag
 
 def test_persistentTimer():
     timer = Timer(0.1, Test(), "timer", persist=True)
     timer.register(app)
 
-    for i in xrange(5):
-        sleep(1)
+    for i in xrange(2):
+        sleep(0.1)
+        app.flush()
         assert app.flag
         app.flag = False
 
