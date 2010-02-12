@@ -137,6 +137,7 @@ class Bridge(Component):
             self.nodes.add((address, port))
             self.push(Helo(*self.ourself))
 
+    @handler("read", target="*")
     def read(self, *args):
         if len(args) == 1: data = args[0]
         else: data = args[1]
