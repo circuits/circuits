@@ -118,7 +118,7 @@ class SMTP(Component):
         self.__data = None
 
     def processMessage(self, sock, mailfrom, rcpttos, data):
-        r =  self.send(Message(sock, mailfrom, rcpttos, data), "message")
+        r =  self.push(Message(sock, mailfrom, rcpttos, data), "message")
         data.close()
 
         if r:

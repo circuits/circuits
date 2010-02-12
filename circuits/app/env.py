@@ -143,7 +143,7 @@ class Environment(Component):
         createFile(configfile)
         self.config = Config(configfile)
         self.manager += self.config
-        self.send(LoadConfig(), "load", "config")
+        self.push(LoadConfig(), "load", "config")
         for section in CONFIG:
             if not self.config.has_section(section):
                 self.config.add_section(section)
@@ -151,9 +151,9 @@ class Environment(Component):
                 if type(value) == str:
                     value = value % {"name": self.envname}
                 self.config.set(section, option, value)
-        self.send(SaveConfig(), "save", "config")
+        self.push(SaveConfig(), "save", "config")
 
-        self.send(Created(), "created", self.channel)
+        self.push(Created(), "created", self.channel)
 
     @handler("verify")
     def onVERIFY(self):
@@ -162,9 +162,9 @@ class Environment(Component):
         Verify the Environment by checking it's version against
         the expected version.
 
-        If the Environment's version does not match, send
+        If the Environment's version does not match, trigger
         an EnvNeedsUpgrade event. If the Environment is
-        invalid and cannot be read, send an Invalid
+        invalid and cannot be read, trigger an Invalid
         event.
         """
 
@@ -172,18 +172,18 @@ class Environment(Component):
             version = f.read().strip()
             if not version:
                 msg = "No Environment version information"
-                self.send(Invalid(self.env.path, msg), "invalid", self.channel)
+                self.push(Invalid(self.env.path, msg), "invalid", self.channel)
             else:
                 try:
                     verion = int(version)
                     if self.version > version:
-                        self.send(
+                        self.push(
                                 NeedsUpgrade(self.env.path),
                                 "needsupgrade",
                                 self.channel)
                 except ValueError:
                     msg = "Environment version information invalid"
-                    self.send(
+                    self.push(
                             Invalid(self.env.path, msg),
                             "invalid",
                             self.channel)
@@ -197,7 +197,7 @@ class Environment(Component):
         """
 
         if verify:
-            self.send(Verify(), "verify", self.channel)
+            self.push(Verify(), "verify", self.channel)
 
         os.chdir(self.path)
 
@@ -205,7 +205,7 @@ class Environment(Component):
         configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile)
         self.manager += self.config
-        self.send(LoadConfig(), "load", "config")
+        self.push(LoadConfig(), "load", "config")
 
         # Create Logger Component
         logname = self.envname
@@ -218,4 +218,4 @@ class Environment(Component):
         self.log = Logger(logfile, logname, logtype, loglevel)
         self.manager += self.log
 
-        self.send(Loaded(), "loaded", self.channel)
+        self.push(Loaded(), "loaded", self.channel)

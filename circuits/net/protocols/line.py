@@ -107,7 +107,7 @@ class LP(BaseComponent):
         lines, self.buffer = self.splitter(data, self.buffer)
         for line in lines:
             if self.children:
-                self.send(Line(line))
+                self.push(Line(line))
             else:
                 self.push(Line(line))
 
@@ -117,6 +117,6 @@ class LP(BaseComponent):
         self.updateBuffer(sock, buffer)
         for line in lines:
             if self.children:
-                self.send(Line(sock, line))
+                self.push(Line(sock, line))
             else:
                 self.push(Line(sock, line))

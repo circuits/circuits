@@ -75,7 +75,7 @@ if HAS_MULTIPROCESSING:
                             event = self.child.recv()
                             channel = event.channel
                             target = event.target
-                            self.send(event, channel, target)
+                            self.push(event, channel, target)
                     except SystemExit:
                         running.acquire()
                         running.value = False
@@ -115,7 +115,7 @@ if HAS_MULTIPROCESSING:
                 event = self.parent.recv()
                 channel = event.channel
                 target = event.target
-                self.send(event, channel, target)
+                self.push(event, channel, target)
 
 else:
     Process = Thread
