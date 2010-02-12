@@ -20,26 +20,24 @@ class Root(Controller):
         return "Hello World!"
 
 def test_baseserver():
-    server = BaseServer(("0.0.0.0", 8000))
+    server = BaseServer(("0.0.0.0", 9000))
     BaseRoot().register(server)
     server.start()
 
     hostname = gethostname()
-    assert server.host == "%s:8000" % hostname
+    assert server.host == "%s:9000" % hostname
 
     f = urlopen(server.base)
     s = f.read()
     assert s == "Hello World!"
 
-    server.stop()
-
 def test_server():
-    server = Server("0.0.0.0:8001")
+    server = Server("0.0.0.0:9001")
     Root().register(server)
     server.start()
 
     hostname = gethostname()
-    assert server.host == "%s:8001" % hostname
+    assert server.host == "%s:9001" % hostname
 
     f = urlopen(server.base)
     s = f.read()
