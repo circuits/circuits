@@ -85,6 +85,11 @@ class Event(object):
         self.args = list(args)
         self.kwargs = kwargs
 
+    def __getstate__(self):
+        keys = ("args", "kwargs", "channel", "target", "success", "failure",
+                "filter", "start", "end", "value", "source")
+        return dict([(k, v) for k, v in self.__dict__.items() if k in keys])
+
     @property
     def name(self):
         return self.__class__.__name__
