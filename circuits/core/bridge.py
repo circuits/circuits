@@ -158,4 +158,4 @@ class Bridge(Component):
             else:
                 target = "*"
 
-        self.send(event, channel, target)
+        self.push(event, channel, target)
