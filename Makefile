@@ -27,4 +27,7 @@ tests:
 	@py.test -x --ignore=tmp \
 		--pastebin=all \
 		--report=skipped \
-		--cover=circuits
+		--cover=circuits \
+		--cover-report=html \
+		--cover-directory=coverage \
+		--cover-show-missing
