@@ -485,6 +485,16 @@ class Value(object):
         self._parent = self
         self._value = None
 
+    def __getstate__(self):
+        keys = ("event", "result", "errors", "_value")
+        return dict([(k, v) for k, v in self.__dict__.items() if k in keys])
+
+    def __setstate__(self, state):
+        obj = Value()
+        for k, v in state.items():
+            setattr(obj, k, v)
+        return obj
+
     def __iter__(self):
         return iter(self.value)
 
