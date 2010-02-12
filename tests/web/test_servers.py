@@ -43,4 +43,9 @@ def test_server():
     s = f.read()
     assert s == "Hello World!"
 
-    server.stop()
+def test_unixserver():
+    server = Server("test.sock")
+    Root().register(server)
+    server.start()
+
+    assert server.host == "test.sock"
