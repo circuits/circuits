@@ -1,4 +1,3 @@
-from __future__ import with_statement
 # Package:  app
 # Date:     20th June 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
