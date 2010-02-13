@@ -33,8 +33,12 @@
 import urllib
 import httplib
 import base64
-import simplejson
 import types
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 __version__ = "0.0.1"
 
@@ -94,7 +98,7 @@ def dumps(params, methodname=None, methodresponse=None, encoding=None,
         request["method"] = methodname
         request["params"] = params
         request["id"] = _gen_id()
-        return simplejson.dumps(request)
+        return json.dumps(request)
 
 class Unmarshaller(object):
     def __init__(self):
@@ -108,7 +112,7 @@ class Unmarshaller(object):
     
     def close(self):
         #try to convert string to json
-        return simplejson.loads(self.data)
+        return json.loads(self.data)
 
 class Parser(object):
     def __init__(self, unmarshaller):
