@@ -1,63 +1,27 @@
-# Filename: log.py
-# Module:   log
+# Module:   logging
 # Date:     11th June 2006
 # Author:   James Mills <prologic@shortcircuit.net.au>
 
-"""Log
-
-...
-"""
+"""Logging Components"""
 
 import sys
 import logging
+from logging import CRITICAL, DEBUG, ERROR, FATAL, INFO, WARN, WARNING
 
-from circuits import Event, Component
 
-###
-### Events
-###
+from circuits.core import handler, Event, BaseComponent
 
-class Debug(Event):
-    """Debug(Event) -> Debug Log Event
+class Log(Event):
+    """Log Event"""
 
-    args: msg
-    """
+    channel = "log"
+    target = "log"
 
-class Info(Event):
-    """Info(Event) -> Info Log Event
+    success = "log_successful", "log"
+    filter = "log_filtered", "log"
+    failure = "log_failed", "log"
 
-    args: msg
-    """
-
-class Warning(Event):
-    """Warning(Event) -> Warning Log Event
-
-    args: msg
-    """
-
-class Error(Event):
-    """Error(Event) -> Error Log Event
-
-    args: msg
-    """
-
-class Exception(Event):
-    """Exception(Event) -> Exception Log Event
-
-    args: msg
-    """
-
-class Critical(Event):
-    """Critical(Event) -> Critical Log Event
-
-    args: msg
-    """
-
-###
-### Components
-###
-
-class Logger(Component):
+class Logger(BaseComponent):
 
     channel = "log"
 
@@ -100,22 +64,7 @@ class Logger(Component):
         hdlr.setFormatter(formatter)
         self.logger.addHandler(hdlr)
 
-    def debug(self, msg, *args, **kwargs):
-        self.logger.debug(msg, *args, **kwargs)
-
-    def info(self, msg, *args, **kwargs):
-        self.logger.info(msg, *args, **kwargs)
-
-    def warning(self, msg, *args, **kwargs):
-        self.logger.warning(msg, *args, **kwargs)
-
-    warn = warning
-
-    def error(self, msg, *args, **kwargs):
-        self.logger.error(msg, *args, **kwargs)
-
-    def exception(self, msg, *args, **kwargs):
-        self.logger.exception(msg, *args)
-
-    def critical(self, msg, *args, **kwargs):
-        self.logger.critical(msg, *args, **kwargs)
+    @handler("log")
+    def log(self, level, msg, *args, **kwargs):
+        self.logger.log(level, msg, *args, **kwargs)
+        return True
