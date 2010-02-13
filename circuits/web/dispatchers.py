@@ -28,7 +28,7 @@ from circuits import handler, Event, Component
 
 from events import Response
 from errors import HTTPError
-from cgifs import FieldStorage
+from cgi import FieldStorage
 from controllers import BaseController
 from tools import expires, serve_file
 from utils import parseQueryString, dictform
