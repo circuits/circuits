@@ -42,8 +42,6 @@ make_packages() {
 
     test_application "$hg"
     test_application "$python"
-    tag=$(get_latest_tag)
-    echo "Latest tag: ${tag}"
 
     status=$(hg status -0 -m)
     if [[ $status ]]; then
@@ -51,23 +49,17 @@ make_packages() {
         exit 2
     fi
 
-    echo "Updating to ${tag}"
+    echo "Building packages for $python ..."
+
+    tag=$(get_latest_tag)
+    echo "Latest tag: ${tag}"
+
     $hg update -C ${tag} &> /dev/null
 
-    echo "Running: ${python} setup.py clean"
     $python setup.py clean &> /dev/null
-
-    echo "Running: ${python} setup.py build"
     $python setup.py build &> /dev/null
-
-    echo "Running: ${python} setup.py bdist_egg"
     $python setup.py bdist_egg &> /dev/null
-
-    echo "Running: ${python} setup.py sdist --formats=bztar,gztar,zip"
     $python setup.py sdist --formats=bztar,gztar,zip &> /dev/null
-
-    echo "Packages in dist/"
-    ls -1 dist/
 
     $hg update -C &> /dev/null
 }
