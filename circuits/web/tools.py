@@ -265,9 +265,6 @@ def validate_since(request, response):
                 else:
                     return HTTPError(request, response, 412)
 
-def redirect(request, response, url=''):
-    raise Redirect(request, response, url)
-
 def trailing_slash(request, response, missing=True, extra=False):
     """Redirect if request.path has (missing|extra) trailing slash."""
 
