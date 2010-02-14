@@ -27,8 +27,8 @@ docs:
 		--no-sourcecode circuits
 
 packages:
-	@tools/mkpkgs python2.5
-	@tools/mkpkgs python2.6
+	@tools/mkpkgs -p python2.5
+	@tools/mkpkgs -p python2.6
 
 tests:
 	@py.test -x --ignore=tmp \
