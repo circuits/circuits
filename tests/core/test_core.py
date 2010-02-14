@@ -19,3 +19,7 @@ def test_fire():
     x = m.push(Event("test"), "test")
     m.flush()
     assert x.value == "test"
+
+def test_contains():
+    assert App in m
+    assert not m in app

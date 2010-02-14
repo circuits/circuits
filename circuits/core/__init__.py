@@ -577,6 +577,14 @@ class Manager(object):
         format = "<%s (queued=%d, channels=%d, handlers=%d) [%s]>"
         return format % (name, q, c, h, state)
 
+    def __contains__(self, y):
+        """x.__contains__(y) <==> y in x
+
+        Return True if the Component y is registered.
+        """
+
+        return [c for c in self.components if isinstance(c, y)]
+
     def __len__(self):
         """x.__len__() <==> len(x)
 
