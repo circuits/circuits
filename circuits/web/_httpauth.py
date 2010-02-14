@@ -275,7 +275,7 @@ def _computeDigestResponse(auth_map, password, method = "GET", A1 = None,**kwarg
     else:
         H_A1 = H(_A1(params, password))
 
-    if qop == "auth" or aop == "auth-int":
+    if qop in ("auth", "auth-int"):
         # If the "qop" value is "auth" or "auth-int":
         # request-digest  = <"> < KD ( H(A1),     unq(nonce-value)
         #                              ":" nc-value

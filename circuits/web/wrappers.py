@@ -9,7 +9,6 @@ This module implements the Request and Response objects.
 
 
 import os
-import stat
 import types
 from cStringIO import StringIO
 from time import strftime, time

@@ -18,6 +18,7 @@ except ImportError:
         import simplejson as json
         HAS_JSON = 1
     except ImportError:
+        import warnings
         HAS_JSON = 0
         warnings.warn("No json support available.")
 

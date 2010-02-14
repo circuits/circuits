@@ -11,7 +11,6 @@ or commonly known as HTTP.
 
 from urllib import unquote
 from urlparse import urlparse
-from traceback import format_exc
 
 try:
     from cStringIO import StringIO

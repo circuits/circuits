@@ -16,7 +16,6 @@ Borrowed from Mercurial project.
 
 import os
 import re
-import time
 
 from types import ModuleType
 

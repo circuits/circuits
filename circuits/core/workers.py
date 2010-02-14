@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
 from threading import Thread as _Thread
-from threading import enumerate as threads
 
 try:
     from multiprocessing import Pipe as _Pipe
     from multiprocessing import Value as _Value
     from multiprocessing import Process as _Process
 
-    from multiprocessing import cpu_count as cpus
-    from multiprocessing import active_children as processes
     HAS_MULTIPROCESSING = 2
 except:
     try:
@@ -17,8 +14,6 @@ except:
         from processing import Value as _Value
         from processing import Process as _Process
 
-        from processing import cpuCount as cpus
-        from processing import activeChildren as processes
         HAS_MULTIPROCESSING = 1
     except:
         HAS_MULTIPROCESSING = 0

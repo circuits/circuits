@@ -7,8 +7,6 @@
 This module implements the several Web Server components.
 """
 
-import os
-from types import TupleType
 from socket import gethostname as _gethostname
 from types import IntType, ListType, TupleType
 

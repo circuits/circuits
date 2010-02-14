@@ -13,6 +13,7 @@ import socket
 from tempfile import TemporaryFile
 from collections import defaultdict
 
+from circuits.net.protocols import LP
 from circuits import handler, Event, Component
 
 ###
@@ -90,7 +91,7 @@ class SMTP(Component):
 
     __buffers = defaultdict(str)
 
-    __states = defaultdict(lambda : COMMAND)
+    __states = defaultdict(lambda : SMTP.COMMAND)
 
     __greeting = None
     __mailfrom = None
@@ -103,7 +104,7 @@ class SMTP(Component):
         super(SMTP, self).__init__(*args, **kwargs)
 
         LP(getBuffer=self.__buffers.__getitem__,
-                updateBuffer=self.__buffers.__setitem__)
+                updateBuffer=self.__buffers.__setitem__).register(self)
 
     ###
     ### Methods

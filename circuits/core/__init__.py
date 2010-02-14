@@ -41,7 +41,7 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
-from circuits.tools import reprhandler, findroot
+from circuits.tools import findroot
 
 class Event(object):
     """Create a new Event Object
@@ -149,7 +149,7 @@ class Event(object):
         elif type(i) is str:
             self.kwargs[i] = y
         else:
-            raise TypeError("Expected int or str, got %r" % type(x))
+            raise TypeError("Expected int or str, got %r" % type(i))
 
 
 class Error(Event):

@@ -6,8 +6,6 @@
 
 import sys
 import logging
-from logging import CRITICAL, DEBUG, ERROR, FATAL, INFO, WARN, WARNING
-
 
 from circuits.core import handler, Event, BaseComponent
 

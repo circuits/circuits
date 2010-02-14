@@ -8,7 +8,6 @@ This module implements URL dispatchers.
 """
 
 import os
-import warnings
 import xmlrpclib
 from string import Template
 from urlparse import urljoin as _urljoin
@@ -21,6 +20,7 @@ except ImportError:
         import simplejson as json
         HAS_JSON = 1
     except ImportError:
+        import warnings
         HAS_JSON = 0
         warnings.warn("No json support available.")
 

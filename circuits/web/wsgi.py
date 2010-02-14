@@ -7,22 +7,18 @@
 This module implements WSGI Components.
 """
 
-import warnings
 from urllib import unquote
 from cStringIO import StringIO
-from traceback import format_exc
 from sys import exc_info as _exc_info
 
 from circuits import handler, Component
 
 import wrappers
 from http import HTTP
+from events import Request
 from headers import Headers
-from utils import quoteHTML
+from errors import HTTPError
 from dispatchers import Dispatcher
-from events import Request, Response
-from errors import HTTPError, NotFound
-from constants import RESPONSES, DEFAULT_ERROR_MESSAGE
 
 class Application(Component):
 

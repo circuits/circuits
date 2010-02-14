@@ -3,8 +3,10 @@
 from time import strftime
 from tempfile import mkstemp
 
+from logging import DEBUG
+
 from circuits import Event, Component
-from circuits.app.log import Log, Logger, DEBUG
+from circuits.app.log import Log, Logger
 
 class Test(Event):
     """Test Event"""
