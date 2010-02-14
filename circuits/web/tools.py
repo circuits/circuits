@@ -378,7 +378,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
     @type  encrypt: callable
     """
 
-    if check_auth(request, response, users, encrypt):
+    if check_auth(request, response, realm, users, encrypt):
         return
     
     # inform the user-agent this path is protected
@@ -399,7 +399,7 @@ def digest_auth(request, response, realm, users):
     @type  users: dict or callable
     """
 
-    if check_auth(request, response, users, realm=realm):
+    if check_auth(request, response, realm, users):
         return
     
     # inform the user-agent this path is protected
