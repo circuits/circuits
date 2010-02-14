@@ -1,6 +1,11 @@
-.PHONY: all clean checks tests docs
+.PHONY: help clean docs tests packages
 
-all: clean checks tests docs
+help:
+	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  clean     to cleanup build and temporary files"
+	@echo "  docs      to build the documentation"
+	@echo "  tests     to run the test suite"
+	@echo "  packages  to build python source and egg packages"
 
 clean:
 	@rm -rf build dist circuits.egg-info circuits/__version__.py
@@ -9,9 +14,6 @@ clean:
 	@find . -name '*.pyc' -delete
 	@find . -name '*.pyo' -delete
 	@find . -name '*~' -delete
-
-checks:
-	@find . -name "*.py" -exec pyflakes {} +
 
 docs:
 	@rm -rf docs/*
@@ -23,6 +25,10 @@ docs:
 		--exclude=circuits\.__version__ \
 		--exclude=circuits\.version \
 		--no-sourcecode circuits
+
+packages:
+	tools/mkpkgs python2.5
+	tools/mkpkgs python2.6
 
 tests:
 	@py.test -x --ignore=tmp \
