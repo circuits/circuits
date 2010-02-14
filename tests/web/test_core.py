@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from urllib2 import urlopen
 from urllib import urlencode
+from urllib2 import urlopen, HTTPError
 
 from circuits.web import Controller
 
@@ -16,9 +16,25 @@ class Root(Controller):
     def test_redirect(self):
         return self.redirect("/")
 
+    def test_forbidden(self):
+        return self.forbidden()
+
+    def test_notfound(self):
+        return self.notfound()
+
 def test(webapp):
     f = urlopen(webapp.server.base)
-    assert f.read() == "Hello World!"
+    s = f.read()
+    assert s == "Hello World!"
+
+def test_404(webapp):
+    try:
+        urlopen("%s/foo" % webapp.server.base)
+    except HTTPError, e:
+        assert e.code == 404
+        assert e.msg == "Not Found"
+    else:
+        assert False
 
 def test_args(webapp):
     args = ("1", "2", "3")
@@ -33,4 +49,23 @@ def test_args(webapp):
 
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
-    assert f.read() == "Hello World!"
+    s = f.read()
+    assert s == "Hello World!"
+
+def test_forbidden(webapp):
+    try:
+        urlopen("%s/test_forbidden" % webapp.server.base)
+    except HTTPError, e:
+        assert e.code == 403
+        assert e.msg == "Forbidden"
+    else:
+        assert False
+
+def test_notfound(webapp):
+    try:
+         urlopen("%s/test_notfound" % webapp.server.base)
+    except HTTPError, e:
+        assert e.code == 404
+        assert e.msg == "Not Found"
+    else:
+        assert False
