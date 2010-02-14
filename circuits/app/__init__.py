@@ -47,7 +47,7 @@ class Daemon(BaseComponent):
             raise SystemExit, 1
 
         # Decouple from parent environment.
-        os.chdir(path)
+        os.chdir(self._path)
         os.umask(077)
         os.setsid()
 
@@ -64,15 +64,16 @@ class Daemon(BaseComponent):
         # Now I am a daemon!
 
         # Redirect standard file descriptors.
-        si = open(os.path.abspath(os.path.expanduser(stdin)), "r")
-        so = open(os.path.abspath(os.path.expanduser(stdout)), "a+")
-        se = open(os.path.abspath(os.path.expanduser(stderr)), "a+", 0)
+        si = open(os.path.abspath(os.path.expanduser(self._stdin)), "r")
+        so = open(os.path.abspath(os.path.expanduser(self._stdout)), "a+")
+        se = open(os.path.abspath(os.path.expanduser(self._stderr)), "a+", 0)
         os.dup2(si.fileno(), sys.stdin.fileno())
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
         self.push(WritePID())
 
+    @handler("started")
     def started(self, manager, mode):
         if not manager == self and mode is None:
             self.push(Daemonize())
