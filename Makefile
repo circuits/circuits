@@ -5,6 +5,7 @@ all: clean checks tests docs
 clean:
 	@rm -rf build dist circuits.egg-info circuits/__version__.py
 	@rm -rf .coverage coverage
+	@rm -rf docs/build
 	@find . -name '*.pyc' -delete
 	@find . -name '*.pyo' -delete
 	@find . -name '*~' -delete
