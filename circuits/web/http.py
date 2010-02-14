@@ -165,7 +165,7 @@ class HTTP(Component):
             request.body.write(body)
             
             if headers.get("Expect", "") == "100-continue":
-                return self.simple(sock, 100)
+                return self.simple(request, response, 100)
 
             contentLength = int(headers.get("Content-Length", "0"))
             if not request.body.tell() == contentLength:
@@ -185,7 +185,7 @@ class HTTP(Component):
 
         self.push(Request(request, response), "request", "web")
 
-    def simple(self, sock, code, message=""):
+    def simple(self, request, response, code, message=""):
         """Simple Response Events Handler
 
         Send a simple response.
@@ -194,7 +194,7 @@ class HTTP(Component):
         short, long = RESPONSES.get(code, ("???", "???",))
         message = message or short
 
-        response = wrappers.Response(sock)
+        response = wrappers.Response(request.sock, request)
         response.body = message
         response.status = "%s %s" % (code, message)
 
