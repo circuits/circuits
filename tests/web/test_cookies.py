@@ -18,7 +18,9 @@ def test(webapp):
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
     f = opener.open(webapp.server.base)
-    assert f.read() == "Hello World!"
+    s = f.read()
+    assert s == "Hello World!"
 
     f = opener.open(webapp.server.base)
-    assert f.read() == "Hello again!"
+    s = f.read()
+    assert s == "Hello again!"

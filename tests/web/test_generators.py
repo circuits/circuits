@@ -12,4 +12,5 @@ class Root(Controller):
 
 def test(webapp):
     f = urlopen(webapp.server.base)
-    assert f.read() == "Hello World!"
+    s = f.read()
+    assert s == "Hello World!"
