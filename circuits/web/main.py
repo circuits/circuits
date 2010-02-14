@@ -26,7 +26,7 @@ from circuits.tools import inspect, graph
 from circuits.net.pollers import Select, Poll
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
-from circuits.web import BaseServer, Server, Controller, wsgi
+from circuits.web import BaseServer, Server, Controller, Static, wsgi
 
 try:
     from circuits.net.pollers import EPoll
@@ -147,9 +147,9 @@ def main():
         Poller = Select
 
     if opts.server.lower() == "base":
-        manager += (BaseServer(bind, poller=Poller) + HelloWorld())
+        manager += (BaseServer(bind, poller=Poller) + HelloWorld() + Static())
     else:
-        manager += (Server(bind, poller=Poller) + Root())
+        manager += (Server(bind, poller=Poller) + Root() + Static())
 
     if opts.profile:
         if hotshot:
