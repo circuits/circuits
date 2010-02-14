@@ -52,7 +52,6 @@ make_packages() {
     echo "Building packages for $python ..."
 
     tag=$(get_latest_tag)
-    echo "Latest tag: ${tag}"
 
     $hg update -C ${tag} &> /dev/null
 
