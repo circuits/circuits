@@ -268,18 +268,20 @@ class EPoll(_Poller):
         self._map = {}
         self._poller = epoll()
 
-    @handler("started", target="*")
-    def started(self, component, mode):
-        if mode in ("P", "T"):
-            self._poller = epoll()
+    #@handler("started", target="*")
+    #def started(self, component, mode):
+    #    if mode in ("P", "T"):
+    #        self._poller = epoll()
 
     def _updateRegistration(self, fd):
-        fileno = fd.fileno()
-
         try:
+            fileno = fd.fileno()
             self._poller.unregister(fileno)
-        except IOError:
-            pass
+        except (SocketError, IOError), e:
+            if e[0] == EBADF:
+                keys = [k for k, v in self._map.items() if v == fd]
+                for key in keys:
+                    del self._map[key]
 
         mask = 0
 
@@ -316,7 +318,7 @@ class EPoll(_Poller):
 
     def __tick__(self):
         try:
-            l = self._poller.poll(self.timeout * 1000)
+            l = self._poller.poll(self.timeout)
         except SelectError, e:
             if e[0] == EINTR:
                 return
