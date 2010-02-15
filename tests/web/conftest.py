@@ -4,10 +4,13 @@
 
 """py.test config"""
 
+import os
+
 from circuits import Component
-from circuits.web import Server
+from circuits.web import Server, Static
 
 BIND = ("127.0.0.1", 8000)
+DOCROOT = os.path.join(os.path.dirname(__file__), "static")
 
 class WebApp(Component):
 
@@ -27,6 +30,7 @@ def setupwebapp(request):
     webapp = WebApp()
     Root = getattr(request.module, "Root")
     Root().register(webapp)
+    Static("/static", DOCROOT, dirlisting=True).register(webapp)
     webapp.start()
     return webapp
 
