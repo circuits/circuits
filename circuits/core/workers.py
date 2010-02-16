@@ -55,8 +55,16 @@ if HAS_MULTIPROCESSING:
             super(Process, self).__init__(*args, **kwargs)
 
             self._running = _Value("b", False)
-            self.process = _Process(target=self._run, args=(self.run, self._running,))
-            self.parent, self.child = _Pipe()
+            self._process = _Process(target=self._run,
+                    args=(self.run, self._running,))
+            self._parent, self._child = _Pipe()
+
+        def __tick__(self):
+            if self._parent.poll(self.timeout)
+                event = self._parent.recv()
+                channel = event.channel
+                target = event.target
+                self.push(event, channel, target)
 
         def _run(self, fn, running):
             thread = _Thread(target=fn)
@@ -66,8 +74,8 @@ if HAS_MULTIPROCESSING:
                 while running.value:
                     try:
                         self.flush()
-                        if self.child.poll(POLL_INTERVAL):
-                            event = self.child.recv()
+                        if self._child.poll(POLL_INTERVAL):
+                            event = self._child.recv()
                             channel = event.channel
                             target = event.target
                             self.push(event, channel, target)
@@ -92,7 +100,7 @@ if HAS_MULTIPROCESSING:
             self._running.acquire()
             self._running.value = True
             self._running.release()
-            self.process.start()
+            self._process.start()
 
         def run(self):
             pass
@@ -102,15 +110,9 @@ if HAS_MULTIPROCESSING:
             self._running.value = False
             self._running.release()
 
-        def isAlive(self):
-            return self._running.value
-
-        def poll(self, wait=POLL_INTERVAL):
-            if self.parent.poll(POLL_INTERVAL):
-                event = self.parent.recv()
-                channel = event.channel
-                target = event.target
-                self.push(event, channel, target)
+        @property
+        def alive(self):
+            return self._running.value and self._process.is_alive()
 
 else:
     Process = Thread
