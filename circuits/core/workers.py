@@ -21,7 +21,7 @@ except:
 
 from circuits.core import BaseComponent as _BaseComponent
 
-POLL_INTERVAL = 0.00001
+TIMEOUT = 0.2
 
 class Thread(_BaseComponent):
 
@@ -55,12 +55,13 @@ if HAS_MULTIPROCESSING:
             super(Process, self).__init__(*args, **kwargs)
 
             self._running = _Value("b", False)
+            self._timeout = kwargs.get("timeou", TIMEOUT)
             self._process = _Process(target=self._run,
                     args=(self.run, self._running,))
             self._parent, self._child = _Pipe()
 
         def __tick__(self):
-            if self._parent.poll(self.timeout)
+            if self._parent.poll(self._timeout)
                 event = self._parent.recv()
                 channel = event.channel
                 target = event.target
