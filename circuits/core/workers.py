@@ -61,7 +61,7 @@ if HAS_MULTIPROCESSING:
             self._parent, self._child = _Pipe()
 
         def __tick__(self):
-            if self._parent.poll(self._timeout)
+            if self._parent.poll(self._timeout):
                 event = self._parent.recv()
                 channel = event.channel
                 target = event.target
