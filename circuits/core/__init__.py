@@ -583,7 +583,8 @@ class Manager(object):
         Return True if the Component y is registered.
         """
 
-        return [c for c in self.components if isinstance(c, y)]
+        components = self.components.copy()
+        return y in components or y in [c.__class__ for c in components]
 
     def __len__(self):
         """x.__len__() <==> len(x)
