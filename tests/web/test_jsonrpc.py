@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-import xmlrpclib
 from urllib2 import urlopen
 
 import jsonrpclib
 
 from circuits import Component
-from circuits.web import Controller, XMLRPC, JSONRPC
+from circuits.web import Controller, JSONRPC
 
 class Test(Component):
 
@@ -18,26 +17,7 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-def test_xmlrpc(webapp):
-    rpc = XMLRPC("/rpc")
-    test = Test()
-    rpc.register(webapp)
-    test.register(webapp)
-
-    f = urlopen(webapp.server.base)
-    s = f.read()
-    assert s == "Hello World!"
-
-    url = "%s/rpc/" % webapp.server.base
-    xmlrpc = xmlrpclib.ServerProxy(url, allow_none=True)
-
-    r = xmlrpc.eval("1 + 2")
-    assert r == 3
-
-    rpc.unregister()
-    test.unregister()
-
-def test_jsonrpc(webapp):
+def test(webapp):
     rpc = JSONRPC("/rpc")
     test = Test()
     rpc.register(webapp)
@@ -46,6 +26,8 @@ def test_jsonrpc(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == "Hello World!"
+
+    assert len(webapp) == 0
 
     url = "%s/rpc/" % webapp.server.base
     jsonrpc = jsonrpclib.ServerProxy(url, allow_none=True)
