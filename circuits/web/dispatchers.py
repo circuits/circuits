@@ -486,7 +486,7 @@ class XMLRPC(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, target=None, encoding="utf-8"):
+    def __init__(self, path=None, target="*", encoding="utf-8"):
         super(XMLRPC, self).__init__()
 
         self.path = path
@@ -496,7 +496,7 @@ class XMLRPC(Component):
     def rpcvalue(self, value):
         response = value.response
         response.body = self._response(value.value)
-        self.push(Response(response))
+        self.push(Response(response), target="http")
 
     @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
@@ -539,7 +539,7 @@ class JSONRPC(Component):
 
     channel = "web"
 
-    def __init__(self, path=None, target=None, encoding="utf-8"):
+    def __init__(self, path=None, target="*", encoding="utf-8"):
         super(JSONRPC, self).__init__()
 
         self.path = path
@@ -550,7 +550,7 @@ class JSONRPC(Component):
         id = value.id
         response = value.response
         response.body = self._response(id, value.value)
-        self.push(Response(response))
+        self.push(Response(response), target="http")
 
     @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
