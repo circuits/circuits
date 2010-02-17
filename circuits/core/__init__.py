@@ -835,13 +835,14 @@ class Manager(object):
                 target, channel = event.channel
             else:
                 channel = event.channel or event.name.lower()
-                target = event.target or "*"
+                target = event.target or None
         else:
             channel = channel or event.channel or event.name.lower()
-            if isinstance(target, Component):
-                target = getattr(target, "channel", "*")
-            else:
-                target = target or event.target or getattr(self, "channel", "*")
+
+        if isinstance(target, Component):
+            target = getattr(target, "channel", "*")
+        else:
+            target = target or event.target or getattr(self, "channel", "*")
 
         event.channel = (target, channel)
 
