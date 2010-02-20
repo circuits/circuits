@@ -67,8 +67,7 @@ class Debugger(Component):
         s.seek(0)
 
         if self.logger is not None:
-            for line in s:
-                self.logger.error(line)
+            self.logger.error(s.getvalue())
         else:
             self.file.write(s.read())
             self.file.flush()
