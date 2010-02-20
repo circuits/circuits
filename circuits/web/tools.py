@@ -11,10 +11,11 @@ These tools can also be used within Controlelrs and request handlers.
 import os
 import stat
 import hashlib
-import datetime
 import mimetypes
 import mimetools
+from time import mktime
 from rfc822 import formatdate
+from datetime import datetime, timedelta
 
 mimetypes.init()
 mimetypes.add_type("image/x-dwg", ".dwg")
@@ -53,7 +54,7 @@ def expires(request, response, secs=0, force=False):
                 break
     
     if not cacheable:
-        if isinstance(secs, datetime.timedelta):
+        if isinstance(secs, timedelta):
             secs = (86400 * secs.days) + secs.seconds
         
         if secs == 0:
@@ -63,7 +64,9 @@ def expires(request, response, secs=0, force=False):
                 if force or "Cache-Control" not in headers:
                     headers["Cache-Control"] = "no-cache, must-revalidate"
             # Set an explicit Expires date in the past.
-            expiry = formatdate(1169942400.0)
+            now = datetime.now()
+            lastyear = now.replace(year=now.year-1)
+            expiry = formatdate(mktime(lastyear.timetuple()))
         else:
             expiry = formatdate(response.time + secs)
         if force or "Expires" not in headers:
