@@ -1157,7 +1157,8 @@ class BaseComponent(Manager):
         _unregister(self, self.manager, root)
 
         self.manager.components.discard(self)
-        self.fire(Unregistered(self, self.manager), target=self)
+        if not root == self:
+            self.fire(Unregistered(self, self.manager), target=self)
 
         self.manager = self
 
