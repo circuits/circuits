@@ -4,11 +4,10 @@
 
 """Debugger Tests"""
 
-from time import sleep
 from StringIO import StringIO
 
 from circuits import Debugger
-from circuits.core import handler, Event, Component, Manager
+from circuits.core import Event, Component
 
 
 class Test(Event):
