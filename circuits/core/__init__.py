@@ -1156,7 +1156,7 @@ class BaseComponent(Manager):
         root = findroot(self.manager)
         _unregister(self, self.manager, root)
 
-        self.manager.components.remove(self)
+        self.manager.components.discard(self)
         self.fire(Unregistered(self, self.manager), target=self)
 
         self.manager = self
