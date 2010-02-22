@@ -6,7 +6,7 @@
 
 import py
 
-from circuits import handler, Event, Component#, Debugger
+from circuits import handler, Event, Component
 
 class Test(Event):
     """Test Event"""
@@ -51,7 +51,7 @@ class App(Component):
         self.states.append("failure")
         self.events.append(evt)
         self.handlers.append(handler)
-        self.errors.append(retval)
+        self.errors.append(error)
 
     def test_filtered(self, evt, handler, retval):
         self.states.append("filter")
@@ -73,7 +73,7 @@ def reraise(e):
     raise e
 
 def test():
-    app = App()# + Debugger()
+    app = App()
     while app:
         app.flush()
 
@@ -108,9 +108,8 @@ def test():
     assert not app.errors
     assert app.handlers[-1:][0] == app.test
 
-@py.test.skip("TODO")
 def test_failure():
-    app = App()# + Debugger()
+    app = App()
     while app:
         app.flush()
 
@@ -134,20 +133,50 @@ def test_failure():
     # "success", "failure" or "filter" and "end" feedback
     assert app.states[-2:][0] == "failure"
     assert app.events[-2:][0] == e
-    py.test.raises(Exception, lambda x: reraise(x[1]), app.values[-2:][0])
-    etype, evalue, etraceback = app.errors[-2:][0]
-    assert etype is Exception
-    assert type(evalue) is Exception
-    assert isinstance(evalue, Excpetion)
-    assert type(etraceback) is traceback
+    assert app.values
+    assert app.values[-2:][0] == None
+    assert app.errors
+    py.test.raises(Exception, lambda x: reraise(x[1]), app.errors[-2:][0])
     assert app.handlers[-2:][0] == app.test
 
     assert app.states[-1:][0] == "end"
     assert app.events[-1:][0] == e
-    py.test.raises(Exception, lambda x: reraise(x[1]), app.values[-1:][0])
-    etype, evalue, etraceback = app.errors[-1:][0]
-    assert etype is Exception
-    assert type(evalue) is Exception
-    assert isinstance(evalue, Excpetion)
-    assert type(etraceback) is traceback
+    assert app.values
+    assert app.values[-1:][0] == None
+    assert app.errors
+    py.test.raises(Exception, lambda x: reraise(x[1]), app.errors[-1:][0])
     assert app.handlers[-1:][0] == app.test
+
+def test_filter():
+    app = App()
+    while app:
+        app.flush()
+
+    e = Test(filter=True)
+    x = app.push(e)
+
+    app.flush()
+
+    # "start" feedback
+    assert app.states[-1:][0] == "start"
+    assert app.events[-1:][0] == e
+    assert not app.values
+    assert not app.errors
+    assert not app.handlers
+
+    # The Event
+    s = x.value
+    assert type(s) is bool
+    assert s == True
+
+    app.flush()
+
+    # "success", "failure" or "filter" and "end" feedback
+    assert app.states[-1:][0] == "filter"
+    assert app.events[-1:][0] == e
+    assert app.values
+    assert app.values[-1:][0] == True
+    assert not app.errors
+    assert app.handlers[-1:][0] == app.event
+
+    # No 'end' events for filtered events.
