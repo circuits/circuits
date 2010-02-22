@@ -901,13 +901,13 @@ class Manager(object):
                     error = (etype, evalue, etraceback)
                     self.fire(Failure(event, handler, error), *event.failure)
 
-            if retval is not None and retval and handler.filter:
-                if event.filter is not None:
-                    self.fire(Filter(event, handler, retval), *event.filter)
-                return # Filter
-
-            if event.success is not None:
-                self.fire(Success(event, handler, retval), *event.success)
+            if retval is not None:
+                if retval and handler.filter:
+                    if event.filter is not None:
+                        self.fire(Filter(event, handler, retval), *event.filter)
+                    return # Filter
+                if event.success is not None:
+                    self.fire(Success(event, handler, retval), *event.success)
 
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
