@@ -16,15 +16,7 @@ clean:
 	@find . -name '*~' -delete
 
 docs:
-	@rm -rf docs/*
-	@epydoc -v -n circuits -o docs/ \
-		-u http://trac.softcircuit.com.au/circuits/ \
-		--check --html --src-code-tab-width=4 --no-frames \
-		--no-private --exclude=circuits.web._httpauth \
-		--exclude=.*\.tests.* \
-		--exclude=circuits\.__version__ \
-		--exclude=circuits\.version \
-		--no-sourcecode circuits
+	@make -C docs html
 
 packages:
 	@tools/mkpkgs -p python2.5
