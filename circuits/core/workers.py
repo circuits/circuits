@@ -113,7 +113,8 @@ if HAS_MULTIPROCESSING:
 
         @property
         def alive(self):
-            return self._running.value and self._process.is_alive()
+            if type(self._running) is _Value:
+                return self._running.value and self._process.is_alive()
 
 else:
     Process = Thread
