@@ -88,7 +88,6 @@ if HAS_MULTIPROCESSING:
                 running.acquire()
                 running.value = False
                 running.release()
-                thread.join()
                 self.flush()
 
         def start(self):
