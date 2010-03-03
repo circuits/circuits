@@ -75,7 +75,7 @@ if HAS_MULTIPROCESSING:
                 while running.value:
                     try:
                         self.flush()
-                        if self._child.poll(POLL_INTERVAL):
+                        if self._child.poll(self._timeout):
                             event = self._child.recv()
                             channel = event.channel
                             target = event.target
