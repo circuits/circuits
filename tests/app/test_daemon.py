@@ -7,9 +7,6 @@ from subprocess import Popen
 from tests.app import app
 
 def test(tmpdir, coverage):
-    cwd = os.getcwd()
-    os.chdir(str(tmpdir))
-
     tmpdir.ensure("app.pid")
     pidpath = tmpdir.join("app.pid")
     pidfile = str(pidpath)
@@ -34,5 +31,3 @@ def test(tmpdir, coverage):
     os.remove(pidfile)
 
     coverage.combine()
-
-    os.chdir(cwd)
