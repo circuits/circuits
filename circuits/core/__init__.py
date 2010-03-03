@@ -591,8 +591,7 @@ class Manager(object):
         self._task = None
         self._running = False
 
-        self.root = self
-        self.manager = self
+        self.root = self.manager = self
         self.components = set()
 
     def __repr__(self):
