@@ -10,7 +10,6 @@ This package contains the most basic building blocks of all Components.
 import os
 import new
 import time
-from pickle import dumps
 from types import TupleType
 from itertools import chain
 from threading import Thread
@@ -87,37 +86,9 @@ class Event(object):
         self.kwargs = kwargs
 
     def __getstate__(self):
-        args = self.args[:]
-        kwargs = self.kwargs.copy()
-
-        for i, arg in enumerate(args[:]):
-            try:
-                _ = dumps(arg)
-            except:
-                args[i] = repr(arg)
-
-        for k, v in kwargs.copy():
-            try:
-                _ = dumps(v)
-            except:
-                kwargs[k] = repr(v)
-
-        state = {}
-        state["args"] = args
-        state["kwargs"] = kwargs
-
-        attrs = ("channel", "target", "success", "failure",
+        keys = ("args", "kwargs", "channel", "target", "success", "failure",
                 "filter", "start", "end", "value", "source")
-        for attr in attrs:
-            v = getattr(self, attr, None)
-            try:
-                _ = dumps(v)
-            except:
-                state[attr] = repr(v)
-            else:
-                state[attr] = v
-
-        return state
+        return dict([(k, v) for k, v in self.__dict__.items() if k in keys])
 
     @property
     def name(self):
