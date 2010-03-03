@@ -72,7 +72,7 @@ if HAS_MULTIPROCESSING:
             thread.start()
 
             try:
-                while running.value:
+                while running.value and thread.isAlive():
                     try:
                         self.flush()
                         if self._child.poll(self._timeout):
