@@ -80,16 +80,10 @@ if HAS_MULTIPROCESSING:
                             channel = event.channel
                             target = event.target
                             self.push(event, channel, target)
-                    except SystemExit:
+                    except KeyboardInterrupt, SystemExit:
                         running.acquire()
                         running.value = False
                         running.release()
-                        break
-                    except KeyboardInterrupt:
-                        running.acquire()
-                        running.value = False
-                        running.release()
-                        break
             finally:
                 running.acquire()
                 running.value = False
