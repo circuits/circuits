@@ -119,7 +119,7 @@ def test_kill():
     assert not e.components
     assert not f.components
 
-def test_graph():
+def test_graph(tmpdir):
     a = A()
     b = B()
     c = C()
@@ -150,4 +150,6 @@ def test_graph():
     assert e in d.components
     assert not f.components
 
-    assert graph(a) == GRAPH
+    tmpdir.ensure("A")
+    name = str(tmpdir.join("A"))
+    assert graph(a, name=name) == GRAPH

@@ -13,8 +13,9 @@ def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"poller": Poll})
     metafunc.addcall(funcargs={"poller": EPoll})
 
-def test_unix(poller):
-    filename = os.path.join(os.path.abspath(os.getcwd()), "test.sock")
+def test_unix(tmpdir, poller):
+    sockpath = tmpdir.ensure("test.sock")
+    filename = str(sockpath)
     server = Server() + UNIXServer(filename, poller=poller)
     client = Client() + UNIXClient(poller=poller)
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from os.path import basename
 from urllib2 import urlopen
 from socket import gethostname
 
@@ -43,9 +44,13 @@ def test_server():
     s = f.read()
     assert s == "Hello World!"
 
-def test_unixserver():
-    server = Server("test.sock")
+def test_unixserver(tmpdir):
+    sockpath = tmpdir.ensure("test.sock")
+    socket = str(sockpath)
+    server = Server(socket)
     Root().register(server)
     server.start()
 
-    assert server.host == "test.sock"
+    assert basename(server.host) == "test.sock"
+
+    server.stop()

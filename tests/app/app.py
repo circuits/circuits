@@ -16,7 +16,7 @@ class App(Component):
         Daemon(pidfile, stderr="/tmp/app.log").register(self)
 
 def main():
-    _coverage = coverage(data_suffix=True)
+    _coverage = coverage()
     _coverage.start()
 
     pidfile = os.path.abspath(sys.argv[1])

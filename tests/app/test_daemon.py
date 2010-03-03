@@ -6,8 +6,13 @@ from subprocess import Popen
 
 from tests.app import app
 
-def test(coverage):
-    pidfile = os.path.join(os.getcwd(), "app.pid")
+def test(tmpdir, coverage):
+    cwd = os.getcwd()
+    os.chdir(str(tmpdir))
+
+    tmpdir.ensure("app.pid")
+    pidpath = tmpdir.join("app.pid")
+    pidfile = str(pidpath)
 
     args = ["python", app.__file__, pidfile]
     cmd = " ".join(args)
@@ -29,3 +34,5 @@ def test(coverage):
     os.remove(pidfile)
 
     coverage.combine()
+
+    os.chdir(cwd)
