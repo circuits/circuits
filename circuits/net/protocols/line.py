@@ -106,17 +106,11 @@ class LP(BaseComponent):
     def anyRead(self, data):
         lines, self.buffer = self.splitter(data, self.buffer)
         for line in lines:
-            if self.children:
-                self.push(Line(line))
-            else:
-                self.push(Line(line))
+            self.push(Line(line))
 
     @handler("read", target="server")
     def serverRead(self, sock, data):
         lines, buffer = self.splitter(data, self.getBuffer(sock))
         self.updateBuffer(sock, buffer)
         for line in lines:
-            if self.children:
-                self.push(Line(sock, line))
-            else:
-                self.push(Line(sock, line))
+            self.push(Line(sock, line))
