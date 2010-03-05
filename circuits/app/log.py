@@ -14,15 +14,15 @@ class Log(Event):
     """Log Event"""
 
     channel = "log"
-    target = "log"
+    target = "logger"
 
-    success = "log_successful", "log"
-    filter = "log_filtered", "log"
-    failure = "log_failed", "log"
+    success = "log_successful", target
+    filter = "log_filtered", target
+    failure = "log_failed", target
 
 class Logger(BaseComponent):
 
-    channel = "log"
+    channel = "logger"
 
     LEVELS = {"debug": DEBUG, "info": INFO, "warning": WARNING,
             "warn": WARN, "error": ERROR, "critical": CRITICAL}
