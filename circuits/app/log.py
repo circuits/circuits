@@ -69,3 +69,23 @@ class Logger(BaseComponent):
     @handler("log")
     def log(self, level, msg, *args, **kwargs):
         self.logger.log(self.LEVELS[level.lower()], msg, *args, **kwargs)
+
+    def debug(self, msg, *args, **kwargs):
+        self.logger.debug(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self.logger.info(msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        self.logger.warning(msg, *args, **kwargs)
+
+    warn = warning
+
+    def error(self, msg, *args, **kwargs):
+        self.logger.error(msg, *args, **kwargs)
+
+    def exception(self, msg, *args, **kwargs):
+        self.logger.exception(msg, *args)
+
+    def critical(self, msg, *args, **kwargs):
+        self.logger.critical(msg, *args, **kwargs)
