@@ -6,6 +6,7 @@
 
 import sys
 import logging
+from logging import DEBUG, INFO, WARNING, WARN, ERROR, CRITICAL
 
 from circuits.core import handler, Event, BaseComponent
 
@@ -22,6 +23,9 @@ class Log(Event):
 class Logger(BaseComponent):
 
     channel = "log"
+
+    LEVELS = {"debug": DEBUG, "info": INFO, "warning": WARNING,
+            "warn": WARN, "error": ERROR, "critical": CRITICAL}
 
     def __init__(self, filename, name, type, level, channel=channel):
         super(Logger, self).__init__(channel=channel)
@@ -64,5 +68,4 @@ class Logger(BaseComponent):
 
     @handler("log")
     def log(self, level, msg, *args, **kwargs):
-        self.logger.log(level, msg, *args, **kwargs)
-        return True
+        self.logger.log(self.LEVELS[level.lower()], msg, *args, **kwargs)
