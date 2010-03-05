@@ -28,19 +28,7 @@ def splitLines(s, buffer):
     return lines[:-1], lines[-1]
 
 class Line(Event):
-    """Line Event
-
-    This Event is sent for each line processed by the LP Protocol Component.
-
-    @param line: a single line of data
-    @type  line: str
-    """
-
-    def __init__(self, line):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Line, self).__init__(line)
-
+    """Line Event"""
 
 class LP(BaseComponent):
     """Line Protocol
@@ -103,14 +91,15 @@ class LP(BaseComponent):
         self.buffer = ""
 
     @handler("read")
-    def anyRead(self, data):
-        lines, self.buffer = self.splitter(data, self.buffer)
-        for line in lines:
-            self.push(Line(line))
-
-    @handler("read", target="server")
-    def serverRead(self, sock, data):
-        lines, buffer = self.splitter(data, self.getBuffer(sock))
-        self.updateBuffer(sock, buffer)
-        for line in lines:
-            self.push(Line(sock, line))
+    def anyRead(self, *args):
+        if len(args) == 1:
+            data, = args
+            lines, self.buffer = self.splitter(data, self.buffer)
+            for line in lines:
+                self.push(Line(line))
+        else:
+            sock, data = args
+            lines, buffer = self.splitter(data, self.getBuffer(sock))
+            self.updateBuffer(sock, buffer)
+            for line in lines:
+                self.push(Line(sock, line))
