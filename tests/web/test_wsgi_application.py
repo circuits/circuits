@@ -3,8 +3,7 @@
 from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 
-from circuits.tools import find
-from circuits.web import Controller, Request
+from circuits.web import Controller
 from circuits.web.wsgi import Application
 
 class Root(Controller):
