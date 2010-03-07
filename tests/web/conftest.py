@@ -7,6 +7,7 @@
 import os
 
 from circuits import Component
+from circuits.web.wsgi import Gateway
 from circuits.web import Server, Static
 
 BIND = ("127.0.0.1", 8000)
@@ -28,8 +29,15 @@ def pytest_funcarg__webapp(request):
 
 def setupwebapp(request):
     webapp = WebApp()
-    Root = getattr(request.module, "Root")
-    Root().register(webapp)
+
+    if hasattr(request.module, "application"):
+        application = getattr(request.module, "application")
+        Gateway(application).register(webapp)
+    else:
+        Root = getattr(request.module, "Root", None)
+        if Root:
+            Root().register(webapp)
+
     Static("/static", DOCROOT, dirlisting=True).register(webapp)
     webapp.start()
     return webapp
