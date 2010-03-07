@@ -77,7 +77,8 @@ class Application(Component):
 
         self.run()
 
-        body = self.response.process()
+        self.response.prepare()
+        body = self.response.body
         status = self.response.status
         headers = self.response.headers.items()
 
