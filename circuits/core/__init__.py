@@ -12,11 +12,11 @@ import new
 import time
 from types import TupleType
 from itertools import chain
-from threading import Thread
 from collections import deque
 from operator import attrgetter
 from sys import exc_info as _exc_info
 from inspect import getargspec, getmembers
+from threading import current_thread, Thread
 
 if os.name == "posix":
     from signal import SIGHUP, SIGINT, SIGTERM
@@ -963,7 +963,7 @@ class Manager(object):
         if __self is not None:
             self = __self
 
-        if not mode == "T":
+        if not mode == "T" and current_thread().name == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
             _registerSignalHandler(SIGINT, self._signalHandler)
