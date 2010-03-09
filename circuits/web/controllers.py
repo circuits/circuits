@@ -50,10 +50,6 @@ def expose(*channels, **config):
               getargspec(f)
       if wrapper.args and wrapper.args[0] == "self":
           del wrapper.args[0]
-      if wrapper.args and wrapper.args[0] == "event":
-          wrapper._passEvent = True
-      else:
-          wrapper._passEvent = False
 
       return update_wrapper(wrapper, f)
 
@@ -121,10 +117,6 @@ if HAS_JSON:
                   getargspec(f)
           if wrapper.args and wrapper.args[0] == "self":
               del wrapper.args[0]
-          if wrapper.args and wrapper.args[0] == "event":
-              wrapper._passEvent = True
-          else:
-              wrapper._passEvent = False
 
           return update_wrapper(wrapper, f)
 
