@@ -173,10 +173,10 @@ class Error(Event):
 
     channel = "exception"
 
-    def __init__(self, type, value, traceback, **kwargs):
+    def __init__(self, type, value, traceback, handler=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Error, self).__init__(type, value, traceback, **kwargs)
+        super(Error, self).__init__(type, value, traceback, handler)
 
 
 class Success(Event):
@@ -895,7 +895,7 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 event.value.errors = True
                 event.value.value = etype, evalue, etraceback
-                self.fire(Error(etype, evalue, etraceback, handler=handler))
+                self.fire(Error(etype, evalue, etraceback, handler))
                 if event.failure is not None:
                     error = (etype, evalue, etraceback)
                     self.fire(Failure(event, handler, error), *event.failure)
