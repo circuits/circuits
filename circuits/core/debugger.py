@@ -44,25 +44,19 @@ class Debugger(Component):
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("exception", filter=True)
-    def exception(self, *args, **kwargs):
+    def exception(self, type, value, traceback, handler=None):
         if not self.errors:
             return
 
         s = StringIO()
 
-        if len(args) == 3:
-            type, value, traceback = args
-            handler = kwargs.get("handler", None)
-            if handler is None:
-                handler = "'Unknown'"
-            else:
-                handler = reprhandler(handler)
-            s.write("ERROR in %s (%s): %s\n" % (handler, type, value))
-            s.write("%s\n" % "".join(format_tb(traceback)))
+        if handler is None:
+            handler = ""
         else:
-            s.write("Unknown Error\n")
-            s.write("args:   %s\n" % repr(args))
-            s.write("kwargs: %s\n" % repr(kwargs))
+            handler = reprhandler(handler)
+
+        s.write("ERROR %s(%s): %s\n" % ("%s " % handler, type, value))
+        s.write("%s\n" % "".join(format_tb(traceback)))
 
         s.seek(0)
 
