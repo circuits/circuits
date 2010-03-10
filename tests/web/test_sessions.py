@@ -29,6 +29,6 @@ def test(webapp):
     s = f.read()
     assert s == "Hello test"
 
-    f = opener.open(webapp.server.base + "/test")
+    f = opener.open(webapp.server.base)
     s = f.read()
     assert s == "Hello test"
