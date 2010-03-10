@@ -6,6 +6,7 @@ try:
     from multiprocessing import Pipe as _Pipe
     from multiprocessing import Value as _Value
     from multiprocessing import Process as _Process
+    from multiprocessing.sharedctypes import Synchronized
 
     HAS_MULTIPROCESSING = 2
 except:
@@ -13,6 +14,7 @@ except:
         from processing import Pipe as _Pipe
         from processing import Value as _Value
         from processing import Process as _Process
+        from processing.sharedctypes import Synchronized
 
         HAS_MULTIPROCESSING = 1
     except:
@@ -106,7 +108,7 @@ if HAS_MULTIPROCESSING:
 
         @property
         def alive(self):
-            if type(self._running) is _Value:
+            if type(self._running) is Synchronized:
                 return self._running.value and self._process.is_alive()
 
 else:
