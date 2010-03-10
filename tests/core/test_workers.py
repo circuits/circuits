@@ -4,13 +4,15 @@
 
 """Workers Tests"""
 
-from circuits import Thread
+from time import sleep
+
+from circuits import Thread, Process
 from circuits.core import handler, Event
 
 class Test(Event):
     """Test Event"""
 
-class App(Thread):
+class AppThread(Thread):
 
    count = 0
    flag = False
@@ -28,8 +30,13 @@ class App(Thread):
 
       self.done = True
 
-def test_threads():
-    app = App()
+class AppProcess(Process):
+
+    def run(self):
+        sleep(1)
+
+def test_thread():
+    app = AppThread()
     app.start()
 
     app.push(Test())
@@ -40,3 +47,13 @@ def test_threads():
     assert app.count == 5
     assert app.flag
     assert app.done
+
+def test_process():
+    app = AppProcess()
+    app.start()
+
+    assert app.alive
+
+    app.join()
+
+    assert not app.alive
