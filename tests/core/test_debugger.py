@@ -15,8 +15,9 @@ class Test(Event):
 
 class App(Component):
 
-    def test(self):
-        pass
+    def test(self, raiseException=False):
+        if raiseException:
+            raise Exception()
 
 class Logger(object):
 
@@ -58,6 +59,57 @@ def test():
     assert s == ""
     stderr.seek(0)
     stderr.truncate()
+
+def test_exceptions():
+    app = App()
+    stderr = StringIO()
+    debugger = Debugger(file=stderr)
+    debugger.register(app)
+    while app:
+        app.flush()
+    stderr.seek(0)
+    stderr.truncate()
+
+    assert debugger.events
+    assert debugger.errors
+
+    e = Test(raiseException=True)
+    app.push(e)
+    app.flush()
+
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == str(e)
+    stderr.seek(0)
+    stderr.truncate()
+
+    app.flush()
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s.startswith("<Error[*:exception]")
+    stderr.seek(0)
+    stderr.truncate()
+
+    debugger.events = False
+    debugger.errors = False
+
+    assert not debugger.events
+    assert not debugger.errors
+
+    e = Test(raiseException=True)
+    app.push(e)
+    app.flush()
+
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == ""
+    stderr.seek(0)
+    stderr.truncate()
+
+    app.flush()
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == ""
 
 def test_IgnoreEvents():
     app = App()
