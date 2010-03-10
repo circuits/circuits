@@ -106,6 +106,9 @@ if HAS_MULTIPROCESSING:
             self._running.value = False
             self._running.release()
 
+        def join(self):
+            return self._process.join()
+
         @property
         def alive(self):
             if type(self._running) is Synchronized:
