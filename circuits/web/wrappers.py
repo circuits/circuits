@@ -136,6 +136,33 @@ class Request(object):
     def url(self):
         return url(self)
 
+class Body(object):
+    """The body of the HTTP response (the response entity)."""
+    
+    def __get__(self, obj, objclass=None):
+        if obj is None:
+            # When calling on the class instead of an instance...
+            return self
+        else:
+            return obj._body
+    
+    def __set__(self, obj, value):
+        # Convert the given value to an iterable object.
+        if isinstance(value, basestring):
+            # strings get wrapped in a list because iterating over a single
+            # item list is much faster than iterating over every character
+            # in a long string.
+            if value:
+                value = [value]
+            else:
+                # [''] doesn't evaluate to False, so replace it with [].
+                value = []
+        elif isinstance(value, types.FileType):
+            value = file_generator(value)
+        elif value is None:
+            value = []
+        obj._body = value
+
 class Response(object):
     """Response(sock, request) -> new Response object
 
@@ -145,6 +172,7 @@ class Response(object):
     """
 
     chunked = False
+    body = Body()
 
     def __init__(self, sock, request):
         "initializes x; see x.__class__.__doc__ for signature"
@@ -185,24 +213,18 @@ class Response(object):
         self.cookie = self.request.cookie
 
         self.stream = False
-        self.body = None
+        self._body = []
         self.time = time()
         self.status = "200 OK"
         self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
     def prepare(self):
-        if isinstance(self.body, basestring):
-            self.headers["Content-Length"] = str(len(self.body))
+        if type(self.body) is types.ListType:
+            self.headers["Content-Length"] = str(sum(map(len, self.body)))
             self.headers.setdefault("Content-Type", "text/html")
-        elif type(self.body) is types.GeneratorType:
-            self.stream = True
-        elif type(self.body) is types.FileType:
-            st = os.fstat(self.body.fileno())
-            self.headers.setdefault("Content-Length", str(st.st_size))
+
+        if self.stream:
             self.headers.setdefault("Content-Type", "application/octet-stream")
-            self.stream = True
-            self.file = self.body
-            self.body = file_generator(self.body)
 
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
