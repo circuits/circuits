@@ -83,7 +83,7 @@ class Application(Component):
         headers = self.response.headers.items()
 
         start_response(status, headers, exc_info)
-        return [body]
+        return body
 
     def response_completed(self, evt, handler, retval):
         if self.response.done:
@@ -162,7 +162,7 @@ class Gateway(Component):
         self._response = response
 
         try:
-            return "".join(self.app(self._createEnviron(), self.start_response))
+            return self.app(self._createEnviron(), self.start_response)
         except Exception, error:
             status = 500
             message = str(error)
