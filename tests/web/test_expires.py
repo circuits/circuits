@@ -23,7 +23,7 @@ def test(webapp):
     assert s  == "Hello World!"
     expires = f.headers["Expires"]
     diff = (mktime(parsedate(expires)) - mktime(gmtime()))
-    assert 59.9 < diff < 60.1
+    assert 60 - (60 * 0.01) < diff < 60 + (60 * 0.01) # diff is about 60 +- 1%
 
 def test_nocache(webapp):
     f = urlopen("%s/nocache" % webapp.server.base)
