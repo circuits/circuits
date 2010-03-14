@@ -27,8 +27,6 @@ def test(webapp):
     s = f.read()
     assert s == "Hello World!"
 
-    assert len(webapp) == 0
-
     url = "%s/rpc/" % webapp.server.base
     jsonrpc = jsonrpclib.ServerProxy(url, allow_none=True)
 
