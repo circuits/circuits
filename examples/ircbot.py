@@ -2,7 +2,7 @@
 
 from circuits import Component, Debugger
 from circuits.net.sockets import TCPClient, Connect
-from circuits.net.protocols.irc import IRC, Message, User, Nick, Join
+from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
 
 class Bot(Component):
 
@@ -12,16 +12,17 @@ class Bot(Component):
         self.push(Connect(host, port))
 
     def connected(self, host, port):
-        self.push(User("circuits", host, host, "Test circuits IRC Bot"), "USER")
-        self.push(Nick("circuits"), "NICK")
-        self.push(Join("#circuits"), "JOIN")
+        self.push(USER("circuits", host, host, "Test circuits IRC Bot"))
+        self.push(NICK("circuits"))
+        self.push(JOIN("#shortcircuit"))
+        self.push(JOIN("#softcircuit"))
 
     def numeric(self, source, target, numeric, args, message):
         if numeric == 433:
-            self.push(Nick("%s_" % args), "NICK")
+            self.push(NICK("%s_" % args))
 
     def message(self, source, target, message):
-        self.push(Message(source[0], message), "PRIVMSG")
+        self.push(PRIVMSG(source[0], message))
 
 bot = Bot("irc.freenode.net", channel="bot") + Debugger()
 bot.run()

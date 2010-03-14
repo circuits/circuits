@@ -15,7 +15,7 @@ from circuits.io import stdin
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
 from circuits.net.sockets import TCPClient, Connect
-from circuits.net.protocols.irc import IRC, Message, User, Nick, Join
+from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
@@ -82,15 +82,15 @@ class Client(Component):
         hostname = self.hostname
         name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
 
-        self.push(User(nick, hostname, host, name), "USER")
-        self.push(Nick(nick), "NICK")
+        self.push(USER(nick, hostname, host, name))
+        self.push(NICK(nick))
 
     def disconnected(self):
         self.push(Connect(self.opts.host, self.opts.port), "connect")
 
     def numeric(self, source, target, numeric, args, message):
         if numeric == 1:
-            self.push(Join(self.ircchannel), "JOIN")
+            self.push(JOIN(self.ircchannel))
         elif numeric == 433:
             self.nick = newnick = "%s_" % self.nick
             self.push(Nick(newnick), "NICK")
@@ -112,7 +112,7 @@ class Client(Component):
 
     @handler("read", target="stdin")
     def stdin_read(self, data):
-        self.push(Message(self.ircchannel, data.strip()), "PRIVMSG")
+        self.push(PRIVMSG(self.ircchannel, data.strip()))
 
 ###
 ### Main
