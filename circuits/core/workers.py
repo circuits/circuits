@@ -37,7 +37,7 @@ class Thread(_BaseComponent):
         self._thread.start()
 
     def run(self):
-        pass
+        """To be implemented by subclasses"""
 
     def stop(self):
         self._running = False
@@ -99,7 +99,7 @@ if HAS_MULTIPROCESSING:
             self._process.start()
 
         def run(self):
-            pass
+            """To be implemented by subclasses"""
 
         def stop(self):
             self._running.acquire()
