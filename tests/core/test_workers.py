@@ -35,6 +35,14 @@ class AppProcess(Process):
     def run(self):
         sleep(1)
 
+def test_compat():
+    from circuits.core import workers
+
+    if workers.HAS_MULTIPROCESSING:
+        assert workers.Thread is not workers.Process
+    else:
+        assert workers.Thread is workers.Process
+
 def test_thread():
     app = AppThread()
     app.start()
