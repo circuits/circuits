@@ -49,7 +49,7 @@ def test_thread():
 
     app.push(Test())
 
-    while app.alive: pass
+    app.join()
     app.flush()
 
     assert app.count == 5
