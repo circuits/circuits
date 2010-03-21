@@ -957,7 +957,10 @@ class Manager(object):
                     p.join(3)
 
     def tick(self):
-        [f() for f in self._ticks.copy()]
+        if self._ticks:
+            [f() for f in self._ticks.copy()]
+        if len(self):
+            self._flush()
 
     def run(self, sleep=0, mode=None, log=True, __self=None):
         if __self is not None:
@@ -976,10 +979,7 @@ class Manager(object):
         try:
             while self.running:
                 try:
-                    if self._ticks:
-                        [f() for f in self._ticks.copy()]
-                    if len(self):
-                        self._flush()
+                    self.tick()
                     if sleep:
                         try:
                             time.sleep(sleep)
@@ -999,10 +999,12 @@ class Manager(object):
                 rtime = time.time()
                 while len(self) > 0 and (time.time() - rtime) < 3:
                     try:
-                        [f() for f in self._ticks.copy()]
-                        self._flush()
+                        self.tick()
                         if sleep:
-                            time.sleep(sleep)
+                            try:
+                                time.sleep(sleep)
+                            except:
+                                pass
                     except:
                         try:
                             if log:
