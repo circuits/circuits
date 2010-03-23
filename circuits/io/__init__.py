@@ -132,7 +132,7 @@ class File(Component):
 
 try:
     stdin = File("/dev/stdin", "r", channel="stdin")
-    stdout = File("/dev/stdout", "a", channel="stdout")
-    stderr = File("/dev/stderr", "a", channel="stderr")
+    stdout = File("/dev/stdout", "w", channel="stdout")
+    stderr = File("/dev/stderr", "w", channel="stderr")
 except IOError:
     pass
