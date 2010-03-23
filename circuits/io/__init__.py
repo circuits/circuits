@@ -29,20 +29,6 @@ class Error(Event): pass
 class Opened(Event): pass
 class Closed(Event): pass
 
-def setblocking(fd, flag):
-    """Set/Clear blocking mode of a file descriptor"""
-
-    # get the file's current flag settings
-    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-    if flag:
-        # clear non-blocking mode from flags
-        fl = fl & ~os.O_NONBLOCK
-    else:
-        # set non-blocking mode from flags
-        fl = fl | os.O_NONBLOCK
-    # update the file's flags
-    fcntl.fcntl(fd, fcntl.F_SETFL, fl)
-
 class File(Component):
 
     channel = "file"
@@ -64,7 +50,10 @@ class File(Component):
 
         self.bufsize = kwargs.get("bufsize", BUFSIZE)
 
-        setblocking(self._fd, False)
+        # Set non-blocking file descriptor (non-portable)
+        flag = fcntl.fcntl(self._fd, fcntl.F_GETFL)
+        flag = flag | os.O_NONBLOCK
+        fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
 
         self._read = []
         self._write = []
