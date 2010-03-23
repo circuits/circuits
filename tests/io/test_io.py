@@ -5,10 +5,10 @@ from circuits.io import File, Write
 
 class App(Component):
 
-    def __init__(self, filename, mode):
+    def __init__(self, *args):
         super(App, self).__init__()
 
-        self._file = File(filename, mode)
+        self._file = File(*args)
         self._file.register(self)
 
         self.data = None
@@ -42,6 +42,24 @@ def test_read(tmpdir):
     f.close()
 
     app = App(filename, "r")
+    app.start()
+
+    while not app.eof:
+        pass
+
+    app.stop()
+
+    assert app.data == "Hello World!"
+
+def test_fd(tmpdir):
+    sockpath = tmpdir.ensure("helloworld.txt")
+    filename = str(sockpath)
+
+    f = open(filename, "w")
+    f.write("Hello World!")
+    f.close()
+
+    app = App(open(filename, "r"))
     app.start()
 
     while not app.eof:
