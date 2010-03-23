@@ -70,7 +70,8 @@ class File(Component):
         self._write = []
         self._buffer = deque()
 
-        self._read.append(self._fd)
+        if any(filter(lambda m: m in self._fd.mode, "r+")):
+            self._read.append(self._fd)
 
         self.push(Opened(self.filename), "opened")
 
