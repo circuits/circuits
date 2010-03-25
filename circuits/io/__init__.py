@@ -73,9 +73,7 @@ class File(Component):
             try:
                 r, w, e = select.select(self._read, self._write, [], wait)
             except select.error, error:
-                if error[0] == 4:
-                    pass
-                else:
+                if not error[0] == errno.EINTR:
                     self.push(Error(error), "error")
                     return
 
