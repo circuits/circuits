@@ -220,8 +220,13 @@ class Response(object):
 
     def prepare(self):
         if type(self.body) is types.ListType:
-            self.headers["Content-Length"] = str(sum(map(len, self.body)))
+            if unicode in map(type, self.body):
+                cLength = sum(map(lambda s: len(s.encode("utf-8")), self.body))
+            else:
+                cLength = sum(map(len, self.body))
+
             self.headers.setdefault("Content-Type", "text/html")
+            self.headers["Content-Length"] = str(cLength)
 
         if self.stream:
             self.headers.setdefault("Content-Type", "application/octet-stream")
