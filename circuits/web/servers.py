@@ -140,6 +140,8 @@ class Server(BaseServer):
     Create a Web Server (HTTP) complete with the default Dispatcher to
     parse requests and posted form data dispatching to appropriate
     Controller(s).
+
+    See: circuits.web.servers.BaseServer
     """
 
     def __init__(self, bind, **kwargs):
