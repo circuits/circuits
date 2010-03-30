@@ -58,6 +58,7 @@ class Application(BaseComponent):
                 env("PATH_INFO", ""),
                 protocol,
                 env("QUERY_STRING", ""))
+        request.server = None
 
         request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
 
