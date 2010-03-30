@@ -110,7 +110,7 @@ class Gateway(BaseComponent):
 
         self._request = self._response = None
 
-    def _createEnviron(self):
+    def createEnviron(self):
         environ = {}
         req = self._request
         env = environ.__setitem__
@@ -165,7 +165,7 @@ class Gateway(BaseComponent):
         self._response = response
 
         try:
-            return self.app(self._createEnviron(), self.start_response)
+            return self.app(self.createEnviron(), self.start_response)
         except Exception, error:
             status = 500
             message = str(error)
