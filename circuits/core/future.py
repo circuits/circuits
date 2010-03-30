@@ -26,13 +26,6 @@ class Future(Value):
         self._task.setDaemon(True)
         self._task.start()
 
-    def __repr__(self):
-        type = "T"
-        name = self.__class__.__name__
-        running = self._task is not None and self._task.isAlive()
-        format = "<%s (%s) runnine=%r for %r (args=%r kwargs=%r)>"
-        return format % (name, type, running, self.f, self.args, self.kwargs)
-
     def _run(self):
         try:
             self.value = self.f(*self.args, **self.kwargs)
@@ -40,9 +33,9 @@ class Future(Value):
             self.errors = True
             self.value = exc_info()
 
-def future(**config):
+def future():
     def decorate(f):
         def wrapper(*args, **kwargs):
-            return Future(f, args, kwargs, **config)
+            return Future(f, args, kwargs)
         return update_wrapper(wrapper, f)
     return decorate
