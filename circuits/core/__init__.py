@@ -404,6 +404,13 @@ def handler(*channels, **kwargs):
     """
 
     def wrapper(f):
+        im_self = None
+        if type(f) is MethodType:
+            im_func = f.im_func
+            im_self = f.im_self
+            func_name = im_func.func_name
+            f = copy(im_func)
+
         if channels and type(channels[0]) is bool and not channels[0]:
             f.handler = False
             return f
@@ -419,12 +426,17 @@ def handler(*channels, **kwargs):
         f.channels = channels
 
         f.args, f.varargs, f.varkw, f.defaults = getargspec(f)
+
         if f.args and f.args[0] == "self":
             del f.args[0]
         if f.args and f.args[0] == "event":
             f._passEvent = True
         else:
             f._passEvent = False
+
+        if im_self is not None:
+            f = MethodType(f, im_self)
+            setattr(im_self, func_name, f)
 
         return f
 
@@ -729,43 +741,41 @@ class Manager(object):
         else:
             return "S"
 
-    def addHandler(self, handler, channel=None):
+    def addHandler(self, handler, target=None):
         """Add a new Event Handler
 
-        Add a new Event Handler to the Event Manager
-        adding it to the given channel. If no channel is
-        given, add it to the global channel.
+        Add a new Event Handler to the Event Manager.
         """
 
-        if channel is None:
+        channels = handler.channels
+        target = target or handler.target or getattr(self, "channel", "*")
+
+        if not channels and target == "*":
             if handler not in self._globals:
                 self._globals.append(handler)
                 self._globals.sort(key=_sortkey)
                 self._globals.reverse()
         else:
-            assert type(channel) is tuple and len(channel) == 2
+            for channel in channels:
+                self._handlers.add(handler)
 
-            self._handlers.add(handler)
+                if (target, channel) not in self.channels:
+                    self.channels[(target, channel)] = []
 
-            if channel not in self.channels:
-                self.channels[channel] = []
+                if handler not in self.channels[(target, channel)]:
+                    self.channels[(target, channel)].append(handler)
+                    self.channels[(target, channel)].sort(key=_sortkey)
+                    self.channels[(target, channel)].reverse()
 
-            if handler not in self.channels[channel]:
-                self.channels[channel].append(handler)
-                self.channels[channel].sort(key=_sortkey)
-                self.channels[channel].reverse()
+                if target not in self._tmap:
+                    self._tmap[target] = []
+                if handler not in self._tmap[target]:
+                    self._tmap[target].append(handler)
 
-            (target, channel) = channel
-
-            if target not in self._tmap:
-                self._tmap[target] = []
-            if handler not in self._tmap[target]:
-                self._tmap[target].append(handler)
-
-            if channel not in self._cmap:
-                self._cmap[channel] = []
-            if handler not in self._cmap[channel]:
-                self._cmap[channel].append(handler)
+                if channel not in self._cmap:
+                    self._cmap[channel] = []
+                if handler not in self._cmap[channel]:
+                    self._cmap[channel].append(handler)
 
     add = addHandler
 
@@ -1073,23 +1083,9 @@ class BaseComponent(Manager):
     def _registerHandlers(self, manager):
         p = lambda x: callable(x) and getattr(x, "handler", False)
         handlers = [v for k, v in getmembers(self, p)]
-
         for handler in handlers:
-            if handler.channels:
-                channels = handler.channels
-            else:
-                channels = [None]
-
-            for channel in channels:
-                if handler.target is not None:
-                    target = handler.target
-                else:
-                    target = getattr(self, "channel", None)
-                if not all([channel, target]):
-                    channel = None
-                else:
-                    channel = (target, channel or "*")
-                manager.add(handler, channel)
+            target = handler.target or getattr(self, "channel", "*")
+            manager.add(handler, target=target)
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():
