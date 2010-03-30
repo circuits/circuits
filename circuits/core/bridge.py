@@ -22,13 +22,13 @@ order or delivery.
 from cPickle import dumps, loads
 from socket import gethostname, gethostbyname
 
-from circuits import handler, Event, Component
+from circuits.core import handler, Event, BaseComponent
 from circuits.net.sockets import Client, Server, UDPServer as DefaultTransport
 from circuits.net.sockets import Read, Write, Error, Close
 
 class Helo(Event): pass
 
-class Bridge(Component):
+class Bridge(BaseComponent):
 
     channel = "bridge"
 
@@ -75,7 +75,7 @@ class Bridge(Component):
         if c == self:
             self.push(Helo(*self.ourself), "helo")
 
-    @handler(filter=True, priority=100)
+    @handler(priority=100, target="*")
     def event(self, event, *args, **kwargs):
         channel = event.channel
         if True in [event.name == x.__name__ for x in self.IgnoreEvents]:
