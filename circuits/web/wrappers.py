@@ -9,10 +9,10 @@ This module implements the Request and Response objects.
 
 
 import os
-import types
 from cStringIO import StringIO
 from time import strftime, time
 from Cookie import SimpleCookie
+from types import FileType, ListType
 
 from utils import url
 from headers import Headers
@@ -137,31 +137,26 @@ class Request(object):
         return url(self)
 
 class Body(object):
-    """The body of the HTTP response (the response entity)."""
+    """Response Body"""
     
-    def __get__(self, obj, objclass=None):
-        if obj is None:
-            # When calling on the class instead of an instance...
+    def __get__(self, response, cls=None):
+        if response is None:
             return self
         else:
-            return obj._body
+            return response._body
     
-    def __set__(self, obj, value):
-        # Convert the given value to an iterable object.
+    def __set__(self, response, value):
         if isinstance(value, basestring):
-            # strings get wrapped in a list because iterating over a single
-            # item list is much faster than iterating over every character
-            # in a long string.
             if value:
                 value = [value]
             else:
-                # [''] doesn't evaluate to False, so replace it with [].
                 value = []
-        elif isinstance(value, types.FileType):
+        elif isinstance(value, FileType):
+            response.stream = True
             value = file_generator(value)
         elif value is None:
             value = []
-        obj._body = value
+        response._body = value
 
 class Response(object):
     """Response(sock, request) -> new Response object
@@ -219,7 +214,7 @@ class Response(object):
         self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
     def prepare(self):
-        if type(self.body) is types.ListType:
+        if type(self.body) is ListType:
             if unicode in map(type, self.body):
                 cLength = sum(map(lambda s: len(s.encode("utf-8")), self.body))
             else:
