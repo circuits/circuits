@@ -8,13 +8,13 @@ This package contains the most basic building blocks of all Components.
 """
 
 import os
-import new
 import time
-from types import TupleType
+from copy import copy
 from itertools import chain
 from collections import deque
 from operator import attrgetter
 from sys import exc_info as _exc_info
+from types import TupleType, MethodType
 from inspect import getargspec, getmembers
 from threading import current_thread, Thread
 
@@ -1184,6 +1184,6 @@ class Component(BaseComponent):
                     predicate = p1 and p2 and not overridden(v)
                     if predicate:
                         name = "%s_%s" % (base.__name__, k)
-                        method = new.instancemethod(v, self, cls)
+                        method = MethodType(v, self)
                         setattr(self, name, method)
         return self
