@@ -10,6 +10,12 @@ tools are installed as executables with a prefix of "circuits."
 
 from hashlib import md5
 
+try:
+    import pydot
+    HAS_PYDOT = True
+except ImportError:
+    HAS_PYDOT = False
+
 def walk(x, f, d=0, v=None):
     if not v:
         v = set()
@@ -64,9 +70,7 @@ def graph(x, name=None):
     def getname(c):
         return "%s-%s" % (c.name, md5(str(hash(c))).hexdigest()[-4:])
 
-    try:
-        import pydot
-        
+    if HAS_PYDOT:
         graph_edges = []
         for (u, v) in edges(x):
             graph_edges.append(("\"%s\"" % getname(u), "\"%s\"" % getname(v)))
@@ -74,10 +78,6 @@ def graph(x, name=None):
         g = pydot.graph_from_edges(graph_edges, directed=True)
         g.write("%s.dot" % (name or x.name))
         g.write("%s.png" % (name or x.name), format="png")
-    except ImportError:
-        pass
-    except:
-        raise
 
     def printer(d, x):
         return "%s* %s" % (" " * d, x)
