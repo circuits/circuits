@@ -36,17 +36,11 @@ def edges(x, e=None, v=None):
         edges(c, e, v)
     return e
 
-def findroot(x, v=None):
-    if not v:
-        v = set()
+def findroot(x):
     if x.manager == x:
         return x
     else:
-        if x.manager not in v:
-            v.add(x.manager)
-            return findroot(x.manager, v)
-        else:
-            return x.manager
+        return findroot(x.manager)
 
 def kill(x):
     for c in x.components.copy():
