@@ -23,10 +23,6 @@ class Root(Controller):
     def test_notfound(self):
         return self.notfound()
 
-    def test_event(self, event, *args, **kwargs):
-        self.event = event
-        return "%s\n%s" % (repr(args), repr(kwargs))
-
 application = Application() + Root()
 
 def test(webapp):

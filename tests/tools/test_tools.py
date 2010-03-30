@@ -7,10 +7,10 @@
 Test all functionality of the tools package.
 """
 
-import unittest
+import py
 
 from circuits import Component
-from circuits.tools import kill, graph, inspect
+from circuits.tools import kill, graph, inspect, findroot, reprhandler
 
 class A(Component):
 
@@ -67,6 +67,17 @@ GRAPH = """\
  * <D/* (queued=0, channels=1, handlers=3) [S]>
   * <E/* (queued=0, channels=1, handlers=2) [S]>
    * <F/* (queued=0, channels=1, handlers=1) [S]>"""
+
+INSPECT = """\
+ Registered Components: 0
+
+ Tick Functions: 1
+  <bound method A.__tick__ of <A/* (queued=0, channels=1, handlers=1) [S]>>
+
+ Channels and Event Handlers: 1
+  *:foo; 1
+   <listener on ('foo',) {target=None, priority=0.0}>
+"""
 
 def test_kill():
     a = A()
@@ -153,3 +164,33 @@ def test_graph(tmpdir):
     tmpdir.ensure("A")
     name = str(tmpdir.join("A"))
     assert graph(a, name=name) == GRAPH
+
+def test_inspect():
+    a = A()
+    s = inspect(a)
+    assert s == INSPECT
+
+def test_findroot():
+    a = A()
+    b = B()
+    c = C()
+
+    a += b
+    b += c
+
+    root = findroot(a)
+    assert root == a
+
+    root = findroot(b)
+    assert root == a
+
+    root = findroot(c)
+    assert root == a
+
+def test_reprhandler():
+    a = A()
+    s = reprhandler(a.foo)
+    assert s == "<listener on ('foo',) {target=None, priority=0.0}>"
+
+    f = lambda: None
+    py.test.raises(TypeError, reprhandler, f)
