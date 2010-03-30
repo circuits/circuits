@@ -530,6 +530,9 @@ class Value(object):
                 o.result = True
                 if o.manager is not None and o.onSet is not None:
                     o.manager.fireEvent(ValueChanged(o), *o.onSet)
+            elif isinstance(v, Value):
+                o.errors = v.errors
+                o.result = v.result
             if not o._parent == o:
                 notify(o._parent, v)
         
