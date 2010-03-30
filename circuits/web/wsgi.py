@@ -11,7 +11,7 @@ from urllib import unquote
 from cStringIO import StringIO
 from sys import exc_info as _exc_info
 
-from circuits import handler, Component
+from circuits.core import handler, BaseComponent
 
 import wrappers
 from http import HTTP
@@ -20,7 +20,7 @@ from headers import Headers
 from errors import HTTPError
 from dispatchers import Dispatcher
 
-class Application(Component):
+class Application(BaseComponent):
 
     headerNames = {
             "HTTP_CGI_AUTHORIZATION": "Authorization",
@@ -85,15 +85,17 @@ class Application(Component):
         start_response(status, headers, exc_info)
         return body
 
+    @handler("response_completed")
     def response_completed(self, evt, handler, retval):
         if self.response.done:
             self.stop()
 
+    @handler("stream_completed")
     def stream_completed(self, evt, handler, retval):
         if self.response.done:
             self.stop()
 
-class Gateway(Component):
+class Gateway(BaseComponent):
 
     channel = "web"
 
