@@ -2,7 +2,7 @@ Event Feedback
 ==============
 
 Within the core of circuits is a feature called **Event Feedback**. This is a
-mechanism that ties into any **Event** object alllowing feedback to be given
+mechanism that ties into any **Event** object allowing feedback to be given
 for a number of criteria:
  * **success**: An optional channel to use for Event Handler success
  * **failure**: An optional channel to use for Event Handler failure

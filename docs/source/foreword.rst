@@ -1,4 +1,4 @@
-Foreward
+Foreword
 ========
 
 circuits was a reincarnation of a design architecture that the author had been
@@ -10,5 +10,5 @@ Software Engineering at Griffith University (*in Queensland of Australia*)
 and quickly grew into a useful and successful framework to build more
 complex systems and applications with.
 
-circuits became what it is today by the encourement of a co-worker of a
-startup company at the time and was rebranded into it's own project.
+circuits became what it is today by the encouragement of a co-worker of a
+start-up company at the time and was re-branded into it's own project.
