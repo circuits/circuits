@@ -1,7 +1,7 @@
 Event Driven
 ============
 
-circuits is **Event Drive**.
+circuits is **Event Driven**.
 
 This means that everything you do in a circuits-based application or system
 is the reaction to or exposure of some kind of "Event". Components communicate
