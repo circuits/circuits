@@ -11,4 +11,4 @@ and quickly grew into a useful and successful framework to build more
 complex systems and applications with.
 
 circuits became what it is today by the encourement of a co-worker of a
-startup company at the time and was rebranded into it's own proejct.
+startup company at the time and was rebranded into it's own project.
