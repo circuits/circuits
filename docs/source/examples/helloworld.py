@@ -3,7 +3,7 @@
 from circuits import Event, Component
 
 class Hello(Event):
-    "Hello Event"
+    """Hello Event"""
 
 class App(Component):
 

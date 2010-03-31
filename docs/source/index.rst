@@ -11,7 +11,7 @@ circuits is a **Lightweight** **Event** driven **Framework** for the
 `Python Programming Language <http://www.python.org/>`_, with a
 strong **Component** Architecture. circuits also includes a lightweight,
 high performance and scalable HTTP/WSGI web server
-(*with some similar features to `CherryPy <http://www.cherrypy.org/>`_*)
+(*with some similar features to* `CherryPy <http://www.cherrypy.org/>`_)
 as well as various I/O and Networking components.
 
 circuits has a clean architecture and has no required external dependencies.
@@ -28,6 +28,13 @@ As a simple demonstration (*in the style of the traditional "Hello World!"*):
    :language: python
    :linenos:
 
+Output:
+
+.. code-block:: bash
+
+   $ python helloworld.py 
+   Hello World!
+
 circuits was created by and is primarily maintained by
 `James Mills <http://prologic.shortcircuit.net.au/>`_
 
@@ -36,8 +43,8 @@ License
 
 circuits is licensed under the MIT License. See the LICENSE file included
 in the distribution or refer to the
-`License <http://code.google.com/p/circuits/wiki/License>`_ wiki page on
-the `circuits website <http://code.google.com/p/circuits/>`_.
+`License <http://bitbucket.org/prologic/circuits/wiki/License>`_ wiki page on
+the `circuits website <http://bitbucket.org/prologic/circuits/>`_.
 
 Contents
 ========
@@ -59,4 +66,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
