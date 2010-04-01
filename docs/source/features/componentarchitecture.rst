@@ -17,18 +17,14 @@ A good example of this is a simple web application displaying the traditional
    :language: python
    :linenos:
 
-This very simple example demonstrates and makes use of the following set of components:
+This very simple example demonstrates and makes use of the following set of components::
+
  * Server
-
   * TCPServer
-
    * Select
    * HTTP
-
   * Dispatcher
-
    * Root
-
     * Controller
 
 We won't go into the any details about how these components interact with each
