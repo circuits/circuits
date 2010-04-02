@@ -11,5 +11,4 @@ API Documentation
    circuits.net
    circuits.net.protocols
    circuits.tools
-   circuits.version
    circuits.web
