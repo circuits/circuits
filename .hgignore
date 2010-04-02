@@ -7,6 +7,7 @@ build
 dist
 .coverage
 coverage
-docs/.build
+docs/build
+docs/source/api
 circuits.egg-info
 __version__.py

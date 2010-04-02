@@ -1,8 +1,15 @@
 API Documentation
 =================
 
-.. toctree::
-   :maxdepth: 2
-   :glob:
-
-   circuits/*
+.. autosummary::
+   :toctree: api
+   
+   circuits.app
+   circuits.core
+   circuits.drivers
+   circuits.io
+   circuits.net
+   circuits.net.protocols
+   circuits.tools
+   circuits.version
+   circuits.web

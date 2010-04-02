@@ -5,6 +5,8 @@ from circuits import Event, Component
 class Hello(Event):
     """Hello Event"""
 
+    end = "goodbye",
+
 class App(Component):
 
     def started(self, component, mode):
@@ -12,6 +14,12 @@ class App(Component):
 
     def hello(self):
         print "Hello World!"
+
+    def goodbye(self, e, handler, v):
+        print "Goodbye World!"
+        print "Event:", e
+        print "Handler", handler
+        print "Return Value:", v
         raise SystemExit, 0
 
 App().run()

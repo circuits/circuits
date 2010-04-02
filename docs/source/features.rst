@@ -8,8 +8,9 @@ Here are just some of the many features circuits comes with:
 
    features/eventdriven
    features/componentarchitecture
+   features/runnablecomponents
    features/eventfeedback
    features/inheritence
-   features/linking
-   features/runnablecomponents
+   features/values
+   features/futures
    features/other

@@ -50,15 +50,16 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 2
-
+   :maxdepth: 1
+   
    foreword
    features
    gettingstarted
    tutorial
    examples
-   circuits.web
    api
+   web
+   todo
 
 Indices and tables
 ==================
