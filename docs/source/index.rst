@@ -3,7 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-============
 Introduction
 ============
 
@@ -20,37 +19,14 @@ large, scalable, maintainable applications and systems. circuits comes with a
 suite of standard components that can be quickly utilized to create
 applications from a simple tool to a complex distributed web application. 
 
-As a simple demonstration (*in the style of the traditional "Hello World!"*):
-
-:download:`helloworld.py <examples/helloworld.py>`
-
-.. literalinclude:: examples/helloworld.py
-   :language: python
-   :linenos:
-
-Output:
-
-.. code-block:: bash
-
-   $ python helloworld.py 
-   Hello World!
-
 circuits was created by and is primarily maintained by
 `James Mills <http://prologic.shortcircuit.net.au/>`_
-
-License
-=======
-
-circuits is licensed under the MIT License. See the LICENSE file included
-in the distribution or refer to the
-`License <http://bitbucket.org/prologic/circuits/wiki/License>`_ wiki page on
-the `circuits website <http://bitbucket.org/prologic/circuits/>`_.
 
 Contents
 ========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    
    foreword
    features
@@ -59,7 +35,14 @@ Contents
    examples
    api
    web
-   todo
+
+License
+=======
+
+circuits is licensed under the MIT License. See the LICENSE file included
+in the distribution or refer to the
+`License <http://bitbucket.org/prologic/circuits/wiki/License>`_ wiki page on
+the `circuits website <http://bitbucket.org/prologic/circuits/>`_.
 
 Indices and tables
 ==================
