@@ -644,11 +644,9 @@ class Manager(object):
         @rtype Component or Manager
         """
 
-        if y.manager == self:
+        if y.manager is not y:
             y.unregister()
-            return self
-        else:
-            raise TypeError("No registration found for %r" % y)
+        return self
 
     def __isub__(self, y):
         """x.__sub__(y) <==> x -= y
@@ -660,17 +658,9 @@ class Manager(object):
         @rtype Component or Manager
         """
 
-        if y.manager == self:
+        if y.manager is not y:
             y.unregister()
-            return self
-        else:
-            raise TypeError("No registration found for %r" % y)
-
-    def __lshift__(self, y):
-        return y.link(self)
-
-    def __rshift__(self, y):
-        return self.link(y)
+        return self
 
     def _getHandlers(self, _channel):
         target, channel = _channel
@@ -1129,6 +1119,8 @@ class BaseComponent(Manager):
             manager.components.add(self)
             self.fire(Registered(self, manager), target=self)
 
+        return self
+
     def unregister(self):
         """Unregister all registered Event Handlers
         
@@ -1161,6 +1153,8 @@ class BaseComponent(Manager):
             self.fire(Unregistered(self, self.manager), target=self)
 
         self.manager = self
+
+        return self
 
 class Component(BaseComponent):
 
