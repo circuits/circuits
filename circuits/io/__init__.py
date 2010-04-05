@@ -31,8 +31,6 @@ class Closed(Event): pass
 
 class File(Component):
 
-    channel = "file"
-
     def __init__(self, *args, **kwargs):
         channel = kwargs.get("channel", File.channel)
         super(File, self).__init__(channel=channel)
