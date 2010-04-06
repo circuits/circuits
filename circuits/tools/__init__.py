@@ -1,6 +1,6 @@
-# Module:	__init__
-# Date:		8th November 2008
-# Author:	James Mills, prologic at shortcircuit dot net dot au
+# Module:   __init__
+# Date:     8th November 2008
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
 """Circuits Tools
 
@@ -51,11 +51,11 @@ def kill(x):
 def graph(x, name=None):
     """Display a directed graph of the Component structure of x
 
-    @param x: A Component or Manager to graph
-    @type  x: Component or Manager
+    :param x: A Component or Manager to graph
+    :type  x: Component or Manager
 
-    @param name: A name for the graph (defaults to x's name)
-    @type  name: str
+    :param name: A name for the graph (defaults to x's name)
+    :type  name: str
 
     @return: A directed graph representing x's Component sturcture.
     @rtype:  str
@@ -81,8 +81,8 @@ def graph(x, name=None):
 def reprhandler(x):
     """Display a nicely formatted Event Handler, x
 
-    @param x: An Event Handler
-    @type  x: function or method
+    :param x: An Event Handler
+    :type  x: function or method
 
     @return: A nicely formatted representation of the Event Handler, x
     @rtype:  str
@@ -101,8 +101,8 @@ def reprhandler(x):
 def inspect(x):
     """Display an inspection report of the Component or Manager x
 
-    @param x: A Component or Manager to graph
-    @type  x: Component or Manager
+    :param x: A Component or Manager to graph
+    :type  x: Component or Manager
 
     @return: A detailed inspection report of x
     @rtype:  str

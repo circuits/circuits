@@ -41,11 +41,11 @@ class Connect(Event):
 
     @note: This event is used for both Client and Server Components.
 
-    @param args:  Client: (host, port) Server: (sock, host, port)
-    @type  args: tuple
+    :param args:  Client: (host, port) Server: (sock, host, port)
+    :type  args: tuple
 
-    @param kwargs: Client: (ssl)
-    @type  kwargs: dict
+    :param kwargs: Client: (ssl)
+    :type  kwargs: dict
     """
 
     def __init__(self, *args, **kwargs):
@@ -61,8 +61,8 @@ class Disconnect(Event):
 
     @note: This event is used for both Client and Server Components.
 
-    @param args:  Client: () Server: (sock)
-    @type  tuple: tuple
+    :param args:  Client: () Server: (sock)
+    :type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -77,11 +77,11 @@ class Connected(Event):
 
     @note: This event is for Client Components.
 
-    @param host: The hostname connected to.
-    @type  str:  str
+    :param host: The hostname connected to.
+    :type  str:  str
 
-    @param port: The port connected to
-    @type  int:  int
+    :param port: The port connected to
+    :type  int:  int
     """
 
     def __init__(self, host, port):
@@ -109,8 +109,8 @@ class Read(Event):
 
     @note: This event is used for both Client and Server Components.
 
-    @param args:  Client: (data) Server: (sock, data)
-    @type  tuple: tuple
+    :param args:  Client: (data) Server: (sock, data)
+    :type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -125,8 +125,8 @@ class Error(Event):
 
     @note: This event is used for both Client and Server Components.
 
-    @param args:  Client: (error) Server: (sock, error)
-    @type  tuple: tuple
+    :param args:  Client: (error) Server: (sock, error)
+    :type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -143,8 +143,8 @@ class Write(Event):
     @note: This event is never sent, it is used to send data.
     @note: This event is used for both Client and Server Components.
 
-    @param args:  Client: (data) Server: (sock, data)
-    @type  tuple: tuple
+    :param args:  Client: (data) Server: (sock, data)
+    :type  tuple: tuple
     """
 
     def __init__(self, *args):
@@ -162,8 +162,8 @@ class Close(Event):
     @note: This event is never sent, it is used to close.
     @note: This event is used for both Client and Server Components.
 
-    @param args:  Client: () Server: (sock)
-    @type  tuple: tuple
+    :param args:  Client: () Server: (sock)
+    :type  tuple: tuple
     """
 
     def __init__(self, *args):

@@ -272,16 +272,16 @@ def check_auth(request, response, realm, users, encrypt=None):
 
     If an authorization header contains credentials, return True, else False.
 
-    @param realm: The authentication realm.
-    @type  realm: str
+    :param realm: The authentication realm.
+    :type  realm: str
 
-    @param users: A dict of the form: {username: password} or a callable
+    :param users: A dict of the form: {username: password} or a callable
                   returning a dict.
-    @type  users: dict or callable
+    :type  users: dict or callable
 
-    @param encrypt: Callable used to encrypt the password returned from
+    :param encrypt: Callable used to encrypt the password returned from
                     the user-agent. if None it defaults to a md5 encryption.
-    @type  encrypt: callable
+    :type  encrypt: callable
     """
 
     if 'authorization' in request.headers:
@@ -329,16 +329,16 @@ def basic_auth(request, response, realm, users, encrypt=None):
     If auth fails, returns an Unauthorized error  with a
     basic authentication header.
     
-    @param realm: The authentication realm.
-    @type  realm: str
+    :param realm: The authentication realm.
+    :type  realm: str
 
-    @param users: A dict of the form: {username: password} or a callable
+    :param users: A dict of the form: {username: password} or a callable
                   returning a dict.
-    @type  users: dict or callable
+    :type  users: dict or callable
 
-    @param encrypt: Callable used to encrypt the password returned from
+    :param encrypt: Callable used to encrypt the password returned from
                     the user-agent. if None it defaults to a md5 encryption.
-    @type  encrypt: callable
+    :type  encrypt: callable
     """
 
     if check_auth(request, response, realm, users, encrypt):
@@ -354,12 +354,12 @@ def digest_auth(request, response, realm, users):
     
     If auth fails, raise 401 with a digest authentication header.
     
-    @param realm: The authentication realm.
-    @type  realm: str
+    :param realm: The authentication realm.
+    :type  realm: str
 
-    @param users: A dict of the form: {username: password} or a callable
+    :param users: A dict of the form: {username: password} or a callable
                   returning a dict.
-    @type  users: dict or callable
+    :type  users: dict or callable
     """
 
     if check_auth(request, response, realm, users):

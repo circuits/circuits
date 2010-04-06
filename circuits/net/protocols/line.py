@@ -45,8 +45,8 @@ class LP(BaseComponent):
     splitter function. The function must also return a tiple of two items,
     a list of lines and any left over data.
 
-    @param splitter: a line splitter function
-    @type  splitter: function
+    :param splitter: a line splitter function
+    :type  splitter: function
 
     This Component operates in two modes. In normal operation it's expected
     to be used in conjunction with components that expose a Read Event on
@@ -61,14 +61,14 @@ class LP(BaseComponent):
     two arguments can be passed to affect how unfinished data is stored
     and retrieved for such components:
 
-    @params getBuffer: function to retrieve the buffer for a client sock
-    @type getBuffer: function
+    :param getBuffer: function to retrieve the buffer for a client sock
+    :type getBuffer: function
 
     This function must accept one argument (sock,) the client socket
     whoose buffer is to be retrieved.
 
-    @params updateBuffer: function to update the buffer for a client sock
-    @type updateBuffer: function
+    :param updateBuffer: function to update the buffer for a client sock
+    :type updateBuffer: function
 
     This function must accept two arguments (sock, buffer,) the client
     socket and the left over buffer to be updated.

@@ -1,6 +1,6 @@
-# Module:	__init__
-# Date:		3rd October 2008
-# Author:	James Mills, prologic at shortcircuit dot net dot au
+# Module:   __init__
+# Date:     3rd October 2008
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
 """
     circuits

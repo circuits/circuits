@@ -50,23 +50,23 @@ class Host(object):
 class Request(object):
     """Creates a new Request object to hold information about a request.
     
-    @param sock: The socket object of the request.
-    @type  sock: socket.socket
+    :param sock: The socket object of the request.
+    :type  sock: socket.socket
 
-    @param method: The requsted method.
-    @type  method: str
+    :param method: The requsted method.
+    :type  method: str
 
-    @param scheme: The requsted scheme.
-    @type  scheme: str
+    :param scheme: The requsted scheme.
+    :type  scheme: str
 
-    @param path: The requsted path.
-    @type  path: str
+    :param path: The requsted path.
+    :type  path: str
 
-    @param protocol: The requsted protocol.
-    @type  protocol: str
+    :param protocol: The requsted protocol.
+    :type  protocol: str
 
-    @param qs: The query string of the request.
-    @type  qs: str
+    :param qs: The query string of the request.
+    :type  qs: str
     """
 
     server = None

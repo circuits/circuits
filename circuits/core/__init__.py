@@ -49,22 +49,22 @@ class Event(object):
     Create a new Event Object populating it with the given list of arguments
     and keyword arguments.
 
-    @ivar name:    The name of the Event
-    @ivar channel: The channel this Event is bound for
-    @ivar target:  The target Component this Event is bound for
-    @ivar success: An optional channel to use for Event Handler success
-    @ivar failure: An optional channel to use for Event Handler failure
-    @ivar filter: An optional channel to use if an Event is filtered
-    @ivar start: An optional channel to use before an Event starts
-    @ivar end: An optional channel to use when an Event ends
+    :ivar name:    The name of the Event
+    :ivar channel: The channel this Event is bound for
+    :ivar target:  The target Component this Event is bound for
+    :ivar success: An optional channel to use for Event Handler success
+    :ivar failure: An optional channel to use for Event Handler failure
+    :ivar filter: An optional channel to use if an Event is filtered
+    :ivar start: An optional channel to use before an Event starts
+    :ivar end: An optional channel to use when an Event ends
 
-    @ivar value: The future Value object used to store the result of an event
+    :ivar value: The future Value object used to store the result of an event
 
-    @param args: list of arguments
-    @type  args: tuple
+    :param args: list of arguments
+    :type  args: tuple
 
-    @param kwargs: dct of keyword arguments
-    @type  kwargs: dict
+    :param kwargs: dct of keyword arguments
+    :type  kwargs: dict
     """
 
     channel = None
@@ -158,17 +158,17 @@ class Error(Event):
     This Event is sent for any exceptions that occur during the execution
     of an Event Handler that is not SystemExit or KeyboardInterrupt.
 
-    @param type: type of exception
-    @type  type: type
+    :param type: type of exception
+    :type  type: type
 
-    @param value: exception object
-    @type  value: exceptions.TypeError
+    :param value: exception object
+    :type  value: exceptions.TypeError
 
-    @param traceback: traceback of exception
-    @type  traceback: traceback
+    :param traceback: traceback of exception
+    :type  traceback: traceback
 
-    @param kwargs: (Optional) Additional Information
-    @type  kwargs: dict
+    :param kwargs: (Optional) Additional Information
+    :type  kwargs: dict
     """
 
     channel = "exception"
@@ -185,14 +185,14 @@ class Success(Event):
     This Event is sent when an Event Handler's execution has completed
     successfully.
 
-    @param evt: The event that succeeded
-    @type  evt: Event
+    :param evt: The event that succeeded
+    :type  evt: Event
 
-    @param handler: The handler that executed this event
-    @type  handler: @handler
+    :param handler: The handler that executed this event
+    :type  handler: @handler
 
-    @param retval: The returned value of the handler
-    @type  retval: object
+    :param retval: The returned value of the handler
+    :type  retval: object
     """
 
     def __init__(self, event, handler, retval):
@@ -207,14 +207,14 @@ class Failure(Event):
     This Event is sent when an error has occured with the execution of an
     Event Handlers.
 
-    @param evt: The event that failued
-    @type  evt: Event
+    :param evt: The event that failued
+    :type  evt: Event
 
-    @param handler: The handler that failed
-    @type  handler: @handler
+    :param handler: The handler that failed
+    :type  handler: @handler
 
-    @param error: A tuple containing the exception that occured
-    @type  error: (etype, evalue, traceback)
+    :param error: A tuple containing the exception that occured
+    :type  error: (etype, evalue, traceback)
     """
 
     def __init__(self, event, handler, error):
@@ -228,14 +228,14 @@ class Filter(Event):
 
     This Event is sent when an Event is filtered by some Event Handler.
 
-    @param evt: The event that was filtered
-    @type  evt: Event
+    :param evt: The event that was filtered
+    :type  evt: Event
 
-    @param handler: The handler that filtered this event
-    @type  handler: @handler
+    :param handler: The handler that filtered this event
+    :type  handler: @handler
 
-    @param retval: The returned value of the handler
-    @type  retval: object
+    :param retval: The returned value of the handler
+    :type  retval: object
     """
 
     def __init__(self, event, handler, retval):
@@ -249,8 +249,8 @@ class Start(Event):
 
     This Event is sent just before an Event is started
 
-    @param evt: The event about to start
-    @type  evt: Event
+    :param evt: The event about to start
+    :type  evt: Event
     """
 
     def __init__(self, event):
@@ -264,14 +264,14 @@ class End(Event):
 
     This Event is sent just after an Event has ended
 
-    @param evt: The event that has finished
-    @type  evt: Event
+    :param evt: The event that has finished
+    :type  evt: Event
 
-    @param handler: The last handler that executed this event
-    @type  handler: @handler
+    :param handler: The last handler that executed this event
+    :type  handler: @handler
 
-    @param retval: The returned value of the last handler
-    @type  retval: object
+    :param retval: The returned value of the last handler
+    :type  retval: object
     """
 
     def __init__(self, event, handler, retval):
@@ -285,12 +285,12 @@ class Started(Event):
 
     This Event is sent when a Component has started running.
 
-    @param component: The component that was started
-    @type  component: Component or Manager
+    :param component: The component that was started
+    :type  component: Component or Manager
 
-    @param mode: The mode in which the Component was started,
+    :param mode: The mode in which the Component was started,
                  P (Process), T (Thread) or None (Main Thread / Main Process).
-    @type  str:  str or None
+    :type  str:  str or None
     """
 
     def __init__(self, component, mode):
@@ -304,8 +304,8 @@ class Stopped(Event):
 
     This Event is sent when a Component has stopped running.
 
-    @param component: The component that has stopped
-    @type  component: Component or Manager
+    :param component: The component that has stopped
+    :type  component: Component or Manager
     """
 
     def __init__(self, component):
@@ -318,11 +318,11 @@ class Signal(Event):
 
     This Event is sent when a Component receives a signal.
 
-    @param signal: The signal number received.
-    @type  int:    An int value for the signal
+    :param signal: The signal number received.
+    :type  int:    An int value for the signal
 
-    @param stack:  The interrupted stack frame.
-    @type  object: A stack frame
+    :param stack:  The interrupted stack frame.
+    :type  object: A stack frame
     """
 
     def __init__(self, signal, stack):
@@ -338,11 +338,11 @@ class Registered(Event):
     or Manager. This Event is only sent iif the Component or Manager being
     registered with is not itself.
 
-    @param component: The Component being registered
-    @type  component: Component
+    :param component: The Component being registered
+    :type  component: Component
 
-    @param manager: The Component or Manager being registered with
-    @type  manager: Component or Manager
+    :param manager: The Component or Manager being registered with
+    :type  manager: Component or Manager
     """
 
     def __init__(self, component, manager):
@@ -469,17 +469,17 @@ class Value(object):
     Manager to store the result(s) of an Event Handler's exeuction of some
     Event in the system.
 
-    @param event: The Event this Value is associated with.
-    @type  event: Event instance
+    :param event: The Event this Value is associated with.
+    :type  event: Event instance
 
-    @param manager: The Manager/Component used to trigger notifications.
-    @type  manager: A Manager/Component instance.
+    :param manager: The Manager/Component used to trigger notifications.
+    :type  manager: A Manager/Component instance.
 
-    @param onSet: The channel used when triggering ValueChagned events.
-    @type  onSet: A (channel, target) tuple.
+    :param onSet: The channel used when triggering ValueChagned events.
+    :type  onSet: A (channel, target) tuple.
 
-    @ivar result: True if this value has been changed.
-    @ivar errors: True if while setting this value an exception occured.
+    :ivar result: True if this value has been changed.
+    :ivar errors: True if while setting this value an exception occured.
 
     This is a Future/Promise implementation.
     """
@@ -559,7 +559,7 @@ class Manager(object):
     a set of Event Handlers, Channels, Tick Functions, Registered and Hidden
     Components, a Task and the Running State.
 
-    @ivar manager: The Manager of this Component or Manager
+    :ivar manager: The Manager of this Component or Manager
     """
 
     def __init__(self, *args, **kwargs):
@@ -823,14 +823,14 @@ class Manager(object):
         If this Component's Manager is itself, enqueue on this Component's
         Event Queue, otherwise enqueue on this Component's Manager.
 
-        @param event: The Event Object
-        @type  event: Event
+        :param event: The Event Object
+        :type  event: Event
 
-        @param channel: The Channel this Event is bound for
-        @type  channel: str
+        :param channel: The Channel this Event is bound for
+        :type  channel: str
 
         @keyword target: The target Component's channel this Event is bound for
-        @type    target: str or Component
+        :type    target: str or Component
         """
 
         if channel is None and target is None:
@@ -1037,7 +1037,7 @@ class BaseComponent(Manager):
        - target is the Component's Channel
        - channel is the Event Handler's Channel
 
-    @ivar channel: The Component's Channel
+    :ivar channel: The Component's Channel
     """
 
     channel = "*"

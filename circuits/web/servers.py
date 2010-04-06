@@ -25,10 +25,10 @@ class BaseServer(BaseComponent):
     Create a Base Web Server (HTTP) bound to the IP Address / Port or
     UNIX Socket specified by the 'bind' parameter.
 
-    @ivar server: Reference to underlying Server Component
+    :ivar server: Reference to underlying Server Component
 
-    @param bind: IP Address / Port or UNIX Socket to bind to.
-    @type bind: One of IntType, ListType, TupeType or StringType
+    :param bind: IP Address / Port or UNIX Socket to bind to.
+    :type bind: One of IntType, ListType, TupeType or StringType
 
     The 'bind' parameter is quite flexible with what valid values it accepts.
 

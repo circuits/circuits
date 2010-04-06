@@ -450,8 +450,8 @@ class VirtualHosts(Component):
      - http://www.domain2.example     -> /domain2
      - http://www.domain2.example:443 -> /secure
     
-    @param domains: a dict of {host header value: virtual prefix} pairs.
-    @type  domains: dict
+    :param domains: a dict of {host header value: virtual prefix} pairs.
+    :type  domains: dict
 
     The incoming "Host" request header is looked up in this dict,
     and, if a match is found, the corresponding "virtual prefix"
