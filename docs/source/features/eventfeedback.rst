@@ -49,10 +49,6 @@ Note:
  * **DO NOT** name the 1st parameter ``event`` as this has a special meaning in any Event Handlers in circuits.
  * See: ... for more information.
 
-.. todo::
-   
-   Fix above reference to API docs for the Event class.
-
 When this modified example is run, here's the output you'll expect:
 
 .. code-block:: bash
