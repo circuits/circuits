@@ -2,9 +2,15 @@
 # Date:     20th June 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Application Components
+"""
+    Application Components
+    ~~~~~~~~~~~~~~~~~~~~~~
 
-This package contains components useful for building and deploying applications.
+    Contains various components useful for application development and tasks
+    common to applications.
+
+    :copyright: CopyRight (C) 2004-2010 by James Mills
+    :license: MIT (See: LICENSE)
 """
 
 from __future__ import with_statement
@@ -14,20 +20,51 @@ import sys
 
 from circuits.core import handler, BaseComponent, Event
 
-class Daemonize(Event): pass
-class WritePID(Event): pass
+class Daemonize(Event):
+    """Daemonize Event
+
+    This event can be fired to notify the `Daemon` Component to begin the
+    "daemonization" process. This event is (*by default*) used
+    automatically by the `Daemon` Component in it's "started" Event
+    Handler (*This behavior can be overridden*).
+
+    Arguments: *None*
+    """
+
+class WritePID(Event):
+    """"WritePID Event
+
+    This event can be fired to notify the `Daemon` Component that is should
+    retrive the current process's id (pid) and write it out to the
+    configured path in the `Daemon` Component. This event (*by default*)
+    is used automatically by the `Daemon` Component after the
+    :class:`Daemonize`.
+    """
 
 class Daemon(BaseComponent):
+    """Daemon Component
 
-    def __init__(self, pidfile, path="/", stdin="/dev/null", stdout="/dev/null",
-            stderr="/dev/null"):
-        super(Daemon, self).__init__()
+    :param pidfile: .pid filename/path.
+    :type  pidfile: str or unicode
+    :param stdin:   stdin path     (**default:** /dev/stdin)
+    :type  stdin:   str or unicode
+    :param stdout:  stdout path    (**default:** /dev/stdout)
+    :type  stdout:  str or unicode
+    :param stderr:  stderr path    (**default:** /dev/stderr)
+    :type  stderr:  str or unicode
+    """
+
+    def __init__(self, pidfile, **kwargs):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        channel = kwargs.get("channel", Daemon.channel)
+        super(Daemon, self).__init__(channel=channel)
 
         self._pidfile = pidfile
-        self._path = path
-        self._stdin = stdin
-        self._stdout = stdout
-        self._stderr = stderr
+        self._path = kwargs.get("path", "/")
+        self._stdin = kwargs.get("stdin", "/dev/stdin")
+        self._stdout = kwargs.get("stdout", "/dev/stdout")
+        self._stderr = kwargs.get("stderr", "/dev/stderr")
 
     @handler("writepid")
     def _writepid(self):
