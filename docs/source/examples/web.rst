@@ -1,5 +1,5 @@
-Web Example
-===========
+Web Server Example
+==================
 
 :download:`web.py <web.py>`
 

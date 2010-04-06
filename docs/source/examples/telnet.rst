@@ -1,5 +1,5 @@
-Telnet Example
-==============
+Telnet Client Example
+=====================
 
 :download:`telnet.py <telnet.py>`
 
