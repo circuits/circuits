@@ -22,10 +22,12 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage',
+        'sphinx.ext.autosummary', 'sphinkydocext']
 
-# autosummary_generate  list
-autosummary_generate = True
+sphinkydoc_modules = ['circuits']
+sphinkydoc_modules_dir = 'api/'
+sphinkydoc_modules_overwrite = True 
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
