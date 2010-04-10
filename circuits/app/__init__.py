@@ -2,15 +2,13 @@
 # Date:     20th June 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""
-    Application Components
-    ~~~~~~~~~~~~~~~~~~~~~~
+"""Application Components
 
-    Contains various components useful for application development and tasks
-    common to applications.
+Contains various components useful for application development and tasks
+common to applications.
 
-    :copyright: CopyRight (C) 2004-2010 by James Mills
-    :license: MIT (See: LICENSE)
+:copyright: CopyRight (C) 2004-2010 by James Mills
+:license: MIT (See: LICENSE)
 """
 
 from __future__ import with_statement

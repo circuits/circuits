@@ -6,9 +6,9 @@ API Reference
         
    api/circuits
    api/circuits.app
+   api/circuits.core
    api/circuits.drivers
    api/circuits.io
    api/circuits.net
-   api/circuits.net.protocols
    api/circuits.tools
    api/circuits.web
