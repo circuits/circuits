@@ -2,18 +2,14 @@
 
 import sys
 
-from circuits import Component
 from circuits.io import stdout, File, Write
 
-class Cat(Component):
+class Cat(File):
 
-    def __init__(self, filename):
-        super(Cat, self).__init__()
+    def __init__(self, filename, mode="r"):
+        super(Cat, self).__init__(filename, mode)
 
         stdout.register(self)
-
-        self._file = File(filename, "r")
-        self._file.register(self)
 
     def read(self, data):
         self.push(Write(data), target=stdout)
