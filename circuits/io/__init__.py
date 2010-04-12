@@ -75,7 +75,7 @@ class File(Component):
                     self.push(Error(error), "error")
                     return
 
-            if w:
+            if w and self._buffer:
                 data = self._buffer.popleft()
                 try:
                     if type(data) is unicode:
