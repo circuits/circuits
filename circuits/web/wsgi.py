@@ -86,15 +86,10 @@ class Application(BaseComponent):
         start_response(status, headers, exc_info)
         return body
 
-    @handler("response_completed")
-    def response_completed(self, evt, handler, retval):
-        if self.response.done:
-            self.stop()
-
-    @handler("stream_completed")
-    def stream_completed(self, evt, handler, retval):
-        if self.response.done:
-            self.stop()
+    @handler("response", filter=True, target="http")
+    def response(self, response):
+        self.stop()
+        return True
 
 class Gateway(BaseComponent):
 
