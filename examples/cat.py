@@ -6,10 +6,7 @@ from circuits.io import stdout, File, Write
 
 class Cat(File):
 
-    def __init__(self, filename, mode="r"):
-        super(Cat, self).__init__(filename, mode)
-
-        stdout.register(self)
+    stdout = stdout
 
     def read(self, data):
         self.push(Write(data), target=stdout)

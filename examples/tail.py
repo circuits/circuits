@@ -1,22 +1,18 @@
 #!/usr/bin/env python
 
 import sys
-from time import sleep
-from circuits import Component
+from circuits import Component, Debugger
+from circuits.io import stdout, File, Write
 
 class Tail(Component):
 
+    stdout = stdout
+
     def __init__(self, filename):
         super(Tail, self).__init__()
+        File(filename, "r", autoclose=False).register(self).seek(0, 2)
 
-        self.filename = filename
-        self.fp = open(self.filename, "r")
+    def read(self, data):
+        self.fire(Write(data), target=self.stdout)
 
-    def __tick__(self):
-        self.fp.seek(self.fp.tell())
-        for line in self.fp.readlines():
-            sys.stdout.write(line) 
-        sleep(0.1)
-
-tail = Tail(sys.argv[1])
-tail.run()
+(Tail(sys.argv[1]) + Debugger()).run()
