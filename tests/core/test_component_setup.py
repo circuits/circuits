@@ -15,7 +15,13 @@ class App(Component):
     def test(self, event, *args, **kwargs):
         pass
 
-def test():
+class A(Component):
+    pass
+
+class B(Component):
+    pass
+
+def test_basic():
     m = Manager()
 
     app = App()
@@ -26,3 +32,28 @@ def test():
     app.unregister()
 
     assert not m._handlers
+
+def test_complex():
+    m = Manager()
+
+    a = A()
+    b = B()
+
+    a.register(m)
+    b.register(a)
+
+    assert a in m
+    assert a.root == m
+    assert a.manager == m
+    assert b in a
+    assert b.root == m
+    assert b.manager == a
+
+    a.unregister()
+
+    assert a not in m
+    assert a.root == a
+    assert a.manager == a
+    assert b in a
+    assert b.root == a
+    assert b.manager == a
