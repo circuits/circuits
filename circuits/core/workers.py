@@ -21,7 +21,7 @@ except:
         HAS_MULTIPROCESSING = 0
 
 
-from circuits.core import BaseComponent as _BaseComponent
+from components import BaseComponent as _BaseComponent
 
 TIMEOUT = 0.2
 

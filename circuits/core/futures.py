@@ -11,7 +11,7 @@ from sys import exc_info
 from threading import Thread
 from functools import update_wrapper
 
-from circuits.core import Value
+from values import Value
 
 class Future(Value):
 

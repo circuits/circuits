@@ -11,8 +11,9 @@ import sys
 from cStringIO import StringIO
 from traceback import format_tb
 
+from handlers import handler
+from components import Component
 from circuits.tools import reprhandler
-from circuits.core import handler, Component
 
 class Debugger(Component):
     """Create a new Debugger Component

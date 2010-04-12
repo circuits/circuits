@@ -15,14 +15,4 @@ try:
 except ImportError:
     __version__ = "unknown"
 
-from core import handler, Event, Component,  Manager
-
-from core.future import future
-from core.timers import Timer
-from core.bridge import Bridge
-from core.debugger import Debugger
-from core.workers import Thread, Process
-
-__all__ = ("app", "core", "drivers", "io", "net", "tools", "web",
-        "handler", "future", "Event", "Component", "Manager",
-        "Timer", "Bridge", "Debugger", "Thread", "Process",)
+from core import *
