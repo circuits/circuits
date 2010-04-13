@@ -409,10 +409,8 @@ class Manager(object):
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
-        if signal == SIGINT:
-            raise KeyboardInterrupt
-        elif signal == SIGTERM:
-            raise SystemExit
+        if signal in [SIGINT, SIGTERM]:
+            self.stop()
 
     def start(self, sleep=0, log=True, process=False):
         group = None
@@ -439,10 +437,13 @@ class Manager(object):
 
     def stop(self):
         self._running = False
+        self.fire(Stopped(self))
+
         if hasattr(self._task, "terminate"):
             self._task.terminate()
         if hasattr(self._task, "join"):
             self._task.join(3)
+
         self._task = None
 
     def _terminate(self):
@@ -454,7 +455,10 @@ class Manager(object):
 
     def tick(self):
         if self._ticks:
-            [f() for f in self._ticks.copy()]
+            try:
+                [f() for f in self._ticks.copy()]
+            except:
+                self.fire(Error(*_exc_info()))
         if len(self):
             self._flush()
 
@@ -472,40 +476,7 @@ class Manager(object):
 
         self.fire(Started(self, mode))
 
-        try:
-            while self.running:
-                try:
-                    self.tick()
-                    if sleep:
-                        try:
-                            time.sleep(sleep)
-                        except:
-                            pass
-                except (KeyboardInterrupt, SystemExit):
-                    self._running = False
-                except:
-                    try:
-                        if log:
-                            self.fire(Error(*_exc_info()))
-                    finally:
-                        self._flush()
-        finally:
-            try:
-                self.fire(Stopped(self))
-                rtime = time.time()
-                while len(self) > 0 and (time.time() - rtime) < 3:
-                    try:
-                        self.tick()
-                        if sleep:
-                            try:
-                                time.sleep(sleep)
-                            except:
-                                pass
-                    except:
-                        try:
-                            if log:
-                                self.fire(Error(*_exc_info()))
-                        finally:
-                            self._flush()
-            except:
-                pass
+        while self or self.running:
+            self.tick()
+            if sleep:
+                time.sleep(sleep)
