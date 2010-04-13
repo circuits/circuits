@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from time import sleep
+
 from circuits import Component
 from circuits.io import File, Write
 
@@ -27,6 +29,7 @@ def test_write(tmpdir):
     app = App(filename, "w")
     app.start()
     app.push(Write("Hello World!"))
+    sleep(1)
     app.stop()
 
     f = open(filename, "r")
