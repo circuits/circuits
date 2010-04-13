@@ -38,6 +38,7 @@ def test_nested_value():
     x = m.push(Test())
     m.flush(); m.flush()
     assert x.value == "Hello World!"
+    assert str(x) == "Hello World!"
 
 def test_error_value():
     x = m.push(Error())
