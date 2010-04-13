@@ -15,6 +15,12 @@ class Test(Event):
 
 class App(Component):
 
+    raiseException = False
+
+    def __tick__(self):
+        if self.raiseException:
+            raise Exception()
+
     def test(self, raiseException=False):
         if raiseException:
             raise Exception()
@@ -25,6 +31,8 @@ class Logger(object):
 
     def debug(self, msg):
         self.msg = msg
+
+    error = debug
 
 def test():
     app = App()
@@ -111,6 +119,33 @@ def test_exceptions():
     s = stderr.read().strip()
     assert s == ""
 
+def test_tick_exceptions():
+    app = App()
+    stderr = StringIO()
+    debugger = Debugger(file=stderr)
+    debugger.register(app)
+    while app:
+        app.flush()
+    stderr.seek(0)
+    stderr.truncate()
+
+    assert debugger.events
+    assert debugger.errors
+
+    app.raiseException = True
+    app.tick()
+
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception(), <traceback object")
+    stderr.seek(0)
+    stderr.truncate()
+
+    app.flush()
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == ""
+
 def test_IgnoreEvents():
     app = App()
     stderr = StringIO()
@@ -170,6 +205,7 @@ def test_IgnoreChannels():
 
     e = Test()
     app.push(e)
+    app.flush()
 
     stderr.seek(0)
     s = stderr.read().strip()
@@ -177,7 +213,7 @@ def test_IgnoreChannels():
     stderr.seek(0)
     stderr.truncate()
 
-def test_Logger():
+def test_Logger_debug():
     app = App()
     logger = Logger()
     debugger = Debugger(logger=logger)
@@ -190,3 +226,17 @@ def test_Logger():
     app.flush()
 
     assert logger.msg == repr(e)
+
+def test_Logger_error():
+    app = App()
+    logger = Logger()
+    debugger = Debugger(logger=logger)
+    debugger.register(app)
+    while app:
+        app.flush()
+
+    e = Test(raiseException=True)
+    app.push(e)
+    app.flush()
+    app.flush()
+    assert logger.msg.startswith("ERROR <listener on ('test',) {target=None, priority=0.0}> (<type 'exceptions.Exception'>):")
