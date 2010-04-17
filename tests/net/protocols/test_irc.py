@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits import handler, Event, Component#, Debugger
+from circuits import handler, Event, Component
 from circuits.net.protocols.irc import strip, sourceJoin, sourceSplit, IRC
 
 from circuits.net.protocols.irc import (
@@ -36,20 +36,13 @@ class App(Component):
 def pytest_funcarg__app(request):
     return request.cached_setup(
             setup=lambda: setupapp(request),
-            teardown=lambda app: teardownapp(app),
             scope="module")
 
 def setupapp(request):
-    app = App()# + Debugger()
-    app.start()
-
-    while app: pass
+    app = App()
+    while app: app.flush()
     app.reset()
-
     return app
-
-def teardownapp(app):
-    app.stop()
 
 ###
 ### Test Functions (utility)
@@ -90,7 +83,7 @@ def test_PASS(app):
     app.reset()
 
     app.push(PASS("secret"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -115,7 +108,7 @@ def test_USER(app):
     app.reset()
 
     app.push(USER("foo", "localhost", "localhost", "Test Client"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -143,7 +136,7 @@ def test_NICK(app):
     app.reset()
 
     app.push(NICK("test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -168,7 +161,7 @@ def test_PING(app):
     app.reset()
 
     app.push(PING("localhost"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -193,7 +186,7 @@ def test_PONG(app):
     app.reset()
 
     app.push(PONG("localhost"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -218,7 +211,7 @@ def test_QUIT(app):
     app.reset()
 
     app.push(QUIT())
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -242,7 +235,7 @@ def test_QUIT(app):
     app.reset()
 
     app.push(QUIT("Test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -267,7 +260,7 @@ def test_JOIN(app):
     app.reset()
 
     app.push(JOIN("#test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -291,7 +284,7 @@ def test_JOIN(app):
     app.reset()
 
     app.push(JOIN("#test", "secret"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -317,7 +310,7 @@ def test_PART(app):
     app.reset()
 
     app.push(PART("#test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -341,7 +334,7 @@ def test_PART(app):
     app.reset()
 
     app.push(PART("#test", "Test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -367,7 +360,7 @@ def test_PRIVMSG(app):
     app.reset()
 
     app.push(PRIVMSG("test", "Hello"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -393,7 +386,7 @@ def test_NOTICE(app):
     app.reset()
 
     app.push(NOTICE("test", "Hello"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -419,7 +412,7 @@ def test_CTCP(app):
     app.reset()
 
     app.push(CTCP("test", "PING", "1234567890"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -451,7 +444,7 @@ def test_CTCPREPLY(app):
     app.reset()
 
     app.push(CTCPREPLY("test", "PING", "1234567890"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -483,7 +476,7 @@ def test_KICK(app):
     app.reset()
 
     app.push(KICK("#test", "test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -508,7 +501,7 @@ def test_KICK(app):
     app.reset()
 
     app.push(KICK("#test", "test", "Bye"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -535,7 +528,7 @@ def test_TOPIC(app):
     app.reset()
 
     app.push(TOPIC("#test", "Hello World!"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -561,7 +554,7 @@ def test_MODE(app):
     app.reset()
 
     app.push(MODE("+i"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -585,7 +578,7 @@ def test_MODE(app):
     app.reset()
 
     app.push(MODE("+o test", "#test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -611,7 +604,7 @@ def test_INVITE(app):
     app.reset()
 
     app.push(INVITE("test", "#test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -637,7 +630,7 @@ def test_NAMES(app):
     app.reset()
 
     app.push(NAMES())
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -661,7 +654,7 @@ def test_NAMES(app):
     app.reset()
 
     app.push(NAMES("#test"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -690,7 +683,7 @@ def test_ping(app):
     app.reset()
 
     app.push(Read("PING :localhost\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -728,7 +721,7 @@ def test_numerics(app):
 
     app.push(Read(":localhost 001 test " +
         ":Welcome to the circuits Internet Relay Chat Network test\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -754,7 +747,7 @@ def test_numerics(app):
     app.reset()
 
     app.push(Read(":localhost 332 test #test :Hello World!\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -778,7 +771,7 @@ def test_ctcp(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost PRIVMSG test :TIME\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -801,7 +794,7 @@ def test_message(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost PRIVMSG test :Hello\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -823,7 +816,7 @@ def test_notice(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost NOTICE test :Hello\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -845,7 +838,7 @@ def test_join(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost JOIN #test\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -866,7 +859,7 @@ def test_part(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost PART #test :Leaving\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -888,7 +881,7 @@ def test_quit(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost QUIT :Leaving\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -909,7 +902,7 @@ def test_nick(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost NICK :test_\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
@@ -930,7 +923,7 @@ def test_mode(app):
     app.reset()
 
     app.push(Read(":test!foo@localhost MODE #test +o test\r\n"))
-    while app: pass
+    while app: app.flush()
 
     events = iter(app.events)
 
