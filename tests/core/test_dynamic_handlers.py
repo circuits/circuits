@@ -30,9 +30,6 @@ def test():
 
     app.start()
 
-    from circuits.tools import inspect
-    print inspect(app)
-
     #assert app.running
     #assert app.state == "R"
     #assert app._event is None
