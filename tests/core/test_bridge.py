@@ -32,7 +32,7 @@ class Bar(Component):
 
 def test():
     m1 = Manager()
-    b1 = Bridge(bind=8000, nodes=[("127.0.0.1", 8001)])
+    b1 = Bridge(bind=("127.0.0.1", 8000), nodes=[("127.0.0.1", 8001)])
     b1.IgnoreChannels.extend(["dummy"])
     foo = Foo()
     m1 += b1
@@ -40,7 +40,7 @@ def test():
     m1.start()
 
     m2 = Manager()
-    b2 = Bridge(bind=8001, nodes=[("127.0.0.1", 8000)])
+    b2 = Bridge(bind=("127.0.0.1", 8001), nodes=[("127.0.0.1", 8000)])
     b2.IgnoreChannels.extend(["dummy"])
     bar = Bar()
     m2 += b2
