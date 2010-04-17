@@ -10,11 +10,9 @@ class App(Component):
     def __init__(self, *args, **kwargs):
         super(App, self).__init__(*args, **kwargs)
 
-        self._event = None
+        self.addHandler(handler("test")(self._test))
 
-    def started(self, component, mode):
-        if component == self:
-            self.addHandler(handler("test")(self._test))
+        self._event = None
 
     def _test(self, event, *args, **kwargs):
         self._event = event
@@ -22,23 +20,8 @@ class App(Component):
 def test():
     app = App()
 
-    #assert not app.running
-    #assert app.state == "S"
-    #assert app._event is None
-    #assert len(app._handlers) == 1
-    #assert len(app.channels) == 1
-
-    app.start()
-
-    #assert app.running
-    #assert app.state == "R"
-    #assert app._event is None
-    #assert len(app._handlers) == 2
-    #assert len(app.channels) == 2
-
     e = Test()
     app.push(e)
-
-    while app: pass
+    app.flush()
 
     assert app._event == e
