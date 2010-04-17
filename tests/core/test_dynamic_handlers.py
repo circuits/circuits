@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits import handler, Event, Component, Debugger
+from circuits import handler, Event, Component
 
 class Test(Event):
     """Test Event"""
@@ -20,7 +20,7 @@ class App(Component):
         self._event = event
 
 def test():
-    app = App() + Debugger()
+    app = App()
 
     #assert not app.running
     #assert app.state == "S"
