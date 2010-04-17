@@ -21,11 +21,11 @@ class App(Component):
 
 def test():
     app = App()
-    app.start()
+    while app: app.flush()
 
     e = Test()
     app.push(e)
-    sleep(1)
+    app.flush()
 
     s = dumps(e, -1)
     x = loads(s)
