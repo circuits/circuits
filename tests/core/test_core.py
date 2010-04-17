@@ -2,23 +2,24 @@
 
 from circuits import Event, Component, Manager
 
-class A(Event):
-    "A Event"
+class Test(Event):
+    """Test Event"""
 
 class App(Component):
 
-    def test(self, message):
-        return message
+    def test(self):
+        return "Hello World!"
 
 m = Manager()
 app = App()
 app.register(m)
-m.start()
+
+while app: app.flush()
 
 def test_fire():
-    x = m.push(Event("test"), "test")
+    x = m.push(Test())
     m.flush()
-    assert x.value == "test"
+    assert x.value == "Hello World!"
 
 def test_contains():
     assert App in m
