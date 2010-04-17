@@ -47,9 +47,6 @@ def test_error():
     x = app.push(Error())
     app.flush()
     app.flush()
-    print repr(x)
-    print repr(x._value)
-    print repr(x._value._value)
     assert x.errors
     etype, evalue, etraceback = x.value
     assert etype is Exception
