@@ -33,20 +33,18 @@ def reraise(e):
 
 def test():
     app = App()
-    while app:
-        app.flush()
+    while app: app.flush()
     x = app.push(Test())
-    app.flush()
-    app.flush()
+    while not x.result:
+        app.flush()
     assert x.value == "Hello World!"
 
 def test_error():
     app = App()
-    while app:
-        app.flush()
+    while app: app.flush()
     x = app.push(Error())
-    app.flush()
-    app.flush()
+    while not x.errors:
+        app.flush()
     assert x.errors
     etype, evalue, etraceback = x.value
     assert etype is Exception
