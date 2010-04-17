@@ -22,26 +22,22 @@ class App(Component):
 
 def test_return_generator():
     app = App()
-    app.start()
+    while app: app.flush()
 
     v = app.push(Test())
-
-    while app: pass
+    app.flush()
 
     g = v.value
-
     s = g.next()
     assert s == "Hello"
 
 def test_yield():
     app = App()
-    app.start()
+    while app: app.flush()
 
     v = app.push(Hello())
-
-    while app: pass
+    app.flush()
 
     g = v.value
-
     s = "".join(g)
     assert s == "Hello World!"
