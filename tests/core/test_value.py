@@ -27,23 +27,24 @@ class App(Component):
 m = Manager()
 app = App()
 app.register(m)
-m.start()
+
+while m: m.flush()
 
 def test_value():
     x = m.push(Hello())
-    m.flush()
+    while m: m.flush()
     assert x.value == "Hello World!"
 
 def test_nested_value():
     x = m.push(Test())
-    m.flush(); m.flush()
+    while m: m.flush()
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
 
 def test_error_value():
     x = m.push(Error())
-    m.flush()
+    while m: m.flush()
     etype, evalue, etraceback = x
     assert etype is Exception
-    assert evalue.message == "Error!"
+    assert str(evalue) == "Error!"
     assert type(etraceback) is TracebackType
