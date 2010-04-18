@@ -27,17 +27,21 @@ def test_pipe(poller):
     try:
         a.push(Write("foo"))
         sleep(1)
-        assert b.data == "foo"
+        s = b.data
+        assert s == "foo"
 
         b.push(Write("foo"))
         sleep(1)
-        assert a.data == "foo"
+        s = a.data
+        assert s == "foo"
 
         a.push(Close())
         b.push(Close())
         sleep(1)
-        assert a.disconnected
-        assert b.disconnected
+        a_disconnected = a.disconnected
+        b_disconnected = b.disconnected
+        assert a_disconnected
+        assert b_disconnected
     finally:
         a.stop()
         b.stop()

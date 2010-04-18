@@ -27,20 +27,26 @@ def test_tcp(poller, port):
     try:
         client.push(Connect("127.0.0.1", port))
         sleep(1)
-        assert client.connected
-        assert server.connected
-        assert client.data == "Ready"
+        client_connected = client.connected
+        server_connected = server.connected
+        s = client.data
+        assert client_connected
+        assert server_connected
+        assert s == "Ready"
 
         client.push(Write("foo"))
         sleep(1)
-        assert server.data == "foo"
+        s = server.data
+        assert s == "foo"
 
         client.push(Close())
         sleep(1)
         server.push(Close())
         sleep(1)
-        assert client.disconnected
-        assert server.disconnected
+        client_disconnected = client.disconnected
+        server_disconnected = server.disconnected
+        assert client_disconnected
+        assert server_disconnected
     finally:
         server.stop()
         client.stop()

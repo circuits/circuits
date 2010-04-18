@@ -28,7 +28,8 @@ def test_udp(poller, ports):
     try:
         client.push(Write(("127.0.0.1", ports[0]), "foo"))
         sleep(1)
-        assert server.data == "foo"
+        s = server.data
+        assert s == "foo"
     finally:
         server.stop()
         client.stop()
