@@ -1,6 +1,7 @@
 from time import sleep
 
-from circuits.net.pollers import Select, Poll, EPoll
+from circuits.net import pollers
+from circuits.net.pollers import Select
 from circuits.net.sockets import TCPServer, TCPClient
 from circuits.net.sockets import Close, Connect, Write
 
@@ -9,8 +10,12 @@ from server import Server
 
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"poller": Select, "port": 9000})
-    metafunc.addcall(funcargs={"poller": Poll, "port": 9001})
-    metafunc.addcall(funcargs={"poller": EPoll, "port": 9002})
+    if pollers.HAS_POLL:
+        from circuits.net.pollers import Poll
+        metafunc.addcall(funcargs={"poller": Poll, "port": 9001})
+    if pollers.HAS_EPOLL:
+        from circuits.net.pollers import EPoll
+        metafunc.addcall(funcargs={"poller": EPoll, "port": 9002})
 
 def test_tcp(poller, port):
     server = Server() + TCPServer(port, poller=poller)

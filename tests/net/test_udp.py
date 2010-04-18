@@ -1,7 +1,8 @@
 from time import sleep
 
+from circuits.net import pollers
 from circuits.net.sockets import Write
-from circuits.net.pollers import Select, Poll, EPoll
+from circuits.net.pollers import Select
 from circuits.net.sockets import UDPServer, UDPClient
 
 from client import Client
@@ -9,8 +10,12 @@ from server import Server
 
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"poller": Select, "ports": (10000, 10001)})
-    metafunc.addcall(funcargs={"poller": Poll, "ports": (10002, 10003)})
-    metafunc.addcall(funcargs={"poller": EPoll, "ports": (10004, 10005)})
+    if pollers.HAS_POLL:
+        from circuits.net.pollers import Poll
+        metafunc.addcall(funcargs={"poller": Poll, "ports": (10002, 10003)})
+    if pollers.HAS_EPOLL:
+        from circuits.net.pollers import EPoll
+        metafunc.addcall(funcargs={"poller": EPoll, "ports": (10004, 10005)})
 
 def test_udp(poller, ports):
     server = Server() + UDPServer(ports[0], poller=poller)
