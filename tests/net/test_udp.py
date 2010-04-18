@@ -18,8 +18,9 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs={"poller": EPoll, "ports": (10004, 10005)})
 
 def test_udp(poller, ports):
-    server = Server() + UDPServer(ports[0], poller=poller)
-    client = Client() + UDPClient(ports[1], poller=poller, channel="client")
+    server = Server() + UDPServer(("127.0.0.1", ports[0]), poller=poller)
+    client = Client() + UDPClient(("127.0.0.1", ports[1]), poller=poller,
+            channel="client")
 
     server.start()
     client.start()

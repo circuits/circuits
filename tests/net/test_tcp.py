@@ -18,7 +18,7 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs={"poller": EPoll, "port": 9002})
 
 def test_tcp(poller, port):
-    server = Server() + TCPServer(port, poller=poller)
+    server = Server() + TCPServer(("127.0.0.1", port), poller=poller)
     client = Client() + TCPClient(poller=poller)
 
     server.start()
