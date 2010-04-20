@@ -80,10 +80,11 @@ class HTTP(Component):
                     buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
                     body = "".join(buf)
 
-                self.push(Write(response.sock, body))
+                self.push(Write(response.sock, body), "write", "server")
 
                 if response.chunked:
-                    self.push(Write(response.sock, "0\r\n\r\n"))
+                    self.push(Write(response.sock, "0\r\n\r\n"),
+                            "write", "server")
 
             if not response.stream:
                 if response.close:
