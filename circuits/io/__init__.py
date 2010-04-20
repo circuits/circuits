@@ -15,6 +15,12 @@ import errno
 import select
 from collections import deque
 
+try:
+    import serial
+    HAS_SERIAL = True
+except ImportError:
+    HAS_SERIAL = False
+
 from circuits.core import Event, Component
 
 TIMEOUT = 0.2
@@ -114,6 +120,77 @@ class File(Component):
 
     def seek(self, offset, whence=0):
         self._fd.seek(offset, whence)
+
+if HAS_SERIAL:
+
+    class Serial(Component):
+
+        def __init__(self, port, **kwargs):
+            channel = kwargs.get("channel", Serial.channel)
+            super(Serial, self).__init__(channel=channel)
+
+            self.port = port
+
+            self._serial = serial.Serial()
+            self._serial.port = port
+            self._serial.baudrate = kwargs.get("baudrate", 115200)
+
+            if os.name == "posix":
+                self._serial.timeout = 0 # non-blocking (POSIX)
+            else:
+                self._serial.timeout = kwargs.get("timeout", TIMEOUT)
+
+            self._buffer = deque()
+            self._bufsize = kwargs.get("bufsize", BUFSIZE)
+            self._timeout = kwargs.get("timeout", TIMEOUT)
+
+            self._read = []
+            self._write = []
+
+            self._serial.open()
+            self._fd = self._serial.fileno()
+
+            self._read.append(self._fd)
+
+            self.push(Opened(self.port))
+
+        def __tick__(self):
+            r, w, e = select.select(self._read, self._write, [], self._timeout)
+
+            if w and self._buffer:
+                data = self._buffer.popleft()
+                try:
+                    bytes = os.write(self._fd, data)
+                    if bytes < len(data):
+                        self._buffer.append(data[bytes:])
+                    elif not self._buffer:
+                        self._write.remove(self._fd)
+                except OSError, error:
+                    self.push(Error(error))
+
+            if r:
+                try:
+                    data = os.read(self._fd, self._bufsize)
+                except IOError, e:
+                    if e[0] == errno.EBADF:
+                        data = None
+
+                if data:
+                    self.push(Read(data))
+                else:
+                    self.close()
+
+        def write(self, data):
+            if self._fd not in self._write:
+                self._write.append(self._fd)
+            self._buffer.append(data)
+
+        def close(self):
+            self._fd = None
+            self._read = []
+            self._write = []
+            self._serial.close()
+            self.push(Closed(self.port))
 
 try:
     stdin = File("/dev/stdin", "r", channel="stdin")
