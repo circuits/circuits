@@ -214,7 +214,7 @@ class Response(object):
         self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
     def prepare(self):
-        if type(self.body) is ListType:
+        if self.body and type(self.body) is ListType:
             if unicode in map(type, self.body):
                 cLength = sum(map(lambda s: len(s.encode("utf-8")), self.body))
             else:

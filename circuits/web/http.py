@@ -75,18 +75,20 @@ class HTTP(Component):
         else:
             body = "".join(response.body)
 
-            if response.chunked:
-                buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
-                body = "".join(buf)
+            if body:
+                if response.chunked:
+                    buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
+                    body = "".join(buf)
 
-            self.push(Write(response.sock, body), "write", "server")
+                self.push(Write(response.sock, body))
 
-            if response.chunked:
-                self.push(Write(response.sock, "0\r\n\r\n"), "write", "server")
+                if response.chunked:
+                    self.push(Write(response.sock, "0\r\n\r\n"))
 
-            if response.close:
-                self.push(Close(response.sock), "close", "server")
-            response.done = True
+            if not response.stream:
+                if response.close:
+                    self.push(Close(response.sock), "close", "server")
+                response.done = True
 
     @handler("disconnect", target="server")
     def disconnect(self, sock):
