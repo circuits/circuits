@@ -47,8 +47,11 @@ def test_file(webapp):
     d["f"] = ""
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
-    m = format % d
-    assert s == m
+    keys = d.keys()
+    keys.remove("t")
+
+    for k in keys:
+        assert d[k] in s
 
     logfile.close()
     logger.unregister()

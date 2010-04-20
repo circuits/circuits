@@ -23,7 +23,7 @@ def test(webapp):
     assert s  == "Hello World!"
     expires = f.headers["Expires"]
     diff = (mktime(parsedate(expires)) - mktime(gmtime()))
-    assert 60 - (60 * 0.01) < diff < 60 + (60 * 0.01) # diff is about 60 +- 1%
+    assert 60 - (60 * 0.1) < diff < 60 + (60 * 0.1) # diff is about 60 +- 10%
 
 def test_nocache(webapp):
     f = urlopen("%s/nocache" % webapp.server.base)
@@ -38,7 +38,7 @@ def test_nocache(webapp):
     lastyear = now.replace(year=now.year-1)
 
     diff = (mktime(parsedate(expires)) - mktime(lastyear.utctimetuple()))
-    assert 0.0 <= diff < 0.1
+    assert diff < 1.0
 
     assert pragma == "no-cache"
     assert cacheControl == "no-cache, must-revalidate"
