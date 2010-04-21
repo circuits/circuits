@@ -163,8 +163,9 @@ if HAS_SERIAL:
                     bytes = os.write(self._fd, data)
                     if bytes < len(data):
                         self._buffer.append(data[bytes:])
-                    elif not self._buffer:
-                        self._write.remove(self._fd)
+                    else:
+                        if not self._buffer and self._fd in self._write:
+                            self._write.remove(self._fd)
                 except OSError, error:
                     self.push(Error(error))
 
