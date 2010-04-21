@@ -169,16 +169,9 @@ if HAS_SERIAL:
                     self.push(Error(error))
 
             if r:
-                try:
-                    data = os.read(self._fd, self._bufsize)
-                except IOError, e:
-                    if e[0] == errno.EBADF:
-                        data = None
-
+                data = os.read(self._fd, self._bufsize)
                 if data:
                     self.push(Read(data))
-                else:
-                    self.close()
 
         def write(self, data):
             if self._fd not in self._write:
