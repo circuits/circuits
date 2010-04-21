@@ -103,6 +103,12 @@ class Select(_Poller):
 
     channel = "select"
 
+    def __init__(self, timeout=0.0, channel=channel):
+        super(Select, self).__init__(timeout, channel=channel)
+
+        self._ts = time()
+        self._load = 0.0
+
     def _preenDescriptors(self):
         for socks in (self._read[:], self._write[:]):
             for sock in socks:
@@ -114,6 +120,17 @@ class Select(_Poller):
     def __tick__(self):
         try:
             r, w, _ = select(self._read, self._write, [], self.timeout)
+            if r or w:
+                self.timeout = 0.0
+            load = float(len(r) + len(w)) / (time() - self._ts)
+            self._ts = time()
+            if load > self._load:
+                if self.timeout > 0.1:
+                    self.timeout -= 0.001
+            else:
+                if self.timeout < 0.5:
+                    self.timeout += 0.001
+            self._load = load
         except ValueError, e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
