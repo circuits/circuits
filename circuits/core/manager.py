@@ -10,11 +10,16 @@ This module definse the Manager class subclasses by component.BaseComponent
 import os
 import time
 from itertools import chain
+from types import TupleType
+from threading import Thread
 from collections import deque
 from operator import attrgetter
 from sys import exc_info as _exc_info
-from types import TupleType
-from threading import current_thread, Thread
+
+try:
+    from threading import current_thread
+except ImportError:
+    from threading import currentThread as current_thread
 
 if os.name == "posix":
     from signal import SIGHUP, SIGINT, SIGTERM
