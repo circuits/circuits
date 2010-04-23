@@ -76,7 +76,7 @@ INSPECT = """\
 
  Channels and Event Handlers: 1
   *:foo; 1
-   <listener on ('foo',) {target=None, priority=0.0}>
+   <listener on ('foo',) {target='*', priority=0.0}>
 """
 
 def test_kill():
@@ -189,8 +189,8 @@ def test_findroot():
 
 def test_reprhandler():
     a = A()
-    s = reprhandler(a.foo)
-    assert s == "<listener on ('foo',) {target=None, priority=0.0}>"
+    s = reprhandler(a, a.foo)
+    assert s == "<listener on ('foo',) {target='*', priority=0.0}>"
 
     f = lambda: None
-    py.test.raises(TypeError, reprhandler, f)
+    py.test.raises(KeyError, reprhandler, a, f)
