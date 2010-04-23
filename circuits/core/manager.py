@@ -13,7 +13,7 @@ from itertools import chain
 from types import TupleType
 from threading import Thread
 from collections import deque
-from operator import attrgetter
+from inspect import getargspec
 from sys import exc_info as _exc_info
 
 try:
@@ -48,8 +48,6 @@ from values import Value
 from events import Started, Stopped, Signal
 from events import Error, Success, Failure, Filter, Start, End
 
-_sortkey = attrgetter("priority", "filter")
-
 class Manager(object):
     """Manager
 
@@ -69,6 +67,7 @@ class Manager(object):
         self._queue = deque()
         self.channels = dict()
         self._handlers = set()
+        self._handlerattrs = dict()
 
         self._ticks = set()
 
@@ -229,14 +228,37 @@ class Manager(object):
         else:
             return "S"
 
-    def addHandler(self, handler, target=None):
+    def addHandler(self, handler, *channels, **kwargs):
         """Add a new Event Handler
 
         Add a new Event Handler to the Event Manager.
         """
 
-        channels = handler.channels
-        target = target or handler.target or getattr(self, "channel", "*")
+        channels = getattr(handler, "channels", channels)
+
+        target = kwargs.get("target", getattr(handler, "target", 
+            getattr(self, "channel", "*")))
+
+        attrs = {}
+
+        attrs["filter"] = getattr(handler, "filter",
+                kwargs.get("filter", False))
+        attrs["priority"] = getattr(handler, "priority",
+                kwargs.get("priority", 0))
+
+        if not hasattr(handler, "_passEvent"):
+            args = getargspec(handler)[0]
+            if args and args[0] == "self":
+                del args[0]
+            attrs["_passEvent"] = args and args[0] == "event"
+        else:
+            attrs["_passEvent"] = getattr(handler, "_passEvent")
+
+        self._handlerattrs[handler] = attrs
+
+        def _sortkey(handler):
+            return (self._handlerattrs[handler]["priority"],
+                    self._handlerattrs[handler]["filter"])
 
         if not channels and target == "*":
             if handler not in self._globals:
@@ -285,6 +307,9 @@ class Manager(object):
 
         if handler in self._handlers:
             self._handlers.remove(handler)
+
+        if handler in self._handlerattrs:
+            del self._handlerattrs[handler]
 
         for channel in channels:
             if handler in self.channels[channel]:
@@ -383,9 +408,10 @@ class Manager(object):
         handler = None
 
         for handler in self._getHandlers(channel):
+            attrs = self._handlerattrs[handler]
             event.handler = handler
             try:
-                if handler._passEvent:
+                if attrs["_passEvent"]:
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
@@ -402,7 +428,7 @@ class Manager(object):
                     self.fire(Failure(event, handler, error), *event.failure)
 
             if retval is not None:
-                if retval and handler.filter:
+                if retval and attrs["filter"]:
                     if event.filter is not None:
                         self.fire(Filter(event, handler, retval), *event.filter)
                     return # Filter
