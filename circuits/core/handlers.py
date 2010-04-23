@@ -39,39 +39,23 @@ def handler(*channels, **kwargs):
     """
 
     def wrapper(f):
-        im_self = None
-        if type(f) is MethodType:
-            im_func = f.im_func
-            im_self = f.im_self
-            func_name = im_func.func_name
-            f = copy(im_func)
-
         if channels and type(channels[0]) is bool and not channels[0]:
             f.handler = False
             return f
 
         f.handler = True
 
-        f.override = kwargs.get("override", False)
-        f.priority = kwargs.get("priority", 0)
-
-        f.filter = kwargs.get("filter", False)
-
-        f.target = kwargs.get("target", None)
         f.channels = channels
+        f.target = kwargs.get("target", None)
+        f.filter = kwargs.get("filter", False)
+        f.priority = kwargs.get("priority", 0)
+        f.override = kwargs.get("override", False)
 
-        f.args, f.varargs, f.varkw, f.defaults = getargspec(f)
+        args = getargspec(f)[0]
 
-        if f.args and f.args[0] == "self":
-            del f.args[0]
-        if f.args and f.args[0] == "event":
-            f._passEvent = True
-        else:
-            f._passEvent = False
-
-        if im_self is not None:
-            f = MethodType(f, im_self)
-            setattr(im_self, func_name, f)
+        if args and args[0] == "self":
+            del args[0]
+        f._passEvent = args and args[0] == "event"
 
         return f
 
