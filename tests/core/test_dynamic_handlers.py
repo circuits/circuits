@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-import py
-
-from circuits import handler, Event, Component
+from circuits import Event, Component
 
 class Test(Event):
     """Test Event"""
@@ -12,7 +10,7 @@ class App(Component):
     def __init__(self, *args, **kwargs):
         super(App, self).__init__(*args, **kwargs)
 
-        self.addHandler(handler("test")(self._test))
+        self.addHandler(self._test, "test")
 
         self._event = None
 
@@ -20,7 +18,6 @@ class App(Component):
         self._event = event
 
 def test():
-    py.test.skip("FIXME: This feature is broken until furtner notice.")
     app = App()
 
     e = Test()
