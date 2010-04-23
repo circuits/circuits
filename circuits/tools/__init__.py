@@ -78,8 +78,11 @@ def graph(x, name=None):
 
     return "\n".join(walk(x, printer))
     
-def reprhandler(x):
-    """Display a nicely formatted Event Handler, x
+def reprhandler(c, h):
+    """Display a nicely formatted Event Handler, h from Component c.
+
+    :param c: A Component that contains Event Handler h
+    :type c: Manager or Manager subclass
 
     :param x: An Event Handler
     :type  x: function or method
@@ -88,14 +91,13 @@ def reprhandler(x):
     @rtype:  str
     """
 
-    if not hasattr(x, "handler"):
-        raise TypeError("%r is not an Event Handler" % x)
+    attrs = c._handlerattrs[h]
 
     format = "<%s on %s {target=%s, priority=%0.1f}>"
-    channels = repr(x.channels)
-    f = "filter" if x.filter else "listener"
-    t = repr(x.target)
-    p = x.priority
+    channels = repr(attrs["channels"])
+    f = "filter" if attrs["filter"] else "listener"
+    t = repr(attrs["target"])
+    p = attrs["priority"]
     return format % (f, channels, t, p)
 
 def inspect(x):
@@ -125,6 +127,6 @@ def inspect(x):
     for (t, c) in x.channels:
         write("  %s:%s; %d\n" % (t, c, len(x.channels[(t, c)])))
         for handler in x.channels[(t, c)]:
-            write("   %s\n" % reprhandler(handler))
+            write("   %s\n" % reprhandler(x, handler))
 
     return "".join(s)
