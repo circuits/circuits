@@ -239,6 +239,9 @@ class Manager(object):
         target = kwargs.get("target", getattr(handler, "target",
             getattr(self, "channel", "*")))
 
+        if isinstance(target, Manager):
+            target = getattr(target, "channel", "*")
+
         attrs = {}
 
         attrs["filter"] = getattr(handler, "filter",
