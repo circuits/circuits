@@ -54,7 +54,7 @@ class Debugger(Component):
         if handler is None:
             handler = ""
         else:
-            handler = reprhandler(handler)
+            handler = reprhandler(self.root, handler)
 
         s.write("ERROR %s(%s): %s\n" % ("%s " % handler, type, value))
         s.write("%s\n" % "".join(format_tb(traceback)))
