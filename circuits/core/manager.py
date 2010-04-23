@@ -243,6 +243,8 @@ class Manager(object):
             target = getattr(target, "channel", "*")
 
         attrs = {}
+        attrs["channels"] = channels
+        attrs["target"] = target
 
         attrs["filter"] = getattr(handler, "filter",
                 kwargs.get("filter", False))
