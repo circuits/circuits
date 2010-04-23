@@ -236,7 +236,7 @@ class Manager(object):
 
         channels = getattr(handler, "channels", channels)
 
-        target = kwargs.get("target", getattr(handler, "target", 
+        target = kwargs.get("target", getattr(handler, "target",
             getattr(self, "channel", "*")))
 
         attrs = {}
