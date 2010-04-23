@@ -239,4 +239,4 @@ def test_Logger_error():
     app.push(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("ERROR <listener on ('test',) {target=None, priority=0.0}> (<type 'exceptions.Exception'>):")
+    assert logger.msg.startswith("ERROR <listener on ('test',) {target='*', priority=0.0}> (<type 'exceptions.Exception'>):")
