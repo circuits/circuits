@@ -31,3 +31,14 @@ def test():
     x = loads(s)
 
     assert e == x
+    assert hasattr(x, "args")
+    assert hasattr(x, "kwargs")
+    assert hasattr(x, "channel")
+    assert hasattr(x, "target")
+    assert hasattr(x, "success")
+    assert hasattr(x, "failure")
+    assert hasattr(x, "filter")
+    assert hasattr(x, "start")
+    assert hasattr(x, "end")
+    assert hasattr(x, "value")
+    assert hasattr(x, "source")

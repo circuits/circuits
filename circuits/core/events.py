@@ -52,7 +52,7 @@ class Event(object):
     def __getstate__(self):
         keys = ("args", "kwargs", "channel", "target", "success", "failure",
                 "filter", "start", "end", "value", "source")
-        return dict([(k, v) for k, v in self.__dict__.items() if k in keys])
+        return dict([(k, getattr(self, k, None)) for k in keys])
 
     @property
     def name(self):

@@ -57,15 +57,16 @@ class Value(object):
         self._parent = self
         self._value = None
 
-    def __getstate__(self):
-        keys = ("event", "result", "errors", "_value")
-        return dict([(k, v) for k, v in self.__dict__.items() if k in keys])
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self.event == other.event
+                and self.result == other.result
+                and self.errors == other.errors
+                and self._value == other._value)
 
-    def __setstate__(self, state):
-        obj = Value()
-        for k, v in state.items():
-            setattr(obj, k, v)
-        return obj
+    def __getstate__(self):
+        keys = ("event", "onSet", "result", "errors", "_parent", "_value")
+        return dict([(k, getattr(self, k, None)) for k in keys])
 
     def __iter__(self):
         return iter(self.value)
