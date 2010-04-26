@@ -1,8 +1,8 @@
 #!/usr/bin/python -i
 
-from types import TracebackType
+from types import ListType, TracebackType
 
-from circuits import Event, Component, Manager
+from circuits import handler, Event, Component, Manager
 
 class Hello(Event):
     "Hello Event"
@@ -12,6 +12,9 @@ class Test(Event):
 
 class Error(Event):
     "Error Event"
+
+class Values(Event):
+    "Values Event"
 
 class App(Component):
 
@@ -23,6 +26,19 @@ class App(Component):
 
     def error(self):
         raise Exception("Error!")
+
+    @handler("values")
+    def _value1(self):
+        return "foo"
+
+    @handler("values")
+    def _value2(self):
+        return "bar"
+
+    @handler("values")
+    def _value3(self):
+        return self.push(Hello())
+
 
 m = Manager()
 app = App()
@@ -48,3 +64,12 @@ def test_error_value():
     assert etype is Exception
     assert str(evalue) == "Error!"
     assert type(etraceback) is TracebackType
+
+def test_multiple_values():
+    x = m.push(Values())
+    while m: m.flush()
+    assert type(x.value) is ListType
+    assert list(x) == ["foo", "bar", "Hello World!"]
+    assert x[0] == "foo"
+    assert x[1] == "bar"
+    assert x[2] == "Hello World!"
