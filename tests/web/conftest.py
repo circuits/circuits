@@ -8,6 +8,7 @@ import os
 
 from circuits import Component
 from circuits.web.wsgi import Gateway
+from circuits.net.sockets import Close
 from circuits.web import Server, Static
 
 BIND = ("127.0.0.1", 8000)
@@ -43,4 +44,6 @@ def setupwebapp(request):
     return webapp
 
 def teardownwebapp(webapp):
+    webapp.push(Close(), target=webapp.server)
+    while webapp: pass
     webapp.stop()
