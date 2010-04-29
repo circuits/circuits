@@ -1,6 +1,6 @@
 #!/usr/bin/python -i
 
-from types import ListType, TracebackType
+from types import ListType, ListType
 
 from circuits import handler, Event, Component, Manager
 
@@ -63,7 +63,7 @@ def test_error_value():
     etype, evalue, etraceback = x
     assert etype is Exception
     assert str(evalue) == "Error!"
-    assert type(etraceback) is TracebackType
+    assert type(etraceback) is ListType
 
 def test_multiple_values():
     x = m.push(Values())

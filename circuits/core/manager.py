@@ -14,6 +14,7 @@ from types import TupleType
 from threading import Thread
 from collections import deque
 from inspect import getargspec
+from traceback import format_tb
 from sys import exc_info as _exc_info
 
 try:
@@ -426,10 +427,10 @@ class Manager(object):
             except:
                 etype, evalue, etraceback = _exc_info()
                 event.value.errors = True
-                event.value.value = etype, evalue, etraceback
-                self.fire(Error(etype, evalue, etraceback, handler))
+                event.value.value = etype, evalue, format_tb(etraceback)
+                self.fire(Error(etype, evalue, format_tb(etraceback), handler))
                 if event.failure is not None:
-                    error = (etype, evalue, etraceback)
+                    error = (etype, evalue, format_tb(etraceback))
                     self.fire(Failure(event, handler, error), *event.failure)
 
             if retval is not None:
@@ -494,8 +495,9 @@ class Manager(object):
             try:
                 [f() for f in self._ticks.copy()]
             except:
-                self.fire(Error(*_exc_info()))
-        if len(self):
+                etype, evalue, etraceback = _exc_info()
+                self.fire(Error(etype, evalue, format_tb(etraceback)))
+        if self:
             self._flush()
 
     def run(self, sleep=0, mode=None, log=True, __self=None):

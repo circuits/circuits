@@ -9,7 +9,6 @@ each event to sys.stderr or to a Logger Component instnace.
 
 import sys
 from cStringIO import StringIO
-from traceback import format_tb
 
 from handlers import handler
 from components import Component
@@ -57,7 +56,7 @@ class Debugger(Component):
             handler = reprhandler(self.root, handler)
 
         s.write("ERROR %s(%s): %s\n" % ("%s " % handler, type, value))
-        s.write("%s\n" % "".join(format_tb(traceback)))
+        s.write("%s\n" % "".join(traceback))
 
         s.seek(0)
 

@@ -137,7 +137,7 @@ def test_tick_exceptions():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception(), <traceback object")
+    assert s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception()")
     stderr.seek(0)
     stderr.truncate()
 

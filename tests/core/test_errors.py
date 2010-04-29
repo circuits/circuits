@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from types import TracebackType
+from types import ListType
 
 import py
 
@@ -42,5 +42,5 @@ def test():
 
     assert app.etype == NameError
     py.test.raises(NameError, lambda e: reraise(e), app.evalue)
-    assert type(app.etraceback) is TracebackType
+    assert type(app.etraceback) is ListType
     assert app.handler == app.test
