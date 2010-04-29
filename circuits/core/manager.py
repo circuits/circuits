@@ -464,10 +464,6 @@ class Manager(object):
         self._task.setDaemon(True)
         self._task.start()
 
-    def join(self, timeout=None):
-        if hasattr(self._task, "join"):
-            self._task.join(timeout)
-
     def stop(self):
         self._running = False
         self.fire(Stopped(self))
@@ -475,13 +471,7 @@ class Manager(object):
             if not current_process() == self._task:
                 self._task.terminate()
         self._task = None
-
-    def _terminate(self):
-        if HAS_MULTIPROCESSING:
-            for p in processes():
-                if not p == process():
-                    p.terminate()
-                    p.join(3)
+        self.tick()
 
     def tick(self):
         if self._ticks:
