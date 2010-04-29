@@ -216,14 +216,10 @@ class Manager(object):
          - [S]topped
         """
 
-        if self.running:
-            if self._task is None:
-                return "R"
-            else:
-                if self._task.isAlive():
-                    return "R"
-                else:
-                    return "D"
+        if self.running or (self._task and self._task.isAlive()):
+            return "R"
+        elif self._task and not self._task.isAlive():
+            return "D"
         else:
             return "S"
 
