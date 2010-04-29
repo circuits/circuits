@@ -68,7 +68,7 @@ class Value(object):
                 and self._value == other._value)
 
     def __getstate__(self):
-        keys = ("event", "onSet", "result", "errors", "_parent", "_value")
+        keys = ("event", "onSet", "result", "errors", "_value")
         return dict([(k, getattr(self, k, None)) for k in keys])
 
     def __getitem__(self, y):

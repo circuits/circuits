@@ -34,5 +34,4 @@ def test():
     assert hasattr(x, "onSet")
     assert hasattr(x, "result")
     assert hasattr(x, "errors")
-    assert hasattr(x, "_parent")
     assert hasattr(x, "_value")
