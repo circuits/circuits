@@ -456,6 +456,7 @@ class Manager(object):
             self._task.daemon = True
             if HAS_MULTIPROCESSING == 2:
                 setattr(self._task, "isAlive", self._task.is_alive)
+            self.tick()
             self._task.start()
             return
 
