@@ -33,14 +33,12 @@ else:
 
 try:
     from multiprocessing import Process
-    from multiprocessing import current_process as process
-    from multiprocessing import active_children as processes
+    from multiprocessing import current_process
     HAS_MULTIPROCESSING = 2
 except:
     try:
         from processing import Process
-        from processing import currentProcess as process
-        from processing import activeChildren as processes
+        from processing import currentProcess as current_process
         HAS_MULTIPROCESSING = 1
     except:
         HAS_MULTIPROCESSING = 0
@@ -459,6 +457,7 @@ class Manager(object):
         if process and HAS_MULTIPROCESSING:
             args += (self,)
             self._task = Process(group, target, name, args)
+            self._task.daemon = True
             if HAS_MULTIPROCESSING == 2:
                 setattr(self._task, "isAlive", self._task.is_alive)
             self._task.start()
@@ -475,12 +474,9 @@ class Manager(object):
     def stop(self):
         self._running = False
         self.fire(Stopped(self))
-
-        if hasattr(self._task, "terminate"):
-            self._task.terminate()
-        if hasattr(self._task, "join"):
-            self._task.join(3)
-
+        if self._task and type(self._task) is Process and self._task.isAlive():
+            if not current_process() == self._task:
+                self._task.terminate()
         self._task = None
 
     def _terminate(self):
