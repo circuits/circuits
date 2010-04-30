@@ -19,143 +19,83 @@ uses the UDP protocol and as such events cannot be guaranteed of their
 order or delivery.
 """
 
-from cPickle import dumps, loads
-from socket import gethostname, gethostbyname
+from StringIO import StringIO
+from pickle import dumps, Unpickler
 
-from circuits.core import handler, Event, BaseComponent
-from circuits.net.sockets import Client, Server, UDPServer as DefaultTransport
-from circuits.net.sockets import Read, Write, Error, Close
+from components import BaseComponent
+from values import Value, ValueChanged
+from events import Event, Registered, Unregistered, Started, Stopped
 
-class Helo(Event): pass
+from circuits.net.sockets import Write
 
 class Bridge(BaseComponent):
 
-    channel = "bridge"
+    IgnoreEvents = [Registered, Unregistered, Started, Stopped, ValueChanged]
+    IgnoreChannels = [("*", "exception")]
 
-    IgnoreEvents = [Read, Write, Error, Close]
-    IgnoreChannels = []
+    def __init__(self, manager, socket=None):
+        super(Bridge, self).__init__()
 
-    def __init__(self, nodes=[], transport=None, **kwargs):
-        super(Bridge, self).__init__(**kwargs)
+        self._manager = manager
+        self._socket = socket
 
-        self.nodes = set(nodes)
+        self._values = dict()
 
-        if transport:
-            self.transport = transport
-        else:
-            self.transport = DefaultTransport(**kwargs)
+        self._manager.addHandler(self._started, "started", target="*")
+        self._manager.addHandler(self._events, priority=100, target="*")
+        self._manager.addHandler(self._value, "value", target=self._manager)
 
+        if self._socket is not None:
+            self._socket.register(self)
+            self.addHandler(self._reader, "read", target=self._socket)
 
-        if isinstance(self.transport, DefaultTransport):
-            self.write = self.udp
-        elif isinstance(self.transport, Server):
-            self.write = self.server
-        elif isinstance(self.transport, Client):
-            self.write = self.client
-        else:
-            raise TypeError("Unsupported transport type")
+    def _started(self, component, mode):
+        self.start()
 
-        if isinstance(self.transport, Client):
-            self.server = False
-        else:
-            self.server = True
+    def _value(self, value):
+        try:
+            eid = self._values[value]
+            s = dumps((eid, value), -1)
+            self.push(Write(s), target=self._socket)
+        except Exception, e:
+            print "ERROR: %s" % e
+            print "Can't write value:", value
 
-        self += self.transport
+    def _process(self, id, obj):
+        if isinstance(obj, Event):
+            obj.remote = True
+            value = self._manager.push(obj)
+            self._values[value] = id
+            value.manager = self._manager
+            value.onSet = "value",
+        elif isinstance(obj, Value):
+            self._values[id].value = obj.value
 
-        if hasattr(self.transport, "address"):
-            if self.transport.address in ["", "0.0.0.0"]:
-                address = gethostbyname(gethostname())
-                self.ourself = (address, self.transport.port)
-            else:
-                self.ourself = self.transport.bind
-        else:
-            self.ourself = (gethostbyname(gethostname()), 0)
+    def _reader(self, data):
+        unpickler = Unpickler(StringIO(data))
 
-    def registered(self, c, m):
-        if c == self:
-            self.push(Helo(*self.ourself), "helo")
+        while True:
+            try:
+                self._process(*unpickler.load())
+            except EOFError:
+                break
 
-    @handler(priority=100, target="*")
-    def event(self, event, *args, **kwargs):
-        channel = event.channel
+    def _writer(self, event):
+        try:
+            eid = id(event)
+            self._values[eid] = event.value
+            s = dumps((eid, event))
+            self.push(Write(s), target=self._socket)
+        except Exception, e:
+            print "ERROR: %s" % e
+            print "Can't write event:", event
+
+    def _events(self, event, *args, **kwargs):
         if True in [event.name == x.__name__ for x in self.IgnoreEvents]:
             return
-        elif channel in self.IgnoreChannels:
+        elif event.channel in self.IgnoreChannels:
             return
-        elif getattr(event, "ignore", False):
+        elif getattr(event, "remote", False):
             return
         else:
-            event.ignore = True
-
-        event.source = self.ourself
-
-        try:
-            s = dumps(event, -1) + "\x00\x00"
-        except:
-            return
-
-        self.write(channel, event, s)
-
-    def udp(self, channel, e, s):
-        if self.nodes:
-            for node in self.nodes:
-                self.transport.write(node, s)
-        else:
-            target, channel = channel
-            if type(target) is tuple:
-                if type(target[0]) is int:
-                    node = ("<broadcast>", target[0])
-                elif type(target[0]) is str and ":" in target[0]:
-                    address, port = target[0].split(":", 1)
-                    port = int(port)
-                    node = (address, port)
-                elif type(target[0]) is str:
-                    node = (target[0], self.transport.port)
-                elif type(target[0]) is int:
-                    node = (self.transport.address, target[0])
-                else:
-                    raise TypeError("Invalid bridge target!")
-            else:
-                node = ("<broadcast>", self.transport.port)
-
-            self.transport.write(node, s)
-
-    def server(self, channel, e, s):
-        self.transport.broadcast(s)
-
-    def client(self, channel, e, s):
-        self.transport.write(s)
-
-    @handler("helo", filter=True)
-    def helo(self, event, address, port):
-        source = event.source
-
-        if (address, port) == self.ourself or source in self.nodes:
-            return True
-
-        if not (address, port) in self.nodes:
-            self.nodes.add((address, port))
-            self.push(Helo(*self.ourself))
-
-    @handler("read", target="*")
-    def read(self, *args):
-        if len(args) == 1:
-            data = args[0]
-        else:
-            data = args[1]
-        data = data.split("\x00\x00")
-        for d in data:
-            if d:
-                self.push_event(loads(d))
-
-    def push_event(self, event):
-        (target, channel) = event.channel
-        source = event.source
-
-        if type(target) is tuple:
-            if len(target) == 2:
-                target = target[1]
-            else:
-                target = "*"
-
-        self.push(event, channel, target)
+            self._writer(event)

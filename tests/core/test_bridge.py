@@ -1,62 +1,36 @@
-# Module:   bridge
-# Date:     5th November 2008
-# Author:   James Mills, prologic at shortcircuit dot net dot au
+#!/usr/bin/python -i
 
-"""Bridge Tests"""
-
+import os
 from time import sleep
 
-from circuits import Bridge
-from circuits import Event, Component, Manager
+from circuits.net.sockets import Pipe
+from circuits import Event, Component, Bridge
 
-class Foo(Component):
+class Hello(Event):
+    """Hello Event"""
 
-    flag = False
+class App(Component):
 
-    def foo(self):
-        self.flag = True
-
-    def dummy(self):
-        pass
-
-class Bar(Component):
-
-    flag = False
-
-    def bar(self):
-        self.flag = True
-
-    def dummy(self):
-        pass
-
+    def hello(self):
+        return "Hello from %d" % os.getpid()
 
 def test():
-    m1 = Manager()
-    b1 = Bridge(bind=("127.0.0.1", 8000), nodes=[("127.0.0.1", 8001)])
-    b1.IgnoreChannels.extend(["dummy"])
-    foo = Foo()
-    m1 += b1
-    m1 += foo
-    m1.start()
+    # Our communication transport
+    a, b = Pipe()
 
-    m2 = Manager()
-    b2 = Bridge(bind=("127.0.0.1", 8001), nodes=[("127.0.0.1", 8000)])
-    b2.IgnoreChannels.extend(["dummy"])
-    bar = Bar()
-    m2 += b2
-    m2 += bar
-    m2.start()
+    # 1st App (process)
+    p = App()
+    Bridge(p, socket=a)
+    p.start(process=True)
 
-    m1.push(Event(), "bar")
-    m1.push(Event(), "dummy")
+    # 2nd App
+    app = App()
+    Bridge(app, socket=b)
+    app.start()
+
+    pid = os.getpid()
+    x = app.push(Hello())
     sleep(1)
-
-    assert not foo.flag
-    assert bar.flag
-
-    m2.push(Event(), "foo")
-    m2.push(Event(), "dummy")
-    sleep(1)
-
-    assert foo.flag
-    assert bar.flag
+    assert x[0] == "Hello from %s" % pid
+    assert x[1].startswith("Hello from")
+    assert not x[0]  == x[1]
