@@ -3,25 +3,25 @@
 from threading import Thread as _Thread
 
 try:
-    from multiprocessing import Pipe as _Pipe
     from multiprocessing import Value as _Value
     from multiprocessing import Process as _Process
-    from multiprocessing.sharedctypes import Synchronized
-
+    from multiprocessing.sharedctypes import Synchronized as _Synchronized
     HAS_MULTIPROCESSING = 2
 except:
     try:
-        from processing import Pipe as _Pipe
         from processing import Value as _Value
         from processing import Process as _Process
-        from processing.sharedctypes import Synchronized
-
+        from processing.sharedctypes import Synchronized as _Synchronized
         HAS_MULTIPROCESSING = 1
     except:
         HAS_MULTIPROCESSING = 0
 
-
+from bridge import Bridge
+from utils import findroot
+from manager import Manager
 from components import BaseComponent as _BaseComponent
+
+from circuits.net.sockets import Pipe
 
 TIMEOUT = 0.2
 
@@ -47,72 +47,71 @@ class Thread(_BaseComponent):
 
     @property
     def alive(self):
-        return self.running and self._thread.isAlive()
+        return self._running and self._thread.isAlive()
 
-if HAS_MULTIPROCESSING:
+class Process(_BaseComponent):
 
-    class Process(_BaseComponent):
+    def __init__(self, manager=None, **kwargs):
+        channel = kwargs.get("channel", Process.channel)
+        super(Process, self).__init__(channel=channel)
 
-        def __init__(self, *args, **kwargs):
-            super(Process, self).__init__(*args, **kwargs)
+        self._manager = manager
 
-            self._running = _Value("b", False)
-            self._timeout = kwargs.get("timeou", TIMEOUT)
-            self._process = _Process(target=self._run,
-                    args=(self.run, self._running,))
-            self._parent, self._child = _Pipe()
+        self._bridge = None
 
-        def __tick__(self):
-            if self._parent.poll(self._timeout):
-                event = self._parent.recv()
-                channel = event.channel
-                target = event.target
-                self.push(event, channel, target)
+        self._running = _Value("b", False)
 
-        def _run(self, fn, running):
-            thread = _Thread(target=fn)
-            thread.start()
+    def __main__(self, running, socket=None):
+        if socket is not None:
+            manager = Manager()
+            bridge = Bridge(manager, socket=socket)
+            self.register(manager)
+            manager.start()
 
-            try:
-                while running.value and thread.isAlive():
-                    try:
-                        self.flush()
-                        if self._child.poll(self._timeout):
-                            event = self._child.recv()
-                            channel = event.channel
-                            target = event.target
-                            self.push(event, channel, target)
-                    except KeyboardInterrupt, SystemExit:
-                        running.acquire()
-                        running.value = False
-                        running.release()
-            finally:
-                running.acquire()
-                running.value = False
-                running.release()
-                self.flush()
+        try:
+            self.run()
+        finally:
+            if socket is not None:
+                while bridge or manager: pass
+                manager.stop()
+                bridge.stop()
 
-        def start(self):
-            self._running.acquire()
-            self._running.value = True
-            self._running.release()
-            self._process.start()
+    def start(self):
+        args = (self._running,)
 
-        def run(self):
-            """To be implemented by subclasses"""
+        if self._manager is not None:
+            root = findroot(self._manager)
+            parent, child = Pipe()
+            self._bridge = Bridge(root, socket=parent)
+            self._bridge.start()
 
-        def stop(self):
-            self._running.acquire()
-            self._running.value = False
-            self._running.release()
+            args = (self._running, child,)
 
-        def join(self):
-            return self._process.join()
+        self._process = _Process(target=self.__main__, args=args)
+        self._process.daemon = True
+        if HAS_MULTIPROCESSING == 2:
+            setattr(self._process, "isAlive", self._process.is_alive)
 
-        @property
-        def alive(self):
-            if type(self._running) is Synchronized:
-                return self._running.value and self._process.is_alive()
+        self._running.acquire()
+        self._running.value = True
+        self._running.release()
+        self._process.start()
 
-else:
+    def run(self):
+        """To be implemented by subclasses"""
+
+    def stop(self):
+        self._running.acquire()
+        self._running.value = False
+        self._running.release()
+
+    def join(self):
+        return hasattr(self, "_process") and self._process.join()
+
+    @property
+    def alive(self):
+        if type(self._running) is _Synchronized:
+            return self._running.value and self._process.isAlive()
+
+if not HAS_MULTIPROCESSING:
     Process = Thread
