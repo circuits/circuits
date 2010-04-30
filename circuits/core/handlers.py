@@ -7,8 +7,6 @@
 This module define the @handler decorator/function and the HandlesType type.
 """
 
-from copy import copy
-from types import MethodType
 from inspect import getargspec
 
 def handler(*channels, **kwargs):
