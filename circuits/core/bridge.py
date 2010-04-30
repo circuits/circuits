@@ -57,9 +57,8 @@ class Bridge(BaseComponent):
             eid = self._values[value]
             s = dumps((eid, value), -1)
             self.push(Write(s), target=self._socket)
-        except Exception, e:
-            print "ERROR: %s" % e
-            print "Can't write value:", value
+        except:
+            return
 
     def _process(self, id, obj):
         if isinstance(obj, Event):
@@ -86,9 +85,8 @@ class Bridge(BaseComponent):
             self._values[eid] = event.value
             s = dumps((eid, event))
             self.push(Write(s), target=self._socket)
-        except Exception, e:
-            print "ERROR: %s" % e
-            print "Can't write event:", event
+        except:
+            return
 
     def _events(self, event, *args, **kwargs):
         if True in [event.name == x.__name__ for x in self.IgnoreEvents]:
