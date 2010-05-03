@@ -443,15 +443,24 @@ class Manager(object):
         if signal in [SIGINT, SIGTERM]:
             self.stop()
 
-    def start(self, sleep=0, log=True, process=False):
+    def start(self, sleep=0, log=True, link=None, process=False):
         group = None
         target = self.run
         name = self.__class__.__name__
         mode = "P" if process else "T"
-        args = (sleep, mode, log,)
+        args = (sleep, log, mode,)
 
         if process and HAS_MULTIPROCESSING:
-            args += (self,)
+            if link is not None and isinstance(link, Manager):
+                from circuits.net.sockets import Pipe
+                from circuits.core.bridge import Bridge
+                from circuits.core.utils import findroot
+                root = findroot(link)
+                parent, child = Pipe()
+                self._bridge = Bridge(root, socket=parent)
+                self._bridge.start()
+                args += (child,)
+
             self._task = Process(group, target, name, args)
             self._task.daemon = True
             if HAS_MULTIPROCESSING == 2:
@@ -483,21 +492,31 @@ class Manager(object):
         if self:
             self._flush()
 
-    def run(self, sleep=0, mode=None, log=True, __self=None):
-        if __self is not None:
-            self = __self
-
-        if not mode == "T" and current_thread().name == "MainThread":
+    def run(self, sleep=0, log=True, __mode=None, __socket=None):
+        if not __mode == "T" and current_thread().name == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
             _registerSignalHandler(SIGINT, self._signalHandler)
             _registerSignalHandler(SIGTERM, self._signalHandler)
 
+        if __socket is not None:
+            from circuits.core.bridge import Bridge
+            manager = Manager()
+            bridge = Bridge(manager, socket=__socket)
+            self.register(manager)
+            manager.start()
+
         self._running = True
 
-        self.fire(Started(self, mode))
+        self.fire(Started(self, __mode))
 
-        while self or self.running:
-            self.tick()
-            if sleep:
-                time.sleep(sleep)
+        try:
+            while self or self.running:
+                self.tick()
+                if sleep:
+                    time.sleep(sleep)
+        finally:
+            if __socket is not None:
+                while bridge or manager: pass
+                manager.stop()
+                bridge.stop()
