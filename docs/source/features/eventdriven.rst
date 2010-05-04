@@ -8,6 +8,7 @@ What is Event Driven Programming ? It's a technique of programming
 whereby events are scheduled into some kind of a queue
 and handled by event handlers. Some really good
 references and reading material can be found here:
+
 * `Event Driven Programming <http://en.wikipedia.org/wiki/Event-driven_programming>`_ (*wikipedia*)
 * `Event Driven Programming. Introduction, Tutorial and History <http://eventdrivenpgm.sourceforge.net/>`_ (*sourceforge*)
 

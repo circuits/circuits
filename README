@@ -1,5 +1,5 @@
 circuits is a **Lightweight** **Event** driven **Framework** for the
-`Python Programming Language <http://www.python.org/>`_, with a
+`Python Programming Language <http://www.python.org/>`_ with a
 strong **Component** Architecture. circuits also includes a lightweight,
 high performance and scalable HTTP/WSGI web server
 (*with some similar features to* `CherryPy <http://www.cherrypy.org/>`_)

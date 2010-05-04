@@ -2,7 +2,7 @@ Foreword
 ========
 
 circuits was a reincarnation of a design architecture that the author had been
-working on since mid-2005. It was then part of the pymills project
+working on since mid-2004. It was then part of the pymills project
 (*named so after the author*) and was just a single module: ``pymills.event``
 
 It was an architecture inspired from learning
