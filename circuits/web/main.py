@@ -39,7 +39,7 @@ except ImportError:
     EPoll = None
 
 
-USAGE = "%prog [options]"
+USAGE = "%prog [options] [docroot]"
 VERSION = "%prog v" + systemVersion
 
 ###
@@ -156,9 +156,15 @@ def main():
         Poller = Select
 
     if opts.server.lower() == "base":
-        manager += (BaseServer(bind, poller=Poller) + HelloWorld() + Static())
+        BaseServer(bind, poller=Poller).register(manager)
+        HelloWorld().register(manager)
     else:
-        manager += (Server(bind, poller=Poller) + Root() + Static())
+        Server(bind, poller=Poller).register(manager)
+        Root().register(manager)
+
+    docroot = os.getcwd() if not args else args[0]
+
+    Static(docroot=docroot, dirlisting=True).register(manager)
 
     if opts.profile:
         if hotshot:
