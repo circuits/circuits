@@ -71,6 +71,10 @@ class Value(object):
         keys = ("event", "onSet", "result", "errors", "_value")
         return dict([(k, getattr(self, k, None)) for k in keys])
 
+    def __contains__(self, y):
+        value = self.value
+        return y in value if type(value) is ListType else y == value
+
     def __getitem__(self, y):
         v = self.value[y]
         if isinstance(v, Value):
