@@ -141,6 +141,30 @@ When this modified example is run, here's the output you'll expect:
 Inheritence
 -----------
 
+Just like in Object Orientated Programming, circuits has this notion of *Inherience*. However in circuits, this means the capability of inheriting Event Handlers from a Base Component. This is done automatically unless the keyword argument *override=True* is given to the Event Handler in the subclassed Component.
+
+For example, let's consider the following simple example:
+
+.. code-block:: python
+   :linenos:
+
+   from circuits import handler, Event, Component
+
+   class Hello(Event):
+      """Hello Event"""
+
+   class App(Component):
+
+      def hello(self):
+         print "Hello World!"
+
+      def hello_completed(self, e, v, h):
+         raise SystemExit, 0
+
+   app = App()
+   app.push(Hello())
+   app.run()
+
 Runnable Components
 -------------------
 
