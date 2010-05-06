@@ -153,10 +153,15 @@ For example, let's consider the following simple example:
    class Hello(Event):
       """Hello Event"""
 
-   class App(Component):
+   class Base(Component):
 
       def hello(self):
-         print "Hello World!"
+         print "Hello"
+
+   class App(Base):
+
+      def hello(self):
+         print "World!"
 
       def hello_completed(self, e, v, h):
          raise SystemExit, 0
@@ -164,6 +169,28 @@ For example, let's consider the following simple example:
    app = App()
    app.push(Hello())
    app.run()
+
+Runnning this simple example demonstrates *Event Inheritence*:
+
+.. code-block:: sh
+
+   $ python hello.py
+   Hello
+   World!
+
+It should be obvious here that despite (**from an object orientated programming perspective**) the Base component's hello (**method**) handler being overridden, it's actually inherited. If we wanted to override the Base component's "hello" Event Handler we'd do this:
+
+.. code-block:: python
+   :linenos:
+
+   # ...
+   from circuits import handler
+
+   class App(Base):
+
+      @handler("hello", override=True)
+      def hello(self):
+         print "World!"
 
 Runnable Components
 -------------------
