@@ -278,6 +278,49 @@ Output:
    $ python test.py 
    11
 
+Example (Future Values):
+
+.. code-block:: python
+   :linenos:
+   
+   from time import sleep
+   
+   from circuits import future, Event, Component
+   
+   class Test(Event):
+      """Test Event"""
+   
+   class Eval(Event):
+      """Eval Event"""
+   
+   class App(Component):
+   
+      def test(self, x, y):
+         return self.push(Eval("%d + %d" % (x, y)))
+   
+      @future()
+      def eval(self, s):
+         sleep(1)
+         return eval(s)
+   
+      def display(self, v):
+         print v
+         self.stop()
+   
+   app = App()
+   
+   x = app.push(Test(4, 7))
+   x.onSet = "display",
+   
+   app.run()
+
+Output:
+
+.. code-block:: sh
+   
+   $ python test.py 
+   11
+
 Other Features
 --------------
 
