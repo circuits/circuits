@@ -15,8 +15,8 @@ from values import Value
 
 class Future(Value):
 
-    def __init__(self, f, args, kwargs):
-        super(Future, self).__init__(None, None)
+    def __init__(self, event, manager, f, args, kwargs):
+        super(Future, self).__init__(event, manager)
 
         self.f = f
         self.args = args
@@ -28,14 +28,15 @@ class Future(Value):
 
     def _run(self):
         try:
-            self.value = self.f(*self.args, **self.kwargs)
+            self.value = self.f(self.event, *self.args, **self.kwargs)
         except:
             self.errors = True
             self.value = exc_info()
 
 def future():
     def decorate(f):
-        def wrapper(*args, **kwargs):
-            return Future(f, args, kwargs)
+        f._passEvent = True
+        def wrapper(self, event, *args, **kwargs):
+            return Future(event, self, f, args, kwargs)
         return update_wrapper(wrapper, f)
     return decorate
