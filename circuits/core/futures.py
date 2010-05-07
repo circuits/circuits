@@ -9,6 +9,7 @@ Future Value object and decorator wrapping a Thread (by default).
 
 from sys import exc_info
 from threading import Thread
+from traceback import format_tb
 from functools import update_wrapper
 
 from values import Value
@@ -30,8 +31,9 @@ class Future(Value):
         try:
             self.value = self.f(self.event, *self.args, **self.kwargs)
         except:
+            etype, evalue, etraceback = exc_info()
             self.errors = True
-            self.value = exc_info()
+            self.value = etype, evalue, format_tb(etraceback)
 
 def future():
     def decorate(f):

@@ -1,6 +1,6 @@
 #!/usr/bin/python -i
 
-from types import TracebackType
+from types import ListType
 
 import py
 
@@ -49,4 +49,4 @@ def test_error():
     etype, evalue, etraceback = x.value
     assert etype is Exception
     py.test.raises(Exception, lambda e: reraise(e), evalue)
-    assert type(etraceback) is TracebackType
+    assert type(etraceback) is ListType
