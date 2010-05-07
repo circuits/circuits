@@ -195,11 +195,14 @@ It should be obvious here that despite (**from an object orientated programming 
 Runnable Components
 -------------------
 
-Values
-------
+To makes things a lot easier, circuits removes as much of the unnecessary boiler-plate code necessary to setup a main-loop and run a system. A Manager (*which all components are subclasses of*) has 3 important methods:
 
-Futures
--------
+* **.start(...)**: Used to start a Component and it's registered structure in either a new thread or process.
+* **.stop()**: Used to terminate a running Component.
+* **.run(...)**: Used to run a Component in the MainThread (*this blocks*).
+
+Values and Future Values
+------------------------
 
 Other Features
 --------------
