@@ -29,7 +29,7 @@ class Future(Value):
 
     def _run(self):
         try:
-            self.value = self.f(self.event, *self.args, **self.kwargs)
+            self.value = self.f(self.manager, *self.args, **self.kwargs)
         except:
             etype, evalue, etraceback = exc_info()
             self.errors = True
@@ -37,8 +37,7 @@ class Future(Value):
 
 def future():
     def decorate(f):
-        f._passEvent = True
-        def wrapper(self, event, *args, **kwargs):
-            return Future(event, self, f, args, kwargs)
+        def wrapper(manager, *args, **kwargs):
+            return Future(None, manager, f, args, kwargs)
         return update_wrapper(wrapper, f)
     return decorate
