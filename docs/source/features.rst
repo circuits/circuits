@@ -75,8 +75,8 @@ events on various channels. Each Component itself also defines it's own
 channel (*sub channel*) which allows two or more components with similar
 events to co-exist without interfering with each other.
 
-Event Feedback
---------------
+Event Feedback Channels
+-----------------------
 
 Within the core of circuits is a feature called **Event Feedback**. This is a
 mechanism that ties into any **Event** object allowing feedback to be given
@@ -138,8 +138,8 @@ When this modified example is run, here's the output you'll expect:
    Handler <bound method App.hello of <App/* (queued=0, channels=3, handlers=3) [R]>>
    Return Value: None
 
-Inheritence
------------
+Event Handler Inheritence
+-------------------------
 
 Just like in Object Orientated Programming, circuits has this notion of *Inherience*. However in circuits, this means the capability of inheriting Event Handlers from a Base Component. This is done automatically unless the keyword argument *override=True* is given to the Event Handler in the subclassed Component.
 
@@ -203,6 +203,80 @@ To makes things a lot easier, circuits removes as much of the unnecessary boiler
 
 Values and Future Values
 ------------------------
+
+The circuits core framework allows values to be returned from event handlers as well as nested values (*values of other events not yet executed*) and future values (*values not yet computed or that take a while to compite*). A Value object is returned for each call to ``.push(...)`` queing an event into the system.
+
+Example (Value):
+
+.. code-block:: python
+   :linenos:
+
+   from circuits import Event, Component
+   
+   class Test(Event):
+      """Test Event"""
+
+   class App(Component):
+   
+      def test(self, x, y):
+         return x + y
+   
+      def display(self, v):
+         print v
+         self.stop()
+   
+   app = App()
+   
+   x = app.push(Test(4, 7))
+   x.onSet = "display",
+   
+   app.run()
+
+Output:
+
+.. code-block:: sh
+   
+   $ python test.py 
+   11
+   
+Example (Nested Values):
+
+.. code-block:: python
+   :linenos:
+   
+   from circuits import Event, Component
+   
+   class Test(Event):
+      """Test Event"""
+   
+   class Eval(Event):
+      """Eval Event"""
+   
+   class App(Component):
+   
+      def test(self, x, y):
+         return self.push(Eval("%d + %d" % (x, y)))
+   
+      def eval(self, s):
+         return eval(s)
+   
+      def display(self, v):
+         print v
+         self.stop()
+   
+   app = App()
+   
+   x = app.push(Test(4, 7))
+   x.onSet = "display",
+   
+   app.run()
+
+Output:
+
+.. code-block:: sh
+   
+   $ python test.py 
+   11
 
 Other Features
 --------------
