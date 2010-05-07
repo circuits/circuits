@@ -246,13 +246,13 @@ class Manager(object):
         attrs["priority"] = getattr(handler, "priority",
                 kwargs.get("priority", 0))
 
-        if not hasattr(handler, "_passEvent"):
+        if not hasattr(handler, "event"):
             args = getargspec(handler)[0]
             if args and args[0] == "self":
                 del args[0]
-            attrs["_passEvent"] = args and args[0] == "event"
+            attrs["event"] = bool(args and args[0] == "event")
         else:
-            attrs["_passEvent"] = getattr(handler, "_passEvent")
+            attrs["event"] = getattr(handler, "event")
 
         self._handlerattrs[handler] = attrs
 
@@ -411,7 +411,7 @@ class Manager(object):
             attrs = self._handlerattrs[handler]
             event.handler = handler
             try:
-                if attrs["_passEvent"]:
+                if attrs["event"]:
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
