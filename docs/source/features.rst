@@ -129,7 +129,7 @@ Note:
 
 When this modified example is run, here's the output you'll expect:
 
-.. code-block:: bash
+.. code-block:: sh
 
    $ python source/examples/helloworld.py 
    Hello World!

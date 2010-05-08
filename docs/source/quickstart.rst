@@ -1,8 +1,8 @@
 Quick Start Guide
 =================
 
-The easiest way to download and install circuits is to use
-`setuptools <http://pypi.python.org/pypi/setuptools>`_' easy_install tool::
+The easiest way to download and install circuits is to use the
+`setuptools <http://pypi.python.org/pypi/setuptools>`_ easy_install tool::
    
    easy_install circuits
 
@@ -16,4 +16,7 @@ First, let's check the installed version::
    1.3
 
 Try some of the examples in the examples/ directory shipped with the
-distribution or have a look at some of the :doc:`Examples <examples>`.
+distribution or have a look at some of the :doc:`Examples <examples>`
+in this documentation.
+
+Have fun :)
