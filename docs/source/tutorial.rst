@@ -46,14 +46,11 @@ Event Handlers
 Components
 ----------
 
-Values
-------
+Values and Future Values
+------------------------
 
-Futures
--------
-
-Asynchronous I/O
-----------------
+Networking and I/O
+------------------
 
 Debugging
 ---------
