@@ -18,6 +18,7 @@ Contents
    features
    gettingstarted
    tutorial
+   manual
    examples
    api
    web
