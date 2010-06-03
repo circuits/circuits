@@ -19,10 +19,10 @@ if not HAS_SETUPTOOLS:
         packages = {}
         for item in listdir(where):
             dir = os.path.join(where, item)
-            if is_package( dir ):
+            if is_package(dir):
                 module_name = item
                 packages[module_name] = dir
-                packages.update(find_packages(dir, module_name))
+                packages.update(find_packages(dir))
         return packages
 
 from circuits.version import forget_version, remember_version
