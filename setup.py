@@ -22,7 +22,6 @@ if not HAS_SETUPTOOLS:
             if is_package(dir):
                 module_name = item
                 packages[module_name] = dir
-                packages.update(find_packages(dir))
         return packages
 
 from circuits.version import forget_version, remember_version
