@@ -9,7 +9,7 @@ except ImportError:
 
 if not HAS_SETUPTOOLS:
     import os
-    from os import getcwdd, listdir
+    from os import getcwd, listdir
     from os.path import isdir, isfile
 
     def is_package(path):
