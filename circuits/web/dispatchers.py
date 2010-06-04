@@ -127,7 +127,7 @@ class Static(Component):
                         location = os.path.abspath(
                                 os.path.join(self.docroot, path, item))
                         if os.path.isdir(location):
-                            li = '<li><a href="%s">%s/</a></li>' % (url, item)
+                            li = '<li><a href="%s/">%s/</a></li>' % (url, item)
                         else:
                             li = '<li><a href="%s">%s</a></li>' % (url, item)
                         listing.append(li)
