@@ -5,6 +5,7 @@
 """Timers Tests"""
 
 from time import sleep
+from datetime import datetime, timedelta
 
 from circuits import Event, Component, Timer
 
@@ -37,3 +38,11 @@ def test_persistentTimer():
         app.flag = False
 
     timer.unregister()
+
+def test_datetime():
+    now = datetime.now()
+    d = now + timedelta(seconds=1)
+    timer = Timer(d, Test(), "timer")
+    timer.register(app)
+    sleep(1)
+    assert app.flag

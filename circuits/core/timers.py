@@ -7,7 +7,8 @@
 Timers component to facilitate timed eventd.
 """
 
-from time import time
+from time import time, mktime
+from datetime import datetime
 
 from components import Component
 
@@ -30,7 +31,11 @@ class Timer(Component):
 
         super(Timer, self).__init__()
 
-        self.s = s
+        if isinstance(s, datetime):
+            self.s = mktime(s.timetuple()) - time()
+        else:
+            self.s = s
+
         self.e = e
         self.c = c
         self.t = t
