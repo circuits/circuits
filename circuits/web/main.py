@@ -7,6 +7,7 @@
 circutis.web Web Server and Testing Tool.
 """
 
+import os
 import optparse
 from wsgiref.validate import validator
 from wsgiref.simple_server import make_server
