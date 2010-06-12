@@ -1,41 +1,40 @@
 Features
 ========
 
-Major Core Features:
+Core Features:
 
-* Event Driven
-* Component Architecture
-* Event Feedback Channels
-* Event Handler Inheritence
-* Values and Future Values
-* Remote Briding / Distribution
-* Asynchronous / Non-Blocking Networking and I/O
+* Event Driven (*message passing*)
+* Component Architecture (*directed graph of components*)
+* Event Feedback Channels (*callbacks*)
+* Event Handler Inheritence (*component polymorphism*)
+* Values and Future Values (*returned, deferred and future values*)
+* Remote Bridging (*remote support*)
+* Asynchronous Networking and I/O (*non-blocking*)
 
-Networking Support:
+Networking (components):
 
 * TCPServer, TCPClient
 * UDPServer, UDPClient
 * UNIXServer, UNIXClient
 * Pipe
 
-Polling Support:
+Polling (*components*):
 
 * Select, Poll, EPoll
 
-Protocols Available:
+Protocol (*components*):
 
 * Line, IRC, HTTP
 
 Other Features:
 
+* Small and lightweight.
 * Pure python implementation. No C extension modules required.
-* Small lightweight core.
+* Compatible with Python 2.5, 2.6, 2.7 and 3.x (*coming soon*).
 * High performance event framework (See:
   `Performance <http://bitbucket.org/prologic/circuits/wiki/Performance>`_
   on the wiki).
 * Built-in developer tools: ``Debugger, circuits.tools``
-* Application components (*Daemon, Log*).
-* Asynchronous Networking components (*sockets, pollers*).
-* Asynchronous I/O components (*File*, *Serial*).
-* Networking protocol components
-* Small lightweight web framework 
+* Application components: ``Daemon``, ``Log``.
+* Asynchronous I/O components: ``File``, ``Serial``.
+* Web framework: ``circuits.web`` 
