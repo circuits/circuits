@@ -22,7 +22,11 @@ functional componnets that interact together to produce more complex
 behavior. For example, Component A might be responsible for doing a set
 of tasks, while Component B responsible for another set of tasks. The
 two components might occasionally communicate some information (*by passing
-messages/events*) to cooperate accomplishing bigger tasks.
+messages/events*) to cooperate accomplishing bigger tasks. Designing your
+system/application this way encourages a decoupled design and components
+in circuits are designed to help accomplish this.
+
+This is called the **Component Architecture**.
 
 The three most important things in circuits are;
 
@@ -71,6 +75,10 @@ The Event class's constructor is defined as:
       def __init__(self, ``*args, **kwargs``):
          ...
     
+**Note**: Normally you would subclass ``Event`` and create your own classes of
+          events with appropriate doc-strings describing what the event is and
+          what it's used for. You may even create constraints in the args and
+          keyword args that can be passed to it during initialization.
 
 Using an Event
 ~~~~~~~~~~~~~~
