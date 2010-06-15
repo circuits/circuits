@@ -89,10 +89,18 @@ Other Components
 To start working with circuits.web one normally only needs to import
 from circuits.web, for example:
 
-.. code-block: python
-   
-   from circuits.web import xxx
-   
+.. code-block:: python
+   :linenos:
 
+   from circuits import Component
+   from circuits.web import BaseServer
+   
+   class Root(Component):
+   
+       def request(self, request, response):
+           return "Hello World!"
+   
+   (BaseServer(8000) + Root()).run()
+   
 For further information regarding any of circuits.web's components,
 events or other modules and functions refer to the to the API Documentation.
