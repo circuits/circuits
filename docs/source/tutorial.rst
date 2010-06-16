@@ -105,10 +105,10 @@ Event Handlers
 
 In order to do useful things with events and components we need a way to
 create **Event Handlers** that react to events. In circuits there are two
-types of handlers: Listeners and Filters
+types of handlers: **Listeners** and **Filters**.
 
 A Listener is an Event Handler that simply "listens" for an Event while a
-Filter is an Event Handler with a higher priority than Listeners **and** is
+Filter is an Event Handler with a higher priority than Listeners and is
 capable of filtering the Event from other handlers.
 
 To create an Event Handler (*a Listener*) simply use the ``handler(...)``
