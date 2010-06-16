@@ -9,20 +9,27 @@ except ImportError:
 
 if not HAS_SETUPTOOLS:
     import os
-    from os import getcwd, listdir
-    from os.path import isdir, isfile
+    from distutils.util import convert_path
 
-    def is_package(path):
-        return isdir(path) and isfile(os.path.join(path, "__init__.py"))
+    def find_packages(where=".", exclude=()):
+        """Borrowed directly from setuptools"""
 
-    def find_packages(where="."):
-        packages = {}
-        for item in listdir(where):
-            dir = os.path.join(where, item)
-            if is_package(dir):
-                module_name = item
-                packages[module_name] = dir
-        return packages
+        out = []
+        stack = [(convert_path(where), "")]
+        while stack:
+            where, prefix = stack.pop(0)
+            for name in os.listdir(where):
+                fn = os.path.join(where, name)
+                if ("." not in name and os.path.isdir(fn) and 
+                        os.path.isfile(os.path.join(fn, "__init__.py"))):
+                    out.append(prefix+name)
+                    stack.append((fn, prefix + name + "."))
+
+        from fnmatch import fnmatchcase
+        for pat in list(exclude) + ["ez_setup"]:
+            out = [item for item in out if not fnmatchcase(item, pat)]
+
+        return out
 
 from circuits.version import forget_version, remember_version
 
