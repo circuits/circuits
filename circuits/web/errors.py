@@ -7,7 +7,6 @@
 This module implements a set of standard HTTP Errors.
 """
 
-from traceback import format_tb
 from cgi import escape as _escape
 from urlparse import urljoin as _urljoin
 
@@ -36,7 +35,7 @@ class HTTPError(Event):
         if self.error is not None:
             self.etype, self.evalue, self.traceback = self.error
             traceback = ["ERROR: %s\n" % str(self.evalue)]
-            traceback.extend(format_tb(self.traceback))
+            traceback.extend(self.traceback)
         else:
             self.etype, self.evalue, self.traceback = None, None, None
             traceback = []
