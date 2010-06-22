@@ -157,10 +157,12 @@ class Select(_Poller):
                 raise
 
         for sock in w:
-            self.push(Write(sock), "_write", self.manager)
+            if self.isWriting(sock):
+                self.push(Write(sock), "_write", self.manager)
             
         for sock in r:
-            self.push(Read(sock), "_read", self.manager)
+            if self.isReading(sock):
+                self.push(Read(sock), "_read", self.manager)
 
 class Poll(_Poller):
     """Poll(...) -> new Poll Poller Component
