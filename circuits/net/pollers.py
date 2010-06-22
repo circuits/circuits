@@ -272,11 +272,6 @@ class EPoll(_Poller):
         self._map = {}
         self._poller = epoll()
 
-    #@handler("started", target="*")
-    #def started(self, component, mode):
-    #    if mode in ("P", "T"):
-    #        self._poller = epoll()
-
     def _updateRegistration(self, fd):
         try:
             fileno = fd.fileno()
