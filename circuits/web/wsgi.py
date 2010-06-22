@@ -9,6 +9,7 @@ This module implements WSGI Components.
 
 from urllib import unquote
 from cStringIO import StringIO
+from traceback import format_tb
 from sys import exc_info as _exc_info
 
 from circuits.core import handler, BaseComponent
@@ -165,4 +166,6 @@ class Gateway(BaseComponent):
             status = 500
             message = str(error)
             error = _exc_info()
+            etype, evalue, etraceback = _exc_info()
+            error = (etype, evalue, format_tb(etraceback))
             return HTTPError(request, response, status, message, error)
