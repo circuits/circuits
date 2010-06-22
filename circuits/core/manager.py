@@ -84,16 +84,8 @@ class Manager(object):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-
-        if self._task is not None:
-            id = self._task.ident
-        else:
-            id = "M"
-
-        process = current_process()
-        thread = current_thread()
-        format = "<%s %s (queued=%d, channels=%d, handlers=%d) [%s]>"
-        return format % (name, id, q, c, h, state)
+        format = "<%s (queued=%d, channels=%d, handlers=%d) [%s]>"
+        return format % (name, q, c, h, state)
 
     def __contains__(self, y):
         """x.__contains__(y) <==> y in x
