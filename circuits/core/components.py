@@ -69,14 +69,8 @@ class BaseComponent(Manager):
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-
-        if self._task is not None:
-            id = self._task.ident
-        else:
-            id = "M"
-
-        format = "<%s/%s %s (queued=%d, channels=%d, handlers=%d) [%s]>"
-        return format % (name, channel, id, q, c, h, state)
+        format = "<%s/%s (queued=%d, channels=%d, handlers=%d) [%s]>"
+        return format % (name, channel, q, c, h, state)
 
     def _registerHandlers(self, manager):
         p = lambda x: callable(x) and getattr(x, "handler", False)
