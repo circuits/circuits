@@ -60,18 +60,6 @@ class BaseComponent(Manager):
             if isinstance(v, BaseComponent):
                 v.register(self)
 
-    def __repr__(self):
-        "x.__repr__() <==> repr(x)"
-
-        name = self.__class__.__name__
-        channel = self.channel or ""
-        q = len(self._queue)
-        c = len(self.channels)
-        h = len(self._handlers)
-        state = self.state
-        format = "<%s/%s (queued=%d, channels=%d, handlers=%d) [%s]>"
-        return format % (name, channel, q, c, h, state)
-
     def _registerHandlers(self, manager):
         p = lambda x: callable(x) and getattr(x, "handler", False)
         handlers = [v for k, v in getmembers(self, p)]

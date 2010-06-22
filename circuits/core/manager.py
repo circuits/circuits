@@ -80,12 +80,31 @@ class Manager(object):
         "x.__repr__() <==> repr(x)"
 
         name = self.__class__.__name__
+
+        if hasattr(self, "channel") and self.channel is not None:
+            channel = "/%s" % self.channel 
+        else:
+            channel = ""
+
         q = len(self._queue)
         c = len(self.channels)
         h = len(self._handlers)
         state = self.state
-        format = "<%s (queued=%d, channels=%d, handlers=%d) [%s]>"
-        return format % (name, q, c, h, state)
+
+        if HAS_MULTIPROCESSING == 2:
+            pid = current_process().ident
+        if HAS_MULTIPROCESSING == 1:
+            pid = current_process().getPid()
+        else:
+            pid = os.getpid()
+
+        if pid:
+            id = "%s:%s" % (pid, current_thread().getName())
+        else:
+            id = current_thread().getName()
+
+        format = "<%s%s %s (queued=%d, channels=%d, handlers=%d) [%s]>"
+        return format % (name, channel, id, q, c, h, state)
 
     def __contains__(self, y):
         """x.__contains__(y) <==> y in x

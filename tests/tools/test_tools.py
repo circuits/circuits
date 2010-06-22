@@ -7,6 +7,13 @@
 Test all functionality of the tools package.
 """
 
+import os
+
+try:
+    from threading import current_thread
+except ImportError:
+    from threading import currentThread as current_thread
+
 import py
 
 from circuits import Component
@@ -61,18 +68,18 @@ class F(Component):
         print "F!"
 
 GRAPH = """\
-* <A/* (queued=5, channels=1, handlers=6) [S]>
- * <B/* (queued=0, channels=1, handlers=2) [S]>
-  * <C/* (queued=0, channels=1, handlers=1) [S]>
- * <D/* (queued=0, channels=1, handlers=3) [S]>
-  * <E/* (queued=0, channels=1, handlers=2) [S]>
-   * <F/* (queued=0, channels=1, handlers=1) [S]>"""
+* <A/* %s (queued=5, channels=1, handlers=6) [S]>
+ * <B/* %s (queued=0, channels=1, handlers=2) [S]>
+  * <C/* %s (queued=0, channels=1, handlers=1) [S]>
+ * <D/* %s (queued=0, channels=1, handlers=3) [S]>
+  * <E/* %s (queued=0, channels=1, handlers=2) [S]>
+   * <F/* %s (queued=0, channels=1, handlers=1) [S]>"""
 
 INSPECT = """\
  Registered Components: 0
 
  Tick Functions: 1
-  <bound method A.__tick__ of <A/* (queued=0, channels=1, handlers=1) [S]>>
+  <bound method A.__tick__ of <A/* %s (queued=0, channels=1, handlers=1) [S]>>
 
  Channels and Event Handlers: 1
   *:foo; 1
@@ -161,14 +168,19 @@ def test_graph(tmpdir):
     assert e in d.components
     assert not f.components
 
+    id = "%s:%s" % (os.getpid(), current_thread().getName())
+
     tmpdir.ensure("A")
     name = str(tmpdir.join("A"))
-    assert graph(a, name=name) == GRAPH
+    assert graph(a, name=name) == GRAPH % tuple([id] * 6)
 
 def test_inspect():
     a = A()
     s = inspect(a)
-    assert s == INSPECT
+
+    id = "%s:%s" % (os.getpid(), current_thread().getName())
+
+    assert s == INSPECT % id
 
 def test_findroot():
     a = A()

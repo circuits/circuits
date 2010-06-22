@@ -7,6 +7,13 @@
 Test Component's representation string.
 """
 
+import os
+
+try:
+    from threading import current_thread
+except ImportError:
+    from threading import currentThread as current_thread
+
 from circuits import Event, Component
 
 class App(Component):
@@ -15,20 +22,22 @@ class App(Component):
         pass
 
 def test():
+    id = "%s:%s" % (os.getpid(), current_thread().getName())
+
     app = App()
-    assert repr(app) == "<App/* (queued=0, channels=1, handlers=1) [S]>"
+    assert repr(app) == "<App/* %s (queued=0, channels=1, handlers=1) [S]>" % id
 
     app.flush()
-    assert repr(app) == "<App/* (queued=0, channels=1, handlers=1) [S]>"
+    assert repr(app) == "<App/* %s (queued=0, channels=1, handlers=1) [S]>" % id
 
     app.push(Event(), "test")
-    assert repr(app) == "<App/* (queued=1, channels=1, handlers=1) [S]>"
+    assert repr(app) == "<App/* %s (queued=1, channels=1, handlers=1) [S]>" % id
 
     app.flush()
-    assert repr(app) == "<App/* (queued=0, channels=1, handlers=1) [S]>"
+    assert repr(app) == "<App/* %s (queued=0, channels=1, handlers=1) [S]>" % id
 
     app.unregister()
-    assert repr(app) == "<App/* (queued=1, channels=0, handlers=0) [S]>"
+    assert repr(app) == "<App/* %s (queued=1, channels=0, handlers=0) [S]>" % id
 
     app.flush()
-    assert repr(app) == "<App/* (queued=0, channels=0, handlers=0) [S]>"
+    assert repr(app) == "<App/* %s (queued=0, channels=0, handlers=0) [S]>" % id
