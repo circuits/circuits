@@ -512,7 +512,7 @@ class Manager(object):
             self._flush()
 
     def run(self, sleep=0, log=True, __mode=None, __socket=None):
-        if not __mode == "T" and current_thread().name == "MainThread":
+        if not __mode == "T" and current_thread().getName() == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
             _registerSignalHandler(SIGINT, self._signalHandler)
