@@ -2,7 +2,7 @@
 
 import os
 
-def test(tmpdir, coverage):
+def test(tmpdir, cov):
     if not os.name == "posix":
         py.test.skip("Cannot run test on a non-POSIX platform.")
 
@@ -46,4 +46,4 @@ def test(tmpdir, coverage):
     os.remove(pidfile)
     os.remove(signalfile)
 
-    coverage.combine()
+    cov.combine()

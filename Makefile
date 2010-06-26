@@ -23,10 +23,16 @@ packages:
 	@tools/mkpkgs -p python2.6
 
 tests:
-	@py.test -x --ignore=tmp \
+	@py.test -x -r fsxX \
+		--ignore=tmp \
 		--pastebin=all \
-		--report=skipped \
-		--cover=circuits \
-		--cover-report=html \
-		--cover-directory=coverage \
-		--cover-show-missing
+		--cov=circuits \
+		--cov-html \
+		--cov-html-dir=coverage \
+		--cov-no-terminal \
+		tests/
+		#--cov-combine-each \
+		#--dist=each \
+		#--tx=popen//python=/usr/bin/python2.5 \
+		#--tx=popen//python=/usr/bin/python2.6 \
+		#tests/

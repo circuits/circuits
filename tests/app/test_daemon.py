@@ -6,7 +6,7 @@ from subprocess import Popen
 
 from tests.app import app
 
-def test(tmpdir, coverage):
+def test(tmpdir, cov):
     tmpdir.ensure("app.pid")
     pidpath = tmpdir.join("app.pid")
     pidfile = str(pidpath)
@@ -30,4 +30,4 @@ def test(tmpdir, coverage):
 
     os.remove(pidfile)
 
-    coverage.combine()
+    cov.combine()
