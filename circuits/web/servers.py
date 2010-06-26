@@ -15,6 +15,7 @@ from circuits.core import handler, BaseComponent
 from circuits.net.sockets import TCPServer, UNIXServer, Close
 
 from http import HTTP
+from events import WebEvent
 from wrappers import Request, Host
 from constants import SERVER_VERSION
 from dispatchers import Dispatcher
@@ -57,6 +58,8 @@ class BaseServer(BaseComponent):
 
         kwargs.setdefault("channel", self.channel)
         super(BaseServer, self).__init__(**kwargs)
+
+        WebEvent._target = kwargs["channel"]
 
         if type(bind) in [IntType, ListType, TupleType]:
             SocketType = TCPServer
