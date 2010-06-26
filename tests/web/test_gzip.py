@@ -10,9 +10,10 @@ from circuits.web.utils import decompress
 
 class Gzip(Component):
 
-    @handler("response", priority=1.0)
-    def response(self, event, response):
-        event[0] = gzip(response)
+    channel = "web"
+
+    def response_started(self, event, response_event):
+        event[0] = gzip(response_event[0])
 
 class Root(Controller):
 

@@ -496,7 +496,7 @@ class XMLRPC(Component):
     def rpcvalue(self, value):
         response = value.response
         response.body = self._response(value.value)
-        self.push(Response(response), target="http")
+        self.push(Response(response), target=self.channel)
 
     @handler("request", filter=True, priority=0.1)
     def request(self, request, response):
@@ -550,7 +550,7 @@ class JSONRPC(Component):
         id = value.id
         response = value.response
         response.body = self._response(id, value.value)
-        self.push(Response(response), target="http")
+        self.push(Response(response), target=self.channel)
 
     @handler("request", filter=True, priority=0.1)
     def request(self, request, response):

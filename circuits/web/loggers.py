@@ -21,12 +21,12 @@ def formattime():
 
 class Logger(BaseComponent):
 
-    channel = "http"
+    channel = "web"
 
     format = "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
 
-    def __init__(self, file=sys.stderr, logger=None):
-        super(Logger, self).__init__()
+    def __init__(self, file=sys.stderr, logger=None, **kwargs):
+        super(Logger, self).__init__(**kwargs)
 
         self.file = file
         self.logger = logger

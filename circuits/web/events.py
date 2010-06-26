@@ -15,12 +15,11 @@ class Request(Event):
     args: request, response
     """
 
-    success = "request_success", "http"
-    failure = "request_failure", "http"
-    before = "before_request", "http"
-    filter = "request_filtered", "http"
-    start = "request_started", "http"
-    end = "request_completed", "http"
+    success = "request_success",
+    failure = "request_failure",
+    filter = "request_filtered",
+    start = "request_started",
+    end = "request_completed",
 
 class Response(Event):
     """Response(Event) -> Response Event
@@ -28,12 +27,11 @@ class Response(Event):
     args: request, response
     """
 
-    success = "response_success", "http"
-    failure = "response_failure", "http"
-    before = "before_response", "http"
-    filter = "response_filtered", "http"
-    start = "response_started", "http"
-    end = "response_completed", "http"
+    success = "response_success",
+    failure = "response_failure",
+    filter = "response_filtered",
+    start = "response_started",
+    end = "response_completed",
 
 class Stream(Event):
     """Stream(Event) -> Stream Event
@@ -41,9 +39,8 @@ class Stream(Event):
     args: request, response
     """
 
-    success = "stream_success", "http"
-    failure = "stream_failure", "http"
-    before = "before_stream", "http"
-    filter = "stream_filtered", "http"
-    start = "stream_started", "http"
-    end = "stream_completed", "http"
+    success = "stream_success",
+    failure = "stream_failure",
+    filter = "stream_filtered",
+    start = "stream_started",
+    end = "stream_completed",

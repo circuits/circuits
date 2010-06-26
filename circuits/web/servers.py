@@ -55,6 +55,7 @@ class BaseServer(BaseComponent):
     def __init__(self, bind, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
+        kwargs.setdefault("channel", self.channel)
         super(BaseServer, self).__init__(**kwargs)
 
         if type(bind) in [IntType, ListType, TupleType]:
@@ -65,7 +66,7 @@ class BaseServer(BaseComponent):
             else:
                 SocketType = UNIXServer
 
-        self.server = (SocketType(bind, **kwargs) + HTTP())
+        self.server = (SocketType(bind, **kwargs) + HTTP(**kwargs))
         self += self.server
 
         Request.server = self
@@ -149,4 +150,4 @@ class Server(BaseServer):
 
         super(Server, self).__init__(bind, **kwargs)
 
-        Dispatcher().register(self)
+        Dispatcher(channel=self.channel).register(self)

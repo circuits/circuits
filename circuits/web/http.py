@@ -34,8 +34,6 @@ class HTTP(Component):
     HTTP messages creating and sending an appropriate response.
     """
 
-    channel = "http"
-
     def __init__(self, *args, **kwargs):
         super(HTTP, self).__init__(*args, **kwargs)
 
@@ -46,7 +44,7 @@ class HTTP(Component):
             if response.chunked:
                 buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
                 data = "".join(buf)
-            self.push(Write(response.sock, data), "write", "server")
+            self.push(Write(response.sock, data))
             if response.body and not response.done:
                 try:
                     data = response.body.next()
@@ -57,14 +55,13 @@ class HTTP(Component):
             if response.body:
                 response.body.close()
             if response.chunked:
-                self.push(Write(response.sock, "0\r\n\r\n"),
-                            "write", "server")
+                self.push(Write(response.sock, "0\r\n\r\n"))
             if response.close:
-                self.push(Close(response.sock), "close", "server")
+                self.push(Close(response.sock))
             response.done = True
         
     def response(self, response):
-        self.push(Write(response.sock, str(response)), "write", "server")
+        self.push(Write(response.sock, str(response)))
 
         if response.stream and response.body:
             try:
@@ -80,24 +77,21 @@ class HTTP(Component):
                     buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
                     body = "".join(buf)
 
-                self.push(Write(response.sock, body), "write", "server")
+                self.push(Write(response.sock, body))
 
                 if response.chunked:
-                    self.push(Write(response.sock, "0\r\n\r\n"),
-                            "write", "server")
+                    self.push(Write(response.sock, "0\r\n\r\n"))
 
             if not response.stream:
                 if response.close:
-                    self.push(Close(response.sock), "close", "server")
+                    self.push(Close(response.sock))
                 response.done = True
 
-    @handler("disconnect", target="server")
     def disconnect(self, sock):
         if sock in self._clients:
             request, response = self._clients[sock]
             del self._clients[sock]
 
-    @handler("read", target="server")
     def read(self, sock, data):
         """Read Event Handler
 
@@ -130,7 +124,7 @@ class HTTP(Component):
 
             if frag:
                 error = HTTPError(request, response, 400)
-                return self.push(error, "httperror", self.channel)
+                return self.push(error)
         
             if params:
                 path = "%s;%s" % (path, params)
