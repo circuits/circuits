@@ -5,7 +5,7 @@ from time import sleep
 from urllib2 import urlopen
 
 from circuits.web import Controller, Server
-from circuits import  handler, Event, Component, Process, Debugger
+from circuits import  handler, Event, Component, Process
 
 class Hello(Event):
     """Hello Event"""
