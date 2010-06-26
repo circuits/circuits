@@ -150,8 +150,7 @@ class HTTP(Component):
             # the client only understands 1.0. RFC 2616 10.5.6 says we should
             # only return 505 if the _major_ version is different.
             if not request.protocol[0] == request.server_protocol[0]:
-                error = HTTPError(request, response, 505)
-                return self.push(error, "httperror", self.channel)
+                return self.push(HTTPError(request, response, 505))
 
             rp = request.protocol
             sp = request.server_protocol
@@ -180,7 +179,7 @@ class HTTP(Component):
 
         request.body.seek(0)
 
-        self.push(Request(request, response), "request", "web")
+        self.push(Request(request, response))
 
     def simple(self, request, response, code, message=""):
         """Simple Response Events Handler
@@ -200,7 +199,7 @@ class HTTP(Component):
             response.close = True
             response.headers.add_header("Connection", "close")
 
-        self.push(Response(response), "response", self.channel)
+        self.push(Response(response))
 
     def httperror(self, request, response, status, message=None, error=None):
         """Default HTTP Error Handler
@@ -210,19 +209,18 @@ class HTTP(Component):
         HTTPError instance or a subclass thereof.
         """
 
-        self.push(Response(response), "response", self.channel)
+        self.push(Response(response))
 
     def valuechanged(self, value):
         request, response = value.event.args[:2]
         if value.result and not value.errors:
             response.body = value.value
-            self.push(Response(response), "response", self.channel)
+            self.push(Response(response))
         else:
             # This possibly never occurs.
             message = "Request Failed"
             error = value.value
-            error = HTTPError(request, response, 500, message, error)
-            self.push(error, "httperror", self.channel)
+            self.push(HTTPError(request, response, 500, message, error))
 
     @handler("request_success", "request_filtered")
     def request_success_or_filtered(self, evt, handler, retval):
@@ -232,16 +230,15 @@ class HTTP(Component):
             if isinstance(retval, HTTPError):
                 self.push(retval, "httperror", self.channel)
             elif isinstance(retval, wrappers.Response):
-                self.push(Response(retval), "response", self.channel)
+                self.push(Response(retval))
             elif isinstance(retval, Value):
                 if retval.result and not retval.errors:
                     response.body = retval.value
-                    self.push(Response(response), "response", self.channel)
+                    self.push(Response(response))
                 elif retval.errors:
                     message = "Request Failed"
                     error = retval.value
-                    error = HTTPError(request, response, 500, message, error)
-                    self.push(error, "httperror", self.channel)
+                    self.push(HTTPError(request, response, 500, message, error))
                 else:
                     if retval.manager is None:
                         retval.manager = self
@@ -249,16 +246,14 @@ class HTTP(Component):
                     retval.onSet = "valuechanged", self
             elif type(retval) is not bool:
                 response.body = retval
-                self.push(Response(response), "response", self.channel)
+                self.push(Response(response))
 
     def request_failure(self, evt, handler, error):
         request, response = evt.args[:2]
         message = "Request Failed"
-        error = HTTPError(request, response, 500, message, error)
-        self.push(error, "httperror", self.channel)
+        self.push(HTTPError(request, response, 500, message, error))
 
     def request_completed(self, evt, handler, retval):
         request, response = evt.args[:2]
         if not request.handled or handler is None:
-            error = NotFound(request, response)
-            self.push(error, "httperror", self.channel)
+            self.push(NotFound(request, response), "httperror", self.channel)
