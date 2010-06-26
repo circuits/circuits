@@ -26,7 +26,8 @@ def test_timer():
     timer = Timer(0.1, Test(), "timer")
     timer.register(app)
     sleep(0.2)
-    assert app.flag
+    flag = app.flag
+    assert flag
 
 def test_persistentTimer():
     timer = Timer(0.1, Test(), "timer", persist=True)
@@ -34,7 +35,8 @@ def test_persistentTimer():
 
     for i in xrange(2):
         sleep(0.2)
-        assert app.flag
+        flag = app.flag
+        assert flag
         app.flag = False
 
     timer.unregister()
@@ -45,4 +47,5 @@ def test_datetime():
     timer = Timer(d, Test(), "timer")
     timer.register(app)
     sleep(1)
-    assert app.flag
+    flag = app.flag
+    assert flag
