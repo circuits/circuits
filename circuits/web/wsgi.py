@@ -96,7 +96,7 @@ class Gateway(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, app, path=""):
+    def __init__(self, app, path="/"):
         super(Gateway, self).__init__()
 
         self.app = app
@@ -105,6 +105,9 @@ class Gateway(BaseComponent):
         self._errors = StringIO()
 
         self._request = self._response = None
+
+        self.addHandler(self._on_request, "request", filter=True,
+                priority=len(path))
 
     def createEnviron(self):
         environ = {}
@@ -145,9 +148,8 @@ class Gateway(BaseComponent):
         for header in headers:
             self._response.headers.add_header(*header)
 
-    @handler("request", filter=True, priority=1.0)
-    def request(self, event, request, response):
-        if self.path is not None and not request.path.startswith(self.path):
+    def _on_request(self, event, request, response):
+        if self.path and not request.path.startswith(self.path):
             return
 
         req = event
