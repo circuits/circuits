@@ -669,9 +669,9 @@ class UDPServer(Server):
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.push(Read(address, data), "read", self.channel)
-            else:
-                self.close(self._sock)
         except socket.error, e:
+            if e[0] in (EWOULDBLOCK, EAGAIN):
+                return
             self.push(Error(self._sock, e), "error", self.channel)
             self._close(self._sock)
 
