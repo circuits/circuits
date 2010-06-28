@@ -276,7 +276,7 @@ class Client(Component):
 
     def write(self, data):
         if not self._poller.isWriting(self._sock):
-            self._poller.addWriter(self._sock)
+            self._poller.addWriter(self, self._sock)
         self._buffer.append(data)
 
     @handler("_disconnect", filter=True)
@@ -335,7 +335,7 @@ class TCPClient(Client):
 
         self._connected = True
 
-        self._poller.addReader(self._sock)
+        self._poller.addReader(self, self._sock)
 
         if self.ssl:
             self._sslsock = socket.ssl(self._sock)
@@ -376,7 +376,7 @@ class UNIXClient(Client):
 
         self._connected = True
 
-        self._poller.addReader(self._sock)
+        self._poller.addReader(self, self._sock)
 
         if self.ssl:
             self._sslsock = socket.ssl(self._sock)
@@ -502,7 +502,7 @@ class Server(Component):
 
     def write(self, sock, data):
         if not self._poller.isWriting(sock):
-            self._poller.addWriter(sock)
+            self._poller.addWriter(self, sock)
         self._buffers[sock].append(data)
 
     def broadcast(self, data):
@@ -545,7 +545,7 @@ class Server(Component):
                 raise
 
         newsock.setblocking(False)
-        self._poller.addReader(newsock)
+        self._poller.addReader(self, newsock)
         self._clients.append(newsock)
         self.push(Connect(newsock, *host), "connect", self.channel)
 
@@ -592,7 +592,7 @@ class TCPServer(Server):
             self._sock.bind(self.bind)
         self._sock.listen(self._backlog)
 
-        self._poller.addReader(self._sock)
+        self._poller.addReader(self, self._sock)
 
 class UNIXServer(Server):
 
@@ -620,7 +620,7 @@ class UNIXServer(Server):
         self._sock.setblocking(False)
         self._sock.listen(self._backlog)
 
-        self._poller.addReader(self._sock)
+        self._poller.addReader(self, self._sock)
 
 class UDPServer(Server):
 
@@ -637,7 +637,7 @@ class UDPServer(Server):
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self._sock.setblocking(False)
 
-        self._poller.addReader(self._sock)
+        self._poller.addReader(self, self._sock)
 
     def _close(self, sock):
         self._poller.discard(sock)
@@ -686,7 +686,7 @@ class UDPServer(Server):
     @handler("write", override=True)
     def write(self, address, data):
         if not self._poller.isWriting(self._sock):
-            self._poller.addWriter(self._sock)
+            self._poller.addWriter(self, self._sock)
         self._buffers[self._sock].append((address, data))
 
     def broadcast(self, data, port):
@@ -726,7 +726,7 @@ def Pipe(channels=("pipe", "pipe"), **kwargs):
     a = UNIXClient(s1, channel=channels[0], **kwargs)
     b = UNIXClient(s2, channel=channels[1], **kwargs)
     a._connected = True
-    a._poller.addReader(a._sock)
+    a._poller.addReader(a, a._sock)
     b._connected = True
-    b._poller.addReader(b._sock)
+    b._poller.addReader(b, b._sock)
     return a, b
