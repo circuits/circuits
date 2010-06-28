@@ -22,8 +22,9 @@ except ImportError:
     warnings.warn("No SSL support available. Using python-2.5 ? Try isntalling the ssl module: http://pypi.python.org/pypi/ssl/")
     HAS_SSL = 0
 
-from circuits.net.pollers import Select as DefaultPoller
+from circuits.core.utils import findcmp
 from circuits.core import handler, Event, Component
+from circuits.net.pollers import _Poller, Select as DefaultPoller
 
 BUFSIZE = 4096 # 4KB Buffer
 BACKLOG = 5000 #  5K Concurrent Connections
@@ -411,10 +412,8 @@ class Server(Component):
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
         self._backlog = kwargs.get("backlog", BACKLOG)
 
-        Poller = kwargs.get("poller", DefaultPoller)
-
-        self._poller = Poller(channel=self.channel)
-        self._poller.register(self)
+        self._poller = None
+        self._PollerComponent = kwargs.get("poller", DefaultPoller)
 
         self._sock = None
         self._buffers = defaultdict(deque)
@@ -432,6 +431,22 @@ class Server(Component):
     @property
     def port(self):
         return self.bind[1] if hasattr(self, "bind") else None
+
+    @handler("registered", target="*")
+    def registered(self, component, manager):
+        if self._poller is None and isinstance(component, _Poller):
+            #print "Setting poller..."
+            self._poller = component
+            self._poller.addReader(self, self._sock)
+
+    @handler("started", filter=True, target="*")
+    def _on_started(self, component, mode):
+        if self._poller is None:
+            #print "No poller set..."
+            self._poller = self._PollerComponent()
+            self._poller.register(self.root)
+            self._poller.addReader(self, self._sock)
+            return True
 
     def _close(self, sock):
         if not sock == self._sock and sock not in self._clients:
@@ -592,8 +607,6 @@ class TCPServer(Server):
             self._sock.bind(self.bind)
         self._sock.listen(self._backlog)
 
-        self._poller.addReader(self, self._sock)
-
 class UNIXServer(Server):
 
     def __init__(self, bind, ssl=False, **kwargs):
@@ -620,8 +633,6 @@ class UNIXServer(Server):
         self._sock.setblocking(False)
         self._sock.listen(self._backlog)
 
-        self._poller.addReader(self, self._sock)
-
 class UDPServer(Server):
 
     def __init__(self, bind, ssl=False, **kwargs):
@@ -636,8 +647,6 @@ class UDPServer(Server):
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self._sock.setblocking(False)
-
-        self._poller.addReader(self, self._sock)
 
     def _close(self, sock):
         self._poller.discard(sock)
