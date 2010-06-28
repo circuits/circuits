@@ -434,14 +434,12 @@ class Server(Component):
     @handler("registered", target="*")
     def registered(self, component, manager):
         if self._poller is None and isinstance(component, _Poller):
-            #print "Setting poller..."
             self._poller = component
             self._poller.addReader(self, self._sock)
 
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
         if self._poller is None:
-            #print "No poller set..."
             self._poller = self._PollerComponent()
             self._poller.register(self.root)
             self._poller.addReader(self, self._sock)

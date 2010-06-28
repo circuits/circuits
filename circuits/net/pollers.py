@@ -71,15 +71,11 @@ class _Poller(BaseComponent):
 
     def addReader(self, source, fd):
         channel = getattr(source, "channel", "*")
-        #print "Adding reader from %r with channel %r for %r" % (
-        #        source, channel, fd)
         self._read.append(fd)
         self._targets[fd] = channel
 
     def addWriter(self, source, fd):
         channel = getattr(source, "channel", "*")
-        #print "Adding writer from %r with channel %r for %r" % (
-        #        source, channel, fd)
         self._write.append(fd)
         self._targets[fd] = channel
 
