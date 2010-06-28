@@ -27,15 +27,15 @@ class App(Component):
     def error(self):
         raise Exception("Error!")
 
-    @handler("values")
+    @handler("values", priority=2.0)
     def _value1(self):
         return "foo"
 
-    @handler("values")
+    @handler("values", priority=1.0)
     def _value2(self):
         return "bar"
 
-    @handler("values")
+    @handler("values", priority=0.0)
     def _value3(self):
         return self.push(Hello())
 
