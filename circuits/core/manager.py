@@ -186,31 +186,38 @@ class Manager(object):
         tmap = self._tmap.get
         cmap = self._cmap.get
 
+        def _sortkey(handler):
+            return (self._handlerattrs[handler]["priority"],
+                    self._handlerattrs[handler]["filter"])
+
         # Global Channels
-        handlers = self._globals
-  
+        handlers = self._globals[:]
+
         # This channel on all targets
         if channel == "*":
-            all = tmap(target, [])
-            return chain(handlers, all)
+            handlers.extend(tmap(target, []))
+            handlers.sort(key=_sortkey, reverse=True)
+            return handlers
 
         # Every channel on this target
         if target == "*":
-            all = cmap(channel, [])
-            return chain(handlers, all)
+            handlers.extend(cmap(channel, []))
+            handlers.sort(key=_sortkey, reverse=True)
+            return handlers
 
         # Any global channels
         if exists(("*", channel)):
-            handlers = chain(handlers, get(("*", channel)))
+            handlers.extend(get(("*", channel)))
  
         # Any global channels for this target
         if exists((channel, "*")):
-            handlers = chain(handlers, get((channel, "*")))
+            handlers.extend(get((channel, "*")))
 
         # The actual channel and target
         if exists(_channel):
-            handlers = chain(handlers, get((_channel)))
-  
+            handlers.extend(get((_channel)))
+
+        handlers.sort(key=_sortkey, reverse=True)
         return handlers
 
     @property
@@ -282,8 +289,7 @@ class Manager(object):
         if not channels and target == "*":
             if handler not in self._globals:
                 self._globals.append(handler)
-                self._globals.sort(key=_sortkey)
-                self._globals.reverse()
+                self._globals.sort(key=_sortkey, reverse=True)
         else:
             for channel in channels:
                 self._handlers.add(handler)
@@ -293,8 +299,8 @@ class Manager(object):
 
                 if handler not in self.channels[(target, channel)]:
                     self.channels[(target, channel)].append(handler)
-                    self.channels[(target, channel)].sort(key=_sortkey)
-                    self.channels[(target, channel)].reverse()
+                    self.channels[(target, channel)].sort(key=_sortkey,
+                            reverse=True)
 
                 if target not in self._tmap:
                     self._tmap[target] = []
