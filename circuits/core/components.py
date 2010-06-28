@@ -7,6 +7,7 @@
 This module definse the BaseComponent and the subclassed Component
 """
 
+from itertools import chain
 from types import MethodType
 from inspect import getmembers
 
@@ -54,18 +55,32 @@ class BaseComponent(Manager):
         super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
-        self.register(self)
+        self._registerHandlers()
+        self.manager = self
 
         for k, v in getmembers(self):
             if isinstance(v, BaseComponent):
                 v.register(self)
 
-    def _registerHandlers(self, manager):
-        p = lambda x: callable(x) and getattr(x, "handler", False)
-        handlers = [v for k, v in getmembers(self, p)]
-        for handler in handlers:
-            target = handler.target or getattr(self, "channel", "*")
-            manager.add(handler, target=target)
+    def _registerHandlers(self, manager=None):
+        if manager is None:
+            p = lambda x: callable(x) and getattr(x, "handler", False)
+            handlers = [v for k, v in getmembers(self, p)]
+            for handler in handlers:
+                target = handler.target or getattr(self, "channel", "*")
+                self.add(handler, target=target)
+        else:
+            for handler in chain(self._globals, self._handlers):
+                kwargs = {}
+                kwargs = self._handlerattrs[handler]
+                if not kwargs.get("target"):
+                    kwargs["target"] = getattr(self, "channel", "*")
+                if "channels" in kwargs:
+                    channels = kwargs["channels"]
+                    del kwargs["channels"]
+                else:
+                    channels = ()
+                manager.add(handler, *channels, **kwargs)
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():
