@@ -22,7 +22,6 @@ except ImportError:
     warnings.warn("No SSL support available. Using python-2.5 ? Try isntalling the ssl module: http://pypi.python.org/pypi/ssl/")
     HAS_SSL = 0
 
-from circuits.core.utils import findcmp
 from circuits.core import handler, Event, Component
 from circuits.net.pollers import _Poller, Select as DefaultPoller
 
