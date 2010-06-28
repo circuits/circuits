@@ -9,7 +9,7 @@ from circuits.web import Controller
 
 class Root(Controller):
 
-    @handler("started", target="*")
+    @handler("started", priority=1.0, target="*")
     def _on_started(self, component, mode):
         fd, self.filename = mkstemp()
         os.write(fd, "Hello World!")

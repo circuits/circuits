@@ -43,7 +43,7 @@ def test_file(webapp):
     d["t"] = formattime()
     d["r"] = "GET / HTTP/1.1"
     d["s"] = "200"
-    d["b"] = "-"
+    d["b"] = "12"
     d["f"] = ""
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
@@ -76,7 +76,7 @@ def test_logger(webapp):
     d["t"] = formattime()
     d["r"] = "GET / HTTP/1.1"
     d["s"] = "200"
-    d["b"] = "-"
+    d["b"] = "12"
     d["f"] = ""
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
