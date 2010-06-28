@@ -66,10 +66,11 @@ def test_error_value():
     assert type(etraceback) is ListType
 
 def test_multiple_values():
-    x = m.push(Values())
+    v = m.push(Values())
     while m: m.flush()
-    assert type(x.value) is ListType
-    assert list(x) == ["foo", "bar", "Hello World!"]
+    assert type(v.value) is ListType
+    x = list(v)
+    assert x == ["foo", "bar", "Hello World!"]
     assert x[0] == "foo"
     assert x[1] == "bar"
     assert x[2] == "Hello World!"
