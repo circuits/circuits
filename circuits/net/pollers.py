@@ -80,12 +80,16 @@ class _Poller(BaseComponent):
         self._targets[fd] = channel
 
     def removeReader(self, fd):
-        self._read.remove(fd)
-        del self._targets[fd]
+        if fd in self._read:
+            self._read.remove(fd)
+        if fd in self._targets:
+            del self._targets[fd]
 
     def removeWriter(self, fd):
-        self._write.remove(fd)
-        del self._targets[fd]
+        if fd in self._write:
+            self._write.remove(fd)
+        if fd in self._targets:
+            del self._targets[fd]
 
     def isReading(self, fd):
         return fd in self._read
@@ -98,6 +102,8 @@ class _Poller(BaseComponent):
             self._read.remove(fd)
         if fd in self._write:
             self._write.remove(fd)
+        if fd in self._targets:
+            del self._targets[fd]
 
     def getTarget(self, fd):
         return self._targets.get(fd, self.manager)
