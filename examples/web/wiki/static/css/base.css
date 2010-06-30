@@ -1,0 +1,265 @@
+/* Main Layout */
+
+* {
+	margin: 0;
+	padding: 0;
+    color: #2e3436;
+    font-family: Droid Sans, DejaVu Sans, sans-serif;
+    font-size: 96%
+}
+
+body {
+	background: none rgb(240, 255, 240);
+	min-width: 800px;
+}
+
+h1 {
+	font-size: 20pt;
+}
+
+h2 {
+	font-size: 18pt;
+}
+
+h3 {
+	font-size: 16pt;
+}
+
+h4 {
+	font-size: 14pt;
+}
+
+h5 {
+	font-size: 12pt;
+}
+
+a:link, a:visited {
+	color: #888888;
+	text-decoration: none;
+	border-bottom: 1px dashed;
+}
+
+a:focus, a:hover, a:active {
+	border-bottom: 1px solid;
+}
+
+a img { border: none }
+
+#window {
+	position: relative;
+	width: 800px;
+	top: 10px;
+	margin: 0 auto;
+	border: 2px solid rgb(100, 155, 100);
+	background: none rgb(255, 255, 255);
+}
+
+#header, #footer {
+	background: none rgb(34, 170, 34);
+	color: rgb(255, 255, 255);
+}
+
+#header {
+	padding: 5px 5px 5px 5px;
+}
+
+#header h1 {
+	text-align: center;
+}
+
+#header h1 a {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#footer {
+    height: 20px;
+	padding: 5px 5px 5px 5px;
+}
+
+/* Content */
+
+#content {
+	margin: 0 auto;
+	padding: 20px;
+	height: 600px;
+	border: none;
+	background: none rgb(255, 255, 255);
+    overflow: auto;
+    clear: both;
+}
+
+/* Editor */
+
+#editor label.comment input {
+    display: block;
+    margin: 0.5em auto;
+    width: 97%;
+}
+
+/* Menu */
+
+#menu {
+ background: #f7f7f7 url(../images/topbar_gradient.png) 0 0;
+ border: 1px solid #649B64;
+ font-family: Droid Sans, DejaVu Sans, sans-serif;
+ font-size: 10px;
+ padding: .2em 0;
+}
+
+#menu li {
+    border-right: none;
+    padding: .25em 0;
+}
+
+#menu :link, #menu :visited {
+ background: url(../images/dots.gif) 0 0 no-repeat;
+ border-right: 1px solid #fff;
+ border-bottom: none;
+ border-left: 1px solid #555;
+ color: #000;
+ padding: .2em 20px;
+}
+
+* html #menu :link, * html #menu :visited { background-position: 1px 0 }
+
+#menu :link:hover, #menu :visited:hover {
+ background-color: #ccc;
+ border-right: 1px solid #ddd;
+}
+
+#menu .active :link, #menu .active :visited {
+ background: #333 url(../images/topbar_gradient2.png) 0 0 repeat-x;
+ border-top: none;
+ border-right: 1px solid #000;
+ color: #eee;
+ font-weight: bold;
+}
+
+#menu .active :link:hover, #menu .active :visited:hover {
+ border-right: 1px solid #000;
+}
+
+/* Navigation */
+
+.nav h2, .nav hr { display: none }
+.nav ul { font-size: 10px; list-style: none; margin: 0; text-align: right }
+.nav li {
+ border-right: 1px solid #d7d7d7;
+ display: inline;
+ padding: 0 .75em;
+ white-space: nowrap;
+}
+.nav li.last { border-right: none }
+
+/* Software */
+
+#software {
+    float: left;
+	margin-top: 5px;
+	font-size: 8pt;
+}
+
+#software a:link, a:active, a:focus, a:visited, a:hover {
+	border: none;
+}
+
+/* validate icons */
+
+#icons {
+	float: right;
+	margin-top: 5px;
+}
+
+#icons img, a:link, a:active, a:focus, a:visited, a:hover {
+	border: none;
+}
+
+/* Buttons */
+
+#buttons {
+    float: left;
+    border: none;
+    font-family: Droid Sans, DejaVu Sans, sans-serif;
+    font-size: 10px;
+    padding: .2em 0;
+}
+
+#buttons li {
+    border-right: none;
+    padding: .25em 0;
+}
+
+#buttons :link, #buttons :visited {
+    border-bottom: none;
+    color: #000;
+    padding: .2em;
+}
+
+#buttons :link:hover, #buttons :visited:hover {
+    background-color: rgb(100, 100, 100);
+}
+
+/* Styles for the error page (and rst errors) */
+#content.error .message, div.system-message {
+ background: #fdc;
+ border: 2px solid #d00;
+ color: #500;
+ padding: .5em;
+ margin: 1em 0;
+}
+#content.error div.message pre, div.system-message pre {
+  margin-left: 1em;
+  overflow: hidden;
+  white-space: normal;
+}
+div.system-message p { margin: 0; }
+div.system-message p.system-message-title { font-weight: bold; }
+
+#warning.system-message { background: #ffa; border: 2px solid #886; }
+#warning.system-message li { list-style-type: square; }
+
+#notice.system-message { background: #bfb; border: 2px solid #484; }
+#notice.system-message li { list-style-type: square; }
+
+#content.error form.newticket { display: inline; }
+#content.error form.newticket textarea { display: none; }
+
+#content.error #systeminfo { margin: 1em; width: auto; }
+#content.error #systeminfo th { font-weight: bold; text-align: right; }
+
+#content.error #traceback { margin-left: 1em; }
+#content.error #traceback :link, #content.error #traceback :visited {
+  border: none;
+}
+#content.error #tbtoggle { font-size: 80%; }
+#content.error #traceback div { margin-left: 1em; }
+#content.error #traceback h3 { font-size: 95%; margin: .5em 0 0; }
+#content.error #traceback :link var, #content.error #traceback :visited var {
+  font-family: monospace;
+  font-style: normal;
+  font-weight: bold;
+}
+#content.error #traceback span.file { color: #666; font-size: 85%; }
+#content.error #traceback ul { list-style: none; margin: .5em 0; padding: 0; }
+#content.error #traceback ol {
+  border: 1px dotted #d7d7d7;
+  color: #999;
+  font-size: 85%;
+  line-height: 1;
+  margin: .5em 0;
+}
+#content.error #traceback ol li { white-space: pre; }
+#content.error #traceback ol li.current { background: #e6e6e6; color: #333; }
+#content.error #traceback ol li code { color: #666; }
+#content.error #traceback ol li.current code { color: #000; }
+#content.error #traceback table { margin: .5em 0 1em;  }
+#content.error #traceback th, #content.error #traceback td {
+  font-size: 85%; padding: 1px;
+}
+#content.error #traceback th var {
+  font-family: monospace;
+  font-style: normal;
+}
+#content.error #traceback td code { white-space: pre; }
+#content.error #traceback pre { font-size: 95%; }

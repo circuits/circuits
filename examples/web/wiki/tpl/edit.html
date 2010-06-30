@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US">
+ <head>
+  <title>Editing %(title)s</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" title="default" media="screen" href="./css/base.css" type="text/css" />
+  <link rel="stylesheet" href="./css/wiki.css" type="text/css" />
+
+  <link rel="stylesheet" type="text/css" href="./js/markitup/skins/simple/style.css" />
+  <link rel="stylesheet" type="text/css" href="./js/markitup/sets/wiki/style.css" />
+
+  <link type="image/x-icon" href="/favicon.ico" rel="shortcut icon" />
+</head>
+<body>
+<div id="window">
+
+ <div id="header">
+  <h1 id="title">Editing %(title)s</h1>
+ </div>
+
+ <div id="menu" class="nav">%(menu)s</div>
+
+ <div id="content" class="content">
+  <div id="editor" style="display: block">
+
+   <form action="" method="post">
+    <div id="editor-content">
+      <textarea id="text" name="text" rows="25" cols="80">%(text)s</textarea>
+    </div>
+    <div id="editor-buttons">
+     <button type="submit" name="save" value="Save">Save</button>
+    </div>
+   </form>
+  </div>
+ </div>
+
+ <div id="footer" class="footer">
+  <div id="buttons" class="nav">
+  </div>
+ </div>
+
+ <div id="software">
+  Powered by <a id="circuits" href="http://bitbucket.org/prologic/circuits/">circuits - <span class="version">%(version)s</span></a>
+ </div>
+ <div id="icons">
+  <a href="http://validator.w3.org/check/referer">
+   <img src="/images/valid-xhtml10.png"  alt="Valid XHTML 1.0 Transitional" />
+  </a>
+  <a href="http://jigsaw.w3.org/css-validator/check/referer">
+   <img src="/images/valid-css.png" alt="Valid CSS" />
+  </a>
+ </div>
+</div>
+</body>
+</html>
