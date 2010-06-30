@@ -44,6 +44,7 @@ def loadMacros():
 
         p = lambda x: isfunction(x) and getmodule(x) is m
         for name, function in getmembers(m, p):
+            name = name.replace("_", "-")
             try:
                 macros[name] = function
             except Exception, e:

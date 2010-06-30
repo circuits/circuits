@@ -8,9 +8,18 @@ import pygments
 import pygments.util
 import pygments.lexers
 import pygments.formatters
+from genshi import builder
 from genshi.filters import HTMLSanitizer
 
 sanitizer = HTMLSanitizer()
+
+def pre(macro, environ, *args, **kwargs):
+    """Return the raw text of body, rendered in a <pre> block."""
+    
+    if macro.body is None:
+        return None
+
+    return builder.tag.pre(macro.body)
 
 def code(macro, environ, *args, **kwargs):
     """Render syntax highlighted code"""

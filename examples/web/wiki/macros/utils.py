@@ -6,16 +6,6 @@ Utility macros
 def macros(macro, environ, *args, **kwargs):
     """Return a list of available macros"""
 
-    s = StringIO()
+    s = "\n".join(["* %s" % k for k in environ["macros"].keys()])
 
-    s.write("= Available Macros =\n")
-    s.write("\N")
-
-    for k, v in environ["macros"].items():
-        s.write("* %s\n" % (k))
-    s.write("\n")
-
-    v = s.getvalue()
-    s.close()
-
-    return v
+    return environ["parser"].generate(s, environ=environ)
