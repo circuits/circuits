@@ -56,7 +56,7 @@ class Root(Controller):
 
         return s % d
 
-    def POST(self, name, **form):
+    def POST(self, name="FrontPage", **form):
         self.db.save(name, form.get("text", ""))
         return self.redirect(name)
 
