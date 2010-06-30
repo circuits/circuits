@@ -30,8 +30,9 @@ class Wiki(object):
                 self.save(defaultpage, open(filename, "r").read())
 
     def save(self, name, text):
-        self._cu.execute("SELECT name FROM pages WHERE name=?", (name,))
-        if self._cu.rowcount:
+        self._cu.execute("SELECT COUNT() FROM pages WHERE name=?", (name,))
+        row = self._cu.fetchone()
+        if row[0]:
             self._cu.execute("UPDATE pages SET text=? WHERE name=?",
                     (text, name,))
         else:
@@ -71,9 +72,7 @@ class Root(Controller):
         return s % d
 
     def POST(self, name="FrontPage", **form):
-        text = form.get("text", "")
-        self.db.save(name, text)
+        self.db.save(name, form.get("text", ""))
         return self.redirect(name)
 
-from circuits import Debugger
-(Server(("0.0.0.0", 8000)) + Debugger(events=False) + Static(docroot="static") + Root() + Logger()).run()
+(Server(("0.0.0.0", 8000)) + Static(docroot="static") + Root() + Logger()).run()

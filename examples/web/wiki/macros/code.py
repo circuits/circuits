@@ -7,13 +7,13 @@ import re
 
 import genshi
 import pygments
+import pygments.util
+import pygments.lexers
+import pygments.formatters
 
 def code(macro, environ, *args, **kwargs):
     """Render syntax highlighted code"""
     
-    import pdb
-    pdb.set_trace()
-
     if not macro.body:
         return None
 

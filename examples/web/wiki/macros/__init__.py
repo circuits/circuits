@@ -4,7 +4,6 @@ Macro support and dispatcher
 """
 
 import os
-import sys
 from inspect import getmembers, getmodule, isfunction
 
 from creoleparser import parse_args
