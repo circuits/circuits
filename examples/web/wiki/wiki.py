@@ -3,10 +3,15 @@
 import os
 import sqlite3
 
-import creoleparser
+from creoleparser import create_dialect, creole11_base, Parser
 
 import circuits
 from circuits.web import Server, Controller, Logger, Static
+
+import macros
+
+text2html = Parser(create_dialect(creole11_base, macro_func=macros.dispatcher),
+        method="xhtml")
 
 class Wiki(object):
 
@@ -43,21 +48,32 @@ class Root(Controller):
 
     db = Wiki("wiki.db")
 
+    environ = {"db": db, "macros": macros.loadMacros()}
+
     def GET(self, name="FrontPage", action="view"):
+        environ = self.environ.copy()
+        environ["page.name"] = name
+
         d = {}
         d["title"] = name
         d["version"] = circuits.__version__
-        d["menu"] = creoleparser.text2html(self.db.get("SiteMenu", ""))
+        d["menu"] = text2html(self.db.get("SiteMenu", ""),
+                environ=environ)
 
         text = self.db.get(name, "")
         s = open("tpl/%s.html" % action, "r").read()
 
-        d["text"] = creoleparser.text2html(text) if action == "view" else text
+        if action == "view":
+            d["text"] = text2html(text, environ=environ)
+        else:
+            d["text"] = text
 
         return s % d
 
     def POST(self, name="FrontPage", **form):
-        self.db.save(name, form.get("text", ""))
+        text = form.get("text", "")
+        self.db.save(name, text)
         return self.redirect(name)
 
-(Server(("0.0.0.0", 8000)) + Static(docroot="static") + Root() + Logger()).run()
+from circuits import Debugger
+(Server(("0.0.0.0", 8000)) + Debugger(events=False) + Static(docroot="static") + Root() + Logger()).run()
