@@ -9,9 +9,11 @@ from circuits.net.protocols.irc import RPL_ENDOFMOTD, ERR_NOMOTD
 
 class Bot(Component):
 
-    def __init__(self, host, port=6667):
+    channel = "ircbot"
+
+    def __init__(self, host, port=6667, channel=channel):
         super(Bot, self).__init__()
-        self += TCPClient() + IRC()
+        self += TCPClient(channel=self.channel) + IRC(channel=self.channel)
         self.push(Connect(host, port))
 
     def connected(self, host, port):
