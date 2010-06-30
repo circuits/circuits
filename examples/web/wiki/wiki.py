@@ -36,7 +36,8 @@ class Wiki(object):
 
     def get(self, name, default=None):
         self._cu.execute("SELECT text FROM pages WHERE name=?", (name,))
-        return self._cu.fetchone()[0]
+        row = self._cu.fetchone()
+        return row[0] if row else default
 
 class Root(Controller):
 
