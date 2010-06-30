@@ -1,0 +1,27 @@
+|= Wiki                                 |= Rendered                  |= Source
+|##{{{//italics//}}}##                  |//italics//                 |<<source>>//italics//<</source>>
+|##{{{**bold**}}}##                     |**bold**                    |<<source>>**bold**<</source>>
+|##{{{^^super^^script}}}##              |^^super^^script             |<<source>>^^super^^script<</source>>
+|##{{{,,sub,,script}}}##                |,,sub,,script               |<<source>>,,sub,,script<</source>>
+|##{{{##monospace##}}}##                |##monospace##               |<<source>>##monospace##<</source>>
+|<<include-raw BulletList>>             |<<include BulletList>>      |<<include-source BulletList>>
+|<<include-raw NumberedList>>           |<<include NumberedList>>    |<<include-source NumberedList>>
+|<<include-raw MixedList>>              |<<include MixedList>>       |<<include-source MixedList>>
+|<<include-raw DefinitionList>>         |<<include DefinitionList>>  |<<include-source DefinitionList>>
+|##Link to ~[[WikiPage]]##              |Link to [[WikiPage]]        |<<pre>><p>Link to <a href="WikiPage">WikiPage</a></p><</pre>>
+|##{{{[[http://google.com|Google]]}}}## |[[http://google.com|Google]]|<<source>>[[http://google.com|Google]]<</source>>
+|<<include-raw HeadingsPage>>           |<<include HeadingsPage>>    |<<include-source HeadingsPage>>
+|<<include-raw NoLineBreak>>            |<<include NoLineBreak>>     |<<include-source NoLineBreak>>
+|##Force~\\linebreak##                  |Force\\linebreak            |<<source>>Force\\linebreak<</source>>
+|<<include-raw HorizontalLine>>         |<<include HorizontalLine>>  |<<include-source HorizontalLine>>
+|##{{{{{Image.jpg|Cod}}}}}##            |{{Image.jpg|Cod}}           |<<source>>{{Image.jpg|Cod}}<</source>>
+|<<include-raw RenderedTable>>          |<<include RenderedTable>>   |<<include-source RenderedTable>>
+|<<include-raw RenderedPre>>            |<<include RenderedPre>>     |<<include-source RenderedPre>>
+|<<include-raw Indented>>               |<<include Indented>>        |<<include-source Indented>>
+|{{{use a tilde to ~**escape}}}         |use a tilde to ~**escape    |<<source>>use a tilde to ~**escape<</source>>
+|##{{{<<source>>a //simple// macro<</source>>}}}##|<<source>>a //simple// macro<</source>>|<<pre>><pre><p>a <em>simple</em> macro</p></pre><</pre>>
+
+[[http://creoleparser.googlecode.com/svn/trunk/creoleparser/test_pages/CheatSheetPlus.txt|raw wiki text]]
+
+[[http://validator.w3.org/check?uri=referer|{{http://www.w3.org/Icons/valid-xhtml10-blue|Valid XHTML 1.0 Strict}}]]
+

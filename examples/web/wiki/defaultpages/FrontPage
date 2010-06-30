@@ -1,5 +1,30 @@
 = Front Page =
 
-Welcome to the simple [[http://bitbucket.org/prologic/circuits/|circuits.web]] wiki engine in < 100 lines of code!!!! (//95 not including white space or macros//)
+Welcome to the simple [[http://bitbucket.org/prologic/circuits/|circuits.web]] wiki engine in < 100 lines of code!!!!
+
+This little demo wiki makes use of the following software/library:
+* [[http://www.python.org|Python]] D'uh :)
+* [[http://bitbucket.org/prologic/circuits/|circuits]] -- circuits.web
+* [[http://code.google.com/p/creoleparser/|creoleparser]] -- wiki parser
+* [[http://sqlite.org|SQLite]] -- wiki database
+* [[http://genshi.edgewall.org/|genshi]] -- used by creoleparser and macros
+* [[http://pygments.org/|pygments]] -- used by code macro for highlighting
+
+This is the simplest, most concise demonstration of quite a number of the
+features of the [[http://bitbucket.org/prologic/circuits/|circuits.web]]
+web framework as well as the smallest (//without resorting to obfuscation//).
+
+This wiki engine also fully supports macros and a list of available macros
+can be found here: [[MacroList]]
+
+For help with wiki syntax see the [[CheatSheet]] page.
+
+THe entire source code to this wiki can be found on the
+[[http://bitbucket.org/prologic/circuits/|circuits]] project home page
+here: http://bitbucket.org/prologic/circuits/src/tip/examples/web/wiki/
 
 Try the [[SandBox]] :)
+
+Enjoy!
+
+--[[http://prologic.shortcircuit.net.au|JamesMills]]

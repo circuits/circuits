@@ -54,6 +54,7 @@ class Root(Controller):
     def GET(self, name="FrontPage", action="view"):
         environ = self.environ.copy()
         environ["page.name"] = name
+        environ["parser"] = text2html
 
         d = {}
         d["title"] = name
