@@ -194,7 +194,7 @@ class IRC(Component):
 
     def __init__(self, *args, **kwargs):
         super(IRC, self).__init__(*args, **kwargs)
-        LP().register(self)
+        LP(**kwargs).register(self)
 
     ###
     ### IRC Command Event Handlers
