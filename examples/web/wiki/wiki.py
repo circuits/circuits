@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import os
 import sqlite3
@@ -23,37 +22,25 @@ class Wiki(object):
             self._cu.execute("CREATE TABLE pages (name, text)")
             for defaultpage in os.listdir("defaultpages"):
                 filename = os.path.join("defaultpages", defaultpage)
-                self[defaultpage] = open(filename, "r").read()
+                self.save(defaultpage, open(filename, "r").read())
 
-    def __contains__(self, name):
-        self._cu.execute("SELECT COUNT() AS result FROM pages WHERE name=?",
-                (name,))
-        row = self._cu.fetchone()
-        return row[0]
-
-    def __getitem__(self, name):
-        self._cu.execute("SELECT text FROM pages WHERE name=?", (name,))
-        row = self._cu.fetchone()
-        return row[0]
-
-    def __setitem__(self, name, text):
-        if name in self:
+    def save(self, name, text):
+        self._cu.execute("SELECT name FROM pages WHERE name=?", (name,))
+        if self._cu.rowcount:
             self._cu.execute("UPDATE pages SET text=? WHERE name=?",
                     (text, name,))
         else:
             self._cu.execute("INSERT INTO pages (name, text) VALUES (?, ?)",
                     (name, text,))
-
         self._cx.commit()
 
     def get(self, name, default=None):
-        return self.__getitem__(name) if name in self else default
+        self._cu.execute("SELECT text FROM pages WHERE name=?", (name,))
+        return self._cu.fetchone()[0]
 
 class Root(Controller):
 
-    def __init__(self, db):
-        super(Root, self).__init__()
-        self.db = db
+    db = Wiki("wiki.db")
 
     def GET(self, name="FrontPage", action="view"):
         d = {}
@@ -64,20 +51,12 @@ class Root(Controller):
         text = self.db.get(name, "")
         s = open("tpl/%s.html" % action, "r").read()
 
-        if action == "view":
-            d["page"] = creoleparser.text2html(text)
-        elif action == "edit":
-            d["text"] = text
+        d["text"] = creoleparser.text2html(text) if action == "view" else text
 
         return s % d
 
     def POST(self, name, **form):
-        self.db[name] = form.get("text", "")
+        self.db.save(name, form.get("text", ""))
         return self.redirect(name)
 
-db = Wiki("wiki.db")
-
-(Server(("0.0.0.0", 8000))
-        + Static(docroot="static")
-        + Root(db)
-        + Logger()).run()
+(Server(("0.0.0.0", 8000)) + Static(docroot="static") + Root() + Logger()).run()
