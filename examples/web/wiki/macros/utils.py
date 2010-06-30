@@ -1,6 +1,6 @@
-"""Macros macros
+"""Utils macros
 
-Macros to display information about other macros
+Utility macros
 """
 
 def macros(macro, environ, *args, **kwargs):
