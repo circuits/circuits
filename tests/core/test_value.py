@@ -70,6 +70,7 @@ def test_multiple_values():
     while m: m.flush()
     assert type(v.value) is ListType
     x = list(v)
+    assert "foo" in v
     assert x == ["foo", "bar", "Hello World!"]
     assert x[0] == "foo"
     assert x[1] == "bar"
