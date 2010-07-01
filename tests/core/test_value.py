@@ -49,6 +49,7 @@ while m: m.flush()
 def test_value():
     x = m.push(Hello())
     while m: m.flush()
+    assert "Hello World!" in x
     assert x.value == "Hello World!"
 
 def test_nested_value():
