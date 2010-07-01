@@ -22,6 +22,7 @@ except ImportError:
     warnings.warn("No SSL support available. Using python-2.5 ? Try isntalling the ssl module: http://pypi.python.org/pypi/ssl/")
     HAS_SSL = 0
 
+from circuits.core.utils import findcmp
 from circuits.core import handler, Event, Component
 from circuits.net.pollers import _Poller, Select as DefaultPoller
 
@@ -203,10 +204,8 @@ class Client(Component):
 
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
 
-        Poller = kwargs.get("poller", DefaultPoller)
-
-        self._poller = Poller(channel=self.channel)
-        self._poller.register(self)
+        self._poller = None
+        self._PollerComponent = kwargs.get("poller", DefaultPoller)
 
         self._sock = None
         self._sslsock = None
@@ -217,6 +216,27 @@ class Client(Component):
     @property
     def connected(self):
         return getattr(self, "_connected", None)
+
+    @handler("registered", target="*")
+    def _on_registered(self, component, manager):
+        if self._poller is None:
+            if isinstance(component, _Poller):
+                self._poller = component
+            else:
+                component = findcmp(self.root, _Poller, subclass=False)
+                if component is not None:
+                    print
+                    print "Found poller:", component
+                    print
+                    self._poller = component
+
+    @handler("started", filter=True, target="*")
+    def _on_started(self, component, mode):
+        if self._poller is None:
+            self._poller = self._PollerComponent()
+            self._poller.register(self.root)
+            self._poller.addReader(self, self._sock)
+            return True
 
     def _close(self):
         self._poller.discard(self._sock)
@@ -432,10 +452,21 @@ class Server(Component):
         return self.bind[1] if hasattr(self, "bind") else None
 
     @handler("registered", target="*")
-    def registered(self, component, manager):
-        if self._poller is None and isinstance(component, _Poller):
-            self._poller = component
-            self._poller.addReader(self, self._sock)
+    def _on_registered(self, component, manager):
+        if self._poller is None:
+            if isinstance(component, _Poller):
+                self._poller = component
+                self._poller.addReader(self, self._sock)
+            else:
+                #import pdb
+                #pdb.set_trace()
+                component = findcmp(self.root, _Poller, subclass=False)
+                if component is not None:
+                    print
+                    print "Found poller:", component
+                    print
+                    self._poller = component
+                    self._poller.addReader(self, self._sock)
 
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
