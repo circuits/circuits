@@ -60,9 +60,8 @@ def source(macro, environ, *args, **kwargs):
     return builder.tag.pre(environ["parser"].render(
         macro.body, environ=environ).decode("utf-8"))
 
-def div(macro, environ, class_=None, float=None, id=None, style=None,
+def div(macro, environ, cls=None, float=None, id=None, style=None,
         *args, **kwargs):
-    """..."""
 
     if macro.body is None:
         return None
@@ -71,17 +70,17 @@ def div(macro, environ, class_=None, float=None, id=None, style=None,
         style = "float: %s; %s" % (float, style)
 
     if style:
-        style = ';'.join(sanitizer.sanitize_css(style))
+        style = ";".join(sanitizer.sanitize_css(style))
 
     if macro.isblock:
-        context = 'block'
+        context = "block"
     else:
-        context = 'inline'
+        context = "inline"
 
-    contents = environ['parser'].generate(
+    contents = environ["parser"].generate(
             macro.body, environ=environ, context=context)
 
-    return builder.tag.div(contents, id=id, class_=class_, style=style)
+    return builder.tag.div(contents, id=id, class_=cls, style=style)
 
 def span(macro, environ, class_=None, id=None, style=None, *args, **kwargs):
     """..."""
