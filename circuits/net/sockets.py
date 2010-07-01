@@ -225,9 +225,6 @@ class Client(Component):
             else:
                 component = findcmp(self.root, _Poller, subclass=False)
                 if component is not None:
-                    print
-                    print "Found poller:", component
-                    print
                     self._poller = component
 
     @handler("started", filter=True, target="*")
@@ -466,9 +463,6 @@ class Server(Component):
                 #pdb.set_trace()
                 component = findcmp(self.root, _Poller, subclass=False)
                 if component is not None:
-                    print
-                    print "Found poller:", component
-                    print
                     self._poller = component
                     self._poller.addReader(self, self._sock)
 
