@@ -375,6 +375,11 @@ class UNIXClient(Client):
 
         self._sock.setblocking(False)
 
+    @handler("registered", target="*")
+    def _on_registered(self, component, manager):
+        if self._poller is not None and self._connected:
+            self._poller.addReader(self, self._sock)
+
     def connect(self, path, ssl=False):
         self.path = path
         self.ssl = ssl
@@ -762,7 +767,5 @@ def Pipe(channels=("pipe", "pipe"), **kwargs):
     a = UNIXClient(s1, channel=channels[0], **kwargs)
     b = UNIXClient(s2, channel=channels[1], **kwargs)
     a._connected = True
-    a._poller.addReader(a, a._sock)
     b._connected = True
-    b._poller.addReader(b, b._sock)
     return a, b
