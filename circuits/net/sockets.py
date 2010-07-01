@@ -235,7 +235,6 @@ class Client(Component):
         if self._poller is None:
             self._poller = self._PollerComponent()
             self._poller.register(self.root)
-            self._poller.addReader(self, self._sock)
             return True
 
     def _close(self):
