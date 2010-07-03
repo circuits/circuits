@@ -45,7 +45,7 @@ class HTTPError(Event):
         response.body = DEFAULT_ERROR_MESSAGE % {
             "status": "%s %s" % (status, short),
             "message": _escape(message) if message else "",
-            "traceback": "".join(traceback),
+            "traceback": _escape("".join(traceback)),
             "version": SERVER_VERSION}
 
     def __repr__(self):
