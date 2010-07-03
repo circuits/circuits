@@ -9,8 +9,13 @@ Component, StdIn, StdOut and StdErr components. Instances of StdIn, StdOUt
 and StdErr are also created by importing this package.
 """
 
+import sys
 import os
-import fcntl
+try:
+    import fcntl
+    HAS_FCNTL = True
+except ImportError:
+    HAS_FCNTL = False
 import errno
 import select
 from collections import deque
@@ -44,7 +49,7 @@ class File(Component):
         self.autoclose = kwargs.get("autoclose", True)
         self.encoding = kwargs.get("encoding", "utf-8")
 
-        if len(args) == 1 and type(args[0]) == file:
+        if len(args) == 1 and isinstance(args[0], file) or args[0] in (sys.stdin, sys.stdout, sys.stderr):
             self._fd = args[0]
         else:
             self._fd = open(*args)
@@ -54,10 +59,11 @@ class File(Component):
 
         self.bufsize = kwargs.get("bufsize", BUFSIZE)
 
-        # Set non-blocking file descriptor (non-portable)
-        flag = fcntl.fcntl(self._fd, fcntl.F_GETFL)
-        flag = flag | os.O_NONBLOCK
-        fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
+        if HAS_FCNTL:
+            # Set non-blocking file descriptor (non-portable)
+            flag = fcntl.fcntl(self._fd, fcntl.F_GETFL)
+            flag = flag | os.O_NONBLOCK
+            fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
 
         self._read = []
         self._write = []
@@ -187,8 +193,8 @@ if HAS_SERIAL:
             self.push(Closed(self.port))
 
 try:
-    stdin = File("/dev/stdin", "r", channel="stdin")
-    stdout = File("/dev/stdout", "w", channel="stdout")
-    stderr = File("/dev/stderr", "w", channel="stderr")
-except IOError:
+    stdin = File(sys.stdin, "r", channel="stdin")
+    stdout = File(sys.stdout, "w", channel="stdout")
+    stderr = File(sys.stderr, "w", channel="stderr")
+except:
     pass
