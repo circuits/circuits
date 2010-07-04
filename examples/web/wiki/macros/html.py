@@ -14,7 +14,20 @@ from genshi.filters import HTMLSanitizer
 sanitizer = HTMLSanitizer()
 
 def pre(macro, environ, *args, **kwargs):
-    """Return the raw text of body, rendered in a <pre> block."""
+    """Return the raw text of body, rendered in a <pre> block.
+    
+    **Arguments:** //None//
+
+    **Example:**
+    {{{
+    <<pre>>
+    def hello():
+        print "Hello World!"
+
+    hello()
+    <</pre>>
+    }}}
+    """
     
     if macro.body is None:
         return None
