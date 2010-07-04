@@ -25,6 +25,11 @@ here: http://bitbucket.org/prologic/circuits/src/tip/examples/web/wiki/
 
 Try the [[SandBox]] :)
 
+**NB**: This circuits.web wiki demo is not a complete wiki engine and lacks
+        some rather basic wiki features such as history and recent changes.
+        For a more complete wiki engine please see the
+        [[http://bitbucket.org/prologic/sahriswiki/|sahriswiki]] project.
+
 Enjoy!
 
 --[[http://prologic.shortcircuit.net.au|JamesMills]]
