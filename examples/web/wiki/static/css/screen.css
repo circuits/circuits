@@ -1,0 +1,197 @@
+* {
+	margin : 0;
+	padding : 0;
+}
+
+a {
+	color : #437fda;
+	text-decoration : none;
+}
+a:visited {
+	color : #437fda;
+	text-decoration : none;
+}
+a:hover {
+	color : #ba8f43;
+}
+
+h2 {
+	color : #343434;
+	font : italic 200% sans-serif;
+}
+h3 {
+	color : #343434;
+	font : italic 160% sans-serif;
+}
+h4 {
+	color : #343434;
+	font : bold italic 110% sans-serif;
+	padding : 1em 1em 0 1em;
+}
+
+html {
+	color : #565656;
+	font : 70%/170% sans-serif;
+	text-align : justify;
+}
+
+img {
+	margin : 1em 1em 0 1em;
+}
+img.left {
+	float : left;
+	margin : 1em 1em 0 0;
+}
+img.right {
+	float : right;
+	margin : 1em 0 0 1em;
+}
+
+blockquote {
+	font-style : italic;
+	margin : 1em 1em 0 1em;
+	padding : 0 0 1em 0;
+}
+blockquote span {
+	font-size : 200%;
+	line-height : 1%;
+	margin : 0 0.15em;
+	position : relative;
+	top : 0.25em;
+}
+
+form button {
+	background : #ffffff;
+	border : 1px solid #cfcfcf;
+	padding : 0.25em;
+	margin : 0 0 0 0.75em;
+}
+form input {
+	border : none;
+	width : 100%;
+}
+form textarea {
+	border : none;
+	width : 100%;
+	height : 100%;
+}
+form p.button {
+	text-align : right;
+}
+form p.input,
+form p.text {
+	background : #ffffff;
+	border : 1px solid #cfcfcf;
+	padding : 0.25em;
+	margin : 0.25em 1em 0 1em;
+}
+
+p {
+	padding : 1em 1em 0 1em;
+}
+
+ul,
+ol {
+	padding : 1em 1em 0 3em;
+}
+
+code, pre {
+    font-size: 90%;
+    white-space: pre-wrap;
+    line-height: 1.2;
+    color: #666;
+    font-family: Droid Mono, DejaVu Mono, Lucida Console, Lucida Typewriter, monospace;
+    background: #f7f7f7;
+    border: 1px solid #d7d7d7;
+    margin: 1em 1.75em;
+    padding: .25em;
+    overflow: auto;
+}
+
+img.smiley {
+ vertical-align: baseline;
+}
+
+.wiki table {
+    border: 2px solid #ccc;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+#main {
+	margin : auto;
+	max-width : 65em;
+	min-width : 40em;
+	width : auto !important;
+	width : 65em;
+}
+
+#header {
+	background : #2b548c url('../images/header_bg.png') repeat-x bottom left;
+	padding : 6em 4em 1em 4em;
+}
+#header h1 {
+	color : #ffffff;
+	font : italic 200% sans-serif;
+}
+
+#menu {
+	background : #437fda;
+	border-bottom : 1px solid #2b548c;
+	font : 100% sans-serif;
+}
+#menu ul {
+	padding : 0.75em 4em;
+}
+#menu li {
+	display : inline;
+}
+#menu li a {
+	color : #ffffff;
+	padding : 0.75em 1.5em;
+}
+#menu li a:hover {
+	background : #2b548c;
+}
+#menu li.selected a {
+	background : #ffffff;
+	border : 1px solid #2b548c;
+	border-bottom : 1px solid #ffffff;
+	color : #437fda;
+}
+#menu li.selected a:hover {
+	background : #ffffff;
+	color : #ba8f43;
+}
+
+#content {
+	border-bottom : 1px solid #cfcfcf;
+	height : auto !important;
+	height : 1%;
+	overflow : hidden;
+	padding : 2em 0 0 0;
+}
+#content div {
+	padding : 0 4em 2em 4em;
+}
+
+div.left {
+	left : -1em;
+	float : left;
+	position : relative;
+	width : 50%;
+}
+div.right {
+	left : 1em;
+	float : left;
+	position : relative;
+	width : 50%;
+}
+
+#footer {
+	font-size : 85%;
+	margin : auto;
+	padding : 1em 0 3em 0;
+	text-align : center;
+	width : 65%;
+}

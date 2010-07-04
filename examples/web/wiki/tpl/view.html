@@ -1,47 +1,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US">
- <head>
-  <title>%(title)s</title>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" title="default" media="screen" href="./css/base.css" type="text/css" />
-  <link rel="stylesheet" href="./css/wiki.css" type="text/css" />
-  <link rel="stylesheet" href="./css/pygments.css" type="text/css" />
-
-  <link type="image/x-icon" href="/favicon.ico" rel="shortcut icon" />
-</head>
-<body>
-<div id="window">
-
- <div id="header">
-  <h1 id="title">%(title)s</h1>
- </div>
-
- <div id="menu" class="nav">%(menu)s</div>
-
- <div id="content" class="content">
-  <div id="page" class="wiki">%(text)s</div>
- </div>
-
- <div id="footer" class="footer">
-  <div id="buttons" class="nav">
-   <ul>
-    <li class="button"><a id="a" href="?action=edit">Edit</a></li>
-   </ul>
-  </div>
- </div>
-
- <div id="software">
-  Powered by <a id="circuits" href="http://bitbucket.org/prologic/circuits/">circuits - <span class="version">%(version)s</span></a>
- </div>
- <div id="icons">
-  <a href="http://validator.w3.org/check/referer">
-   <img src="/images/valid-xhtml10.png"  alt="Valid XHTML 1.0 Transitional" />
-  </a>
-  <a href="http://jigsaw.w3.org/css-validator/check/referer">
-   <img src="/images/valid-css.png" alt="Valid CSS" />
-  </a>
- </div>
-</div>
-</body>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>%(title)s</title>
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta name="author" content="James Mills" />
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+		<link rel="stylesheet" title="Normal" type="text/css" media="screen" href="css/screen.css" />
+		<link rel="stylesheet" type="text/css" href="css/pygments.css" />
+	</head>
+	<body>
+		<div id="main">
+			<div id="header">
+				<h1>%(title)s</h1>
+			</div>
+   <div id="menu">%(menu)s</div>
+			<div id="content">
+    <div class="article">%(text)s</div>
+    <a href="?action=edit">Edit</a>
+			</div>
+			<div id="footer">
+    <p>Powered by <a href="http://bitbucket.org/prologic/circuits/">circuits - %(version)s</a></p>
+   </div>
+		</div>
+	</body>
 </html>
