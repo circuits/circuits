@@ -68,6 +68,9 @@ class BaseController(BaseComponent):
 
     channel = "/"
 
+    def url(self, *args, **kwargs):
+        return self.request.url(*args, **kwargs)
+
     def forbidden(self, message=None):
         return Forbidden(self.request, self.response, message)
 
