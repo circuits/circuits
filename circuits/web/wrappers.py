@@ -133,8 +133,8 @@ class Request(object):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
-    def url(self):
-        return url(self)
+    def url(self, *args, **kwargs):
+        return url(self, *args, **kwargs)
 
 class Body(object):
     """Response Body"""
