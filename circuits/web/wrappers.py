@@ -77,7 +77,7 @@ class Request(object):
     server_protocol = (1, 1)
     host = ""
     local = Host("127.0.0.1", 80)
-    remote = Host("127.0.0.1", 1111)
+    remote = Host("", 0)
 
     xhr = False
 
