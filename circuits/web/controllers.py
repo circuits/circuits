@@ -34,6 +34,8 @@ def expose(*channels, **config):
          try:
             if not hasattr(self, "request"):
                 (self.request, self.response), args = args[:2], args[2:]
+                self.request.args = args
+                self.request.kwargs = kwargs
                 self.cookie = self.request.cookie
                 if hasattr(self.request, "session"):
                    self.session = self.request.session
