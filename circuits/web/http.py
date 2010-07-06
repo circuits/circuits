@@ -136,6 +136,8 @@ class HTTP(Component):
             # before the escaped characters within those components can be
             # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
             path = "%2F".join(map(unquote, quoted_slash.split(path)))
+
+            request.path = path
         
             # Compare request and server HTTP protocol versions, in case our
             # server does not support the requested protocol. Limit our output
