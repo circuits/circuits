@@ -163,7 +163,7 @@ class Gateway(BaseComponent):
         self._response = response
 
         try:
-            return self.app(self.createEnviron(), self.start_response)
+            return "".join(self.app(self.createEnviron(), self.start_response))
         except Exception, error:
             status = 500
             message = str(error)
