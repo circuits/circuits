@@ -13,6 +13,7 @@ import zlib
 import time
 import struct
 import urllib
+from cgi import escape
 from urlparse import urljoin as _urljoin
 
 try:
@@ -28,10 +29,6 @@ except ImportError:
 from constants import RESPONSES
 
 quoted_slash = re.compile("(?i)%2F")
-
-def quoteHTML(html):
-    return html.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
 image_map_pattern = re.compile(r"[0-9]+,[0-9]+")
 
 def parseQueryString(query_string, keep_blank_values=True):
