@@ -137,8 +137,8 @@ class HTTP(Component):
             # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
             path = "%2F".join(map(unquote, quoted_slash.split(path)))
 
-            request.path = path
-        
+            request.path = path.decode("utf-8", "replace")
+
             # Compare request and server HTTP protocol versions, in case our
             # server does not support the requested protocol. Limit our output
             # to min(req, server). We want the following output:
