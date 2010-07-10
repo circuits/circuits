@@ -5,7 +5,7 @@ syntax: glob
 tmp
 build
 dist
-.coverage
+.coverage*
 coverage
 docs/build
 docs/source/api
