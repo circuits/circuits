@@ -16,8 +16,8 @@ from types import FileType, ListType
 
 from utils import url
 from headers import Headers
-from constants import SERVER_VERSION
 from circuits.net.sockets import BUFSIZE
+from constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
 
 def file_generator(input, chunkSize=BUFSIZE):
     chunk = input.read(chunkSize)
@@ -169,15 +169,37 @@ class Response(object):
     is sent in the correct order.
     """
 
-    chunked = False
+    code = 200
     body = Body()
+    done = False
+    close = False
+    stream = False
+    chunked = False
 
-    def __init__(self, sock, request):
+    protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
+
+    def __init__(self, request, code=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        self.sock = sock
         self.request = request
-        self.clear()
+
+        if code is not None:
+            self.code = code
+
+        self._body = []
+        self.time = time()
+
+        self.headers = Headers([])
+        self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
+
+        if self.request.server:
+            self.headers.add_header("Server", self.request.server.version)
+        else:
+            self.headers.add_header("X-Powered-By", SERVER_VERSION)
+
+        self.cookie = self.request.cookie
+
+        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
@@ -192,29 +214,9 @@ class Response(object):
         headers = self.headers
         return "%s %s\r\n%s" % (protocol, status, headers)
 
-    def clear(self):
-        self.done = False
-        self.close = False
-        
-        if self.request.server:
-            server_version = self.request.server.version
-        else:
-            server_version = SERVER_VERSION
-
-        self.headers = Headers([
-            ("Date", strftime("%a, %d %b %Y %H:%M:%S %Z")),
-            ("X-Powered-By", server_version)])
-
-        if self.request.server is not None:
-            self.headers.add_header("Server", server_version)
-
-        self.cookie = self.request.cookie
-
-        self.stream = False
-        self._body = []
-        self.time = time()
-        self.status = "200 OK"
-        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
+    @property
+    def status(self):
+        return "%d %s" % (self.code, HTTP_STATUS_CODES[self.code])
 
     def prepare(self):
         if self.body and type(self.body) is ListType:
@@ -232,7 +234,7 @@ class Response(object):
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
-        status = int(self.status.split(" ", 1)[0])
+        status = self.code
 
         if status == 413:
             self.close = True

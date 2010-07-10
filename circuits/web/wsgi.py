@@ -23,6 +23,8 @@ from dispatchers import Dispatcher
 
 class Application(BaseComponent):
 
+    channel = "web"
+
     headerNames = {
             "HTTP_CGI_AUTHORIZATION": "Authorization",
             "CONTENT_LENGTH": "Content-Length",
@@ -68,14 +70,14 @@ class Application(BaseComponent):
         request.wsgi_environ = environ
         request.body = env("wsgi.input")
 
-        response = wrappers.Response(None, request)
+        response = wrappers.Response(request)
         response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
 
         return request, response
 
     def __call__(self, environ, start_response, exc_info=None):
         self.request, self.response = self.getRequestResponse(environ)
-        self.push(Request(self.request, self.response), "request", "web")
+        self.push(Request(self.request, self.response))
 
         self.run()
 
@@ -144,7 +146,7 @@ class Gateway(BaseComponent):
         return environ
 
     def start_response(self, status, headers, exc_info=None):
-        self._response.status = status
+        self._response.code = int(status.split(" ", 1)[0])
         for header in headers:
             self._response.headers.add_header(*header)
 
@@ -165,9 +167,6 @@ class Gateway(BaseComponent):
         try:
             return "".join(self.app(self.createEnviron(), self.start_response))
         except Exception, error:
-            status = 500
-            message = str(error)
-            error = _exc_info()
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))
-            return HTTPError(request, response, status, message, error)
+            return HTTPError(request, response, 500, error=error)

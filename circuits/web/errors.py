@@ -7,69 +7,72 @@
 This module implements a set of standard HTTP Errors.
 """
 
-from cgi import escape as _escape
 from urlparse import urljoin as _urljoin
 
 from circuits import Event
 
 import utils
-from constants import DEFAULT_ERROR_MESSAGE, RESPONSES, SERVER_VERSION
-
+from utils import escape
+from constants import SERVER_URL, SERVER_VERSION
+from constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 class HTTPError(Event):
 
-    def __init__(self, request, response, status, message=None, error=None):
-        super(HTTPError, self).__init__(request, response,
-                status, message=message, error=error)
+    channel = "httperror"
 
-        response.close = True
+    code = 500
+    description = ""
+
+    def __init__(self, request, response, code=None, **kwargs):
+        super(HTTPError, self).__init__(request, response, code, **kwargs)
 
         self.request = request
         self.response = response
-        self.status = status
 
-        short, long = RESPONSES.get(status, ("???", "???",))
-        self.message = message or short
+        if code is not None:
+            self.code = code
 
-        self.error = error
+        self.error = kwargs.get("error", None)
+
+        self.description = kwargs.get("description",
+                getattr(self.__class__, "description", ""))
+
         if self.error is not None:
-            self.etype, self.evalue, self.traceback = self.error
-            traceback = ["ERROR: %s\n" % str(self.evalue)]
-            traceback.extend(self.traceback)
+            traceback = "ERROR: (%s) %s\n%s" % (self.error[0], self.error[1],
+                    "".join(self.error[2]))
         else:
-            self.etype, self.evalue, self.traceback = None, None, None
-            traceback = []
+            traceback = ""
 
-        response.status = "%s %s" % (status, short)
+        self.response.close = True
+        self.response.code = self.code
 
-        response.body = DEFAULT_ERROR_MESSAGE % {
-            "status": "%s %s" % (status, short),
-            "message": _escape(message) if message else "",
-            "traceback": _escape("".join(traceback)),
+        self.response.body = DEFAULT_ERROR_MESSAGE % {
+            "code": self.code,
+            "name": HTTP_STATUS_CODES.get(self.code, "???"),
+            "description": self.description,
+            "traceback": escape(traceback),
+            "url": SERVER_URL,
             "version": SERVER_VERSION}
 
     def __repr__(self):
-        name = self.__class__.__name__
-        return "<%s (%d, %s)>" % (name, self.status, repr(self.message))
+        return "<%s %d %s>" % (self.__class__.__name__, self.code,
+                HTTP_STATUS_CODES.get(self.code, "???"))
 
 class Forbidden(HTTPError):
 
-    def __init__(self, request, response, message=None):
-        super(Forbidden, self).__init__(request, response, 403, message)
+    code = 403
 
 class Unauthorized(HTTPError):
 
-    def __init__(self, request, response, message=None):
-        super(Unauthorized, self).__init__(request, response, 401, message)
+    code = 401
 
 class NotFound(HTTPError):
 
-    def __init__(self, request, response, message=None):
-        super(NotFound, self).__init__(request, response, 404, message)
+    code = 404
 
 class Redirect(HTTPError):
 
-    def __init__(self, request, response, urls, status=None):
+    def __init__(self, request, response, urls, code=None):
         if isinstance(urls, basestring):
             urls = [urls]
         
@@ -87,19 +90,18 @@ class Redirect(HTTPError):
         # RFC 2616 indicates a 301 response code fits our goal; however,
         # browser support for 301 is quite messy. Do 302/303 instead. See
         # http://ppewww.ph.gla.ac.uk/~flavell/www/post-redirect.html
-        if status is None:
+        if code is None:
             if request.protocol >= (1, 1):
-                status = 303
+                code = 303
             else:
-                status = 302
+                code = 302
         else:
-            status = int(status)
-            if status < 300 or status > 399:
-                raise ValueError("status must be between 300 and 399.")
+            if code < 300 or code > 399:
+                raise ValueError("status code must be between 300 and 399.")
 
-        super(Redirect, self).__init__(request, response, status)
+        super(Redirect, self).__init__(request, response, code)
         
-        if status in (300, 301, 302, 303, 307):
+        if code in (300, 301, 302, 303, 307):
             response.headers["Content-Type"] = "text/html"
             # "The ... URI SHOULD be given by the Location field
             # in the response."
@@ -109,16 +111,20 @@ class Redirect(HTTPError):
             # SHOULD contain a short hypertext note with a hyperlink to the
             # new URI(s)."
             msg = {300: "This resource can be found at <a href='%s'>%s</a>.",
-                   301: "This resource has permanently moved to <a href='%s'>%s</a>.",
-                   302: "This resource resides temporarily at <a href='%s'>%s</a>.",
-                   303: "This resource can be found at <a href='%s'>%s</a>.",
-                   307: "This resource has moved temporarily to <a href='%s'>%s</a>.",
-                   }[status]
+                   301: ("This resource has permanently moved to "
+                       "<a href='%s'>%s</a>."),
+                   302: ("This resource resides temporarily at "
+                        "<a href='%s'>%s</a>."),
+                   303: ("This resource can be found at "
+                        "<a href='%s'>%s</a>."),
+                   307: ("This resource has moved temporarily to "
+                        "<a href='%s'>%s</a>."),
+                   }[code]
             response.body = "<br />\n".join([msg % (u, u) for u in urls])
             # Previous code may have set C-L, so we have to reset it
             # (allow finalize to set it).
             response.headers.pop("Content-Length", None)
-        elif status == 304:
+        elif code == 304:
             # Not Modified.
             # "The response MUST include the following header fields:
             # Date, unless its omission is required by section 14.18.1"
@@ -136,7 +142,7 @@ class Redirect(HTTPError):
             response.body = None
             # Previous code may have set C-L, so we have to reset it.
             response.headers.pop("Content-Length", None)
-        elif status == 305:
+        elif code == 305:
             # Use Proxy.
             # urls[0] should be the URI of the proxy.
             response.headers["Location"] = urls[0]
@@ -144,8 +150,8 @@ class Redirect(HTTPError):
             # Previous code may have set C-L, so we have to reset it.
             response.headers.pop("Content-Length", None)
         else:
-            raise ValueError("The %s status code is unknown." % status)
+            raise ValueError("The %s status code is unknown." % code)
 
     def __repr__(self):
-        name = self.__class__.__name__
-        return "<%s (%d, %s)>" % (name, self.status, " ".join(self.urls))
+        return "<%s %d %s %s>" % (self.__class__.__name__, self.code, self.name,
+                " ".join(self.urls))

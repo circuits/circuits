@@ -23,7 +23,7 @@ mimetypes.add_type("image/x-icon", ".ico")
 mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
 import _httpauth
-from utils import valid_status, get_ranges, compress
+from utils import get_ranges, compress
 from errors import HTTPError, NotFound, Redirect, Unauthorized
 
 def expires(request, response, secs=0, force=False):
@@ -130,14 +130,13 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
         r = get_ranges(request.headers.get('Range'), c_len)
         if r == []:
             response.headers['Content-Range'] = "bytes */%s" % c_len
-            message = "Invalid Range (first-byte-pos greater than Content-Length)"
-            return HTTPError(request, response, 416, message)
+            return HTTPError(request, response, 416)
         if r:
             if len(r) == 1:
                 # Return a single-part response.
                 start, stop = r[0]
                 r_len = stop - start
-                response.status = "206 Partial Content"
+                response.code = 206
                 response.headers['Content-Range'] = ("bytes %s-%s/%s" %
                                                        (start, stop - 1, c_len))
                 response.headers['Content-Length'] = r_len
@@ -145,7 +144,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                 response.body = bodyfile.read(r_len)
             else:
                 # Return a multipart/byteranges response.
-                response.status = "206 Partial Content"
+                response.code = 206
                 boundary = mimetools.choose_boundary()
                 ct = "multipart/byteranges; boundary=%s" % boundary
                 response.headers['Content-Type'] = ct
@@ -209,13 +208,13 @@ def validate_etags(request, response, autotags=False):
     if hasattr(response, "ETag"):
         return
     
-    status, reason, msg = valid_status(response.status)
+    code = response.code
     
     etag = response.headers.get('ETag')
     
     # Automatic ETag generation. See warning in docstring.
     if (not etag) and autotags:
-        if status == 200:
+        if code == 200:
             etag = response.collapse_body()
             etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
             response.headers['ETag'] = etag
@@ -225,23 +224,24 @@ def validate_etags(request, response, autotags=False):
     # "If the request would, without the If-Match header field, result in
     # anything other than a 2xx or 412 status, then the If-Match header
     # MUST be ignored."
-    if status >= 200 and status <= 299:
+    if code >= 200 and code <= 299:
         conditions = request.headers.elements('If-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions and not (conditions == ["*"] or etag in conditions):
             return HTTPError(request, response, 412,
-                    "If-Match failed: ETag %r did not match %r" % (
+                    description="If-Match failed: ETag %r did not match %r" % (
                         etag, conditions))
         
         conditions = request.headers.elements('If-None-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions == ["*"] or etag in conditions:
             if request.method in ("GET", "HEAD"):
-                return Redirect(request, response, [], 304)
+                return Redirect(request, response, [], code=304)
             else:
                 return HTTPError(request, response, 412,
-                        "If-None-Match failed: ETag %r matched %r" % (
-                            etag, conditions))
+                        description=(
+                            "If-None-Match failed: ETag %r matched %r" % (
+                                etag, conditions)))
 
 def validate_since(request, response):
     """Validate the current Last-Modified against If-Modified-Since headers.
@@ -252,18 +252,18 @@ def validate_since(request, response):
 
     lastmod = response.headers.get('Last-Modified')
     if lastmod:
-        status, reason, msg = valid_status(response.status)
+        code = response.code
         
         since = request.headers.get('If-Unmodified-Since')
         if since and since != lastmod:
-            if (status >= 200 and status <= 299) or status == 412:
+            if (code >= 200 and code <= 299) or code == 412:
                 return HTTPError(request, response, 412)
         
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod:
-            if (status >= 200 and status <= 299) or status == 304:
+            if (code >= 200 and code <= 299) or code == 304:
                 if request.method in ("GET", "HEAD"):
-                    return Redirect(request, response, [], 304)
+                    return Redirect(request, response, [], code=304)
                 else:
                     return HTTPError(request, response, 412)
 
@@ -424,4 +424,5 @@ def gzip(response, level=1, mime_types=['text/html', 'text/plain']):
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
             return response
-    return HTTPError(response.request, response, 406, "identity, gzip")
+    return HTTPError(response.request, response, 406,
+            description="identity, gzip")

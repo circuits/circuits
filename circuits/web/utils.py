@@ -26,7 +26,7 @@ try:
 except ImportError:
     from cgi import parse_qs
 
-from constants import RESPONSES
+from constants import HTTP_STATUS_CODES
 
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile(r"[0-9]+,[0-9]+")
@@ -186,49 +186,6 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
         newurl = '/'.join(new)
     
     return newurl
-
-def valid_status(status):
-    """Return legal HTTP status Code, Reason-phrase and Message.
-    
-    The status arg must be an int, or a str that begins with an int.
-    
-    If status is an int, or a str and  no reason-phrase is supplied,
-    a default reason-phrase will be provided.
-    """
-    
-    if not status:
-        status = 200
-    
-    status = str(status)
-    parts = status.split(" ", 1)
-    if len(parts) == 1:
-        # No reason supplied.
-        code, = parts
-        reason = None
-    else:
-        code, reason = parts
-        reason = reason.strip()
-    
-    try:
-        code = int(code)
-    except ValueError:
-        raise ValueError("Illegal response status from server "
-                         "(%s is non-numeric)." % repr(code))
-    
-    if code < 100 or code > 599:
-        raise ValueError("Illegal response status from server "
-                         "(%s is out of range)." % repr(code))
-    
-    if code not in RESPONSES:
-        # code is unknown but not illegal
-        default_reason, message = "", ""
-    else:
-        default_reason, message = RESPONSES[code]
-    
-    if reason is None:
-        reason = default_reason
-    
-    return code, reason, message
 
 def get_ranges(headervalue, content_length):
     """Return a list of (start, stop) indices from a Range header, or None.

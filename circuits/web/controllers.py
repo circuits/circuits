@@ -73,14 +73,14 @@ class BaseController(BaseComponent):
     def url(self, *args, **kwargs):
         return self.request.url(*args, **kwargs)
 
-    def forbidden(self, message=None):
-        return Forbidden(self.request, self.response, message)
+    def forbidden(self, description=None):
+        return Forbidden(self.request, self.response, description=description)
 
-    def notfound(self, message=None):
-       return NotFound(self.request, self.response, message)
+    def notfound(self, description=None):
+       return NotFound(self.request, self.response, description=description)
 
-    def redirect(self, urls, status=None):
-       return Redirect(self.request, self.response, urls, status)
+    def redirect(self, urls, code=None):
+       return Redirect(self.request, self.response, urls, code=code)
 
     def serve_file(self, path, type=None, disposition=None, name=None):
         return tools.serve_file(self.request, self.response, path,

@@ -446,11 +446,13 @@ class Manager(object):
             except:
                 etype, evalue, etraceback = _exc_info()
                 event.value.errors = True
-                event.value.value = etype, evalue, format_tb(etraceback)
-                self.fire(Error(etype, evalue, format_tb(etraceback), handler))
+                traceback = format_tb(etraceback)
+                event.value.value = (etype, evalue, traceback)
                 if event.failure is not None:
-                    error = (etype, evalue, format_tb(etraceback))
+                    error = (etype, evalue, traceback)
                     self.fire(Failure(event, handler, error), *event.failure)
+                else:
+                    self.fire(Error(etype, evalue, traceback, handler))
 
             if retval is not None:
                 if retval and attrs["filter"]:

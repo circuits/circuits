@@ -18,14 +18,16 @@ except ImportError:
     from StringIO import StringIO
 
 from circuits.net.sockets import Close, Write
-from circuits.core import handler, Component, Value
+from circuits.core import handler, Component, Value, Timer
 
 import wrappers
 from utils import quoted_slash
-from constants import RESPONSES
 from headers import parseHeaders
+from exceptions import HTTPException
 from errors import HTTPError, NotFound
 from events import Request, Response, Stream
+
+DEFAULT_TIMEOUT = 3.0
 
 class HTTP(Component):
     """HTTP Protocol Component
@@ -44,7 +46,7 @@ class HTTP(Component):
             if response.chunked:
                 buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
                 data = "".join(buf)
-            self.push(Write(response.sock, data))
+            self.push(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
                     data = response.body.next()
@@ -55,13 +57,13 @@ class HTTP(Component):
             if response.body:
                 response.body.close()
             if response.chunked:
-                self.push(Write(response.sock, "0\r\n\r\n"))
+                self.push(Write(response.request.sock, "0\r\n\r\n"))
             if response.close:
-                self.push(Close(response.sock))
+                self.push(Close(response.request.sock))
             response.done = True
         
     def response(self, response):
-        self.push(Write(response.sock, str(response)))
+        self.push(Write(response.request.sock, str(response)))
 
         if response.stream and response.body:
             try:
@@ -77,14 +79,14 @@ class HTTP(Component):
                     buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
                     body = "".join(buf)
 
-                self.push(Write(response.sock, body))
+                self.push(Write(response.request.sock, body))
 
                 if response.chunked:
-                    self.push(Write(response.sock, "0\r\n\r\n"))
+                    self.push(Write(response.request.sock, "0\r\n\r\n"))
 
             if not response.stream:
                 if response.close:
-                    self.push(Close(response.sock))
+                    self.push(Close(response.request.sock))
                 response.done = True
 
     def disconnect(self, sock):
@@ -119,12 +121,11 @@ class HTTP(Component):
 
             protocol = tuple(map(int, protocol[5:].split(".")))
             request = wrappers.Request(sock, method, scheme, path, protocol, qs)
-            response = wrappers.Response(sock, request)
+            response = wrappers.Response(request)
             self._clients[sock] = request, response
 
             if frag:
-                error = HTTPError(request, response, 400)
-                return self.push(error)
+                return self.push(HTTPError(request, response, 400))
         
             if params:
                 path = "%s;%s" % (path, params)
@@ -163,7 +164,7 @@ class HTTP(Component):
             request.body.write(body)
             
             if headers.get("Expect", "") == "100-continue":
-                return self.simple(request, response, 100)
+                return self.push(Response(wrappers.Response(request, 100)))
 
             contentLength = int(headers.get("Content-Length", "0"))
             if not request.body.tell() == contentLength:
@@ -183,27 +184,7 @@ class HTTP(Component):
 
         self.push(Request(request, response))
 
-    def simple(self, request, response, code, message=""):
-        """Simple Response Events Handler
-
-        Send a simple response.
-        """
-
-        short, long = RESPONSES.get(code, ("???", "???",))
-        message = message or short
-
-        response = wrappers.Response(request.sock, request)
-        response.body = message
-        response.status = "%s %s" % (code, message)
-
-        if response.status[:3] == "413" and response.protocol == "HTTP/1.1":
-            # Request Entity Too Large
-            response.close = True
-            response.headers.add_header("Connection", "close")
-
-        self.push(Response(response))
-
-    def httperror(self, request, response, status, message=None, error=None):
+    def httperror(self, request, response, code, description="", error=None):
         """Default HTTP Error Handler
         
         Default Error Handler that by default just responds with the response
@@ -220,9 +201,7 @@ class HTTP(Component):
             self.push(Response(response))
         else:
             # This possibly never occurs.
-            message = "Request Failed"
-            error = value.value
-            self.push(HTTPError(request, response, 500, message, error))
+            self.push(HTTPError(request, response, error=value.value))
 
     @handler("request_success", "request_filtered")
     def request_success_or_filtered(self, evt, handler, retval):
@@ -230,7 +209,7 @@ class HTTP(Component):
             request, response = evt.args[:2]
             request.handled = True
             if isinstance(retval, HTTPError):
-                self.push(retval, "httperror", self.channel)
+                self.push(retval)
             elif isinstance(retval, wrappers.Response):
                 self.push(Response(retval))
             elif isinstance(retval, Value):
@@ -238,9 +217,7 @@ class HTTP(Component):
                     response.body = retval.value
                     self.push(Response(response))
                 elif retval.errors:
-                    message = "Request Failed"
-                    error = retval.value
-                    self.push(HTTPError(request, response, 500, message, error))
+                    self.push(HTTPError(request, response, error=retval.value))
                 else:
                     if retval.manager is None:
                         retval.manager = self
@@ -252,10 +229,16 @@ class HTTP(Component):
 
     def request_failure(self, evt, handler, error):
         request, response = evt.args[:2]
-        message = "Request Failed"
-        self.push(HTTPError(request, response, 500, message, error))
+
+        etype, evalue, traceback = error
+
+        if isinstance(evalue, HTTPException):
+            self.push(HTTPError(request, response, evalue.code,
+                description=evalue.description, error=error))
+        else:
+            self.push(HTTPError(request, response, error=error))
 
     def request_completed(self, evt, handler, retval):
         request, response = evt.args[:2]
         if not request.handled or handler is None:
-            self.push(NotFound(request, response), "httperror", self.channel)
+            self.push(NotFound(request, response))

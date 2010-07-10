@@ -48,7 +48,7 @@ class Logger(BaseComponent):
                  "u": getattr(request, "login", None) or "-",
                  "t": formattime(),
                  "r": "%s %s %s" % (request.method, request.path, protocol),
-                 "s": response.status.split(" ", 1)[0],
+                 "s": str(response.code),
                  "b": outheaders.get("Content-Length", "") or "-",
                  "f": inheaders.get("Referer", ""),
                  "a": inheaders.get("User-Agent", ""),
