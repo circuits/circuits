@@ -10,9 +10,9 @@ Timers component to facilitate timed eventd.
 from time import time, mktime
 from datetime import datetime
 
-from components import Component
+from components import BaseComponent
 
-class Timer(Component):
+class Timer(BaseComponent):
     """Timer(s, e, c, t, persist) -> new timer component
 
     Creates a new timer object which when triggered
@@ -44,7 +44,13 @@ class Timer(Component):
         self.reset()
 
     def __tick__(self):
-        self.poll()
+        if time() > self._eTime:
+            self.push(self.e, self.c, self.t)
+
+            if self.persist:
+                self.reset()
+            else:
+                self.unregister()
 
     def reset(self):
         """T.reset() -> None
@@ -53,24 +59,3 @@ class Timer(Component):
         """
 
         self._eTime = time() + self.s
-
-    def poll(self):
-        """T.poll() -> state
-
-        Check if this timer is ready to be triggered.
-        If so, push the event onto the event queue.
-
-        If timer is persistent, reset it after triggering.
-        """
-
-        if time() > self._eTime:
-            self.push(self.e, self.c, self.t)
-
-            if self.persist:
-                self.reset()
-                return False
-            else:
-                self.unregister()
-                return True
-
-        return None
