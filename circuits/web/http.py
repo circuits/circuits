@@ -26,6 +26,8 @@ from headers import parseHeaders
 from exceptions import HTTPException
 from errors import HTTPError, NotFound
 from events import Request, Response, Stream
+from errors import Redirect as RedirectError
+from exceptions import Redirect as RedirectException
 
 DEFAULT_TIMEOUT = 3.0
 
@@ -184,7 +186,7 @@ class HTTP(Component):
 
         self.push(Request(request, response))
 
-    def httperror(self, request, response, code, description="", error=None):
+    def httperror(self, event, request, response, code, **kwargs):
         """Default HTTP Error Handler
         
         Default Error Handler that by default just responds with the response
@@ -192,6 +194,7 @@ class HTTP(Component):
         HTTPError instance or a subclass thereof.
         """
 
+        response.body = str(event)
         self.push(Response(response))
 
     def valuechanged(self, value):
@@ -232,7 +235,10 @@ class HTTP(Component):
 
         etype, evalue, traceback = error
 
-        if isinstance(evalue, HTTPException):
+        if isinstance(evalue, RedirectException):
+            self.push(RedirectError(request, response,
+                evalue.urls, evalue.status))
+        elif isinstance(evalue, HTTPException):
             self.push(HTTPError(request, response, evalue.code,
                 description=evalue.description, error=error))
         else:

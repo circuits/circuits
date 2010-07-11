@@ -46,13 +46,17 @@ class HTTPError(Event):
         self.response.close = True
         self.response.code = self.code
 
-        self.response.body = DEFAULT_ERROR_MESSAGE % {
+        self.data = {
             "code": self.code,
             "name": HTTP_STATUS_CODES.get(self.code, "???"),
             "description": self.description,
             "traceback": escape(traceback),
             "url": SERVER_URL,
-            "version": SERVER_VERSION}
+            "version": SERVER_VERSION
+        }
+
+    def __str__(self):
+        return DEFAULT_ERROR_MESSAGE % self.data
 
     def __repr__(self):
         return "<%s %d %s>" % (self.__class__.__name__, self.code,

@@ -38,7 +38,6 @@ class HTTPException(Exception):
     def __repr__(self):
         return '<%s \'%s\'>' % (self.__class__.__name__, self)
 
-
 class BadRequest(HTTPException):
     """*400* `Bad Request`
 
@@ -276,6 +275,20 @@ class ServiceUnavailable(HTTPException):
         'maintenance downtime or capacity problems.  Please try again '
         'later.</p>'
     )
+
+class Redirect(HTTPException):
+
+    code = 303
+
+    def __init__(self, urls, status=None):
+        super(Redirect, self).__init__()
+
+        if isinstance(urls, basestring):
+            self.urls = [urls]
+        else:
+            self.urls = urls
+
+        self.status = status
 
 __all__ = [x[0] for x in globals().items() if isclass(x[1])
         and issubclass(x[1], HTTPException)]
