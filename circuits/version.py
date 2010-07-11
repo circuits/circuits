@@ -30,7 +30,8 @@ def get_version(doreload=False):
             reload(circuits.__version__)
         if type(circuits.__version__) == ModuleType:
             version = circuits.__version__.version
-        version = circuits.__version__
+        else:
+            version = circuits.__version__
     except ImportError:
         version = unknown_version
     return version
