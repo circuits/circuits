@@ -92,7 +92,7 @@ class Static(Component):
 
         # Is it a file we can serve directly?
         if os.path.isfile(location):
-            expires(request, response, 3600*24*30)
+            expires(request, response, 3600*24*30, force=True)
             return serve_file(request, response, location)
 
         # Is it a directory?
@@ -103,7 +103,7 @@ class Static(Component):
                 location = os.path.abspath(
                         os.path.join(self.docroot, path, default))
                 if os.path.exists(location):
-                    expires(request, response, 3600*24*30)
+                    expires(request, response, 3600*24*30, force=True)
                     return serve_file(request, response, location)
 
             # .. serve a directory listing if allowed to.
