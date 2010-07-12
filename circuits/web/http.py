@@ -44,11 +44,12 @@ class HTTP(Component):
         self._clients = {}
 
     def stream(self, response, data):
-        if data:
-            if response.chunked:
-                buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
-                data = "".join(buf)
-            self.push(Write(response.request.sock, data))
+        if data is not None:
+            if data:
+                if response.chunked:
+                    buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
+                    data = "".join(buf)
+                self.push(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
                     data = response.body.next()
