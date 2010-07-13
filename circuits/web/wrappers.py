@@ -219,13 +219,15 @@ class Response(object):
         return "%d %s" % (self.code, HTTP_STATUS_CODES[self.code])
 
     def prepare(self):
+        # Set a default content-Type if we don't have one.
+        self.headers.setdefault("Content-Type", "text/html")
+
         if self.body and type(self.body) is ListType:
             if unicode in map(type, self.body):
                 cLength = sum(map(lambda s: len(s.encode("utf-8")), self.body))
             else:
                 cLength = sum(map(len, self.body))
 
-            self.headers.setdefault("Content-Type", "text/html")
             self.headers["Content-Length"] = str(cLength)
 
         if self.stream:
