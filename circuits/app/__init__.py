@@ -58,7 +58,7 @@ class Daemon(BaseComponent):
         channel = kwargs.get("channel", Daemon.channel)
         super(Daemon, self).__init__(channel=channel)
 
-        self._pidfile = pidfile
+        self._pidfile = os.path.abspath(os.path.expanduser(pidfile))
         self._path = kwargs.get("path", "/")
         self._stdin = kwargs.get("stdin", "/dev/stdin")
         self._stdout = kwargs.get("stdout", "/dev/stdout")
