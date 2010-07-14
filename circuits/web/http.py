@@ -211,6 +211,7 @@ class HTTP(Component):
     def request_success_or_filtered(self, evt, handler, retval):
         if retval is not None:
             request, response = evt.args[:2]
+            request.handled = True
             if isinstance(retval, HTTPError):
                 self.push(retval)
             elif isinstance(retval, wrappers.Response):
@@ -250,5 +251,5 @@ class HTTP(Component):
 
     def request_completed(self, evt, handler, retval):
         request, response = evt.args[:2]
-        if not response.done or handler is None:
+        if not request.handled or handler is None:
             self.push(NotFound(request, response))
