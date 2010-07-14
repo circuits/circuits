@@ -108,7 +108,7 @@ class Daemon(BaseComponent):
 
         self.push(WritePID())
 
-    @handler("started")
-    def started(self, manager, mode):
+    @handler("started", filter=True, priority=1.0, target="*")
+    def _on_started(self, manager, mode):
         if not manager == self and mode is None:
             self.push(Daemonize())
