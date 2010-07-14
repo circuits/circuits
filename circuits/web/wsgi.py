@@ -143,10 +143,10 @@ class Gateway(BaseComponent):
         env("wsgi.url_scheme", req.scheme)
 
         if req.path:
-            i = req.path.find(self.path) + len(self.path)
-            req.script_name, req.path = req.path[:i], req.path[i:]
+            req.script_name = req.path[:len(self.path)]
+            req.path = req.path[len(self.path):]
             env("SCRIPT_NAME", req.script_name)
-            env("PATH_INFO", unquote(req.path))
+            env("PATH_INFO", req.path)
 
         for k, v in req.headers.items():
             env("HTTP_%s" % k.upper().replace("-", "_"), v)
@@ -161,13 +161,6 @@ class Gateway(BaseComponent):
     def _on_request(self, event, request, response):
         if self.path and not request.path.startswith(self.path):
             return
-
-        req = event
-        path = request.path
-
-        if self.path is not None:
-            path = path[len(self.path):]
-            req.path = path
 
         self._request = request
         self._response = response
