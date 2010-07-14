@@ -94,6 +94,14 @@ class Application(BaseComponent):
         self.stop()
         return True
 
+class _Empty(str):
+
+    def __nonzero__(self):
+        return True
+
+empty = _Empty()
+del _Empty
+
 class Gateway(BaseComponent):
 
     channel = "web"
@@ -165,7 +173,10 @@ class Gateway(BaseComponent):
         self._response = response
 
         try:
-            return "".join(self.app(self.createEnviron(), self.start_response))
+            body = "".join(self.app(self.createEnviron(), self.start_response))
+            if not body:
+                body = empty
+            return body
         except Exception, error:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))

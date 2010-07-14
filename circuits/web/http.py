@@ -209,7 +209,7 @@ class HTTP(Component):
 
     @handler("request_success", "request_filtered")
     def request_success_or_filtered(self, evt, handler, retval):
-        if retval:
+        if retval is not None:
             request, response = evt.args[:2]
             request.handled = True
             if isinstance(retval, HTTPError):
