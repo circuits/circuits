@@ -23,12 +23,15 @@ class HTTPException(Exception):
     """
 
     code = None
+    traceback = True
     description = None
 
-    def __init__(self, description=None):
+    def __init__(self, description=None, traceback=None):
         super(HTTPException, self).__init__("%d %s" % (self.code, self.name))
         if description is not None:
             self.description = description
+        if traceback is not None:
+            self.traceback = traceback
 
     @property
     def name(self):

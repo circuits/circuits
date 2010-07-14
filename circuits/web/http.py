@@ -240,8 +240,12 @@ class HTTP(Component):
             self.push(RedirectError(request, response,
                 evalue.urls, evalue.status))
         elif isinstance(evalue, HTTPException):
-            self.push(HTTPError(request, response, evalue.code,
-                description=evalue.description, error=error))
+            if evalue.traceback:
+                self.push(HTTPError(request, response, evalue.code,
+                    description=evalue.description, error=error))
+            else:
+                self.push(HTTPError(request, response, evalue.code,
+                    description=evalue.description))
         else:
             self.push(HTTPError(request, response, error=error))
 
