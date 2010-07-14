@@ -7,6 +7,7 @@
 This module implements Logger Components.
 """
 
+import os
 import sys
 import rfc822
 import datetime
@@ -28,7 +29,11 @@ class Logger(BaseComponent):
     def __init__(self, file=sys.stderr, logger=None, **kwargs):
         super(Logger, self).__init__(**kwargs)
 
-        self.file = file
+        if type(file) is str:
+            self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
+        else:
+            self.file = file
+
         self.logger = logger
 
     @handler("response")
