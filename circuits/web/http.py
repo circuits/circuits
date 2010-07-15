@@ -234,11 +234,14 @@ class HTTP(Component):
 
     @handler("request_failure", "response_failure")
     def request_or_response_failure(self, evt, handler, error):
-        if len(evt.args) == 2:
-            request, response = evt.args[:2]
-        else:
+        if len(evt.args) == 1:
             response = evt.args[0]
             request = response.request
+        else:
+            request, response = evt.args[:2]
+
+        if not request.handled:
+            request.handled = True
 
         etype, evalue, traceback = error
 
