@@ -240,6 +240,9 @@ class HTTP(Component):
         else:
             request, response = evt.args[:2]
 
+        if response.done:
+            return # Ignore failed "response" handlers (eg: Loggers or Tools)
+
         if not request.handled:
             request.handled = True
 
