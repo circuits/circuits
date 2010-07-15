@@ -53,7 +53,7 @@ def handler(*channels, **kwargs):
 
         if args and args[0] == "self":
             del args[0]
-        f.event = bool(args and args[0] == "event")
+        f.event = getattr(f, "event", bool(args and args[0] == "event"))
 
         return f
 
