@@ -7,6 +7,7 @@ Debugger component used to debug each event in a system by printing
 each event to sys.stderr or to a Logger Component instnace.
 """
 
+import os
 import sys
 from cStringIO import StringIO
 
@@ -30,7 +31,8 @@ class Debugger(Component):
     IgnoreEvents = []
     IgnoreChannels = []
 
-    def __init__(self, errors=True, events=True, **kwargs):
+    def __init__(self, errors=True, events=True, file=None, logger=None,
+            **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Debugger, self).__init__()
@@ -38,8 +40,15 @@ class Debugger(Component):
         self.errors = errors
         self.events = events
 
-        self.logger = kwargs.get("logger", None)
-        self.file = kwargs.get("file", sys.stderr)
+        if type(file) is str:
+            self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
+        elif type(file) is file or hasattr(file, "write"):
+            self.file = file
+        else:
+            self.file = sys.stderr
+
+        self.logger = logger
+
         self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 

@@ -68,6 +68,78 @@ def test():
     stderr.seek(0)
     stderr.truncate()
 
+def test_file(tmpdir):
+    logfile = str(tmpdir.ensure("debug.log"))
+    stderr = open(logfile, "w+")
+
+    app = App()
+    debugger = Debugger(file=stderr)
+    debugger.register(app)
+    while app:
+        app.flush()
+    stderr.seek(0)
+    stderr.truncate()
+
+    assert debugger.events
+
+    e = Event()
+    app.push(e)
+    app.flush()
+
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == str(e)
+    stderr.seek(0)
+    stderr.truncate()
+
+    debugger.events = False
+    assert not debugger.events
+
+    e = Event()
+    app.push(e)
+
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == ""
+    stderr.seek(0)
+    stderr.truncate()
+
+def test_filename(tmpdir):
+    logfile = str(tmpdir.ensure("debug.log"))
+    stderr = open(logfile, "r+")
+
+    app = App()
+    debugger = Debugger(file=logfile)
+    debugger.register(app)
+    while app:
+        app.flush()
+    stderr.seek(0)
+    stderr.truncate()
+
+    assert debugger.events
+
+    e = Event()
+    app.push(e)
+    app.flush()
+
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == str(e)
+    stderr.seek(0)
+    stderr.truncate()
+
+    debugger.events = False
+    assert not debugger.events
+
+    e = Event()
+    app.push(e)
+
+    stderr.seek(0)
+    s = stderr.read().strip()
+    assert s == ""
+    stderr.seek(0)
+    stderr.truncate()
+
 def test_exceptions():
     app = App()
     stderr = StringIO()
