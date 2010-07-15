@@ -126,7 +126,7 @@ class Gateway(BaseComponent):
 
         env("REQUEST_METHOD", req.method)
         env("SERVER_NAME", req.host.split(":", 1)[0])
-        env("SERVER_PORT", "%i" % req.server.port)
+        env("SERVER_PORT", "%i" % req.server.port or 0)
         env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server_protocol)
         env("QUERY_STRING", req.qs)
         env("SCRIPT_NAME", req.script_name)
