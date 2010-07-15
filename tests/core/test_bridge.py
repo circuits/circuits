@@ -29,8 +29,11 @@ def test():
     app.start()
 
     pid = os.getpid()
-    x = app.push(Hello())
+    e = Hello()
+    assert e.future == False
+    x = app.push(e)
     sleep(1)
+    assert e.future == True
     assert x[0] == "Hello from %s" % pid
     assert x[1].startswith("Hello from")
     assert not x[0]  == x[1]

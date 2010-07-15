@@ -34,20 +34,21 @@ class Event(object):
     channel = None
     target = None
 
-    handler = None
     success = None
     failure = None
     filter = None
     start = None
     end = None
 
-    value = None
-
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         self.args = list(args)
         self.kwargs = kwargs
+
+        self.value = None
+        self.future = False
+        self.handler = None
 
     def __getstate__(self):
         keys = ("args", "kwargs", "channel", "target", "success", "failure",

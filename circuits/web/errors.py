@@ -55,7 +55,13 @@ class HTTPError(Event):
             "version": SERVER_VERSION
         }
 
+    def sanitize(self):
+        if self.code < 300 or self.code > 399:
+            if "Location" in self.response.headers:
+                del self.response.headers["Location"]
+
     def __str__(self):
+        self.sanitize()
         return DEFAULT_ERROR_MESSAGE % self.data
 
     def __repr__(self):

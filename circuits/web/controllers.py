@@ -30,7 +30,7 @@ from errors import Forbidden, NotFound, Redirect
 def expose(*channels, **config):
    def decorate(f):
       @handler(*channels, **config)
-      def wrapper(self, *args, **kwargs):
+      def wrapper(self, event, *args, **kwargs):
          try:
             if not hasattr(self, "request"):
                 (self.request, self.response), args = args[:2], args[2:]
@@ -39,7 +39,10 @@ def expose(*channels, **config):
                 self.cookie = self.request.cookie
                 if hasattr(self.request, "session"):
                    self.session = self.request.session
-            return f(self, *args, **kwargs)
+            if not getattr(f, "event", False):
+                return f(self, *args, **kwargs)
+            else:
+                return f(self, event, *args, **kwargs)
          finally:
             if hasattr(self, "request"):
                del self.request
@@ -52,6 +55,7 @@ def expose(*channels, **config):
               getargspec(f)
       if wrapper.args and wrapper.args[0] == "self":
           del wrapper.args[0]
+      wrapper.event = True
 
       return update_wrapper(wrapper, f)
 

@@ -209,8 +209,9 @@ class HTTP(Component):
 
     @handler("request_success", "request_filtered")
     def request_success_or_filtered(self, evt, handler, retval):
-        if retval is not None:
-            request, response = evt.args[:2]
+        request, response = evt.args[:2]
+
+        if not request.handled and retval is not None:
             request.handled = True
             if isinstance(retval, HTTPError):
                 self.push(retval)
@@ -231,8 +232,13 @@ class HTTP(Component):
                 response.body = retval
                 self.push(Response(response))
 
-    def request_failure(self, evt, handler, error):
-        request, response = evt.args[:2]
+    @handler("request_failure", "response_failure")
+    def request_or_response_failure(self, evt, handler, error):
+        if len(evt.args) == 2:
+            request, response = evt.args[:2]
+        else:
+            response = evt.args[0]
+            request = response.request
 
         etype, evalue, traceback = error
 
@@ -251,5 +257,13 @@ class HTTP(Component):
 
     def request_completed(self, evt, handler, retval):
         request, response = evt.args[:2]
-        if not request.handled or handler is None:
+
+        # Return a 404 response on any of the following:
+        # 1) The request was not successful (request.handled)
+        # 2) The request was not handled by any handler (handler)
+        # 3) The value is both None and is not a future.
+        #    (evt.value.value, evt.future)
+
+        if not request.handled or handler is None or \
+                (evt.value.value is None and not evt.future):
             self.push(NotFound(request, response))

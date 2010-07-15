@@ -96,4 +96,5 @@ class Bridge(BaseComponent):
         elif getattr(event, "remote", False):
             return
         else:
+            event.future = True
             self._writer(event)

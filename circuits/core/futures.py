@@ -37,7 +37,9 @@ class Future(Value):
 
 def future():
     def decorate(f):
-        def wrapper(manager, *args, **kwargs):
-            return Future(None, manager, f, args, kwargs)
+        def wrapper(manager, event, *args, **kwargs):
+            event.future = True
+            return Future(event, manager, f, args, kwargs)
+        wrapper.event = True
         return update_wrapper(wrapper, f)
     return decorate

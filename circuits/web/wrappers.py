@@ -16,6 +16,7 @@ from types import FileType, ListType
 
 from utils import url
 from headers import Headers
+from errors import HTTPError
 from circuits.net.sockets import BUFSIZE
 from constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
 
@@ -149,6 +150,9 @@ class Body(object):
             return response._body
     
     def __set__(self, response, value):
+        if response == value:
+            return
+
         if isinstance(value, basestring):
             if value:
                 value = [value]
@@ -157,8 +161,11 @@ class Body(object):
         elif isinstance(value, FileType):
             response.stream = True
             value = file_generator(value)
+        elif isinstance(value, HTTPError):
+            value = [str(value)]
         elif value is None:
             value = []
+
         response._body = value
 
 class Response(object):
