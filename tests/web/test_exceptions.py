@@ -35,9 +35,6 @@ class Root(Controller):
         raise NotFound()
 
 def test_forbidden(webapp):
-    from circuits import Debugger
-    Debugger(events=False).register(webapp)
-
     try:
         urlopen("%s/test_forbidden" % webapp.server.base)
     except HTTPError, e:
