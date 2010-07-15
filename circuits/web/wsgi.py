@@ -133,7 +133,7 @@ class Gateway(BaseComponent):
         env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
         env("CONTENT_LENGTH", req.headers.get("Content-Length", ""))
         env("REMOTE_ADDR", req.remote.ip)
-        env("REMOTE_PORT", "%i" % req.remote.port)
+        env("REMOTE_PORT", "%i" % (req.remote.port or 0))
         env("wsgi.version", (1, 0))
         env("wsgi.input", req.body)
         env("wsgi.errors", self._errors)
