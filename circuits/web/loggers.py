@@ -31,8 +31,10 @@ class Logger(BaseComponent):
 
         if type(file) is str:
             self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
-        else:
+        elif type(file) is file or hasattr(file, "write"):
             self.file = file
+        else:
+            raise TypeError("Invalid type for file, expected a str or file")
 
         self.logger = logger
 
