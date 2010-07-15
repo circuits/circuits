@@ -26,7 +26,7 @@ class Logger(BaseComponent):
 
     format = "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
 
-    def __init__(self, file=sys.stderr, logger=None, **kwargs):
+    def __init__(self, file=None, logger=None, **kwargs):
         super(Logger, self).__init__(**kwargs)
 
         if type(file) is str:
@@ -34,7 +34,7 @@ class Logger(BaseComponent):
         elif type(file) is file or hasattr(file, "write"):
             self.file = file
         else:
-            raise TypeError("Invalid type for file, expected a str or file")
+            self.file = sys.stdout
 
         self.logger = logger
 

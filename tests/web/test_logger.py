@@ -120,11 +120,3 @@ def test_filename(webapp, tmpdir):
 
     logfile.close()
     logger.unregister()
-
-def test_bad_value():
-    try:
-        logger = Logger(None)
-    except:
-        assert True
-    else:
-        assert False
