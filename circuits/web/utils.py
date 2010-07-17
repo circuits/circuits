@@ -70,22 +70,26 @@ def dictform(form):
 
 def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
-    yield '\037\213'      # magic header
-    yield '\010'         # compression method
-    yield '\0'
-    yield struct.pack("<L", long(time.time()))
-    yield '\002'
-    yield '\377'
-    
-    crc = zlib.crc32("")
+
+    # Header
+    yield "\037\213\010\0" + struct.pack("<L", long(time.time())) + "\002\377"
+
     size = 0
-    zobj = zlib.compressobj(compress_level,
-                            zlib.DEFLATED, -zlib.MAX_WBITS,
-                            zlib.DEF_MEM_LEVEL, 0)
-    for line in body:
-        size += len(line)
-        crc = zlib.crc32(line, crc)
-        yield zobj.compress(line)
+    crc = zlib.crc32("")
+
+    zobj = zlib.compressobj(
+        compress_level,
+        zlib.DEFLATED,
+        -zlib.MAX_WBITS,
+        zlib.DEF_MEM_LEVEL,
+        0,
+    )
+
+    for chunk in body:
+        size += len(chunk)
+        crc = zlib.crc32(chunk, crc)
+        yield zobj.compress(chunk)
+
     yield zobj.flush()
     yield struct.pack("<l", crc)
     yield struct.pack("<L", size & 0xFFFFFFFFL)
