@@ -90,9 +90,8 @@ def compress(body, compress_level):
         crc = zlib.crc32(chunk, crc)
         yield zobj.compress(chunk)
 
-    yield zobj.flush()
-    yield struct.pack("<l", crc)
-    yield struct.pack("<L", size & 0xFFFFFFFFL)
+    yield zobj.flush() + struct.pack("<l", crc) + \
+            struct.pack("<L", size & 0xFFFFFFFFL)
 
 def decompress(body):
     zbuf = StringIO()
