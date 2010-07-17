@@ -92,6 +92,8 @@ class Static(Component):
 
         # Is it a file we can serve directly?
         if os.path.isfile(location):
+            # Don't set cookies for static content
+            response.cookie.clear()
             expires(request, response, 3600*24*30, force=True)
             return serve_file(request, response, location)
 
@@ -103,6 +105,8 @@ class Static(Component):
                 location = os.path.abspath(
                         os.path.join(self.docroot, path, default))
                 if os.path.exists(location):
+                    # Don't set cookies for static content
+                    response.cookie.clear()
                     expires(request, response, 3600*24*30, force=True)
                     return serve_file(request, response, location)
 
