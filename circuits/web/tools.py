@@ -370,7 +370,7 @@ def digest_auth(request, response, realm, users):
     
     return Unauthorized(request, response)
 
-def gzip(response, level=1, mime_types=['text/html', 'text/plain']):
+def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
     """Try to gzip the response body if Content-Type in mime_types.
     
     response.headers['Content-Type'] must be set to one of the
