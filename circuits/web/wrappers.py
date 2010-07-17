@@ -237,9 +237,6 @@ class Response(object):
 
             self.headers["Content-Length"] = str(cLength)
 
-        if self.stream:
-            self.headers.setdefault("Content-Type", "application/octet-stream")
-
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
