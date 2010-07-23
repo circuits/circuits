@@ -80,8 +80,6 @@ class BaseServer(BaseComponent):
         Request.host = self.host
         Request.scheme = "https" if self.server.ssl else "http"
 
-        print "%s listening on %s" % (self.version, self.base)
-
     @property
     def version(self):
         return SERVER_VERSION
