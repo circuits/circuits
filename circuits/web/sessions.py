@@ -23,6 +23,12 @@ class Sessions(Component):
         self._name = name
         self._data = defaultdict(dict)
 
+    def _load(self, id):
+        return self._data[id]
+
+    def _save(self, id, data):
+        self._data[id] = data
+
     @handler("request", filter=True, priority=10)
     def request(self, request, response):
         if self._name in request.cookie:
@@ -31,5 +37,5 @@ class Sessions(Component):
             id = str(uuid())
 
         request.sid = id
-        request.session = self._data[id]
+        request.session = self._load(id)
         response.cookie[self._name] = id
