@@ -5,34 +5,24 @@ from urllib2 import urlopen, HTTPError
 from circuits.web import Controller
 from circuits.web.exceptions import *
 
-"""
-BadGateway
-BadRequest
-Forbidden
-Gone
-InternalServerError
-LengthRequired
-MethodNotAllowed
-NotAcceptable
-NotFound
-NotImplemented
-PreconditionFailed
-RequestEntityTooLarge
-RequestTimeout
-RequestURITooLarge
-ServiceUnavailable
-Unauthorized
-UnicodeError
-UnsupportedMediaType
-"""
-
 class Root(Controller):
+
+    def index(self):
+        return "Hello World!"
+
+    def test_redirect(self):
+        raise Redirect("/")
 
     def test_forbidden(self):
         raise Forbidden()
 
     def test_notfound(self):
         raise NotFound()
+
+def test_redirect(webapp):
+    f = urlopen("%s/test_redirect" % webapp.server.base)
+    s = f.read()
+    assert s == "Hello World!"
 
 def test_forbidden(webapp):
     try:
