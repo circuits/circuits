@@ -222,7 +222,20 @@ class HTTP(Component):
                     response.body = retval.value
                     self.push(Response(response))
                 elif retval.errors:
-                    self.push(HTTPError(request, response, error=retval.value))
+                    error = retval.value
+                    etype, evalue, traceback = error
+                    if isinstance(evalue, RedirectException):
+                        self.push(RedirectError(request, response,
+                            evalue.urls, evalue.status))
+                    elif isinstance(evalue, HTTPException):
+                        if evalue.traceback:
+                            self.push(HTTPError(request, response, evalue.code,
+                                description=evalue.description, error=error))
+                        else:
+                            self.push(HTTPError(request, response, evalue.code,
+                                description=evalue.description))
+                    else:
+                        self.push(HTTPError(request, response, error=error))
                 else:
                     if retval.manager is None:
                         retval.manager = self
@@ -240,8 +253,10 @@ class HTTP(Component):
         else:
             request, response = evt.args[:2]
 
-        if response.done:
-            return # Ignore failed "response" handlers (eg: Loggers or Tools)
+        # Ignore filtered requests already handled (eg: HTTPException(s)).
+        # Ignore failed "response" handlers (eg: Loggers or Tools)
+        if request.handled or response.done:
+            return
 
         if not request.handled:
             request.handled = True
