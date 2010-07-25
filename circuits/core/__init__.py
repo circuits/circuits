@@ -17,7 +17,11 @@ from values import Value
 from futures import future, Future
 
 from timers import Timer
-from bridge import Bridge
+try:
+    from bridge import Bridge
+except:
+     print "Failed to import circuits.core.bridge. This probably means we're running in debug mode, and the debug version of the Python socket library is not available. Continuing without."
+     Bridge = None
 from debugger import Debugger
 from workers import Thread, Process
 
