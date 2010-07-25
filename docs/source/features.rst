@@ -6,7 +6,7 @@ Core Features:
 * Event Driven (*message passing*)
 * Component Architecture (*directed graph of components*)
 * Event Feedback Channels (*callbacks*)
-* Event Handler Inheritence (*component polymorphism*)
+* Event Handler Inheritance (*component polymorphism*)
 * Values and Future Values (*returned, deferred and future values*)
 * Remote Bridging (*remote support*)
 * Asynchronous Networking and I/O (*non-blocking*)
@@ -37,4 +37,4 @@ Other Features:
 * Built-in developer tools: ``Debugger, circuits.tools``
 * Application components: ``Daemon``, ``Log``.
 * Asynchronous I/O components: ``File``, ``Serial``.
-* Web framework: ``circuits.web`` 
+* Web framework: ``circuits.web``

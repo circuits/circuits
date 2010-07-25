@@ -27,7 +27,7 @@ Events
 +---------------+-----------------------------------+
 | Response      | The Response Event                |
 +---------------+-----------------------------------+
-| Stream        | The Stream   Event                |
+| Stream        | The Stream Event                  |
 +---------------+-----------------------------------+
 
 Servers
@@ -94,13 +94,13 @@ from circuits.web, for example:
 
    from circuits import Component
    from circuits.web import BaseServer
-   
+
    class Root(Component):
-   
+
        def request(self, request, response):
            return "Hello World!"
-   
+
    (BaseServer(8000) + Root()).run()
-   
+
 For further information regarding any of circuits.web's components,
-events or other modules and functions refer to the to the API Documentation.
+events or other modules and functions refer to the API Documentation.
