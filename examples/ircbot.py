@@ -13,8 +13,14 @@ class Bot(Component):
 
     def __init__(self, host, port=6667, channel=channel):
         super(Bot, self).__init__()
+
+        self._host = host
+        self._port = port
+
         self += TCPClient(channel=self.channel) + IRC(channel=self.channel)
-        self.push(Connect(host, port))
+
+    def ready(self, component):
+        self.push(Connect(self._host, self._port))
 
     def connected(self, host, port):
         self.push(USER("circuits", host, host, "Test circuits IRC Bot"))
