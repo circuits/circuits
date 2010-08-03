@@ -37,9 +37,6 @@ def test_404(webapp):
         assert False
 
 def test_args(webapp):
-    from circuits import Debugger
-    Debugger().register(webapp)
-
     args = (u"1", u"2", u"3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.base, "/".join(args))
