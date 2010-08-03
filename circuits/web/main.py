@@ -105,7 +105,7 @@ class HelloWorld(Component):
 
 class Root(Controller):
 
-    def index(self):
+    def hello(self):
         return "Hello World!"
 
 ###
