@@ -135,8 +135,6 @@ class Select(_Poller):
 
     def __tick__(self):
         try:
-            if not any([self._read, self._write]):
-                return
             r, w, _ = select(self._read, self._write, [], self.timeout)
             if r or w:
                 self.timeout = 0.0
