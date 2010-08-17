@@ -248,6 +248,10 @@ class Client(Component):
                 if component is not None:
                     self._poller = component
                     self.push(Ready(self), "ready", self.channel)
+                else:
+                    self._poller = self._PollerComponent()
+                    self._poller.register(self.root)
+                    self.push(Ready(self), "ready", self.channel)
 
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
@@ -486,6 +490,11 @@ class Server(Component):
                 component = findcmp(self.root, _Poller, subclass=False)
                 if component is not None:
                     self._poller = component
+                    self._poller.addReader(self, self._sock)
+                    self.push(Ready(self), "ready", self.channel)
+                else:
+                    self._poller = self._PollerComponent()
+                    self._poller.register(self.root)
                     self._poller.addReader(self, self._sock)
                     self.push(Ready(self), "ready", self.channel)
 
