@@ -88,7 +88,7 @@ class _Poller(BaseComponent):
     def removeWriter(self, fd):
         if fd in self._write:
             self._write.remove(fd)
-        if fd in self._targets:
+        if not (fd in self._read or fd in self._write):
             del self._targets[fd]
 
     def isReading(self, fd):
