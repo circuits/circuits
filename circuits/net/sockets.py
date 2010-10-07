@@ -16,6 +16,7 @@ from socket import gethostname, gethostbyname
 
 try:
     import ssl
+    import ssl as ssl_ # Doh, otherwise local variables overshadow the module
     HAS_SSL = 1
 except ImportError:
     import warnings
@@ -382,7 +383,7 @@ class TCPClient(Client):
 
         if self.ssl:
             self._sslsock = socket.ssl(self._sock)
-        
+
         self.push(Connected(host, port), "connected", self.channel)
 
 class UNIXClient(Client):
@@ -428,7 +429,7 @@ class UNIXClient(Client):
 
         if self.ssl:
             self._sslsock = socket.ssl(self._sock)
-        
+
         self.push(Connected(gethostname(), path), "connected", self.channel)
 
 
@@ -455,6 +456,9 @@ class Server(Component):
         if self.ssl:
             self.certfile = kwargs.get("certfile", None)
             self.keyfile = kwargs.get("keyfile", None)
+            self.cert_reqs = kwargs.get("cert_reqs", None)
+            self.ssl_version = kwargs.get("ssl_version", ssl_.PROTOCOL_SSLv23)
+            self.ca_certs = kwargs.get("ca_certs", None)
 
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
         self._backlog = kwargs.get("backlog", BACKLOG)
@@ -591,7 +595,13 @@ class Server(Component):
                     server_side=True,
                     certfile=self.certfile,
                     keyfile=self.keyfile,
-                    ssl_version=ssl.PROTOCOL_TLSv1)
+                    cert_reqs=self.cert_reqs,
+                    ssl_version=self.ssl_version,
+                    ca_certs=self.ca_certs)
+
+        except ssl_.SSLError, e:
+            raise
+
         except socket.error, e:
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return

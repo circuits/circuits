@@ -129,7 +129,7 @@ class BaseServer(BaseComponent):
     def base(self):
         host = self.host
         scheme = self.scheme
-        
+
         return "%s://%s" % (scheme, host)
 
     @handler("stopped", target="*")

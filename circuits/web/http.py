@@ -64,7 +64,7 @@ class HTTP(Component):
             if response.close:
                 self.push(Close(response.request.sock))
             response.done = True
-        
+
     def response(self, response):
         data = [str(response)]
 
@@ -129,10 +129,10 @@ class HTTP(Component):
 
             if frag:
                 return self.push(HTTPError(request, response, 400))
-        
+
             if params:
                 path = "%s;%s" % (path, params)
-        
+
             # Unquote the path+params (e.g. "/this%20path" -> "this path").
             # http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
             #
@@ -165,7 +165,7 @@ class HTTP(Component):
             headers, body = parseHeaders(StringIO(data))
             request.headers = headers
             request.body.write(body)
-            
+
             if headers.get("Expect", "") == "100-continue":
                 return self.push(Response(wrappers.Response(request, 100)))
 
@@ -189,7 +189,7 @@ class HTTP(Component):
 
     def httperror(self, event, request, response, code, **kwargs):
         """Default HTTP Error Handler
-        
+
         Default Error Handler that by default just responds with the response
         in the error object passed. The response is normally modified by a
         HTTPError instance or a subclass thereof.
