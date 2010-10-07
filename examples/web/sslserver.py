@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
+from circuits import Debugger
 from circuits.web import Server, Controller
 
 class Root(Controller):
 
-    def index(self):
+    def index(self, peer_cert):
         return "Hello World!"
 
-(Server(8000, ssl=True, certfile="cert.pem") + Root()).run()
+(Server(("localhost", 8000), ssl=True, certfile="cert.pem") + Debugger() + Root()).run()
