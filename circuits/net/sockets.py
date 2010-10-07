@@ -456,7 +456,7 @@ class Server(Component):
         if self.ssl:
             self.certfile = kwargs.get("certfile", None)
             self.keyfile = kwargs.get("keyfile", None)
-            self.cert_reqs = kwargs.get("cert_reqs", None)
+            self.cert_reqs = kwargs.get("cert_reqs", ssl_.CERT_NONE)
             self.ssl_version = kwargs.get("ssl_version", ssl_.PROTOCOL_SSLv23)
             self.ca_certs = kwargs.get("ca_certs", None)
 
