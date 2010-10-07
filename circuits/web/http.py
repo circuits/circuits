@@ -186,7 +186,11 @@ class HTTP(Component):
         request.body.seek(0)
 
         if hasattr(sock, "getpeercert"):
-            req = Request(request, response, sock.getpeercert())
+            peer_cert = sock.getpeercert()
+            if peer_cert:
+                req = Request(request, response, peer_cert)
+            else:
+                req = Request(request, response)
         else:
             req = Request(request, response)
 
