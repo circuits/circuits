@@ -185,7 +185,12 @@ class HTTP(Component):
 
         request.body.seek(0)
 
-        self.push(Request(request, response))
+        if hasattr(sock, "getpeercert"):
+            req = Request(request, response, sock.getpeercert())
+        else:
+            req = Request(request, response)
+
+        self.push(req)
 
     def httperror(self, event, request, response, code, **kwargs):
         """Default HTTP Error Handler

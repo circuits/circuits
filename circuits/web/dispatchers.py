@@ -269,8 +269,10 @@ class Dispatcher(Component):
             self.paths.remove(c.channel)
 
     @handler("request", filter=True, priority=0.1)
-    def request(self, event, request, response):
+    def request(self, event, request, response, peer_cert=None):
         req = event
+        if peer_cert:
+            req.peer_cert = peer_cert
 
         channel, target, vpath = self._getChannel(request)
 
@@ -445,14 +447,14 @@ class RoutesDispatcher(Component):
 
 class VirtualHosts(Component):
     """Forward to anotehr Dispatcher based on the Host header.
-    
+
     This can be useful when running multiple sites within one server.
     It allows several domains to point to different parts of a single
     website structure. For example:
      - http://www.domain.example      -> /
      - http://www.domain2.example     -> /domain2
      - http://www.domain2.example:443 -> /secure
-    
+
     :param domains: a dict of {host header value: virtual prefix} pairs.
     :type  domains: dict
 
