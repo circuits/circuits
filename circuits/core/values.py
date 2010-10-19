@@ -121,6 +121,8 @@ class Value(object):
                 o.errors = v.errors
                 o.result = v.result
             if not o._parent == o:
+                o._parent.errors = o.errors
+                o._parent.result = o.result
                 notify(o._parent, v)
         
         notify(self, value)
