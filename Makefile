@@ -27,9 +27,6 @@ tests:
 		--ignore=tmp \
 		--pastebin=all \
 		--cov=circuits \
-		--cov-html \
-		--cov-html-dir=coverage \
-		--cov-no-terminal \
 		tests/
 		#--cov-combine-each \
 		#--dist=each \
