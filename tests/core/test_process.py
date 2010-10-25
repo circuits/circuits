@@ -43,9 +43,14 @@ def test():
     p = MyProcess(app)
     p.start()
 
-    sleep(1)
+    retries = 3
+    for i in range(retries):
+        if app.flag:
+            break
+        sleep(1)
+    else:
+        raise Exception("app.flag not set after %d retries" % retries)
 
-    assert app.flag
     ppid = os.getpid()
     cpid = app.events[-1][0]
     assert not ppid == cpid
