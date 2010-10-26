@@ -28,7 +28,6 @@ tests:
 		--pastebin=all \
 		--cov=circuits \
 		tests/
-		#--cov-combine-each \
 		#--dist=each \
 		#--tx=popen//python=/usr/bin/python2.5 \
 		#--tx=popen//python=/usr/bin/python2.6 \
