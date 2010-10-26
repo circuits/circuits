@@ -43,7 +43,7 @@ def test():
     p = MyProcess(app)
     p.start()
 
-    retries = 3
+    retries = 5
     for i in range(retries):
         if app.flag:
             break
