@@ -93,5 +93,5 @@ setup(
     circuits.web = circuits.web.main:main
     """,
     setup_requires=("hgtools",),
-    use_hg_version=True,
+    use_hg_version_increment="0.1",
 )
