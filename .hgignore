@@ -5,6 +5,7 @@ syntax: glob
 tmp
 build
 dist
+hgtools*
 .coverage*
 coverage
 docs/build
