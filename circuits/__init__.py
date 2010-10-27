@@ -10,9 +10,4 @@ Lightweight Event driven Framework
 :license: MIT (See: LICENSE)
 """
 
-try:
-    from __version__ import version as __version__
-except ImportError:
-    __version__ = "unknown"
-
 from core import *

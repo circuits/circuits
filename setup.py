@@ -31,14 +31,8 @@ if not HAS_SETUPTOOLS:
 
         return out
 
-from circuits.version import forget_version, get_version, remember_version
-
-forget_version()
-version = remember_version()
-
 setup(
     name="circuits",
-    version=get_version(),
     description="Lightweight Event driven Framework",
     long_description=open("README", "r").read(),
     author="James Mills",
@@ -92,5 +86,7 @@ setup(
     [console_scripts]
     circuits.bench = circuits.tools.bench:main
     circuits.web = circuits.web.main:main
-    """
+    """,
+    setup_requires=("hgtools",),
+    use_hg_version=True,
 )
