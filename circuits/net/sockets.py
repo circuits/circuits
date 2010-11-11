@@ -25,7 +25,7 @@ except ImportError:
 
 from circuits.core.utils import findcmp
 from circuits.core import handler, Event, Component
-from circuits.net.pollers import _Poller, Select as DefaultPoller
+from circuits.core.pollers import _Poller, Select as DefaultPoller
 
 BUFSIZE = 4096 # 4KB Buffer
 BACKLOG = 5000 #  5K Concurrent Connections
@@ -202,7 +202,7 @@ class Client(Component):
     channel = "client"
 
     def __init__(self, bind=None, **kwargs):
-        channel = kwargs.get("channel", Client.channel)
+        channel = kwargs.get("channel", self.__class__.channel)
         super(Client, self).__init__(channel=channel)
 
         self.encoding = kwargs.get("encoding", "utf-8")
@@ -438,7 +438,7 @@ class Server(Component):
     channel = "server"
 
     def __init__(self, bind, ssl=False, **kwargs):
-        channel = kwargs.get("channel", Server.channel)
+        channel = kwargs.get("channel", self.__class__.channel)
         super(Server, self).__init__(channel=channel)
 
         self.encoding = kwargs.get("encoding", "utf-8")

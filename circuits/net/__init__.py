@@ -5,7 +5,7 @@
 """Networking Components
 
 This package contains components that implement network sockets and
-pollers for implementing client and server network applications.
+protocols for implementing client and server network applications.
 
 :copyright: CopyRight (C) 2004-2010 by James Mills
 :license: MIT (See: LICENSE)

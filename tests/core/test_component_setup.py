@@ -21,6 +21,14 @@ class A(Component):
 class B(Component):
     pass
 
+class Base(Component):
+
+    channel = "base"
+
+class C(Base):
+
+    channel = "c"
+
 def test_basic():
     m = Manager()
 
@@ -57,3 +65,12 @@ def test_complex():
     assert b in a
     assert b.root == a
     assert b.manager == a
+
+def test_subclassing_with_custom_channel():
+    base = Base()
+
+    assert base.channel == "base"
+
+    c = C()
+
+    assert c.channel == "c"

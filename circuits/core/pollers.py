@@ -37,7 +37,8 @@ except ImportError:
     except ImportError:
         HAS_EPOLL = 0
 
-from circuits.core import handler, Event, BaseComponent
+from events import Event
+from components import BaseComponent
 
 if HAS_POLL:
     _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)

@@ -1,8 +1,8 @@
 import os
 from time import sleep
 
-from circuits.net import pollers
-from circuits.net.pollers import Select
+from circuits.core import pollers
+from circuits.core.pollers import Select
 from circuits.net.sockets import Close, Connect, Write
 from circuits.net.sockets import UNIXServer, UNIXClient
 
@@ -12,10 +12,10 @@ from server import Server
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"poller": Select})
     if pollers.HAS_POLL:
-        from circuits.net.pollers import Poll
+        from circuits.core.pollers import Poll
         metafunc.addcall(funcargs={"poller": Poll})
     if pollers.HAS_EPOLL:
-        from circuits.net.pollers import EPoll
+        from circuits.core.pollers import EPoll
         metafunc.addcall(funcargs={"poller": EPoll})
 
 def test_unix(tmpdir, poller):

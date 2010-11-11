@@ -526,6 +526,14 @@ class Manager(object):
             _registerSignalHandler(SIGINT, self._signalHandler)
             _registerSignalHandler(SIGTERM, self._signalHandler)
 
+        from circuits.core.utils import findcmp
+        from circuits.core.pollers import _Poller, Select
+
+        poller = findcmp(self.root, _Poller, subclass=False)
+        if poller is None:
+            poller = Select()
+            poller.register(self.root)
+
         if __socket is not None:
             from circuits.core.bridge import Bridge
             manager = Manager()

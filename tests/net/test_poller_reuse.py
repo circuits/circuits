@@ -1,7 +1,7 @@
 from time import time
 
 from circuits import Manager
-from circuits.net.pollers import Select, TIMEOUT
+from circuits.core.pollers import Select, TIMEOUT
 from circuits.net.sockets import TCPServer, TCPClient
 from circuits.net.sockets import Close, Connect, Write
 
