@@ -16,6 +16,7 @@ except ImportError:
 
 import py
 
+import circuits.tools
 from circuits import Component
 from circuits.tools import kill, graph, inspect, findroot, reprhandler
 
@@ -171,8 +172,8 @@ def test_graph(tmpdir):
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
     tmpdir.ensure("A")
-    name = str(tmpdir.join("A"))
-    assert graph(a, name=name) == GRAPH % tuple([id] * 6)
+    circuits.tools.HAS_PYDOT = False # Not testing writing to .png
+    assert graph(a) == GRAPH % tuple([id] * 6)
 
 def test_inspect():
     a = A()

@@ -5,6 +5,7 @@
 """py.test config"""
 
 import os
+import socket
 
 from circuits import Component
 from circuits.web.wsgi import Gateway
@@ -19,7 +20,17 @@ class WebApp(Component):
     def __init__(self):
         super(WebApp, self).__init__()
 
-        self.server = Server(BIND)
+        bind = BIND[0], BIND[1]
+        while True:
+            try:
+                self.server = Server(bind)
+                break
+            except socket.error, e:
+                if e[0] == 48:
+                    bind = bind[0], (bind[1] + 1)
+                else:
+                    raise
+            
         self.server.register(self)
 
 def pytest_funcarg__webapp(request):

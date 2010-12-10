@@ -7,7 +7,23 @@
 from time import sleep
 from datetime import datetime, timedelta
 
+import py
+
 from circuits import Event, Component, Timer
+
+def pytest_funcarg__app(request):
+    return request.cached_setup(
+            setup=lambda: setupapp(request),
+            teardown=lambda app: teardownapp(app),
+            scope="module")
+
+def setupapp(request):
+    app = App()
+    app.start(1)
+    return app
+
+def teardownapp(app):
+    app.stop()
 
 class Test(Event):
     """Test Event"""
@@ -16,36 +32,32 @@ class App(Component):
 
     flag = False
 
+    def reset(self):
+        self.flag = False
+
     def timer(self):
         self.flag = True
 
-app = App()
-app.start()
-
-def test_timer():
-    timer = Timer(0.1, Test(), "timer")
+def test_timer(app):
+    timer = Timer(1.0, Test(), "timer")
     timer.register(app)
-    sleep(0.2)
-    flag = app.flag
-    assert flag
+    assert py.test.wait_for_flag(app, "flag")
+    app.reset()
 
-def test_persistentTimer():
-    timer = Timer(0.1, Test(), "timer", persist=True)
+def test_persistentTimer(app):
+    timer = Timer(1.0, Test(), "timer", persist=True)
     timer.register(app)
 
     for i in xrange(2):
-        sleep(0.2)
-        flag = app.flag
-        assert flag
-        app.flag = False
+        assert py.test.wait_for_flag(app, "flag")
+        app.reset()
 
     timer.unregister()
 
-def test_datetime():
+def test_datetime(app):
     now = datetime.now()
     d = now + timedelta(seconds=1)
     timer = Timer(d, Test(), "timer")
     timer.register(app)
-    sleep(1)
-    flag = app.flag
-    assert flag
+    assert py.test.wait_for_flag(app, "flag")
+    app.reset()

@@ -26,9 +26,10 @@ tests:
 	@py.test -x -r fsxX \
 		--ignore=tmp \
 		--pastebin=all \
-		--cov=circuits \
-		--cov-report=html \
-		tests/
+        tests/
+		#--cov=circuits \
+		#--cov-report=html \
+		#tests/
 		#--dist=each \
 		#--tx=popen//python=/usr/bin/python2.5 \
 		#--tx=popen//python=/usr/bin/python2.6 \
