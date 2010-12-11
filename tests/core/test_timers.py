@@ -4,7 +4,6 @@
 
 """Timers Tests"""
 
-from time import sleep
 from datetime import datetime, timedelta
 
 import py
@@ -19,7 +18,7 @@ def pytest_funcarg__app(request):
 
 def setupapp(request):
     app = App()
-    app.start(1)
+    app.start()
     return app
 
 def teardownapp(app):
@@ -39,13 +38,13 @@ class App(Component):
         self.flag = True
 
 def test_timer(app):
-    timer = Timer(1.0, Test(), "timer")
+    timer = Timer(0.1, Test(), "timer")
     timer.register(app)
     assert py.test.wait_for(app, "flag")
     app.reset()
 
 def test_persistentTimer(app):
-    timer = Timer(1.0, Test(), "timer", persist=True)
+    timer = Timer(0.1, Test(), "timer", persist=True)
     timer.register(app)
 
     for i in xrange(2):
@@ -56,7 +55,7 @@ def test_persistentTimer(app):
 
 def test_datetime(app):
     now = datetime.now()
-    d = now + timedelta(seconds=1)
+    d = now + timedelta(seconds=0.1)
     timer = Timer(d, Test(), "timer")
     timer.register(app)
     assert py.test.wait_for(app, "flag")
