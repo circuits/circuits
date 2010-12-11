@@ -4,7 +4,6 @@
 
 """Event Serialization Tests"""
 
-from time import sleep
 from pickle import dumps, loads
 
 from circuits import Event, Component
