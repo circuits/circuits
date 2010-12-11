@@ -1,4 +1,6 @@
-from time import sleep
+#!/usr/bin/env python
+
+import py
 
 from circuits.core import pollers
 from circuits.net.sockets import Write
@@ -27,9 +29,7 @@ def test_udp(poller, ports):
 
     try:
         client.push(Write(("127.0.0.1", ports[0]), "foo"))
-        sleep(1)
-        s = server.data
-        assert s == "foo"
+        py.test.wait_for(server, "data", "foo")
     finally:
         server.stop()
         client.stop()

@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 import os
-from time import sleep
+
+import py
 
 from circuits.core import pollers
 from circuits.core.pollers import Select
@@ -29,26 +32,17 @@ def test_unix(tmpdir, poller):
 
     try:
         client.push(Connect(filename))
-        sleep(1)
-        client_connected = client.connected
-        server_connected = server.connected
-        assert client_connected
-        assert server_connected
-        s = client.data
-        assert s == "Ready"
+        py.test.wait_for(client, "connected")
+        py.test.wait_for(server, "connected")
+        py.test.wait_for(client, "data", "Ready")
 
         client.push(Write("foo"))
-        sleep(1)
-        s = server.data
-        assert s == "foo"
+        py.test.wait_for(server, "data", "foo")
 
         client.push(Close())
         server.push(Close())
-        sleep(1)
-        client_disconnected = client.disconnected
-        server_disconnected = server.disconnected
-        assert client_disconnected
-        assert server_disconnected
+        py.test.wait_for(client, "disconnected")
+        py.test.wait_for(server, "disconnected")
     finally:
         server.stop()
         client.stop()

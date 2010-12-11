@@ -41,7 +41,7 @@ class App(Component):
 def test_timer(app):
     timer = Timer(1.0, Test(), "timer")
     timer.register(app)
-    assert py.test.wait_for_flag(app, "flag")
+    assert py.test.wait_for(app, "flag")
     app.reset()
 
 def test_persistentTimer(app):
@@ -49,7 +49,7 @@ def test_persistentTimer(app):
     timer.register(app)
 
     for i in xrange(2):
-        assert py.test.wait_for_flag(app, "flag")
+        assert py.test.wait_for(app, "flag")
         app.reset()
 
     timer.unregister()
@@ -59,5 +59,5 @@ def test_datetime(app):
     d = now + timedelta(seconds=1)
     timer = Timer(d, Test(), "timer")
     timer.register(app)
-    assert py.test.wait_for_flag(app, "flag")
+    assert py.test.wait_for(app, "flag")
     app.reset()

@@ -1,4 +1,6 @@
-from time import sleep
+#!/usr/bin/env python
+
+import py
 
 from circuits.core import pollers
 from circuits.net.sockets import Pipe
@@ -26,22 +28,15 @@ def test_pipe(poller):
 
     try:
         a.push(Write("foo"))
-        sleep(1)
-        s = b.data
-        assert s == "foo"
+        py.test.wait_for(b, "data", "foo")
 
         b.push(Write("foo"))
-        sleep(1)
-        s = a.data
-        assert s == "foo"
+        py.test.wait_for(a, "data", "foo")
 
         a.push(Close())
         b.push(Close())
-        sleep(1)
-        a_disconnected = a.disconnected
-        b_disconnected = b.disconnected
-        assert a_disconnected
-        assert b_disconnected
+        py.test.wait_for(a, "disconnected")
+        py.test.wait_for(b, "disconnected")
     finally:
         a.stop()
         b.stop()
