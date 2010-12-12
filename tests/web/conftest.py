@@ -5,6 +5,7 @@
 """py.test config"""
 
 import os
+import errno
 import socket
 
 from circuits import Component
@@ -26,7 +27,7 @@ class WebApp(Component):
                 self.server = Server(bind)
                 break
             except socket.error, e:
-                if e[0] == 48:
+                if e[0] == errno.EADDRINUSE:
                     bind = bind[0], (bind[1] + 1)
                 else:
                     raise

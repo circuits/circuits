@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
 import os
+import sys
 
 import py
+
+if sys.platform in ("win32", "cygwin"):
+    py.test.skip("Test Not Applicable on Windows")
 
 from circuits.core import pollers
 from circuits.core.pollers import Select

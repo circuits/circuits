@@ -39,8 +39,8 @@ def test(tmpdir):
             level = "error"
         elif level == "warn":
             level = "warning"
-        assert s == "%s test[log] %s: Hello World!" % (now, level.upper())
-
+        assert s == "%s test[log] %s: Hello World!" % (now, level.upper()) or \
+            s[(len(now) + 1):] == "test[log] %s: Hello World!" % (level.upper())
     for level in LEVELS:
         f.seek(0)
         f.truncate()
@@ -62,9 +62,11 @@ def test_direct(tmpdir):
         if level == "warn":
             level = "warning"
         if level == "exception":
-            assert s == "%s test[log] ERROR: Hello World!\nNone" % now
+            assert s == "%s test[log] ERROR: Hello World!\nNone" % now or \
+                s[(len(now) + 1):] == "test[log] ERROR: Hello World!\nNone"
         else:
-            assert s == "%s test[log] %s: Hello World!" % (now, level.upper())
+            assert s == "%s test[log] %s: Hello World!" % (now, level.upper()) or \
+                s[(len(now) + 1):] == "test[log] %s: Hello World!" % level.upper()
 
     for level in LEVELS:
         f.seek(0)
