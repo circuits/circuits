@@ -36,6 +36,8 @@ class Application(BaseComponent):
     def __init__(self):
         super(Application, self).__init__()
 
+        self._finished = False
+
         HTTP().register(self)
         Dispatcher().register(self)
 
@@ -79,7 +81,9 @@ class Application(BaseComponent):
         self.request, self.response = self.getRequestResponse(environ)
         self.push(Request(self.request, self.response))
 
-        self.run()
+        self._finished = False
+        while not self._finished:
+            self.tick()
 
         self.response.prepare()
         body = self.response.body
@@ -91,7 +95,7 @@ class Application(BaseComponent):
 
     @handler("response", filter=True, target="http")
     def response(self, response):
-        self.stop()
+        self._finished = True
         return True
 
 class _Empty(str):
