@@ -31,11 +31,6 @@ if not HAS_SETUPTOOLS:
 
         return out
 
-__author__ = "James Mills, prologic at shortcircuit dot net dot au"
-__version__ = "$Rev$"[6:-2]
-__svnauthor__ = "$Author$"[9:-2]
-__date__ = "$Date$"[7:-2]
-
 setup(
     name="circuits",
     description="Lightweight Event driven Framework",
@@ -93,5 +88,5 @@ setup(
     circuits.web = circuits.web.main:main
     """,
     setup_requires=("hgtools",),
-    use_hg_version_increment="0.1",
+    use_hg_version={"increment": "0.01"},
 )
