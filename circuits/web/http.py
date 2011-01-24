@@ -90,7 +90,7 @@ class HTTP(Component):
         if not response.stream:
             if response.close:
                 self.push(Close(response.request.sock))
-            response.done = True
+        response.done = True
 
     def disconnect(self, sock):
         if sock in self._clients:
