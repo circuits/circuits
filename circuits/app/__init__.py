@@ -7,7 +7,7 @@
 Contains various components useful for application development and tasks
 common to applications.
 
-:copyright: CopyRight (C) 2004-2010 by James Mills
+:copyright: CopyRight (C) 2004-2011 by James Mills
 :license: MIT (See: LICENSE)
 """
 

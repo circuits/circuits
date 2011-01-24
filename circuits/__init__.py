@@ -7,7 +7,7 @@
 
 Lightweight Event driven Framework
 
-:copyright: CopyRight (C) 2004-2010 by James Mills
+:copyright: CopyRight (C) 2004-2011 by James Mills
 :license: MIT (See: LICENSE)
 """
 
