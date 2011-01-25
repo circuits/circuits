@@ -1,4 +1,5 @@
-circuits is a **Lightweight** **Event** driven **Framework** for the
+circuits is a **Lightweight** **Event** driven and **Asynchronous**
+**Application Framework** for the
 `Python Programming Language <http://www.python.org/>`_ with a
 strong **Component** Architecture. circuits also includes a lightweight,
 high performance and scalable HTTP/WSGI web server

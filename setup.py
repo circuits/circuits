@@ -33,7 +33,7 @@ if not HAS_SETUPTOOLS:
 
 setup(
     name="circuits",
-    description="Lightweight Event driven Framework",
+    description="Asynchronous Component based Event Application Framework"
     long_description=open("README", "r").read(),
     author="James Mills",
     author_email="James Mills, prologic at shortcircuit dot net dot au",
