@@ -8,7 +8,8 @@ This module definse the Manager class subclasses by component.BaseComponent
 """
 
 import os
-import time
+from time import sleep
+from warnings import warn
 from itertools import chain
 from types import TupleType
 from threading import Thread
@@ -46,6 +47,8 @@ except:
 from values import Value
 from events import Started, Stopped, Signal
 from events import Error, Success, Failure, Filter, Start, End
+
+TIMEOUT = 1.0 # 1s timeout when no tick functions to process
 
 class Manager(object):
     """Manager
@@ -470,7 +473,12 @@ class Manager(object):
         if signal in [SIGINT, SIGTERM]:
             self.stop()
 
-    def start(self, sleep=0, log=True, link=None, process=False):
+    def start(self, sleep=None, log=True, link=None, process=False):
+        if sleep:
+            warn(DeprecationWarning(
+                "sleep will be deprecated in a future release. " +
+                "Set circuits.core.TIMEOUT instead."))
+
         group = None
         target = self.run
         name = self.__class__.__name__
@@ -516,10 +524,17 @@ class Manager(object):
             except:
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
+        else:
+            sleep(TIMEOUT) # Nothing to do - Let's not tie up the CUP
         if self:
             self._flush()
 
-    def run(self, sleep=0, log=True, __mode=None, __socket=None):
+    def run(self, sleep=None, log=True, __mode=None, __socket=None):
+        if sleep:
+            warn(DeprecationWarning(
+                "sleep will be deprecated in a future release. " +
+                "Set circuits.core.TIMEOUT instead."))
+
         if not __mode == "T" and current_thread().getName() == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
@@ -548,8 +563,6 @@ class Manager(object):
         try:
             while self or self.running:
                 self.tick()
-                if sleep:
-                    time.sleep(sleep)
         finally:
             if __socket is not None:
                 while bridge or manager: pass
