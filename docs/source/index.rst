@@ -20,7 +20,6 @@ Contents
    tutorial
    manual
    examples
-   api
    web
 
 License
