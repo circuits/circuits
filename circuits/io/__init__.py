@@ -85,7 +85,7 @@ class File(Component):
             except select.error, error:
                 if not error[0] == errno.EINTR:
                     self.push(Error(error), "error")
-                    return
+                return
 
             if w and self._buffer:
                 data = self._buffer.popleft()
