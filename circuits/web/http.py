@@ -66,31 +66,31 @@ class HTTP(Component):
             response.done = True
 
     def response(self, response):
-        data = [str(response)]
-
-        body = "".join(response.body)
-        if body and response.chunked:
-            buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
-            body = "".join(buf)
-
-        data.append(body)
-
-        if response.chunked:
-            data.append("0\r\n\r\n")
-
-        self.push(Write(response.request.sock, "".join(data)))
+        self.push(Write(response.request.sock, str(response)))
 
         if response.stream and response.body:
             try:
                 data = response.body.next()
-                self.push(Stream(response, data))
             except StopIteration:
-                pass
+                data = None
+            self.push(Stream(response, data))
+        else:
+            body = "".join(response.body)
 
-        if not response.stream:
-            if response.close:
-                self.push(Close(response.request.sock))
-        response.done = True
+            if body:
+                if response.chunked:
+                    buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
+                    body = "".join(buf)
+
+                self.push(Write(response.request.sock, body))
+
+                if response.chunked:
+                    self.push(Write(response.request.sock, "0\r\n\r\n"))
+
+            if not response.stream:
+                if response.close:
+                    self.push(Close(response.request.sock))
+                response.done = True
 
     def disconnect(self, sock):
         if sock in self._clients:
