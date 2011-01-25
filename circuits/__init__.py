@@ -11,4 +11,8 @@ Lightweight Event driven Framework
 :license: MIT (See: LICENSE)
 """
 
+__author__ = "James Mills"
+__date__ = "25 January 2011"
+__version__ = "1.3"
+
 from core import *
