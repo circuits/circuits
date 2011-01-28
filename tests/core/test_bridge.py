@@ -1,10 +1,8 @@
 #!/usr/bin/python -i
 
 import os
-from time import sleep
 
 import py
-py.test.skip("XXX: Not passing...")
 
 from circuits.net.sockets import Pipe
 from circuits import Event, Component, Bridge
@@ -35,8 +33,15 @@ def test():
     e = Hello()
     assert e.future == False
     x = app.push(e)
-    sleep(1)
+
+    py.test.wait_for(e, "future", True)
     assert e.future == True
+
+    def test(obj, attr):
+        return isinstance(obj._value, list)
+
+    py.test.wait_for(x, None, test)
+
     assert x[0] == "Hello from %s" % pid
     assert x[1].startswith("Hello from")
     assert not x[0]  == x[1]
