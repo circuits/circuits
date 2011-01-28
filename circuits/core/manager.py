@@ -570,3 +570,4 @@ class Manager(object):
                 while bridge or manager: pass
                 manager.stop()
                 bridge.stop()
+            self.stop()
