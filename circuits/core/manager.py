@@ -526,10 +526,10 @@ class Manager(object):
             except:
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
-        else:
-            sleep(TIMEOUT) # Nothing to do - Let's not tie up the CUP
         if self:
             self._flush()
+        else:
+            sleep(TIMEOUT) # Nothing to do - Let's not tie up the CUP
 
     def run(self, sleep=None, log=True, __mode=None, __socket=None):
         if sleep:
