@@ -521,6 +521,8 @@ class Manager(object):
         if self._ticks:
             try:
                 [f() for f in self._ticks.copy()]
+            except (KeyboardInterrupt, SystemExit):
+                raise
             except:
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
