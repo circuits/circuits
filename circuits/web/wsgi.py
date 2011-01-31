@@ -70,7 +70,13 @@ class Application(BaseComponent):
         request.headers = headers
         request.script_name = env("SCRIPT_NAME")
         request.wsgi_environ = environ
-        request.body = env("wsgi.input")
+
+        try:
+            cl = int(headers.get("Content-Length", "0"))
+        except:
+            cl = 0
+
+        request.body.write(env("wsgi.input").read(cl))
 
         response = wrappers.Response(request)
         response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
