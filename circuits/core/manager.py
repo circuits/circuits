@@ -511,9 +511,11 @@ class Manager(object):
     def stop(self):
         self._running = False
         self.fire(Stopped(self))
-        if self._task and type(self._task) is Process and self._task.isAlive():
-            if not current_process() == self._task:
-                self._task.terminate()
+        if (self._task and HAS_MULTIPROCESSING
+                and type(self._task) is Process
+                and self._task.isAlive()
+                and not current_process() == self._task):
+            self._task.terminate()
         self._task = None
         self.tick()
 
