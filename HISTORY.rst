@@ -1,3 +1,12 @@
+1.3.2 (yyyymmdd)
+================
+
+Bug Fixes
+---------
+
+- circuits.web.wsgi: Fixed a bug with writing to the ``request.body``.
+  (Forgot to rewing the ``StringIO`` instnace after writing to it)
+
 1.3.1 (20110131)
 ================
 
