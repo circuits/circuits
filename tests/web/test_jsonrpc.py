@@ -2,7 +2,12 @@
 
 from urllib2 import urlopen
 
-import jsonrpclib
+import pytest
+
+try:
+    from jsonrpclib import ServerProxy
+except ImportError:
+    py.test.skip("Skip: No JSON support")
 
 from circuits import Component
 from circuits.web import Controller, JSONRPC
@@ -28,7 +33,7 @@ def test(webapp):
     assert s == "Hello World!"
 
     url = "%s/rpc/" % webapp.server.base
-    jsonrpc = jsonrpclib.ServerProxy(url, allow_none=True)
+    jsonrpc = ServerProxy(url, allow_none=True)
 
     data = jsonrpc.eval("1 + 2")
     assert data["result"] == 3
