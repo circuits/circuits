@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+
 try:
     from setuptools import setup, find_packages
     HAS_SETUPTOOLS = True
@@ -8,7 +10,6 @@ except ImportError:
     HAS_SETUPTOOLS = False
 
 if not HAS_SETUPTOOLS:
-    import os
     from distutils.util import convert_path
 
     def find_packages(where=".", exclude=()):
@@ -31,10 +32,17 @@ if not HAS_SETUPTOOLS:
 
         return out
 
+path = os.path.abspath(os.path.dirname(__file__))
+try:
+    README = open(os.path.join(path, "README.rst")).read()
+    HISTORY = open(os.path.join(path, "HISTORY.rst")).read()
+except IOError:
+    README = HISTORY = ""
+
 setup(
     name="circuits",
     description="Asynchronous Component based Event Application Framework",
-    long_description=open("README", "r").read(),
+    long_description="%s\n\n%s" % (README, HISTORY),
     author="James Mills",
     author_email="James Mills, prologic at shortcircuit dot net dot au",
     url="http://bitbucket.org/prologic/circuits/",

@@ -6,7 +6,7 @@
 Introduction
 ============
 
-.. include:: ../../README
+.. include:: ../../README.rst
 
 Contents
 ========
@@ -29,6 +29,11 @@ circuits is licensed under the MIT License. See the LICENSE file included
 in the distribution or refer to the
 `License <http://bitbucket.org/prologic/circuits/wiki/License>`_ wiki page on
 the `circuits website <http://bitbucket.org/prologic/circuits/>`_.
+
+Release Notes
+=============
+
+.. include:: ../../HISTORY.rst
 
 Indices and tables
 ==================

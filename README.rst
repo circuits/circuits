@@ -17,7 +17,11 @@ circuits was created by and is primarily maintained by
 
 Links:
 
-1) `Development Repository <http://bitbucket.org/prologic/circuits/>`_
+1) `Home Page <http://bitbucket.org/prologic/circuits/>`_
 
-2) `Development Snapshot (tip) <http://bitbucket.org/prologic/circuits/get/tip.zip#egg=circuits-tip>`_
+2) `Issues <https://bitbucket.org/prologic/circuits/issues>`_
+
+3) `Mailing List <http://groups.google.com/group/circuits-users>`_
+
+4) `Development Snapshot <http://bitbucket.org/prologic/circuits/get/tip.zip#egg=circuits-dev>`_
 
