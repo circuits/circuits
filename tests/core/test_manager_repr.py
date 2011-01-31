@@ -12,7 +12,7 @@ import os
 try:
     from threading import current_thread
 except ImportError:
-    from threading import currentThread
+    from threading import currentThread as current_thread
 
 from circuits import Event, Component, Manager
 
