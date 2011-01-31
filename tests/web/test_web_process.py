@@ -4,6 +4,12 @@ import os
 from time import sleep
 from urllib2 import urlopen
 
+import pytest
+
+from circuits.core import workers
+if not workers.HAS_MULTIPROCESSING:
+    py.test.skip("Skip: No multiprocessing support")
+
 from circuits.web import Controller, Server
 from circuits import  handler, Event, Component, Process
 
