@@ -77,6 +77,7 @@ class Application(BaseComponent):
             cl = 0
 
         request.body.write(env("wsgi.input").read(cl))
+        request.body.seek(0)
 
         response = wrappers.Response(request)
         response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
