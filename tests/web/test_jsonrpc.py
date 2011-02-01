@@ -7,7 +7,7 @@ import pytest
 try:
     from jsonrpclib import ServerProxy
 except ImportError:
-    py.test.skip("Skip: No JSON support")
+    pytest.skip("Skip: No JSON support")
 
 from circuits import Component
 from circuits.web import Controller, JSONRPC
