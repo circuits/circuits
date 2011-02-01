@@ -4,12 +4,14 @@ from threading import Thread as _Thread
 
 try:
     from multiprocessing import Value as _Value
+    from multiprocessing import cpu_count as cpus
     from multiprocessing import Process as _Process
     from multiprocessing.sharedctypes import Synchronized as _Synchronized
     HAS_MULTIPROCESSING = 2
 except:
     try:
         from processing import Value as _Value
+        from processing import cpuCount as cpus
         from processing import Process as _Process
         from processing.sharedctypes import Synchronized as _Synchronized
         HAS_MULTIPROCESSING = 1
