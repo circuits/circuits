@@ -1,8 +1,10 @@
-1.3.2 (yyyymmdd)
+1.3.2 (20110201)
 ================
 
 Bug Fixes
 ---------
+
+- Fixed several Python 2.5 incompatibilities.
 
 - circuits.web.wsgi: Fixed a bug with writing to the ``request.body``.
   (Forgot to rewing the ``StringIO`` instnace after writing to it)
