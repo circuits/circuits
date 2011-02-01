@@ -2,7 +2,11 @@
 
 import os
 
-import py
+import pytest
+
+from circuits.core import workers
+if not workers.HAS_MULTIPROCESSING:
+    pytest.skip("Skip: No multiprocessing support")
 
 from circuits.net.sockets import Pipe
 from circuits import Event, Component, Bridge
@@ -34,13 +38,13 @@ def test():
     assert e.future == False
     x = app.push(e)
 
-    py.test.wait_for(e, "future", True)
+    pytest.wait_for(e, "future", True)
     assert e.future == True
 
     def test(obj, attr):
         return isinstance(obj._value, list)
 
-    py.test.wait_for(x, None, test)
+    pytest.wait_for(x, None, test)
 
     assert x[0] == "Hello from %s" % pid
     assert x[1].startswith("Hello from")
