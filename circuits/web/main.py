@@ -23,6 +23,7 @@ try:
 except ImportError:
     psyco = None
 
+from circuits.core import workers
 from circuits.net.pollers import Select
 from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
@@ -177,10 +178,11 @@ def main():
         print
         print inspect(manager)
 
-    if opts.mp:
-        from circuits.core.workers import cpus
-        for i in xrange(cpus() - 1):
+    if opts.mp and workers.HAS_MULTIPROCESSING:
+        for i in xrange(workers.cpus() - 1):
             manager.start(process=True)
+    else:
+        print "No multiprocessing support available"
 
     manager.run()
 
