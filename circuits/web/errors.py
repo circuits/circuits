@@ -38,10 +38,10 @@ class HTTPError(Event):
                 getattr(self.__class__, "description", ""))
 
         if self.error is not None:
-            traceback = "ERROR: (%s) %s\n%s" % (self.error[0], self.error[1],
-                    "".join(self.error[2]))
+            self.traceback = "ERROR: (%s) %s\n%s" % (
+                    self.error[0], self.error[1], "".join(self.error[2]))
         else:
-            traceback = ""
+            self.traceback = ""
 
         self.response.close = True
         self.response.code = self.code
@@ -50,7 +50,7 @@ class HTTPError(Event):
             "code": self.code,
             "name": HTTP_STATUS_CODES.get(self.code, "???"),
             "description": self.description,
-            "traceback": escape(traceback),
+            "traceback": escape(self.traceback),
             "url": SERVER_URL,
             "version": SERVER_VERSION
         }
