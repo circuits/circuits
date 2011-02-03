@@ -1,0 +1,466 @@
+<!-- Internet Explorer has to be in quirks mode for position:fixed to work;
+     this comment just does that -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>circuits.web Terminal</title>
+
+<style type='text/css'>
+
+body {
+    margin: 0;
+    padding: 6px;
+}
+
+h1 {
+    font: 700 24pt Verdana, sans-serif;
+    margin-top: -6px;
+    margin-right: -6px;
+    margin-bottom: 6px;
+    margin-left: -6px;
+    padding: 0.5em;
+    background-color: #993333;
+    color: white;
+    border-bottom: 1px solid #330000;
+}
+
+#output pre {
+    font: 10pt monospace;
+    margin: 0;
+    padding: 1px;
+    border: 1px solid #E0E0FF;
+    background-color: #F8F8FF;
+    
+    white-space: -moz-pre-wrap; /* Mozilla, supported since 1999 */
+    white-space: -pre-wrap; /* Opera 4 - 6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    white-space: pre-wrap; /* CSS3 - Text module (Candidate Recommendation)
+                            http://www.w3.org/TR/css3-text/#white-space */
+    word-wrap: break-word; /* IE 5.5+ */
+}
+
+#output pre.stdin {
+    border: none;
+    background-color: transparent;
+}
+
+form {
+    font: 10pt monospace;
+    margin: 0;
+}
+
+#input {
+    font: 10pt monospace;
+    width: 95%;
+    border-top: none;
+    border-right: 1px dotted #E0E0FF;
+    border-bottom: none;
+    border-left: 1px dotted #E0E0FF;
+}
+
+#tipbar {
+    position: fixed;
+    top: 10px;
+    
+    /* See http://annevankesteren.nl/test/examples/ie/position-fixed.html */
+    _position:absolute;
+    _top:expression(eval(document.body.scrollTop) + 10);
+    
+    right: 10px;
+    
+    max-width: 50%;
+    max-height: 80%;
+    /* See http://www.svendtofte.com/code/max_width_in_ie/ */
+    width: expression(document.body.clientWidth / 2);
+    height: expression(document.body.clientHeight * 0.8);
+    
+    border: 2px outset #DDCCBB;
+    background-color: #FFEEDD;
+    font: 9pt monospace;
+    
+    margin: 0;
+    padding: 4px;
+    
+    white-space: -moz-pre-wrap; /* Mozilla, supported since 1999 */
+    white-space: -pre-wrap; /* Opera 4 - 6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    white-space: pre-wrap; /* CSS3 - Text module (Candidate Recommendation)
+                            http://www.w3.org/TR/css3-text/#white-space */
+    word-wrap: break-word; /* IE 5.5+ */
+    
+    display: none;
+    overflow: auto;
+}
+
+#tipbar a {
+    padding: 4px;
+    text-decoration: none;
+    color: #666666;
+}
+
+</style>
+
+<script type='text/javascript'>
+
+function http() {
+    var h;
+    if (typeof(XMLHttpRequest) != "undefined") {
+        h = new XMLHttpRequest();
+    } else {
+        try { h = new ActiveXObject("Msxml2.XMLHTTP"); }
+        catch (e) {
+            try { h = new ActiveXObject("Microsoft.XMLHTTP"); }
+            catch (E) { alert("Your browser is not supported."); }
+        }
+    }
+    return h
+}
+
+
+//                           HISTORY NAVIGATION                           //
+
+function use_history(elem) {
+    var content = get_text(elem);
+    // Strip the leading prompt
+    if (elem.className == 'stdin') content = content.substr(4);
+    input.value = content;
+    input.focus();
+}
+
+function history_hook() {
+    use_history(this);
+}
+
+var current_history = undefined;
+
+function prev_history() {
+    if (current_history == undefined) {
+        var prev = document.getElementById("output").lastChild;
+    } else {
+        var prev = current_history.previousSibling;
+    }
+    while (prev != null && prev.className != 'stdin') {
+        prev = prev.previousSibling;
+    }
+    if (prev != null) {
+        current_history = prev;
+        use_history(prev);
+    }
+}
+
+function next_history() {
+    if (current_history == undefined) return;
+    
+    var next = current_history.nextSibling;
+    while (next != null && next.className != 'stdin') {
+        next = next.nextSibling;
+    }
+    if (next != null) {
+        current_history = next;
+        use_history(next);
+    }
+}
+
+
+//                            CODE COMPLETION                            //
+
+current_range = undefined;
+
+function partial_line() {
+    if (document.selection) {
+        // Internet Explorer
+        current_range = document.selection.createRange();
+        var end = current_range.getBookmark().charCodeAt(2) - 2;
+    } else {
+        var end = input.selectionEnd;
+    }
+    return input.value.substring(0, end);
+}
+
+function insert_text(newtext) {
+    if (document.selection) {
+        // Internet Explorer
+        current_range.text = newtext;
+        current_range.select();
+    } else {
+        var start = input.selectionStart;
+        input.value = input.value.substring(0, start) + newtext + input.value.substr(input.selectionEnd);
+        var end = start + newtext.length;
+        input.setSelectionRange(end, end);
+    }
+}
+
+function clear_tips() {
+    tipbar.style.display = '';
+    while (tipbar.hasChildNodes()) {
+        tipbar.removeChild(tipbar.lastChild);
+    }
+}
+
+function show_tips() {
+    tipbar.style.display = 'block';
+}
+
+var intip = false;
+
+function use_tip() {
+    insert_text(get_text(this));
+    clear_tips();
+    intip = true;
+    input.focus();
+}
+
+function dir() {
+    var data = partial_line();
+    
+    clear_tips();
+    
+    var h = http();
+    h.onreadystatechange = function() {
+        if (h.readyState == 4) {
+            try {
+                var status = h.status;
+            } catch(e) {
+                var status = "NO HTTP RESPONSE";
+            }
+            switch (status) {
+                case 200:
+                    var tips = eval(h.responseText);
+                    for (var i=0; i < tips.length; i++) {
+                        var tiplink = document.createElement("a");
+                        tiplink.onclick = use_tip;
+                        tiplink.href = "javascript:void(0)";
+                        set_text(tiplink, tips[i]);
+                        tipbar.appendChild(tiplink);
+                        tipbar.appendChild(document.createElement("br"));
+                    }
+                    show_tips()
+                    input.focus();
+                    break;
+                // Internet Explorer might return 1223 for 204
+                case 1223:
+                case 204:
+                    // No tips available
+                    break;
+                case 12029:
+                    // Internet Explorer client could not connect to server
+                    status = "NO HTTP RESPONSE";
+                default:
+                    stdout_write(status + "\n" + h.responseText, false);
+            }
+        }
+    }
+    h.open("GET", "dir?line=" + escape(data), true);
+    h.send(null);
+}
+
+function doc() {
+    var data = partial_line();
+    
+    clear_tips();
+    
+    var h = http();
+    h.onreadystatechange = function() {
+        if (h.readyState == 4) {
+            try {
+                var status = h.status;
+            } catch(e) {
+                var status = "NO HTTP RESPONSE";
+            }
+            switch (status) {
+                case 200:
+                    tipbar.appendChild(document.createTextNode(h.responseText));
+                    show_tips();
+                    input.focus();
+                    break;
+                // Internet Explorer might return 1223 for 204
+                case 1223:
+                case 204:
+                    // No tips available
+                    break;
+                case 12029:
+                    // Internet Explorer client could not connect to server
+                    status = "NO HTTP RESPONSE";
+                default:
+                    stdout_write(status + "\n" + h.responseText, false);
+            }
+        }
+    }
+    h.open("GET", "doc?line=" + escape(data), true);
+    h.send(null);
+}
+
+//                           COMMAND EXECUTION                           //
+
+function get_text(elem) {
+    if (elem.innerText != undefined) {
+        // Internet Explorer
+        return elem.innerText;
+    } else {
+        // Mozilla
+        return elem.textContent;
+    }
+}
+
+function set_text(elem, newvalue) {
+    if (elem.innerText != undefined) {
+        // Internet Explorer
+        elem.innerText = newvalue;
+    } else {
+        // Mozilla
+        elem.textContent = newvalue;
+    }
+}
+
+function get_prompt() {
+    return get_text(document.getElementById("prompt"));
+}
+
+function set_prompt(newvalue) {
+    var p = document.getElementById("prompt");
+    set_text(p, newvalue);
+}
+
+function stdout_write(content, stdin) {
+    current_history = undefined;
+    if (content == "") return;
+    
+    var block = document.createElement("pre");
+    block.ondblclick = history_hook;
+    if (stdin) {
+        content = get_prompt() + content;
+        block.className = 'stdin';
+    }
+    if (block.innerText != undefined) {
+        // Internet Explorer quirkiness
+        block.innerText = content;
+    } else {
+        block.appendChild(document.createTextNode(content));
+    }
+    output.appendChild(block);
+}
+
+whitespace = /^\s+$/;
+
+function push() {
+    var data = input.value;
+    // Uncomment to treat a line with only whitespace like a blank line
+    // if (whitespace.test(data)) data = "";
+    
+    input.value = "";
+    
+    var h = http();
+    h.onreadystatechange = function() {
+        if (h.readyState == 4) {
+            stdout_write(data, true);
+            try {
+                var status = h.status;
+            } catch(e) {
+                var status = "NO HTTP RESPONSE";
+            }
+            switch (status) {
+                case 200:
+                    set_prompt(">>> ");
+                    stdout_write(h.responseText, false);
+                    break;
+                // Internet Explorer might return 1223 for 204
+                case 1223:
+                case 204:
+                    set_prompt("... ");
+                    // input.value *should* be blank, but just in case...
+                    input.value = "    " + input.value;
+                    break;
+                case 12029:
+                    // Internet Explorer client could not connect to server
+                    status = "NO HTTP RESPONSE";
+                default:
+                    stdout_write(status + "\n" + h.responseText, false);
+            }
+            input.focus();
+        }
+    }
+    h.open("POST", "push", true);
+    h.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    h.send("line=" + escape(data));
+}
+
+function escape(data) {
+    data = data.replace(/%/gi, "%25");
+    data = data.replace(/&/gi, "%26");
+    data = data.replace(/[+]/gi, "%2B");
+    data = data.replace(/;/gi, "%3B");
+    return data;
+}
+
+
+//                                 SETUP                                 //
+
+function mapKeys(key_code) {
+    if (intip) {
+        intip = false;
+        // Trap the bubbling keyup event from a tiplink. This means that,
+        // if you actually click a tiplink instead of tab and hit 'enter',
+        // you have to hit 'enter' twice to push the line. :(
+        if (key_code == 13) return;
+    }
+    switch(key_code) {
+        case 8:    // backspace
+            clear_tips();
+            break;
+        case 13:   // enter
+            clear_tips();
+            push();
+            break;
+        case 38:   // up arrow
+            prev_history();
+            break;
+        case 40:   // down arrow
+            next_history();
+            break;
+        case 48:  // close paren "("
+            clear_tips();
+            break;
+        case 57:  // open paren "("
+            doc();
+            break;
+        case 190:  // period "."
+            dir();
+            break;
+    }
+}
+
+function trapKeys(e) {
+    if (!e) var e = window.event;
+    mapKeys(e.keyCode);
+}
+
+input = undefined;
+output = undefined;
+tipbar = undefined;
+
+function init() {
+    input = document.getElementById("input");
+    input.onkeyup = trapKeys;
+    output = document.getElementById("output");
+    tipbar = document.getElementById("tipbar");
+    input.focus();
+}
+
+</script>
+</head>
+
+<body onload="init();">
+<h1>circuits.web Terminal</h1>
+
+<div id="output">
+</div>
+
+<form action="" id="terminal" onsubmit="return false;">
+<div id='tipbar'></div>
+<nobr><span id='prompt'>&gt;&gt;&gt; </span><input type="text" id="input"
+    size="60" /></nobr>
+</form>
+
+</body>
+</html>
