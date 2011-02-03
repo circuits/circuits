@@ -98,5 +98,8 @@ class Debugger(Component):
             if self.logger is not None:
                 self.logger.debug(repr(event))
             else:
-                self.file.write("%s\n" % repr(event))
+                s = repr(event)
+                if self.file is sys.stderr and len(s) > 80:
+                    s = "%s ...>" % s[:75]
+                self.file.write("%s\n" % s)
                 self.file.flush()
