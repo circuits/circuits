@@ -337,6 +337,9 @@ class EPoll(_Poller):
     def __tick__(self):
         try:
             l = self._poller.poll(self.timeout)
+        except IOError, e:
+            if e[0] == EINTR:
+                return
         except SelectError, e:
             if e[0] == EINTR:
                 return
