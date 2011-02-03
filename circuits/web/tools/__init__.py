@@ -22,9 +22,9 @@ mimetypes.add_type("image/x-dwg", ".dwg")
 mimetypes.add_type("image/x-icon", ".ico")
 mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
-import _httpauth
-from utils import get_ranges, compress
-from errors import HTTPError, NotFound, Redirect, Unauthorized
+from circuits.web import _httpauth
+from circuits.web.utils import get_ranges, compress
+from circuits.web.errors import HTTPError, NotFound, Redirect, Unauthorized
 
 def expires(request, response, secs=0, force=False):
     """Tool for influencing cache mechanisms using the 'Expires' header.
