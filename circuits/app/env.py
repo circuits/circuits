@@ -17,10 +17,7 @@ import os
 from circuits import handler, Event, Component
 
 from log import Logger
-from config import (
-        Config,
-        Load as LoadConfig,
-        Save as SaveConfig)
+from config import Config, LoadConfig, SaveConfig
 
 ###
 ### Constants
@@ -207,6 +204,8 @@ class Environment(Component):
         self.manager += self.config
         self.push(LoadConfig(), "load", "config")
 
+    @handler("config_loaded", target="config")
+    def _on_config_loaded(self, evt, handler, retval):
         # Create Logger Component
         logname = self.envname
         logtype = self.config.get("logging", "type", "file")
@@ -215,7 +214,8 @@ class Environment(Component):
         logfile = logfile % {"name": self.envname}
         if not os.path.isabs(logfile):
             logfile = os.path.join(self.path, logfile)
-        self.log = Logger(logfile, logname, logtype, loglevel)
-        self.manager += self.log
+        self.log = Logger(logfile, logname, logtype,
+                loglevel).register(self)
+        print "Creating logger..."
 
         self.push(Loaded(), "loaded", self.channel)

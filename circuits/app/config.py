@@ -20,11 +20,13 @@ from circuits import handler, Event, Component
 ### Events
 ###
 
-class Load(Event):
-    """Load(Event) -> Load Event"""
+class LoadConfig(Event):
+    """Load Config Event"""
 
-class Save(Event):
-    """Save(Event) -> Save Event"""
+    end = "config_loaded",
+
+class SaveConfig(Event):
+    """Save Config Event"""
 
 ###
 ### Components
