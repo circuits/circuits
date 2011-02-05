@@ -4,9 +4,7 @@ import sys
 from time import sleep
 
 from circuits import Component, Event
-
-from futures import future
-from pools import ThreadPool
+from circuits import future, ThreadPool
 
 class Test(Event):
     """Test Event"""

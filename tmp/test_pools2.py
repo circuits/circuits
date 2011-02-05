@@ -3,9 +3,7 @@
 import sys
 from time import sleep
 
-from circuits import Component, Event
-
-from futures import future
+from circuits import future, Component, Event
 
 class Test(Event):
     """Test Event"""
