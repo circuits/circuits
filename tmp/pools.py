@@ -1,10 +1,18 @@
-#!/usr/bin/env python
+# Module:   pools
+# Date:     6th February 2011
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
-from time import sleep, time
+"""Pools
+
+Thread and Process based "worker" pools.
+"""
+
+
+from time import time
 from uuid import uuid4 as uuid
 from random import seed, choice
 
-from circuits import handler, BaseComponent, Debugger, Event
+from circuits import handler, BaseComponent, Event
 
 seed(time())
 
@@ -44,9 +52,7 @@ class ThreadPool(BaseComponent):
         workers = float(len(self._workers))
         tasks = [float(len(worker)) for worker in self._workers]
         total = sum(tasks)
-        _min = min(tasks)
         _avg = total / workers
-        _max = max(tasks)
 
         assigned = None
 
