@@ -7,39 +7,22 @@
 Future Value object and decorator wrapping a Thread (by default).
 """
 
-from sys import exc_info
-from threading import Thread
-from traceback import format_tb
+from uuid import uuid4 as uuid
 from functools import update_wrapper
 
-from values import Value
-
-class Future(Value):
-
-    def __init__(self, event, manager, f, args, kwargs):
-        super(Future, self).__init__(event, manager)
-
-        self.f = f
-        self.args = args
-        self.kwargs = kwargs
-
-        self._task = Thread(target=self._run)
-        self._task.setDaemon(True)
-        self._task.start()
-
-    def _run(self):
-        try:
-            self.value = self.f(self.manager, *self.args, **self.kwargs)
-        except:
-            etype, evalue, etraceback = exc_info()
-            self.errors = True
-            self.value = etype, evalue, format_tb(etraceback)
+from pools import NewTask, Task, Worker
 
 def future():
     def decorate(f):
-        def wrapper(manager, event, *args, **kwargs):
+        def wrapper(self, event, *args, **kwargs):
             event.future = True
-            return Future(event, manager, f, args, kwargs)
+            pool = getattr(self, "pool", None)
+            if pool:
+                return self.push(NewTask(f, self, *args, **kwargs),
+                        target=self._pool)
+            else:
+                return Worker(str(uuid())).push(
+                        Task(f, self, *args, **kwargs))
         wrapper.event = True
         return update_wrapper(wrapper, f)
     return decorate

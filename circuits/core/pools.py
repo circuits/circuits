@@ -12,7 +12,7 @@ from time import time
 from uuid import uuid4 as uuid
 from random import seed, choice
 
-from circuits import handler, BaseComponent, Event
+from circuits.core import handler, BaseComponent, Event
 
 seed(time())
 

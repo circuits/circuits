@@ -14,7 +14,7 @@ from manager import Manager
 from components import BaseComponent, Component
 
 from values import Value
-from futures import future, Future
+from futures import future
 
 from timers import Timer
 try:
@@ -24,9 +24,11 @@ except:
      Bridge = None
 from debugger import Debugger
 from workers import Thread, Process
+from pools import NewTask, ThreadPool
 
 __all__ = ("handler",
         "Event", "Manager", "BaseComponent", "Component",
-        "Value", "future", "Future",
+        "Value", "future",
         "Timer", "Bridge", "Debugger",
-        "Thread", "Process",)
+        "Thread", "Process",
+        "NewTask", "ThreadPool",)
