@@ -10,16 +10,17 @@ Future Value object and decorator wrapping a Thread (by default).
 from uuid import uuid4 as uuid
 from functools import update_wrapper
 
-from pools import NewTask, Task, Worker
+from utils import findcmp
+from pools import NewTask, Task, Worker, ThreadPool
 
 def future():
     def decorate(f):
         def wrapper(self, event, *args, **kwargs):
             event.future = True
-            pool = getattr(self, "pool", None)
-            if pool:
+            pool = findcmp(self.root, ThreadPool)
+            if pool is not None:
                 return self.push(NewTask(f, self, *args, **kwargs),
-                        target=self._pool)
+                        target=pool)
             else:
                 return Worker(str(uuid())).push(
                         Task(f, self, *args, **kwargs))
