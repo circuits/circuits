@@ -1,0 +1,26 @@
+Name        RFC         Status      Description
+-------------------------------------------------------------------------------
+dict        2229        [ ]         Dictionary Server Protocol
+dns                     [ ]         Domain Name System Protocol
+finger      1288        [ ]         Finger User Information Protocol
+ftp                     [ ]         File Transfer Protocol
+http                    [P]         Hyper Text Transfer Protocol
+ident       1413        [ ]         Identification Protocol
+imap4                   [ ]         IMAP4 Protocol (Version 4)
+irc                     [P]         Internet Relay Chat Protocol
+jabber                  [ ]         Jabber Protocol
+msn                     [ ]         Messenger Protocol
+nntp                    [ ]         Network News Transfer Protocol
+oscar                   [ ]         OSCAR Protocol
+pop3                    [ ]         Post Office Protocol (Version 3)
+shoutcast               [ ]         Shoutcast Protocol
+sip                     [ ]         SIP Protocol
+smtp                    [ ]         Simple Mail Transfer Protocol
+socks                   [ ]         Socks 4/5 Protocol
+telnet                  [ ]         Telnet Protocol
+xmlstream               [ ]         XML Stream Protocol
+-------------------------------------------------------------------------------
+
+Status Codes:
+ P - Partial
+ X - Completed
