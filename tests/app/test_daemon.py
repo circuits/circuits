@@ -4,9 +4,6 @@ import os
 from signal import SIGTERM
 from subprocess import Popen
 
-import py
-py.test.skip("XXX: Not passing...")
-
 from tests.app import app
 
 def test(tmpdir, cov):
