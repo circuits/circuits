@@ -12,7 +12,7 @@ Lightweight Event driven Framework
 """
 
 __author__ = "James Mills"
-__date__ = "1st February 2011"
-__version__ = "1.3.2"
+__date__ = "5th February 2011"
+__version__ = "1.3.3"
 
 from core import *
