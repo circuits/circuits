@@ -1,4 +1,11 @@
-#!/usr/bin/env python
+# Module:   future
+# Date:     6th February 2010
+# Author:   James Mills, prologic at shortcircuit dot net dot au
+
+"""Futures
+
+Future Value object and decorator wrapping a Thread (by default).
+"""
 
 from uuid import uuid4 as uuid
 from functools import update_wrapper
