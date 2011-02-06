@@ -3,8 +3,8 @@
 import sys
 from time import sleep
 
+from circuits import future, Pool
 from circuits import Component, Event
-from circuits import future, ThreadPool
 
 class Test(Event):
     """Test Event"""
@@ -14,7 +14,7 @@ class App(Component):
     def __init__(self, N):
         super(App, self).__init__()
 
-        self.pool = ThreadPool(min=10, max=20).register(self)
+        Pool(min=10, max=20).register(self)
 
         self.N = N
         self.n = 0
