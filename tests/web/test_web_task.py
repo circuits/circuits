@@ -5,8 +5,8 @@ from urllib2 import urlopen
 
 import pytest
 
-from circuits.core import workers
-if not workers.HAS_MULTIPROCESSING:
+from circuits.core import HAS_MULTIPROCESSING
+if not HAS_MULTIPROCESSING:
     pytest.skip("Skip: No multiprocessing support")
 
 from circuits.web import Controller
