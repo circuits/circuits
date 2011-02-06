@@ -4,64 +4,22 @@
 
 """Workers Tests"""
 
-from time import sleep
+from circuits import Task, Worker
 
-from circuits import Thread, Process
-from circuits.core import handler, Event
+def f():
+    x = 0
+    i = 0
+    while i < 1000000:
+        x += 1
+        i += 1
+    return x
 
-class Test(Event):
-    """Test Event"""
+def test():
+    w = Worker()
 
-class AppThread(Thread):
+    x = w.push(Task(f))
 
-   count = 0
-   flag = False
-   done = False
+    while not x.result: pass
 
-   @handler("test")
-   def test(self):
-      self.flag = True
-
-   def run(self):
-      while self.alive:
-         self.count += 1
-         if self.count == 5:
-            self.stop()
-
-      self.done = True
-
-class AppProcess(Process):
-
-    def run(self):
-        sleep(1)
-
-def test_compat():
-    from circuits.core import workers
-
-    if workers.HAS_MULTIPROCESSING:
-        assert workers.Thread is not workers.Process
-    else:
-        assert workers.Thread is workers.Process
-
-def test_thread():
-    app = AppThread()
-    app.start()
-
-    app.push(Test())
-
-    app.join()
-    app.flush()
-
-    assert app.count == 5
-    assert app.flag
-    assert app.done
-
-def test_process():
-    app = AppProcess()
-    app.start()
-
-    assert app.alive
-
-    app.join()
-
-    assert not app.alive
+    assert x.result
+    assert x.value == 1000000
