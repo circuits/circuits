@@ -10,16 +10,20 @@
 from uuid import uuid4 as uuid
 from functools import update_wrapper
 
+from pools import Pool
 from utils import findcmp
-from pools import NewTask, Task, Worker, Pool
+from workers import Task, Worker
 
 def future():
     def decorate(f):
         def wrapper(self, event, *args, **kwargs):
             event.future = True
-            pool = findcmp(self.root, Pool)
+            pool = getattr(self, "_pool", None)
+            if pool is None:
+                pool = findcmp(self.root, Pool)
             if pool is not None:
-                return self.push(NewTask(f, self, *args, **kwargs),
+                setattr(self, "_pool", pool)
+                return self.push(Task(f, self, *args, **kwargs),
                         target=pool)
             else:
                 return Worker(str(uuid())).push(

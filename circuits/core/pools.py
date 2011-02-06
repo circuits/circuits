@@ -7,37 +7,14 @@
 Thread and Process based "worker" pools.
 """
 
-
 from time import time
 from uuid import uuid4 as uuid
 from random import seed, choice
 
+from circuits.core.workers import Task, Worker
 from circuits.core import handler, BaseComponent, Event
 
 seed(time())
-
-class NewTask(Event):
-    """New Task Event"""
-
-class Task(Event):
-    """Task Event"""
-
-class Worker(BaseComponent):
-
-    channel = "worker"
-
-    def __init__(self, process=False, channel=channel):
-        super(Worker, self).__init__(channel=channel)
-
-        if process:
-            self.start(link=self, process=True)
-            self.start()
-        else:
-            self.start()
-
-    @handler("task")
-    def _on_task(self, f, *args, **kwargs):
-        return f(*args, **kwargs)
 
 class Pool(BaseComponent):
 
@@ -51,8 +28,8 @@ class Pool(BaseComponent):
         for i in range(min):
             self._workers.append(Worker(process=process, channel=str(uuid())))
 
-    @handler("newtask")
-    def _on_new_task(self, f, *args, **kwargs):
+    @handler("task")
+    def _on_task(self, f, *args, **kwargs):
         workers = float(len(self._workers))
         tasks = [float(len(worker)) for worker in self._workers]
         total = sum(tasks)

@@ -1,119 +1,59 @@
-#!/usr/bin/env python
+# Module:   workers
+# Date:     6th February 2011
+# Author:   James Mills, prologic at shortcircuit dot net dot au
 
-from threading import Thread as _Thread
+"""Workers
 
-try:
-    from multiprocessing import Value as _Value
-    from multiprocessing import cpu_count as cpus
-    from multiprocessing import Process as _Process
-    from multiprocessing.sharedctypes import Synchronized as _Synchronized
-    HAS_MULTIPROCESSING = 2
-except:
-    try:
-        from processing import Value as _Value
-        from processing import cpuCount as cpus
-        from processing import Process as _Process
-        from processing.sharedctypes import Synchronized as _Synchronized
-        HAS_MULTIPROCESSING = 1
-    except:
-        HAS_MULTIPROCESSING = 0
+Worker components used to perform "work" in independent threads or
+processes. Worker(s) are typically used by a Pool (circuits.core.pools)
+to create a pool of workers. Worker(s) are not registered with a Manager
+or another Component - instead they are managed by the Pool. If a Worker
+is used independently it should not be registered as it causes it's
+main event handler ``_on_task`` to execute in the other thread blocking it.
+"""
 
-from bridge import Bridge
-from utils import findroot
-from manager import Manager
-from components import BaseComponent as _BaseComponent
+from time import time
+from uuid import uuid4 as uuid
+from random import seed, choice
 
-from circuits.net.sockets import Pipe
+from circuits.core import handler, BaseComponent, Event
 
-TIMEOUT = 0.2
+seed(time())
 
-class Thread(_BaseComponent):
+class Task(Event):
+    """Task Event
 
-    def __init__(self, *args, **kwargs):
-        super(Thread, self).__init__(*args, **kwargs)
+    This Event is used to initiate a new task to be performed by a Worker
+    or a Pool of Worker(s).
 
-        self._thread = _Thread(target=self.run)
+    :param f: The function to be executed.
+    :type  f: function
 
-    def start(self):
-        self._running = True
-        self._thread.start()
+    :param args: Arguments to pass to the function
+    :type  args: tuple
 
-    def run(self):
-        """To be implemented by subclasses"""
+    :param kwargs: Keyword Arguments to pass to the function
+    :type  kwargs: dict
+    """
 
-    def stop(self):
-        self._running = False
+    def __init__(self, f, *args, **kwargs):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-    def join(self):
-        return self._thread.join()
+        super(Task, self).__init__(f, *args, **kwargs)
 
-    @property
-    def alive(self):
-        return self._running and self._thread.isAlive()
+class Worker(BaseComponent):
 
-class Process(_BaseComponent):
+    channel = "worker"
 
-    def __init__(self, manager=None, **kwargs):
-        channel = kwargs.get("channel", Process.channel)
-        super(Process, self).__init__(channel=channel)
+    def __init__(self, process=False, channel=channel):
+        super(Worker, self).__init__(channel=channel)
 
-        self._manager = manager
+        if process:
+            self.start(link=self, process=True)
+            self.start()
+        else:
+            self.start()
 
-        self._bridge = None
-
-        self._running = _Value("b", False)
-
-    def __main__(self, running, socket=None):
-        if socket is not None:
-            manager = Manager()
-            bridge = Bridge(manager, socket=socket)
-            self.register(manager)
-            manager.start()
-
-        try:
-            self.run()
-        finally:
-            if socket is not None:
-                while bridge or manager: pass
-                manager.stop()
-                bridge.stop()
-
-    def start(self):
-        args = (self._running,)
-
-        if self._manager is not None:
-            root = findroot(self._manager)
-            parent, child = Pipe()
-            self._bridge = Bridge(root, socket=parent)
-            self._bridge.start()
-
-            args = (self._running, child,)
-
-        self._process = _Process(target=self.__main__, args=args)
-        self._process.daemon = True
-        if HAS_MULTIPROCESSING == 2:
-            setattr(self._process, "isAlive", self._process.is_alive)
-
-        self._running.acquire()
-        self._running.value = True
-        self._running.release()
-        self._process.start()
-
-    def run(self):
-        """To be implemented by subclasses"""
-
-    def stop(self):
-        self._running.acquire()
-        self._running.value = False
-        self._running.release()
-
-    def join(self):
-        return hasattr(self, "_process") and self._process.join()
-
-    @property
-    def alive(self):
-        if type(self._running) is _Synchronized:
-            return self._running.value and self._process.isAlive()
-
-if not HAS_MULTIPROCESSING:
-    Process = Thread
+    @handler("task")
+    def _on_task(self, f, *args, **kwargs):
+        return f(*args, **kwargs)
