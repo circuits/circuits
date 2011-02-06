@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from circuits.core import HAS_MULTIPROCESSING
+from circuits.core.manager import HAS_MULTIPROCESSING
 if not HAS_MULTIPROCESSING:
     pytest.skip("Skip: No multiprocessing support")
 
