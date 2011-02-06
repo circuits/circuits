@@ -23,12 +23,12 @@ except:
      print "Failed to import circuits.core.bridge. This probably means we're running in debug mode, and the debug version of the Python socket library is not available. Continuing without."
      Bridge = None
 from debugger import Debugger
+from pools import NewTask, Pool
 from workers import Thread, Process
-from pools import NewTask, ThreadPool
 
 __all__ = ("handler",
         "Event", "Manager", "BaseComponent", "Component",
         "Value", "future",
         "Timer", "Bridge", "Debugger",
         "Thread", "Process",
-        "NewTask", "ThreadPool",)
+        "NewTask", "Pool",)

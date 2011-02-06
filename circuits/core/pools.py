@@ -39,17 +39,17 @@ class Worker(BaseComponent):
     def _on_task(self, f, *args, **kwargs):
         return f(*args, **kwargs)
 
-class ThreadPool(BaseComponent):
+class Pool(BaseComponent):
 
     channel = "pool"
 
-    def __init__(self, min=5, max=10, channel=channel):
-        super(ThreadPool, self).__init__(channel=channel)
+    def __init__(self, min=5, max=10, process=False, channel=channel):
+        super(Pool, self).__init__(channel=channel)
 
         self._workers = []
 
         for i in range(min):
-            self._workers.append(Worker(channel=str(uuid())))
+            self._workers.append(Worker(process=process, channel=str(uuid())))
 
     @handler("newtask")
     def _on_new_task(self, f, *args, **kwargs):

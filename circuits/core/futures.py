@@ -4,20 +4,20 @@
 
 """Futures
 
-Future Value object and decorator wrapping a Thread (by default).
+...
 """
 
 from uuid import uuid4 as uuid
 from functools import update_wrapper
 
 from utils import findcmp
-from pools import NewTask, Task, Worker, ThreadPool
+from pools import NewTask, Task, Worker, Pool
 
 def future():
     def decorate(f):
         def wrapper(self, event, *args, **kwargs):
             event.future = True
-            pool = findcmp(self.root, ThreadPool)
+            pool = findcmp(self.root, Pool)
             if pool is not None:
                 return self.push(NewTask(f, self, *args, **kwargs),
                         target=pool)
