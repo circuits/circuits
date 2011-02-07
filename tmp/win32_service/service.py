@@ -70,8 +70,6 @@ def install_service(cls, name, description=None, stay_alive=True):
 
         StartService(cls._svc_name_)
         print "Service started"
-    except TypeError:
-        pass
     except Exception, e:
         print "ERROR: %s" % e
         print format_exc()
