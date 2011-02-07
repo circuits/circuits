@@ -45,7 +45,7 @@ def main():
     opts, args = parse_options()
 
     if args and args[0] == "install":
-        install_service(TestService)
+        install_service(TestService, "test_service")
 
 if __name__ == "__main__":
     main()
