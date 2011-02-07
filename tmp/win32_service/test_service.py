@@ -5,9 +5,8 @@
 ...
 """
 
+from time import sleep
 from optparse import OptionParser
-
-from circuits import Component
 
 from service import install_service, Service
 
@@ -16,14 +15,11 @@ __version__ = "0.0.1"
 USAGE = "%prog [<options>] <command>"
 VERSION = "%prog v" + __version__
 
-class App(Component):
-
-    def started(self, component, mode):
-        pass
-
 class TestService(Service):
 
-    app = App()
+    def run(se0f):
+        while True:
+            sleep(1)
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)

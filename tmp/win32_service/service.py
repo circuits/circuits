@@ -16,9 +16,7 @@ from win32service import SERVICE_STOPPED
 from win32service import SERVICE_AUTO_START, SERVICE_RUNNING
 from win32service import SERVICE_START_PENDING, SERVICE_STOP_PENDING
 
-from circuits import BaseComponent
-
-class Service(BaseComponent, ServiceFramework):
+class Service(ServiceFramework):
 
     _svc_name_ = "unknown"
     _svc_display_name_ = "Service Template"
