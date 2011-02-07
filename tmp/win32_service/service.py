@@ -45,7 +45,7 @@ class Service(BaseComponent, ServiceFramework):
         SetEvent(self._stop_event)
         self.ReportServiceStatus(SERVICE_STOPPED)
 
-def install(cls, name, description=None, stay_alive=True):
+def install_service(cls, name, description=None, stay_alive=True):
     cls._svc_name_ = name
     cls._svc_display_name_ = description or name
 
