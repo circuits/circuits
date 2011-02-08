@@ -19,9 +19,9 @@ class Response(Event):
 
 class ResponseObject(object):
 
-    def __init__(self, status, reason, protocol=None):
+    def __init__(self, status, message, protocol=None):
         self.status = status
-        self.reason = reason
+        self.message = message
         self.protocol = protocol
 
         self._headers = None
@@ -56,12 +56,12 @@ class HTTP(BaseComponent):
         else:
             statusline, data = data.split("\n", 1)
             statusline = statusline.strip()
-            protocol, status, reason = statusline.split(" ", 2)
+            protocol, status, message = statusline.split(" ", 2)
 
             status = int(status)
             protocol = tuple(map(int, protocol[5:].split(".")))
 
-            response = ResponseObject(status, reason, protocol)
+            response = ResponseObject(status, message, protocol)
 
             headers, body = parseHeaders(StringIO(data))
             response._headers = headers

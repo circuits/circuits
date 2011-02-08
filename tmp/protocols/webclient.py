@@ -3,13 +3,13 @@
 from urlparse import urlparse
 
 from circuits.web.headers import Headers
-from circuits.core import handler, BaseComponent
+from circuits.core import handler, BaseComponent, Event
 from circuits.net.sockets import TCPClient, Connect, Write, Close
 
 from http import HTTP
 
 def parse_url(url):
-    p = urlparse.urlparse(url)
+    p = urlparse(url)
 
     if p.hostname:
         host = p.hostname
@@ -17,6 +17,7 @@ def parse_url(url):
         raise ValueError("URL must be absolute")
     
     if p.scheme == "http":
+        secure = False
         port = p.port or 80
     elif p.scheme == "https":
         secure = True
@@ -36,6 +37,23 @@ class HTTPException(Exception):
 
 class NotConnected(HTTPException):
     pass
+
+class Request(Event):
+    """Request Event
+
+    This Event is used to initiate a new request.
+
+    :param method: HTTP Method (PUT, GET, POST, DELETE)
+    :type  method: str
+
+    :param path: Path to resource
+    :type  path: str
+    """
+
+    def __init__(self, method, path):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Request, self).__init__(method, path)
 
 class Client(BaseComponent):
 
@@ -64,10 +82,10 @@ class Client(BaseComponent):
                     target=self._transport)
 
     @handler("request")
-    def request(self, method, url, body=None, headers={}):
+    def request(self, method, path, body=None, headers={}):
         if self._transport.connected:
             headers = Headers([(k, v) for k, v in headers.items()])
-            command = "%s %s HTTP/1.1" % (method, url)
+            command = "%s %s HTTP/1.1" % (method, path)
             message = "%s\r\n%s" % (command, headers)
             self.push(Write(message), target=self._transport)
             if body:
@@ -80,6 +98,11 @@ class Client(BaseComponent):
         self._response = response
         if not response.status == 100:
             self.push(Close(), target=self._transport)
+
+    @property
+    def connected(self):
+        if hasattr(self, "_transport"):
+            return self._transport.connected
 
     @property
     def response(self):
