@@ -176,10 +176,11 @@ class Gateway(BaseComponent):
         self._request = request
         self._response = response
 
+        environ = self.createEnviron()
         try:
-            body = "".join(self.app(self.createEnviron(), self.start_response))
+            body = self.app(environ, self.start_response)
             if not body:
-                body = empty
+                return empty
             return body
         except Exception, error:
             etype, evalue, etraceback = _exc_info()
