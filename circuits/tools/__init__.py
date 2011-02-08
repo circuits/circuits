@@ -71,7 +71,10 @@ def graph(x, name=None):
 
         g = pydot.graph_from_edges(graph_edges, directed=True)
         g.write("%s.dot" % (name or x.name))
-        g.write("%s.png" % (name or x.name), format="png")
+        try:
+            g.write("%s.png" % (name or x.name), format="png")
+        except pydot.InvocationException:
+            pass
 
     def printer(d, x):
         return "%s* %s" % (" " * d, x)
