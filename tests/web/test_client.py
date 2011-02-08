@@ -1,19 +1,15 @@
-#!/usr/bin/python -i
 
 from circuits.web import Server, Controller
 
-from webclient import Client, Connect, Request
+from circuits.web.client import Client, Connect, Request
 
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
 
-def test():
-    webapp = Server(("0.0.0.0", 8000)) + Root()
-    webapp.start()
-
-    client = Client(webapp.base)
+def test(webapp):
+    client = Client(webapp.server.base)
     client.start()
 
     client.push(Connect())

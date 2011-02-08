@@ -1,4 +1,3 @@
-#!/usr/bin/python -i
 
 try:
     from cStringIO import StringIO

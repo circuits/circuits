@@ -1,4 +1,3 @@
-#!/usr/bin/python -i
 
 from urlparse import urlparse
 
@@ -6,7 +5,7 @@ from circuits.web.headers import Headers
 from circuits.core import handler, BaseComponent, Event
 from circuits.net.sockets import TCPClient, Connect, Write, Close
 
-from http import HTTP
+from circuits.net.protocols.http import HTTP
 
 def parse_url(url):
     p = urlparse(url)
