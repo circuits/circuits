@@ -2,7 +2,7 @@
 
 from types import ListType
 
-import py
+import pytest
 
 from circuits import future, handler, BaseComponent, Component, Event
 
@@ -58,7 +58,6 @@ def test():
     assert e.future == True
     assert x.value == "Hello World!"
 
-@py.test.skip("XXX: Not passing...")
 def test_error():
     app = App()
     while app: app.flush()
@@ -71,7 +70,7 @@ def test_error():
     assert x.errors
     etype, evalue, etraceback = x.value
     assert etype is Exception
-    py.test.raises(Exception, lambda e: reraise(e), evalue)
+    pytest.raises(Exception, lambda e: reraise(e), evalue)
     assert type(etraceback) is ListType
 
 def test_base():
@@ -97,5 +96,5 @@ def test_base_error():
     assert x.errors
     etype, evalue, etraceback = x.value
     assert etype is Exception
-    py.test.raises(Exception, lambda e: reraise(e), evalue)
+    pytest.raises(Exception, lambda e: reraise(e), evalue)
     assert type(etraceback) is ListType
