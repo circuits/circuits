@@ -170,7 +170,7 @@ class HTTP(Component):
                 return self.push(Response(wrappers.Response(request, 100)))
 
             contentLength = int(headers.get("Content-Length", "0"))
-            if not request.body.tell() == contentLength:
+            if request.body.tell() < contentLength:
                 return
 
         # Persistent connection support
