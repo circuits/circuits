@@ -2,8 +2,7 @@
 
 from time import time
 
-import py
-py.test.skip("XXX: Not passing...")
+import pytest
 
 from circuits import Manager
 from circuits.core.pollers import Select, TIMEOUT
@@ -13,44 +12,33 @@ from circuits.net.sockets import Close, Connect, Write
 from client import Client
 from server import Server
 
-TIMEOUT += 0.1
-
 def test():
     m = Manager()
-    m += Select()
+    m.start()
 
-    server = (Server() + TCPServer(8000))
+    Select().register(m)
+
+    server = (Server() + TCPServer(("0.0.0.0", 8000)))
     client = (Client() + TCPClient())
 
-    m += server
-    m += client
+    server.register(m)
+    client.register(m)
 
-    def tick(m, timeout=TIMEOUT):
-        t = time() + timeout
-        while time() < t:
-            m.tick()
-
-    tick(m)
+    assert pytest.wait_for(client, "ready")
+    assert pytest.wait_for(server, "ready")
 
     m.push(Connect("127.0.0.1", 8000), target="client")
-    tick(m)
-    client_connected = client.connected
-    server_connected = server.connected
-    s = client.data
-    assert client_connected
-    assert server_connected
-    assert s == "Ready"
+    assert pytest.wait_for(client, "connected")
+    assert pytest.wait_for(server, "connected")
+    assert pytest.wait_for(client, "data", "Ready")
 
     m.push(Write("foo"), target="client")
-    tick(m)
-    s = server.data
-    assert s == "foo"
+    assert pytest.wait_for(server, "data", "foo")
 
     m.push(Close(), target="client")
-    tick(m)
+    assert pytest.wait_for(client, "disconnected")
+
     m.push(Close(), target="server")
-    tick(m)
-    client_disconnected = client.disconnected
-    server_disconnected = server.disconnected
-    assert client_disconnected
-    assert server_disconnected
+    assert pytest.wait_for(server, "disconnected")
+
+    m.stop()

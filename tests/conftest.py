@@ -10,8 +10,7 @@ def wait_for(obj, attr, value=True, timeout=30.0):
     etime = time() + timeout
     while time() < etime:
         if callable(value):
-            if value(obj, attr):
-                return True
+            return value(obj, attr)
         elif getattr(obj, attr) == value:
             return True
     return False

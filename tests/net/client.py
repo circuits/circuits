@@ -8,8 +8,12 @@ class Client(Component):
         super(Client, self).__init__()
 
         self.data = ""
+        self.ready = True
         self.connected = False
         self.disconnected = False
+
+    def ready(self, component):
+        self.ready = True
 
     def connected(self, host, port):
         self.connected = True

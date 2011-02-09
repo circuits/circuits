@@ -9,8 +9,12 @@ class Server(Component):
         super(Server, self).__init__()
 
         self.data = ""
+        self.ready = False
         self.connected = False
         self.disconnected = False
+
+    def ready(self, component):
+        self.ready = True
 
     def connect(self, sock, *args):
         self.connected = True
