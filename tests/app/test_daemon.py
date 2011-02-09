@@ -4,6 +4,9 @@ import os
 from signal import SIGTERM
 from subprocess import Popen
 
+import pytest
+pytest.importorskip("pytest_cov")
+
 from tests.app import app
 
 def test(tmpdir, cov):
