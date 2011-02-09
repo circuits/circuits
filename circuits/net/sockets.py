@@ -10,6 +10,7 @@ This module contains various Socket Components for use with Networking.
 import os
 import socket
 from errno import *
+from socket import gaierror
 from _socket import socket as SocketType
 from collections import defaultdict, deque
 from socket import gethostname, gethostbyname
@@ -208,7 +209,10 @@ class Client(Component):
         self.encoding = kwargs.get("encoding", "utf-8")
 
         if type(bind) is int:
-            self.bind = (gethostbyname(gethostname()), bind)
+            try:
+                self.bind = (gethostbyname(gethostname()), bind)
+            except gaierror:
+                self.bind = ("0.0.0.0", bind)
         elif type(bind) is str and ":" in bind:
             host, port = bind.split(":")
             port = int(port)
@@ -444,7 +448,10 @@ class Server(Component):
         self.encoding = kwargs.get("encoding", "utf-8")
 
         if type(bind) is int:
-            self.bind = (gethostbyname(gethostname()), bind)
+            try:
+                self.bind = (gethostbyname(gethostname()), bind)
+            except gaierror:
+                self.bind = ("0.0.0.0", bind)
         elif type(bind) is str and ":" in bind:
             host, port = bind.split(":")
             port = int(port)
