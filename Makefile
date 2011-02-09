@@ -23,8 +23,4 @@ packages:
 	@tools/mkpkgs -p python2.6
 
 tests:
-	@py.test -x -r fsxX \
-		--ignore=tmp \
-		--pastebin=all \
-		--cov=circuits \
-        tests/
+	@tools/runtests
