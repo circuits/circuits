@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from os.path import basename
-from urllib2 import urlopen
-from socket import gethostname
+from urllib2 import urlopen, URLError
+from socket import gaierror, gethostname
 
 from circuits import Component
 from circuits.web import Controller
@@ -28,7 +28,14 @@ def test_baseserver():
     hostname = gethostname()
     assert server.host == "%s:9000" % hostname
 
-    f = urlopen(server.base)
+    try:
+        f = urlopen(server.base)
+    except URLError, e:
+        if type(e[0]) is gaierror:
+            f = urlopen("http://127.0.0.1:9000")
+        else:
+            raise
+
     s = f.read()
     assert s == "Hello World!"
 
@@ -40,7 +47,14 @@ def test_server():
     hostname = gethostname()
     assert server.host == "%s:9001" % hostname
 
-    f = urlopen(server.base)
+    try:
+        f = urlopen(server.base)
+    except URLError, e:
+        if type(e[0]) is gaierror:
+            f = urlopen("http://127.0.0.1:9000")
+        else:
+            raise
+
     s = f.read()
     assert s == "Hello World!"
 
