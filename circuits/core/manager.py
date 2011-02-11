@@ -10,12 +10,12 @@ This module definse the Manager class subclasses by component.BaseComponent
 import os
 from time import sleep
 from warnings import warn
-from itertools import chain
 from types import TupleType
 from threading import Thread
 from collections import deque
 from inspect import getargspec
 from traceback import format_tb
+from itertools import chain, starmap
 from sys import exc_info as _exc_info
 
 try:
@@ -188,7 +188,6 @@ class Manager(object):
         target, channel = _channel
 
         channels = self.channels
-        exists = self.channels.has_key
         get = self.channels.get
         tmap = self._tmap.get
         cmap = self._cmap.get
@@ -215,16 +214,13 @@ class Manager(object):
             return handlers
 
         # Any global channels
-        if exists(("*", channel)):
-            handlers.extend(get(("*", channel)))
+        handlers.extend(get(("*", channel), []))
  
         # Any global channels for this target
-        if exists((channel, "*")):
-            handlers.extend(get((channel, "*")))
+        handlers.extend(get((channel, "*"), []))
 
         # The actual channel and target
-        if exists(_channel):
-            handlers.extend(get((_channel)))
+        handlers.extend(get(_channel, []))
 
         handlers.sort(key=_sortkey, reverse=True)
         self._handler_cache[_channel] = handlers
@@ -425,7 +421,8 @@ class Manager(object):
     def _flush(self):
         q = self._queue
         self._queue = deque()
-        while q: self.__handleEvent(*q.popleft())
+        for event, channel in q:
+            self.__handleEvent(event, channel)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
