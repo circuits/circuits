@@ -70,6 +70,7 @@ class Manager(object):
         self.channels = dict()
         self._handlers = set()
         self._handlerattrs = dict()
+        self._handler_cache = dict()
 
         self._ticks = set()
 
@@ -181,6 +182,9 @@ class Manager(object):
         return self
 
     def _getHandlers(self, _channel):
+        if _channel in self._handler_cache:
+            return self._handler_cache[_channel]
+
         target, channel = _channel
 
         channels = self.channels
@@ -200,12 +204,14 @@ class Manager(object):
         if channel == "*":
             handlers.extend(tmap(target, []))
             handlers.sort(key=_sortkey, reverse=True)
+            self._handler_cache[_channel] = handlers
             return handlers
 
         # Every channel on this target
         if target == "*":
             handlers.extend(cmap(channel, []))
             handlers.sort(key=_sortkey, reverse=True)
+            self._handler_cache[_channel] = handlers
             return handlers
 
         # Any global channels
@@ -221,6 +227,7 @@ class Manager(object):
             handlers.extend(get((_channel)))
 
         handlers.sort(key=_sortkey, reverse=True)
+        self._handler_cache[_channel] = handlers
         return handlers
 
     @property
@@ -257,6 +264,8 @@ class Manager(object):
 
         Add a new Event Handler to the Event Manager.
         """
+
+        self._handler_cache.clear()
 
         channels = getattr(handler, "channels", channels)
 
@@ -325,6 +334,8 @@ class Manager(object):
         remove it from all channels. This will succeed even
         if the specified  handler has already been removed.
         """
+
+        self._handler_cache.clear()
 
         if channel is None:
             if handler in self._globals:
