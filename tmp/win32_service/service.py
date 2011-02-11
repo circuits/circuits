@@ -8,7 +8,7 @@ from os.path import splitext, abspath
 from servicemanager import LogInfoMsg
 from win32api import SetConsoleCtrlHandler
 
-from win32serviceutil import InstallService, RemoveServicer
+from win32serviceutil import InstallService, RemoveService
 from win32serviceutil import ServiceFramework, StartService
 
 from win32event import INFINITE
