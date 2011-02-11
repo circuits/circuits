@@ -43,7 +43,7 @@ def main():
     if args[0] == "install":
         install_service(TestService, "test_service")
     elif args[0] == "remove":
-        remove_service(TestService, "test_service")
+        remove_service("test_service")
 
 if __name__ == "__main__":
     main()
