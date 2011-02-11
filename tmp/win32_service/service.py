@@ -16,10 +16,10 @@ from win32event import CreateEvent, SetEvent, WaitForSingleObject
 
 from win32service import SetServiceStatus
 from win32service import SERVICE_STOPPED
-from win32service import SERVICE_CONTROL_STOP:
-from win32service import SERVICE_CONTROL_SHUTDOWN:
+from win32service import SERVICE_CONTROL_STOP
+from win32service import SERVICE_CONTROL_SHUTDOWN
 from win32service import SERVICE_WIN32_OWN_PROCESS
-from win32service import SERVICE_CONTROL_INTERROGATE:
+from win32service import SERVICE_CONTROL_INTERROGATE
 from win32service import SERVICE_AUTO_START, SERVICE_RUNNING
 from win32service import SERVICE_START_PENDING, SERVICE_STOP_PENDING
 from win32service import SERVICE_ACCEPT_STOP, SERVICE_ACCEPT_SHUTDOWN
