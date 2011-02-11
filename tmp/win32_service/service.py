@@ -3,6 +3,7 @@
 import sys
 from sys import modules
 from traceback import format_exc
+from threading import currentThread
 from os.path import splitext, abspath
 
 from servicemanager import LogInfoMsg
@@ -28,6 +29,9 @@ class Service(BaseComponent, ServiceFramework):
     def __init__(self, *args):
         BaseComponent.__init__(self)
         ServiceFramework.__init__(self, *args)
+
+        LogInfoMsg("Thread: %s", repr(currentThread()))\
+        LogInfoMsg("Name: %s", currentThread().name)
 
         self._stop_event = CreateEvent(None, 0, 0, None)
 
