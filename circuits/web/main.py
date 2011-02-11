@@ -23,11 +23,11 @@ try:
 except ImportError:
     psyco = None
 
-from circuits.core import workers
 from circuits.net.pollers import Select
 from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
+from circuits.core.manager import HAS_MULTIPROCESSING
 from circuits.web import BaseServer, Server, Controller, Static, wsgi
 
 try:
@@ -66,8 +66,8 @@ def parse_options():
             help="Use python HIT (psyco)")
 
     parser.add_option("-m", "--multiprocessing",
-            action="store_true", default=False, dest="mp",
-            help="Start in multiprocessing mode")
+            action="store", type="int", default=0, dest="mp",
+            help="Specify no. of processes to start (multiprocessing)")
 
     parser.add_option("-t", "--type",
             action="store", type="string", default="select", dest="type",
@@ -178,8 +178,8 @@ def main():
         print
         print inspect(manager)
 
-    if opts.mp and workers.HAS_MULTIPROCESSING:
-        for i in xrange(workers.cpus() - 1):
+    if opts.mp and HAS_MULTIPROCESSING:
+        for i in range(opts.mp):
             manager.start(process=True)
     else:
         print "No multiprocessing support available"
