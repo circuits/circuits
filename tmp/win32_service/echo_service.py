@@ -26,7 +26,7 @@ class EchoService(Service):
 
     @handler("started")
     def _on_started(self, component, mode):
-        EchoServer(("0.0.0.0", 8000)).register(self)
+        EchoServer(8000).register(self)
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
