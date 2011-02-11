@@ -26,7 +26,7 @@ from win32service import SERVICE_ACCEPT_STOP, SERVICE_ACCEPT_SHUTDOWN
 
 from circuits import BaseComponent
 
-class ServiceFramework:
+class Service(BaseComponent):
 
     _svc_name_ = "unknown"
     _svc_display_name_ = "Service Template"
