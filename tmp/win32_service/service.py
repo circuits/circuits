@@ -7,7 +7,9 @@ from os.path import splitext, abspath
 
 from servicemanager import LogInfoMsg
 from win32api import SetConsoleCtrlHandler
-from win32serviceutil import InstallService, ServiceFramework, StartService
+
+from win32serviceutil import InstallService, RemoveServicer
+from win32serviceutil import ServiceFramework, StartService
 
 from win32event import INFINITE
 from win32event import CreateEvent, SetEvent, WaitForSingleObject
@@ -70,6 +72,13 @@ def install_service(cls, name, description=None, stay_alive=True):
 
         StartService(cls._svc_name_)
         print "Service started"
+    except Exception, e:
+        print "ERROR: %s" % e
+        print format_exc()
+
+def remove_service(name):
+    try:
+        RemoveService(name)
     except Exception, e:
         print "ERROR: %s" % e
         print format_exc()

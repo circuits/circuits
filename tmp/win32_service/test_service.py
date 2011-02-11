@@ -17,7 +17,7 @@ VERSION = "%prog v" + __version__
 
 class TestService(Service):
 
-    def run(se0f):
+    def run(self):
         while True:
             sleep(1)
 
@@ -31,7 +31,7 @@ def parse_options():
 
     opts, args = parser.parse_args()
 
-    if not args:
+    if (args and args[0] not in ("install", "remove",)) or not args:
         parser.print_usage()
         raise SystemExit, -1
 
@@ -40,8 +40,10 @@ def parse_options():
 def main():
     opts, args = parse_options()
 
-    if args and args[0] == "install":
+    if args[0] == "install":
         install_service(TestService, "test_service")
+    elif args[0] == "remove":
+        remove_service(TestService, "test_service")
 
 if __name__ == "__main__":
     main()
