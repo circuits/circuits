@@ -539,7 +539,7 @@ class Manager(object):
                 "sleep will be deprecated in a future release. " +
                 "Set circuits.core.TIMEOUT instead."))
 
-        if not __mode == "T" and current_thread().getName() == "MainThread":
+        if current_thread().getName() == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
             _registerSignalHandler(SIGINT, self._signalHandler)
