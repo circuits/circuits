@@ -16,10 +16,7 @@ USAGE = "%prog [<options>] <command>"
 VERSION = "%prog v" + __version__
 
 class TestService(Service):
-
-    def run(self):
-        while True:
-            sleep(1)
+    pass
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)

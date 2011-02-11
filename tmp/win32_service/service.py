@@ -18,12 +18,17 @@ from win32service import SERVICE_STOPPED
 from win32service import SERVICE_AUTO_START, SERVICE_RUNNING
 from win32service import SERVICE_START_PENDING, SERVICE_STOP_PENDING
 
-class Service(ServiceFramework):
+from circuits import BaseComponent
+
+class Service(BaseComponent, ServiceFramework):
 
     _svc_name_ = "unknown"
     _svc_display_name_ = "Service Template"
 
-    def __init__(self, *args):
+    channel = "service"
+
+    def __init__(self, *args, channel=channel):
+        BaseComponent.__init__(self, channel=channel)
         ServiceFramework.__init__(self, *args)
 
         self._stop_event = CreateEvent(None, 0, 0, None)
