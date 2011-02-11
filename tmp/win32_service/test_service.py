@@ -5,7 +5,6 @@
 ...
 """
 
-from time import sleep
 from optparse import OptionParser
 
 from service import install_service, remove_service, Service

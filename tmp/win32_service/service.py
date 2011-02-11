@@ -3,7 +3,6 @@
 import sys
 from sys import modules
 from traceback import format_exc
-from threading import currentThread
 from os.path import splitext, abspath
 
 from servicemanager import LogInfoMsg
