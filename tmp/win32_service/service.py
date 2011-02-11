@@ -25,10 +25,8 @@ class Service(BaseComponent, ServiceFramework):
     _svc_name_ = "unknown"
     _svc_display_name_ = "Service Template"
 
-    channel = "service"
-
-    def __init__(self, *args, channel=channel):
-        BaseComponent.__init__(self, channel=channel)
+    def __init__(self, *args):
+        BaseComponent.__init__(self)
         ServiceFramework.__init__(self, *args)
 
         self._stop_event = CreateEvent(None, 0, 0, None)
