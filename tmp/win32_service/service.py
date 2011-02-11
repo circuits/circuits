@@ -30,7 +30,7 @@ class Service(BaseComponent, ServiceFramework):
         BaseComponent.__init__(self)
         ServiceFramework.__init__(self, *args)
 
-        LogInfoMsg("Thread: %s", repr(currentThread()))\
+        LogInfoMsg("Thread: %s", repr(currentThread()))
         LogInfoMsg("Name: %s", currentThread().name)
 
         self._stop_event = CreateEvent(None, 0, 0, None)
