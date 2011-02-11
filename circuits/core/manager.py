@@ -542,8 +542,11 @@ class Manager(object):
         if current_thread().getName() == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
-            _registerSignalHandler(SIGINT, self._signalHandler)
-            _registerSignalHandler(SIGTERM, self._signalHandler)
+            try:
+                _registerSignalHandler(SIGINT, self._signalHandler)
+                _registerSignalHandler(SIGTERM, self._signalHandler)
+            except ValueError:
+                pass # Ignore if we can't install signal handlers
 
         if __socket is not None:
             from circuits.core.bridge import Bridge
