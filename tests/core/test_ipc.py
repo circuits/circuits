@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-from time import sleep
-
-import py
-py.test.skip("XXX: Not passing...")
+import pytest
 
 from circuits import Event, Component, Manager
 
@@ -23,7 +20,10 @@ def test():
     app.start(link=m, process=True)
 
     x = m.push(Hello())
-    sleep(1)
 
+    assert pytest.wait_for(x, "result", True)
     s = str(x)
     assert s == "Hello World!"
+
+    m.stop()
+    app.stop()
