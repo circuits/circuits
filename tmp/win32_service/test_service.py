@@ -8,7 +8,7 @@
 from time import sleep
 from optparse import OptionParser
 
-from service import install_service, Service
+from service import install_service, remove_service, Service
 
 __version__ = "0.0.1"
 
