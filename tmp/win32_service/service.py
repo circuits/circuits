@@ -33,7 +33,8 @@ class ServiceFramework:
 
     channel = "service"
 
-    def __init__(self, *args, channel=channel):
+    def __init__(self, *args, **kwargs):
+        channel = kwargs.get("channel", Service.channel)
         super(Service, self).__init__(channel=channel)
 
         self._ssh = RegisterServiceCtrlHandler(args[0], self.ServiceCtrlHandler)
