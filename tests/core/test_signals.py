@@ -2,9 +2,6 @@
 
 import os
 
-import py
-py.test.skip("XXX: Not passing...")
-
 def test(tmpdir, cov):
     if not os.name == "posix":
         py.test.skip("Cannot run test on a non-POSIX platform.")
