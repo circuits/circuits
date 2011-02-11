@@ -24,7 +24,7 @@ class Service(ServiceFramework):
     _svc_display_name_ = "Service Template"
 
     def __init__(self, *args):
-        super(Service, self).__init__(*args)
+        ServiceFramework.__init__(*args)
 
         self._stop_event = CreateEvent(None, 0, 0, None)
 
