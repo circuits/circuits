@@ -24,7 +24,7 @@ Features
 Bug Fixes
 .........
 
-- circuits.app: Fixed `Issue #14`_.
+- circuits.app: Fixed :bbissue:`14`
 
 - circuits.web: Fixed streaming support for `wsgi.Gateway`
 
