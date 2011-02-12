@@ -78,12 +78,6 @@ Alternatively, you may download the source package from the
     > python setup.py install
 
 
-Release Notes
--------------
-
-.. include:: ReleaseNotes.rst
-
-
 License
 -------
 
