@@ -2,7 +2,11 @@
 
 import pytest
 
-from circuits import Event, Component, Manager
+from circuits.core.manager import HAS_MULTIPROCESSING
+if not HAS_MULTIPROCESSING:
+    pytest.skip("Skip: No multiprocessing support")
+
+from circuits import handler, Event, Component, Manager
 
 class Hello(Event):
     """Hello Event"""
@@ -21,7 +25,7 @@ def test():
 
     x = m.push(Hello())
 
-    assert pytest.wait_for(x, "result", True)
+    assert pytest.wait_for(x, "result")
     s = str(x)
     assert s == "Hello World!"
 
