@@ -35,14 +35,14 @@ if not HAS_SETUPTOOLS:
 path = os.path.abspath(os.path.dirname(__file__))
 try:
     README = open(os.path.join(path, "README.rst")).read()
-    HISTORY = open(os.path.join(path, "HISTORY.rst")).read()
+    RELEASE = open(os.path.join(path, "ReleaseNotes.rst")).read()
 except IOError:
-    README = HISTORY = ""
+    README = RELEASE = ""
 
 setup(
     name="circuits",
     description="Asynchronous Component based Event Application Framework",
-    long_description="%s\n\n%s" % (README, HISTORY),
+    long_description="%s\n\n%s" % (README, RELEASE),
     author="James Mills",
     author_email="James Mills, prologic at shortcircuit dot net dot au",
     url="http://bitbucket.org/prologic/circuits/",
