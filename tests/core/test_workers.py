@@ -23,3 +23,5 @@ def test():
 
     assert x.result
     assert x.value == 1000000
+
+    w.stop()
