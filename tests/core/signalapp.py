@@ -19,8 +19,9 @@ class App(Component):
         Daemon(self.pidfile).register(self)
 
     def signal(self, signal, stack):
-        with open(self.signalfile, "w") as f:
-            f.write(str(signal))
+        f = open(self.signalfile, "w")
+        f.write(str(signal))
+        f.close()
 
 def main():
     _coverage = coverage(data_suffix=True)
