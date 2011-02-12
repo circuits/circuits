@@ -43,6 +43,16 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
+
+#
+# Compatibility and consistency fixes
+#
+
+if HAS_MULTIPROCESSING == 2:
+    setattr(Process, "isAlive", Process.is_alive)
+elif HAS_MULTIPROCESSING == 1:
+    setattr(Process, "pid", property(Process.getPid))
+
 from values import Value
 from events import Started, Stopped, Signal
 from events import Error, Success, Failure, Filter, Start, End
@@ -94,10 +104,8 @@ class Manager(object):
         h = len(self._handlers)
         state = self.state
 
-        if HAS_MULTIPROCESSING == 2:
-            pid = current_process().ident
-        if HAS_MULTIPROCESSING == 1:
-            pid = current_process().getPid()
+        if HAS_MULTIPROCESSING:
+            pid = current_process().pid
         else:
             pid = os.getpid()
 
@@ -500,8 +508,6 @@ class Manager(object):
 
             self._task = Process(group, target, name, args)
             self._task.daemon = True
-            if HAS_MULTIPROCESSING == 2:
-                setattr(self._task, "isAlive", self._task.is_alive)
             self.tick()
             self._task.start()
             return
