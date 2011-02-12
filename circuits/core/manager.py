@@ -486,12 +486,12 @@ class Manager(object):
         if signal in [SIGINT, SIGTERM]:
             self.stop()
 
-    def start(self, sleep=None, log=True, link=None, process=False):
+    def start(self, log=True, link=None, process=False):
         group = None
         target = self.run
         name = self.__class__.__name__
         mode = "P" if process else "T"
-        args = (sleep, log, mode,)
+        args = (log, mode,)
 
         if process and HAS_MULTIPROCESSING:
             if link is not None and isinstance(link, Manager):
@@ -539,7 +539,7 @@ class Manager(object):
         else:
             sleep(TIMEOUT) # Nothing to do - Let's not tie up the CUP
 
-    def run(self, sleep=None, log=True, __mode=None, __socket=None):
+    def run(self, log=True, __mode=None, __socket=None):
         if current_thread().getName() == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
