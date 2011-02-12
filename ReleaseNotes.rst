@@ -1,3 +1,6 @@
+Release Notes
+-------------
+
 .. _Issue #14: https://bitbucket.org/prologic/circuits/issue/14
 
 Features
