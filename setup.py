@@ -35,7 +35,7 @@ if not HAS_SETUPTOOLS:
 path = os.path.abspath(os.path.dirname(__file__))
 try:
     README = open(os.path.join(path, "README.rst")).read()
-    RELEASE = open(os.path.join(path, "ReleaseNotes.rst")).read()
+    RELEASE = open(os.path.join(path, "RELEASE.rst")).read()
 except IOError:
     README = RELEASE = ""
 
