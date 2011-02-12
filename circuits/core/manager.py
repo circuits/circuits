@@ -9,7 +9,6 @@ This module definse the Manager class subclasses by component.BaseComponent
 
 import os
 from time import sleep
-from warnings import warn
 from types import TupleType
 from threading import Thread
 from collections import deque
@@ -482,11 +481,6 @@ class Manager(object):
             self.stop()
 
     def start(self, sleep=None, log=True, link=None, process=False):
-        if sleep:
-            warn(DeprecationWarning(
-                "sleep will be deprecated in a future release. " +
-                "Set circuits.core.TIMEOUT instead."))
-
         group = None
         target = self.run
         name = self.__class__.__name__
@@ -542,11 +536,6 @@ class Manager(object):
             sleep(TIMEOUT) # Nothing to do - Let's not tie up the CUP
 
     def run(self, sleep=None, log=True, __mode=None, __socket=None):
-        if sleep:
-            warn(DeprecationWarning(
-                "sleep will be deprecated in a future release. " +
-                "Set circuits.core.TIMEOUT instead."))
-
         if current_thread().getName() == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
