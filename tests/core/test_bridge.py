@@ -49,3 +49,5 @@ def test():
     assert x[0] == "Hello from %s" % pid
     assert x[1].startswith("Hello from")
     assert not x[0]  == x[1]
+
+    p.stop()
