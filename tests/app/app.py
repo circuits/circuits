@@ -13,7 +13,7 @@ class App(Component):
     def __init__(self, pidfile):
         super(App, self).__init__()
 
-        Daemon(pidfile, stderr="/tmp/app.log").register(self)
+        Daemon(pidfile).register(self)
 
 def main():
     _coverage = coverage(data_suffix=True)
