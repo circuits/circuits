@@ -1,8 +1,12 @@
+Change Log
+==========
+
 1.3.3 (20110205)
-================
+----------------
+
 
 Features
---------
+........
 
 - circuits.core.workers: Add import of cpu_count/cpuCount as cpus from the
   respective multiprocessing/processing modules
@@ -20,8 +24,9 @@ Features
 - circuits.web.errors: Make traceback available on the HTTPError Event Object
   as self.traceback
 
+
 Bug Fixes
----------
+.........
 
 - circuits.web.main: Only start multiple processes if multiprocessing is
   actually available
@@ -31,8 +36,9 @@ Bug Fixes
 - circuits.app: Fixed a bug with loading a Logger instance and loading the
   Config instance (*``circuits.app needs`` to be refactored*)
 
+
 Examples
---------
+........
 
 - examples/web/jsonserializer.py: New example showing how to build a simple
   request filter that intercepts the return values of request handlers before
@@ -40,27 +46,32 @@ Examples
 
 - examples/web/filtering.py: Fixed example
 
+
 1.3.2 (20110201)
-================
+----------------
+
 
 Bug Fixes
----------
+.........
 
 - Fixed several Python 2.5 incompatibilities.
 
 - circuits.web.wsgi: Fixed a bug with writing to the ``request.body``.
   (Forgot to rewing the ``StringIO`` instnace after writing to it)
 
+
 1.3.1 (20110131)
-================
+----------------
+
 
 Documentation
--------------
+.............
 
 - Fixed documentation generation
 
+
 Features
---------
+........
 
 - circuits.core.manager: Deprecated the use of the sleep parameter/argument
   in ``Manager.start(...)`` and ``Manager.run(...)`` in favor of sleeping
@@ -77,8 +88,9 @@ Features
 - circuits.core.Manager: If a KeyboardInterrupt or SystemExit exception
   is raised during a **Tick Function**, then re-raise it.
 
+
 Bug Fixes
----------
+.........
 
 - circuits.web.http: Fixed a bug with HTTP streaming
 
