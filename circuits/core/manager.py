@@ -14,7 +14,6 @@ from threading import Thread
 from collections import deque
 from inspect import getargspec
 from traceback import format_tb
-from itertools import chain, starmap
 from sys import exc_info as _exc_info
 
 try:
@@ -194,7 +193,6 @@ class Manager(object):
 
         target, channel = _channel
 
-        channels = self.channels
         get = self.channels.get
         tmap = self._tmap.get
         cmap = self._cmap.get
