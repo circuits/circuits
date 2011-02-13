@@ -33,8 +33,8 @@ CONFIG = {
             "type": "file",
             "file": os.path.join("log", "%(name)s.log"),
             "level": "DEBUG",
-            "debug": True,
-            "verbose": True
+            "debug": "True",
+            "verbose": "True",
             }
         }
 
