@@ -53,7 +53,7 @@ class Debugger(Component):
         self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
-    @handler("exception", filter=True)
+    @handler("exception", priority=100.0)
     def exception(self, type, value, traceback, handler=None):
         if not self.errors:
             return
@@ -78,7 +78,7 @@ class Debugger(Component):
 
         s.close()
 
-    @handler(filter=True)
+    @handler(priority=100.0)
     def event(self, event, *args, **kwargs):
         """Global Event Handler
 
