@@ -33,8 +33,8 @@ CONFIG = {
             "type": "file",
             "file": os.path.join("log", "%(name)s.log"),
             "level": "DEBUG",
-            "debug": "True",
-            "verbose": "True",
+            "debug": True,
+            "verbose": True,
             }
         }
 
@@ -138,9 +138,7 @@ class Environment(Component):
         # Setup the default configuration
         configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
         createFile(configfile)
-        self.config = Config(configfile)
-        self.manager += self.config
-        self.push(LoadConfig(), "load", "config")
+        self.config = Config(configfile).register(self)
         for section in CONFIG:
             if not self.config.has_section(section):
                 self.config.add_section(section)
@@ -216,6 +214,5 @@ class Environment(Component):
             logfile = os.path.join(self.path, logfile)
         self.log = Logger(logfile, logname, logtype,
                 loglevel).register(self)
-        print "Creating logger..."
 
         self.push(Loaded(), "loaded", self.channel)
