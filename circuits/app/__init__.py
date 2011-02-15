@@ -11,7 +11,7 @@ common to applications.
 :license: MIT (See: LICENSE)
 """
 
-from circuits.app.log import Logger
+from circuits.app.log import Log, Logger
 
 from circuits.app.daemon import Daemon
 
