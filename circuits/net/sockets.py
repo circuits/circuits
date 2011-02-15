@@ -10,9 +10,9 @@ This module contains various Socket Components for use with Networking.
 import os
 from collections import defaultdict, deque
 
-from errno import EAGAIN, EALREADY, ECONNABORTED
-from errno import EINPROGRESS, EISCONN, EMFILE, ENFILE
-from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EWOULDBLOCK
+from errno import EAGAIN, EALREADY, EBADF
+from errno import ECONNABORTED, EINPROGRESS, EISCONN, EMFILE, ENFILE
+from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 
 from _socket import socket as SocketType
 
@@ -278,6 +278,7 @@ class Client(Component):
 
         self._buffer.clear()
         self._closeflag = False
+        self._connected = False
 
         try:
             self._sock.shutdown(2)
@@ -336,7 +337,7 @@ class Client(Component):
 
     @handler("_disconnect", filter=True)
     def __on_disconnect(self, sock):
-        self.push(Disconnect(sock), "disconnect", self.channel)
+        self._close()
 
     @handler("_read", filter=True)
     def __on_read(self, sock):
@@ -386,12 +387,16 @@ class TCPClient(Client):
         try:
             r = self._sock.connect_ex((host, port))
         except SocketError, e:
-            r = e[0]
+            import pdb
+            pdb.set_trace()
+            if e[0] in (EBADF, EINVAL,):
+                self._sock = self._create_socket()
+                r = self._sock.connect_ex((host, port))
+            else:
+                r = e[0]
 
         if r:
-            if r == EISCONN:
-                self._connected = True
-            elif r in (EWOULDBLOCK, EINPROGRESS, EALREADY):
+            if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
                 self.push(Error(r), "error", self.channel)
@@ -444,9 +449,7 @@ class UNIXClient(Client):
             r = e[0]
 
         if r:
-            if r == EISCONN:
-                self._connected = True
-            elif r in (EWOULDBLOCK, EINPROGRESS, EALREADY):
+            if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
                 self.push(Error(r), "error", self.channel)
@@ -668,7 +671,7 @@ class Server(Component):
 
     @handler("_disconnect", filter=True)
     def _on_disconnect(self, sock):
-        self.push(Disconnect(sock), "disconnect", self.channel)
+        self._close(sock)
 
     @handler("_read", filter=True)
     def _on_read(self, sock):
@@ -809,7 +812,7 @@ class UDPServer(Server):
 
     @handler("_disconnect", filter=True, override=True)
     def _on_disconnect(self, sock):
-        self.push(Disconnected(), "disconnected", self.channel)
+        self._close(sock)
 
     @handler("_read", filter=True, override=True)
     def _on_read(self, sock):

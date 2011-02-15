@@ -42,3 +42,41 @@ def test_tcp(poller, port):
     finally:
         server.stop()
         client.stop()
+
+def test_tcp_reconnect(poller, port):
+    server = Server() + TCPServer(("127.0.0.1", port), poller=poller)
+    client = Client() + TCPClient(poller=poller)
+
+    server.start()
+    client.start()
+
+    try:
+        # 1st connect
+        client.push(Connect("127.0.0.1", port))
+        py.test.wait_for(client, "connected")
+        py.test.wait_for(server, "connected")
+        py.test.wait_for(client, "data", "Ready")
+
+        client.push(Write("foo"))
+        py.test.wait_for(server, "data", "foo")
+
+        # disconnect
+        client.push(Close())
+        py.test.wait_for(client, "disconnected")
+
+        # 2nd reconnect
+        client.push(Connect("127.0.0.1", port))
+        py.test.wait_for(client, "connected")
+        py.test.wait_for(server, "connected")
+        py.test.wait_for(client, "data", "Ready")
+
+        client.push(Write("foo"))
+        py.test.wait_for(server, "data", "foo")
+
+        client.push(Close())
+        server.push(Close())
+        py.test.wait_for(client, "disconnected")
+        py.test.wait_for(server, "disconnected")
+    finally:
+        server.stop()
+        client.stop()
