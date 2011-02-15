@@ -126,3 +126,8 @@ class Daemon(BaseComponent):
     def _on_started(self, manager, mode):
         if not manager == self and mode is None:
             self.push(Daemonize())
+
+    @handler("registered")
+    def _on_registered(self, component, manager):
+        if component == self and manager.root.running:
+            self.push(Daemonize())
