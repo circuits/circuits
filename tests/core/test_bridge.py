@@ -23,14 +23,16 @@ def test():
     # Our communication transport
     a, b = Pipe()
 
+    from circuits import Debugger
+
     # 1st App (process)
-    p = App()
-    Bridge(p, socket=a)
+    p = App() + Debugger()
+    Bridge(p, socket=a) + Debugger()
     p.start(process=True)
 
     # 2nd App
-    app = App()
-    Bridge(app, socket=b)
+    app = App() + Debugger()
+    Bridge(app, socket=b) + Debugger()
     app.start()
 
     pid = os.getpid()
@@ -38,13 +40,13 @@ def test():
     assert e.future == False
     x = app.push(e)
 
-    pytest.wait_for(e, "future", True)
+    assert pytest.wait_for(e, "future", True)
     assert e.future == True
 
     def test(obj, attr):
         return isinstance(obj._value, list)
 
-    pytest.wait_for(x, None, test)
+    assert pytest.wait_for(x, None, test)
 
     assert x[0] == "Hello from %s" % pid
     assert x[1].startswith("Hello from")

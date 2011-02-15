@@ -78,7 +78,7 @@ class BaseServer(BaseComponent):
         else:
             Request.local = Host(self.server.bind, None)
         Request.host = self.host
-        Request.scheme = "https" if self.server.ssl else "http"
+        Request.scheme = "https" if self.server.secure else "http"
 
     @property
     def version(self):
@@ -99,12 +99,12 @@ class BaseServer(BaseComponent):
                 return self.server.bind[1]
 
     @property
-    def ssl(self):
-        return self.server.ssl if hasattr(self, "server") else None
+    def secure(self):
+        return self.server.secure if hasattr(self, "server") else None
 
     @property
     def scheme(self):
-        return "https" if self.ssl else "http"
+        return "https" if self.secure else "http"
 
     @property
     def host(self):
@@ -116,10 +116,10 @@ class BaseServer(BaseComponent):
             # safest thing to spit out in a URL.
             host = _gethostname()
 
-        ssl = self.ssl
+        secure = self.secure
         port = self.port
 
-        if not ((ssl and port == 443) or (not ssl and port == 80)):
+        if not ((secure and port == 443) or (not secure and port == 80)):
             if port is not None:
                 host = "%s:%s" % (host, port)
 

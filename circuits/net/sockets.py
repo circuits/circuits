@@ -8,20 +8,27 @@ This module contains various Socket Components for use with Networking.
 """
 
 import os
-import socket
-from errno import *
-from socket import gaierror
-from _socket import socket as SocketType
 from collections import defaultdict, deque
-from socket import gethostname, gethostbyname
+
+from errno import EAGAIN, EALREADY, ECONNABORTED
+from errno import EINPROGRESS, EISCONN, EMFILE, ENFILE
+from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EWOULDBLOCK
+
+from _socket import socket as SocketType
+
+from socket import gaierror, error as SocketError
+from socket import gethostname, gethostbyname, socket, socketpair
+
+from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
+from socket import AF_INET, AF_UNIX, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
 
 try:
-    import ssl
-    import ssl as ssl_ # Doh, otherwise local variables overshadow the module
+    from ssl import wrap_socket as ssl_socket
+    from ssl import CERT_NONE, PROTOCOL_SSLv23, SSLError
     HAS_SSL = 1
 except ImportError:
     import warnings
-    warnings.warn("No SSL support available. Using python-2.5 ? Try isntalling the ssl module: http://pypi.python.org/pypi/ssl/")
+    warnings.warn("No SSL support available.")
     HAS_SSL = 0
 
 from circuits.core.utils import findcmp
@@ -222,7 +229,7 @@ class Client(Component):
 
         self.host = "0.0.0.0"
         self.port = 0
-        self.ssl  = False
+        self.secure  = False
 
         self.server = {}
         self.issuer = {}
@@ -233,7 +240,7 @@ class Client(Component):
         self._PollerComponent = kwargs.get("poller", DefaultPoller)
 
         self._sock = None
-        self._sslsock = None
+        self._ssock = None
         self._buffer = deque()
         self._closeflag = False
         self._connected = False
@@ -275,7 +282,7 @@ class Client(Component):
         try:
             self._sock.shutdown(2)
             self._sock.close()
-        except socket.error:
+        except SocketError:
             pass
 
         self.push(Disconnected(), "disconnected", self.channel)
@@ -288,8 +295,8 @@ class Client(Component):
 
     def _read(self):
         try:
-            if self.ssl and self._sslsock:
-                data = self._sslsock.read(self._bufsize)
+            if self.secure and self._ssock:
+                data = self._ssock.read(self._bufsize)
             else:
                 data = self._sock.recv(self._bufsize)
 
@@ -297,7 +304,7 @@ class Client(Component):
                 self.push(Read(data), "read", self.channel)
             else:
                 self.close()
-        except socket.error, e:
+        except SocketError, e:
             if e[0] == EWOULDBLOCK:
                 return
             else:
@@ -309,14 +316,14 @@ class Client(Component):
             if type(data) is unicode:
                 data = data.encode(self.encoding)
 
-            if self.ssl and self._sslsock:
-                bytes = self._sslsock.write(data)
+            if self.secure and self._ssock:
+                bytes = self._ssock.write(data)
             else:
                 bytes = self._sock.send(data)
 
             if bytes < len(data):
                 self._buffer.appendleft(data[bytes:])
-        except socket.error, e:
+        except SocketError, e:
             if e[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
@@ -355,21 +362,30 @@ class TCPClient(Client):
         if type(bind) is SocketType:
             self._sock = bind
         else:
-            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            if bind is not None:
-                self._sock.bind((bind, 0))
+            self._sock = self._create_socket()
 
-        self._sock.setblocking(False)
-        self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    def _create_socket(self):
+        sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
+        if self.bind is not None:
+            sock.bind((self.bind, 0))
 
-    def connect(self, host, port, ssl=False):
+        sock.setblocking(False)
+        sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
+
+        return sock
+
+    def connect(self, host, port, secure=False, **kwargs):
         self.host = host
         self.port = port
-        self.ssl  = ssl
+        self.secure  = secure
+
+        if self.secure:
+            self.certfile = kwargs.get("certfile", None)
+            self.keyfile = kwargs.get("keyfile", None)
 
         try:
             r = self._sock.connect_ex((host, port))
-        except socket.error, e:
+        except SocketError, e:
             r = e[0]
 
         if r:
@@ -385,8 +401,8 @@ class TCPClient(Client):
 
         self._poller.addReader(self, self._sock)
 
-        if self.ssl:
-            self._sslsock = socket.ssl(self._sock)
+        if self.secure:
+            self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
         self.push(Connected(host, port), "connected", self.channel)
 
@@ -398,24 +414,33 @@ class UNIXClient(Client):
         if type(bind) is SocketType:
             self._sock = bind
         else:
-            self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            if bind is not None:
-                self._sock.bind(bind)
+            self._sock = self._create_socket()
 
-        self._sock.setblocking(False)
+    def _create_socket(self):
+        sock = socket(AF_UNIX, SOCK_STREAM)
+        if self.bind is not None:
+            sock.bind(self.bind)
+
+        sock.setblocking(False)
+
+        return sock
 
     @handler("registered", target="*")
     def _on_registered(self, component, manager):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
-    def connect(self, path, ssl=False):
+    def connect(self, path, secure=False, **kwargs):
         self.path = path
-        self.ssl = ssl
+        self.secure = secure
+
+        if self.secure:
+            self.certfile = kwargs.get("certfile", None)
+            self.keyfile = kwargs.get("keyfile", None)
 
         try:
             r = self._sock.connect_ex(path)
-        except socket.error, e:
+        except SocketError, e:
             r = e[0]
 
         if r:
@@ -431,8 +456,8 @@ class UNIXClient(Client):
 
         self._poller.addReader(self, self._sock)
 
-        if self.ssl:
-            self._sslsock = socket.ssl(self._sock)
+        if self.secure:
+            self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
         self.push(Connected(gethostname(), path), "connected", self.channel)
 
@@ -441,7 +466,7 @@ class Server(Component):
 
     channel = "server"
 
-    def __init__(self, bind, ssl=False, **kwargs):
+    def __init__(self, bind, secure=False, **kwargs):
         channel = kwargs.get("channel", self.__class__.channel)
         super(Server, self).__init__(channel=channel)
 
@@ -459,12 +484,13 @@ class Server(Component):
         else:
             self.bind = bind
 
-        self.ssl = ssl
-        if self.ssl:
+        self.secure = secure
+
+        if self.secure:
             self.certfile = kwargs.get("certfile", None)
             self.keyfile = kwargs.get("keyfile", None)
-            self.cert_reqs = kwargs.get("cert_reqs", ssl_.CERT_NONE)
-            self.ssl_version = kwargs.get("ssl_version", ssl_.PROTOCOL_SSLv23)
+            self.cert_reqs = kwargs.get("cert_reqs", CERT_NONE)
+            self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)
             self.ca_certs = kwargs.get("ca_certs", None)
 
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
@@ -533,7 +559,7 @@ class Server(Component):
         try:
             sock.shutdown(2)
             sock.close()
-        except socket.error:
+        except SocketError:
             pass
 
         self.push(Disconnect(sock), "disconnect", self.channel)
@@ -561,7 +587,7 @@ class Server(Component):
                 self.push(Read(sock, data), "read", self.channel)
             else:
                 self.close(sock)
-        except socket.error, e:
+        except SocketError, e:
             if e[0] == EWOULDBLOCK:
                 return
             else:
@@ -579,7 +605,7 @@ class Server(Component):
             bytes = sock.send(data)
             if bytes < len(data):
                 self._buffers[sock].appendleft(data[bytes:])
-        except socket.error, e:
+        except SocketError, e:
             if e[0] in (EPIPE, ENOTCONN):
                 self._close(sock)
             else:
@@ -597,8 +623,8 @@ class Server(Component):
     def _accept(self):
         try:
             newsock, host = self._sock.accept()
-            if self.ssl and HAS_SSL:
-                newsock = ssl.wrap_socket(newsock,
+            if self.secure and HAS_SSL:
+                newsock = ssl_socket(newsock,
                     server_side=True,
                     certfile=self.certfile,
                     keyfile=self.keyfile,
@@ -606,10 +632,10 @@ class Server(Component):
                     ssl_version=self.ssl_version,
                     ca_certs=self.ca_certs)
 
-        except ssl_.SSLError, e:
+        except SSLError, e:
             raise
 
-        except socket.error, e:
+        except SocketError, e:
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
             elif e[0] == EPERM:
@@ -666,62 +692,67 @@ class Server(Component):
 
 class TCPServer(Server):
 
-    def __init__(self, bind, ssl=False, **kwargs):
-        super(TCPServer, self).__init__(bind, ssl, **kwargs)
+    def __init__(self, bind, secure=False, **kwargs):
+        super(TCPServer, self).__init__(bind, secure, **kwargs)
 
-        bound = False
         if type(bind) is SocketType:
+            self.bind = None
             self._sock = bind
-            bound = True
         else:
-            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._sock = self._create_socket()
 
-        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        self._sock.setblocking(False)
-        if not bound:
-            self._sock.bind(self.bind)
-        self._sock.listen(self._backlog)
+    def _create_socket(self):
+        sock = socket(AF_INET, SOCK_STREAM)
+
+        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
+        sock.setblocking(False)
+        sock.bind(self.bind)
+        sock.listen(self._backlog)
+
+        return sock
 
 class UNIXServer(Server):
 
-    def __init__(self, bind, ssl=False, **kwargs):
-        super(UNIXServer, self).__init__(bind, ssl, **kwargs)
+    def __init__(self, bind, secure=False, **kwargs):
+        super(UNIXServer, self).__init__(bind, secure, **kwargs)
 
         if type(bind) is SocketType:
             self._sock = bind
         else:
-            if os.path.exists(bind):
-                os.unlink(self.bind)
+            self._sock = self._create_socket()
 
-            oldUmask = None
-            umask = kwargs.get("umask", None)
-            if umask:
-                oldUmask = os.umask(umask)
+    def _create_socket(self):
+        if os.path.exists(self.bind):
+            os.unlink(self.bind)
 
-            self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self._sock.bind(self.bind)
+        sock = socket(AF_UNIX, SOCK_STREAM)
+        sock.bind(self.bind)
 
-            if oldUmask is not None:
-                os.umask(oldUmask)
+        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        sock.setblocking(False)
+        sock.listen(self._backlog)
 
-        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._sock.setblocking(False)
-        self._sock.listen(self._backlog)
+        return sock
 
 class UDPServer(Server):
 
-    def __init__(self, bind, ssl=False, **kwargs):
-        super(UDPServer, self).__init__(bind, ssl, **kwargs)
+    def __init__(self, bind, secure=False, **kwargs):
+        super(UDPServer, self).__init__(bind, secure, **kwargs)
 
         if type(bind) is SocketType:
             self._sock = bind
         else:
-            self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self._sock.bind(self.bind)
+            self._sock = self._create_socket()
 
-        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self._sock.setblocking(False)
+    def _create_socket(self):
+        sock = socket(AF_INET, SOCK_DGRAM)
+        sock.bind(self.bind)
+
+        sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+        sock.setblocking(False)
+
+        return sock
 
     def _close(self, sock):
         self._poller.discard(sock)
@@ -732,7 +763,7 @@ class UDPServer(Server):
         try:
             sock.shutdown(2)
             sock.close()
-        except socket.error:
+        except SocketError:
             pass
 
         self.push(Disconnect(sock), "disconnect", self.channel)
@@ -747,7 +778,7 @@ class UDPServer(Server):
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.push(Read(address, data), "read", self.channel)
-        except socket.error, e:
+        except SocketError, e:
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
             self.push(Error(self._sock, e), "error", self.channel)
@@ -761,7 +792,7 @@ class UDPServer(Server):
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
-        except socket.error, e:
+        except SocketError, e:
             if e[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:
@@ -806,9 +837,14 @@ def Pipe(channels=("pipe", "pipe"), **kwargs):
     the pipe.
     """
 
-    s1, s2 = socket.socketpair()
+    s1, s2 = socketpair()
+    s1.setblocking(False)
+    s2.setblocking(False)
+
     a = UNIXClient(s1, channel=channels[0], **kwargs)
     b = UNIXClient(s2, channel=channels[1], **kwargs)
+
     a._connected = True
     b._connected = True
+
     return a, b
