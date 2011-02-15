@@ -167,17 +167,18 @@ class Component(BaseComponent):
 
     def __new__(cls, *args, **kwargs):
         self = BaseComponent.__new__(cls, *args, **kwargs)
-        handlers = [x for x in cls.__dict__.values() \
-                if getattr(x, "handler", False)]
-        overridden = lambda x: [h for h in handlers \
-                if x.channels == h.channels and getattr(h, "override", False)]
+        handlers = dict([(k, v) for k, v in cls.__dict__.items()
+                if getattr(v, "handler", False)])
+
+        overridden = lambda x: x in handlers and handlers[x].override
+
         for base in cls.__bases__:
             if issubclass(cls, base):
                 for k, v in base.__dict__.items():
                     p1 = callable(v)
                     p2 = getattr(v, "handler", False)
-                    predicate = p1 and p2 and not overridden(v)
-                    if predicate:
+                    p3 = overridden(k)
+                    if p1 and p2 and not p3:
                         name = "%s_%s" % (base.__name__, k)
                         method = MethodType(v, self)
                         setattr(self, name, method)
