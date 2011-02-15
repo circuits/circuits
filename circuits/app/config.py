@@ -9,28 +9,31 @@ ConfigParser.ConfigParser class and adds support for saving
 the configuration to a file.
 """
 
-from __future__ import with_statement
 
 from ConfigParser import ConfigParser
 
 from circuits import handler, Event, Component
 
 
-###
-### Events
-###
+class ConfigEvent(Event):
+    """Config Event"""
 
-class LoadConfig(Event):
+    _target =  "config"
+
+
+class LoadConfig(ConfigEvent):
     """Load Config Event"""
 
-    end = "config_loaded",
+    channel = "load_config"
 
-class SaveConfig(Event):
+    end = "config_loaded", ConfigEvent._target
+
+
+class SaveConfig(ConfigEvent):
     """Save Config Event"""
 
-###
-### Components
-###
+    channel = "save_config"
+
 
 class Config(Component, ConfigParser):
 
@@ -66,21 +69,12 @@ class Config(Component, ConfigParser):
         else:
             return default
 
-    @handler("load")
-    def onLOAD(self):
-        """C.onLOAD()
-
-        Load the configuration file.
-        """
-
+    @handler("load_config")
+    def _on_load_config(self):
         self.read(self.filename)
 
-    @handler("save")
-    def onSAVE(self):
-        """C.onSAVE()
-
-        Save the configuration file.
-        """
-
-        with open(self.filename, "w") as f:
-            self.write(f)
+    @handler("save_config")
+    def _on_save_config(self):
+        f = open(self.filename, "w")
+        self.write(f)
+        f.close()

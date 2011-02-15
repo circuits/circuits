@@ -1,4 +1,3 @@
-from __future__ import with_statement
 # Module:   env
 # Date:     10th June 2006
 # Author:   James Mills, prologic at shortcircuit dot net dot au
@@ -10,37 +9,30 @@ components and is used to create, load and manage system/application
 environments.
 """
 
-from __future__ import with_statement
 
 import os
 
-from circuits import handler, Event, Component
+from circuits import handler, BaseComponent, Event
 
 from log import Logger
 from config import Config, LoadConfig, SaveConfig
 
-###
-### Constants
-###
 
 VERSION = 1
 
 CONFIG = {
         "general": {
             "pidfile": os.path.join("log", "%(name)s.pid"),
-            },
+        },
         "logging": {
-            "type": "file",
-            "file": os.path.join("log", "%(name)s.log"),
-            "level": "DEBUG",
             "debug": True,
+            "type": "file",
             "verbose": True,
-            }
+            "level": "DEBUG",
+            "file": os.path.join("log", "%(name)s.log"),
         }
+ }
 
-###
-### Functions
-###
 
 def createFile(filename, data=None):
     fd = open(filename, "w")
@@ -48,81 +40,93 @@ def createFile(filename, data=None):
         fd.write(data)
     fd.close()
 
-###
-### Events
-###
 
-class Create(Event):
-    """Create(Event) -> Create Event"""
+class InvalidEnvironmentError(Exception):
+    """Invalid Environment Error"""
 
-class Load(Event):
-    """Load(Event) -> Load Event"""
 
-class Verify(Event):
-    """Verify(Event) -> Verify Event"""
+class UpgradeEnvironmentError(Exception):
+    """Upgrade Environment Error"""
 
-class Upgrade(Event):
-    """Upgrade(Event) -> Upgrade Event"""
 
-class Created(Event):
-    """Created(Event) -> Created Event"""
+class EnvironmentEvent(Event):
+    """Environment Event"""
 
-class Loaded(Event):
-    """Loaded(Event) -> Loaded Event"""
+    _target = "env"
 
-class Invalid(Event):
-    """Invalid(Event) -> Invalid Event
 
-    args: path, msg
-    """
+class CreateEnvironment(EnvironmentEvent):
+    """Create Environment Event"""
 
-class NeedsUpgrade(Event):
-    """NeedsUpgrade(Event) -> NeedsUpgrade Event
+    channel = "create_environment"
 
-    args: path, msg
-    """
+    start = "creating_environment", EnvironmentEvent._target
+    end = "environment_created", EnvironmentEvent._target
 
-class Upgraded(Event):
-    """Upgraded(Event) -> Upgraded Event"""
 
-###
-### Components
-###
+class LoadEnvironment(EnvironmentEvent):
+    """Load Environment Event"""
 
-class Environment(Component):
-    """Environment(path, name, version=VERSION, config=CONFIG) -> Environment
+    channel = "load_environment"
+
+    start = "loading_environment", EnvironmentEvent._target
+
+
+class EnvironmentLoaded(EnvironmentEvent):
+    """Environment Loaded Event"""
+
+    channel = "environment_loaded"
+
+
+class VerifyEnvironment(EnvironmentEvent):
+    """Verify EEnvironment Event"""
+
+    channel = "verify_environment"
+
+    start = "verifying_environment", EnvironmentEvent._target
+    success = "environment_verified", EnvironmentEvent._target
+    failure = "environment_invalid", EnvironmentEvent._target
+
+
+class UpgradeEnvironment(EnvironmentEvent):
+    """Upgrade Environment Event"""
+
+    channel = "upgrade_environment"
+
+    start = "upgrading_environment", EnvironmentEvent._target
+    end = "environment_upgraded", EnvironmentEvent._target
+
+
+class BaseEnvironment(BaseComponent):
+    """Base Environment Component
 
     Creates a new environment component that by default only
     holds configuration and logger components.
 
     This component can be extended to provide more complex
-    system and application environments. This component will
-    expose the following events:
-       - Created
-       - Loaded
-       - Invalid
-       - NeedsUpgrade
-       - Upgraded
+    system and application environments.
     """
 
     channel = "env"
 
     version = VERSION
 
-    def __init__(self, path, envname):
-        super(Environment, self).__init__()
+    def __init__(self, path, envname, channel=channel):
+        super(BaseEnvironment, self).__init__(channel=channel)
 
         self.path = os.path.abspath(os.path.expanduser(path))
         self.envname = envname
 
-    @handler("create")
-    def onCREATE(self):
-        """E.onCREATE()
+    def _load(self):
+        os.chdir(self.path)
 
-        Create a new Environment. The Environment path given
-        by self.path must not already exist.
-        """
+        # Create Config Component
+        configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
+        self.config = Config(configfile).register(self)
+        self.push(LoadConfig(), target=self.config)
 
+    @handler("create_environment")
+    def _on_create_environment(self):
         # Create the directory structure
         os.makedirs(self.path)
         os.chdir(self.path)
@@ -133,7 +137,8 @@ class Environment(Component):
         createFile(os.path.join(self.path, "VERSION"), "%d" % self.version)
         createFile(
                 os.path.join(self.path, "README"),
-                "This directory contains a %s Environment." % self.envname)
+                "This directory contains a %s Environment." % self.envname
+        )
 
         # Setup the default configuration
         configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
@@ -146,61 +151,36 @@ class Environment(Component):
                 if type(value) == str:
                     value = value % {"name": self.envname}
                 self.config.set(section, option, value)
-        self.push(SaveConfig(), "save", "config")
+        self.push(SaveConfig(), target=self.config)
 
-        self.push(Created(), "created", self.channel)
+    @handler("verify_environment")
+    def _on_verify_environment(self):
+        f = open(os.path.join(self.path, "VERSION"), "r")
+        version = f.read().strip()
+        f.close()
 
-    @handler("verify")
-    def onVERIFY(self):
-        """E.onVERIFY()
+        if not version:
+            msg = "No Environment version information"
+            raise InvalidEnvironmentError(msg)
+        else:
+            if self.version > int(version):
+                msg = "Environment needs upgrading"
+                raise UpgradeEnvironmentError(msg)
 
-        Verify the Environment by checking it's version against
-        the expected version.
+    @handler("environment_verified")
+    def _on_verify_pass(self, evt, handler, retval):
+        self._load()
 
-        If the Environment's version does not match, trigger
-        an EnvNeedsUpgrade event. If the Environment is
-        invalid and cannot be read, trigger an Invalid
-        event.
-        """
+    @handler("environment_invalid")
+    def _on_environment_invalid(self, evt, handler, error):
+        raise SystemExit(-1)
 
-        with open(os.path.join(self.path, "VERSION"), "r") as f:
-            version = f.read().strip()
-            if not version:
-                msg = "No Environment version information"
-                self.push(Invalid(self.env.path, msg), "invalid", self.channel)
-            else:
-                try:
-                    verion = int(version)
-                    if self.version > version:
-                        self.push(
-                                NeedsUpgrade(self.env.path),
-                                "needsupgrade",
-                                self.channel)
-                except ValueError:
-                    msg = "Environment version information invalid"
-                    self.push(
-                            Invalid(self.env.path, msg),
-                            "invalid",
-                            self.channel)
-
-    @handler("load")
-    def onLOAD(self, verify=False):
-        """E.onLOAD(verify=False)
-
-        Load the Environment. Load the configuration and logging
-        components. If verify=True, verify the Environment first.
-        """
-
+    @handler("load_environment")
+    def _on_load_environment(self, verify=False):
         if verify:
-            self.push(Verify(), "verify", self.channel)
-
-        os.chdir(self.path)
-
-        # Create Config Component
-        configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
-        self.config = Config(configfile)
-        self.manager += self.config
-        self.push(LoadConfig(), "load", "config")
+            self.push(VerifyEnvironment())
+        else:
+            self._load()
 
     @handler("config_loaded", target="config")
     def _on_config_loaded(self, evt, handler, retval):
@@ -212,7 +192,5 @@ class Environment(Component):
         logfile = logfile % {"name": self.envname}
         if not os.path.isabs(logfile):
             logfile = os.path.join(self.path, logfile)
-        self.log = Logger(logfile, logname, logtype,
-                loglevel).register(self)
-
-        self.push(Loaded(), "loaded", self.channel)
+        self.log = Logger(logfile, logname, logtype, loglevel).register(self)
+        self.push(EnvironmentLoaded())

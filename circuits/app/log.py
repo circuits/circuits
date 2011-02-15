@@ -4,11 +4,13 @@
 
 """Logging Components"""
 
+
 import sys
 import logging
 from logging import DEBUG, INFO, WARNING, WARN, ERROR, CRITICAL
 
 from circuits.core import handler, Event, BaseComponent
+
 
 class Log(Event):
     """Log Event"""
@@ -16,9 +18,6 @@ class Log(Event):
     channel = "log"
     target = "logger"
 
-    success = "log_successful", target
-    filter = "log_filtered", target
-    failure = "log_failed", target
 
 class Logger(BaseComponent):
 
@@ -68,7 +67,7 @@ class Logger(BaseComponent):
         self.logger.addHandler(hdlr)
 
     @handler("log")
-    def log(self, level, msg, *args, **kwargs):
+    def _on_log(self, level, msg, *args, **kwargs):
         self.logger.log(self.LEVELS[level.lower()], msg, *args, **kwargs)
 
     def debug(self, msg, *args, **kwargs):

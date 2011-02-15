@@ -12,6 +12,11 @@ common to applications.
 """
 
 from circuits.app.log import Logger
+
 from circuits.app.daemon import Daemon
-from circuits.app.config import Config
-from circuits.app.env import Environment
+
+from circuits.app.config import Config, LoadConfig, SaveConfig
+
+from circuits.app.env import BaseEnvironment
+from circuits.app.env import UpgradeEnvironment
+from circuits.app.env import CreateEnvironment, LoadEnvironment
