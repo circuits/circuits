@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang=
+"en-US">
+<head>
+  <title>circuits.web WebSockets Demo</title>
+  <meta http-equiv="content-type" content=
+  "application/xml+xhtml; charset=us-ascii" />
+</head>
+
+<body>
+  <a href="#" onclick="test()">Test</a> <script type=
+  "text/javascript">
+//<![CDATA[
+     function test() {
+         var ws = new WebSocket("ws://localhost:8000/websocket");
+         ws.onopen = function() {
+             ws.send("Hello World!");
+         };
+         ws.onmessage = function (e) {
+             console.log(e);
+             console.log(e.data);
+         };
+         ws.onclose = function() {
+             console.log(arguments);
+         };
+     };
+  //]]>
+  </script>
+</body>
+</html>
