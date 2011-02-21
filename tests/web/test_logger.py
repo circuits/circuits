@@ -3,6 +3,7 @@
 import sys
 from urllib2 import urlopen
 from StringIO import StringIO
+from socket import gaierror, gethostbyname, gethostname
 
 from circuits.web import Controller, Logger
 from circuits.web.loggers import formattime
@@ -36,8 +37,13 @@ def test_file(webapp):
 
     format = logger.format
 
+    try:
+        address = gethostbyname(gethostname())
+    except gaierror:
+        address = "127.0.0.1"
+
     d = {}
-    d["h"] = "127.0.0.1"
+    d["h"] = address
     d["l"] = "-"
     d["u"] = "-"
     d["r"] = "GET / HTTP/1.1"
@@ -67,8 +73,13 @@ def test_logger(webapp):
 
     format = logger.format
 
+    try:
+        address = gethostbyname(gethostname())
+    except gaierror:
+        address = "127.0.0.1"
+
     d = {}
-    d["h"] = "127.0.0.1"
+    d["h"] = address
     d["l"] = "-"
     d["u"] = "-"
     d["r"] = "GET / HTTP/1.1"
@@ -100,8 +111,13 @@ def test_filename(webapp, tmpdir):
 
     format = logger.format
 
+    try:
+        address = gethostbyname(gethostname())
+    except gaierror:
+        address = "127.0.0.1"
+
     d = {}
-    d["h"] = "127.0.0.1"
+    d["h"] = address
     d["l"] = "-"
     d["u"] = "-"
     d["r"] = "GET / HTTP/1.1"
