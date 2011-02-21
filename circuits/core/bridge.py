@@ -22,6 +22,7 @@ order or delivery.
 from StringIO import StringIO
 from pickle import dumps, Unpickler
 
+from handlers import handler
 from components import BaseComponent
 from values import Value, ValueChanged
 from events import Event, Registered, Unregistered, Started, Stopped
@@ -40,6 +41,8 @@ class Bridge(BaseComponent):
         self._socket = socket
 
         self._values = dict()
+
+        self.ready = False
 
         self._manager.addHandler(self._started, "started", target="*")
         self._manager.addHandler(self._events, priority=100, target="*")
@@ -98,3 +101,7 @@ class Bridge(BaseComponent):
         else:
             event.future = True
             self._writer(event)
+
+    @handler("ready")
+    def _on_ready(self, component):
+        self.ready = True

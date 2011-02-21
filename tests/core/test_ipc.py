@@ -23,6 +23,8 @@ def test():
     app = App()
     app.start(link=m, process=True)
 
+    assert pytest.wait_for(app._bridge, "ready")
+
     x = m.push(Hello())
 
     assert pytest.wait_for(x, "result")

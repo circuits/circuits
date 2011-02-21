@@ -83,6 +83,7 @@ class Manager(object):
         self._ticks = set()
 
         self._task = None
+        self._bridge = None
         self._running = False
 
         self.root = self.manager = self
@@ -522,6 +523,8 @@ class Manager(object):
                 and self._task.isAlive()
                 and not current_process() == self._task):
             self._task.terminate()
+        if (self._bridge is not None):
+            self._bridge = None
         self._task = None
         self.tick()
 
