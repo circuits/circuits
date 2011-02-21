@@ -18,7 +18,7 @@ import py
 
 import circuits.tools
 from circuits import Component
-from circuits.tools import kill, graph, inspect, findroot, reprhandler
+from circuits.tools import kill, inspect, findroot, reprhandler
 
 class A(Component):
 
@@ -67,14 +67,6 @@ class F(Component):
 
     def foo(self):
         print "F!"
-
-GRAPH = """\
-* <A/* %s (queued=5, channels=1, handlers=6) [S]>
- * <B/* %s (queued=0, channels=1, handlers=2) [S]>
-  * <C/* %s (queued=0, channels=1, handlers=1) [S]>
- * <D/* %s (queued=0, channels=1, handlers=3) [S]>
-  * <E/* %s (queued=0, channels=1, handlers=2) [S]>
-   * <F/* %s (queued=0, channels=1, handlers=1) [S]>"""
 
 INSPECT = """\
  Registered Components: 0
@@ -137,43 +129,6 @@ def test_kill():
     assert not d.components
     assert not e.components
     assert not f.components
-
-def test_graph(tmpdir):
-    a = A()
-    b = B()
-    c = C()
-    d = D()
-    e = E()
-    f = F()
-
-    a += b
-    b += c
-
-    e += f
-    d += e
-    a += d
-
-    assert a.manager == a
-    assert b.manager == a
-    assert c.manager == b
-    assert not c.components
-
-    assert b in a.components
-    assert d in a.components
-
-    assert d.manager == a
-    assert e.manager == d
-    assert f.manager == e
-
-    assert f in e.components
-    assert e in d.components
-    assert not f.components
-
-    id = "%s:%s" % (os.getpid(), current_thread().getName())
-
-    tmpdir.ensure("A")
-    circuits.tools.HAS_PYDOT = False # Not testing writing to .png
-    assert graph(a) == GRAPH % tuple([id] * 6)
 
 def test_inspect():
     a = A()
