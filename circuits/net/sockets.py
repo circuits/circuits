@@ -523,12 +523,14 @@ class Server(Component):
         return True
 
     @property
-    def address(self):
-        return self.bind[0] if hasattr(self, "bind") else None
+    def host(self):
+        if hasattr(self, "_sock"):
+            return self._sock.getsockname()[0]
 
     @property
     def port(self):
-        return self.bind[1] if hasattr(self, "bind") else None
+        if hasattr(self, "_sock"):
+            return self._sock.getsockname()[1]
 
     @handler("registered", target="*")
     def _on_registered(self, component, manager):
@@ -755,6 +757,11 @@ class UNIXServer(Server):
         sock.listen(self._backlog)
 
         return sock
+
+    @property
+    def host(self):
+        if hasattr(self, "bind"):
+            return self.bind
 
 class UDPServer(Server):
 

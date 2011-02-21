@@ -2,7 +2,7 @@
 
 from os.path import basename
 from urllib2 import urlopen, URLError
-from socket import gaierror, gethostname
+from socket import gaierror
 
 from circuits import Component
 from circuits.web import Controller
@@ -21,12 +21,9 @@ class Root(Controller):
         return "Hello World!"
 
 def test_baseserver():
-    server = BaseServer(("0.0.0.0", 9000))
+    server = BaseServer(0)
     BaseRoot().register(server)
     server.start()
-
-    hostname = gethostname()
-    assert server.host == "%s:9000" % hostname
 
     try:
         f = urlopen(server.base)
@@ -40,12 +37,9 @@ def test_baseserver():
     assert s == "Hello World!"
 
 def test_server():
-    server = Server("0.0.0.0:9001")
+    server = Server(0)
     Root().register(server)
     server.start()
-
-    hostname = gethostname()
-    assert server.host == "%s:9001" % hostname
 
     try:
         f = urlopen(server.base)

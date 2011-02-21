@@ -85,52 +85,39 @@ class BaseServer(BaseComponent):
         return SERVER_VERSION
 
     @property
-    def address(self):
+    def host(self):
         if hasattr(self, "server"):
-            if type(self.server.bind) is TupleType:
-                return self.server.bind[0]
-            else:
-                return self.server.bind
+            return self.server.host
 
     @property
     def port(self):
         if hasattr(self, "server"):
-            if type(self.server.bind) is TupleType:
-                return self.server.bind[1]
+            return self.server.port
 
     @property
     def secure(self):
-        return self.server.secure if hasattr(self, "server") else None
+        if hasattr(self, "server"):
+            return self.server.secure
 
     @property
     def scheme(self):
         return "https" if self.secure else "http"
 
     @property
-    def host(self):
-        host = self.address
-
-        if host in ("0.0.0.0", "::", ""):
-            # 0.0.0.0 is INADDR_ANY and :: is IN6ADDR_ANY.
-            # Look up the host name, which should be the
-            # safest thing to spit out in a URL.
-            host = _gethostname()
-
-        secure = self.secure
-        port = self.port
-
-        if not ((secure and port == 443) or (not secure and port == 80)):
-            if port is not None:
-                host = "%s:%s" % (host, port)
-
-        return host
-
-    @property
     def base(self):
-        host = self.host
+        host = self.host or "0.0.0.0"
+        port = self.port or 80
         scheme = self.scheme
+        secure = self.secure
 
-        return "%s://%s" % (scheme, host)
+        tpl = "%s://%s%s"
+
+        if (port == 80 and not secure) or (port == 443 and secure):
+            port = ""
+        else:
+            port = ":%d" % port
+
+        return tpl % (scheme, host, port)
 
 class Server(BaseServer):
     """Create a Web Server

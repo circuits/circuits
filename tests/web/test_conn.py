@@ -8,7 +8,7 @@ class Root(Controller):
         return "Hello World!"
 
 def test(webapp):
-    connection = HTTPConnection(webapp.server.address, webapp.server.port)
+    connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.auto_open = False
     connection.connect()
 
