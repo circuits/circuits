@@ -1,0 +1,7 @@
+[run]
+omit = circuits/web/main.py
+       circuits.web/apps/*
+       tests/*
+
+[html]
+directory = coverage
