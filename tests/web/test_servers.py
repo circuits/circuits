@@ -4,6 +4,9 @@ from os.path import basename
 from urllib2 import urlopen, URLError
 from socket import gaierror
 
+import pytest
+pytest.skip()
+
 from circuits import Component
 from circuits.web import Controller
 from circuits.web import BaseServer, Server
