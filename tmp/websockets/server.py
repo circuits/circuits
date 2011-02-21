@@ -20,10 +20,6 @@ from circuits import handler, BaseComponent, Event
 from circuits import Debugger
 
 def _extract_number(value):
-    """
-    Utility function which, given a string like 'g98sd  5[]221@1', will
-    return 9852211. Used to parse the Sec-WebSocket-Key headers.
-    """
     out = ""
     spaces = 0
     for char in value:
@@ -36,215 +32,16 @@ def _extract_number(value):
 class MalformedWebSocket(ValueError):
     """Malformed WebSocket Error"""
 
-class Message(Event):
+class WebSocketEvent(Event):
+    """WebSocket Event"""
+
+class WebSocketRequest(WebSocketEvent):
+    """WebSocket Request Event"""
+
+    channel = "websocket_request"
+
+class Message(WebSocketEvent):
     """Message Event"""
-
-class WebSocket(BaseComponent):
-    """
-    A websocket object that handles the details of
-    serialization/deserialization to the socket.
-
-    The primary way to interact with a :class:`WebSocket` object is to
-    call :meth:`send` and :meth:`wait` in order to pass messages back
-    and forth with the browser.
-    """
-    _socket_recv_bytes = 4096
-
-    channel = "websocket"
-
-    def __init__(self, socket, protocol, version=76,
-        handshake_reply=None, handshake_sent=None):
-        '''
-        Arguments:
-
-        - ``socket``: An open socket that should be used for WebSocket
-          communciation.
-        - ``protocol``: not used yet.
-        - ``version``: The WebSocket spec version to follow (default is 76)
-        - ``handshake_reply``: Handshake message that should be sent to the
-          client when ``send_handshake()`` is called.
-        - ``handshake_sent``: Whether the handshake is already sent or not.
-          Set to ``False`` to prevent ``send_handshake()`` to do anything.
-        '''
-
-        super(WebSocket, self).__init__()
-
-        self.socket = socket
-        self.protocol = protocol
-        self.version = version
-        self.closed = False
-        self.handshake_reply = handshake_reply
-        if handshake_sent is None:
-            self._handshake_sent = not bool(handshake_reply)
-        else:
-            self._handshake_sent = handshake_sent
-        self._buffer = ""
-        self._message_queue = collections.deque()
-
-    def __tick__(self):
-        message = self.wait()
-        if message is not None:
-            self.push(Message(message))
-
-    def send_handshake(self):
-        print "Sent:"
-        print repr(self.handshake_reply)
-        self.socket.sendall(self.handshake_reply)
-        self._handshake_sent = True
-
-    @classmethod
-    def _pack_message(cls, message):
-        """Pack the message inside ``00`` and ``FF``
-
-        As per the dataframing section (5.3) for the websocket spec
-        """
-        if isinstance(message, unicode):
-            message = message.encode('utf-8')
-        elif not isinstance(message, str):
-            message = str(message)
-        packed = "\x00%s\xFF" % message
-        return packed
-
-    def _parse_message_queue(self):
-        """ Parses for messages in the buffer *buf*.  It is assumed that
-        the buffer contains the start character for a message, but that it
-        may contain only part of the rest of the message.
-
-        Returns an array of messages, and the buffer remainder that
-        didn't contain any full messages."""
-        msgs = []
-        end_idx = 0
-        buf = self._buffer
-        while buf:
-            frame_type = ord(buf[0])
-            if frame_type == 0:
-                # Normal message.
-                end_idx = buf.find("\xFF")
-                if end_idx == -1: #pragma NO COVER
-                    break
-                msgs.append(buf[1:end_idx].decode('utf-8', 'replace'))
-                buf = buf[end_idx+1:]
-            elif frame_type == 255:
-                # Closing handshake.
-                assert ord(buf[1]) == 0, "Unexpected closing handshake: %r" % buf
-                self.closed = True
-                break
-            else:
-                raise ValueError("Don't understand how to parse this type of message: %r" % buf)
-        self._buffer = buf
-        return msgs
-
-    def send(self, message):
-        '''
-        Send a message to the client. *message* should be convertable to a
-        string; unicode objects should be encodable as utf-8.
-        '''
-        packed = self._pack_message(message)
-        print "Sent:"
-        print repr(packet)
-        self.socket.sendall(packed)
-
-    def _socket_recv(self):
-        '''
-        Gets new data from the socket and try to parse new messages.
-        '''
-        try:
-            delta = self.socket.recv(self._socket_recv_bytes)
-        except SocketError, e:
-            if e[0] == EAGAIN:
-                return False
-
-        if delta == '':
-            return False
-
-        print repr(delta)
-
-        self._buffer += delta
-        msgs = self._parse_message_queue()
-        self._message_queue.extend(msgs)
-        return True
-
-    def _socket_can_recv(self, timeout=0.0):
-        '''
-        Return ``True`` if new data can be read from the socket.
-        '''
-        r, w, e = [self.socket], [], []
-        try:
-            r, w, e = select.select(r, w, e, timeout)
-        except select.error, err:
-            if err.args[0] == EINTR:
-                return False
-            raise
-        return self.socket in r
-
-    def _get_new_messages(self):
-        # read as long from socket as we need to get a new message.
-        while self._socket_can_recv():
-            self._socket_recv()
-            if self._message_queue:
-                return
-
-    def count_messages(self):
-        '''
-        Returns the number of queued messages.
-        '''
-        self._get_new_messages()
-        return len(self._message_queue)
-
-    def has_messages(self):
-        '''
-        Returns ``True`` if new messages from the socket are available, else
-        ``False``.
-        '''
-        if self._message_queue:
-            return True
-        self._get_new_messages()
-        if self._message_queue:
-            return True
-        return False
-
-    def read(self, fallback=None):
-        '''
-        Return new message or ``fallback`` if no message is available.
-        '''
-        if self.has_messages():
-            return self._message_queue.popleft()
-        return fallback
-
-    def wait(self):
-        '''
-        Waits for and deserializes messages. Returns a single message; the
-        oldest not yet processed.
-        '''
-        while not self._message_queue:
-            # Websocket might be closed already.
-            if self.closed:
-                return None
-            # no parsed messages, must mean buf needs more data
-            new_data = self._socket_recv()
-            if not new_data:
-                return None
-        return self._message_queue.popleft()
-
-    def _send_closing_frame(self, ignore_send_errors=False):
-        '''
-        Sends the closing frame to the client, if required.
-        '''
-        if self.version == 76 and not self.closed:
-            try:
-                self.socket.sendall("\xff\x00")
-            except SocketError:
-                # Sometimes, like when the remote side cuts off the connection,
-                # we don't care about this.
-                if not ignore_send_errors:
-                    raise
-            self.closed = True
-
-    def close(self):
-        '''
-        Forcibly close the websocket.
-        '''
-        self._send_closing_frame()
 
 class WebSockets(BaseComponent):
 
@@ -255,92 +52,108 @@ class WebSockets(BaseComponent):
 
         self.path = path
 
-    def _setup_websocket(self, request, response):
+        self._clients = []
+        self._buffers = {}
+
+    def _parse_messages(self, sock):
+        msgs = []
+        end_idx = 0
+        buf = self._buffers[sock]
+        while buf:
+            frame_type = ord(buf[0])
+            if frame_type == 0:
+                # Normal message.
+                end_idx = buf.find("\xFF")
+                if end_idx == -1: #pragma NO COVER
+                    break
+                msgs.append(buf[1:end_idx].decode("utf-8", "replace"))
+                buf = buf[end_idx+1:]
+            elif frame_type == 255:
+                # Closing handshake.
+                assert ord(buf[1]) == 0, "Unexpected closing handshake: %r" % buf
+                self.closed = True
+                break
+            else:
+                raise ValueError(
+                    "Don't understand how to parse "
+                    "this type of message: %r" % buf)
+        self._buffers[sock] = buf
+        return msgs
+
+    @handler("read", filter=True)
+    def _on_read(self, sock):
+        if sock in self._clients:
+            self._buffers[sock] += data
+            messages = self._parse_messages(sock)
+            for message in messages:
+                self.push(Message(sock, message))
+            return True
+
+    @handler("websocket_request")
+    def _on_websocket_request(self, request, response):
         headers = request.headers
 
-        if headers.get('Connection', None) == 'Upgrade' and \
-            headers.get('Upgrade', None) == 'WebSocket':
+        if headers.get("Connection", None) == "Upgrade" and \
+            headers.get("Upgrade", None) == "WebSocket":
 
             # See if they sent the new-format headers
-            if 'Sec_WebSocket-Key1' in headers:
+            if "Sec_WebSocket-Key1" in headers:
                 protocol_version = 76
-                if 'Sec-WebSocket-Key2' not in headers:
+                if "Sec-WebSocket-Key2" not in headers:
                     raise MalformedWebSocket()
             else:
                 protocol_version = 75
 
-            # If it's new-version, we need to work out our challenge response
+            # If it"s new-version, we need to work out our challenge response
             if protocol_version == 76:
-                key1 = _extract_number(headers['Sec-WebSocket-Key1'])
-                key2 = _extract_number(headers['Sec-WebSocket-Key2'])
-                # There's no content-length header in the request, but it has 8
+                key1 = _extract_number(headers["Sec-WebSocket-Key1"])
+                key2 = _extract_number(headers["Sec-WebSocket-Key2"])
+                # There"s no content-length header in the request, but it has 8
                 # bytes of data.
-                key3 = headers['wsgi.input'].read(8)
+                key3 = request.body.read()
                 key = struct.pack(">II", key1, key2) + key3
                 handshake_response = md5(key).digest()
 
-            location = 'ws://127.0.0.1:8000%s' % request.path
+            location = "ws://%s:%s%s" % (request.host,
+                    request.local.port, request.path)
             qs = request.qs
             if qs:
-                location += '?' + qs
+                location += "?" + qs
 
             if protocol_version == 75:
-                handshake_reply = (
-                    "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-                    "Upgrade: WebSocket\r\n"
-                    "Connection: Upgrade\r\n"
-                    "WebSocket-Origin: %s\r\n"
-                    "WebSocket-Location: %s\r\n\r\n" % (
-                        headers.get('Origin'),
-                        location))
+                response.status = (101, "Web Socket Protocol Handshake")
+                response.headers["Upgrade"] =  "WebSocket"
+                response.headers["Connection"] =  "Upgrade"
+                response.headers["WebSocket-Origin"] = headers["Origin"]
+                response.headers["WebSocket-Location"] =  location
             elif protocol_version == 76:
-                handshake_reply = (
-                    "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-                    "Upgrade: WebSocket\r\n"
-                    "Connection: Upgrade\r\n"
-                    "Sec-WebSocket-Origin: %s\r\n"
-                    "Sec-WebSocket-Protocol: %s\r\n"
-                    "Sec-WebSocket-Location: %s\r\n" % (
-                        headers.get('Origin'),
-                        headers.get('Sec-WebSocket-Protocol', 'default'),
-                        location))
-                handshake_reply = str(handshake_reply)
-                handshake_reply = '%s\r\n%s' % (
-                    handshake_reply,
-                    handshake_response
-                )
+                response.status = (101, "Web Socket Protocol Handshake")
+                response.headers["Upgrade"] =  "WebSocket"
+                response.headers["Connection"] =  "Upgrade"
 
+                response.headers["Sec-WebSocket-Origin"] = headers["Origin"]
+
+                response.headers["Sec-WebSocket-Protocol"] = \
+                        headers.get("Sec-WebSocket-Protocol", "default")
+                        
+                response.headers["Sec-WebSocket-Location"] = location
             else:
                 raise MalformedWebSocket("Unknown WebSocket protocol version.")
 
-            poller = findcmp(self.root, _Poller, subclass=False)
-            if poller is not None:
-                poller.discard(request.sock)
-
-            socket = request.sock.dup()
+            socket = request.sock
+            self._clients.append(request.sock)
 
             response.stream = True
             response.close = False
-            response.done = True
 
-            ws = WebSocket(
-                socket,
-                protocol=headers.get('WebSocket-Protocol'),
-                version=protocol_version,
-                handshake_reply=handshake_reply,
-            )
-
-            ws.send_handshake()
-            ws.register(self)
-
-            return True
+            return response
 
     @handler("request", filter=True, priority=0.2)
-    def request(self, request, response):
+    def _on_request(self, request, response):
         if self.path is not None and not request.path.startswith(self.path):
             return
 
-        return self._setup_websocket(request, response)
+        return self.push(WebSocketRequest(request, response))
 
 (Server(("0.0.0.0", 8000))
     + WebSockets("/websocket")

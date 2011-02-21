@@ -19,6 +19,9 @@
          ws.onopen = function() {
              ws.send("Hello World!");
          };
+         ws.onerror = function (e) {
+             console.log(e);
+         };
          ws.onmessage = function (e) {
              console.log(e);
              console.log(e.data);
@@ -26,7 +29,8 @@
          ws.onclose = function() {
              console.log(arguments);
          };
-     };
+         return ws;
+     }
   //]]>
   </script>
 </body>
