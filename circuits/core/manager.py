@@ -56,7 +56,7 @@ from values import Value
 from events import Started, Stopped, Signal
 from events import Error, Success, Failure, Filter, Start, End
 
-TIMEOUT = 1.0 # 1s timeout when no tick functions to process
+TIMEOUT = 0.01 # 10ms timeout when no tick functions to process
 
 class Manager(object):
     """Manager
