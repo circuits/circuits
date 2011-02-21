@@ -29,7 +29,8 @@ def test_inheritence():
 
     x = app.push(Test())
     assert pytest.wait_for(x, "result")
-    assert x.value == ["Hello World!", "Foobar"]
+    v = x.value
+    assert v == ["Hello World!", "Foobar"]
 
     app.stop()
 
@@ -39,6 +40,7 @@ def test_override():
 
     x = app.push(Test())
     assert pytest.wait_for(x, "result")
-    assert x.value == "Foobar"
+    v = x.value
+    assert v == "Foobar"
 
     app.stop()
