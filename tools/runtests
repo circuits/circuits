@@ -9,12 +9,21 @@ try:
 except ImportError:
     COVERAGE = False
 
+try:
+    import xdist
+    XDIST = True
+except ImportError:
+    XDIST = False
+
 def main():
     cmd = ["py.test", "-x", "-r", "fsxX", "--ignore=tmp"]
 
     if COVERAGE:
         cmd.append("--cov=circuits")
         cmd.append("--cov-report=html")
+
+    if XDIST:
+        cmd.append("--boxed")
 
     cmd.append("tests")
 
