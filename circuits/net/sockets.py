@@ -384,8 +384,6 @@ class TCPClient(Client):
         try:
             r = self._sock.connect_ex((host, port))
         except SocketError, e:
-            import pdb
-            pdb.set_trace()
             if e[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
