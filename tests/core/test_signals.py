@@ -2,6 +2,9 @@
 
 import os
 
+import pytest
+pytest.importorskip("pytest_cov")
+
 def test(tmpdir, cov):
     if not os.name == "posix":
         py.test.skip("Cannot run test on a non-POSIX platform.")
