@@ -9,7 +9,6 @@ descriptors for read/write events. Pollers:
    - Select
    - Poll
    - EPoll
-   - KQueue
 """
 
 from errno import *
@@ -57,12 +56,12 @@ class Write(Event): pass
 class Error(Event): pass
 class Disconnect(Event): pass
 
-class _Poller(BaseComponent):
+class BasePoller(BaseComponent):
 
     channel = None
 
     def __init__(self, timeout=TIMEOUT, channel=channel):
-        super(_Poller, self).__init__(channel=channel)
+        super(BasePoller, self).__init__(channel=channel)
 
         self.timeout = timeout
 
@@ -109,7 +108,7 @@ class _Poller(BaseComponent):
     def getTarget(self, fd):
         return self._targets.get(fd, self.manager)
 
-class Select(_Poller):
+class Select(BasePoller):
     """Select(...) -> new Select Poller Component
 
     Creates a new Select Poller Component that uses the select poller
@@ -183,7 +182,7 @@ class Select(_Poller):
             if self.isReading(sock):
                 self.push(Read(sock), "_read", self.getTarget(sock))
 
-class Poll(_Poller):
+class Poll(BasePoller):
     """Poll(...) -> new Poll Poller Component
 
     Creates a new Poll Poller Component that uses the poll poller
@@ -276,7 +275,7 @@ class Poll(_Poller):
                 super(Poll, self).discard(fd)
                 del self._map[fileno]
 
-class EPoll(_Poller):
+class EPoll(BasePoller):
     """EPoll(...) -> new EPoll Poller Component
 
     Creates a new EPoll Poller Component that uses the epoll poller
@@ -373,8 +372,9 @@ class EPoll(_Poller):
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
 
-if not HAS_POLL:
-    del Poll
+if HAS_EPOLL:
+    Poller = EPoll
+else:
+    Poller = Select
 
-if not HAS_EPOLL:
-    del EPoll
+__all__ = ("BasePoller", "Poller", "Select", "Poll", "EPoll",)

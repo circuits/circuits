@@ -33,7 +33,7 @@ except ImportError:
 
 from circuits.core.utils import findcmp
 from circuits.core import handler, Event, Component
-from circuits.core.pollers import _Poller, Select as DefaultPoller
+from circuits.core.pollers import BasePoller, Poller
 
 BUFSIZE = 4096 # 4KB Buffer
 BACKLOG = 5000 #  5K Concurrent Connections
@@ -237,7 +237,6 @@ class Client(Component):
         self._bufsize = kwargs.get("bufsize", BUFSIZE)
 
         self._poller = None
-        self._PollerComponent = kwargs.get("poller", DefaultPoller)
 
         self._sock = None
         self._ssock = None
@@ -252,24 +251,22 @@ class Client(Component):
     @handler("registered", target="*")
     def _on_registered(self, component, manager):
         if self._poller is None:
-            if isinstance(component, _Poller):
+            if isinstance(component, BasePoller):
                 self._poller = component
                 self.push(Ready(self), "ready", self.channel)
             else:
-                component = findcmp(self.root, _Poller, subclass=False)
+                component = findcmp(self.root, BasePoller, subclass=False)
                 if component is not None:
                     self._poller = component
                     self.push(Ready(self), "ready", self.channel)
                 else:
-                    self._poller = self._PollerComponent()
-                    self._poller.register(self.root)
+                    self._poller = Poller().register(self)
                     self.push(Ready(self), "ready", self.channel)
 
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
         if self._poller is None:
-            self._poller = self._PollerComponent()
-            self._poller.register(self.root)
+            self._poller = Poller().register(self)
             self.push(Ready(self), "ready", self.channel)
             return True
 
@@ -500,7 +497,6 @@ class Server(Component):
         self._backlog = kwargs.get("backlog", BACKLOG)
 
         self._poller = None
-        self._PollerComponent = kwargs.get("poller", DefaultPoller)
 
         self._sock = None
         self._buffers = defaultdict(deque)
@@ -522,27 +518,25 @@ class Server(Component):
     @handler("registered", target="*")
     def _on_registered(self, component, manager):
         if self._poller is None:
-            if isinstance(component, _Poller):
+            if isinstance(component, BasePoller):
                 self._poller = component
                 self._poller.addReader(self, self._sock)
                 self.push(Ready(self), "ready", self.channel)
             else:
-                component = findcmp(self.root, _Poller, subclass=False)
+                component = findcmp(self.root, BasePoller, subclass=False)
                 if component is not None:
                     self._poller = component
                     self._poller.addReader(self, self._sock)
                     self.push(Ready(self), "ready", self.channel)
                 else:
-                    self._poller = self._PollerComponent()
-                    self._poller.register(self.root)
+                    self._poller = Poller().register(self)
                     self._poller.addReader(self, self._sock)
                     self.push(Ready(self), "ready", self.channel)
 
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
         if self._poller is None:
-            self._poller = self._PollerComponent()
-            self._poller.register(self.root)
+            self._poller = Poller().register(self)
             self._poller.addReader(self, self._sock)
             self.push(Ready(self), "ready", self.channel)
             return True
