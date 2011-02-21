@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+from glob import glob
 
 try:
     from setuptools import setup, find_packages
@@ -90,9 +91,9 @@ setup(
     keywords="event framework distributed concurrent component asynchronous",
     platforms="POSIX",
     packages=find_packages("."),
+    scripts=glob("scripts/*"),
     entry_points="""
     [console_scripts]
-    circuits.bench = circuits.tools.bench:main
     circuits.web = circuits.web.main:main
     """,
     setup_requires=("hgtools",),
