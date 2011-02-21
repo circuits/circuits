@@ -40,7 +40,6 @@ def test_file(webapp):
     d["h"] = "127.0.0.1"
     d["l"] = "-"
     d["u"] = "-"
-    d["t"] = formattime()
     d["r"] = "GET / HTTP/1.1"
     d["s"] = "200"
     d["b"] = "12"
@@ -48,7 +47,6 @@ def test_file(webapp):
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
     keys = d.keys()
-    keys.remove("t")
 
     for k in keys:
         assert d[k] in s
@@ -73,15 +71,16 @@ def test_logger(webapp):
     d["h"] = "127.0.0.1"
     d["l"] = "-"
     d["u"] = "-"
-    d["t"] = formattime()
     d["r"] = "GET / HTTP/1.1"
     d["s"] = "200"
     d["b"] = "12"
     d["f"] = ""
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
-    m = format % d
-    assert s == m
+    keys = d.keys()
+
+    for k in keys:
+        assert d[k] in s
 
     logger.unregister()
 
@@ -105,7 +104,6 @@ def test_filename(webapp, tmpdir):
     d["h"] = "127.0.0.1"
     d["l"] = "-"
     d["u"] = "-"
-    d["t"] = formattime()
     d["r"] = "GET / HTTP/1.1"
     d["s"] = "200"
     d["b"] = "12"
@@ -113,7 +111,6 @@ def test_filename(webapp, tmpdir):
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
     keys = d.keys()
-    keys.remove("t")
 
     for k in keys:
         assert d[k] in s
