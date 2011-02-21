@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import py
+import pytest
 
+from circuits import Manager
 from circuits.core import pollers
-from circuits.core.pollers import Select
 from circuits.net.sockets import TCPServer, TCPClient
 from circuits.net.sockets import Close, Connect, Write
 
@@ -11,72 +11,84 @@ from client import Client
 from server import Server
 
 def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"poller": Select, "port": 9000})
+    metafunc.addcall(funcargs={"Poller": pollers.Select})
     if pollers.HAS_POLL:
-        from circuits.core.pollers import Poll
-        metafunc.addcall(funcargs={"poller": Poll, "port": 9001})
+        metafunc.addcall(funcargs={"Poller": pollers.Poll})
     if pollers.HAS_EPOLL:
-        from circuits.core.pollers import EPoll
-        metafunc.addcall(funcargs={"poller": EPoll, "port": 9002})
+        metafunc.addcall(funcargs={"Poller": pollers.EPoll})
 
-def test_tcp(poller, port):
-    server = Server() + TCPServer(("127.0.0.1", port), poller=poller)
-    client = Client() + TCPClient(poller=poller)
+def test_tcp(Poller):
+    m = Manager() + Poller()
+    server = Server() + TCPServer(0)
+    client = Client() + TCPClient()
 
-    server.start()
-    client.start()
+    server.register(m)
+    client.register(m)
+
+    m.start()
 
     try:
-        client.push(Connect("127.0.0.1", port))
-        py.test.wait_for(client, "connected")
-        py.test.wait_for(server, "connected")
-        py.test.wait_for(client, "data", "Ready")
+        assert pytest.wait_for(client, "ready")
+        assert pytest.wait_for(server, "ready")
+
+        client.push(Connect(server.host, server.port))
+        assert pytest.wait_for(client, "connected")
+        assert pytest.wait_for(server, "connected")
+        assert pytest.wait_for(client, "data", "Ready")
 
         client.push(Write("foo"))
-        py.test.wait_for(server, "data", "foo")
+        assert pytest.wait_for(server, "data", "foo")
 
         client.push(Close())
+        assert pytest.wait_for(client, "disconnected")
+        assert pytest.wait_for(server, "disconnected")
+
         server.push(Close())
-        py.test.wait_for(client, "disconnected")
-        py.test.wait_for(server, "disconnected")
+        assert pytest.wait_for(server, "closed")
     finally:
-        server.stop()
-        client.stop()
+        m.stop()
 
-def test_tcp_reconnect(poller, port):
-    server = Server() + TCPServer(("127.0.0.1", port), poller=poller)
-    client = Client() + TCPClient(poller=poller)
+def test_tcp_reconnect(Poller):
+    m = Manager() + Poller()
+    server = Server() + TCPServer(0)
+    client = Client() + TCPClient()
 
-    server.start()
-    client.start()
+    server.register(m)
+    client.register(m)
+
+    m.start()
 
     try:
+        assert pytest.wait_for(client, "ready")
+        assert pytest.wait_for(server, "ready")
+
         # 1st connect
-        client.push(Connect("127.0.0.1", port))
-        py.test.wait_for(client, "connected")
-        py.test.wait_for(server, "connected")
-        py.test.wait_for(client, "data", "Ready")
+        client.push(Connect(server.host, server.port))
+        assert pytest.wait_for(client, "connected")
+        assert pytest.wait_for(server, "connected")
+        assert pytest.wait_for(client, "data", "Ready")
 
         client.push(Write("foo"))
-        py.test.wait_for(server, "data", "foo")
+        assert pytest.wait_for(server, "data", "foo")
 
         # disconnect
         client.push(Close())
-        py.test.wait_for(client, "disconnected")
+        assert pytest.wait_for(client, "disconnected")
 
         # 2nd reconnect
-        client.push(Connect("127.0.0.1", port))
-        py.test.wait_for(client, "connected")
-        py.test.wait_for(server, "connected")
-        py.test.wait_for(client, "data", "Ready")
+        client.push(Connect(server.host, server.port))
+        assert pytest.wait_for(client, "connected")
+        assert pytest.wait_for(server, "connected")
+        assert pytest.wait_for(client, "data", "Ready")
 
         client.push(Write("foo"))
-        py.test.wait_for(server, "data", "foo")
+        assert pytest.wait_for(server, "data", "foo")
 
         client.push(Close())
+        assert pytest.wait_for(client, "disconnected")
+        assert pytest.wait_for(server, "disconnected")
+
         server.push(Close())
-        py.test.wait_for(client, "disconnected")
-        py.test.wait_for(server, "disconnected")
+        assert pytest.wait_for(server, "closed")
     finally:
-        server.stop()
-        client.stop()
+        m.stop()

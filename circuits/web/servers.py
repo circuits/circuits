@@ -12,7 +12,7 @@ from types import IntType, ListType, TupleType
 
 from circuits.core import handler, BaseComponent
 
-from circuits.net.sockets import TCPServer, UNIXServer, Close
+from circuits.net.sockets import TCPServer, UNIXServer
 
 from http import HTTP
 from events import WebEvent
@@ -131,10 +131,6 @@ class BaseServer(BaseComponent):
         scheme = self.scheme
 
         return "%s://%s" % (scheme, host)
-
-    @handler("stopped", target="*")
-    def stopped(self, manager):
-        self.push(Close(), target=self.server)
 
 class Server(BaseServer):
     """Create a Web Server

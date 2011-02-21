@@ -1,35 +1,39 @@
 #!/usr/bin/env python
 
-import py
+import pytest
 
+from circuits import Manager
 from circuits.core import pollers
-from circuits.net.sockets import Write
-from circuits.core.pollers import Select
+from circuits.net.sockets import Close, Write
 from circuits.net.sockets import UDPServer, UDPClient
 
 from client import Client
 from server import Server
 
 def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"poller": Select, "ports": (10000, 10001)})
+    metafunc.addcall(funcargs={"Poller": pollers.Select})
     if pollers.HAS_POLL:
-        from circuits.core.pollers import Poll
-        metafunc.addcall(funcargs={"poller": Poll, "ports": (10002, 10003)})
+        metafunc.addcall(funcargs={"Poller": pollers.Poll})
     if pollers.HAS_EPOLL:
-        from circuits.core.pollers import EPoll
-        metafunc.addcall(funcargs={"poller": EPoll, "ports": (10004, 10005)})
+        metafunc.addcall(funcargs={"Poller": pollers.EPoll})
 
-def test_udp(poller, ports):
-    server = Server() + UDPServer(("127.0.0.1", ports[0]), poller=poller)
-    client = Client() + UDPClient(("127.0.0.1", ports[1]), poller=poller,
-            channel="client")
+def test_udp(Poller):
+    from circuits import Debugger
+    m = Manager() + Poller() + Debugger()
 
-    server.start()
-    client.start()
+    server = Server() + UDPServer(0)
+    client = Client() + UDPClient(0, channel="client")
+
+    server.register(m)
+    client.register(m)
+
+    m.start()
 
     try:
-        client.push(Write(("127.0.0.1", ports[0]), "foo"))
-        py.test.wait_for(server, "data", "foo")
+        assert pytest.wait_for(server, "ready")
+        assert pytest.wait_for(client, "ready")
+
+        client.push(Write((server.host, server.port), "foo"))
+        assert pytest.wait_for(server, "data", "foo")
     finally:
-        server.stop()
-        client.stop()
+        m.stop()

@@ -201,6 +201,19 @@ class Ready(Event):
 
         super(Ready, self).__init__(component)
 
+class Closed(Event):
+    """Closed Event
+
+    This Event is sent when a server has closed it's listening socket.
+
+    @note: This event is for Server components.
+    """
+
+    def __init__(self):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Closed, self).__init__()
+
 ###
 ### Components
 ###
@@ -269,6 +282,10 @@ class Client(Component):
             self._poller = Poller().register(self)
             self.push(Ready(self), "ready", self.channel)
             return True
+
+    @handler("stopped", target="*")
+    def _on_stopped(self, component):
+        self.push(Close(), "close", self.channel)
 
     def _close(self):
         self._poller.discard(self._sock)
@@ -539,6 +556,10 @@ class Server(Component):
             self.push(Ready(self), "ready", self.channel)
             return True
 
+    @handler("stopped", target="*")
+    def _on_stopped(self, component):
+        self.push(Close(), "close", self.channel)
+
     def _close(self, sock):
         if not sock == self._sock and sock not in self._clients:
             return
@@ -560,6 +581,8 @@ class Server(Component):
         self.push(Disconnect(sock), "disconnect", self.channel)
 
     def close(self, sock=None):
+        closed = sock is None
+
         if sock is None:
             socks = [self._sock]
             socks.extend(self._clients[:])
@@ -571,6 +594,9 @@ class Server(Component):
                 self._close(sock)
             elif sock not in self._closeq:
                 self._closeq.append(sock)
+
+        if closed:
+            self.push(Closed(), "closed", self.channel)
 
     def _read(self, sock):
         if sock not in self._clients:
@@ -825,12 +851,15 @@ class UDPServer(Server):
 
 UDPClient = UDPServer
 
-def Pipe(channels=("pipe", "pipe"), **kwargs):
+def Pipe(*channels, **kwargs):
     """Create a new full duplex Pipe
 
     Returns a pair of UNIXClient instances connected on either side of
     the pipe.
     """
+
+    if not channels:
+        channels = ("a", "b")
 
     s1, s2 = socketpair()
     s1.setblocking(False)
