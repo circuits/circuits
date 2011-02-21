@@ -176,7 +176,7 @@ class Response(object):
     is sent in the correct order.
     """
 
-    status = 200
+    code = 200
     body = Body()
     done = False
     close = False
@@ -185,13 +185,13 @@ class Response(object):
 
     protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
 
-    def __init__(self, request, status=None):
+    def __init__(self, request, code=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
 
-        if status is not None:
-            self.status = status
+        if code is not None:
+            self.code = code
 
         self._body = []
         self.time = time()
@@ -217,15 +217,13 @@ class Response(object):
     def __str__(self):
         self.prepare()
         protocol = self.protocol
-
         status = self.status
-        if type(status) is int:
-            reason = HTTP_STATUS_CODES[status]
-        elif type(status) is tuple:
-            status, reason = status
-
         headers = self.headers
-        return "%s %s %s\r\n%s" % (protocol, status, reason, headers)
+        return "%s %s\r\n%s" % (protocol, status, headers)
+
+    @property
+    def status(self):
+        return "%d %s" % (self.code, HTTP_STATUS_CODES[self.code])
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
@@ -242,9 +240,7 @@ class Response(object):
         for k, v in self.cookie.iteritems():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
-        status = self.status
-        if type(status) is tuple:
-            status = status[0]
+        status = self.code
 
         if status == 413:
             self.close = True

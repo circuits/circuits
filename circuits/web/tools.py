@@ -100,7 +100,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
         return NotFound(request, response)
     
     # Set the Last-Modified response header, so that
-    # modified-since validation status can work.
+    # modified-since validation code can work.
     response.headers['Last-Modified'] = formatdate(st.st_mtime)
     validate_since(request, response)
     
@@ -124,7 +124,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
     c_len = st.st_size
     bodyfile = open(path, 'rb')
     
-    # HTTP/1.0 didn't have Range/Accept-Ranges headers, or the 206 status
+    # HTTP/1.0 didn't have Range/Accept-Ranges headers, or the 206 code
     if request.protocol >= (1, 1):
         response.headers["Accept-Ranges"] = "bytes"
         r = get_ranges(request.headers.get('Range'), c_len)
@@ -136,7 +136,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                 # Return a single-part response.
                 start, stop = r[0]
                 r_len = stop - start
-                response.status = 206
+                response.code = 206
                 response.headers['Content-Range'] = ("bytes %s-%s/%s" %
                                                        (start, stop - 1, c_len))
                 response.headers['Content-Length'] = r_len
@@ -144,7 +144,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                 response.body = bodyfile.read(r_len)
             else:
                 # Return a multipart/byteranges response.
-                response.status = 206
+                response.code = 206
                 boundary = mimetools.choose_boundary()
                 ct = "multipart/byteranges; boundary=%s" % boundary
                 response.headers['Content-Type'] = ct
@@ -191,7 +191,7 @@ def validate_etags(request, response, autotags=False):
     """Validate the current ETag against If-Match, If-None-Match headers.
     
     If autotags is True, an ETag response-header value will be provided
-    from an MD5 hash of the response body (unless some other status has
+    from an MD5 hash of the response body (unless some other code has
     already provided an ETag header). If False (the default), the ETag
     will not be automatic.
     
@@ -208,13 +208,13 @@ def validate_etags(request, response, autotags=False):
     if hasattr(response, "ETag"):
         return
     
-    status = response.status
+    code = response.code
     
     etag = response.headers.get('ETag')
     
     # Automatic ETag generation. See warning in docstring.
     if (not etag) and autotags:
-        if status == 200:
+        if code == 200:
             etag = response.collapse_body()
             etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
             response.headers['ETag'] = etag
@@ -224,7 +224,7 @@ def validate_etags(request, response, autotags=False):
     # "If the request would, without the If-Match header field, result in
     # anything other than a 2xx or 412 status, then the If-Match header
     # MUST be ignored."
-    if status >= 200 and status <= 299:
+    if code >= 200 and code <= 299:
         conditions = request.headers.elements('If-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions and not (conditions == ["*"] or etag in conditions):
@@ -236,7 +236,7 @@ def validate_etags(request, response, autotags=False):
         conditions = [str(x) for x in conditions]
         if conditions == ["*"] or etag in conditions:
             if request.method in ("GET", "HEAD"):
-                return Redirect(request, response, [], status=304)
+                return Redirect(request, response, [], code=304)
             else:
                 return HTTPError(request, response, 412,
                         description=(
@@ -246,24 +246,24 @@ def validate_etags(request, response, autotags=False):
 def validate_since(request, response):
     """Validate the current Last-Modified against If-Modified-Since headers.
     
-    If no status has set the Last-Modified response header, then no validation
+    If no code has set the Last-Modified response header, then no validation
     will be performed.
     """
 
     lastmod = response.headers.get('Last-Modified')
     if lastmod:
-        status = response.status
+        code = response.code
         
         since = request.headers.get('If-Unmodified-Since')
         if since and since != lastmod:
-            if (status >= 200 and status <= 299) or status == 412:
+            if (code >= 200 and code <= 299) or code == 412:
                 return HTTPError(request, response, 412)
         
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod:
-            if (status >= 200 and status <= 299) or status == 304:
+            if (code >= 200 and code <= 299) or code == 304:
                 if request.method in ("GET", "HEAD"):
-                    return Redirect(request, response, [], status=304)
+                    return Redirect(request, response, [], code=304)
                 else:
                     return HTTPError(request, response, 412)
 
