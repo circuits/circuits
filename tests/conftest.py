@@ -9,7 +9,7 @@ from time import sleep
 from circuits.core.manager import TIMEOUT
 
 def wait_for(obj, attr, value=True, timeout=30.0):
-    for i in range(timeout / TIMEOUT):
+    for i in range(int(timeout / TIMEOUT)):
         if callable(value):
             if value(obj, attr):
                 return True
