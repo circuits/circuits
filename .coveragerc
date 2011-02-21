@@ -1,6 +1,6 @@
 [run]
 omit = circuits/web/main.py
-       circuits.web/apps/*
+       circuits/web/apps/*
        tests/*
 
 [html]
