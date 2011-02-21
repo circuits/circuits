@@ -534,10 +534,10 @@ class Manager(object):
             except:
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
-        if self:
-            self._flush()
         else:
             sleep(TIMEOUT) # Nothing to do - Let's not tie up the CUP
+
+        self._flush()
 
     def run(self, log=True, __mode=None, __socket=None):
         if current_thread().getName() == "MainThread":
