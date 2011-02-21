@@ -372,9 +372,12 @@ class EPoll(BasePoller):
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
 
-if HAS_EPOLL:
-    Poller = EPoll
-else:
-    Poller = Select
+### FIXME: The EPoll poller has some weird performance issues :/
+#if HAS_EPOLL:
+#    Poller = EPoll
+#else:
+#    Poller = Select
+
+Poller = Select
 
 __all__ = ("BasePoller", "Poller", "Select", "Poll", "EPoll",)
