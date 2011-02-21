@@ -15,8 +15,6 @@ def main():
     if COVERAGE:
         cmd.append("--cov=circuits")
 
-    cmd.append("--boxed")
-
     cmd.append("tests")
 
     Popen(cmd, stdout=sys.stdout, stderr=STDOUT).wait()
