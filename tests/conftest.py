@@ -4,16 +4,18 @@
 
 """py.test config"""
 
-from time import time
+from time import sleep
+
+from circuits.core.manager import TIMEOUT
 
 def wait_for(obj, attr, value=True, timeout=30.0):
-    etime = time() + timeout
-    while time() < etime:
+    for i in range(timeout / TIMEOUT):
         if callable(value):
             if value(obj, attr):
                 return True
         elif getattr(obj, attr) == value:
             return True
+        sleep(TIMEOUT)
     return False
 
 def pytest_namespace():
