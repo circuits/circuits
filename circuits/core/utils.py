@@ -7,19 +7,27 @@
 This module defines utilities used by circuits.
 """
 
-def findcmp(x, c, subclass=True):
+def itercmp(x, c, subclass=True):
     if subclass and issubclass(x.__class__, c):
-        return x
+        yield x
     elif isinstance(x, c):
-        return x
+        yield x
     else:
         for component in x.components:
             if subclass and issubclass(component.__class__, c):
-                return component
+                yield component
             elif isinstance(component, c):
-                return component
+                yield component
             else:
-                return findcmp(component, c, subclass)
+                for component in itercmp(component, c, subclass):
+                    yield component
+
+def findcmp(x, c, subclass=True):
+    components = itercmp(x, c, subclass)
+    try:
+        return components.next()
+    except StopIteration:
+        return None
 
 def findroot(x):
     if x.manager == x:
