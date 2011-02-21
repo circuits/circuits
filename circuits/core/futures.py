@@ -26,7 +26,7 @@ def future():
                 return self.push(Task(f, self, *args, **kwargs),
                         target=pool)
             else:
-                return Worker(str(uuid())).push(
+                return Worker(channel=str(uuid())).push(
                         Task(f, self, *args, **kwargs))
         wrapper.event = True
         return update_wrapper(wrapper, f)
