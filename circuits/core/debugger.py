@@ -96,11 +96,11 @@ class Debugger(BaseComponent):
         elif channel in self.IgnoreChannels:
             return
         else:
+            s = repr(event)
+            if self.chop:
+                s = "%s ...>" % s[:75]
             if self.logger is not None:
-                self.logger.debug(repr(event))
+                self.logger.debug(s)
             else:
-                s = repr(event)
-                if self.file is sys.stderr and len(s) > 80 and self.chop:
-                    s = "%s ...>" % s[:75]
                 self.file.write("%s\n" % s)
                 self.file.flush()
