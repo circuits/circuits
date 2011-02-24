@@ -12,10 +12,10 @@ import sys
 from cStringIO import StringIO
 
 from handlers import handler
-from components import Component
+from components import BaseComponent
 from circuits.tools import reprhandler
 
-class Debugger(Component):
+class Debugger(BaseComponent):
     """Create a new Debugger Component
 
     Creates a new Debugger Component that filters all events in teh system
@@ -54,7 +54,7 @@ class Debugger(Component):
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("exception", priority=100.0)
-    def exception(self, type, value, traceback, handler=None):
+    def _on_exception(self, type, value, traceback, handler=None):
         if not self.errors:
             return
 
@@ -79,7 +79,7 @@ class Debugger(Component):
         s.close()
 
     @handler(priority=100.0)
-    def event(self, event, *args, **kwargs):
+    def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 
         Event handler to listen and filter all events printing each event
