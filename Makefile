@@ -1,4 +1,4 @@
-.PHONY: help clean docs tests packages
+.PHONY: help clean docs graph packages tests
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -17,6 +17,9 @@ clean:
 
 docs:
 	@make -C docs html
+
+graph:
+	@sfood circuits -i -I tests -d -u 2> /dev/null | sfood-graph | dot -Tps | ps2pdf - > circuits.pdf
 
 packages:
 	@tools/mkpkgs -p python2.5
