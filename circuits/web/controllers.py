@@ -113,6 +113,7 @@ if HAS_JSON:
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
                        self.session = self.request.session
+                self.response.headers["Content-Type"] = "application/json"
                 return json.dumps(f(self, *args, **kwargs))
              finally:
                 if hasattr(self, "request"):
