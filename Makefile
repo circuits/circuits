@@ -4,8 +4,9 @@ help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  clean     to cleanup build and temporary files"
 	@echo "  docs      to build the documentation"
-	@echo "  tests     to run the test suite"
+	@echo "  graph     to generate dependency graph"
 	@echo "  packages  to build python source and egg packages"
+	@echo "  tests     to run the test suite"
 
 clean:
 	@rm -rf build dist circuits.egg-info circuits/__version__.py
