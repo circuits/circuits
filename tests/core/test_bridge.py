@@ -23,16 +23,14 @@ def test():
     # Our communication transport
     a, b = Pipe()
 
-    from circuits import Debugger
-
     # 1st App (process)
-    p = App() + Debugger()
-    Bridge(p, socket=a) + Debugger()
+    p = App()
+    Bridge(p, socket=a)
     p.start(process=True)
 
     # 2nd App
-    app = App() + Debugger()
-    Bridge(app, socket=b) + Debugger()
+    app = App()
+    Bridge(app, socket=b)
     app.start()
 
     pid = os.getpid()

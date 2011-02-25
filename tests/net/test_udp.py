@@ -18,8 +18,7 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs={"Poller": pollers.EPoll})
 
 def test_udp(Poller):
-    from circuits import Debugger
-    m = Manager() + Poller() + Debugger()
+    m = Manager() + Poller()
 
     server = Server() + UDPServer(0)
     client = Client() + UDPClient(0, channel="client")
