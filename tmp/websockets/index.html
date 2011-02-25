@@ -15,19 +15,22 @@
   "text/javascript">
 //<![CDATA[
      function test() {
-         var ws = new WebSocket("ws://localhost:8000/websocket");
-         ws.onopen = function() {
-             ws.send("Hello World!");
+         var ws = new WebSocket("ws://localhost:8888/websocket");
+         ws.onopen = function(e) {
+             console.log("Opened");
+             console.log(e);
          };
          ws.onerror = function (e) {
+             console.log("Error");
              console.log(e);
          };
          ws.onmessage = function (e) {
-             console.log(e);
+             console.log("Message");
              console.log(e.data);
          };
-         ws.onclose = function() {
-             console.log(arguments);
+         ws.onclose = function(e) {
+             console.log("Closed");
+             console.log(e);
          };
          return ws;
      }
