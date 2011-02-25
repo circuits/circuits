@@ -8,7 +8,6 @@ This module implements the Request and Response objects.
 """
 
 
-import os
 from cStringIO import StringIO
 from time import strftime, time
 from Cookie import SimpleCookie
@@ -20,12 +19,14 @@ from errors import HTTPError
 from circuits.net.sockets import BUFSIZE
 from constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
 
+
 def file_generator(input, chunkSize=BUFSIZE):
     chunk = input.read(chunkSize)
     while chunk:
         yield chunk
         chunk = input.read(chunkSize)
     input.close()
+
 
 class Host(object):
     """An internet address.
@@ -48,9 +49,10 @@ class Host(object):
     def __repr__(self):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
 
+
 class Request(object):
     """Creates a new Request object to hold information about a request.
-    
+
     :param sock: The socket object of the request.
     :type  sock: socket.socket
 
@@ -140,15 +142,16 @@ class Request(object):
     def url(self, *args, **kwargs):
         return url(self, *args, **kwargs)
 
+
 class Body(object):
     """Response Body"""
-    
+
     def __get__(self, response, cls=None):
         if response is None:
             return self
         else:
             return response._body
-    
+
     def __set__(self, response, value):
         if response == value:
             return
@@ -168,6 +171,7 @@ class Body(object):
 
         response._body = value
 
+
 class Response(object):
     """Response(sock, request) -> new Response object
 
@@ -177,6 +181,8 @@ class Response(object):
     """
 
     code = 200
+    message = "OK"
+
     body = Body()
     done = False
     close = False
@@ -185,7 +191,7 @@ class Response(object):
 
     protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
 
-    def __init__(self, request, code=None):
+    def __init__(self, request, code=None, message=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
@@ -193,10 +199,14 @@ class Response(object):
         if code is not None:
             self.code = code
 
+        if message is not None:
+            self.message = message
+
         self._body = []
         self.time = time()
 
         self.headers = Headers([])
+        self.headers.add_header("Content-Type", "text/html")
         self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
 
         if self.request.server:
@@ -213,7 +223,7 @@ class Response(object):
                 self.status,
                 self.headers["Content-Type"],
                 (len(self.body) if type(self.body) == str else 0))
-    
+
     def __str__(self):
         self.prepare()
         protocol = self.protocol
@@ -223,12 +233,10 @@ class Response(object):
 
     @property
     def status(self):
-        return "%d %s" % (self.code, HTTP_STATUS_CODES[self.code])
+        return "%d %s" % (self.code,
+                self.message or HTTP_STATUS_CODES[self.code])
 
     def prepare(self):
-        # Set a default content-Type if we don't have one.
-        self.headers.setdefault("Content-Type", "text/html")
-
         if self.body and type(self.body) is ListType:
             if unicode in map(type, self.body):
                 cLength = sum(map(lambda s: len(s.encode("utf-8")), self.body))
@@ -256,7 +264,8 @@ class Response(object):
                 else:
                     self.close = True
 
-        if self.request.server is not None and "Connection" not in self.headers:
+        if (self.request.server is not None
+                and"Connection" not in self.headers):
             if self.protocol == "HTTP/1.1":
                 if self.close:
                     self.headers.add_header("Connection", "close")
