@@ -66,6 +66,13 @@ class WebSockets(BaseComponent):
         self._buffers[sock] = buf
         return msgs
 
+    @handler("disconnect", target="web")
+    def _on_disconnect(self, sock):
+        if sock in self._clients:
+            self._clients.remove(sock)
+        if sock in self._buffers:
+            del self._buffers[sock]
+
     @handler("write", target="ws")
     def _on_write(self, sock, data):
         payload = chr(0x00) + data.encode("utf-8") + chr(0xFF)
