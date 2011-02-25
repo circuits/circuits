@@ -2,10 +2,12 @@
 
 from struct import pack
 from hashlib import md5
+from urlparse import urlunsplit
 from collections import defaultdict
 
+from circuits.net.sockets import Write
 from circuits.web import Logger, Server, Static
-from circuits import handler, BaseComponent, Event
+from circuits import handler, BaseComponent, Component, Event
 
 from circuits import Debugger
 
@@ -17,15 +19,13 @@ class MalformedWebSocket(ValueError):
 class WebSocketEvent(Event):
     """WebSocket Event"""
 
-
-class WebSocketRequest(WebSocketEvent):
-    """WebSocket Request Event"""
-
-    channel = "websocket_request"
+    _target = "ws"
 
 
 class Message(WebSocketEvent):
     """Message Event"""
+
+    target = WebSocketEvent._target
 
 
 class WebSockets(BaseComponent):
@@ -66,6 +66,11 @@ class WebSockets(BaseComponent):
         self._buffers[sock] = buf
         return msgs
 
+    @handler("write", target="ws")
+    def _on_write(self, sock, data):
+        payload = chr(0x00) + data.encode("utf-8") + chr(0xFF)
+        self.push(Write(sock, payload))
+
     @handler("read", filter=True)
     def _on_read(self, sock, data):
         if sock in self._clients:
@@ -81,6 +86,9 @@ class WebSockets(BaseComponent):
             return
 
         headers = request.headers
+
+        origin = headers["Origin"]
+        location = urlunsplit(("ws", headers["Host"], self.path, "", ""))
 
         key1 = headers["Sec-WebSocket-Key1"]
         key2 = headers["Sec-WebSocket-Key2"]
@@ -114,10 +122,8 @@ class WebSockets(BaseComponent):
         response.message = "WebSocket Protocol Handshake"
         response.headers["Upgrade"] = "WebSocket"
         response.headers["Connection"] = "Upgrade"
-        response.headers["Sec-WebSocket-Origin"] = "http://127.0.0.1:8888"
-        response.headers["Sec-WebSocket-Location"] = \
-                "ws://localhost:8888/websocket"
-        response.headers["Sec-WebSocket-Protocol"] = "chat"
+        response.headers["Sec-WebSocket-Origin"] = origin
+        response.headers["Sec-WebSocket-Location"] = location
 
         self._clients.append(request.sock)
 
@@ -125,9 +131,18 @@ class WebSockets(BaseComponent):
 
         return d
 
-(Server(("127.0.0.1", 8888))
+
+class Test(Component):
+
+    channel = "ws"
+
+    def message(self, sock, data):
+        self.push(Write(sock, data))
+
+(Server(("0.0.0.0", 8000))
     + WebSockets("/websocket")
     + Debugger()
     + Static()
     + Logger()
+    + Test()
 ).run()

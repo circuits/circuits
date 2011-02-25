@@ -15,10 +15,11 @@
   "text/javascript">
 //<![CDATA[
      function test() {
-         var ws = new WebSocket("ws://localhost:8888/websocket");
+         var ws = new WebSocket("ws://" + window.location.host + "/websocket");
          ws.onopen = function(e) {
              console.log("Opened");
              console.log(e);
+             ws.send("Hello World!");
          };
          ws.onerror = function (e) {
              console.log("Error");
