@@ -181,7 +181,7 @@ class Response(object):
     """
 
     code = 200
-    message = "OK"
+    message = None
 
     body = Body()
     done = False
