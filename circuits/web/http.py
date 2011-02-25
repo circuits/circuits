@@ -18,7 +18,7 @@ except ImportError:
     from StringIO import StringIO
 
 from circuits.net.sockets import Close, Write
-from circuits.core import handler, Component, Value, Timer
+from circuits.core import handler, Component, Value
 
 import wrappers
 from utils import quoted_slash
@@ -30,6 +30,7 @@ from errors import Redirect as RedirectError
 from exceptions import Redirect as RedirectException
 
 DEFAULT_TIMEOUT = 3.0
+
 
 class HTTP(Component):
     """HTTP Protocol Component
@@ -94,7 +95,6 @@ class HTTP(Component):
 
     def disconnect(self, sock):
         if sock in self._clients:
-            request, response = self._clients[sock]
             del self._clients[sock]
 
     def read(self, sock, data):
@@ -123,7 +123,8 @@ class HTTP(Component):
             scheme, location, path, params, qs, frag = urlparse(path)
 
             protocol = tuple(map(int, protocol[5:].split(".")))
-            request = wrappers.Request(sock, method, scheme, path, protocol, qs)
+            request = wrappers.Request(sock, method, scheme, path,
+                    protocol, qs)
             response = wrappers.Response(request)
             self._clients[sock] = request, response
 
