@@ -9,12 +9,18 @@ tools are installed as executables with a prefix of "circuits."
 """
 
 from hashlib import md5
+from warnings import warn
 
-try:
-    import pydot
-    HAS_PYDOT = True
-except ImportError:
-    HAS_PYDOT = False
+
+def tryimport(modules, message=None):
+    for module in modules:
+        try:
+            return __import__(module, globals(), locals())
+        except ImportError:
+            pass
+    if message:
+        warn(message)
+
 
 def walk(x, f, d=0, v=None):
     if not v:
@@ -26,6 +32,7 @@ def walk(x, f, d=0, v=None):
             for r in walk(c, f, d + 1, v):
                 yield r
 
+
 def edges(x, e=None, v=None):
     if not e:
         e = set()
@@ -36,17 +43,20 @@ def edges(x, e=None, v=None):
         edges(c, e, v)
     return e
 
+
 def findroot(x):
     if x.manager == x:
         return x
     else:
         return findroot(x.manager)
 
+
 def kill(x):
     for c in x.components.copy():
         kill(c)
     if x.manager != x:
         x.unregister()
+
 
 def graph(x, name=None):
     """Display a directed graph of the Component structure of x
@@ -64,7 +74,8 @@ def graph(x, name=None):
     def getname(c):
         return "%s-%s" % (c.name, md5(str(hash(c))).hexdigest()[-4:])
 
-    if HAS_PYDOT:
+    pydot = tryimport(("pydot",))
+    if pydot is not None:
         graph_edges = []
         for (u, v) in edges(x):
             graph_edges.append(("\"%s\"" % getname(u), "\"%s\"" % getname(v)))
@@ -80,7 +91,8 @@ def graph(x, name=None):
         return "%s* %s" % (" " * d, x)
 
     return "\n".join(walk(x, printer))
-    
+
+
 def reprhandler(c, h):
     """Display a nicely formatted Event Handler, h from Component c.
 
@@ -102,6 +114,7 @@ def reprhandler(c, h):
     t = repr(attrs["target"])
     p = attrs["priority"]
     return format % (f, channels, t, p)
+
 
 def inspect(x):
     """Display an inspection report of the Component or Manager x
