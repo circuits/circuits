@@ -13,6 +13,7 @@ from events import Event
 from manager import Manager
 from components import BaseComponent, Component
 
+from values import Value
 from futures import future
 
 from timers import Timer
