@@ -44,6 +44,9 @@ class Routes(BaseComponent):
 
         super(Routes, self).__init__(**kwargs)
 
+        if routes is None:
+            raise RuntimeError("No routes support available")
+
         # An index of controllers used by the Routes Mapper when performing
         # matches
         self.controllers = {}
