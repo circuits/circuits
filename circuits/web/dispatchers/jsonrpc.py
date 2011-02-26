@@ -10,7 +10,7 @@ RPC calls over JSON into RPC events.
 
 from circuits.tools import tryimport
 
-json = tryimport(("json", "simplejsno",))
+json = tryimport(("json", "simplejson",))
 
 from circuits.web.events import Response
 from circuits import handler, Event, BaseComponent
@@ -91,6 +91,3 @@ class JSONRPC(BaseComponent):
                     }
                 }
         return json.dumps(data, encoding=self.encoding)
-
-if json is None:
-    del JSONRPC
