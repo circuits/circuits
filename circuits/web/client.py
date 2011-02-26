@@ -7,6 +7,7 @@ from circuits.net.sockets import TCPClient, Connect, Write, Close
 
 from circuits.net.protocols.http import HTTP
 
+
 def parse_url(url):
     p = urlparse(url)
 
@@ -14,7 +15,7 @@ def parse_url(url):
         host = p.hostname
     else:
         raise ValueError("URL must be absolute")
-    
+
     if p.scheme == "http":
         secure = False
         port = p.port or 80
@@ -31,11 +32,14 @@ def parse_url(url):
 
     return (host, port, resource, secure)
 
+
 class HTTPException(Exception):
     pass
 
+
 class NotConnected(HTTPException):
     pass
+
 
 class Request(Event):
     """Request Event
@@ -49,10 +53,11 @@ class Request(Event):
     :type  path: str
     """
 
-    def __init__(self, method, path):
+    def __init__(self, method, path, body=None, headers={}):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Request, self).__init__(method, path)
+        super(Request, self).__init__(method, path, body, headers)
+
 
 class Client(BaseComponent):
 
@@ -68,6 +73,11 @@ class Client(BaseComponent):
         self._transport = TCPClient().register(self)
 
         HTTP().register(self._transport)
+
+    @handler("write")
+    def write(self, data):
+        if self._transport.connected:
+            self.push(Write(data), target=self._transport)
 
     @handler("close")
     def close(self):
@@ -95,7 +105,7 @@ class Client(BaseComponent):
     @handler("response")
     def _on_response(self, response):
         self._response = response
-        if not response.status == 100:
+        if response.headers.get("Connection") == "Close":
             self.push(Close(), target=self._transport)
 
     @property
