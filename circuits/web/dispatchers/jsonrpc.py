@@ -27,6 +27,9 @@ class JSONRPC(BaseComponent):
     def __init__(self, path=None, target="*", encoding="utf-8"):
         super(JSONRPC, self).__init__()
 
+        if json is None:
+            raise RuntimeError("No json support available")
+
         self.path = path
         self.target = target
         self.encoding = encoding
