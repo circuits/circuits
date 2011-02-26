@@ -24,8 +24,9 @@ Features
 
   - **API Changes:**
 
-    - Keyword argument `ssl` changes to `secure`
-    * Attribute `ssl` changed to `ssl`
+    - Keyword argument `ssl` changed to `secure`
+
+    - Attribute `ssl` changed to `ssl`
 
 - circuits.app: Allow the ``Daemon`` Component to daemonize an application
   by simply registering it but only if the application is already running.
