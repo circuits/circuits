@@ -3,7 +3,7 @@ Release Notes
 
 
 Code Coverage
--------------
+.............
 
 Code Coverage and Tests need a special section this release. This is
 the first release where circuits now has the following coverage:
