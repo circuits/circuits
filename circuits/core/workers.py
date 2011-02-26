@@ -12,13 +12,8 @@ is used independently it should not be registered as it causes it's
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
-from time import time
-from uuid import uuid4 as uuid
-from random import seed, choice
-
 from circuits.core import handler, BaseComponent, Event
 
-seed(time())
 
 class Task(Event):
     """Task Event
@@ -40,6 +35,7 @@ class Task(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Task, self).__init__(f, *args, **kwargs)
+
 
 class Worker(BaseComponent):
 

@@ -12,9 +12,10 @@ from uuid import uuid4 as uuid
 from random import seed, choice
 
 from circuits.core.workers import Task, Worker
-from circuits.core import handler, BaseComponent, Event
+from circuits.core import handler, BaseComponent
 
 seed(time())
+
 
 class Pool(BaseComponent):
 
