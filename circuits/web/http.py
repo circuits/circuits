@@ -12,10 +12,9 @@ or commonly known as HTTP.
 from urllib import unquote
 from urlparse import urlparse
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from circuits.tools import tryimport
+
+StringIO = tryimport(("cStringIO", "StringIO",))
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, Component, Value
@@ -28,8 +27,6 @@ from errors import HTTPError, NotFound
 from events import Request, Response, Stream
 from errors import Redirect as RedirectError
 from exceptions import Redirect as RedirectException
-
-DEFAULT_TIMEOUT = 3.0
 
 
 class HTTP(Component):
@@ -163,7 +160,7 @@ class HTTP(Component):
             sp = request.server_protocol
             response.protocol = "HTTP/%s.%s" % min(rp, sp)
 
-            headers, body = parseHeaders(StringIO(data))
+            headers, body = parseHeaders(StringIO.StringIO(data))
             request.headers = headers
             request.body.write(body)
 
