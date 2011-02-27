@@ -17,7 +17,7 @@ from circuits.tools import tryimport
 StringIO = tryimport(("cStringIO", "StringIO",))
 
 from circuits.net.sockets import Close, Write
-from circuits.core import handler, Component, Value
+from circuits.core import handler, BaseComponent, Value
 
 import wrappers
 from utils import quoted_slash
@@ -29,7 +29,7 @@ from errors import Redirect as RedirectError
 from exceptions import Redirect as RedirectException
 
 
-class HTTP(Component):
+class HTTP(BaseComponent):
     """HTTP Protocol Component
 
     Implements the HTTP server protocol and parses and processes incoming
@@ -41,7 +41,8 @@ class HTTP(Component):
 
         self._clients = {}
 
-    def stream(self, response, data):
+    @handler("stream")
+    def _on_stream(self, response, data):
         if data is not None:
             if data:
                 if response.chunked:
@@ -63,7 +64,8 @@ class HTTP(Component):
                 self.push(Close(response.request.sock))
             response.done = True
 
-    def response(self, response):
+    @handler("response")
+    def _on_response(self, response):
         self.push(Write(response.request.sock, str(response)))
 
         if response.stream and response.body:
@@ -90,11 +92,13 @@ class HTTP(Component):
                     self.push(Close(response.request.sock))
                 response.done = True
 
-    def disconnect(self, sock):
+    @handler("disconnect")
+    def _on_disconnect(self, sock):
         if sock in self._clients:
             del self._clients[sock]
 
-    def read(self, sock, data):
+    @handler("read")
+    def _on_read(self, sock, data):
         """Read Event Handler
 
         Process any incoming data appending it to an internal buffer.
@@ -194,7 +198,8 @@ class HTTP(Component):
 
         self.push(req)
 
-    def httperror(self, event, request, response, code, **kwargs):
+    @handler("httperror")
+    def _on_httperror(self, event, request, response, code, **kwargs):
         """Default HTTP Error Handler
 
         Default Error Handler that by default just responds with the response
@@ -205,7 +210,8 @@ class HTTP(Component):
         response.body = str(event)
         self.push(Response(response))
 
-    def valuechanged(self, value):
+    @handler("value_changed")
+    def _on_value_changed(self, value):
         request, response = value.event.args[:2]
         if value.result and not value.errors:
             response.body = value.value
@@ -215,7 +221,7 @@ class HTTP(Component):
             self.push(HTTPError(request, response, error=value.value))
 
     @handler("request_success", "request_filtered")
-    def request_success_or_filtered(self, evt, handler, retval):
+    def _on_request_success_or_filtered(self, evt, handler, retval):
         request, response = evt.args[:2]
 
         if not request.handled and retval is not None:
@@ -247,13 +253,13 @@ class HTTP(Component):
                     if retval.manager is None:
                         retval.manager = self
                     retval.event = evt
-                    retval.onSet = "valuechanged", self
+                    retval.onSet = "value_changed", self
             elif type(retval) is not bool:
                 response.body = retval
                 self.push(Response(response))
 
     @handler("request_failure", "response_failure")
-    def request_or_response_failure(self, evt, handler, error):
+    def _on_request_or_response_failure(self, evt, handler, error):
         if len(evt.args) == 1:
             response = evt.args[0]
             request = response.request
@@ -283,7 +289,8 @@ class HTTP(Component):
         else:
             self.push(HTTPError(request, response, error=error))
 
-    def request_completed(self, evt, handler, retval):
+    @handler("request_completed")
+    def _on_request_completed(self, evt, handler, retval):
         request, response = evt.args[:2]
 
         # Return a 404 response on any of the following:
