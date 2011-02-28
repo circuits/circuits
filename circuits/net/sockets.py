@@ -17,7 +17,7 @@ from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 from _socket import socket as SocketType
 
 from socket import gaierror, error as SocketError
-from socket import gethostname, gethostbyname, socket, socketpair
+from socket import gethostname, gethostbyname, socket
 
 from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
 from socket import AF_INET, AF_UNIX, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
@@ -35,12 +35,13 @@ from circuits.core.utils import findcmp
 from circuits.core import handler, Event, Component
 from circuits.core.pollers import BasePoller, Poller
 
-BUFSIZE = 4096 # 4KB Buffer
-BACKLOG = 5000 #  5K Concurrent Connections
+BUFSIZE = 4096  # 4KB Buffer
+BACKLOG = 5000  # 5K Concurrent Connections
 
 ###
 ### Event Objects
 ###
+
 
 class Connect(Event):
     """Connect Event
@@ -63,6 +64,7 @@ class Connect(Event):
 
         super(Connect, self).__init__(*args, **kwargs)
 
+
 class Disconnect(Event):
     """Disconnect Event
 
@@ -79,6 +81,7 @@ class Disconnect(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Disconnect, self).__init__(*args)
+
 
 class Connected(Event):
     """Connected Event
@@ -99,6 +102,7 @@ class Connected(Event):
 
         super(Connected, self).__init__(host, port)
 
+
 class Disconnected(Event):
     """Disconnected Event
 
@@ -111,6 +115,7 @@ class Disconnected(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Disconnected, self).__init__()
+
 
 class Read(Event):
     """Read Event
@@ -128,6 +133,7 @@ class Read(Event):
 
         super(Read, self).__init__(*args)
 
+
 class Error(Event):
     """Error Event
 
@@ -143,6 +149,7 @@ class Error(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Error, self).__init__(*args)
+
 
 class Write(Event):
     """Write Event
@@ -181,6 +188,7 @@ class Close(Event):
 
         super(Close, self).__init__(*args)
 
+
 class Ready(Event):
     """Ready Event
 
@@ -201,6 +209,7 @@ class Ready(Event):
 
         super(Ready, self).__init__(component)
 
+
 class Closed(Event):
     """Closed Event
 
@@ -217,6 +226,7 @@ class Closed(Event):
 ###
 ### Components
 ###
+
 
 class Client(Component):
 
@@ -242,7 +252,7 @@ class Client(Component):
 
         self.host = "0.0.0.0"
         self.port = 0
-        self.secure  = False
+        self.secure = False
 
         self.server = {}
         self.issuer = {}
@@ -369,6 +379,7 @@ class Client(Component):
             elif self._poller.isWriting(self._sock):
                 self._poller.removeWriter(self._sock)
 
+
 class TCPClient(Client):
 
     def __init__(self, bind=None, **kwargs):
@@ -392,7 +403,7 @@ class TCPClient(Client):
     def connect(self, host, port, secure=False, **kwargs):
         self.host = host
         self.port = port
-        self.secure  = secure
+        self.secure = secure
 
         if self.secure:
             self.certfile = kwargs.get("certfile", None)
@@ -422,6 +433,7 @@ class TCPClient(Client):
             self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
         self.push(Connected(host, port), "connected", self.channel)
+
 
 class UNIXClient(Client):
 
@@ -713,6 +725,7 @@ class Server(Component):
             elif self._poller.isWriting(sock):
                 self._poller.removeWriter(sock)
 
+
 class TCPServer(Server):
 
     def __init__(self, bind, secure=False, **kwargs):
@@ -734,6 +747,7 @@ class TCPServer(Server):
         sock.listen(self._backlog)
 
         return sock
+
 
 class UNIXServer(Server):
 
@@ -762,6 +776,7 @@ class UNIXServer(Server):
     def host(self):
         if hasattr(self, "bind"):
             return self.bind
+
 
 class UDPServer(Server):
 
@@ -858,12 +873,15 @@ class UDPServer(Server):
 
 UDPClient = UDPServer
 
+
 def Pipe(*channels, **kwargs):
     """Create a new full duplex Pipe
 
     Returns a pair of UNIXClient instances connected on either side of
     the pipe.
     """
+
+    from socket import socketpair
 
     if not channels:
         channels = ("a", "b")
