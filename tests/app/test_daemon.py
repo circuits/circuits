@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import errno
 from signal import SIGTERM
 from subprocess import Popen
 
@@ -8,6 +9,7 @@ import pytest
 pytest.importorskip("pytest_cov")
 
 from tests.app import app
+
 
 def test(tmpdir, cov):
     tmpdir.ensure("app.pid")
@@ -29,7 +31,10 @@ def test(tmpdir, cov):
     f.close()
 
     os.kill(pid, SIGTERM)
-    assert True
+    try:
+        os.waitpid(pid, os.WTERMSIG(0))
+    except OSError, e:
+        assert e[0] == errno.ECHILD
 
     os.remove(pidfile)
 
