@@ -17,6 +17,8 @@ from collections import defaultdict
 from circuits.net.sockets import Write
 from circuits import handler, BaseComponent, Event
 
+WEBSOCKETS_CHANNEL = "ws"
+
 
 class MalformedWebSocket(ValueError):
     """Malformed WebSocket Error"""
@@ -25,7 +27,7 @@ class MalformedWebSocket(ValueError):
 class WebSocketEvent(Event):
     """WebSocket Event"""
 
-    _target = "ws"
+    _target = WEBSOCKETS_CHANNEL
 
 
 class Message(WebSocketEvent):
@@ -79,10 +81,18 @@ class WebSockets(BaseComponent):
         if sock in self._buffers:
             del self._buffers[sock]
 
-    @handler("write", target="ws")
+    @handler("write", target=WebSocketEvent._target)
     def _on_write(self, sock, data):
         payload = chr(0x00) + data.encode("utf-8") + chr(0xFF)
         self.push(Write(sock, payload))
+
+    @handler("value_changed", target=WebSocketEvent._target)
+    def _on_value_changed(self, value):
+        sock, message = value.event.args
+        result, data = value.result, value.value
+        if result and isinstance(data, basestring):
+                self.push(Write(sock, data),
+                        target=WebSocketEvent._target)
 
     @handler("read", filter=True)
     def _on_read(self, sock, data):
@@ -90,7 +100,8 @@ class WebSockets(BaseComponent):
             self._buffers[sock] += data
             messages = self._parse_messages(sock)
             for message in messages:
-                self.push(Message(sock, message))
+                value = self.push(Message(sock, message))
+                value.onSet = "value_changed", WebSocketEvent._target
             return True
 
     @handler("request", filter=True, priority=0.2)
