@@ -14,17 +14,17 @@ from pools import Pool
 from utils import findcmp
 from workers import Task, Worker
 
-def future():
+
+def future(pool=None):
     def decorate(f):
         def wrapper(self, event, *args, **kwargs):
             event.future = True
-            pool = getattr(self, "_pool", None)
-            if pool is None:
-                pool = findcmp(self.root, Pool)
-            if pool is not None:
-                setattr(self, "_pool", pool)
-                return self.push(Task(f, self, *args, **kwargs),
-                        target=pool)
+            p = getattr(self, "_pool", pool)
+            if p is None:
+                p = findcmp(self.root, Pool)
+            if p is not None:
+                setattr(self, "_pool", p)
+                return self.push(Task(f, self, *args, **kwargs), target=p)
             else:
                 return Worker(channel=str(uuid())).push(
                         Task(f, self, *args, **kwargs))
