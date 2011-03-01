@@ -9,6 +9,7 @@ This module implements ...
 
 from inspect import getargspec
 from functools import update_wrapper
+import collections
 
 try:
     import json
@@ -24,8 +25,8 @@ except ImportError:
 
 from circuits.core import handler, BaseComponent
 
-import tools
-from errors import Forbidden, NotFound, Redirect
+from . import tools
+from .errors import Forbidden, NotFound, Redirect
 
 def expose(*channels, **config):
    def decorate(f):
@@ -66,8 +67,8 @@ class ExposeType(type):
     def __init__(cls, name, bases, dct):
         super(ExposeType, cls).__init__(name, bases, dct)
 
-        for k, v in dct.iteritems():
-            if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
+        for k, v in dct.items():
+            if isinstance(v, collections.Callable) and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, expose(k)(v))
 
 class BaseController(BaseComponent):
@@ -97,9 +98,9 @@ class BaseController(BaseComponent):
     def expires(self, secs=0, force=False):
         tools.expires(self.request, self.response, secs, force)
 
-class Controller(BaseController):
+class Controller(BaseController, metaclass=ExposeType):
 
-    __metaclass__ = ExposeType
+    pass
 
 if HAS_JSON:
 
@@ -136,11 +137,11 @@ if HAS_JSON:
         def __init__(cls, name, bases, dct):
             super(ExposeJSONType, cls).__init__(name, bases, dct)
 
-            for k, v in dct.iteritems():
-                if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
+            for k, v in dct.items():
+                if isinstance(v, collections.Callable) and not (k[0] == "_" or hasattr(v, "handler")):
                     setattr(cls, k, exposeJSON(k)(v))
 
 
-    class JSONController(BaseController):
+    class JSONController(BaseController, metaclass=ExposeJSONType):
 
-        __metaclass__ = ExposeJSONType
+        pass

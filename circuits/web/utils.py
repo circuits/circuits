@@ -12,21 +12,21 @@ import gzip
 import zlib
 import time
 import struct
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from cgi import escape
-from urlparse import urljoin as _urljoin
+from urllib.parse import urljoin as _urljoin
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 
 try:
-    from urlparse import parse_qs
+    from urllib.parse import parse_qs
 except ImportError:
     from cgi import parse_qs
 
-from constants import HTTP_STATUS_CODES
+from .constants import HTTP_STATUS_CODES
 
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile(r"[0-9]+,[0-9]+")
@@ -46,11 +46,11 @@ def parseQueryString(query_string, keep_blank_values=True):
         return {"x": int(pm[0]), "y": int(pm[1])}
     else:
         pm = parse_qs(query_string, keep_blank_values)
-        return dict((k, v[0]) for k, v in pm.iteritems() if v)
+        return dict((k, v[0]) for k, v in pm.items() if v)
 
 def dictform(form):
     d = {}
-    for key in form.keys():
+    for key in list(form.keys()):
         values = form[key]
         if isinstance(values, list):
             d[key] = []
@@ -72,7 +72,7 @@ def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
 
     # Header
-    yield "\037\213\010\0" + struct.pack("<L", long(time.time())) + "\002\377"
+    yield "\037\213\010\0" + struct.pack("<L", int(time.time())) + "\002\377"
 
     size = 0
     crc = zlib.crc32("")
@@ -91,7 +91,7 @@ def compress(body, compress_level):
         yield zobj.compress(chunk)
 
     yield zobj.flush() + struct.pack("<l", crc) + \
-            struct.pack("<L", size & 0xFFFFFFFFL)
+            struct.pack("<L", size & 0xFFFFFFFF)
 
 def decompress(body):
     zbuf = StringIO()
@@ -211,7 +211,7 @@ def get_ranges(headervalue, content_length):
         if start:
             if not stop:
                 stop = content_length - 1
-            start, stop = map(int, (start, stop))
+            start, stop = list(map(int, (start, stop)))
             if start >= content_length:
                 # From rfc 2616 sec 14.16:
                 # "If the server receives a request (other than one
@@ -248,11 +248,11 @@ def url_quote(s, charset="utf-8", safe="/:"):
     :param safe: an optional sequence of safe characters.
     """
 
-    if isinstance(s, unicode):
+    if isinstance(s, str):
         s = s.encode(charset)
     elif not isinstance(s, str):
         s = str(s)
-    return urllib.quote(s, safe=safe)
+    return urllib.parse.quote(s, safe=safe)
 
 def url_unquote(s, charset="utf-8", errors="ignore"):
     """URL decode a single string with a given decoding.
@@ -266,4 +266,4 @@ def url_unquote(s, charset="utf-8", errors="ignore"):
     :param errors: the error handling for the charset decoding.
     """
 
-    return urllib.unquote(s).decode(charset, errors)
+    return urllib.parse.unquote(s).decode(charset, errors)

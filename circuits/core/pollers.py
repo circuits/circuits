@@ -37,8 +37,8 @@ except ImportError:
     except ImportError:
         HAS_EPOLL = 0
 
-from events import Event
-from components import BaseComponent
+from .events import Event
+from .components import BaseComponent
 
 if HAS_POLL:
     _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
@@ -131,7 +131,7 @@ class Select(_Poller):
             for sock in socks:
                 try:
                     select([sock], [sock], [sock], 0)
-                except Exception, e:
+                except Exception as e:
                     self.discard(sock)
 
     def __tick__(self):
@@ -152,14 +152,14 @@ class Select(_Poller):
                     if self.timeout < 0.5:
                         self.timeout += 0.001
                 self._load = load
-        except ValueError, e:
+        except ValueError as e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
-        except TypeError, e:
+        except TypeError as e:
             # Something *totally* invalid (object w/o fileno, non-integral
             # result) was passed
             return self._preenDescriptors()
-        except (SelectError, SocketError, IOError), e:
+        except (SelectError, SocketError, IOError) as e:
             # select(2) encountered an error
             if e[0] in (0, 2):
                 # windows does this if it got an empty list
@@ -243,7 +243,7 @@ class Poll(_Poller):
     def __tick__(self):
         try:
             l = self._poller.poll(self.timeout)
-        except SelectError, e:
+        except SelectError as e:
             if e[0] == EINTR:
                 return
             else:
@@ -269,7 +269,7 @@ class Poll(_Poller):
                     self.push(Read(fd), "_read", self.getTarget(fd))
                 if event & POLLOUT:
                     self.push(Write(fd), "_write", self.getTarget(fd))
-            except Exception, e:
+            except Exception as e:
                 self.push(Error(fd, e), "_error", self.getTarget(fd))
                 self.push(Disconnect(fd), "_disconnect", self.getTarget(fd))
                 self._poller.unregister(fileno)
@@ -295,9 +295,9 @@ class EPoll(_Poller):
         try:
             fileno = fd.fileno()
             self._poller.unregister(fileno)
-        except (SocketError, IOError), e:
+        except (SocketError, IOError) as e:
             if e[0] == EBADF:
-                keys = [k for k, v in self._map.items() if v == fd]
+                keys = [k for k, v in list(self._map.items()) if v == fd]
                 for key in keys:
                     del self._map[key]
 
@@ -337,7 +337,7 @@ class EPoll(_Poller):
     def __tick__(self):
         try:
             l = self._poller.poll(self.timeout)
-        except SelectError, e:
+        except SelectError as e:
             if e[0] == EINTR:
                 return
             else:
@@ -363,7 +363,7 @@ class EPoll(_Poller):
                     self.push(Read(fd), "_read", self.getTarget(fd))
                 if event & EPOLLOUT:
                     self.push(Write(fd), "_write", self.getTarget(fd))
-            except Exception, e:
+            except Exception as e:
                 self.push(Error(fd, e), "_error", self.getTarget(fd))
                 self.push(Disconnect(fd), "_disconnect", self.getTarget(fd))
                 self._poller.unregister(fileno)

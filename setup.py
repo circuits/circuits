@@ -39,8 +39,11 @@ try:
 except IOError:
     README = HISTORY = ""
 
+import circuits
+
 setup(
-    name="circuits",
+    name="circuits3",
+    version=circuits.__version__,
     description="Asynchronous Component based Event Application Framework",
     long_description="%s\n\n%s" % (README, HISTORY),
     author="James Mills",
@@ -95,6 +98,4 @@ setup(
     circuits.bench = circuits.tools.bench:main
     circuits.web = circuits.web.main:main
     """,
-    setup_requires=("hgtools",),
-    use_hg_version={"increment": "0.01"},
 )

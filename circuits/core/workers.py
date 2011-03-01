@@ -18,10 +18,10 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
-from bridge import Bridge
-from utils import findroot
-from manager import Manager
-from components import BaseComponent as _BaseComponent
+from .bridge import Bridge
+from .utils import findroot
+from .manager import Manager
+from .components import BaseComponent as _BaseComponent
 
 from circuits.net.sockets import Pipe
 

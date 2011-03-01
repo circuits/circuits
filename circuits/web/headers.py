@@ -8,7 +8,6 @@ This module implements support for parsing and handling headers.
 """
 
 import re
-from types import ListType
 
 # Regular expression that matches `special' characters in parameters, the
 # existance of which force quoting of the parameter value.
@@ -58,8 +57,8 @@ class HeaderElement(object):
         self.params = params
     
     def __unicode__(self):
-        p = [";%s=%s" % (k, v) for k, v in self.params.iteritems()]
-        return u"%s%s" % (self.value, "".join(p))
+        p = [";%s=%s" % (k, v) for k, v in self.params.items()]
+        return "%s%s" % (self.value, "".join(p))
     
     def __str__(self):
         return str(self.__unicode__())
@@ -132,7 +131,7 @@ class Headers(dict):
     """Manage a collection of HTTP response headers"""
 
     def __init__(self, headers=[]):
-        if type(headers) is not ListType:
+        if isinstance(headers, list):
             raise TypeError("Headers must be a list of name/value tuples")
         self._headers = headers
 
@@ -151,7 +150,7 @@ class Headers(dict):
         Does *not* raise an exception if the header is missing.
         """
         name = name.lower()
-        self._headers[:] = [kv for kv in self._headers if kv[0].lower()<>name]
+        self._headers[:] = [kv for kv in self._headers if kv[0].lower()!=name]
 
     def __getitem__(self,name):
         """Get the first header value for 'name'
@@ -225,7 +224,7 @@ class Headers(dict):
         return self._headers[:]
 
     def __repr__(self):
-        return "Headers(%s)" % `self._headers`
+        return "Headers(%s)" % repr(self._headers)
 
     def __str__(self):
         """str() returns the formatted headers, complete with end line,
@@ -264,7 +263,7 @@ class Headers(dict):
         parts = []
         if _value is not None:
             parts.append(_value)
-        for k, v in _params.items():
+        for k, v in list(_params.items()):
             if v is None:
                 parts.append(k.replace('_', '-'))
             else:

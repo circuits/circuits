@@ -9,9 +9,9 @@ ConfigParser.ConfigParser class and adds support for saving
 the configuration to a file.
 """
 
-from __future__ import with_statement
 
-from ConfigParser import ConfigParser
+
+from configparser import ConfigParser
 
 from circuits import handler, Event, Component
 

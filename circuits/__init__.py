@@ -15,4 +15,4 @@ __author__ = "James Mills"
 __date__ = "1st February 2011"
 __version__ = "1.3.2"
 
-from core import *
+from .core import *

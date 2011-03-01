@@ -8,9 +8,9 @@ This module implements URL dispatchers.
 """
 
 import os
-import xmlrpclib
+import xmlrpc.client
 from string import Template
-from urlparse import urljoin as _urljoin
+from urllib.parse import urljoin as _urljoin
 
 try:
     import json
@@ -26,12 +26,12 @@ except ImportError:
 
 from circuits import handler, Event, Component
 
-from events import Response
-from errors import HTTPError
+from .events import Response
+from .errors import HTTPError
 from cgi import FieldStorage
-from controllers import BaseController
-from tools import expires, serve_file
-from utils import parseQueryString, dictform
+from .controllers import BaseController
+from .tools import expires, serve_file
+from .utils import parseQueryString, dictform
 
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -163,7 +163,7 @@ class Dispatcher(Component):
                 headers=headers,
                 environ={"REQUEST_METHOD": "POST"},
                 keep_blank_values=True)
-        except Exception, e:
+        except Exception as e:
             if e.__class__.__name__ == 'MaxSizeExceeded':
                 # Post data is too big
                 return HTTPError(request, response, 413)
@@ -334,7 +334,7 @@ class RoutesDispatcher(Component):
         controller = kwargs.pop('controller', None)
         if controller is not None:
 
-            if not isinstance(controller, basestring):
+            if not isinstance(controller, str):
                 try:
                     controller = getattr(controller, 'channel')
                 except AttributeError:
@@ -357,7 +357,7 @@ class RoutesDispatcher(Component):
                 headers=headers,
                 environ={"REQUEST_METHOD": "POST"},
                 keep_blank_values=True)
-        except Exception, e:
+        except Exception as e:
             if e.__class__.__name__ == 'MaxSizeExceeded':
                 # Post data is too big
                 return HTTPError(request, response, 413)
@@ -512,7 +512,7 @@ class XMLRPC(Component):
 
         try:
             data = request.body.read()
-            params, method = xmlrpclib.loads(data)
+            params, method = xmlrpc.client.loads(data)
 
             if "." in method:
                 t, c = method.split(".", 1)
@@ -526,19 +526,19 @@ class XMLRPC(Component):
             #TODO: How do we implement this ?
             #else:
             #    r = self._error(1, "method '%s' does not exist" % method)
-        except Exception, e:
+        except Exception as e:
             r = self._error(1, "%s: %s" % (type(e), e))
             return r
         else:
             return True
 
     def _response(self, result):
-        return xmlrpclib.dumps((result,), encoding=self.encoding,
+        return xmlrpc.client.dumps((result,), encoding=self.encoding,
             allow_none=True)
 
     def _error(self, code, message):
-        fault = xmlrpclib.Fault(code, message)
-        return xmlrpclib.dumps(fault, encoding=self.encoding, allow_none=True)
+        fault = xmlrpc.client.Fault(code, message)
+        return xmlrpc.client.dumps(fault, encoding=self.encoding, allow_none=True)
 
 class JSONRPC(Component):
 
@@ -569,7 +569,7 @@ class JSONRPC(Component):
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o["params"]
             if type(params) is dict:
-                params = dict([(str(k), v) for k, v in params.iteritems()])
+                params = dict([(str(k), v) for k, v in params.items()])
 
             if "." in method:
                 t, c = method.split(".", 1)
@@ -588,7 +588,7 @@ class JSONRPC(Component):
             #TODO: How do we implement this ?
             #else:
             #    r = self._error(id, 100, "method '%s' does not exist" % method)
-        except Exception, e:
+        except Exception as e:
             r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
             return r
         else:

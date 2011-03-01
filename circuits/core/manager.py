@@ -11,7 +11,6 @@ import os
 from time import sleep
 from warnings import warn
 from itertools import chain
-from types import TupleType
 from threading import Thread
 from collections import deque
 from inspect import getargspec
@@ -44,9 +43,9 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
-from values import Value
-from events import Started, Stopped, Signal
-from events import Error, Success, Failure, Filter, Start, End
+from .values import Value
+from .events import Started, Stopped, Signal
+from .events import Error, Success, Failure, Filter, Start, End
 
 TIMEOUT = 1.0 # 1s timeout when no tick functions to process
 
@@ -329,7 +328,7 @@ class Manager(object):
         if channel is None:
             if handler in self._globals:
                 self._globals.remove(handler)
-            channels = self.channels.keys()
+            channels = list(self.channels.keys())
         else:
             channels = [channel]
 
@@ -385,7 +384,7 @@ class Manager(object):
         """
 
         if channel is None and target is None:
-            if type(event.channel) is TupleType:
+            if isinstance(event.channel, tuple):
                 target, channel = event.channel
             else:
                 channel = event.channel or event.name.lower()

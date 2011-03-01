@@ -79,7 +79,7 @@ class INotifyDriver(Component):
         name = event.name
         pathname = event.pathname
 
-        for k, v in EVENT_MAP.iteritems():
+        for k, v in EVENT_MAP.items():
             if mask & k:
                 e = v(name, path, pathname, dir)
                 c = e.name.lower()

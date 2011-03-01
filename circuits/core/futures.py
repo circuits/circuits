@@ -12,7 +12,7 @@ from threading import Thread
 from traceback import format_tb
 from functools import update_wrapper
 
-from values import Value
+from .values import Value
 
 class Future(Value):
 

@@ -69,7 +69,7 @@ class File(Component):
         self._write = []
         self._buffer = deque()
 
-        if any(filter(lambda m: m in self._fd.mode, "r+")):
+        if any([m for m in "r+" if m in self._fd.mode]):
             self._read.append(self._fd)
 
         self.push(Opened(self.filename), "opened")
@@ -82,7 +82,7 @@ class File(Component):
         if not self.closed:
             try:
                 r, w, e = select.select(self._read, self._write, [], wait)
-            except select.error, error:
+            except select.error as error:
                 if not error[0] == errno.EINTR:
                     self.push(Error(error), "error")
                 return
@@ -90,20 +90,20 @@ class File(Component):
             if w and self._buffer:
                 data = self._buffer.popleft()
                 try:
-                    if type(data) is unicode:
+                    if type(data) is str:
                         data = data.encode(self.encoding)
                     bytes = os.write(self._fd.fileno(), data)
                     if bytes < len(data):
                         self._buffer.append(data[bytes:])
                     elif not self._buffer:
                         self._write.remove(self._fd)
-                except OSError, error:
+                except OSError as error:
                     self.push(Error(error), "error")
 
             if r:
                 try:
                     data = os.read(self._fd.fileno(), self.bufsize)
-                except IOError, e:
+                except IOError as e:
                     if e[0] == errno.EBADF:
                         data = None
 
@@ -172,7 +172,7 @@ if HAS_SERIAL:
                     else:
                         if not self._buffer and self._fd in self._write:
                             self._write.remove(self._fd)
-                except OSError, error:
+                except OSError as error:
                     self.push(Error(error))
 
             if r:

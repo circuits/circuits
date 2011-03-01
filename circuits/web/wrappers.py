@@ -9,16 +9,15 @@ This module implements the Request and Response objects.
 
 
 import os
-from cStringIO import StringIO
+from io import IOBase, StringIO
 from time import strftime, time
-from Cookie import SimpleCookie
-from types import FileType, ListType
+from http.cookies import SimpleCookie
 
-from utils import url
-from headers import Headers
-from errors import HTTPError
+from .utils import url
+from .headers import Headers
+from .errors import HTTPError
 from circuits.net.sockets import BUFSIZE
-from constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
+from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
 
 def file_generator(input, chunkSize=BUFSIZE):
     chunk = input.read(chunkSize)
@@ -153,12 +152,12 @@ class Body(object):
         if response == value:
             return
 
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             if value:
                 value = [value]
             else:
                 value = []
-        elif isinstance(value, FileType):
+        elif isinstance(value, IOBase):
             response.stream = True
             value = file_generator(value)
         elif isinstance(value, HTTPError):
@@ -229,15 +228,15 @@ class Response(object):
         # Set a default content-Type if we don't have one.
         self.headers.setdefault("Content-Type", "text/html")
 
-        if self.body and type(self.body) is ListType:
-            if unicode in map(type, self.body):
-                cLength = sum(map(lambda s: len(s.encode("utf-8")), self.body))
+        if self.body and isinstance(self.body, list):
+            if str in list(map(type, self.body)):
+                cLength = sum([len(s.encode("utf-8")) for s in self.body])
             else:
                 cLength = sum(map(len, self.body))
 
             self.headers["Content-Length"] = str(cLength)
 
-        for k, v in self.cookie.iteritems():
+        for k, v in self.cookie.items():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
         status = self.code

@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 # Module:   env
 # Date:     10th June 2006
 # Author:   James Mills, prologic at shortcircuit dot net dot au
@@ -10,14 +10,14 @@ components and is used to create, load and manage system/application
 environments.
 """
 
-from __future__ import with_statement
+
 
 import os
 
 from circuits import handler, Event, Component
 
-from log import Logger
-from config import (
+from .log import Logger
+from .config import (
         Config,
         Load as LoadConfig,
         Save as SaveConfig)
@@ -147,7 +147,7 @@ class Environment(Component):
         for section in CONFIG:
             if not self.config.has_section(section):
                 self.config.add_section(section)
-            for option, value in CONFIG[section].iteritems():
+            for option, value in CONFIG[section].items():
                 if type(value) == str:
                     value = value % {"name": self.envname}
                 self.config.set(section, option, value)

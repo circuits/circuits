@@ -11,10 +11,11 @@ from itertools import chain
 from types import MethodType
 from inspect import getmembers
 
-from utils import findroot
-from manager import Manager
-from handlers import HandlersType
-from events import Registered, Unregistered
+from .utils import findroot
+from .manager import Manager
+from .handlers import HandlersType
+from .events import Registered, Unregistered
+import collections
 
 class BaseComponent(Manager):
     """Base Component
@@ -64,7 +65,7 @@ class BaseComponent(Manager):
 
     def _registerHandlers(self, manager=None):
         if manager is None:
-            p = lambda x: callable(x) and getattr(x, "handler", False)
+            p = lambda x: isinstance(x, collections.Callable) and getattr(x, "handler", False)
             handlers = [v for k, v in getmembers(self, p)]
             for handler in handlers:
                 target = handler.target or getattr(self, "channel", "*")
@@ -161,20 +162,18 @@ class BaseComponent(Manager):
 
         return self
 
-class Component(BaseComponent):
-
-    __metaclass__ = HandlersType
+class Component(BaseComponent, metaclass=HandlersType):
 
     def __new__(cls, *args, **kwargs):
         self = BaseComponent.__new__(cls, *args, **kwargs)
-        handlers = [x for x in cls.__dict__.values() \
+        handlers = [x for x in list(cls.__dict__.values()) \
                 if getattr(x, "handler", False)]
         overridden = lambda x: [h for h in handlers \
                 if x.channels == h.channels and getattr(h, "override", False)]
         for base in cls.__bases__:
             if issubclass(cls, base):
-                for k, v in base.__dict__.items():
-                    p1 = callable(v)
+                for k, v in list(base.__dict__.items()):
+                    p1 = isinstance(v, collections.Callable)
                     p2 = getattr(v, "handler", False)
                     predicate = p1 and p2 and not overridden(v)
                     if predicate:

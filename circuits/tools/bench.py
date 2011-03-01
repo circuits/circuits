@@ -164,7 +164,7 @@ class LatencyTest(Base):
     t = None
 
     def received(self, message=""):
-        print "Latency: %0.3f us" % ((time.time() - self.t) * 1e6)
+        print("Latency: %0.3f us" % ((time.time() - self.t) * 1e6))
         time.sleep(1)
         self.push(Hello("hello"))
 
@@ -184,13 +184,13 @@ class State(Base):
 
 class Monitor(Base):
 
-    sTime = sys.maxint
+    sTime = sys.maxsize
     events = 0
     state = 0
 
     def helo(self, *args, **kwargs):
         if self.opts.verbose:
-            print "Resetting sTime"
+            print("Resetting sTime")
         self.sTime = time.time()
 
     @handler(filter=True)
@@ -242,40 +242,40 @@ def main():
 
     if opts.mode.lower() == "speed":
         if opts.verbose:
-            print "Setting up Speed Test..."
+            print("Setting up Speed Test...")
         if opts.concurrency > 1:
-            for c in xrange(int(opts.concurrency)):
+            for c in range(int(opts.concurrency)):
                 manager += SpeedTest(opts, channel=c)
         else:
             manager += SpeedTest(opts)
         monitor.sTime = time.time()
     elif opts.mode.lower() == "latency":
         if opts.verbose:
-            print "Setting up Latency Test..."
+            print("Setting up Latency Test...")
         manager += LatencyTest(opts)
         monitor.sTime = time.time()
     elif opts.listen:
         if opts.verbose:
-            print "Setting up Receiver..."
+            print("Setting up Receiver...")
         if opts.concurrency > 1:
-            for c in xrange(int(opts.concurrency)):
+            for c in range(int(opts.concurrency)):
                 manager += Receiver(opts, channel=c)
         else:
             manager += Receiver(opts)
     elif args:
         if opts.verbose:
-            print "Setting up Sender..."
+            print("Setting up Sender...")
         if opts.concurrency > 1:
-            for c in xrange(int(opts.concurrency)):
+            for c in range(int(opts.concurrency)):
                 manager += Sender(opts, channel=c)
         else:
             manager += Sender(opts)
     else:
         if opts.verbose:
-            print "Setting up Sender..."
-            print "Setting up Receiver..."
+            print("Setting up Sender...")
+            print("Setting up Receiver...")
         if opts.concurrency > 1:
-            for c in xrange(int(opts.concurrency)):
+            for c in range(int(opts.concurrency)):
                 manager += Sender(channel=c)
                 manager += Receiver(opts, channel=c)
         else:
@@ -290,7 +290,7 @@ def main():
 
     if not opts.wait:
         if opts.concurrency > 1:
-            for c in xrange(int(opts.concurrency)):
+            for c in range(int(opts.concurrency)):
                 manager.push(Hello("hello"), "hello", c)
         else:
             manager.push(Hello("hello"))
@@ -299,7 +299,7 @@ def main():
         try:
             manager.flush()
 
-            for i in xrange(opts.fill):
+            for i in range(opts.fill):
                 manager.push(Foo())
 
             if opts.events > 0 and monitor.events > opts.events:
@@ -311,7 +311,7 @@ def main():
             manager.push(Stop())
 
     if opts.verbose:
-        print
+        print()
 
     eTime = time.time()
 
@@ -321,9 +321,9 @@ def main():
     speed = int(math.ceil(float(monitor.events) / tTime))
 
     if opts.output:
-        print opts.output % (events, speed, tTime)
+        print(opts.output % (events, speed, tTime))
     else:
-        print "Total Events: %d (%d/s after %0.2fs)" % (events, speed, tTime)
+        print("Total Events: %d (%d/s after %0.2fs)" % (events, speed, tTime))
 
     if opts.profile and hotshot:
         profiler.stop()

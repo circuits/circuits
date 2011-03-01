@@ -7,14 +7,14 @@
 This module implements a set of standard HTTP Errors.
 """
 
-from urlparse import urljoin as _urljoin
+from urllib.parse import urljoin as _urljoin
 
 from circuits import Event
 
-import utils
-from utils import escape
-from constants import SERVER_URL, SERVER_VERSION
-from constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
+from . import utils
+from .utils import escape
+from .constants import SERVER_URL, SERVER_VERSION
+from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 class HTTPError(Event):
 
@@ -83,7 +83,7 @@ class NotFound(HTTPError):
 class Redirect(HTTPError):
 
     def __init__(self, request, response, urls, code=None):
-        if isinstance(urls, basestring):
+        if isinstance(urls, str):
             urls = [urls]
         
         abs_urls = []

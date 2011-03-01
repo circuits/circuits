@@ -12,8 +12,8 @@ Note: This code is mostly borrowed from werkzeug and adapted for circuits.web
 import sys
 from inspect import isclass
 
-from utils import escape
-from constants import HTTP_STATUS_CODES
+from .utils import escape
+from .constants import HTTP_STATUS_CODES
 
 class HTTPException(Exception):
     """
@@ -286,12 +286,12 @@ class Redirect(HTTPException):
     def __init__(self, urls, status=None):
         super(Redirect, self).__init__()
 
-        if isinstance(urls, basestring):
+        if isinstance(urls, str):
             self.urls = [urls]
         else:
             self.urls = urls
 
         self.status = status
 
-__all__ = [x[0] for x in globals().items() if isclass(x[1])
+__all__ = [x[0] for x in list(globals().items()) if isclass(x[1])
         and issubclass(x[1], HTTPException)]

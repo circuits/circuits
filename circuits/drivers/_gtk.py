@@ -110,11 +110,11 @@ def test2():
             self.push(Connect('google.com', 80), "connect")
 
         def connected(self, host, port):
-            print "Connected to %s" % host
+            print("Connected to %s" % host)
             self.push(Write('GET / HTTP/1.0\r\n\r\n'))
 
         def error(self, *args):
-            print "ERROR: %r" % list(args)
+            print("ERROR: %r" % list(args))
 
         def read(self, data):
             def _write(data):
@@ -134,8 +134,8 @@ def test2():
     w.add(vb)
     w.show_all()
 
-    print graph(m)
-    print inspect(m)
+    print(graph(m))
+    print(inspect(m))
 
     m.run()
 
