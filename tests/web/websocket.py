@@ -487,7 +487,7 @@ class WebSocketApp(object):
                 if data is None:
                     break
                 self._run_with_no_err(self.on_message, data)
-        except Exception, e:
+        except Exception as e:
             self._run_with_no_err(self.on_error, e)
         finally:
             self.sock.close()
@@ -498,7 +498,7 @@ class WebSocketApp(object):
         if callback:
             try:
                 callback(self, *args)
-            except Exception, e:
+            except Exception as e:
                 if logger.isEnabledFor(logging.DEBUG):
                     logger.error(e)
 

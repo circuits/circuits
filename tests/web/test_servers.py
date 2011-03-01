@@ -30,7 +30,7 @@ def test_baseserver():
 
     try:
         f = urlopen(server.base)
-    except URLError, e:
+    except URLError as e:
         if type(e[0]) is gaierror:
             f = urlopen("http://127.0.0.1:9000")
         else:
@@ -46,7 +46,7 @@ def test_server():
 
     try:
         f = urlopen(server.base)
-    except URLError, e:
+    except URLError as e:
         if type(e[0]) is gaierror:
             f = urlopen("http://127.0.0.1:9000")
         else:

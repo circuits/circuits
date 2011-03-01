@@ -17,7 +17,7 @@ def test(webapp):
 def test_404(webapp):
     try:
         urlopen("%s/foo" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
     else:
@@ -32,7 +32,7 @@ def test_file(webapp):
 def test_file404(webapp):
     try:
         urlopen("%s/static/foo.txt" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
     else:

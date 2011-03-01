@@ -11,7 +11,7 @@ def application(environ, start_response):
 def test(webapp):
     try:
         urlopen(webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 500
         assert e.msg == "Internal Server Error"
         s = e.read()

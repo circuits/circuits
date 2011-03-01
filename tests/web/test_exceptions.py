@@ -27,7 +27,7 @@ def test_redirect(webapp):
 def test_forbidden(webapp):
     try:
         urlopen("%s/test_forbidden" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 403
         assert e.msg == "Forbidden"
     else:
@@ -36,7 +36,7 @@ def test_forbidden(webapp):
 def test_notfound(webapp):
     try:
          urlopen("%s/test_notfound" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
     else:

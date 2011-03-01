@@ -13,7 +13,7 @@ the configuration to a file.
 
 from configparser import ConfigParser
 
-from circuits import handler, Event, Component
+from circuits import handler, BaseComponent, Event
 
 
 class ConfigEvent(Event):
@@ -36,46 +36,45 @@ class SaveConfig(ConfigEvent):
     channel = "save_config"
 
 
-class Config(Component, ConfigParser):
+class Config(BaseComponent):
 
     channel = "config"
 
-    def __init__(self, filename, defaults=None):
-        Component.__init__(self)
-        ConfigParser.__init__(self, defaults=defaults)
+    def __init__(self, filename, defaults=None, channel=channel):
+        super(Config. self).__init__(channel=channel)
 
-        self.filename = filename
+        self._config = ConfigParser(defaults=defaults)
+        self._filename = filename
 
     def get(self, section, option, default=None, raw=False, vars=None):
-        if self.has_option(section, option):
-            return super(Config, self).get(section, option, raw, vars)
+        if self._config.has_option(section, option):
+            return self._config.get(section, option, raw, vars)
         else:
             return default
 
     def getint(self, section, option, default=0):
-        if self.has_option(section, option):
-            return super(Config, self).getint(section, option)
+        if self._config.has_option(section, option):
+            return self._config.getint(section, option)
         else:
             return default
 
     def getfloat(self, section, option, default=0.0):
-        if self.has_option(section, option):
-            return super(Config, self).getfloat(section, option)
+        if self._config.has_option(section, option):
+            return self._config.getfloat(section, option)
         else:
             return default
 
     def getboolean(self, section, option, default=False):
-        if self.has_option(section, option):
-            return super(Config, self).getboolean(section, option)
+        if self._config.has_option(section, option):
+            return self._config.getboolean(section, option)
         else:
             return default
 
     @handler("load_config")
     def _on_load_config(self):
-        self.read(self.filename)
+        self._config.read(self._filename)
 
     @handler("save_config")
     def _on_save_config(self):
-        f = open(self.filename, "w")
-        self.write(f)
-        f.close()
+        with open(self._filename, "w") as f:
+            self._config.write(f)

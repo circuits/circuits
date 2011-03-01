@@ -14,10 +14,7 @@ import os
 from circuits import handler, BaseComponent, Event
 
 from .log import Logger
-from .config import (
-        Config,
-        Load as LoadConfig,
-        Save as SaveConfig)
+from .config import Config, LoadConfig, SaveConfig
 
 
 VERSION = 1
