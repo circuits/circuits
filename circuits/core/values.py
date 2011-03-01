@@ -7,10 +7,8 @@
 This defines the Value object used by components and events.
 """
 
-from types import ListType
-from itertools import imap
 
-from events import Event
+from .events import Event
 
 class ValueChanged(Event):
     """Value Changed Event
@@ -66,7 +64,7 @@ class Value(object):
 
     def __contains__(self, y):
         value = self.value
-        return y in value if type(value) is ListType else y == value
+        return y in value if isinstance(value, list) else y == value
 
     def __getitem__(self, y):
         v = self.value[y]
@@ -76,7 +74,7 @@ class Value(object):
             return v
 
     def __iter__(self):
-        return imap(lambda v: v.value if isinstance(v, Value) else v,
+        return map(lambda v: v.value if isinstance(v, Value) else v,
                 self.value)
 
     def __repr__(self):
@@ -104,7 +102,7 @@ class Value(object):
         if isinstance(value, Value):
             value._parent = self
 
-        if self.result and type(self._value) is ListType:
+        if self.result and isinstance(self._value, list):
             self._value.append(value)
         elif self.result:
             self._value = [self._value]

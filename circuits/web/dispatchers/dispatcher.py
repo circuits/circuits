@@ -16,6 +16,12 @@ from circuits.web.errors import HTTPError
 from circuits.web.controllers import BaseController
 from circuits.web.utils import parseQueryString, dictform
 
+from .events import Response
+from .errors import HTTPError
+from cgi import FieldStorage
+from .controllers import BaseController
+from .tools import expires, serve_file
+from .utils import parseQueryString, dictform
 
 class Dispatcher(BaseComponent):
 
@@ -38,7 +44,7 @@ class Dispatcher(BaseComponent):
                 headers=headers,
                 environ={"REQUEST_METHOD": "POST"},
                 keep_blank_values=True)
-        except Exception, e:
+        except Exception as e:
             if e.__class__.__name__ == 'MaxSizeExceeded':
                 # Post data is too big
                 return HTTPError(request, response, 413)

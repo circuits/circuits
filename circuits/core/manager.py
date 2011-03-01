@@ -9,7 +9,8 @@ This module definse the Manager class subclasses by component.BaseComponent
 
 import os
 from time import sleep
-from types import TupleType
+from warnings import warn
+from itertools import chain
 from threading import Thread
 from collections import deque
 from inspect import getargspec
@@ -42,19 +43,9 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
-
-#
-# Compatibility and consistency fixes
-#
-
-if HAS_MULTIPROCESSING == 2:
-    setattr(Process, "isAlive", Process.is_alive)
-elif HAS_MULTIPROCESSING == 1:
-    setattr(Process, "pid", property(Process.getPid))
-
-from values import Value
-from events import Started, Stopped, Signal
-from events import Error, Success, Failure, Filter, Start, End
+from .values import Value
+from .events import Started, Stopped, Signal
+from .events import Error, Success, Failure, Filter, Start, End
 
 TIMEOUT = 0.01 # 10ms timeout when no tick functions to process
 
@@ -342,7 +333,7 @@ class Manager(object):
         if channel is None:
             if handler in self._globals:
                 self._globals.remove(handler)
-            channels = self.channels.keys()
+            channels = list(self.channels.keys())
         else:
             channels = [channel]
 
@@ -398,7 +389,7 @@ class Manager(object):
         """
 
         if channel is None and target is None:
-            if type(event.channel) is TupleType:
+            if isinstance(event.channel, tuple):
                 target, channel = event.channel
             else:
                 channel = event.channel or event.name.lower()

@@ -12,7 +12,10 @@ is used independently it should not be registered as it causes it's
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
-from circuits.core import handler, BaseComponent, Event
+from .bridge import Bridge
+from .utils import findroot
+from .manager import Manager
+from .components import BaseComponent as _BaseComponent
 
 
 class Task(Event):

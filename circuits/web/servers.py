@@ -8,17 +8,16 @@ This module implements the several Web Server components.
 """
 
 from socket import gethostname as _gethostname
-from types import IntType, ListType, TupleType
 
 from circuits.core import handler, BaseComponent
 
 from circuits.net.sockets import TCPServer, UNIXServer
 
-from http import HTTP
-from events import WebEvent
-from wrappers import Request, Host
-from constants import SERVER_VERSION
-from dispatchers import Dispatcher
+from .http import HTTP
+from .events import WebEvent
+from .wrappers import Request, Host
+from .constants import SERVER_VERSION
+from .dispatchers import Dispatcher
 
 class BaseServer(BaseComponent):
     """Create a Base Web Server
@@ -29,24 +28,24 @@ class BaseServer(BaseComponent):
     :ivar server: Reference to underlying Server Component
 
     :param bind: IP Address / Port or UNIX Socket to bind to.
-    :type bind: One of IntType, ListType, TupeType or StringType
+    :type bind: Instance of int, list, tuple or str
 
     The 'bind' parameter is quite flexible with what valid values it accepts.
 
-    If an IntType is passed, a TCPServer will be created. The Server will be
+    If an int is passed, a TCPServer will be created. The Server will be
     bound to the Port given by the 'bind' argument and the bound interface
     will default (normally to  "0.0.0.0").
 
-    If a ListType or TupleType is passed, a TCPServer will be created. The
+    If a list or tuple is passed, a TCPServer will be created. The
     Server will be bound to the Port given by the 2nd item in the 'bind'
     argument and the bound interface will be the 1st item.
 
-    If a StringType is passed and it contains the ':' character, this is
+    If a str is passed and it contains the ':' character, this is
     assumed to be a request to bind to an IP Address / Port. A TCpServer
     will thus be created and the IP Address and Port will be determined
     by splitting the string given by the 'bind' argument.
 
-    Otherwise if a StringType is passed and it does not contain the ':'
+    Otherwise if a str is passed and it does not contain the ':'
     character, a file path is assumed and a UNIXServer is created and
     bound to the file given by the 'bind' argument.
     """
@@ -61,7 +60,7 @@ class BaseServer(BaseComponent):
 
         WebEvent._target = kwargs["channel"]
 
-        if type(bind) in [IntType, ListType, TupleType]:
+        if type(bind) in {int, list, tuple}:
             SocketType = TCPServer
         else:
             if ":" in bind:
@@ -73,7 +72,7 @@ class BaseServer(BaseComponent):
         self += self.server
 
         Request.server = self
-        if type(self.server.bind) is TupleType:
+        if isinstance(self.server.bind, tuple):
             Request.local = Host(self.server.bind[0], self.server.bind[1])
         else:
             Request.local = Host(self.server.bind, None)

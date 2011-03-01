@@ -7,19 +7,19 @@
 This module implements WSGI Components.
 """
 
-from urllib import unquote
-from cStringIO import StringIO
+from urllib.parse import unquote
+from io import StringIO
 from traceback import format_tb
 from sys import exc_info as _exc_info
 
 from circuits.core import handler, BaseComponent
 
-import wrappers
-from http import HTTP
-from events import Request
-from headers import Headers
-from errors import HTTPError
-from dispatchers import Dispatcher
+from . import wrappers
+from .http import HTTP
+from .events import Request
+from .headers import Headers
+from .errors import HTTPError
+from .dispatchers import Dispatcher
 
 class Application(BaseComponent):
 
@@ -95,7 +95,7 @@ class Application(BaseComponent):
         self.response.prepare()
         body = self.response.body
         status = self.response.status
-        headers = self.response.headers.items()
+        headers = list(self.response.headers.items())
 
         start_response(status, headers, exc_info)
         return body
@@ -107,7 +107,7 @@ class Application(BaseComponent):
 
 class _Empty(str):
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
 empty = _Empty()
@@ -159,7 +159,7 @@ class Gateway(BaseComponent):
             env("SCRIPT_NAME", req.script_name)
             env("PATH_INFO", req.path)
 
-        for k, v in req.headers.items():
+        for k, v in list(req.headers.items()):
             env("HTTP_%s" % k.upper().replace("-", "_"), v)
 
         return environ
@@ -182,7 +182,7 @@ class Gateway(BaseComponent):
             if not body:
                 return empty
             return body
-        except Exception, error:
+        except Exception as error:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))
             return HTTPError(request, response, 500, error=error)

@@ -10,7 +10,7 @@ Timers component to facilitate timed eventd.
 from time import time, mktime
 from datetime import datetime
 
-from components import BaseComponent
+from .components import BaseComponent
 
 class Timer(BaseComponent):
     """Timer(s, e, c, t, persist) -> new timer component

@@ -329,7 +329,7 @@ class Client(Component):
                 self.push(Read(data), "read", self.channel)
             else:
                 self.close()
-        except SocketError, e:
+        except socket.error as e:
             if e[0] == EWOULDBLOCK:
                 return
             else:
@@ -338,7 +338,7 @@ class Client(Component):
 
     def _write(self, data):
         try:
-            if type(data) is unicode:
+            if type(data) is str:
                 data = data.encode(self.encoding)
 
             if self.secure and self._ssock:
@@ -348,7 +348,7 @@ class Client(Component):
 
             if bytes < len(data):
                 self._buffer.appendleft(data[bytes:])
-        except SocketError, e:
+        except socket.error as e:
             if e[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
@@ -469,7 +469,7 @@ class UNIXClient(Client):
 
         try:
             r = self._sock.connect_ex(path)
-        except SocketError, e:
+        except socket.error as e:
             r = e[0]
 
         if r:
@@ -622,7 +622,7 @@ class Server(Component):
                 self.push(Read(sock, data), "read", self.channel)
             else:
                 self.close(sock)
-        except SocketError, e:
+        except socket.error as e:
             if e[0] == EWOULDBLOCK:
                 return
             else:
@@ -634,13 +634,13 @@ class Server(Component):
             return
 
         try:
-            if type(data) is unicode:
+            if type(data) is str:
                 data = data.encode(self.encoding)
 
             bytes = sock.send(data)
             if bytes < len(data):
                 self._buffers[sock].appendleft(data[bytes:])
-        except SocketError, e:
+        except socket.error as e:
             if e[0] in (EPIPE, ENOTCONN):
                 self._close(sock)
             else:
@@ -667,10 +667,10 @@ class Server(Component):
                     ssl_version=self.ssl_version,
                     ca_certs=self.ca_certs)
 
-        except SSLError, e:
+        except SSLError as e:
             raise
 
-        except SocketError, e:
+        except SocketError as  e:
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
             elif e[0] == EPERM:
@@ -821,7 +821,7 @@ class UDPServer(Server):
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.push(Read(address, data), "read", self.channel)
-        except SocketError, e:
+        except SocketError as e:
             if e[0] in (EWOULDBLOCK, EAGAIN):
                 return
             self.push(Error(self._sock, e), "error", self.channel)
@@ -829,13 +829,13 @@ class UDPServer(Server):
 
     def _write(self, address, data):
         try:
-            if type(data) is unicode:
+            if type(data) is str:
                 data = data.encode(self.encoding)
 
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
-        except SocketError, e:
+        except SocketError as e:
             if e[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:

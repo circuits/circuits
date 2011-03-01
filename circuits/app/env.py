@@ -9,13 +9,15 @@ components and is used to create, load and manage system/application
 environments.
 """
 
-
 import os
 
 from circuits import handler, BaseComponent, Event
 
-from log import Logger
-from config import Config, LoadConfig, SaveConfig
+from .log import Logger
+from .config import (
+        Config,
+        Load as LoadConfig,
+        Save as SaveConfig)
 
 
 VERSION = 1
@@ -147,7 +149,7 @@ class BaseEnvironment(BaseComponent):
         for section in CONFIG:
             if not self.config.has_section(section):
                 self.config.add_section(section)
-            for option, value in CONFIG[section].iteritems():
+            for option, value in CONFIG[section].items():
                 if type(value) == str:
                     value = value % {"name": self.envname}
                 self.config.set(section, option, value)

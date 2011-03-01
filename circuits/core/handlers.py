@@ -8,6 +8,7 @@ This module define the @handler decorator/function and the HandlesType type.
 """
 
 from inspect import getargspec
+import collections
 
 def handler(*channels, **kwargs):
     """Creates an Event Handler
@@ -75,6 +76,6 @@ class HandlersType(type):
 
         super(HandlersType, cls).__init__(name, bases, dct)
 
-        for k, v in dct.iteritems():
-            if callable(v) and not (k[0] == "_" or hasattr(v, "handler")):
+        for k, v in dct.items():
+            if isinstance(v, collections.Callable) and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, handler(k)(v))

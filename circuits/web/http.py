@@ -9,24 +9,21 @@ or commonly known as HTTP.
 """
 
 
-from urllib import unquote
-from urlparse import urlparse
-
-from circuits.tools import tryimport
-
-StringIO = tryimport(("cStringIO", "StringIO",))
+from io import StringIO
+from urllib.parse import unquote
+from urllib.parse import urlparse
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
 
-import wrappers
-from utils import quoted_slash
-from headers import parseHeaders
-from exceptions import HTTPException
-from errors import HTTPError, NotFound
-from events import Request, Response, Stream
-from errors import Redirect as RedirectError
-from exceptions import Redirect as RedirectException
+from . import wrappers
+from .utils import quoted_slash
+from .headers import parseHeaders
+from .exceptions import HTTPException
+from .errors import HTTPError, NotFound
+from .events import Request, Response, Stream
+from .errors import Redirect as RedirectError
+from .exceptions import Redirect as RedirectException
 
 
 class HTTP(BaseComponent):
@@ -51,7 +48,7 @@ class HTTP(BaseComponent):
                 self.push(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
-                    data = response.body.next()
+                    data = next(response.body)
                 except StopIteration:
                     data = None
                 self.push(Stream(response, data))
@@ -70,7 +67,7 @@ class HTTP(BaseComponent):
 
         if response.stream and response.body:
             try:
-                data = response.body.next()
+                data = next(response.body)
             except StopIteration:
                 data = None
             self.push(Stream(response, data))
