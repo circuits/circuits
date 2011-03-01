@@ -8,7 +8,7 @@ This module implements a virtual host dispatcher that sends requests
 for configured virtual hosts to different dispatchers.
 """
 
-from urlparse import urljoin as _urljoin
+from urllib.parse import urljoin
 
 from circuits import handler, BaseComponent
 
@@ -52,5 +52,5 @@ class VirtualHosts(BaseComponent):
         prefix = self.domains.get(domain, "")
 
         if prefix:
-            path = _urljoin("/%s/" % prefix, path)
+            path = urljoin("/%s/" % prefix, path)
             request.path = path

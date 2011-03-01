@@ -12,7 +12,7 @@ import sys
 from io import StringIO
 
 from .handlers import handler
-from .components import Component
+from .components import BaseComponent
 from circuits.tools import reprhandler
 
 class Debugger(BaseComponent):

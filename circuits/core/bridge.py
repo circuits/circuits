@@ -22,6 +22,7 @@ order or delivery.
 from io import StringIO
 from pickle import dumps, Unpickler
 
+from .handlers import handler
 from .components import BaseComponent
 from .values import Value, ValueChanged
 from .events import Event, Registered, Unregistered, Started, Stopped

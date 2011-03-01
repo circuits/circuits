@@ -8,7 +8,7 @@ This module implements a XML RPC dispatcher that translates incoming
 RPC calls over XML into RPC events.
 """
 
-import xmlrpclib
+from xmlrpc.client import dumps, loads, Fault
 
 from circuits.web.events import Response
 from circuits import handler, Event, BaseComponent
@@ -44,7 +44,7 @@ class XMLRPC(BaseComponent):
 
         try:
             data = request.body.read()
-            params, method = xmlrpclib.loads(data)
+            params, method = loads(data)
 
             if "." in method:
                 t, c = method.split(".", 1)
@@ -54,16 +54,16 @@ class XMLRPC(BaseComponent):
             value = self.push(RPC(*params), c, t)
             value.response = response
             value.onSet = ("value_changed", self)
-        except Exception, e:
+        except Exception as e:
             r = self._error(1, "%s: %s" % (type(e), e))
             return r
         else:
             return True
 
     def _response(self, result):
-        return xmlrpclib.dumps((result,), encoding=self.encoding,
+        return dumps((result,), encoding=self.encoding,
             allow_none=True)
 
     def _error(self, code, message):
-        fault = xmlrpclib.Fault(code, message)
-        return xmlrpclib.dumps(fault, encoding=self.encoding, allow_none=True)
+        fault = Fault(code, message)
+        return dumps(fault, encoding=self.encoding, allow_none=True)

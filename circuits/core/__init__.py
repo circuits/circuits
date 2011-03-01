@@ -14,16 +14,18 @@ from .manager import Manager
 from .components import BaseComponent, Component
 
 from .values import Value
-from .futures import future, Future
+from .futures import future
 
 from .timers import Timer
+
 try:
     from .bridge import Bridge
 except:
-     print("Failed to import circuits.core.bridge. This probably means we're running in debug mode, and the debug version of the Python socket library is not available. Continuing without.")
      Bridge = None
+
+from .pools import Pool
+from .workers import Task, Worker
 from .debugger import Debugger
-from .workers import Thread, Process
 
 __all__ = ("handler", "BaseComponent", "Component", "Event",
         "future", "Pool", "Task", "Worker",

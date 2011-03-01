@@ -90,7 +90,7 @@ class Routes(BaseComponent):
                 headers=headers,
                 environ={"REQUEST_METHOD": "POST"},
                 keep_blank_values=True)
-        except Exception, e:
+        except Exception as e:
             if e.__class__.__name__ == 'MaxSizeExceeded':
                 # Post data is too big
                 return HTTPError(request, response, 413)
