@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+import sys
+
+import pytest
+
+if sys.version_info[:2] <= (2, 5):
+    pytest.skip("This test does not work for Python <= 2.5")
+
 from urlparse import urlunsplit
 
 from circuits import Component
