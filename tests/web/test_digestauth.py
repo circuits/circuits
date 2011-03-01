@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
-from urllib2 import HTTPError, HTTPDigestAuthHandler
-from urllib2 import urlopen, build_opener, install_opener
+from urllib.error import HTTPError
+from urllib.request import HTTPDigestAuthHandler
+from urllib.request import urlopen, build_opener, install_opener
 
 from circuits.web import Controller
 from circuits.web.tools import check_auth, digest_auth

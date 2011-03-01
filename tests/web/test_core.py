@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from urllib import urlencode
-from urllib2 import urlopen, HTTPError
+from urllib.parse import urlencode
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 from circuits.web import Controller
 
@@ -37,7 +38,7 @@ def test_404(webapp):
         assert False
 
 def test_args(webapp):
-    args = (u"1", u"2", u"3")
+    args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.base, "/".join(args))
     data = urlencode(kwargs)

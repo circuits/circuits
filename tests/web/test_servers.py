@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from os.path import basename
-from urllib2 import urlopen, URLError
+from urllib.request import urlopen
+from urllib.error import URLError
 from socket import gaierror
 
 import pytest

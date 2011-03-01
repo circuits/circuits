@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import urllib2
-from cookielib import CookieJar
+import urllib.request, urllib.error, urllib.parse
+from http.cookiejar import CookieJar
 
 from circuits.web import Controller, Sessions
 
@@ -19,7 +19,7 @@ def test(webapp):
     Sessions().register(webapp)
 
     cj = CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 
     f = opener.open(webapp.server.base)
     s = f.read() 

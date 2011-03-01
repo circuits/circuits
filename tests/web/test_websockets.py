@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from urlparse import urlunsplit
+from urllib.parse import urlunsplit
 
 from circuits import Component
 from circuits.net.sockets import Write
 from circuits.web.dispatchers import WebSockets
 
-from websocket import create_connection
+from .websocket import create_connection
 
 
 class Test1(Component):

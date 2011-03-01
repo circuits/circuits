@@ -11,6 +11,9 @@ from uuid import uuid4 as uuid
 from functools import update_wrapper
 
 from .values import Value
+from .utils import findcmp
+from .workers import Worker
+from .pools import Pool, Task
 
 
 def future(pool=None):

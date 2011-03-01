@@ -9,7 +9,7 @@ This module implements the Request and Response objects.
 
 
 import os
-from io import IOBase, StringIO
+from io import BytesIO, IOBase
 from time import strftime, time
 from http.cookies import SimpleCookie
 
@@ -114,7 +114,7 @@ class Request(object):
                 name = sock.getsockname()
                 self.remote = Host(name, "", name)
 
-        self.body = StringIO()
+        self.body = BytesIO()
 
     def _getHeaders(self):
         return self._headers

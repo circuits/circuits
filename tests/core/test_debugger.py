@@ -4,7 +4,7 @@
 
 """Debugger Tests"""
 
-from StringIO import StringIO
+from io import StringIO
 
 from circuits import Debugger
 from circuits.core import Event, Component
@@ -209,7 +209,7 @@ def test_tick_exceptions():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception()")
+    assert s.startswith("<Error[*:exception] [<class 'Exception'>, Exception()")
     stderr.seek(0)
     stderr.truncate()
 
@@ -311,4 +311,4 @@ def test_Logger_error():
     app.push(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("ERROR <listener on ('test',) {target='*', priority=0.0}> (<type 'exceptions.Exception'>):")
+    assert logger.msg.startswith("ERROR <listener on ('test',) {target='*', priority=0.0}> (<class 'Exception'>):")

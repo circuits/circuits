@@ -1,13 +1,13 @@
 
 import itertools
-import mimetools
 from mimetypes import guess_type
+from email.generator import _make_boundary
 
 class MultiPartForm(dict):
 
     def __init__(self):
         self.files = []
-        self.boundary = mimetools.choose_boundary()
+        self.boundary = _make_boundary()
 
     def get_content_type(self):
         return "multipart/form-data; boundary=%s" % self.boundary
@@ -28,7 +28,7 @@ class MultiPartForm(dict):
             "Content-Disposition: form-data; name=\"%s\"" % k,
             "",
             v
-        ] for k, v in self.items())
+        ] for k, v in list(self.items()))
 
         # Add the files to upload
         parts.extend([

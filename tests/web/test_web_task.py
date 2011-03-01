@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 import pytest
 pytest.skip()

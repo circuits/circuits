@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 from circuits.web.wsgi import Gateway
 

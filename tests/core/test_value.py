@@ -1,7 +1,5 @@
 #!/usr/bin/python -i
 
-from types import ListType, ListType
-
 from circuits import handler, Event, Component, Manager
 
 class Hello(Event):
@@ -64,12 +62,12 @@ def test_error_value():
     etype, evalue, etraceback = x
     assert etype is Exception
     assert str(evalue) == "Error!"
-    assert type(etraceback) is ListType
+    assert isinstance(etraceback, list)
 
 def test_multiple_values():
     v = m.push(Values())
     while m: m.flush()
-    assert type(v.value) is ListType
+    assert isinstance(v.value, list)
     x = list(v)
     assert "foo" in v
     assert x == ["foo", "bar", "Hello World!"]

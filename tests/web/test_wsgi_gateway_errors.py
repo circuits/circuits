@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-from urllib2 import urlopen, HTTPError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 def application(environ, start_response):
     status = "200 OK"

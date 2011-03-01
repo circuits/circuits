@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
-from urllib2 import HTTPError, HTTPBasicAuthHandler
-from urllib2 import urlopen, build_opener, install_opener
+from urllib.error import HTTPError
+from urllib.request import HTTPBasicAuthHandler
+from urllib.request import urlopen, build_opener, install_opener
 
 from circuits.web import Controller
 from circuits.web.tools import check_auth, basic_auth
@@ -19,6 +18,8 @@ class Root(Controller):
         return basic_auth(self.request, self.response, realm, users, encrypt)
 
 def test(webapp):
+    from circuits import Debugger
+    Debugger().register(webapp)
     try:
         f = urlopen(webapp.server.base)
     except HTTPError as e:

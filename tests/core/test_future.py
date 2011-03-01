@@ -1,7 +1,5 @@
 #!/usr/bin/python -i
 
-from types import ListType
-
 import pytest
 
 from circuits import future, handler, BaseComponent, Component, Event
@@ -71,7 +69,7 @@ def test_error():
     etype, evalue, etraceback = x.value
     assert etype is Exception
     pytest.raises(Exception, lambda e: reraise(e), evalue)
-    assert type(etraceback) is ListType
+    assert isinstance(etraceback, list)
 
 def test_base():
     app = BaseApp()
@@ -97,4 +95,4 @@ def test_base_error():
     etype, evalue, etraceback = x.value
     assert etype is Exception
     pytest.raises(Exception, lambda e: reraise(e), evalue)
-    assert type(etraceback) is ListType
+    assert isinstance(etraceback, list)

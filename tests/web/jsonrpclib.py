@@ -30,8 +30,8 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
-import urllib
-import httplib
+import urllib.request, urllib.parse, urllib.error
+import http.client
 import base64
 import types
 
@@ -214,13 +214,13 @@ class Transport:
     def get_host_info(self, host):
 
         x509 = {}
-        if isinstance(host, types.TupleType):
+        if isinstance(host, tuple):
             host, x509 = host
 
-        auth, host = urllib.splituser(host)
+        auth, host = urllib.parse.splituser(host)
 
         if auth:
-            auth = base64.encodestring(urllib.unquote(auth))
+            auth = base64.encodestring(urllib.parse.unquote(auth))
             auth = string.join(string.split(auth), "") # get rid of whitespace
             extra_headers = [
                 ("Authorization", "Basic " + auth)
@@ -239,7 +239,7 @@ class Transport:
     def make_connection(self, host):
         # create a HTTP connection object from a host descriptor
         host, extra_headers, x509 = self.get_host_info(host)
-        return httplib.HTTP(host)
+        return http.client.HTTP(host)
 
     ##
     # Send request header.
@@ -262,7 +262,7 @@ class Transport:
         connection.putheader("Host", host)
         if extra_headers:
             if isinstance(extra_headers, DictType):
-                extra_headers = extra_headers.items()
+                extra_headers = list(extra_headers.items())
             for key, value in extra_headers:
                 connection.putheader(key, value)
 
@@ -320,7 +320,7 @@ class Transport:
             if not response:
                 break
             if self.verbose:
-                print "body:", repr(response)
+                print("body:", repr(response))
             p.feed(response)
 
         file.close()
@@ -341,7 +341,7 @@ class SafeTransport(Transport):
         # host may be a string, or a (host, x509-dict) tuple
         host, extra_headers, x509 = self.get_host_info(host)
         try:
-            HTTPS = httplib.HTTPS
+            HTTPS = http.client.HTTPS
         except AttributeError:
             raise NotImplementedError(
                 "your version of httplib doesn't support HTTPS"
@@ -354,10 +354,10 @@ class ServerProxy(object):
 
     def __init__(self, uri, transport=None, encoding=None,
                  verbose=None, allow_none=0):
-        utype, uri = urllib.splittype(uri)
+        utype, uri = urllib.parse.splittype(uri)
         if utype not in ("http", "https"):
-            raise IOError, "Unsupported JSONRPC protocol"
-        self.__host, self.__handler = urllib.splithost(uri)
+            raise IOError("Unsupported JSONRPC protocol")
+        self.__host, self.__handler = urllib.parse.splithost(uri)
         if not self.__handler:
             self.__handler = "/RPC2"
 
@@ -409,10 +409,10 @@ class ServerProxy(object):
 if __name__ == "__main__":
     s = ServerProxy("http://localhost:8080/foo/", verbose = 1)
     c = s.echo("foo bar")
-    print c
+    print(c)
     d = s.bad("other")
-    print d
+    print(d)
     e = s.echo("foo bar", "baz")
-    print e
+    print(e)
     f = s.echo(5)
-    print f
+    print(f)

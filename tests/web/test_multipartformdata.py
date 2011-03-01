@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from StringIO import StringIO
-from urllib2 import urlopen, Request
+from io import StringIO
+from urllib.request import urlopen, Request
 
 from circuits.web import Controller
 
-from multipartform import MultiPartForm
+from .multipartform import MultiPartForm
 
 class Root(Controller):
 

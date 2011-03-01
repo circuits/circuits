@@ -232,23 +232,35 @@ class Client(Component):
 
     channel = "client"
 
-    def __init__(self, bind=None, **kwargs):
-        channel = kwargs.get("channel", self.__class__.channel)
+    def __init__(self, bind=None, bufsize=BUFSIZE,
+            encoding="utf-8", channel=channel):
         super(Client, self).__init__(channel=channel)
 
-        self.encoding = kwargs.get("encoding", "utf-8")
-
-        if type(bind) is int:
+        if isinstance(bind, int):
             try:
-                self.bind = (gethostbyname(gethostname()), bind)
+                self._bind = (gethostbyname(gethostname()), bind)
             except gaierror:
-                self.bind = ("0.0.0.0", bind)
-        elif type(bind) is str and ":" in bind:
+                self._bind = ("0.0.0.0", bind)
+        elif isinstance(bind, str) and ":" in bind:
             host, port = bind.split(":")
             port = int(port)
-            self.bind = (host, port)
+            self._bind = (host, port)
         else:
-            self.bind = bind
+            self._bind = None
+
+        if isinstance(bind, socket):
+            self._sock = bind
+        else:
+            self._sock = self._create_socket()
+
+        self._bufsize = bufsize
+        self._encoding = encoding
+
+        self._ssock = None
+        self._poller = None
+        self._buffer = deque()
+        self._closeflag = False
+        self._connected = False
 
         self.host = "0.0.0.0"
         self.port = 0
@@ -256,16 +268,6 @@ class Client(Component):
 
         self.server = {}
         self.issuer = {}
-
-        self._bufsize = kwargs.get("bufsize", BUFSIZE)
-
-        self._poller = None
-
-        self._sock = None
-        self._ssock = None
-        self._buffer = deque()
-        self._closeflag = False
-        self._connected = False
 
     @property
     def connected(self):
@@ -329,8 +331,8 @@ class Client(Component):
                 self.push(Read(data), "read", self.channel)
             else:
                 self.close()
-        except socket.error as e:
-            if e[0] == EWOULDBLOCK:
+        except SocketError as e:
+            if e.args[0] == EWOULDBLOCK:
                 return
             else:
                 self.push(Error(e), "error", self.channel)
@@ -338,8 +340,8 @@ class Client(Component):
 
     def _write(self, data):
         try:
-            if type(data) is str:
-                data = data.encode(self.encoding)
+            if isinstance(data, str):
+                data = data.encode(self._encoding)
 
             if self.secure and self._ssock:
                 bytes = self._ssock.write(data)
@@ -348,8 +350,8 @@ class Client(Component):
 
             if bytes < len(data):
                 self._buffer.appendleft(data[bytes:])
-        except socket.error as e:
-            if e[0] in (EPIPE, ENOTCONN):
+        except SocketError as e:
+            if e.args[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
                 self.push(Error(e), "error", self.channel)
@@ -382,18 +384,10 @@ class Client(Component):
 
 class TCPClient(Client):
 
-    def __init__(self, bind=None, **kwargs):
-        super(TCPClient, self).__init__(bind, **kwargs)
-
-        if type(bind) is SocketType:
-            self._sock = bind
-        else:
-            self._sock = self._create_socket()
-
     def _create_socket(self):
         sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
-        if self.bind is not None:
-            sock.bind((self.bind, 0))
+        if self._bind is not None:
+            sock.bind((self._bind, 0))
 
         sock.setblocking(False)
         sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
@@ -412,11 +406,11 @@ class TCPClient(Client):
         try:
             r = self._sock.connect_ex((host, port))
         except SocketError as e:
-            if e[0] in (EBADF, EINVAL,):
+            if e.args[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
             else:
-                r = e[0]
+                r = e.args[0]
 
         if r:
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
@@ -437,18 +431,10 @@ class TCPClient(Client):
 
 class UNIXClient(Client):
 
-    def __init__(self, bind=None, **kwargs):
-        super(UNIXClient, self).__init__(bind, **kwargs)
-
-        if type(bind) is SocketType:
-            self._sock = bind
-        else:
-            self._sock = self._create_socket()
-
     def _create_socket(self):
         sock = socket(AF_UNIX, SOCK_STREAM)
-        if self.bind is not None:
-            sock.bind(self.bind)
+        if self._bind is not None:
+            sock.bind(self._bind)
 
         sock.setblocking(False)
 
@@ -469,8 +455,8 @@ class UNIXClient(Client):
 
         try:
             r = self._sock.connect_ex(path)
-        except socket.error as e:
-            r = e[0]
+        except SocketError as e:
+            r = e.args[0]
 
         if r:
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
@@ -493,23 +479,35 @@ class Server(Component):
 
     channel = "server"
 
-    def __init__(self, bind, secure=False, **kwargs):
-        channel = kwargs.get("channel", self.__class__.channel)
+    def __init__(self, bind, secure=False, backlog=BACKLOG,
+            bufsize=BUFSIZE, encoding="utf-8", channel=channel):
         super(Server, self).__init__(channel=channel)
-
-        self.encoding = kwargs.get("encoding", "utf-8")
 
         if type(bind) is int:
             try:
-                self.bind = (gethostbyname(gethostname()), bind)
+                self._bind = (gethostbyname(gethostname()), bind)
             except gaierror:
-                self.bind = ("0.0.0.0", bind)
+                self._bind = ("0.0.0.0", bind)
         elif type(bind) is str and ":" in bind:
             host, port = bind.split(":")
             port = int(port)
-            self.bind = (host, port)
+            self._bind = (host, port)
         else:
-            self.bind = bind
+            self._bind = bind
+
+        self._backlog = backlog
+        self._bufsize = bufsize
+        self._encoding = encoding
+
+        if isinstance(bind, socket):
+            self._sock = sock
+        else:
+            self._sock = self._create_socket()
+
+        self._closeq = []
+        self._clients = []
+        self._poller = None
+        self._buffers = defaultdict(deque)
 
         self.secure = secure
 
@@ -519,16 +517,6 @@ class Server(Component):
             self.cert_reqs = kwargs.get("cert_reqs", CERT_NONE)
             self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)
             self.ca_certs = kwargs.get("ca_certs", None)
-
-        self._bufsize = kwargs.get("bufsize", BUFSIZE)
-        self._backlog = kwargs.get("backlog", BACKLOG)
-
-        self._poller = None
-
-        self._sock = None
-        self._buffers = defaultdict(deque)
-        self._closeq = []
-        self._clients = []
 
     @property
     def connected(self):
@@ -622,8 +610,8 @@ class Server(Component):
                 self.push(Read(sock, data), "read", self.channel)
             else:
                 self.close(sock)
-        except socket.error as e:
-            if e[0] == EWOULDBLOCK:
+        except SocketError as e:
+            if e.args[0] == EWOULDBLOCK:
                 return
             else:
                 self.push(Error(sock, e), "error", self.channel)
@@ -634,14 +622,14 @@ class Server(Component):
             return
 
         try:
-            if type(data) is str:
-                data = data.encode(self.encoding)
+            if isinstance(data, str):
+                data = data.encode(self._encoding)
 
             bytes = sock.send(data)
             if bytes < len(data):
                 self._buffers[sock].appendleft(data[bytes:])
-        except socket.error as e:
-            if e[0] in (EPIPE, ENOTCONN):
+        except SocketError as e:
+            if e.args[0] in (EPIPE, ENOTCONN):
                 self._close(sock)
             else:
                 self.push(Error(sock, e), "error", self.channel)
@@ -671,14 +659,14 @@ class Server(Component):
             raise
 
         except SocketError as  e:
-            if e[0] in (EWOULDBLOCK, EAGAIN):
+            if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
-            elif e[0] == EPERM:
+            elif e.args[0] == EPERM:
                 # Netfilter on Linux may have rejected the
                 # connection, but we get told to try to accept()
                 # anyway.
                 return
-            elif e[0] in (EMFILE, ENOBUFS, ENFILE, ENOMEM, ECONNABORTED):
+            elif e.args[0] in (EMFILE, ENOBUFS, ENFILE, ENOMEM, ECONNABORTED):
                 # Linux gives EMFILE when a process is not allowed
                 # to allocate any more file descriptors.  *BSD and
                 # Win32 give (WSA)ENOBUFS.  Linux can also give
@@ -728,22 +716,13 @@ class Server(Component):
 
 class TCPServer(Server):
 
-    def __init__(self, bind, secure=False, **kwargs):
-        super(TCPServer, self).__init__(bind, secure, **kwargs)
-
-        if type(bind) is SocketType:
-            self.bind = None
-            self._sock = bind
-        else:
-            self._sock = self._create_socket()
-
     def _create_socket(self):
         sock = socket(AF_INET, SOCK_STREAM)
 
         sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
         sock.setblocking(False)
-        sock.bind(self.bind)
+        sock.bind(self._bind)
         sock.listen(self._backlog)
 
         return sock
@@ -751,20 +730,12 @@ class TCPServer(Server):
 
 class UNIXServer(Server):
 
-    def __init__(self, bind, secure=False, **kwargs):
-        super(UNIXServer, self).__init__(bind, secure, **kwargs)
-
-        if type(bind) is SocketType:
-            self._sock = bind
-        else:
-            self._sock = self._create_socket()
-
     def _create_socket(self):
-        if os.path.exists(self.bind):
-            os.unlink(self.bind)
+        if os.path.exists(self._bind):
+            os.unlink(self._bind)
 
         sock = socket(AF_UNIX, SOCK_STREAM)
-        sock.bind(self.bind)
+        sock.bind(self._bind)
 
         sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         sock.setblocking(False)
@@ -775,22 +746,14 @@ class UNIXServer(Server):
     @property
     def host(self):
         if hasattr(self, "bind"):
-            return self.bind
+            return self._bind
 
 
 class UDPServer(Server):
 
-    def __init__(self, bind, secure=False, **kwargs):
-        super(UDPServer, self).__init__(bind, secure, **kwargs)
-
-        if type(bind) is SocketType:
-            self._sock = bind
-        else:
-            self._sock = self._create_socket()
-
     def _create_socket(self):
         sock = socket(AF_INET, SOCK_DGRAM)
-        sock.bind(self.bind)
+        sock.bind(self._bind)
 
         sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
         sock.setblocking(False)
@@ -822,21 +785,21 @@ class UDPServer(Server):
             if data:
                 self.push(Read(address, data), "read", self.channel)
         except SocketError as e:
-            if e[0] in (EWOULDBLOCK, EAGAIN):
+            if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
             self.push(Error(self._sock, e), "error", self.channel)
             self._close(self._sock)
 
     def _write(self, address, data):
         try:
-            if type(data) is str:
-                data = data.encode(self.encoding)
+            if isinstance(data, str):
+                data = data.encode(self._encoding)
 
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
         except SocketError as e:
-            if e[0] in (EPIPE, ENOTCONN):
+            if e.args[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:
                 self.push(Error(self._sock, e), "error", self.channel)

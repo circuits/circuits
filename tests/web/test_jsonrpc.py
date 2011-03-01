@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 import pytest
 
 try:
-    from jsonrpclib import ServerProxy
+    from .jsonrpclib import ServerProxy
 except ImportError:
     pytest.skip("Skip: No JSON support")
 

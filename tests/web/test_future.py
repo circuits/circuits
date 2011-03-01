@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 from circuits.web import Controller
 from circuits import future, Event, Component

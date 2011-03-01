@@ -131,7 +131,7 @@ class Headers(dict):
     """Manage a collection of HTTP response headers"""
 
     def __init__(self, headers=[]):
-        if isinstance(headers, list):
+        if not isinstance(headers, list):
             raise TypeError("Headers must be a list of name/value tuples")
         self._headers = headers
 
@@ -278,19 +278,10 @@ class Headers(dict):
             return []
         return header_elements(key, h)
 
-def parseHeaders(data):
+def parse_headers(data):
     headers = Headers([])
         
-    while True:
-        line = data.readline()
-        if not line:
-            # No more data--illegal end of headers
-            raise ValueError("Illegal end of headers.")
-        
-        if line == "\r\n":
-            # Normal end of headers
-            break
-        
+    for line in data.split("\r\n"):
         if line[0] in " \t":
             # It's a continuation line.
             v = line.strip()
@@ -300,4 +291,4 @@ def parseHeaders(data):
 
         headers.add_header(k, v)
         
-    return headers, data.read()
+    return headers

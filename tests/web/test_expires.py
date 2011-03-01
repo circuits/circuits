@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from urllib2 import urlopen
-from rfc822 import parsedate
 from datetime import datetime
 from time import gmtime, mktime
+from email.utils import parsedate
+from urllib.request import urlopen
 
 from circuits.web import Controller
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from StringIO import StringIO
+from io import StringIO
 
 from circuits.web.utils import get_ranges
 from circuits.web.utils import compress, decompress

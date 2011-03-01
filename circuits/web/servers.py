@@ -68,14 +68,16 @@ class BaseServer(BaseComponent):
             else:
                 SocketType = UNIXServer
 
-        self.server = (SocketType(bind, **kwargs) + HTTP(**kwargs))
-        self += self.server
+        self.server = SocketType(bind, **kwargs).register(self)
+        HTTP(encoding=self.server._encoding,
+                channel=self.server.channel).register(self)
 
         Request.server = self
-        if isinstance(self.server.bind, tuple):
-            Request.local = Host(self.server.bind[0], self.server.bind[1])
+        if isinstance(self.server._bind, tuple):
+            Request.local = Host(self.server._bind[0],
+                    self.server._bind[1])
         else:
-            Request.local = Host(self.server.bind, None)
+            Request.local = Host(self.server._bind, None)
         Request.host = self.host
         Request.scheme = "https" if self.server.secure else "http"
 

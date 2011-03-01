@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from httplib import HTTPConnection
+from http.client import HTTPConnection
 from circuits.web import Controller
 
 class Root(Controller):
@@ -12,7 +12,7 @@ def test(webapp):
     connection.auto_open = False
     connection.connect()
 
-    for i in xrange(2):
+    for i in range(2):
         connection.request("GET", "/")
         response = connection.getresponse()
         assert response.status == 200

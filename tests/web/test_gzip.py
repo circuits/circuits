@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-from urllib2 import build_opener, Request
+from urllib.request import build_opener, Request
 
 from circuits import handler, Component
 

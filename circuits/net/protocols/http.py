@@ -1,8 +1,5 @@
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import StringIO
 
 from circuits.web.headers import parseHeaders
 from circuits.core import handler, BaseComponent, Event

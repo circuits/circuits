@@ -29,7 +29,7 @@ except ImportError:
 from .constants import HTTP_STATUS_CODES
 
 quoted_slash = re.compile("(?i)%2F")
-image_map_pattern = re.compile(r"[0-9]+,[0-9]+")
+image_map_pattern = re.compile("[0-9]+,[0-9]+")
 
 def parseQueryString(query_string, keep_blank_values=True):
     """parseQueryString(query_string) -> dict

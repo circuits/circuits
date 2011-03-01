@@ -160,15 +160,15 @@ class Select(BasePoller):
             return self._preenDescriptors()
         except (SelectError, SocketError, IOError) as e:
             # select(2) encountered an error
-            if e[0] in (0, 2):
+            if e.args[0] in (0, 2):
                 # windows does this if it got an empty list
                 if (not self._read) and (not self._write):
                     return
                 else:
                     raise
-            elif e[0] == EINTR:
+            elif e.args[0] == EINTR:
                 return
-            elif e[0] == EBADF:
+            elif e.args[0] == EBADF:
                 return self._preenDescriptors()
             else:
                 # OK, I really don't know what's going on.  Blow up.
@@ -243,7 +243,7 @@ class Poll(BasePoller):
         try:
             l = self._poller.poll(self.timeout)
         except SelectError as e:
-            if e[0] == EINTR:
+            if e.args[0] == EINTR:
                 return
             else:
                 raise
@@ -295,7 +295,7 @@ class EPoll(BasePoller):
             fileno = fd.fileno()
             self._poller.unregister(fileno)
         except (SocketError, IOError) as e:
-            if e[0] == EBADF:
+            if e.args[0] == EBADF:
                 keys = [k for k, v in list(self._map.items()) if v == fd]
                 for key in keys:
                     del self._map[key]
@@ -337,10 +337,10 @@ class EPoll(BasePoller):
         try:
             l = self._poller.poll(self.timeout)
         except IOError as e:
-            if e[0] == EINTR:
+            if e.args[0] == EINTR:
                 return
         except SelectError as e:
-            if e[0] == EINTR:
+            if e.args[0] == EINTR:
                 return
             else:
                 raise
