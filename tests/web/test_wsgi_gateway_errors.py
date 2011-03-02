@@ -14,7 +14,7 @@ def test(webapp):
         assert e.code == 500
         assert e.msg == "Internal Server Error"
         s = e.read()
-        assert "Exception" in s
-        assert "Hello World!" in s
+        assert b"Exception" in s
+        assert b"Hello World!" in s
     else:
         assert False

@@ -213,7 +213,6 @@ class HTTP(BaseComponent):
         HTTPError instance or a subclass thereof.
         """
 
-        print(event.traceback)
         response.body = str(event)
         self.push(Response(response))
 

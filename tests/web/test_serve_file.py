@@ -12,7 +12,7 @@ class Root(Controller):
     @handler("started", priority=1.0, target="*")
     def _on_started(self, component, mode):
         fd, self.filename = mkstemp()
-        os.write(fd, "Hello World!")
+        os.write(fd, b"Hello World!")
         os.close(fd)
 
     @handler("stopped", target="(")
@@ -25,4 +25,4 @@ class Root(Controller):
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s  == "Hello World!"
+    assert s  == b"Hello World!"

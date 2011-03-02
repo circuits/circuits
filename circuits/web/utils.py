@@ -89,6 +89,9 @@ def compress(body, compress_level):
     )
 
     for chunk in body:
+        if isinstance(chunk, str):
+            chunk = chunk.encode("utf-8")
+
         size += len(chunk)
         crc = zlib.crc32(chunk, crc)
         yield zobj.compress(chunk)

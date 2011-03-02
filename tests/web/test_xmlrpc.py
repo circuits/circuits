@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import xmlrpc.client
 from urllib.request import urlopen
+from xmlrpc.client import ServerProxy
 
 from circuits import Component
 from circuits.web import Controller, XMLRPC
@@ -27,9 +27,9 @@ def test(webapp):
     assert s == b"Hello World!"
 
     url = "%s/rpc/" % webapp.server.base
-    xmlrpc = xmlrpc.client.ServerProxy(url, allow_none=True)
+    server = ServerProxy(url, allow_none=True)
 
-    r = xmlrpc.eval("1 + 2")
+    r = server.eval("1 + 2")
     assert r == 3
 
     rpc.unregister()

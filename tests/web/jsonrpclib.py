@@ -239,7 +239,7 @@ class Transport:
     def make_connection(self, host):
         # create a HTTP connection object from a host descriptor
         host, extra_headers, x509 = self.get_host_info(host)
-        return http.client.HTTP(host)
+        return http.client.HTTPConnection(host)
 
     ##
     # Send request header.
@@ -341,7 +341,7 @@ class SafeTransport(Transport):
         # host may be a string, or a (host, x509-dict) tuple
         host, extra_headers, x509 = self.get_host_info(host)
         try:
-            HTTPS = http.client.HTTPS
+            HTTPS = http.client.HTTPSConnection
         except AttributeError:
             raise NotImplementedError(
                 "your version of httplib doesn't support HTTPS"

@@ -40,4 +40,4 @@ def test_file404(webapp):
 def test_directory(webapp):
     f = urlopen("%s/static/" % webapp.server.base)
     s = f.read()
-    assert "helloworld.txt" in s
+    assert b"helloworld.txt" in s
