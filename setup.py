@@ -43,7 +43,7 @@ except IOError:
 import circuits
 
 setup(
-    name="circuits3",
+    name="circuits",
     version=circuits.__version__,
     description="Asynchronous Component based Event Application Framework",
     long_description="%s\n\n%s" % (README, RELEASE),
