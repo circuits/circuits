@@ -18,9 +18,9 @@ from circuits.core import handler, BaseComponent, Value
 
 from . import wrappers
 from .utils import quoted_slash
-from .headers import parse_headers
 from .exceptions import HTTPException
 from .errors import HTTPError, NotFound
+from .headers import parse_headers, Headers
 from .events import Request, Response, Stream
 from .errors import Redirect as RedirectError
 from .exceptions import Redirect as RedirectException
@@ -48,7 +48,7 @@ class HTTP(BaseComponent):
             if data:
                 if response.chunked:
                     buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
-                    data = "".join(buf)
+                    data = b"".join(buf)
                 self.push(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
@@ -119,7 +119,7 @@ class HTTP(BaseComponent):
             if not request.body.tell() == contentLength:
                 return
         else:
-            requestline, data = data.split(b"\n", 1)
+            requestline, data = data.split(b"\r\n", 1)
             requestline = requestline.strip().decode(
                     self._encoding, "replace")
             method, path, protocol = requestline.split(" ", 2)
@@ -165,11 +165,14 @@ class HTTP(BaseComponent):
             response.protocol = "HTTP/%s.%s" % min(rp, sp)
 
             end_of_headers = data.find(b"\r\n\r\n")
-            header_data = data[:end_of_headers].decode(
-                    self._encoding, "replace")
-            headers = request.headers = parse_headers(header_data)
+            if end_of_headers > -1:
+                header_data = data[:end_of_headers].decode(
+                        self._encoding, "replace")
+                headers = request.headers = parse_headers(header_data)
+            else:
+                headers = request.headers = Headers([])
 
-            request.body.write(data[end_of_headers:])
+            request.body.write(data[(end_of_headers + 4):])
 
             if headers.get("Expect", "") == "100-continue":
                 return self.push(Response(wrappers.Response(request, 100)))
@@ -210,6 +213,7 @@ class HTTP(BaseComponent):
         HTTPError instance or a subclass thereof.
         """
 
+        print(event.traceback)
         response.body = str(event)
         self.push(Response(response))
 

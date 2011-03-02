@@ -12,6 +12,7 @@ import gzip
 import zlib
 import time
 import struct
+from gzip import GzipFile
 import urllib.request, urllib.parse, urllib.error
 from cgi import escape
 from urllib.parse import urljoin as _urljoin
@@ -72,10 +73,12 @@ def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
 
     # Header
-    yield "\037\213\010\0" + struct.pack("<L", int(time.time())) + "\002\377"
+    yield b"\037\213\010\0" \
+            + struct.pack("<L", int(time.time())) \
+            + b"\002\377"
 
     size = 0
-    crc = zlib.crc32("")
+    crc = zlib.crc32(b"")
 
     zobj = zlib.compressobj(
         compress_level,
@@ -90,17 +93,9 @@ def compress(body, compress_level):
         crc = zlib.crc32(chunk, crc)
         yield zobj.compress(chunk)
 
-    yield zobj.flush() + struct.pack("<l", crc) + \
-            struct.pack("<L", size & 0xFFFFFFFF)
-
-def decompress(body):
-    zbuf = StringIO()
-    zbuf.write(body)
-    zbuf.seek(0)
-    zfile = gzip.GzipFile(mode='rb', fileobj=zbuf)
-    data = zfile.read()
-    zfile.close()
-    return data
+    yield zobj.flush() \
+            + struct.pack("<l", crc) \
+            + struct.pack("<L", size & 0xFFFFFFFF)
 
 def url(request, path="", qs="", script_name=None, base=None, relative=None):
     """Create an absolute URL for the given path.
@@ -239,31 +234,3 @@ def get_ranges(headervalue, content_length):
             result.append((content_length - int(stop), content_length))
     
     return result
-
-def url_quote(s, charset="utf-8", safe="/:"):
-    """URL encode a single string with a given encoding.
-
-    :param s: the string to quote.
-    :param charset: the charset to be used.
-    :param safe: an optional sequence of safe characters.
-    """
-
-    if isinstance(s, str):
-        s = s.encode(charset)
-    elif not isinstance(s, str):
-        s = str(s)
-    return urllib.parse.quote(s, safe=safe)
-
-def url_unquote(s, charset="utf-8", errors="ignore"):
-    """URL decode a single string with a given decoding.
-
-    Per default encoding errors are ignored.  If you want a different behavior
-    you can set `errors` to ``"replace"`` or ``"strict"``.  In strict mode a
-    `HTTPUnicodeError` is raised.
-
-    :param s: the string to unquote.
-    :param charset: the charset to be used.
-    :param errors: the error handling for the charset decoding.
-    """
-
-    return urllib.parse.unquote(s).decode(charset, errors)

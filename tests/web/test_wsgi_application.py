@@ -29,7 +29,7 @@ application = Application() + Root()
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_404(webapp):
     try:
@@ -54,7 +54,7 @@ def test_args(webapp):
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_forbidden(webapp):
     try:

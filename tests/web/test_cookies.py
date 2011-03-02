@@ -19,8 +19,8 @@ def test(webapp):
 
     f = opener.open(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     f = opener.open(webapp.server.base)
     s = f.read()
-    assert s == "Hello again!"
+    assert s == b"Hello again!"

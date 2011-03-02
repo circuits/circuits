@@ -62,6 +62,7 @@ __all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse",
 import time
 import base64
 import urllib.request, urllib.error, urllib.parse
+from urllib.request import parse_http_list, parse_keqv_list
 from hashlib import md5
 
 MD5 = "MD5"
@@ -94,7 +95,8 @@ def calculateNonce (realm, algorithm = MD5):
         raise NotImplementedError ("The chosen algorithm (%s) does not have "\
                                    "an implementation yet" % algorithm)
 
-    return encoder ("%d:%s" % (time.time(), realm))
+    s = "%d:%s" % (time.time(), realm)
+    return encoder (s.encode("utf-8"))
 
 def digestAuth (realm, algorithm = MD5, nonce = None, qop = AUTH):
     """Challenges the client for a Digest authentication."""
@@ -130,8 +132,8 @@ def doAuth (realm):
 #
 def _parseDigestAuthorization (auth_params):
     # Convert the auth params to a dict
-    items = urllib2.parse_http_list (auth_params)
-    params = urllib2.parse_keqv_list (items)
+    items = parse_http_list (auth_params)
+    params = parse_keqv_list (items)
 
     # Now validate the params
 
@@ -155,7 +157,10 @@ def _parseDigestAuthorization (auth_params):
 
 
 def _parseBasicAuthorization (auth_params):
-    username, password = base64.decodestring (auth_params).split (":", 1)
+    auth_params = auth_params.encode("utf-8")
+    username, password = base64.decodebytes (auth_params).split (b":", 1)
+    username = username.decode("utf-8")
+    password = password.decode("utf-8")
     return {"username": username, "password": password}
 
 AUTH_SCHEMES = {
@@ -229,7 +234,8 @@ def _A1(params, password):
         # This is A1 if qop is set
         # A1 = H( unq(username-value) ":" unq(realm-value) ":" passwd )
         #         ":" unq(nonce-value) ":" unq(cnonce-value)
-        h_a1 = H ("%s:%s:%s" % (params["username"], params["realm"], password))
+        s = "%s:%s:%s" % (params["username"], params["realm"], password)
+        h_a1 = H (s.encode("utf-8"))
         return "%s:%s:%s" % (h_a1, params["nonce"], params["cnonce"])
 
 
@@ -259,21 +265,27 @@ def _computeDigestResponse(auth_map, password, method = "GET", A1 = None,**kwarg
     """
     Generates a response respecting the algorithm defined in RFC 2617
     """
+
     params = auth_map
 
     algorithm = params.get ("algorithm", MD5)
 
     H = DIGEST_AUTH_ENCODERS[algorithm]
-    KD = lambda secret, data: H(secret + ":" + data)
+
+    def KD(secret, data):
+        s = secret + ":" + data
+        return H(s.encode("utf-8"))
 
     qop = params.get ("qop", None)
 
-    H_A2 = H(_A2(params, method, kwargs))
+    s = _A2(params, method, kwargs)
+    H_A2 = H(s.encode("utf-8"))
 
     if algorithm == MD5_SESS and A1 is not None:
-        H_A1 = H(A1)
+        H_A1 = H(A1.encode("utf-8"))
     else:
-        H_A1 = H(_A1(params, password))
+        s = _A1(params, password)
+        H_A1 = H(s.encode("utf-8"))
 
     if qop in ("auth", "auth-int"):
         # If the "qop" value is "auth" or "auth-int":

@@ -19,16 +19,16 @@ class Root(Controller):
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     f = urlopen("%s/+test" % webapp.server.base)
     s = f.read()
-    assert s == "test"
+    assert s == b"test"
 
     f = urlopen("%s/foo+bar" % webapp.server.base)
     s = f.read()
-    assert s == "foobar"
+    assert s == b"foobar"
 
     f = urlopen("%s/foo_bar" % webapp.server.base)
     s = f.read()
-    assert s == "foobar"
+    assert s == b"foobar"

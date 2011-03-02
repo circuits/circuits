@@ -10,18 +10,17 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-    @expose("你好")
+    @expose("hello")
     def hello(self):
         self.response.headers["Content-Type"] = "text/html; charset=utf-8"
-        return "世界您好"
+        return "Hello World!"
 
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
-    url = "%s/你好" % webapp.server.base
-    f = urlopen(url.encode("utf-8"))
+    url = "%s/hello" % webapp.server.base
+    f = urlopen(url)
     s = f.read()
-    s = s.decode("utf-8")
-    assert s == "世界您好"
+    assert s == b"Hello World!"

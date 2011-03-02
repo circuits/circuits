@@ -30,7 +30,7 @@ def test_file(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     logfile.seek(0)
     s = logfile.read().strip()
@@ -67,7 +67,7 @@ def test_logger(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     s = logobj.message
 
@@ -104,7 +104,7 @@ def test_filename(webapp, tmpdir):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     logfile.seek(0)
     s = logfile.read().strip()

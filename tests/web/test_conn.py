@@ -17,6 +17,7 @@ def test(webapp):
         response = connection.getresponse()
         assert response.status == 200
         assert response.reason == "OK"
-        assert response.read() == "Hello World!"
+        s = response.read()
+        assert s == b"Hello World!"
 
     connection.close()

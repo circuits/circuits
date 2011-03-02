@@ -21,7 +21,7 @@ class Root(Controller):
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_forbidden(webapp):
     try:

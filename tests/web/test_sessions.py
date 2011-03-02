@@ -23,12 +23,12 @@ def test(webapp):
 
     f = opener.open(webapp.server.base)
     s = f.read() 
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     f = opener.open(webapp.server.base + "/test")
     s = f.read()
-    assert s == "Hello test"
+    assert s == b"Hello test"
 
     f = opener.open(webapp.server.base)
     s = f.read()
-    assert s == "Hello test"
+    assert s == b"Hello test"

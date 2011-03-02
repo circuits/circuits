@@ -18,8 +18,6 @@ class Root(Controller):
         return basic_auth(self.request, self.response, realm, users, encrypt)
 
 def test(webapp):
-    from circuits import Debugger
-    Debugger().register(webapp)
     try:
         f = urlopen(webapp.server.base)
     except HTTPError as e:
@@ -35,4 +33,4 @@ def test(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"

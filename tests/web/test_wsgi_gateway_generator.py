@@ -14,4 +14,4 @@ def application(environ, start_response):
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"

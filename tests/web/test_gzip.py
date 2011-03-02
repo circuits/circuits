@@ -1,10 +1,12 @@
+#!/usr/bin/env python
+
+from gzip import decompress
 from urllib.request import build_opener, Request
 
 from circuits import handler, Component
 
 from circuits.web import Controller
 from circuits.web.tools import gzip
-from circuits.web.utils import decompress
 
 class Gzip(Component):
 
@@ -19,6 +21,9 @@ class Root(Controller):
         return "Hello World!"
 
 def test(webapp):
+    from circuits import Debugger
+    Debugger().register(webapp)
+
     gzip = Gzip()
     gzip.register(webapp)
 
@@ -28,6 +33,6 @@ def test(webapp):
 
     f = opener.open(request)
     s = decompress(f.read())
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     gzip.unregister()

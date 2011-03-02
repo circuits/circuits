@@ -11,7 +11,7 @@ class Root(Controller):
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_404(webapp):
     try:
@@ -26,7 +26,7 @@ def test_file(webapp):
     url = "%s/static/helloworld.txt" % webapp.server.base
     f = urlopen(url)
     s = f.read().strip()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_file404(webapp):
     try:

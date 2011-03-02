@@ -24,7 +24,7 @@ def test(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     url = "%s/rpc/" % webapp.server.base
     xmlrpc = xmlrpc.client.ServerProxy(url, allow_none=True)

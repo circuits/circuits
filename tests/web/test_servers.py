@@ -38,7 +38,7 @@ def test_baseserver():
             raise
 
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_server():
     server = Server(0)
@@ -54,7 +54,7 @@ def test_server():
             raise
 
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_unixserver(tmpdir):
     sockpath = tmpdir.ensure("test.sock")

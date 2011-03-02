@@ -1,7 +1,7 @@
 
-from io import StringIO
+from io import BytesIO
 
-from circuits.web.headers import parseHeaders
+from circuits.web.headers import parse_headers
 from circuits.core import handler, BaseComponent, Event
 
 class Request(Event):
@@ -21,7 +21,7 @@ class ResponseObject(object):
         self.protocol = protocol
 
         self._headers = None
-        self._body = StringIO()
+        self._body = BytesIO()
 
     @property
     def headers(self):
@@ -34,11 +34,13 @@ class HTTP(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, channel=channel):
+    def __init__(self, encoding="utf-8", channel=channel):
         super(HTTP, self).__init__(channel=channel)
 
+        self._encoding = encoding
+
         self._response = None
-        self._buffer = StringIO()
+        self._buffer = BytesIO()
 
     @handler("read", target="client")
     def _on_client_read(self, data):
@@ -50,8 +52,9 @@ class HTTP(BaseComponent):
                 self.push(Response(self._response))
                 self._response = None
         else:
-            statusline, data = data.split("\n", 1)
-            statusline = statusline.strip()
+            statusline, data = data.split(b"\r\n", 1)
+            statusline = statusline.strip().decode(
+                    self._encoding, "replace")
             protocol, status, message = statusline.split(" ", 2)
 
             status = int(status)
@@ -59,9 +62,12 @@ class HTTP(BaseComponent):
 
             response = ResponseObject(status, message, protocol)
 
-            headers, body = parseHeaders(StringIO(data))
-            response._headers = headers
-            response._body.write(body)
+            end_of_headers = data.find(b"\r\n\r\n")
+            header_data = data[:end_of_headers].decode(
+                    self._encoding, "replace")
+            headers = response._headers = parse_headers(header_data)
+
+            response._body.write(data[(end_of_headers + 4):])
 
             cLen = int(headers.get("Content-Length", "0"))
             if cLen and response._body.tell() < cLen:

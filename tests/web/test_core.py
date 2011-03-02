@@ -26,7 +26,7 @@ class Root(Controller):
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_404(webapp):
     try:
@@ -41,17 +41,17 @@ def test_args(webapp):
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.base, "/".join(args))
-    data = urlencode(kwargs)
+    data = urlencode(kwargs).encode("utf-8")
 
     f = urlopen(url, data)
-    data = f.read().split("\n")
+    data = f.read().decode("utf-8").split("\n")
     assert data[0] == repr(args)
     assert data[1] == repr(kwargs)
 
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_forbidden(webapp):
     try:
