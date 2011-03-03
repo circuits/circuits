@@ -24,9 +24,9 @@ CONFIG = {
             "pidfile": os.path.join("log", "%(name)s.pid"),
         },
         "logging": {
-            "debug": True,
+            "debug": "True",
             "type": "file",
-            "verbose": True,
+            "verbose": "True",
             "level": "DEBUG",
             "file": os.path.join("log", "%(name)s.log"),
         }
