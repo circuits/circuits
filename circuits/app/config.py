@@ -46,6 +46,9 @@ class Config(BaseComponent):
         self._config = ConfigParser(defaults=defaults)
         self._filename = filename
 
+    def add_section(self, section):
+        return self._config.add_section(section)
+
     def get(self, section, option, default=None, raw=False, vars=None):
         if self._config.has_option(section, option):
             return self._config.get(section, option, raw, vars)
@@ -69,6 +72,12 @@ class Config(BaseComponent):
             return self._config.getboolean(section, option)
         else:
             return default
+
+    def has_section(self, section):
+        return self._config.has_section(section)
+
+    def set(self, section, option, value):
+        return self._config.set(section, option, value)
 
     @handler("load_config")
     def _on_load_config(self):
