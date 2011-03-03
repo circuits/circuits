@@ -41,7 +41,7 @@ class Config(BaseComponent):
     channel = "config"
 
     def __init__(self, filename, defaults=None, channel=channel):
-        super(Config. self).__init__(channel=channel)
+        super(Config, self).__init__(channel=channel)
 
         self._config = ConfigParser(defaults=defaults)
         self._filename = filename
