@@ -51,7 +51,7 @@ class Config(BaseComponent):
 
     def get(self, section, option, default=None, raw=False, vars=None):
         if self._config.has_option(section, option):
-            return self._config.get(section, option, raw, vars)
+            return self._config.get(section, option, raw=raw, vars=vars)
         else:
             return default
 
