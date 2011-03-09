@@ -26,7 +26,8 @@ except ImportError:
 from circuits.core import handler, BaseComponent
 
 from . import tools
-from .errors import Forbidden, NotFound, Redirect
+from .wrappers import Response
+from .errors import Forbidden, HTTPError, NotFound, Redirect
 
 def expose(*channels, **config):
    def decorate(f):
@@ -114,8 +115,13 @@ if HAS_JSON:
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
                        self.session = self.request.session
-                self.response.headers["Content-Type"] = "application/json"
-                return json.dumps(f(self, *args, **kwargs))
+                result = f(self, *args, **kwargs)
+                if (isinstance(result, HTTPError)
+                        or isinstance(result, Response)):
+                    return result
+                else:
+                    self.response.headers["Content-Type"] = "application/json"
+                    return json.dumps(result)
              finally:
                 if hasattr(self, "request"):
                    del self.request
