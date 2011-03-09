@@ -68,7 +68,7 @@ class JSONRPC(BaseComponent):
             value.id = id
             value.response = response
             value.onSet = ("value_changed", self)
-        except Exception, e:
+        except Exception as e:
             r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
             return r
         else:

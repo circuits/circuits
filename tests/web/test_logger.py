@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-from urllib2 import urlopen
-from StringIO import StringIO
+from urllib.request import urlopen
+from io import StringIO
 from socket import gaierror, gethostbyname, gethostname
 
 from circuits.web import Controller, Logger
@@ -30,7 +30,7 @@ def test_file(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     logfile.seek(0)
     s = logfile.read().strip()
@@ -52,7 +52,7 @@ def test_file(webapp):
     d["f"] = ""
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
-    keys = d.keys()
+    keys = list(d.keys())
 
     for k in keys:
         assert d[k] in s
@@ -67,7 +67,7 @@ def test_logger(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     s = logobj.message
 
@@ -88,7 +88,7 @@ def test_logger(webapp):
     d["f"] = ""
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
-    keys = d.keys()
+    keys = list(d.keys())
 
     for k in keys:
         assert d[k] in s
@@ -104,7 +104,7 @@ def test_filename(webapp, tmpdir):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     logfile.seek(0)
     s = logfile.read().strip()
@@ -126,7 +126,7 @@ def test_filename(webapp, tmpdir):
     d["f"] = ""
     d["a"] = "Python-urllib/%s" % sys.version[:3]
 
-    keys = d.keys()
+    keys = list(d.keys())
 
     for k in keys:
         assert d[k] in s

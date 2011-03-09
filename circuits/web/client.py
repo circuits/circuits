@@ -1,5 +1,5 @@
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from circuits.web.headers import Headers
 from circuits.core import handler, BaseComponent, Event
@@ -25,10 +25,10 @@ def parse_url(url):
     else:
         raise ValueError("Invalid URL scheme")
 
-    resource = p.path or u"/"
+    resource = p.path or "/"
 
     if p.query:
-        resource += u"?" + p.query
+        resource += "?" + p.query
 
     return (host, port, resource, secure)
 

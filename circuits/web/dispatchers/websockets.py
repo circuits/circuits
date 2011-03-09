@@ -11,7 +11,7 @@ messages into ``Message`` events.
 
 from struct import pack
 from hashlib import md5
-from urlparse import urlunsplit
+from urllib.parse import urlunsplit
 from collections import defaultdict
 
 from circuits.net.sockets import Write

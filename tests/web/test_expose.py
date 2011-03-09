@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-from urllib2 import urlopen, HTTPError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 from circuits.web import expose, Controller
 
@@ -20,16 +19,16 @@ class Root(Controller):
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     f = urlopen("%s/+test" % webapp.server.base)
     s = f.read()
-    assert s == "test"
+    assert s == b"test"
 
     f = urlopen("%s/foo+bar" % webapp.server.base)
     s = f.read()
-    assert s == "foobar"
+    assert s == b"foobar"
 
     f = urlopen("%s/foo_bar" % webapp.server.base)
     s = f.read()
-    assert s == "foobar"
+    assert s == b"foobar"

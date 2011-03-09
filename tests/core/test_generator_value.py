@@ -28,7 +28,7 @@ def test_return_generator():
     app.flush()
 
     g = v.value
-    s = g.next()
+    s = next(g)
     assert s == "Hello"
 
 def test_yield():

@@ -12,19 +12,20 @@ import os
 import stat
 import hashlib
 import mimetypes
-import mimetools
 from time import mktime
-from rfc822 import formatdate
+from email.utils import formatdate
 from datetime import datetime, timedelta
+from email.generator import _make_boundary
+import collections
 
 mimetypes.init()
 mimetypes.add_type("image/x-dwg", ".dwg")
 mimetypes.add_type("image/x-icon", ".ico")
 mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
-from circuits.web import _httpauth
-from circuits.web.utils import get_ranges, compress
-from circuits.web.errors import HTTPError, NotFound, Redirect, Unauthorized
+from . import _httpauth
+from .utils import get_ranges, compress
+from .errors import HTTPError, NotFound, Redirect, Unauthorized
 
 def expires(request, response, secs=0, force=False):
     """Tool for influencing cache mechanisms using the 'Expires' header.
@@ -66,9 +67,10 @@ def expires(request, response, secs=0, force=False):
             # Set an explicit Expires date in the past.
             now = datetime.now()
             lastyear = now.replace(year=now.year-1)
-            expiry = formatdate(mktime(lastyear.timetuple()))
+            expiry = formatdate(mktime(lastyear.timetuple()),
+                    usegmt=True)
         else:
-            expiry = formatdate(response.time + secs)
+            expiry = formatdate(response.time + secs, usegmt=True)
         if force or "Expires" not in headers:
             headers["Expires"] = expiry
 
@@ -101,7 +103,8 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
     
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
-    response.headers['Last-Modified'] = formatdate(st.st_mtime)
+    response.headers['Last-Modified'] = formatdate(st.st_mtime,
+            usegmt=True)
     validate_since(request, response)
     
     if type is None:
@@ -145,10 +148,10 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
             else:
                 # Return a multipart/byteranges response.
                 response.code = 206
-                boundary = mimetools.choose_boundary()
+                boundary = _make_boundary()
                 ct = "multipart/byteranges; boundary=%s" % boundary
                 response.headers['Content-Type'] = ct
-                if response.headers.has_key("Content-Length"):
+                if "Content-Length" in response.headers:
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
                 
@@ -293,13 +296,13 @@ def check_auth(request, response, realm, users, encrypt=None):
         if not encrypt:
             encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
         
-        if callable(users):
+        if isinstance(users, collections.Callable):
             try:
                 # backward compatibility
                 users = users() # expect it to return a dictionary
 
                 if not isinstance(users, dict):
-                    raise ValueError, "Authentication users must be a dict"
+                    raise ValueError("Authentication users must be a dict")
                 
                 # fetch the user password
                 password = users.get(ah["username"], None)
@@ -308,7 +311,7 @@ def check_auth(request, response, realm, users, encrypt=None):
                 password = users(ah["username"])
         else:
             if not isinstance(users, dict):
-                raise ValueError, "Authentication users must be a dict"
+                raise ValueError("Authentication users must be a dict")
             
             # fetch the user password
             password = users.get(ah["username"], None)
@@ -420,7 +423,7 @@ def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
                 
                 response.headers['Content-Encoding'] = 'gzip'
                 response.body = compress(response.body, level)
-                if response.headers.has_key("Content-Length"):
+                if "Content-Length" in response.headers:
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
             return response

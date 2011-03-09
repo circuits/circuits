@@ -25,4 +25,4 @@ def test(webapp):
     assert response.message == "OK"
 
     s = response.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"

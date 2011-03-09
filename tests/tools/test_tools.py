@@ -26,7 +26,7 @@ class A(Component):
         pass
 
     def foo(self):
-        print "A!"
+        print("A!")
 
 class B(Component):
 
@@ -34,7 +34,7 @@ class B(Component):
         pass
 
     def foo(self):
-        print "B!"
+        print("B!")
 
 class C(Component):
 
@@ -42,7 +42,7 @@ class C(Component):
         pass
 
     def foo(self):
-        print "C!"
+        print("C!")
 
 class D(Component):
 
@@ -50,7 +50,7 @@ class D(Component):
         pass
 
     def foo(self):
-        print "D!"
+        print("D!")
 
 class E(Component):
 
@@ -58,7 +58,7 @@ class E(Component):
         pass
 
     def foo(self):
-        print "E!"
+        print("E!")
 
 class F(Component):
 
@@ -66,7 +66,7 @@ class F(Component):
         pass
 
     def foo(self):
-        print "F!"
+        print("F!")
 
 INSPECT = """\
  Registered Components: 0

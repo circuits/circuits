@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
-from urllib2 import HTTPError, HTTPBasicAuthHandler
-from urllib2 import urlopen, build_opener, install_opener
+from urllib.error import HTTPError
+from urllib.request import HTTPBasicAuthHandler
+from urllib.request import urlopen, build_opener, install_opener
 
 from circuits.web import Controller
 from circuits.web.tools import check_auth, basic_auth
@@ -21,7 +20,7 @@ class Root(Controller):
 def test(webapp):
     try:
         f = urlopen(webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 401
         assert e.msg == "Unauthorized"
     else:
@@ -34,4 +33,4 @@ def test(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"

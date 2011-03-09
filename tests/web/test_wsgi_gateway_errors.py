@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-from urllib2 import urlopen, HTTPError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 def application(environ, start_response):
     status = "200 OK"
@@ -11,11 +10,11 @@ def application(environ, start_response):
 def test(webapp):
     try:
         urlopen(webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 500
         assert e.msg == "Internal Server Error"
         s = e.read()
-        assert "Exception" in s
-        assert "Hello World!" in s
+        assert b"Exception" in s
+        assert b"Hello World!" in s
     else:
         assert False

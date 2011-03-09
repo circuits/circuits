@@ -47,7 +47,7 @@ def test_persistentTimer(app):
     timer = Timer(0.1, Test(), "timer", persist=True)
     timer.register(app)
 
-    for i in xrange(2):
+    for i in range(2):
         assert py.test.wait_for(app, "flag")
         app.reset()
 

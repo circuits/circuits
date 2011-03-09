@@ -90,14 +90,14 @@ class Daemon(BaseComponent):
             pid = os.fork()
             if pid > 0:
                 # Exit first parent
-                raise SystemExit, 0
-        except OSError, e:
+                raise SystemExit(0)
+        except OSError as e:
             print >> sys.stderr, "fork #1 failed: (%d) %s\n" % (errno, str(e))
-            raise SystemExit, 1
+            raise SystemExit(1)
 
         # Decouple from parent environment.
         os.chdir(self._path)
-        os.umask(077)
+        os.umask(0o077)
         os.setsid()
 
         # Do second fork.
@@ -105,10 +105,10 @@ class Daemon(BaseComponent):
             pid = os.fork()
             if pid > 0:
                 # Exit second parent
-                raise SystemExit, 0
-        except OSError, e:
+                raise SystemExit(0)
+        except OSError as e:
             print >> sys.stderr, "fork #2 failed: (%d) %s\n" % (e, str(e))
-            raise SystemExit, 1
+            raise SystemExit(1)
 
         # Now I am a daemon!
 

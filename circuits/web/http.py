@@ -9,24 +9,21 @@ or commonly known as HTTP.
 """
 
 
-from urllib import unquote
-from urlparse import urlparse
-
-from circuits.tools import tryimport
-
-StringIO = tryimport(("cStringIO", "StringIO",))
+from io import BytesIO
+from urllib.parse import unquote
+from urllib.parse import urlparse
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
 
-import wrappers
-from utils import quoted_slash
-from headers import parseHeaders
-from exceptions import HTTPException
-from errors import HTTPError, NotFound
-from events import Request, Response, Stream
-from errors import Redirect as RedirectError
-from exceptions import Redirect as RedirectException
+from . import wrappers
+from .utils import quoted_slash
+from .exceptions import HTTPException
+from .errors import HTTPError, NotFound
+from .headers import parse_headers, Headers
+from .events import Request, Response, Stream
+from .errors import Redirect as RedirectError
+from .exceptions import Redirect as RedirectException
 
 
 class HTTP(BaseComponent):
@@ -36,8 +33,12 @@ class HTTP(BaseComponent):
     HTTP messages creating and sending an appropriate response.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(HTTP, self).__init__(*args, **kwargs)
+    channel = "web"
+
+    def __init__(self, encoding="utf-8", channel=channel):
+        super(HTTP, self).__init__(channel=channel)
+
+        self._encoding = encoding
 
         self._clients = {}
 
@@ -47,11 +48,11 @@ class HTTP(BaseComponent):
             if data:
                 if response.chunked:
                     buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
-                    data = "".join(buf)
+                    data = b"".join(buf)
                 self.push(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
-                    data = response.body.next()
+                    data = next(response.body)
                 except StopIteration:
                     data = None
                 self.push(Stream(response, data))
@@ -70,7 +71,7 @@ class HTTP(BaseComponent):
 
         if response.stream and response.body:
             try:
-                data = response.body.next()
+                data = next(response.body)
             except StopIteration:
                 data = None
             self.push(Stream(response, data))
@@ -118,8 +119,9 @@ class HTTP(BaseComponent):
             if not request.body.tell() == contentLength:
                 return
         else:
-            requestline, data = data.split("\n", 1)
-            requestline = requestline.strip()
+            requestline, data = data.split(b"\r\n", 1)
+            requestline = requestline.strip().decode(
+                    self._encoding, "replace")
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
@@ -143,8 +145,6 @@ class HTTP(BaseComponent):
             # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
             path = "%2F".join(map(unquote, quoted_slash.split(path)))
 
-            request.path = path.decode("utf-8", "replace")
-
             # Compare request and server HTTP protocol versions, in case our
             # server does not support the requested protocol. Limit our output
             # to min(req, server). We want the following output:
@@ -164,9 +164,15 @@ class HTTP(BaseComponent):
             sp = request.server_protocol
             response.protocol = "HTTP/%s.%s" % min(rp, sp)
 
-            headers, body = parseHeaders(StringIO.StringIO(data))
-            request.headers = headers
-            request.body.write(body)
+            end_of_headers = data.find(b"\r\n\r\n")
+            if end_of_headers > -1:
+                header_data = data[:end_of_headers].decode(
+                        self._encoding, "replace")
+                headers = request.headers = parse_headers(header_data)
+            else:
+                headers = request.headers = Headers([])
+
+            request.body.write(data[(end_of_headers + 4):])
 
             if headers.get("Expect", "") == "100-continue":
                 return self.push(Response(wrappers.Response(request, 100)))

@@ -33,7 +33,7 @@ def test(tmpdir, cov):
     os.kill(pid, SIGTERM)
     try:
         os.waitpid(pid, os.WTERMSIG(0))
-    except OSError, e:
+    except OSError as e:
         assert e[0] == errno.ECHILD
 
     os.remove(pidfile)

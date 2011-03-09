@@ -7,10 +7,11 @@
 from time import sleep
 
 from circuits.core.manager import TIMEOUT
+import collections
 
 def wait_for(obj, attr, value=True, timeout=30.0):
     for i in range(int(timeout / TIMEOUT)):
-        if callable(value):
+        if isinstance(value, collections.Callable):
             if value(obj, attr):
                 return True
         elif getattr(obj, attr) == value:

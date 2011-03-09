@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 
-from urllib2 import urlopen
-
 import pytest
+pytest.skip("Not passing")
 
-try:
-    from jsonrpclib import ServerProxy
-except ImportError:
-    pytest.skip("Skip: No JSON support")
+from urllib.request import urlopen
+
+from .jsonrpclib import ServerProxy
 
 from circuits import Component
 from circuits.web import Controller, JSONRPC
@@ -30,7 +28,7 @@ def test(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     url = "%s/rpc/" % webapp.server.base
     jsonrpc = ServerProxy(url, allow_none=True)

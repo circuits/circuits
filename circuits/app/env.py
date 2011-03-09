@@ -9,13 +9,12 @@ components and is used to create, load and manage system/application
 environments.
 """
 
-
 import os
 
 from circuits import handler, BaseComponent, Event
 
-from log import Logger
-from config import Config, LoadConfig, SaveConfig
+from .log import Logger
+from .config import Config, LoadConfig, SaveConfig
 
 
 VERSION = 1
@@ -25,9 +24,9 @@ CONFIG = {
             "pidfile": os.path.join("log", "%(name)s.pid"),
         },
         "logging": {
-            "debug": True,
+            "debug": "True",
             "type": "file",
-            "verbose": True,
+            "verbose": "True",
             "level": "DEBUG",
             "file": os.path.join("log", "%(name)s.log"),
         }
@@ -147,7 +146,7 @@ class BaseEnvironment(BaseComponent):
         for section in CONFIG:
             if not self.config.has_section(section):
                 self.config.add_section(section)
-            for option, value in CONFIG[section].iteritems():
+            for option, value in CONFIG[section].items():
                 if type(value) == str:
                     value = value % {"name": self.envname}
                 self.config.set(section, option, value)

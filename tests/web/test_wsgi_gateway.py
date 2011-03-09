@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 from circuits.web.wsgi import Gateway
 
@@ -22,10 +22,10 @@ def test(webapp):
 
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
     f = urlopen("%s/foo" % webapp.server.base)
     s = f.read()
-    assert s == "Foo"
+    assert s == b"Foo"
 
     foo.unregister()

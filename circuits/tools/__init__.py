@@ -72,7 +72,9 @@ def graph(x, name=None):
     """
 
     def getname(c):
-        return "%s-%s" % (c.name, md5(str(hash(c))).hexdigest()[-4:])
+        s = "%d" % id(c)
+        h = md5(s.encode("utf-8")).hexdigest()[-4:]
+        return "%s-%s" % (c.name, h)
 
     pydot = tryimport(("pydot",))
     if pydot is not None:

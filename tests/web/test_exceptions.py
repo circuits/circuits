@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-from urllib2 import urlopen, HTTPError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 from circuits.web import Controller
 from circuits.web.exceptions import *
@@ -22,12 +21,12 @@ class Root(Controller):
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_forbidden(webapp):
     try:
         urlopen("%s/test_forbidden" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 403
         assert e.msg == "Forbidden"
     else:
@@ -36,7 +35,7 @@ def test_forbidden(webapp):
 def test_notfound(webapp):
     try:
          urlopen("%s/test_notfound" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
     else:

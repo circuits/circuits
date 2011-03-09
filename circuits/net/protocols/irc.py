@@ -17,7 +17,7 @@ import time
 from circuits.net.sockets import Write
 from circuits.core import Event, Component
 
-from line import LP
+from .line import LP
 
 ###
 ### Supporting Functions

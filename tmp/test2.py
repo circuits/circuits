@@ -1,34 +1,12 @@
-# Package:  values
-# Date:     11th April 2010
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
-"""Values
-
-This defines the Value object used by components and events.
-"""
-
-
-from .events import Event
-
-class ValueChanged(Event):
-    """Value Changed Event
-
-    This Event is triggered when the return Value of an Event Handler has
-    changed it's value.
-    """
-
-    def __init__(self, value):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(ValueChanged, self).__init__(value)
+#!/usr/bin/env python
 
 class Proxy(object):
 
-    __slots__ = ["_obj", "_result", "__weakref__"]
+    __slots__ = ["_manager", "_obj", "__weakref__"]
 
-    def __init__(self, obj, result=None):
+    def __init__(self, obj, manager=None):
         object.__setattr__(self, "_obj", obj)
-        object.__setattr__(self, "_result", result)
+        object.__setattr__(self, "_manager", manager)
 
     #
     # Special Cases
@@ -94,8 +72,8 @@ class Proxy(object):
                     else:
                         kwargs[k] = v
 
-                result = object.__getattribute__(self, "_result")
-                if result is not None:
+                manager = object.__getattribute__(self, "_manager")
+                if manager is not None:
                     manager()
 
                 return getattr(object.__getattribute__(self, "_obj"),
@@ -128,10 +106,7 @@ class Value(object):
     def __init__(self, value=None):
         super(Value, self).__init__()
 
-        if value is not None:
-            self._value = Proxy(value)
-        else:
-            self._value = None
+        self._value = Proxy(value)
 
     def __get__(self, instance, owner):
         print("Retriving value...")
@@ -145,26 +120,8 @@ class Value(object):
         print(instance)
         print(value)
 
-        if isinstance(value, instance):
-            instance._parent = value
-
-        if value is not None:
-            self._value = Proxy(value)
-
-        def notify(o, v):
-            if not isinstance(v, Result) and v is not None:
-                o.done = True
-                if o.manager is not None and o.onSet is not None:
-                    o.manager.fireEvent(ValueChanged(o), *o.onSet)
-            elif isinstance(v, Result):
-                o.done = v.done
-                o.errors = v.errors
-            if not o._parent == o:
-                o._parent.done = o.done
-                o._parent.errors = o.errors
-                notify(o._parent, v)
-        
-        notify(self, value)
+        instance.done = True
+        self._value = Proxy(value)
 
 class Result(object):
     """Create a new Result Object
@@ -200,8 +157,6 @@ class Result(object):
 
         self.done = False
         self.errors = False
-
-        self._parent = None
 
     def __getstate__(self):
         keys = ("event", "onSet", "done", "errors", "value")

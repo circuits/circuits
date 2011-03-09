@@ -7,13 +7,13 @@ import pytest
 if sys.version_info[:2] <= (2, 5):
     pytest.skip("This test does not work for Python <= 2.5")
 
-from urlparse import urlunsplit
+from urllib.parse import urlunsplit
 
 from circuits import Component
 from circuits.net.sockets import Write
 from circuits.web.dispatchers import WebSockets
 
-from websocket import create_connection
+from .websocket import create_connection
 
 
 class Test1(Component):

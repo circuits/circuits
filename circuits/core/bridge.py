@@ -19,13 +19,13 @@ uses the UDP protocol and as such events cannot be guaranteed of their
 order or delivery.
 """
 
-from StringIO import StringIO
+from io import StringIO
 from pickle import dumps, Unpickler
 
-from handlers import handler
-from components import BaseComponent
-from values import Value, ValueChanged
-from events import Event, Registered, Unregistered, Started, Stopped
+from .handlers import handler
+from .components import BaseComponent
+from .values import Value, ValueChanged
+from .events import Event, Registered, Unregistered, Started, Stopped
 
 from circuits.net.sockets import Write
 

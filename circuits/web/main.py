@@ -134,7 +134,7 @@ def main():
         httpd = make_server(address, port, app)
         httpd.serve_forever()
         
-        raise SystemExit, 0
+        raise SystemExit(0)
 
     manager = Manager()
 
@@ -144,13 +144,13 @@ def main():
     poller = opts.type.lower()
     if poller == "poll":
         if Poll is None:
-            print "No poll support available - defaulting to Select..."
+            print("No poll support available - defaulting to Select...")
             Poller = Select
         else:
             Poller = Poll
     elif poller == "epoll":
         if EPoll is None:
-            print "No epoll support available - defaulting to Select..."
+            print("No epoll support available - defaulting to Select...")
             Poller = Select
         else:
             Poller = EPoll
@@ -174,15 +174,15 @@ def main():
             profiler.start()
 
     if opts.debug:
-        print graph(manager, name="circuits.web")
-        print
-        print inspect(manager)
+        print(graph(manager, name="circuits.web"))
+        print()
+        print(inspect(manager))
 
     if opts.mp and HAS_MULTIPROCESSING:
         for i in range(opts.mp):
             manager.start(process=True)
     else:
-        print "No multiprocessing support available"
+        print("No multiprocessing support available")
 
     manager.run()
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from os.path import basename
-from urllib2 import urlopen, URLError
+from urllib.request import urlopen
+from urllib.error import URLError
 from socket import gaierror
 
 import pytest
@@ -30,14 +31,14 @@ def test_baseserver():
 
     try:
         f = urlopen(server.base)
-    except URLError, e:
+    except URLError as e:
         if type(e[0]) is gaierror:
             f = urlopen("http://127.0.0.1:9000")
         else:
             raise
 
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_server():
     server = Server(0)
@@ -46,14 +47,14 @@ def test_server():
 
     try:
         f = urlopen(server.base)
-    except URLError, e:
+    except URLError as e:
         if type(e[0]) is gaierror:
             f = urlopen("http://127.0.0.1:9000")
         else:
             raise
 
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_unixserver(tmpdir):
     sockpath = tmpdir.ensure("test.sock")

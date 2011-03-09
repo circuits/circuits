@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from types import ListType
-
 import py
 
 from circuits import Event, Component
@@ -42,5 +40,5 @@ def test():
 
     assert app.etype == NameError
     py.test.raises(NameError, lambda e: reraise(e), app.evalue)
-    assert type(app.etraceback) is ListType
+    assert isinstance(app.etraceback, list)
     assert app.handler == app.test

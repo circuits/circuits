@@ -9,14 +9,14 @@ This module implements Logger Components.
 
 import os
 import sys
-import rfc822
 import datetime
+from email._parseaddr import _monthnames
 
 from circuits.core import handler, BaseComponent
 
 def formattime():
     now = datetime.datetime.now()
-    month = rfc822._monthnames[now.month - 1].capitalize()
+    month = _monthnames[now.month - 1].capitalize()
     return ("[%02d/%s/%04d:%02d:%02d:%02d]" %
             (now.day, month, now.year, now.hour, now.minute, now.second))
 
@@ -65,8 +65,8 @@ class Logger(BaseComponent):
                  "f": inheaders.get("Referer", ""),
                  "a": inheaders.get("User-Agent", ""),
                  }
-        for k, v in atoms.items():
-            if isinstance(v, unicode):
+        for k, v in list(atoms.items()):
+            if isinstance(v, str):
                 v = v.encode("utf8")
             elif not isinstance(v, str):
                 v = str(v)

@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-from urllib2 import urlopen, HTTPError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 from circuits.web import Controller
 
@@ -12,12 +11,12 @@ class Root(Controller):
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_404(webapp):
     try:
         urlopen("%s/foo" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
     else:
@@ -27,12 +26,12 @@ def test_file(webapp):
     url = "%s/static/helloworld.txt" % webapp.server.base
     f = urlopen(url)
     s = f.read().strip()
-    assert s == "Hello World!"
+    assert s == b"Hello World!"
 
 def test_file404(webapp):
     try:
         urlopen("%s/static/foo.txt" % webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
     else:
@@ -41,4 +40,4 @@ def test_file404(webapp):
 def test_directory(webapp):
     f = urlopen("%s/static/" % webapp.server.base)
     s = f.read()
-    assert "helloworld.txt" in s
+    assert b"helloworld.txt" in s

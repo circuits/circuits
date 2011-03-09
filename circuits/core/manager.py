@@ -9,7 +9,8 @@ This module definse the Manager class subclasses by component.BaseComponent
 
 import os
 from time import sleep
-from types import TupleType
+from warnings import warn
+from itertools import chain
 from threading import Thread
 from collections import deque
 from inspect import getargspec
@@ -42,19 +43,9 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
-
-#
-# Compatibility and consistency fixes
-#
-
-if HAS_MULTIPROCESSING == 2:
-    setattr(Process, "isAlive", Process.is_alive)
-elif HAS_MULTIPROCESSING == 1:
-    setattr(Process, "pid", property(Process.getPid))
-
-from values import Value
-from events import Started, Stopped, Signal
-from events import Error, Success, Failure, Filter, Start, End
+from .values import Result
+from .events import Started, Stopped, Signal
+from .events import Error, Success, Failure, Filter, Start, End
 
 TIMEOUT = 0.01 # 10ms timeout when no tick functions to process
 
@@ -342,7 +333,7 @@ class Manager(object):
         if channel is None:
             if handler in self._globals:
                 self._globals.remove(handler)
-            channels = self.channels.keys()
+            channels = list(self.channels.keys())
         else:
             channels = [channel]
 
@@ -398,7 +389,7 @@ class Manager(object):
         """
 
         if channel is None and target is None:
-            if type(event.channel) is TupleType:
+            if isinstance(event.channel, tuple):
                 target, channel = event.channel
             else:
                 channel = event.channel or event.name.lower()
@@ -413,14 +404,14 @@ class Manager(object):
 
         event.channel = (target, channel)
 
-        event.value = Value(event, self)
+        event.result = Result(event, self)
 
         if event.start is not None:
             self.fire(Start(event), *event.start)
 
         self.root._fire(event, (target, channel))
 
-        return event.value
+        return event.result
 
     fire = push = fireEvent
 
@@ -457,14 +448,14 @@ class Manager(object):
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
-                event.value.value = retval
+                event.result.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
                 etype, evalue, etraceback = _exc_info()
-                event.value.errors = True
+                event.result.errors = True
                 traceback = format_tb(etraceback)
-                event.value.value = (etype, evalue, traceback)
+                event.result.value = (etype, evalue, traceback)
                 if event.failure is not None:
                     error = (etype, evalue, traceback)
                     self.fire(Failure(event, handler, error), *event.failure)

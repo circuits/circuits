@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-from urllib2 import urlopen, HTTPError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 from circuits.web import Controller
 
@@ -12,7 +11,7 @@ class Root(Controller):
 def test(webapp):
     try:
         urlopen(webapp.server.base)
-    except HTTPError, e:
+    except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
     else:

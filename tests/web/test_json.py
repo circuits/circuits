@@ -1,18 +1,12 @@
 #!/usr/bin/env python
 
-import urllib2
-from urllib2 import urlopen
-from cookielib import CookieJar
+import urllib.request, urllib.error, urllib.parse
+from urllib.request import urlopen
+from http.cookiejar import CookieJar
 
 import pytest
 
-try:
-    import json
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        pytest.skip("Skip: No JSON support")
+from json import loads
 
 from circuits.web import JSONController, Sessions
 
@@ -32,7 +26,8 @@ class Root(JSONController):
 def test(webapp):
     f = urlopen(webapp.server.base)
     data = f.read()
-    d = json.loads(data)
+    data = data.decode("utf-8")
+    d = loads(data)
     assert d["success"]
     assert d["message"] == "Hello World!"
 
@@ -40,22 +35,25 @@ def test_sessions(webapp):
     Sessions().register(webapp)
 
     cj = CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 
     f = opener.open("%s/test_sessions" % webapp.server.base)
     data = f.read()
-    d = json.loads(data)
+    data = data.decode("utf-8")
+    d = loads(data)
     assert d["success"]
     assert d["message"] == "Hello World!"
 
     f = opener.open("%s/test_sessions/test" % webapp.server.base)
     data = f.read()
-    d = json.loads(data)
+    data = data.decode("utf-8")
+    d = loads(data)
     assert d["success"]
     assert d["message"] == "Hello test"
 
     f = opener.open("%s/test_sessions" % webapp.server.base)
     data = f.read()
-    d = json.loads(data)
+    data = data.decode("utf-8")
+    d = loads(data)
     assert d["success"]
     assert d["message"] == "Hello test"

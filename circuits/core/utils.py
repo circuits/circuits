@@ -25,7 +25,7 @@ def itercmp(x, c, subclass=True):
 def findcmp(x, c, subclass=True):
     components = itercmp(x, c, subclass)
     try:
-        return components.next()
+        return next(components)
     except StopIteration:
         return None
 

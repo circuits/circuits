@@ -21,7 +21,7 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
 
 
 import socket
-from urlparse import urlparse
+from urllib.parse import urlparse
 import random
 import struct
 from hashlib import md5
@@ -111,7 +111,7 @@ def create_connection(url, timeout=None, **options):
     return websock
 
 _MAX_INTEGER = (1 << 32) -1
-_AVAILABLE_KEY_CHARS = range(0x21, 0x2f + 1) + range(0x3a, 0x7e + 1)
+_AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)) + list(range(0x3a, 0x7e + 1))
 _MAX_CHAR_BYTE = (1<<8) -1
 
 # ref. Websocket gets an update, and it breaks stuff.
@@ -276,7 +276,7 @@ class WebSocket(object):
 
     def _validate_header(self, headers):
         #TODO: check other headers
-        for key, value in HEADERS_TO_CHECK.iteritems():
+        for key, value in HEADERS_TO_CHECK.items():
             v = headers.get(key, None)
             if value != v:
                 return False, False
@@ -333,7 +333,7 @@ class WebSocket(object):
         """
         Send the data as string. payload must be utf-8 string or unicoce.
         """
-        if isinstance(payload, unicode):
+        if isinstance(payload, str):
             payload = payload.encode("utf-8")
         data = "".join(["\x00", payload, "\xff"])
         self.io_sock.send(data)
@@ -487,7 +487,7 @@ class WebSocketApp(object):
                 if data is None:
                     break
                 self._run_with_no_err(self.on_message, data)
-        except Exception, e:
+        except Exception as e:
             self._run_with_no_err(self.on_error, e)
         finally:
             self.sock.close()
@@ -498,7 +498,7 @@ class WebSocketApp(object):
         if callback:
             try:
                 callback(self, *args)
-            except Exception, e:
+            except Exception as e:
                 if logger.isEnabledFor(logging.DEBUG):
                     logger.error(e)
 
@@ -507,12 +507,12 @@ if __name__ == "__main__":
     enableTrace(True)
     #ws = create_connection("ws://localhost:8080/echo")
     ws = create_connection("ws://localhost:5000/chat")
-    print "Sending 'Hello, World'..."
+    print("Sending 'Hello, World'...")
     ws.send("Hello, World")
-    print "Sent"
-    print "Receiving..."
+    print("Sent")
+    print("Receiving...")
     result =  ws.recv()
-    print "Received '%s'" % result
+    print("Received '%s'" % result)
     ws.close()
         
 
