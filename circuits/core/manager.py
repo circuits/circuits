@@ -43,7 +43,7 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
-from .values import Value
+from .values import Result
 from .events import Started, Stopped, Signal
 from .events import Error, Success, Failure, Filter, Start, End
 
@@ -404,14 +404,14 @@ class Manager(object):
 
         event.channel = (target, channel)
 
-        event.value = Value(event, self)
+        event.result = Result(event, self)
 
         if event.start is not None:
             self.fire(Start(event), *event.start)
 
         self.root._fire(event, (target, channel))
 
-        return event.value
+        return event.result
 
     fire = push = fireEvent
 
@@ -448,14 +448,14 @@ class Manager(object):
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
-                event.value.value = retval
+                event.result.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
                 etype, evalue, etraceback = _exc_info()
-                event.value.errors = True
+                event.result.errors = True
                 traceback = format_tb(etraceback)
-                event.value.value = (etype, evalue, traceback)
+                event.result.value = (etype, evalue, traceback)
                 if event.failure is not None:
                     error = (etype, evalue, traceback)
                     self.fire(Failure(event, handler, error), *event.failure)
