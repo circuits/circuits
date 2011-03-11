@@ -157,11 +157,13 @@ def main():
     else:
         Poller = Select
 
+    Poller().register(manager)
+
     if opts.server.lower() == "base":
-        BaseServer(bind, poller=Poller).register(manager)
+        BaseServer(bind).register(manager)
         HelloWorld().register(manager)
     else:
-        Server(bind, poller=Poller).register(manager)
+        Server(bind).register(manager)
         Root().register(manager)
 
     docroot = os.getcwd() if not args else args[0]
