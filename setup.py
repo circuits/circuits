@@ -2,36 +2,56 @@
 
 import os
 from glob import glob
+from distutils.core import Command
+from distutils.util import convert_path
 
 try:
-    from setuptools import setup, find_packages
-    HAS_SETUPTOOLS = True
+    from setuptools import setup
 except ImportError:
     from distutils.core import setup
-    HAS_SETUPTOOLS = False
 
-if not HAS_SETUPTOOLS:
-    from distutils.util import convert_path
 
-    def find_packages(where=".", exclude=()):
-        """Borrowed directly from setuptools"""
+def find_packages(where=".", exclude=()):
+    """Borrowed directly from setuptools"""
 
-        out = []
-        stack = [(convert_path(where), "")]
-        while stack:
-            where, prefix = stack.pop(0)
-            for name in os.listdir(where):
-                fn = os.path.join(where, name)
-                if ("." not in name and os.path.isdir(fn) and
-                        os.path.isfile(os.path.join(fn, "__init__.py"))):
-                    out.append(prefix + name)
-                    stack.append((fn, prefix + name + "."))
+    out = []
+    stack = [(convert_path(where), "")]
+    while stack:
+        where, prefix = stack.pop(0)
+        for name in os.listdir(where):
+            fn = os.path.join(where, name)
+            if ("." not in name and os.path.isdir(fn) and
+                    os.path.isfile(os.path.join(fn, "__init__.py"))):
+                out.append(prefix + name)
+                stack.append((fn, prefix + name + "."))
 
-        from fnmatch import fnmatchcase
-        for pat in list(exclude) + ["ez_setup"]:
-            out = [item for item in out if not fnmatchcase(item, pat)]
+    from fnmatch import fnmatchcase
+    for pat in list(exclude) + ["ez_setup"]:
+        out = [item for item in out if not fnmatchcase(item, pat)]
 
-        return out
+    return out
+
+
+class Test(Command):
+
+    description = "Run tests"
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import sys
+        from subprocess import call
+        raise SystemExit(
+            call([sys.executable,
+                "tools/runtests"]
+            )
+        )
 
 path = os.path.abspath(os.path.dirname(__file__))
 try:
@@ -43,6 +63,9 @@ except IOError:
 import circuits
 
 setup(
+    cmdclass={
+        "test": Test,
+    },
     name="circuits",
     version=circuits.__version__,
     description="Asynchronous Component based Event Application Framework",
