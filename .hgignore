@@ -9,4 +9,4 @@ hgtools*
 coverage
 docs/build
 docs/source/api
-.egg-info
+*.egg-info
