@@ -5,7 +5,7 @@ syntax: glob
 build
 dist
 hgtools*
-.coverage
+.coverage*
 coverage
 docs/build
 docs/source/api
