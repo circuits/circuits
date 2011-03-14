@@ -10,6 +10,7 @@ environments.
 """
 
 import os
+from signal import SIGHUP
 
 from circuits import handler, BaseComponent, Event
 
@@ -193,3 +194,8 @@ class BaseEnvironment(BaseComponent):
             logfile = os.path.join(self.path, logfile)
         self.log = Logger(logfile, logname, logtype, loglevel).register(self)
         self.push(EnvironmentLoaded())
+
+    @handler("signal", target="*")
+    def signal(self, signal, track):
+        if signal == SIGHUP:
+            self._load()
