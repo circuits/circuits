@@ -9,8 +9,10 @@ components and is used to create, load and manage system/application
 environments.
 """
 
-import os
+from os import mkdir
+from os import makedirs
 from signal import SIGHUP
+from os.path import abspath, isabs, join as joinpath
 
 from circuits import handler, BaseComponent, Event
 
@@ -22,14 +24,14 @@ VERSION = 1
 
 CONFIG = {
         "general": {
-            "pidfile": os.path.join("log", "%(name)s.pid"),
+            "pidfile": joinpath("%(path)s", "log", "%(name)s.pid"),
         },
         "logging": {
             "debug": "True",
             "type": "file",
             "verbose": "True",
             "level": "DEBUG",
-            "file": os.path.join("log", "%(name)s.log"),
+            "file": joinpath("%(path)s", "log", "%(name)s.log"),
         }
  }
 
@@ -114,34 +116,31 @@ class BaseEnvironment(BaseComponent):
     def __init__(self, path, envname, channel=channel):
         super(BaseEnvironment, self).__init__(channel=channel)
 
-        self.path = os.path.abspath(os.path.expanduser(path))
+        self.path = abspath(path)
         self.envname = envname
 
     def _load(self):
-        os.chdir(self.path)
-
         # Create Config Component
-        configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
+        configfile = joinpath(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile).register(self)
         self.push(LoadConfig(), target=self.config)
 
     @handler("create_environment")
     def _on_create_environment(self):
         # Create the directory structure
-        os.makedirs(self.path)
-        os.chdir(self.path)
-        os.mkdir(os.path.join(self.path, "log"))
-        os.mkdir(os.path.join(self.path, "conf"))
+        makedirs(self.path)
+        mkdir(joinpath(self.path, "log"))
+        mkdir(joinpath(self.path, "conf"))
 
         # Create a few files
-        createFile(os.path.join(self.path, "VERSION"), "%d" % self.version)
+        createFile(joinpath(self.path, "VERSION"), "%d" % self.version)
         createFile(
-                os.path.join(self.path, "README"),
+                joinpath(self.path, "README"),
                 "This directory contains a %s Environment." % self.envname
         )
 
         # Setup the default configuration
-        configfile = os.path.join(self.path, "conf", "%s.ini" % self.envname)
+        configfile = joinpath(self.path, "conf", "%s.ini" % self.envname)
         createFile(configfile)
         self.config = Config(configfile).register(self)
         for section in CONFIG:
@@ -149,13 +148,16 @@ class BaseEnvironment(BaseComponent):
                 self.config.add_section(section)
             for option, value in CONFIG[section].items():
                 if type(value) == str:
-                    value = value % {"name": self.envname}
+                    value = value % {
+                        "name": self.envname,
+                        "path": self.path,
+                    }
                 self.config.set(section, option, value)
         self.push(SaveConfig(), target=self.config)
 
     @handler("verify_environment")
     def _on_verify_environment(self):
-        f = open(os.path.join(self.path, "VERSION"), "r")
+        f = open(joinpath(self.path, "VERSION"), "r")
         version = f.read().strip()
         f.close()
 
@@ -190,8 +192,8 @@ class BaseEnvironment(BaseComponent):
         loglevel = self.config.get("logging", "level", "INFO")
         logfile = self.config.get("logging", "file", "/dev/null")
         logfile = logfile % {"name": self.envname}
-        if not os.path.isabs(logfile):
-            logfile = os.path.join(self.path, logfile)
+        if not isabs(logfile):
+            logfile = joinpath(self.path, logfile)
         self.log = Logger(logfile, logname, logtype, loglevel).register(self)
         self.push(EnvironmentLoaded())
 
