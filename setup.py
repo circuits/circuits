@@ -2,7 +2,6 @@
 
 import os
 from glob import glob
-from distutils.core import Command
 from distutils.util import convert_path
 
 try:
@@ -31,28 +30,6 @@ def find_packages(where=".", exclude=()):
 
     return out
 
-
-class Test(Command):
-
-    description = "Run tests"
-
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        import sys
-        from subprocess import call
-        raise SystemExit(
-            call([sys.executable,
-                "tools/runtests"]
-            )
-        )
-
 path = os.path.abspath(os.path.dirname(__file__))
 try:
     README = open(os.path.join(path, "README.rst")).read()
@@ -63,9 +40,9 @@ except IOError:
 import circuits
 
 setup(
-    cmdclass={
-        "test": Test,
-    },
+    #cmdclass={
+    #    "test": Test,
+    #},
     name="circuits",
     version=circuits.__version__,
     description="Asynchronous Component based Event Application Framework",
@@ -92,7 +69,12 @@ setup(
         "Operating System :: POSIX",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
+        "Programming Language :: Python 2",
+        "Programming Language :: Python :: 2.5",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python 3",
+        "Programming Language :: Python :: 3.2",
         "Topic :: Adaptive Technologies",
         "Topic :: Communications :: Chat",
         "Topic :: Communications :: Chat :: Internet Relay Chat",
@@ -120,6 +102,8 @@ setup(
     [console_scripts]
     circuits.web = circuits.web.main:main
     """,
+    zip_safe=False,
+    test_suite="tests.main.runtests",
 )
 
 # hghooks: no-pyflakes

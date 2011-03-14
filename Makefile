@@ -27,4 +27,4 @@ packages:
 	@tools/mkpkgs -p python2.6
 
 tests:
-	@tools/runtests
+	@python -m tests.main
