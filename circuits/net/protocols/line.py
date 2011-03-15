@@ -13,7 +13,8 @@ import re
 
 from circuits.core import handler, Event, BaseComponent
 
-LINESEP = re.compile("\r?\n")
+LINESEP = re.compile(b"\r?\n")
+
 
 def splitLines(s, buffer):
     """splitLines(s, buffer) -> lines, buffer
@@ -27,8 +28,10 @@ def splitLines(s, buffer):
     lines = LINESEP.split(buffer + s)
     return lines[:-1], lines[-1]
 
+
 class Line(Event):
     """Line Event"""
+
 
 class LP(BaseComponent):
     """Line Protocol
@@ -77,10 +80,12 @@ class LP(BaseComponent):
            exposes Read events on a "read" Channel.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, encoding="utf-8", **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(LP, self).__init__(*args, **kwargs)
+
+        self.encoding = encoding
 
         # Used for Servers
         self.getBuffer = kwargs.get("getBuffer")
@@ -88,18 +93,21 @@ class LP(BaseComponent):
 
         self.splitter = kwargs.get("splitter", splitLines)
 
-        self.buffer = ""
+        self.buffer = b""
 
     @handler("read")
-    def anyRead(self, *args):
+    def _on_read(self, *args):
         if len(args) == 1:
+            # Client read
             data, = args
             lines, self.buffer = self.splitter(data, self.buffer)
             for line in lines:
-                self.push(Line(line))
+                self.push(Line(line.decode(self.encoding, "replace")))
         else:
+            # Server read
             sock, data = args
             lines, buffer = self.splitter(data, self.getBuffer(sock))
             self.updateBuffer(sock, buffer)
             for line in lines:
-                self.push(Line(sock, line))
+                self.push(Line(sock,
+                    line.decode(self.encoding, "replace")))

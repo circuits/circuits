@@ -4,12 +4,14 @@ from circuits import handler, Event, Component
 from circuits.net.protocols.irc import strip, sourceJoin, sourceSplit, IRC
 
 from circuits.net.protocols.irc import (
-        RAW, PASS, USER, NICK, PING, PONG, QUIT,
+        PASS, USER, NICK, PING, PONG, QUIT,
         JOIN, PART, PRIVMSG, NOTICE, CTCP, CTCPREPLY,
         KICK, TOPIC, MODE, INVITE, NAMES)
 
+
 class Read(Event):
     """Read Event"""
+
 
 class App(Component):
 
@@ -33,20 +35,24 @@ class App(Component):
     def write(self, data):
         self.data.append(data)
 
+
 def pytest_funcarg__app(request):
     return request.cached_setup(
             setup=lambda: setupapp(request),
             scope="module")
 
+
 def setupapp(request):
     app = App()
-    while app: app.flush()
+    while app:
+        app.flush()
     app.reset()
     return app
 
 ###
 ### Test Functions (utility)
 ###
+
 
 def test_strip():
     s = ":\x01\x02test\x02\x01"
@@ -57,10 +63,12 @@ def test_strip():
     s = strip(s, color=True)
     assert s == "test"
 
+
 def test_sourceJoin():
     nick, ident, host = "test", "foo", "localhost"
     s = sourceJoin(nick, ident, host)
     assert s == "test!foo@localhost"
+
 
 def test_sourceSplit():
     s = "test!foo@localhost"
@@ -79,11 +87,13 @@ def test_sourceSplit():
 ### Test IRC Commands
 ###
 
+
 def test_PASS(app):
     app.reset()
 
     app.push(PASS("secret"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -104,11 +114,13 @@ def test_PASS(app):
     s = next(data)
     assert s == "PASS secret\r\n"
 
+
 def test_USER(app):
     app.reset()
 
     app.push(USER("foo", "localhost", "localhost", "Test Client"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -132,11 +144,13 @@ def test_USER(app):
     s = next(data)
     assert s == "USER foo \"localhost\" \"localhost\" :Test Client\r\n"
 
+
 def test_NICK(app):
     app.reset()
 
     app.push(NICK("test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -157,11 +171,13 @@ def test_NICK(app):
     s = next(data)
     assert s == "NICK test\r\n"
 
+
 def test_PING(app):
     app.reset()
 
     app.push(PING("localhost"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -182,11 +198,13 @@ def test_PING(app):
     s = next(data)
     assert s == "PING :localhost\r\n"
 
+
 def test_PONG(app):
     app.reset()
 
     app.push(PONG("localhost"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -207,11 +225,13 @@ def test_PONG(app):
     s = next(data)
     assert s == "PONG :localhost\r\n"
 
+
 def test_QUIT(app):
     app.reset()
 
     app.push(QUIT())
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -235,7 +255,8 @@ def test_QUIT(app):
     app.reset()
 
     app.push(QUIT("Test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -256,11 +277,13 @@ def test_QUIT(app):
     s = next(data)
     assert s == "QUIT :Test\r\n"
 
+
 def test_JOIN(app):
     app.reset()
 
     app.push(JOIN("#test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -284,7 +307,8 @@ def test_JOIN(app):
     app.reset()
 
     app.push(JOIN("#test", "secret"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -306,11 +330,13 @@ def test_JOIN(app):
     s = next(data)
     assert s == "JOIN #test secret\r\n"
 
+
 def test_PART(app):
     app.reset()
 
     app.push(PART("#test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -334,7 +360,8 @@ def test_PART(app):
     app.reset()
 
     app.push(PART("#test", "Test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -356,11 +383,13 @@ def test_PART(app):
     s = next(data)
     assert s == "PART #test :Test\r\n"
 
+
 def test_PRIVMSG(app):
     app.reset()
 
     app.push(PRIVMSG("test", "Hello"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -382,11 +411,13 @@ def test_PRIVMSG(app):
     s = next(data)
     assert s == "PRIVMSG test :Hello\r\n"
 
+
 def test_NOTICE(app):
     app.reset()
 
     app.push(NOTICE("test", "Hello"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -408,11 +439,13 @@ def test_NOTICE(app):
     s = next(data)
     assert s == "NOTICE test :Hello\r\n"
 
+
 def test_CTCP(app):
     app.reset()
 
     app.push(CTCP("test", "PING", "1234567890"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -440,11 +473,13 @@ def test_CTCP(app):
     s = next(data)
     assert s == "PRIVMSG test :PING 1234567890\r\n"
 
+
 def test_CTCPREPLY(app):
     app.reset()
 
     app.push(CTCPREPLY("test", "PING", "1234567890"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -472,11 +507,13 @@ def test_CTCPREPLY(app):
     s = next(data)
     assert s == "NOTICE test :PING 1234567890\r\n"
 
+
 def test_KICK(app):
     app.reset()
 
     app.push(KICK("#test", "test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -501,7 +538,8 @@ def test_KICK(app):
     app.reset()
 
     app.push(KICK("#test", "test", "Bye"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -524,11 +562,13 @@ def test_KICK(app):
     s = next(data)
     assert s == "KICK #test test :Bye\r\n"
 
+
 def test_TOPIC(app):
     app.reset()
 
     app.push(TOPIC("#test", "Hello World!"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -550,11 +590,13 @@ def test_TOPIC(app):
     s = next(data)
     assert s == "TOPIC #test :Hello World!\r\n"
 
+
 def test_MODE(app):
     app.reset()
 
     app.push(MODE("+i"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -578,7 +620,8 @@ def test_MODE(app):
     app.reset()
 
     app.push(MODE("+o test", "#test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -600,11 +643,13 @@ def test_MODE(app):
     s = next(data)
     assert s == "MODE #test :+o test\r\n"
 
+
 def test_INVITE(app):
     app.reset()
 
     app.push(INVITE("test", "#test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -626,11 +671,13 @@ def test_INVITE(app):
     s = next(data)
     assert s == "INVITE test #test\r\n"
 
+
 def test_NAMES(app):
     app.reset()
 
     app.push(NAMES())
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -654,7 +701,8 @@ def test_NAMES(app):
     app.reset()
 
     app.push(NAMES("#test"))
-    while app: app.flush()
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
@@ -679,17 +727,19 @@ def test_NAMES(app):
 ### Test IRC Responses
 ###
 
+
 def test_ping(app):
     app.reset()
 
-    app.push(Read("PING :localhost\r\n"))
-    while app: app.flush()
+    app.push(Read(b"PING :localhost\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == "PING :localhost\r\n"
+    assert e.args[0] == b"PING :localhost\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -716,19 +766,21 @@ def test_ping(app):
     s = next(data)
     assert s == "PONG :localhost\r\n"
 
+
 def test_numerics(app):
     app.reset()
 
-    app.push(Read(":localhost 001 test " +
-        ":Welcome to the circuits Internet Relay Chat Network test\r\n"))
-    while app: app.flush()
+    app.push(Read(b":localhost 001 test " +
+        b":Welcome to the circuits Internet Relay Chat Network test\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":localhost 001 test " \
-            ":Welcome to the circuits Internet Relay Chat Network test\r\n"
+    assert e.args[0] == b":localhost 001 test " \
+            b":Welcome to the circuits Internet Relay Chat Network test\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -746,14 +798,15 @@ def test_numerics(app):
 
     app.reset()
 
-    app.push(Read(":localhost 332 test #test :Hello World!\r\n"))
-    while app: app.flush()
+    app.push(Read(b":localhost 332 test #test :Hello World!\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":localhost 332 test #test :Hello World!\r\n"
+    assert e.args[0] == b":localhost 332 test #test :Hello World!\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -767,17 +820,19 @@ def test_numerics(app):
     assert e.args[3] == "#test"
     assert e.args[4] == "Hello World!"
 
+
 def test_ctcp(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost PRIVMSG test :TIME\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost PRIVMSG test :TIME\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost PRIVMSG test :TIME\r\n"
+    assert e.args[0] == b":test!foo@localhost PRIVMSG test :TIME\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -790,17 +845,19 @@ def test_ctcp(app):
     assert e.args[2] == "TIME"
     assert e.args[3] == ""
 
+
 def test_message(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost PRIVMSG test :Hello\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost PRIVMSG test :Hello\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost PRIVMSG test :Hello\r\n"
+    assert e.args[0] == b":test!foo@localhost PRIVMSG test :Hello\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -812,17 +869,19 @@ def test_message(app):
     assert e.args[1] == "test"
     assert e.args[2] == "Hello"
 
+
 def test_notice(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost NOTICE test :Hello\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost NOTICE test :Hello\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost NOTICE test :Hello\r\n"
+    assert e.args[0] == b":test!foo@localhost NOTICE test :Hello\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -834,17 +893,19 @@ def test_notice(app):
     assert e.args[1] == "test"
     assert e.args[2] == "Hello"
 
+
 def test_join(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost JOIN #test\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost JOIN #test\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost JOIN #test\r\n"
+    assert e.args[0] == b":test!foo@localhost JOIN #test\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -855,17 +916,19 @@ def test_join(app):
     assert e.args[0] == ("test", "foo", "localhost")
     assert e.args[1] == "#test"
 
+
 def test_part(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost PART #test :Leaving\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost PART #test :Leaving\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost PART #test :Leaving\r\n"
+    assert e.args[0] == b":test!foo@localhost PART #test :Leaving\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -877,17 +940,19 @@ def test_part(app):
     assert e.args[1] == "#test"
     assert e.args[2] == "Leaving"
 
+
 def test_quit(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost QUIT :Leaving\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost QUIT :Leaving\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost QUIT :Leaving\r\n"
+    assert e.args[0] == b":test!foo@localhost QUIT :Leaving\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -898,17 +963,19 @@ def test_quit(app):
     assert e.args[0] == ("test", "foo", "localhost")
     assert e.args[1] == "Leaving"
 
+
 def test_nick(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost NICK :test_\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost NICK :test_\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost NICK :test_\r\n"
+    assert e.args[0] == b":test!foo@localhost NICK :test_\r\n"
 
     e = next(events)
     assert e.name == "Line"
@@ -919,17 +986,19 @@ def test_nick(app):
     assert e.args[0] == ("test", "foo", "localhost")
     assert e.args[1] == "test_"
 
+
 def test_mode(app):
     app.reset()
 
-    app.push(Read(":test!foo@localhost MODE #test +o test\r\n"))
-    while app: app.flush()
+    app.push(Read(b":test!foo@localhost MODE #test +o test\r\n"))
+    while app:
+        app.flush()
 
     events = iter(app.events)
 
     e = next(events)
     assert e.name == "Read"
-    assert e.args[0] == ":test!foo@localhost MODE #test +o test\r\n"
+    assert e.args[0] == b":test!foo@localhost MODE #test +o test\r\n"
 
     e = next(events)
     assert e.name == "Line"
