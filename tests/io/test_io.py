@@ -2,17 +2,15 @@
 
 from time import sleep
 
-import pytest
-
 from circuits import Component
 from circuits.io import File, Write
 
 class App(Component):
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         super(App, self).__init__()
 
-        self._file = File(*args)
+        self._file = File(*args, **kwargs)
         self._file.register(self)
 
         self.data = None
@@ -30,7 +28,7 @@ def test_write(tmpdir):
 
     app = App(filename, "w")
     app.start()
-    app.push(Write("Hello World!"))
+    app.push(Write(b"Hello World!"))
     sleep(1)
     app.stop()
 
@@ -38,7 +36,6 @@ def test_write(tmpdir):
     s = f.read()
     assert s == "Hello World!"
 
-@pytest.skip("Not passing")
 def test_read(tmpdir):
     sockpath = tmpdir.ensure("helloworld.txt")
     filename = str(sockpath)
@@ -55,7 +52,7 @@ def test_read(tmpdir):
 
     app.stop()
 
-    assert app.data == "Hello World!"
+    assert app.data == b"Hello World!"
 
 def test_fd(tmpdir):
     sockpath = tmpdir.ensure("helloworld.txt")
@@ -65,7 +62,7 @@ def test_fd(tmpdir):
     f.write("Hello World!")
     f.close()
 
-    app = App(open(filename, "r"))
+    app = App(fd=open(filename, "r"))
     app.start()
 
     while not app.eof:
@@ -73,4 +70,4 @@ def test_fd(tmpdir):
 
     app.stop()
 
-    assert app.data == "Hello World!"
+    assert app.data == b"Hello World!"

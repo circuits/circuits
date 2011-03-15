@@ -9,57 +9,76 @@ Component, StdIn, StdOut and StdErr components. Instances of StdIn, StdOUt
 and StdErr are also created by importing this package.
 """
 
-import sys
 import os
-try:
-    import fcntl
-    HAS_FCNTL = True
-except ImportError:
-    HAS_FCNTL = False
+import sys
 import errno
 import select
 from collections import deque
 
-try:
-    import serial
-    HAS_SERIAL = True
-except ImportError:
-    HAS_SERIAL = False
-
+from circuits.tools import tryimport
 from circuits.core import Event, Component
+
+fcntl = tryimport("fcntl")
+serial = tryimport("serial")
 
 TIMEOUT = 0.2
 BUFSIZE = 4096
 
-class EOF(Event): pass
-class Seek(Event): pass
-class Read(Event): pass
-class Close(Event): pass
-class Write(Event): pass
-class Error(Event): pass
-class Opened(Event): pass
-class Closed(Event): pass
+
+class EOF(Event):
+    """EOF Event"""
+
+
+class Seek(Event):
+    """Seek Event"""
+
+
+class Read(Event):
+    """Read Event"""
+
+
+class Close(Event):
+    """Close Event"""
+
+
+class Write(Event):
+    """Write Event"""
+
+
+class Error(Event):
+    """Error Event"""
+
+
+class Opened(Event):
+    """Opened Event"""
+
+
+class Closed(Event):
+    """Closed Event"""
+
 
 class File(Component):
 
-    def __init__(self, *args, **kwargs):
-        channel = kwargs.get("channel", File.channel)
+    channel = "file"
+
+    def __init__(self, filename=None, mode="r", fd=None, autoclose=True,
+            bufsize=BUFSIZE, encoding="utf-8", channel=channel):
         super(File, self).__init__(channel=channel)
 
-        self.autoclose = kwargs.get("autoclose", True)
-        self.encoding = kwargs.get("encoding", "utf-8")
+        self.bufsize = bufsize
+        self.encoding = encoding
+        self.autoclose = autoclose
 
-        if len(args) == 1 and isinstance(args[0], file) or args[0] in (sys.stdin, sys.stdout, sys.stderr):
-            self._fd = args[0]
+        if filename is not None:
+            self.mode = mode
+            self.filename = filename
+            self._fd = open(filename, mode)
         else:
-            self._fd = open(*args)
+            self._fd = fd
+            self.mode = fd.mode
+            self.filename = fd.name
 
-        self.filename = self._fd.name
-        self.mode = self._fd.mode
-
-        self.bufsize = kwargs.get("bufsize", BUFSIZE)
-
-        if HAS_FCNTL:
+        if fcntl is not None:
             # Set non-blocking file descriptor (non-portable)
             flag = fcntl.fcntl(self._fd, fcntl.F_GETFL)
             flag = flag | os.O_NONBLOCK
@@ -90,7 +109,7 @@ class File(Component):
             if w and self._buffer:
                 data = self._buffer.popleft()
                 try:
-                    if type(data) is str:
+                    if isinstance(data, str):
                         data = data.encode(self.encoding)
                     bytes = os.write(self._fd.fileno(), data)
                     if bytes < len(data):
@@ -127,74 +146,79 @@ class File(Component):
     def seek(self, offset, whence=0):
         self._fd.seek(offset, whence)
 
-if HAS_SERIAL:
 
-    class Serial(Component):
+class Serial(Component):
 
-        def __init__(self, port, **kwargs):
-            channel = kwargs.get("channel", Serial.channel)
-            super(Serial, self).__init__(channel=channel)
+    channel = "serial"
 
-            self.port = port
+    def __init__(self, port, baudrate=115200, bufsize=BUFSIZE,
+            timeout=TIMEOUT, channel=channel):
+        super(Serial, self).__init__(channel=channel)
 
-            self._serial = serial.Serial()
-            self._serial.port = port
-            self._serial.baudrate = kwargs.get("baudrate", 115200)
+        if serial is None:
+            raise RuntimeError("No serial support available")
 
-            if os.name == "posix":
-                self._serial.timeout = 0 # non-blocking (POSIX)
-            else:
-                self._serial.timeout = kwargs.get("timeout", TIMEOUT)
+        self.port = port
+        self.baudrate = baudrate
 
-            self._buffer = deque()
-            self._bufsize = kwargs.get("bufsize", BUFSIZE)
-            self._timeout = kwargs.get("timeout", TIMEOUT)
+        self._serial = serial.Serial()
+        self._serial.port = port
+        self._serial.baudrate = baudrate
 
-            self._read = []
-            self._write = []
+        if os.name == "posix":
+            self._serial.timeout = 0  # non-blocking (POSIX)
+        else:
+            self._serial.timeout = timeout
 
-            self._serial.open()
-            self._fd = self._serial.fileno()
+        self._buffer = deque()
+        self._bufsize = bufsize
+        self._timeout = timeout
 
-            self._read.append(self._fd)
+        self._read = []
+        self._write = []
 
-            self.push(Opened(self.port))
+        self._serial.open()
+        self._fd = self._serial.fileno()
 
-        def __tick__(self):
-            r, w, e = select.select(self._read, self._write, [], self._timeout)
+        self._read.append(self._fd)
 
-            if w and self._buffer:
-                data = self._buffer.popleft()
-                try:
-                    bytes = os.write(self._fd, data)
-                    if bytes < len(data):
-                        self._buffer.append(data[bytes:])
-                    else:
-                        if not self._buffer and self._fd in self._write:
-                            self._write.remove(self._fd)
-                except OSError as error:
-                    self.push(Error(error))
+        self.push(Opened(self.port))
 
-            if r:
-                data = os.read(self._fd, self._bufsize)
-                if data:
-                    self.push(Read(data))
+    def __tick__(self):
+        r, w, e = select.select(self._read, self._write, [], self._timeout)
 
-        def write(self, data):
-            if self._fd not in self._write:
-                self._write.append(self._fd)
-            self._buffer.append(data)
+        if w and self._buffer:
+            data = self._buffer.popleft()
+            try:
+                bytes = os.write(self._fd, data)
+                if bytes < len(data):
+                    self._buffer.append(data[bytes:])
+                else:
+                    if not self._buffer and self._fd in self._write:
+                        self._write.remove(self._fd)
+            except OSError as error:
+                self.push(Error(error))
 
-        def close(self):
-            self._fd = None
-            self._read = []
-            self._write = []
-            self._serial.close()
-            self.push(Closed(self.port))
+        if r:
+            data = os.read(self._fd, self._bufsize)
+            if data:
+                self.push(Read(data))
+
+    def write(self, data):
+        if self._fd not in self._write:
+            self._write.append(self._fd)
+        self._buffer.append(data)
+
+    def close(self):
+        self._fd = None
+        self._read = []
+        self._write = []
+        self._serial.close()
+        self.push(Closed(self.port))
 
 try:
-    stdin = File(sys.stdin, "r", channel="stdin")
-    stdout = File(sys.stdout, "w", channel="stdout")
-    stderr = File(sys.stderr, "w", channel="stderr")
+    stdin = File(fd=sys.stdin, mode="r", channel="stdin")
+    stdout = File(fd=sys.stdout, mode="w", channel="stdout")
+    stderr = File(fd=sys.stderr, mode="w", channel="stderr")
 except:
     pass
