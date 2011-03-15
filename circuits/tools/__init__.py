@@ -12,7 +12,7 @@ from hashlib import md5
 from warnings import warn
 
 
-def tryimport(modules, message=None):
+def tryimport(*modules, message=None):
     for module in modules:
         try:
             return __import__(module, globals(), locals())

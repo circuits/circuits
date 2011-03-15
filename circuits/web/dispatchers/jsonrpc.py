@@ -10,7 +10,7 @@ RPC calls over JSON into RPC events.
 
 from circuits.tools import tryimport
 
-json = tryimport(("json", "simplejson",))
+json = tryimport("json", "simplejson")
 
 from circuits.web.events import Response
 from circuits import handler, Event, BaseComponent

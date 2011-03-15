@@ -9,7 +9,7 @@ This module implements a routes based dispatcher.
 
 from circuits.tools import tryimport
 
-routes = tryimport(("routes",))
+routes = tryimport("routes")
 
 from circuits import handler, BaseComponent
 
