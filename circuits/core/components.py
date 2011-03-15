@@ -43,25 +43,25 @@ class BaseComponent(Manager):
     channel = "*"
 
     def __new__(cls, *args, **kwargs):
-        self = super().__new__(cls, *args, **kwargs)
+        """TODO Work around for Python bug.
+
+        Bug: http://bugs.python.org/issue5322
+        """
+
+        return object.__new__(cls)
+
+    def __init__(self, *args, **kwargs):
+        "initializes x; see x.__class__.__doc__ for signature"
+
+        super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
         self._registerHandlers()
         self.manager = self
 
-        import pdb
-        pdb.set_trace()
-
-        super(cls, self).__init__(*args, **kwargs)
-
-        if "__init__" in self.__dict__:
-            self.__init__(*args, **kwargs)
-
         for k, v in getmembers(self):
             if isinstance(v, BaseComponent):
                 v.register(self)
-
-        return self
 
     def _registerHandlers(self, manager=None):
         if manager is None:
