@@ -6,10 +6,11 @@
 
 from time import sleep
 
-from circuits.core.manager import TIMEOUT
 import collections
 
+
 def wait_for(obj, attr, value=True, timeout=30.0):
+    from circuits.core.manager import TIMEOUT
     for i in range(int(timeout / TIMEOUT)):
         if isinstance(value, collections.Callable):
             if value(obj, attr):
@@ -18,6 +19,7 @@ def wait_for(obj, attr, value=True, timeout=30.0):
             return True
         sleep(TIMEOUT)
     return False
+
 
 def pytest_namespace():
     return dict((

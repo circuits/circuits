@@ -5,22 +5,9 @@
 """py.test config"""
 
 import os
-import errno
-import socket
-
-from circuits import Component
-from circuits.web.wsgi import Gateway
-from circuits.net.sockets import Close
-from circuits.web import Server, Static
 
 DOCROOT = os.path.join(os.path.dirname(__file__), "static")
 
-class WebApp(Component):
-
-    def __init__(self):
-        super(WebApp, self).__init__()
-
-        self.server = Server(0).register(self)
 
 def pytest_funcarg__webapp(request):
     return request.cached_setup(
@@ -28,10 +15,23 @@ def pytest_funcarg__webapp(request):
             teardown=lambda webapp: teardownwebapp(webapp),
             scope="module")
 
+
 def setupwebapp(request):
+    from circuits import Component
+
+    class WebApp(Component):
+
+        def __init__(self):
+            super(WebApp, self).__init__()
+
+            from circuits.web import Server
+
+            self.server = Server(0).register(self)
+
     webapp = WebApp()
 
     if hasattr(request.module, "application"):
+        from circuits.web.wsgi import Gateway
         application = getattr(request.module, "application")
         Gateway(application).register(webapp)
     else:
@@ -39,10 +39,14 @@ def setupwebapp(request):
         if Root:
             Root().register(webapp)
 
+    from circuits.web import Static
+
     Static("/static", DOCROOT, dirlisting=True).register(webapp)
     webapp.start()
     return webapp
 
+
 def teardownwebapp(webapp):
+    from circuits.net.sockets import Close
     webapp.push(Close(), target=webapp.server)
     webapp.stop()
