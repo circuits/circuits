@@ -7,6 +7,11 @@
 This module defines utilities used by circuits.
 """
 
+import sys
+
+from imp import reload
+
+
 def itercmp(x, c, subclass=True):
     if subclass and issubclass(x.__class__, c):
         yield x
@@ -34,3 +39,15 @@ def findroot(x):
         return x
     else:
         return findroot(x.manager)
+
+def safeimport(name):
+    modules = sys.modules.copy()
+    try:
+        if name in modules:
+            return reload(modules[name])
+        else:
+            return __import__(name, globals(), locals())
+    except:
+        for name in sys.modules.copy():
+            if not name in modules:
+                del sys.modules[name]

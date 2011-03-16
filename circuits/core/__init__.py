@@ -10,6 +10,7 @@ This package contains the essential core parts of the circuits framework.
 from handlers import handler
 
 from events import Event
+from loader import Loader
 from manager import Manager
 from components import BaseComponent, Component
 
