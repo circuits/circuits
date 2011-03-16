@@ -59,8 +59,8 @@ class Manager(object):
     :ivar manager: The Manager of this Component or Manager
     """
 
-    def __init__(self, *args, **kwargs):
-        "initializes x; see x.__class__.__doc__ for signature"
+    def __new__(cls, *args, **kwargs):
+        self = object.__new__(cls)
 
         self._globals = []
         self._cmap = dict()
@@ -79,6 +79,8 @@ class Manager(object):
 
         self.root = self.manager = self
         self.components = set()
+
+        return self
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
