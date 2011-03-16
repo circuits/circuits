@@ -5,12 +5,10 @@ from urllib.request import urlopen
 from urllib.error import URLError
 from socket import gaierror
 
-import pytest
-pytest.skip()
-
 from circuits import Component
 from circuits.web import Controller
 from circuits.web import BaseServer, Server
+
 
 class BaseRoot(Component):
 
@@ -19,10 +17,12 @@ class BaseRoot(Component):
     def request(self, request, response):
         return "Hello World!"
 
+
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 def test_baseserver():
     server = BaseServer(0)
@@ -40,6 +40,7 @@ def test_baseserver():
     s = f.read()
     assert s == b"Hello World!"
 
+
 def test_server():
     server = Server(0)
     Root().register(server)
@@ -55,6 +56,7 @@ def test_server():
 
     s = f.read()
     assert s == b"Hello World!"
+
 
 def test_unixserver(tmpdir):
     sockpath = tmpdir.ensure("test.sock")
