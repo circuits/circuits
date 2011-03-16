@@ -12,8 +12,7 @@ class Test(Event):
 
 
 def test():
-    from circuits import Debugger
-    m = Manager() + Debugger()
+    m = Manager()
     loader = Loader(paths=[dirname(__file__)]).register(m)
 
     m.start()
