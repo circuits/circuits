@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import os
 import sys
 from types import ModuleType
+from imp import cache_from_source
 
 from circuits.core.utils import safeimport
 
@@ -20,13 +22,8 @@ from circuits.core.utils import safeimport
 def test(tmpdir):
     sys.path.insert(0, str(tmpdir))
 
-    init_path = tmpdir.ensure("__init__.py")
-    f = init_path.open("w")
-    f.close()
-
     foo_path = tmpdir.ensure("foo.py")
-    with foo_path.open("w") as f:
-        f.write(FOO)
+    foo_path.write(FOO)
 
     foo = safeimport("foo")
     assert foo is not None
@@ -35,12 +32,8 @@ def test(tmpdir):
     s = foo.foo()
     assert s == "Hello World!"
 
-    foo_path = tmpdir.ensure("foo.py")
-    with foo_path.open("w") as f:
-        f.write(FOOBAR)
-
-    import pdb
-    pdb.set_trace()
+    os.remove(cache_from_source(str(foo_path)))
+    foo_path.write(FOOBAR)
 
     foo = safeimport("foo")
     assert foo is None

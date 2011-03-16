@@ -43,8 +43,8 @@ def findroot(x):
 def safeimport(name):
     modules = sys.modules.copy()
     try:
-        if name in modules:
-            return reload(modules[name])
+        if name in sys.modules:
+            return reload(sys.modules[name])
         else:
             return __import__(name, globals(), locals())
     except:
