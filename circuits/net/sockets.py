@@ -14,8 +14,6 @@ from errno import EAGAIN, EALREADY, EBADF
 from errno import ECONNABORTED, EINPROGRESS, EISCONN, EMFILE, ENFILE
 from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 
-from _socket import socket as SocketType
-
 from socket import gaierror, error as SocketError
 from socket import gethostname, gethostbyname, socket
 
@@ -480,7 +478,8 @@ class Server(Component):
     channel = "server"
 
     def __init__(self, bind, secure=False, backlog=BACKLOG,
-            bufsize=BUFSIZE, encoding="utf-8", channel=channel):
+            bufsize=BUFSIZE, encoding="utf-8", channel=channel,
+            **kwargs):
         super(Server, self).__init__(channel=channel)
 
         if type(bind) is int:
@@ -500,7 +499,7 @@ class Server(Component):
         self._encoding = encoding
 
         if isinstance(bind, socket):
-            self._sock = sock
+            self._sock = bind
         else:
             self._sock = self._create_socket()
 
@@ -525,12 +524,18 @@ class Server(Component):
     @property
     def host(self):
         if hasattr(self, "_sock"):
-            return self._sock.getsockname()[0]
+            sockname = self._sock.getsockname()
+            if isinstance(sockname, tuple):
+                return sockname[0]
+            else:
+                return sockname
 
     @property
     def port(self):
         if hasattr(self, "_sock"):
-            return self._sock.getsockname()[1]
+            sockname = self._sock.getsockname()
+            if isinstance(sockname, tuple):
+                return sockname[1]
 
     @handler("registered", target="*")
     def _on_registered(self, component, manager):
@@ -742,11 +747,6 @@ class UNIXServer(Server):
         sock.listen(self._backlog)
 
         return sock
-
-    @property
-    def host(self):
-        if hasattr(self, "bind"):
-            return self._bind
 
 
 class UDPServer(Server):
