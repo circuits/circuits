@@ -10,11 +10,11 @@ eggs and zip archives. Both setuptools and distribute are fully supported.
 """
 
 import sys
-from inspect import getmembers, isclass
+from inspect import getmembers, getmodule, isclass
 
 from .handlers import handler
 from .utils import safeimport
-from .components import BaseComponent, Component
+from .components import BaseComponent
 
 
 class Loader(BaseComponent):
@@ -45,9 +45,9 @@ class Loader(BaseComponent):
         module = safeimport(name)
         if module is not None:
 
-            p1 = lambda x: isclass(x) and issubclass(x, BaseComponent)
-            p2 = lambda x: x not in (BaseComponent, Component)
-            test = lambda x: p1(x) and p2(x)
+            test = lambda x: isclass(x) \
+                    and issubclass(x, BaseComponent) \
+                    and getmodule(x) is module
             components = [x[1] for x in getmembers(module, test)]
 
             if components:
