@@ -17,7 +17,7 @@ clean:
 	@find . -name '*~' -delete
 
 docs:
-	@make -C docs html
+	@make -C docs clean html
 
 graph:
 	@sfood circuits -i -I tests -d -u 2> /dev/null | sfood-graph | dot -Tps | ps2pdf - > circuits.pdf

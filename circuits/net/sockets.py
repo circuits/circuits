@@ -45,16 +45,18 @@ BACKLOG = 5000  # 5K Concurrent Connections
 
 class Connect(Event):
     """Connect Event
-
+    
     This Event is sent when a new client connection has arrived on a server.
     This event is also used for client's to initiate a new connection to
     a remote host.
-
-    @note: This event is used for both Client and Server Components.
-
+    
+    .. note ::
+       
+       This event is used for both Client and Server Components.
+    
     :param args:  Client: (host, port) Server: (sock, host, port)
     :type  args: tuple
-
+    
     :param kwargs: Client: (ssl)
     :type  kwargs: dict
     """

@@ -66,8 +66,8 @@ class HandlersType(type):
     new Component and turn them into Event Handlers by applying the
     @handlers decorator on them. This is done for all methods defined in
     the Component that:
-     - Do not start with a single '_'. or
-     - Have previously been decorated with the @handlers decorator
+    - Do not start with a single '_'. or
+    - Have previously been decorated with the @handlers decorator
     """
 
     def __init__(cls, name, bases, dct):

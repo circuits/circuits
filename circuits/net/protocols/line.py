@@ -52,8 +52,8 @@ class LP(BaseComponent):
     to be used in conjunction with components that expose a Read Event on
     a "read" channel with only one argument (data). Some builtin components
     that expose such events are:
-     * circuits.net.sockets.TCPClient
-     * circuits.io.File
+    - circuits.net.sockets.TCPClient
+    - circuits.io.File
 
     The second mode of operation works with circuits.net.sockets.Server
     components such as TCPServer, UNIXServer, etc. It's expected that

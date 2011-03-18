@@ -21,7 +21,6 @@ First, let's check the installed version:
    1.3
    
 Try some of the examples in the examples/ directory shipped with the
-distribution or have a look at some of the :doc:`Examples <examples>`
-in this documentation.
+distribution or check out some :doc:`Applications using circuits <users>`
 
 Have fun :)
