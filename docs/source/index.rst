@@ -13,8 +13,8 @@ Contents
 
    foreword
    features
+   start/index
    introduction
-   gettingstarted
    tutorial
    web/index
    api/index
