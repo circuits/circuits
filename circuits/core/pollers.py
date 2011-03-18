@@ -6,9 +6,9 @@
 
 This module contains Poller components that enable polling of file or socket
 descriptors for read/write events. Pollers:
-   - Select
-   - Poll
-   - EPoll
+- Select
+- Poll
+- EPoll
 """
 
 from errno import *
