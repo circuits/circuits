@@ -16,6 +16,7 @@ Contents
    start/index
    introduction
    tutorial
+   guides/index
    web/index
    api/index
    dev/index

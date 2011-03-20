@@ -1,11 +1,12 @@
-# -*- coding: UTF-8 -*-
 # Package:  circuits
 # Date:     3rd October 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""circuits
+"""Lightweight Event driven and Asynchronous Application Framework
 
-Lightweight Event driven and Asynchronous Application Framework
+circuits is a **Lightweight** **Event** driven and **Asynchronous**
+**Application Framework** for the `Python Programming Language`_
+with a strong **Component** Architecture.
 
 :copyright: CopyRight (C) 2004-2011 by James Mills
 :license: MIT (See: LICENSE)
