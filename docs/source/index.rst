@@ -1,31 +1,49 @@
-.. circuits documentation master file, created by
-   sphinx-quickstart on Thu Feb  4 09:44:50 2010.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+================================
+circuits |version| Documentation
+================================
 
-Introduction
-============
-
-.. include:: ../../README.rst
+:Release: |release|
+:Date: |today|
 
 Contents
 ========
 
 .. toctree::
-   :maxdepth: 2
-   
+   :maxdepth: 1
+
    foreword
    features
-   changelog
-   gettingstarted
+   start/index
+   introduction
    tutorial
-   manual
-   examples
-   web
+   guides/index
+   web/index
+   api/index
+   dev/index
+
+.. toctree::
+   :hidden:
+
+   glossary
+   users
+
+.. ifconfig:: devel
+
+   .. toctree::
+      :hidden:
+
+      todo
+
 
 Indices and tables
 ==================
 
-* :ref:`genindex`
+* :ref:`General Index <genindex>`
 * :ref:`modindex`
 * :ref:`search`
+* :doc:`glossary`
+
+.. ifconfig:: devel
+
+   * :doc:`todo`
+

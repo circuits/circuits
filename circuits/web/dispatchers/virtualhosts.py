@@ -19,9 +19,9 @@ class VirtualHosts(BaseComponent):
     This can be useful when running multiple sites within one server.
     It allows several domains to point to different parts of a single
     website structure. For example:
-     - http://www.domain.example      -> /
-     - http://www.domain2.example     -> /domain2
-     - http://www.domain2.example:443 -> /secure
+    - http://www.domain.example      -> /
+    - http://www.domain2.example     -> /domain2
+    - http://www.domain2.example:443 -> /secure
 
     :param domains: a dict of {host header value: virtual prefix} pairs.
     :type  domains: dict
