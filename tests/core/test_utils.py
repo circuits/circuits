@@ -3,7 +3,6 @@
 import os
 import sys
 from types import ModuleType
-from imp import cache_from_source
 
 from circuits.core.utils import safeimport
 
@@ -32,7 +31,7 @@ def test(tmpdir):
     s = foo.foo()
     assert s == "Hello World!"
 
-    os.remove(cache_from_source(str(foo_path)))
+    foo_path.new(ext="pyc").remove(ignore_errors=True)
     foo_path.write(FOOBAR)
 
     foo = safeimport("foo")
