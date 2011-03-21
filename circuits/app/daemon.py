@@ -115,7 +115,7 @@ class Daemon(BaseComponent):
         # Redirect standard file descriptors.
         si = open(self._stdin, "r")
         so = open(self._stdout, "a+")
-        se = open(self._stderr, "a+", 0)
+        se = open(self._stderr, "a+")
         os.dup2(si.fileno(), sys.stdin.fileno())
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
