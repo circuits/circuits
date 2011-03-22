@@ -22,18 +22,18 @@ class ConfigEvent(Event):
     _target =  "config"
 
 
-class LoadConfig(ConfigEvent):
+class Load(ConfigEvent):
     """Load Config Event"""
 
-    channel = "load_config"
+    success = "load_success", ConfigEvent._target
+    failure = "load_failure", ConfigEvent._target
 
-    end = "config_loaded", ConfigEvent._target
 
-
-class SaveConfig(ConfigEvent):
+class Save(ConfigEvent):
     """Save Config Event"""
 
-    channel = "save_config"
+    success = "save_success", ConfigEvent._target
+    failure = "save_failure", ConfigEvent._target
 
 
 class Config(BaseComponent):
@@ -45,6 +45,15 @@ class Config(BaseComponent):
 
         self._config = ConfigParser(defaults=defaults)
         self._filename = filename
+
+    @handler("load")
+    def load(self):
+        self._config.read(self._filename)
+
+    @handler("save")
+    def save(self):
+        with open(self._filename, "w") as f:
+            self._config.write(f)
 
     def add_section(self, section):
         return self._config.add_section(section)
@@ -78,12 +87,3 @@ class Config(BaseComponent):
 
     def set(self, section, option, value):
         return self._config.set(section, option, value)
-
-    @handler("load_config")
-    def _on_load_config(self):
-        self._config.read(self._filename)
-
-    @handler("save_config")
-    def _on_save_config(self):
-        with open(self._filename, "w") as f:
-            self._config.write(f)
