@@ -441,8 +441,11 @@ class Manager(object):
         handler = None
 
         for handler in self._getHandlers(channel):
+            error = None
+
             attrs = self._handlerattrs[handler]
             event.handler = handler
+
             try:
                 if attrs["event"]:
                     retval = handler(event, *eargs, **ekwargs)
@@ -453,22 +456,25 @@ class Manager(object):
                 raise
             except:
                 etype, evalue, etraceback = _exc_info()
-                event.value.errors = True
                 traceback = format_tb(etraceback)
-                event.value.value = (etype, evalue, traceback)
+                error = (etype, evalue, traceback)
+
+                event.value.errors = True
+
+                event.value.value = error
+
                 if event.failure is not None:
-                    error = (etype, evalue, traceback)
                     self.fire(Failure(event, handler, error), *event.failure)
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
-            if retval is not None:
-                if retval and attrs["filter"]:
-                    if event.filter is not None:
-                        self.fire(Filter(event, handler, retval), *event.filter)
-                    return # Filter
-                if event.success is not None:
-                    self.fire(Success(event, handler, retval), *event.success)
+            if retval and attrs["filter"]:
+                if event.filter is not None:
+                    self.fire(Filter(event, handler, retval), *event.filter)
+                return # Filter
+
+            if error is None and event.success is not None:
+                self.fire(Success(event, handler, retval), *event.success)
 
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
