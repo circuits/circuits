@@ -108,18 +108,18 @@ class Environment(BaseComponent):
         self.path = abspath(path)
         self.envname = envname
 
-    @handler("create")
+    @handler("create", priority=1.0)
     def create(self):
         return self._create()
 
-    @handler("load")
+    @handler("load", priority=1.0)
     def load(self, verify=False):
         if verify:
             return self.push(Verify())
         else:
             return self._load()
 
-    @handler("verify")
+    @handler("verify", priority=1.0)
     def _on_verify(self):
         f = open(joinpath(self.path, "VERSION"), "r")
         version = f.read().strip()
@@ -131,7 +131,7 @@ class Environment(BaseComponent):
             if self.version > int(version):
                 raise EnvironmentError(*ERRORS[1])
 
-    @handler("verify_success")
+    @handler("verify_success", filter=True)
     def _on_verify_success(self, evt, handler, retval):
         return self._load()
 
@@ -180,4 +180,5 @@ class Environment(BaseComponent):
         # Create Config Component
         configfile = joinpath(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile).register(self)
-        return self.push(config.Load(), target=self.config)
+        self.push(config.Load(), target=self.config)
+        return True
