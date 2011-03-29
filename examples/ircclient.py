@@ -49,7 +49,7 @@ def parse_options():
 
     if len(args) < 1:
         parser.print_help()
-        raise SystemExit, 1
+        raise SystemExit(1)
 
     return opts, args
 
@@ -76,7 +76,7 @@ class Client(Component):
         self.push(Connect(self.host, self.port), "connect")
 
     def connected(self, host, port):
-        print "Connected to %s:%d" % (host, port)
+        print("Connected to %s:%d" % (host, port))
 
         nick = self.nick
         hostname = self.hostname
@@ -97,18 +97,18 @@ class Client(Component):
 
     def join(self, source, channel):
         if source[0].lower() == self.nick.lower():
-            print "Joined %s" % channel
+            print("Joined %s" % channel)
         else:
-            print "--> %s (%s) has joined %s" % (source[0], source, channel)
+            print("--> %s (%s) has joined %s" % (source[0], source, channel))
 
     def notice(self, source, target, message):
-        print "-%s- %s" % (source[0], message)
+        print("-%s- %s" % (source[0], message))
 
     def message(self, source, target, message):
         if target[0] == "#":
-            print "<%s> %s" % (target, message)
+            print("<%s> %s" % (target, message))
         else:
-            print "-%s- %s" % (source, message)
+            print("-%s- %s" % (source, message))
 
     @handler("read", target="stdin")
     def stdin_read(self, data):
