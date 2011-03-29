@@ -397,25 +397,30 @@ class KQueue(BasePoller):
     def addReader(self, source, sock):
         super(KQueue, self).addReader(source, sock)
         self._map[sock.fileno()] = sock
-        self._poller.control([kevent(sock, KQ_FILTER_READ, KQ_EV_ADD)], 0)
+        self._poller.control([kevent(sock,
+            KQ_FILTER_READ, KQ_EV_ADD)], 0)
 
     def addWriter(self, source, sock):
         super(KQueue, self).addWriter(source, sock)
         self._map[sock.fileno()] = sock
-        self._poller.control([kevent(sock, KQ_FILTER_WRITE, KQ_EV_ADD)], 0)
+        self._poller.control([kevent(sock,
+            KQ_FILTER_WRITE, KQ_EV_ADD)], 0)
 
     def removeReader(self, sock):
         super(KQueue, self).removeReader(sock)
-        self._poller.control([kevent(sock, KQ_FILTER_READ, KQ_EV_DELETE)], 0)
+        self._poller.control([kevent(sock,
+            KQ_FILTER_READ, KQ_EV_DELETE)], 0)
 
     def removeWriter(self, sock):
         super(KQueue, self).removeWriter(sock)
-        self._poller.control([kevent(sock, KQ_FILTER_WRITE, KQ_EV_DELETE)], 0)
+        self._poller.control([kevent(sock,
+            KQ_FILTER_WRITE, KQ_EV_DELETE)], 0)
 
     def discard(self, sock):
         super(KQueue, self).discard(sock)
         del self._map[sock.fileno()]
-        self._poller.control([kevent(sock, KQ_FILTER_WRITE|KQ_FILTER_READ, KQ_EV_DELETE)], 0)
+        self._poller.control([kevent(sock,
+            KQ_FILTER_WRITE|KQ_FILTER_READ, KQ_EV_DELETE)], 0)
 
     def __tick__(self):
         try:
@@ -433,7 +438,8 @@ class KQueue(BasePoller):
         if event.ident not in self._map:
             # shouldn't happen ?
             # we unregister the socket since we don't care about it anymore
-            self._poller.control([kevent(event.ident, event.filter, KQ_EV_DELETE)], 0)
+            self._poller.control(
+                [kevent(event.ident, event.filter, KQ_EV_DELETE)], 0)
             return
 
         sock = self._map[event.ident]
