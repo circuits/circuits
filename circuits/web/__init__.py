@@ -13,7 +13,7 @@ from loggers import Logger
 from sessions import Sessions
 from controllers import expose, Controller
 from events import Request, Response
-from servers import BaseServer, Server
+from servers import BaseServer, Server, StdinServer
 from errors import HTTPError, Forbidden, NotFound, Redirect
 from dispatchers import Static, Dispatcher, VirtualHosts, XMLRPC
 
