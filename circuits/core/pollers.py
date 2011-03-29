@@ -36,6 +36,14 @@ except ImportError:
     except ImportError:
         HAS_EPOLL = 0
 
+try:
+    # Kqueue
+    from select import kqueue, kevent, KQ_FILTER_READ, KQ_EV_ERROR
+    from select import KQ_FILTER_WRITE, KQ_EV_ADD, KQ_EV_DELETE, KQ_EV_EOF
+    HAS_KQUEUE = 1
+except ImportError:
+    HAS_KQUEUE = 0
+
 from events import Event
 from components import BaseComponent
 
@@ -386,13 +394,13 @@ class KQueue(BasePoller):
         self._map = {}
         self._poller = kqueue()
 
-    def addReader(self, sock):
-        super(KQueue, self).addReader(sock)
+    def addReader(self, source, sock):
+        super(KQueue, self).addReader(source, sock)
         self._map[sock.fileno()] = sock
         self._poller.control([kevent(sock, KQ_FILTER_READ, KQ_EV_ADD)], 0)
 
-    def addWriter(self, sock):
-        super(KQueue, self).addWriter(sock)
+    def addWriter(self, source, sock):
+        super(KQueue, self).addWriter(source, sock)
         self._map[sock.fileno()] = sock
         self._poller.control([kevent(sock, KQ_FILTER_WRITE, KQ_EV_ADD)], 0)
 
