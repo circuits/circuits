@@ -445,15 +445,14 @@ class KQueue(BasePoller):
         sock = self._map[event.ident]
 
         if event.flags & KQ_EV_ERROR:
-            self.push(Error(sock, "error"), "_error", self.manager)
+            self.push(Error(sock, "error"), "_error", self.getTarget(sock))
             self.discard(sock)
         elif event.flags & KQ_EV_EOF:
-            self.push(Disconnect(sock), "_disconnect", self.manager)
-            self.discard(sock)
+            self.push(Disconnect(sock), "_disconnect", self.getTarget(sock))
         elif event.filter == KQ_FILTER_WRITE:
-            self.push(Write(sock), "_write", self.manager)
+            self.push(Write(sock), "_write", self.getTarget(sock))
         elif event.filter == KQ_FILTER_READ:
-            self.push(Read(sock), "_read", self.manager)
+            self.push(Read(sock), "_read", self.getTarget(sock))
 
 ### FIXME: The EPoll poller has some weird performance issues :/
 #if HAS_EPOLL:
