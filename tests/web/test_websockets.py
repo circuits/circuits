@@ -4,8 +4,8 @@ import sys
 
 import pytest
 
-if sys.version_info[:2] <= (2, 5):
-    pytest.skip("This test does not work for Python <= 2.5")
+if sys.version_info[:2] <= (2, 7):
+    pytest.skip("This test does not work for Python <= 2.7")
 
 from urlparse import urlunsplit
 

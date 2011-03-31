@@ -15,7 +15,7 @@ from types import IntType, ListType, TupleType
 
 from circuits.core import handler, BaseComponent
 
-from circuits.io import stdin, stdout
+from circuits import io
 
 from circuits.net.sockets import TCPServer, UNIXServer
 from circuits.net.sockets import TCPClient, Read, Write
@@ -154,7 +154,7 @@ class StdinServer(BaseComponent):
         super(StdinServer, self).__init__(**kwargs)
         WebEvent._target = kwargs["channel"]
 
-        self.server = stdin + stdout + HTTP(**kwargs)
+        self.server = io.stdin + io.stdout + HTTP(**kwargs)
         self += self.server
 
         Request.server = self
