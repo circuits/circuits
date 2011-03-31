@@ -446,7 +446,6 @@ class KQueue(BasePoller):
 
         if event.flags & KQ_EV_ERROR:
             self.push(Error(sock, "error"), "_error", self.getTarget(sock))
-            self.discard(sock)
         elif event.flags & KQ_EV_EOF:
             self.push(Disconnect(sock), "_disconnect", self.getTarget(sock))
         elif event.filter == KQ_FILTER_WRITE:
