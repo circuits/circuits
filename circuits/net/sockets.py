@@ -11,7 +11,7 @@ import os
 from collections import defaultdict, deque
 
 from errno import EAGAIN, EALREADY, EBADF
-from errno import ECONNABORTED, EINPROGRESS, EISCONN, EMFILE, ENFILE
+from errno import ECONNABORTED, EINPROGRESS, EINTR, EISCONN, EMFILE, ENFILE
 from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 
 from _socket import socket as SocketType
@@ -643,10 +643,11 @@ class Server(Component):
             if bytes < len(data):
                 self._buffers[sock].appendleft(data[bytes:])
         except SocketError, e:
-            if e[0] in (EPIPE, ENOTCONN):
+            if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
+                self.push(Error(sock, e), "error", self.channel)
                 self._close(sock)
             else:
-                self.push(Error(sock, e), "error", self.channel)
+                self._buffers[sock].appendleft(data)
 
     def write(self, sock, data):
         if not self._poller.isWriting(sock):
