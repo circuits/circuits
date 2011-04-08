@@ -850,6 +850,7 @@ class UDPServer(Server):
             self._poller.addWriter(self, self._sock)
         self._buffers[self._sock].append((address, data))
 
+    @handler("broadcast", override=True)
     def broadcast(self, data, port):
         self.write(("<broadcast>", port), data)
 
