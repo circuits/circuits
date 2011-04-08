@@ -300,6 +300,9 @@ class Client(Component):
         self.push(Close(), "close", self.channel)
 
     def _close(self):
+        if not self._connected:
+            return
+
         self._poller.discard(self._sock)
 
         self._buffer.clear()
@@ -412,7 +415,7 @@ class TCPClient(Client):
             self.keyfile = kwargs.get("keyfile", None)
 
         try:
-            r = self._sock.connect_ex((host, port))
+            r = self._sock.connect((host, port))
         except SocketError, e:
             if e[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
