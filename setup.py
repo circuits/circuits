@@ -94,7 +94,7 @@ setup(
     scripts=glob("scripts/*"),
     entry_points="""
     [console_scripts]
-    circuits.web = circuits.web.main:main
+    circuits.web = circuits.web.__main__:main
     """,
     setup_requires=("hgtools",),
     use_hg_version={"increment": "0.0.1"},
