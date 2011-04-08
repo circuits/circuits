@@ -212,6 +212,8 @@ class HTTP(BaseComponent):
 
     @handler("value_changed")
     def _on_value_changed(self, value):
+        if value.handled:
+            return
         request, response = value.event.args[:2]
         if value.result and not value.errors:
             response.body = value.value

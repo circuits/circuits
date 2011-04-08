@@ -59,6 +59,7 @@ class Value(object):
         self.errors = False
         self._parent = self
         self._value = None
+        self.handled = False
 
     def __getstate__(self):
         keys = ("event", "onSet", "result", "errors", "_value")

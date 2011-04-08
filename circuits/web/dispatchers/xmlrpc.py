@@ -34,6 +34,7 @@ class XMLRPC(BaseComponent):
         response = value.response
         response.body = self._response(value.value)
         self.push(Response(response), target=self.channel)
+        value.handled = True
 
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, request, response):
