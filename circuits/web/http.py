@@ -40,6 +40,7 @@ class HTTP(BaseComponent):
         super(HTTP, self).__init__(*args, **kwargs)
 
         self._clients = {}
+        self._buffers = {}
 
     @handler("stream")
     def _on_stream(self, response, data):
@@ -118,6 +119,14 @@ class HTTP(BaseComponent):
             if not request.body.tell() == contentLength:
                 return
         else:
+            if data.find('\r\n\r\n') == -1:
+                self._buffers.setdefault(sock, []).append(data)
+                return
+            if sock in self._buffers:
+                self._buffers[sock].append(data)
+                data = ''.join(self._buffers[sock])
+                del self._buffers[sock]
+
             requestline, data = data.split("\n", 1)
             requestline = requestline.strip()
             method, path, protocol = requestline.split(" ", 2)
