@@ -28,6 +28,8 @@ from events import Request, Response, Stream
 from errors import Redirect as RedirectError
 from exceptions import Redirect as RedirectException
 
+MAX_HEADER_FRAGENTS = 20
+
 
 class HTTP(BaseComponent):
     """HTTP Protocol Component
@@ -120,7 +122,10 @@ class HTTP(BaseComponent):
                 return
         else:
             if data.find('\r\n\r\n') == -1:
-                self._buffers.setdefault(sock, []).append(data)
+                buf = self._buffers.setdefault(sock, [])
+                buf.append(data)
+                if len(buf) > MAX_HEADER_FRAGENTS:
+                    return self.push(HTTPError(request, response, 400))
                 return
             if sock in self._buffers:
                 self._buffers[sock].append(data)
