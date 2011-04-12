@@ -126,7 +126,7 @@ class HTTP(BaseComponent):
                 buf.append(data)
                 if len(buf) > MAX_HEADER_FRAGENTS:
                     del self._buffers[sock]
-                    return self.push(HTTPError(request, response, 400))
+                    raise ValueError("Too many HTTP Headers Fragments.")
                 return
             if sock in self._buffers:
                 self._buffers[sock].append(data)
