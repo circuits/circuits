@@ -125,6 +125,7 @@ class HTTP(BaseComponent):
                 buf = self._buffers.setdefault(sock, [])
                 buf.append(data)
                 if len(buf) > MAX_HEADER_FRAGENTS:
+                    del self._buffers[sock]
                     return self.push(HTTPError(request, response, 400))
                 return
             if sock in self._buffers:
