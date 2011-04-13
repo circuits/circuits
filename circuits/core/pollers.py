@@ -53,7 +53,7 @@ if HAS_POLL:
 if HAS_EPOLL:
     _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
 
-TIMEOUT = 0.2
+TIMEOUT = 0.01 # 10ms timeout
 
 ###
 ### Events
@@ -146,19 +146,6 @@ class Select(BasePoller):
             if not any([self._read, self._write]):
                 return
             r, w, _ = select(self._read, self._write, [], self.timeout)
-            if r or w:
-                self.timeout = 0.0
-            dtime = time() - self._ts
-            self._ts = time()
-            if not dtime == 0.0:
-                load = float(len(r) + len(w)) / dtime
-                if load > self._load:
-                    if self.timeout > 0.1:
-                        self.timeout -= 0.001
-                else:
-                    if self.timeout < 0.5:
-                        self.timeout += 0.001
-                self._load = load
         except ValueError, e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
