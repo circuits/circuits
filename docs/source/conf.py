@@ -66,6 +66,14 @@ extensions.append('sphinx.ext.autodoc')
 autoclass_content = 'both'
 autodoc_member_order = 'bysource'
 
+# -- AutoSummary
+
+extensions.append('sphinx.ext.autosummary')
+
+# -- Graphviz
+
+extensions.append('sphinx.ext.graphviz')
+
 # -- Conditional content (see setup() below)
 extensions.append('sphinx.ext.ifconfig')
 
