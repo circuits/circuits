@@ -10,6 +10,8 @@ with a strong **Component** Architecture.
 
 :copyright: CopyRight (C) 2004-2011 by James Mills
 :license: MIT (See: LICENSE)
+
+.. _Python Programming Language: http://www.python.org/
 """
 
 __author__ = "James Mills"

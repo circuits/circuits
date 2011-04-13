@@ -4,12 +4,6 @@
 .. automodule :: circuits.core.components
 
 
-Events
-------
-
-**none**
-
-
 Components
 ----------
 
@@ -18,9 +12,3 @@ Components
 
 .. autoclass :: Component
    :members:
-
-
-Functions
----------
-
-**none**
