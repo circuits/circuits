@@ -16,7 +16,7 @@ class Pound(Component):
 class Dog(Component):
 
     def started(self, *args):
-        self.push(Bark())
+        self.fire(Bark())
 
     def bark(self):
         print("Woof! I'm %s!" % self.name)

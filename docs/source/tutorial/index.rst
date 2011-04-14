@@ -121,9 +121,12 @@ registered to it: ``Bob`` and ``Fred``
 
 The output of this is identical to the previous::
    
+   * <Pound/* 3391:MainThread (queued=0, channels=1, handlers=3) [R]>
+    * <Bob/* 3391:MainThread (queued=0, channels=1, handlers=1) [S]>
+    * <Fred/* 3391:MainThread (queued=0, channels=1, handlers=1) [S]>
    Hello I'm Bob!
    Hello I'm Fred!
-
+   
 The only difference is that ``Bob`` and ``Fred`` are now part of a more
 Complex Component called ``Pound``. This can be illustrated by the
 following diagram:
@@ -135,6 +138,10 @@ following diagram:
       "Pound-1344" -> "Fred-e98a";
    }
    
+.. note::
+   The extra lines in the above output are an ASCII representation of the
+   above graph (*produced by pydot + graphviz*).
+
 Cool :-)
 
 
@@ -177,6 +184,10 @@ Easy! Use a separate ``channel`` like so:
 
 :download:`Download 007.py <007.py>`
 
+.. note::
+   Events can be fired with either the ``.fire(...)`` or ``.fireEvent(...)``
+   method.
+
 If you run this, you'll get::
    
    Woof! I'm Bob!
@@ -185,10 +196,16 @@ If you run this, you'll get::
 Event Objects
 -------------
 
-So far in our tutorial we've only been using the basic ``Event``. Let's
-get a little more explicit and define our own events with custom names.
+So far in our tutorial we have been defining an Event Handler for a builtin
+Event called ``Started`` (*which incidently gets fired on a channel called
+"started"*). What if we wanted to define our own Event Handlers and our own
+Events ? You've already seen how easy it is to create a new Event Handler
+by simply defining a normal Python method on a Component.
 
-Defining a new Event is easy::
+Defining your own Events helps with documentation and testing and makes
+things a little easier.
+
+Example::
    
    class MyEvent(Event):
       """MyEvent"""
@@ -211,8 +228,16 @@ If you run this, you'll get::
 The Debugger
 ------------
 
-Lastly... What if we wrote some erroneous code that caused things to not
-work correctly and our application to have a bug ?
+Lastly...
+
+Asynchronous programming has many advntages but can be a little harder to
+write and follow. A silently caught exception in an Event Handler, or an Event
+that never gets fired, or any number of other weird things can cause your
+application to fail and leave you scratching your head.
+
+Fortunately circuits comes with a ``Debugger`` Component to help you keep
+track of what's going on in your application, and allows you to tell what
+your application is doing.
 
 Let's say that we defined out ``bark`` Event Handler in our ``Dog``
 Component as follows::
@@ -283,8 +308,14 @@ Then run this, you'll get the following::
    <Stopped[*:stopped] [<Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [S]>] {}>
    <Stopped[*:stopped] [<Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [S]>] {}>
    
-From this debug output we can see exactly where our problem is and
-hopefully how to fix it (*from the traceback*).
+You'll notice whereas there was no output before there is now a pretty
+detailed output with the ``Debugger`` added to the application. Looking
+through the output, we find that the application does indeed start
+correctly, but when we fire our ``Bark`` Event it coughs up two exceptions,
+one for each of our dogs (``Bob`` and ``Fred``).
+
+From the error we can tell where the error is and roughly where to look in
+the code.
 
 .. note::
    You'll notice many other events that are displayed in the above output.
