@@ -182,6 +182,131 @@ If you run this, you'll get::
    Woof! I'm Bob!
 
 
+Event Objects
+-------------
+
+So far in our tutorial we've only been using the basic ``Event``. Let's
+get a little more explicit and define our own events with custom names.
+
+Defining a new Event is easy::
+   
+   class MyEvent(Event):
+      """MyEvent"""
+
+So here's our example where we'll define a new Event claled ``Bark``
+and make our ``Dog`` fire a ``Bark`` event when our application starts up.
+
+.. literalinclude:: 008.py
+   :language: python
+   :linenos:
+
+:download:`Download 008.py <008.py>`
+
+If you run this, you'll get::
+   
+   Woof! I'm Bob!
+   Woof! I'm Fred!
+
+
+The Debugger
+------------
+
+Lastly... What if we wrote some erroneous code that caused things to not
+work correctly and our application to have a bug ?
+
+Let's say that we defined out ``bark`` Event Handler in our ``Dog``
+Component as follows::
+   
+   def bark(self):
+      print("Woof! I'm %s!" % name)
+
+Now clearly there is no such variable as ``name`` in the local scope.
+
+For reference here's the entire example...
+
+.. literalinclude:: 009.py
+   :language: python
+   :linenos:
+
+:download:`Download 009.py <009.py>`
+
+If you run this, you'll get:
+
+That's right! You get nothing! Why ? Well in circuits any error or
+exception that occurs in a running application is automatically caught and
+dealt with in a way that lets your application "keep on going". Crashing is
+unwanted behavior in a system so we expect to be able to recover from
+horrible situations.
+
+SO what do we do ? Welll that's easy. circuits come with a ``Debugger``
+that lets you log all events as well as all errors so you can quickly and
+easily discover which Event is causing a problem and which Event Handler to
+look at.
+
+If you change Line 34 of our example...
+
+From:
+
+.. literalinclude:: 009.py
+   :language: python
+   :lines: 34
+
+.. code-block:: python
+   
+   from circuits import Debugger
+
+   (Pound() + Debugger()).run()
+
+Then run this, you'll get the following::
+   
+   <Registered[bob:registered] [<Bob/bob 3191:MainThread (queued=0, channels=2, handlers=2) [S]>, <Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [R]>] {}>
+   <Registered[fred:registered] [<Fred/fred 3191:MainThread (queued=0, channels=2, handlers=2) [S]>, <Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [R]>] {}>
+   <Registered[*:registered] [<Debugger/* 3191:MainThread (queued=0, channels=1, handlers=1) [S]>, <Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [R]>] {}>
+   <Started[*:started] [<Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [R]>, None] {}>
+   <Bark[bob:bark] [] {}>
+   <Bark[fred:bark] [] {}>
+   <Error[*:exception] [<type 'exceptions.NameError'>, NameError("global name 'name' is not defined",), ['  File "/home/prologic/work/circuits/circuits/core/manager.py", line 459, in __handleEvent\n    retval = handler(*eargs, **ekwargs)\n', '  File "source/tutorial/009.py", line 22, in bark\n    print("Woof! I\'m %s!" % name)\n'], <bound method ?.bark of <Bob/bob 3191:MainThread (queued=0, channels=2, handlers=2) [S]>>] {}>
+   ERROR <listener on ('bark',) {target='bob', priority=0.0}> (<type 'exceptions.NameError'>): global name 'name' is not defined
+     File "/home/prologic/work/circuits/circuits/core/manager.py", line 459, in __handleEvent
+    retval = handler(*eargs, **ekwargs)
+     File "source/tutorial/009.py", line 22, in bark
+       print("Woof! I'm %s!" % name)
+   
+   <Error[*:exception] [<type 'exceptions.NameError'>, NameError("global name 'name' is not defined",), ['  File "/home/prologic/work/circuits/circuits/core/manager.py", line 459, in __handleEvent\n    retval = handler(*eargs, **ekwargs)\n', '  File "source/tutorial/009.py", line 22, in bark\n    print("Woof! I\'m %s!" % name)\n'], <bound method ?.bark of <Fred/fred 3191:MainThread (queued=0, channels=2, handlers=2) [S]>>] {}>
+   ERROR <listener on ('bark',) {target='fred', priority=0.0}> (<type 'exceptions.NameError'>): global name 'name' is not defined
+     File "/home/prologic/work/circuits/circuits/core/manager.py", line 459, in __handleEvent
+       retval = handler(*eargs, **ekwargs)
+     File "source/tutorial/009.py", line 22, in bark
+       print("Woof! I'm %s!" % name)
+   
+   ^C<Signal[*:signal] [2, <frame object at 0x808e8ec>] {}>
+   <Stopped[*:stopped] [<Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [S]>] {}>
+   <Stopped[*:stopped] [<Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [S]>] {}>
+   
+From this debug output we can see exactly where our problem is and
+hopefully how to fix it (*from the traceback*).
+
+.. note::
+   You'll notice many other events that are displayed in the above output.
+   These are all default events that circuits has builtin which your
+   application can respond to. Each builtin Event has a special meaning
+   with relation to the state of the application at that point.
+   
+   See: :py:mod:`circuits.core.events` for detailed documentation regarding
+   these events.
+
+The correct code for the ``bark`` Event Handler should be::
+   
+   def bark(self):
+       print("Woof! I'm %s!" % self.name)
+
+Running again with our coorection results in the expected output::
+   
+   Woof! I'm Bob!
+   Woof! I'm Fred!
+
+That's it's folks!
+
 Hopefully this gives you a feel of what circuits is all about and a easy
 tutorial on some of the basic concepts. As you're no doubt itching to get
 started on your next circuits project, here's some recommended reading:
