@@ -12,10 +12,13 @@ class Root(Controller):
 
     def load(self, name):
         try:
-            self.loader.load(name)
-            return "OK"
+            result = self.loader.load(name)
+            if result is not None:
+                return "Successfully loaded %s" % name
+            else:
+                return "Failed to find %s" % name
         except:
-            return "Failed"
+            return "Failed to load %s" % name
 
 
 (Server(("0.0.0.0", 8000)) + Root() + Logger()).run()
