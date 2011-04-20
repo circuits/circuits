@@ -18,10 +18,12 @@ from .server import Server
 
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"Poller": pollers.Select})
-    #if pollers.HAS_POLL:
-    #    metafunc.addcall(funcargs={"Poller": pollers.Poll})
-    #if pollers.HAS_EPOLL:
-    #    metafunc.addcall(funcargs={"Poller": pollers.EPoll})
+    if pollers.HAS_POLL:
+        metafunc.addcall(funcargs={"Poller": pollers.Poll})
+    if pollers.HAS_EPOLL:
+        metafunc.addcall(funcargs={"Poller": pollers.EPoll})
+    if pollers.HAS_KQUEUE:
+        metafunc.addcall(funcargs={"Poller": pollers.KQueue})
 
 def test_unix(tmpdir, Poller):
     m = Manager() + Poller()

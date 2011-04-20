@@ -36,6 +36,14 @@ except ImportError:
     except ImportError:
         HAS_EPOLL = 0
 
+try:
+    # Kqueue
+    from select import kqueue, kevent, KQ_FILTER_READ, KQ_EV_ERROR
+    from select import KQ_FILTER_WRITE, KQ_EV_ADD, KQ_EV_DELETE, KQ_EV_EOF
+    HAS_KQUEUE = 1
+except ImportError:
+    HAS_KQUEUE = 0
+
 from .events import Event
 from .components import BaseComponent
 
@@ -45,7 +53,7 @@ if HAS_POLL:
 if HAS_EPOLL:
     _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
 
-TIMEOUT = 0.2
+TIMEOUT = 0.01 # 10ms timeout
 
 ###
 ### Events
@@ -138,20 +146,7 @@ class Select(BasePoller):
             if not any([self._read, self._write]):
                 return
             r, w, _ = select(self._read, self._write, [], self.timeout)
-            if r or w:
-                self.timeout = 0.0
-            dtime = time() - self._ts
-            self._ts = time()
-            if not dtime == 0.0:
-                load = float(len(r) + len(w)) / dtime
-                if load > self._load:
-                    if self.timeout > 0.1:
-                        self.timeout -= 0.001
-                else:
-                    if self.timeout < 0.5:
-                        self.timeout += 0.001
-                self._load = load
-        except ValueError as e:
+        except ValueError, e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
         except TypeError as e:
@@ -372,6 +367,79 @@ class EPoll(BasePoller):
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
 
+class KQueue(BasePoller):
+    """KQueue(...) -> new KQueue Poller Component
+
+    Creates a new KQueue Poller Component that uses the kqueue poller
+    implementation.
+    """
+
+    channel = "kqueue"
+
+    def __init__(self, timeout=0.00001, channel=channel):
+        super(KQueue, self).__init__(timeout, channel=channel)
+        self._map = {}
+        self._poller = kqueue()
+
+    def addReader(self, source, sock):
+        super(KQueue, self).addReader(source, sock)
+        self._map[sock.fileno()] = sock
+        self._poller.control([kevent(sock,
+            KQ_FILTER_READ, KQ_EV_ADD)], 0)
+
+    def addWriter(self, source, sock):
+        super(KQueue, self).addWriter(source, sock)
+        self._map[sock.fileno()] = sock
+        self._poller.control([kevent(sock,
+            KQ_FILTER_WRITE, KQ_EV_ADD)], 0)
+
+    def removeReader(self, sock):
+        super(KQueue, self).removeReader(sock)
+        self._poller.control([kevent(sock,
+            KQ_FILTER_READ, KQ_EV_DELETE)], 0)
+
+    def removeWriter(self, sock):
+        super(KQueue, self).removeWriter(sock)
+        self._poller.control([kevent(sock,
+            KQ_FILTER_WRITE, KQ_EV_DELETE)], 0)
+
+    def discard(self, sock):
+        super(KQueue, self).discard(sock)
+        del self._map[sock.fileno()]
+        self._poller.control([kevent(sock,
+            KQ_FILTER_WRITE|KQ_FILTER_READ, KQ_EV_DELETE)], 0)
+
+    def __tick__(self):
+        try:
+            l = self._poller.control(None, 1000, self.timeout)
+        except SelectError, e:
+            if e[0] == EINTR:
+                return
+            else:
+                raise
+
+        for event in l:
+            self._process(event)
+
+    def _process(self, event):
+        if event.ident not in self._map:
+            # shouldn't happen ?
+            # we unregister the socket since we don't care about it anymore
+            self._poller.control(
+                [kevent(event.ident, event.filter, KQ_EV_DELETE)], 0)
+            return
+
+        sock = self._map[event.ident]
+
+        if event.flags & KQ_EV_ERROR:
+            self.push(Error(sock, "error"), "_error", self.getTarget(sock))
+        elif event.flags & KQ_EV_EOF:
+            self.push(Disconnect(sock), "_disconnect", self.getTarget(sock))
+        elif event.filter == KQ_FILTER_WRITE:
+            self.push(Write(sock), "_write", self.getTarget(sock))
+        elif event.filter == KQ_FILTER_READ:
+            self.push(Read(sock), "_read", self.getTarget(sock))
+
 ### FIXME: The EPoll poller has some weird performance issues :/
 #if HAS_EPOLL:
 #    Poller = EPoll
@@ -380,4 +448,4 @@ class EPoll(BasePoller):
 
 Poller = Select
 
-__all__ = ("BasePoller", "Poller", "Select", "Poll", "EPoll",)
+__all__ = ("BasePoller", "Poller", "Select", "Poll", "EPoll", "KQueue")

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("Not passing for Python 3")
-
-from urllib.parse import urlunsplit
+try:
+    from urllib.parse import urlunsplit
+except ImportError:
+    from urlparse import urlunsplit
 
 from circuits import Component
 from circuits.net.sockets import Write

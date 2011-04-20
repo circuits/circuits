@@ -11,15 +11,14 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   foreword
-   features
    start/index
-   introduction
-   tutorial
+   tutorial/index
    guides/index
    web/index
    api/index
    dev/index
+   users
+   faq
 
 .. toctree::
    :hidden:

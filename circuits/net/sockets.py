@@ -11,7 +11,7 @@ import os
 from collections import defaultdict, deque
 
 from errno import EAGAIN, EALREADY, EBADF
-from errno import ECONNABORTED, EINPROGRESS, EISCONN, EMFILE, ENFILE
+from errno import ECONNABORTED, EINPROGRESS, EINTR, EISCONN, EMFILE, ENFILE
 from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 
 from socket import gaierror, error as SocketError
@@ -300,6 +300,9 @@ class Client(Component):
         self.push(Close(), "close", self.channel)
 
     def _close(self):
+        if not self._connected:
+            return
+
         self._poller.discard(self._sock)
 
         self._buffer.clear()
@@ -404,9 +407,9 @@ class TCPClient(Client):
             self.keyfile = kwargs.get("keyfile", None)
 
         try:
-            r = self._sock.connect_ex((host, port))
-        except SocketError as e:
-            if e.args[0] in (EBADF, EINVAL,):
+            r = self._sock.connect((host, port))
+        except SocketError, e:
+            if e[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
             else:
@@ -636,10 +639,11 @@ class Server(Component):
             if bytes < len(data):
                 self._buffers[sock].appendleft(data[bytes:])
         except SocketError as e:
-            if e.args[0] in (EPIPE, ENOTCONN):
+            if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
+                self.push(Error(sock, e), "error", self.channel)
                 self._close(sock)
             else:
-                self.push(Error(sock, e), "error", self.channel)
+                self._buffers[sock].appendleft(data)
 
     def write(self, sock, data):
         if not self._poller.isWriting(sock):
@@ -812,6 +816,7 @@ class UDPServer(Server):
             self._poller.addWriter(self, self._sock)
         self._buffers[self._sock].append((address, data))
 
+    @handler("broadcast", override=True)
     def broadcast(self, data, port):
         self.write(("<broadcast>", port), data)
 

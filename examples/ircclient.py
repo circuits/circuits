@@ -15,7 +15,7 @@ from circuits.io import stdin
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
 from circuits.net.sockets import TCPClient, Connect
-from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
+from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN, Nick
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion

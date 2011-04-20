@@ -1,12 +1,14 @@
+.. _pip: http://pypi.python.org/pypi/pip
+
 Quick Start Guide
 =================
 
 The easiest way to download and install circuits is to use the
-`setuptools <http://pypi.python.org/pypi/setuptools>`_ easy_install tool:
+`pip`_ command:
 
 .. code-block:: sh
    
-   $ easy_install circuits
+   $ pip install circuits
    
 
 Now that you have successfully downloaded and installed circuits, let's

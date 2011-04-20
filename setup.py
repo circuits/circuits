@@ -100,7 +100,7 @@ setup(
     scripts=glob("scripts/*"),
     entry_points="""
     [console_scripts]
-    circuits.web = circuits.web.main:main
+    circuits.web = circuits.web.__main__:main
     """,
     zip_safe=False,
     test_suite="tests.main.runtests",

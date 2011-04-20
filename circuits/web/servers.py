@@ -7,11 +7,17 @@
 This module implements the several Web Server components.
 """
 
+import time
+import sys
+
 from socket import gethostname as _gethostname
 
 from circuits.core import handler, BaseComponent
 
+from circuits import io
+
 from circuits.net.sockets import TCPServer, UNIXServer
+from circuits.net.sockets import TCPClient, Read, Write
 
 from .http import HTTP
 from .events import WebEvent
@@ -136,3 +142,30 @@ class Server(BaseServer):
         super(Server, self).__init__(bind, **kwargs)
 
         Dispatcher(channel=self.channel).register(self)
+
+class FakeSock():
+    def getpeername(self):
+        return (None, None)
+
+class StdinServer(BaseComponent):
+    channel = "web"
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault("channel", self.channel)
+        super(StdinServer, self).__init__(**kwargs)
+        WebEvent._target = kwargs["channel"]
+
+        self.server = io.stdin + io.stdout + HTTP(**kwargs)
+        self += self.server
+
+        Request.server = self
+        Dispatcher(channel=self.channel).register(self)
+
+    @handler("read", target="stdin")
+    def read(self, data):
+        self.push(Read(FakeSock(), data), "read", self.channel)
+
+    @handler("write")
+    def write(self, sock, data):
+        self.push(Write(data), "write", "stdout")
+
