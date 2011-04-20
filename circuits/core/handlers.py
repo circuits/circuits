@@ -8,7 +8,8 @@ This module define the @handler decorator/function and the HandlesType type.
 """
 
 from inspect import getargspec
-import collections
+from collections import Callable
+
 
 def handler(*channels, **kwargs):
     """Creates an Event Handler
@@ -60,8 +61,8 @@ def handler(*channels, **kwargs):
 
     return wrapper
 
-class HandlersType(type):
-    """Handlers metaclass
+class HandlerMetaClass(type):
+    """Handler Meta Class
 
     metaclass used by the Component to pick up any methods defined in the
     new Component and turn them into Event Handlers by applying the
@@ -74,8 +75,9 @@ class HandlersType(type):
     def __init__(cls, name, bases, dct):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(HandlersType, cls).__init__(name, bases, dct)
+        super(HandlerMetaClass, cls).__init__(name, bases, dct)
 
         for k, v in dct.items():
-            if isinstance(v, collections.Callable) and not (k[0] == "_" or hasattr(v, "handler")):
+            if (isinstance(v, Callable)
+                    and not (k[0] == "_" or hasattr(v, "handler"))):
                 setattr(cls, k, handler(k)(v))

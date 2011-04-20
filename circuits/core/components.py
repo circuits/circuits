@@ -13,7 +13,7 @@ from inspect import getmembers
 
 from .utils import findroot
 from .manager import Manager
-from .handlers import HandlersType
+from .handlers import HandlerMetaClass
 from .events import Registered, Unregistered
 import collections
 
@@ -43,12 +43,25 @@ class BaseComponent(Manager):
     channel = "*"
 
     def __new__(cls, *args, **kwargs):
-        """TODO Work around for Python bug.
+        self = super(BaseComponent, cls).__new__(cls, *args, **kwargs)
 
-        Bug: http://bugs.python.org/issue5322
-        """
+        handlers = dict([(k, v) for k, v in cls.__dict__.items()
+                if getattr(v, "handler", False)])
 
-        return object.__new__(cls)
+        overridden = lambda x: x in handlers and handlers[x].override
+
+        for base in cls.__bases__:
+            if issubclass(cls, base):
+                for k, v in list(base.__dict__.items()):
+                    p1 = isinstance(v, collections.Callable)
+                    p2 = getattr(v, "handler", False)
+                    p3 = overridden(k)
+                    if p1 and p2 and not p3:
+                        name = "%s_%s" % (base.__name__, k)
+                        method = MethodType(v, self)
+                        setattr(self, name, method)
+
+        return self
 
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
@@ -162,23 +175,5 @@ class BaseComponent(Manager):
 
         return self
 
-class Component(BaseComponent, metaclass=HandlersType):
+Component = HandlerMetaClass("Component", (BaseComponent,), {})
 
-    def __new__(cls, *args, **kwargs):
-        self = BaseComponent.__new__(cls, *args, **kwargs)
-        handlers = dict([(k, v) for k, v in cls.__dict__.items()
-                if getattr(v, "handler", False)])
-
-        overridden = lambda x: x in handlers and handlers[x].override
-
-        for base in cls.__bases__:
-            if issubclass(cls, base):
-                for k, v in list(base.__dict__.items()):
-                    p1 = isinstance(v, collections.Callable)
-                    p2 = getattr(v, "handler", False)
-                    p3 = overridden(k)
-                    if p1 and p2 and not p3:
-                        name = "%s_%s" % (base.__name__, k)
-                        method = MethodType(v, self)
-                        setattr(self, name, method)
-        return self

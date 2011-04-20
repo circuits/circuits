@@ -15,7 +15,6 @@ def wait_event(m, channel, target=None, timeout=30.0):
     flag = False
 
     def handler(evt, handler, retval):
-        nonlocal flag
         flag = True
 
     if target is None:
