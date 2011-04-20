@@ -146,7 +146,7 @@ class Select(BasePoller):
             if not any([self._read, self._write]):
                 return
             r, w, _ = select(self._read, self._write, [], self.timeout)
-        except ValueError, e:
+        except ValueError as e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
         except TypeError as e:
@@ -412,7 +412,7 @@ class KQueue(BasePoller):
     def __tick__(self):
         try:
             l = self._poller.control(None, 1000, self.timeout)
-        except SelectError, e:
+        except SelectError as e:
             if e[0] == EINTR:
                 return
             else:

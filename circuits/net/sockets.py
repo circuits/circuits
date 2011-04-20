@@ -408,7 +408,7 @@ class TCPClient(Client):
 
         try:
             r = self._sock.connect((host, port))
-        except SocketError, e:
+        except SocketError as e:
             if e[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
