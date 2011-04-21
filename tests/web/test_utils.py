@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 from io import BytesIO
-from gzip import decompress
+try:
+    from gzip import decompress
+except ImportError:
+    from zlib import decompress
 
 from circuits.web.utils import compress
 from circuits.web.utils import get_ranges

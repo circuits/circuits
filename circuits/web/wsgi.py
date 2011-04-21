@@ -7,7 +7,10 @@
 This module implements WSGI Components.
 """
 
-from urllib.parse import unquote
+try:
+    from urllib.parse import unquote
+except ImportError:
+    from urllib import unquote
 from io import StringIO
 from traceback import format_tb
 from sys import exc_info as _exc_info

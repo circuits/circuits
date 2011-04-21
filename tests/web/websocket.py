@@ -21,7 +21,10 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
 
 
 import socket
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urllib2 import urlparse
 import random
 import struct
 from hashlib import md5
