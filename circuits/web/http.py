@@ -25,6 +25,8 @@ from .events import Request, Response, Stream
 from .errors import Redirect as RedirectError
 from .exceptions import Redirect as RedirectException
 
+MAX_HEADER_FRAGENTS = 20
+
 
 class HTTP(BaseComponent):
     """HTTP Protocol Component
@@ -41,6 +43,7 @@ class HTTP(BaseComponent):
         self._encoding = encoding
 
         self._clients = {}
+        self._buffers = {}
 
     @handler("stream")
     def _on_stream(self, response, data):
@@ -119,6 +122,18 @@ class HTTP(BaseComponent):
             if not request.body.tell() == contentLength:
                 return
         else:
+            if data.find('\r\n\r\n') == -1:
+                buf = self._buffers.setdefault(sock, [])
+                buf.append(data)
+                if len(buf) > MAX_HEADER_FRAGENTS:
+                    del self._buffers[sock]
+                    raise ValueError("Too many HTTP Headers Fragments.")
+                return
+            if sock in self._buffers:
+                self._buffers[sock].append(data)
+                data = ''.join(self._buffers[sock])
+                del self._buffers[sock]
+
             requestline, data = data.split(b"\r\n", 1)
             requestline = requestline.strip().decode(
                     self._encoding, "replace")
@@ -218,6 +233,8 @@ class HTTP(BaseComponent):
 
     @handler("value_changed")
     def _on_value_changed(self, value):
+        if value.handled:
+            return
         request, response = value.event.args[:2]
         if value.result and not value.errors:
             response.body = value.value

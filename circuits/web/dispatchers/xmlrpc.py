@@ -29,11 +29,12 @@ class XMLRPC(BaseComponent):
         self.target = target
         self.encoding = encoding
 
-    @handler("value_changed")
+    @handler("value_changed", priority=0.1)
     def _on_value_changed(self, value):
         response = value.response
         response.body = self._response(value.value)
         self.push(Response(response), target=self.channel)
+        value.handled = True
 
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, request, response):
