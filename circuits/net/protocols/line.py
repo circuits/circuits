@@ -80,12 +80,12 @@ class LP(BaseComponent):
            exposes Read events on a "read" Channel.
     """
 
-    def __init__(self, *args, encoding="utf-8", **kwargs):
+    def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(LP, self).__init__(*args, **kwargs)
 
-        self.encoding = encoding
+        self.encoding = kwargs.get('encoding', 'utf-8')
 
         # Used for Servers
         self.getBuffer = kwargs.get("getBuffer")

@@ -1,6 +1,11 @@
-from urllib.error import HTTPError
-from urllib.request import HTTPDigestAuthHandler
-from urllib.request import urlopen, build_opener, install_opener
+try:
+    from urllib.error import HTTPError
+    from urllib.request import HTTPDigestAuthHandler
+    from urllib.request import urlopen, build_opener, install_opener
+except ImportError:
+    from urllib2 import HTTPError
+    from urllib2 import HTTPDigestAuthHandler
+    from urllib2 import urlopen, build_opener, install_opener
 
 from circuits.web import Controller
 from circuits.web.tools import check_auth, digest_auth

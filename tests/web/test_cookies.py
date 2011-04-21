@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
-import urllib.request, urllib.error, urllib.parse
-from http.cookiejar import CookieJar
+try:
+    from urllib.request import build_opener, HTTPCookieProcessor
+except ImportError:
+    from urllib2 import build_opener, HTTPCookieProcessor
+try:
+    from http.cookiejar import CookieJar
+except ImportError:
+    from cookielib import CookieJar
 from circuits.web import Controller
 
 class Root(Controller):

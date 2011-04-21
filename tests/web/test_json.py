@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
-import urllib.request, urllib.error, urllib.parse
-from urllib.request import urlopen
-from http.cookiejar import CookieJar
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
+try:
+    from http.cookiejar import CookieJar
+except ImportError:
+    from cookielib import CookieJar
 
 import pytest
 

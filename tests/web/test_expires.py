@@ -3,7 +3,10 @@
 from datetime import datetime
 from time import gmtime, mktime
 from email.utils import parsedate
-from urllib.request import urlopen
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 from circuits.web import Controller
 

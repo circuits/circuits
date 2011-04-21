@@ -1,5 +1,8 @@
 
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 from circuits.web.headers import Headers
 from circuits.core import handler, BaseComponent, Event

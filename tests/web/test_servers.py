@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
 from os.path import basename
-from urllib.request import urlopen
-from urllib.error import URLError
+try:
+    from urllib.request import urlopen
+    from urllib.error import URLError
+except ImportError:
+    from urllib2 import urlopen
+    from urllib2 import URLError
 from socket import gaierror
 
 from circuits import Component

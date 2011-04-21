@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-from http.client import HTTPConnection
+try:
+    from httplib import HTTPConnection
+except ImportError:
+    from http.client import HTTPConnection
 from circuits.web import Controller
 
 class Root(Controller):

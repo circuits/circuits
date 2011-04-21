@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 import sys
-from urllib.request import urlopen
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 from io import StringIO
 from socket import gaierror, gethostbyname, gethostname
 

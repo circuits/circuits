@@ -10,8 +10,10 @@ the configuration to a file.
 """
 
 
-
-from configparser import ConfigParser
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
 from circuits import handler, BaseComponent, Event
 
