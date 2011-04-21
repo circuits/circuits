@@ -61,8 +61,11 @@ __all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse",
 ################################################################################
 import time
 import base64
-import urllib.request, urllib.error, urllib.parse
-from urllib.request import parse_http_list, parse_keqv_list
+try:
+    from urllib.request import parse_http_list, parse_keqv_list
+except ImportError:
+    from urllib2 import parse_http_list, parse_keqv_list
+    
 from hashlib import md5
 
 MD5 = "MD5"

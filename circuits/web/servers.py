@@ -66,7 +66,7 @@ class BaseServer(BaseComponent):
 
         WebEvent._target = kwargs["channel"]
 
-        if type(bind) in {int, list, tuple}:
+        if type(bind) in (int, list, tuple):
             SocketType = TCPServer
         else:
             if ":" in bind:

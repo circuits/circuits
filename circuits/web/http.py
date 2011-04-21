@@ -10,8 +10,12 @@ or commonly known as HTTP.
 
 
 from io import BytesIO
-from urllib.parse import unquote
-from urllib.parse import urlparse
+try:
+    from urllib.parse import unquote
+    from urllib.parse import urlparse
+except ImportError:
+    from urllib import unquote
+    from urlparse import urlparse    
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value

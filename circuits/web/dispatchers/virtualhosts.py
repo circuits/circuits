@@ -8,7 +8,10 @@ This module implements a virtual host dispatcher that sends requests
 for configured virtual hosts to different dispatchers.
 """
 
-from urllib.parse import urljoin
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
 
 from circuits import handler, BaseComponent
 

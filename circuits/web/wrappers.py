@@ -11,7 +11,11 @@ This module implements the Request and Response objects.
 import os
 from io import BytesIO, IOBase
 from time import strftime, time
-from http.cookies import SimpleCookie
+
+try:
+    from Cookie import SimpleCookie
+except ImportError:
+    from http.cookies import SimpleCookie
 
 from .utils import url
 from .headers import Headers

@@ -13,9 +13,11 @@ import zlib
 import time
 import struct
 from gzip import GzipFile
-import urllib.request, urllib.parse, urllib.error
 from cgi import escape
-from urllib.parse import urljoin as _urljoin
+try:
+    from urllib.parse import urljoin as _urljoin
+except ImportError:
+    from urlparse import urljoin as _urljoin
 
 try:
     from io import StringIO

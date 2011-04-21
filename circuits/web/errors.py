@@ -7,7 +7,10 @@
 This module implements a set of standard HTTP Errors.
 """
 
-from urllib.parse import urljoin as _urljoin
+try:
+    from urllib.parse import urljoin as _urljoin
+except ImportError:
+    from urlparse import urljoin as _urljoin
 
 from circuits import Event
 

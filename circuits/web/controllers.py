@@ -28,6 +28,8 @@ from circuits.core import handler, BaseComponent
 from . import tools
 from .wrappers import Response
 from .errors import Forbidden, HTTPError, NotFound, Redirect
+from circuits.core.handlers import HandlerMetaClass
+
 
 def expose(*channels, **config):
    def decorate(f):
@@ -99,9 +101,11 @@ class BaseController(BaseComponent):
     def expires(self, secs=0, force=False):
         tools.expires(self.request, self.response, secs, force)
 
-class Controller(BaseController, metaclass=ExposeType):
-
+class Controller(BaseController):
     pass
+
+Controller = HandlerMetaClass("Controller", (ExposeType,), {})
+
 
 if HAS_JSON:
 
@@ -149,6 +153,8 @@ if HAS_JSON:
                     setattr(cls, k, exposeJSON(k)(v))
 
 
-    class JSONController(BaseController, metaclass=ExposeJSONType):
-
+    class JSONController(BaseController):
         pass
+
+    JSONController = HandlerMetaClass("JSONController", (ExposeJSONType,), {})
+    
