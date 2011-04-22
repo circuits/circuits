@@ -60,7 +60,10 @@ __all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse",
 
 ################################################################################
 import time
-import base64
+try:
+    from base64 import decodebytes as base64_decodebytes
+except ImportError:
+    from base64 import b64decode as base64_decodebytes
 try:
     from urllib.request import parse_http_list, parse_keqv_list
 except ImportError:
@@ -161,7 +164,7 @@ def _parseDigestAuthorization (auth_params):
 
 def _parseBasicAuthorization (auth_params):
     auth_params = auth_params.encode("utf-8")
-    username, password = base64.decodebytes (auth_params).split (b":", 1)
+    username, password = base64_decodebytes (auth_params).split (b":", 1)
     username = username.decode("utf-8")
     password = password.decode("utf-8")
     return {"username": username, "password": password}

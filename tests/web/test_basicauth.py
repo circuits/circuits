@@ -36,6 +36,8 @@ def test(webapp):
     opener = build_opener(handler)
     install_opener(opener)
 
+    from circuits import Debugger
+    Debugger().register(webapp)
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
