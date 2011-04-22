@@ -16,7 +16,7 @@ class Waiter(object):
         self.flag = True    
 
 
-def wait_event(m, channel, target=None, timeout=30.0):
+def wait_event(m, channel, target=None, timeout=1.0):
     from circuits.core.manager import TIMEOUT
 
     waiter = Waiter()
@@ -32,7 +32,7 @@ def wait_event(m, channel, target=None, timeout=30.0):
         sleep(TIMEOUT)
 
 
-def wait_for(obj, attr, value=True, timeout=30.0):
+def wait_for(obj, attr, value=True, timeout=1.0):
     from circuits.core.manager import TIMEOUT
     for i in range(int(timeout / TIMEOUT)):
         if isinstance(value, collections.Callable):

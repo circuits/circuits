@@ -37,7 +37,7 @@ def test_create(env, path):
     env.push(Create())
     assert pytest.wait_event(env, "create_success")
 
-    files = set("conf/test.ini", "README", "VERSION")
+    files = ("conf/test.ini", "README", "VERSION")
 
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
@@ -50,7 +50,7 @@ def test_load(env, path):
 
     assert pytest.wait_event(env, "create_success")
 
-    files = set("conf/test.ini", "README", "VERSION")
+    files = ("conf/test.ini", "README", "VERSION")
 
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
@@ -67,7 +67,7 @@ def test_load_verify(env, path):
 
     assert pytest.wait_event(env, "create_success")
 
-    files = set("conf/test.ini", "README", "VERSION")
+    files = ("conf/test.ini", "README", "VERSION")
 
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
@@ -85,7 +85,7 @@ def test_load_verify_fail(env, path):
 
     assert pytest.wait_event(env, "create_success")
 
-    files = set("conf/test.ini", "README", "VERSION")
+    files = ("conf/test.ini", "README", "VERSION")
 
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
@@ -108,7 +108,7 @@ def test_load_verify_upgrade(env, path):
 
     assert pytest.wait_event(env, "create_success")
 
-    files = set("conf/test.ini", "README", "VERSION")
+    files = ("conf/test.ini", "README", "VERSION")
 
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)

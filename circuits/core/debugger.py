@@ -9,7 +9,10 @@ each event to sys.stderr or to a Logger Component instnace.
 
 import os
 import sys
-from io import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from .handlers import handler
 from .components import BaseComponent
