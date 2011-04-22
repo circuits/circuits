@@ -43,7 +43,7 @@ class BaseComponent(Manager):
     channel = "*"
 
     def __new__(cls, *args, **kwargs):
-        self = super(BaseComponent, cls).__new__(cls, *args, **kwargs)
+        self = super(BaseComponent, cls).__new__(cls)
 
         handlers = dict([(k, v) for k, v in cls.__dict__.items()
                 if getattr(v, "handler", False)])
