@@ -9,21 +9,25 @@ from time import sleep
 import collections
 
 
+class Waiter(object):
+    flag = False
+
+    def handler(self, evt, handler, retval):
+        self.flag = True    
+
+
 def wait_event(m, channel, target=None, timeout=30.0):
     from circuits.core.manager import TIMEOUT
 
-    flag = False
-
-    def handler(evt, handler, retval):
-        flag = True
+    waiter = Waiter()
 
     if target is None:
         target = m
 
-    m.addHandler(handler, channel, target=target)
+    m.addHandler(waiter.handler, channel, target=target)
 
     for i in range(int(timeout / TIMEOUT)):
-        if flag:
+        if waiter.flag:
             return True
         sleep(TIMEOUT)
 
