@@ -14,6 +14,8 @@ from errno import EAGAIN, EALREADY, EBADF
 from errno import ECONNABORTED, EINPROGRESS, EINTR, EISCONN, EMFILE, ENFILE
 from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 
+from _socket import socket as SocketType
+
 from socket import gaierror, error as SocketError
 from socket import gethostname, gethostbyname, socket
 
@@ -247,8 +249,7 @@ class Client(Component):
             self._bind = (host, port)
         else:
             self._bind = None
-
-        if isinstance(bind, socket):
+        if isinstance(bind, SocketType):
             self._sock = bind
         else:
             self._sock = self._create_socket()
