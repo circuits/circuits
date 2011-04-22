@@ -104,7 +104,7 @@ class BaseController(BaseComponent):
 class Controller(BaseController):
     pass
 
-Controller = HandlerMetaClass("Controller", (ExposeType,), {})
+Controller = ExposeType("Controller", (BaseComponent,), {})
 
 
 if HAS_JSON:
@@ -156,5 +156,5 @@ if HAS_JSON:
     class JSONController(BaseController):
         pass
 
-    JSONController = HandlerMetaClass("JSONController", (ExposeJSONType,), {})
+    JSONController = ExposeJSONType("JSONController", (BaseController,), {})
     
