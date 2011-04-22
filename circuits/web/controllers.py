@@ -104,7 +104,7 @@ class BaseController(BaseComponent):
 class Controller(BaseController):
     pass
 
-Controller = ExposeType("Controller", (BaseComponent,), {})
+Controller = ExposeType("Controller", (BaseController,), {})
 
 
 if HAS_JSON:
