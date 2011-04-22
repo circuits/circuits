@@ -13,6 +13,8 @@ from warnings import warn
 
 
 def tryimport(modules, message=None):
+    if isinstance(modules, basestring):
+        modules = (modules,)
     for module in modules:
         try:
             return __import__(module, globals(), locals())
@@ -76,7 +78,7 @@ def graph(x, name=None):
         h = md5(s.encode("utf-8")).hexdigest()[-4:]
         return "%s-%s" % (c.name, h)
 
-    pydot = tryimport(("pydot",))
+    pydot = tryimport("pydot")
     if pydot is not None:
         graph_edges = []
         for (u, v) in edges(x):
