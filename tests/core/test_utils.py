@@ -30,8 +30,9 @@ def test(tmpdir):
 
     s = foo.foo()
     assert s == "Hello World!"
-
-    foo_path.new(ext="pyc").remove(ignore_errors=True)
+    pyc = foo_path.new(ext="pyc")
+    if pyc.check(file=1):
+        pyc.remove(ignore_errors=True)
     foo_path.write(FOOBAR)
 
     foo = safeimport("foo")
