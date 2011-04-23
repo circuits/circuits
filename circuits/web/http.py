@@ -126,7 +126,7 @@ class HTTP(BaseComponent):
             if not request.body.tell() == contentLength:
                 return
         else:
-            if data.find('\r\n\r\n') == -1:
+            if data.find(b'\r\n\r\n') == -1:
                 buf = self._buffers.setdefault(sock, [])
                 buf.append(data)
                 if len(buf) > MAX_HEADER_FRAGENTS:
