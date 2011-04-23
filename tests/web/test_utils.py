@@ -4,7 +4,8 @@ from io import BytesIO
 try:
     from gzip import decompress
 except ImportError:
-    from zlib import decompress
+    import zlib
+    decompress = zlib.decompressobj(16+zlib.MAX_WBITS).decompress
 
 from circuits.web.utils import compress
 from circuits.web.utils import get_ranges
