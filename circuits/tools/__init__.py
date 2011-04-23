@@ -11,13 +11,9 @@ tools are installed as executables with a prefix of "circuits."
 from hashlib import md5
 from warnings import warn
 
-try:
-    basestring
-except NameError:
-    basestring = str
 
 def tryimport(modules, message=None):
-    if isinstance(modules, basestring):
+    if isinstance(modules, str):
         modules = (modules,)
     for module in modules:
         try:

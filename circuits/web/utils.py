@@ -8,11 +8,9 @@ This module implements utility functions.
 """
 
 import re
-import gzip
 import zlib
 import time
 import struct
-from gzip import GzipFile
 from cgi import escape
 try:
     from urllib.parse import urljoin as _urljoin
