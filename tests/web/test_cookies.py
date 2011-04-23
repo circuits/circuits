@@ -21,7 +21,7 @@ class Root(Controller):
 
 def test(webapp):
     cj = CookieJar()
-    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    opener = build_opener(HTTPCookieProcessor(cj))
 
     f = opener.open(webapp.server.base)
     s = f.read()

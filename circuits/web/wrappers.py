@@ -127,7 +127,10 @@ class Request(object):
         self._headers = headers
 
         if "Cookie" in self.headers:
-            self.cookie.load(self.headers["Cookie"])
+            rawcookies = self.headers["Cookie"]
+            if hasattr(rawcookies, 'encode'):
+                rawcookies = rawcookies.encode('utf-8')
+            self.cookie.load(rawcookies)
 
         host = self.headers.get("Host", None)
         if not host:

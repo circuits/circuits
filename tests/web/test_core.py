@@ -17,6 +17,7 @@ class Root(Controller):
         return "Hello World!"
 
     def test_args(self, *args, **kwargs):
+        args = tuple((x.encode('utf-8') if hasattr(x, 'encode') else x for x in args))
         return "%s\n%s" % (repr(args), repr(kwargs))
 
     def test_redirect(self):
@@ -46,10 +47,11 @@ def test_args(webapp):
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.base, "/".join(args))
-    data = urlencode(kwargs).encode("utf-8")
-
+    data = urlencode(kwargs)
+    if hasattr(data, 'encode'):
+        data = data.encode("utf-8")
     f = urlopen(url, data)
-    data = f.read().decode("utf-8").split("\n")
+    data = f.read().split("\n")
     assert data[0] == repr(args)
     assert data[1] == repr(kwargs)
 
