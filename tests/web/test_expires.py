@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from datetime import datetime
-from time import gmtime, mktime
+from time import mktime
 from email.utils import parsedate
 try:
     from urllib.request import urlopen
@@ -25,7 +25,7 @@ def test(webapp):
     s = f.read()
     assert s  == b"Hello World!"
     expires = f.headers["Expires"]
-    diff = (mktime(parsedate(expires)) - mktime(gmtime()))
+    diff = (mktime(parsedate(expires)) - mktime(datetime.utcnow().timetuple()))
     assert 60 - (60 * 0.1) < diff < 60 + (60 * 0.1) # diff is about 60 +- 10%
 
 def test_nocache(webapp):

@@ -5,7 +5,10 @@ try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
-from io import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from socket import gaierror, gethostbyname, gethostname
 
 from circuits.web import Controller, Logger

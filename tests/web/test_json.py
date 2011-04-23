@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 try:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, build_opener, HTTPCookieProcessor
 except ImportError:
-    from urllib2 import urlopen
+    from urllib2 import urlopen, build_opener, HTTPCookieProcessor
 try:
     from http.cookiejar import CookieJar
 except ImportError:
@@ -40,7 +40,7 @@ def test_sessions(webapp):
     Sessions().register(webapp)
 
     cj = CookieJar()
-    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    opener = build_opener(HTTPCookieProcessor(cj))
 
     f = opener.open("%s/test_sessions" % webapp.server.base)
     data = f.read()

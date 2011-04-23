@@ -20,7 +20,9 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs={"Poller": pollers.KQueue})
 
 def test_tcp(Poller):
+    from circuits import Debugger
     m = Manager() + Poller()
+    Debugger().register(m)
     server = Server() + TCPServer(0)
     client = Client() + TCPClient()
 

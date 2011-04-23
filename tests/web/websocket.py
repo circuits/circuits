@@ -24,7 +24,7 @@ import socket
 try:
     from urllib.parse import urlparse
 except ImportError:
-    from urllib2 import urlparse
+    from urlparse import urlparse
 import random
 import struct
 from hashlib import md5
