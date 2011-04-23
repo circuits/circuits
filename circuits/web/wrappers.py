@@ -128,7 +128,7 @@ class Request(object):
 
         if "Cookie" in self.headers:
             rawcookies = self.headers["Cookie"]
-            if hasattr(rawcookies, 'encode'):
+            if not type(rawcookies) == type(''):
                 rawcookies = rawcookies.encode('utf-8')
             self.cookie.load(rawcookies)
 
