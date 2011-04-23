@@ -33,6 +33,9 @@ def test(tmpdir):
     pyc = foo_path.new(ext="pyc")
     if pyc.check(file=1):
         pyc.remove(ignore_errors=True)
+    pyd = foo_path.dirpath('__pycache__')
+    if pyd.check(dir=1):
+        pyd.remove(ignore_errors=True)
     foo_path.write(FOOBAR)
 
     foo = safeimport("foo")

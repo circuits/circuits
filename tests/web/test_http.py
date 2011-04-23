@@ -15,11 +15,11 @@ class Client(Component):
 
     def read(self, data):
         self._buffer.append(data)
-        if data.find("\r\n") != -1:
+        if data.find(b"\r\n") != -1:
             self.done = True
 
     def buffer(self):
-        return ''.join(self._buffer)
+        return b''.join(self._buffer)
 
 class Root(Controller):
 
@@ -42,5 +42,5 @@ def test(webapp):
 
     client.stop()
 
-    s = client.buffer().split('\r\n')[0]
+    s = client.buffer().decode('utf-8').split('\r\n')[0]
     assert s == "HTTP/1.1 200 OK"

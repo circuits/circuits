@@ -83,6 +83,7 @@ class HTTP(BaseComponent):
                 data = None
             self.push(Stream(response, data))
         else:
+            print(response.body)
             body = "".join(response.body)
 
             if body:

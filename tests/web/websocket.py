@@ -123,7 +123,7 @@ _MAX_CHAR_BYTE = (1<<8) -1
 def _create_sec_websocket_key():
     spaces_n = random.randint(1, 12)
     max_n = _MAX_INTEGER / spaces_n
-    number_n = random.randint(0, max_n)
+    number_n = random.randint(0, int(max_n))
     product_n = number_n * spaces_n
     key_n = str(product_n)
     for i in range(random.randint(1, 12)):
@@ -237,7 +237,7 @@ class WebSocket(object):
         headers.append(key3)
 
         header_str = "\r\n".join(headers)
-        sock.send(header_str)
+        sock.send(header_str.encode('utf-8'))
         if traceEnabled:
             logger.debug( "--- request header ---")
             logger.debug( header_str)
@@ -517,7 +517,7 @@ if __name__ == "__main__":
     result =  ws.recv()
     print("Received '%s'" % result)
     ws.close()
-        
+
 
 
 

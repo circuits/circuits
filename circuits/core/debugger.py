@@ -105,5 +105,6 @@ class Debugger(BaseComponent):
             if self.logger is not None:
                 self.logger.debug(s)
             else:
-                self.file.write("%s\n" % s)
+                self.file.write(s)
+                self.file.write("\n")
                 self.file.flush()
