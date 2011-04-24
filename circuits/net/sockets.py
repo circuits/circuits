@@ -446,8 +446,9 @@ class UNIXClient(Client):
 
     @handler("registered", target="*")
     def _on_registered(self, component, manager):
-        if component != self:
-            return 
+        pass
+
+    def ready(self, component):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
