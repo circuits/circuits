@@ -34,11 +34,7 @@ import urllib.request, urllib.parse, urllib.error
 import http.client
 import base64
 import types
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import json
 
 __version__ = "0.0.1"
 

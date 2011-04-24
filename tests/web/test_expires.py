@@ -3,12 +3,11 @@
 from datetime import datetime
 from time import mktime
 from email.utils import parsedate
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
 
 from circuits.web import Controller
+
+from .helpers import urlopen
+
 
 class Root(Controller):
 

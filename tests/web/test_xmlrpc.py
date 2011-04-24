@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
 try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
-try:
     from xmlrpc.client import ServerProxy
 except ImportError:
     from xmlrpclib import ServerProxy
 
 from circuits import Component
 from circuits.web import Controller, XMLRPC
+
+from .helpers import urlopen
+
 
 class Test(Component):
 

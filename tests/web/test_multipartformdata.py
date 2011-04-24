@@ -4,11 +4,13 @@ import pytest
 pytest.skip("Not passing")
 
 from io import BytesIO
-from urllib.request import urlopen, Request
+from urllib.request import Request
 
 from circuits.web import Controller
 
 from .multipartform import MultiPartForm
+from .helpers import urlopen
+
 
 class Root(Controller):
 

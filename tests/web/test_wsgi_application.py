@@ -3,12 +3,11 @@
 import pytest
 pytest.skip("Not passing")
 
-from urllib.parse import urlencode
-from urllib.request import urlopen
-from urllib.error import HTTPError
-
 from circuits.web import Controller
 from circuits.web.wsgi import Application
+
+from .helpers import urlencode, urlopen, HTTPError
+
 
 class Root(Controller):
 

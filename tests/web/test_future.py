@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
-
 from circuits.web import Controller
 from circuits import future, Event, Component
+
+from .helpers import urlopen
+
 
 class Hello(Event):
     """Hello Event"""

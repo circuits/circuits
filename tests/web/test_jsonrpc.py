@@ -3,12 +3,11 @@
 import pytest
 pytest.skip("Not passing")
 
-from urllib.request import urlopen
-
-from .jsonrpclib import ServerProxy
-
 from circuits import Component
 from circuits.web import Controller, JSONRPC
+
+from .jsonrpclib import ServerProxy
+from .helpers import urlopen
 
 class Test(Component):
 

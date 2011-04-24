@@ -3,10 +3,11 @@
 import pytest
 pytest.skip("Not passing")
 
-from urllib.request import urlopen
-
 from circuits.web import Controller
 from circuits.web.wsgi import Application
+
+from .helpers import urlopen
+
 
 class Root(Controller):
 

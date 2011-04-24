@@ -1,18 +1,13 @@
 #!/usr/bin/env python
 
 from os.path import basename
-try:
-    from urllib.request import urlopen
-    from urllib.error import URLError
-except ImportError:
-    from urllib2 import urlopen
-    from urllib2 import URLError
 from socket import gaierror
 
 from circuits import Component
 from circuits.web import Controller
 from circuits.web import BaseServer, Server
 
+from .helpers import urlopen, URLError
 
 class BaseRoot(Component):
 

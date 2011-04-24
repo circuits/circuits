@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
+from .helpers import urlopen
+
 
 def application(environ, start_response):
     status = "200 OK"

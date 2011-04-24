@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
 import os
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
 
 import pytest
 pytest.skip()
@@ -15,6 +11,9 @@ if not HAS_MULTIPROCESSING:
 
 from circuits.web import Controller
 from circuits import Event, Component
+
+from .helpers import urlopen
+
 
 class Hello(Event):
     """Hello Event"""

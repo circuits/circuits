@@ -2,10 +2,6 @@
 
 import sys
 try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
-try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
@@ -13,6 +9,9 @@ from socket import gaierror, gethostbyname, gethostname
 
 from circuits.web import Controller, Logger
 from circuits.web.loggers import formattime
+
+from .helpers import urlopen
+
 
 class DummyLogger(object):
 

@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 
-try:
-    from urllib.request import build_opener, HTTPCookieProcessor
-except ImportError:
-    from urllib2 import build_opener, HTTPCookieProcessor
-try:
-    from http.cookiejar import CookieJar
-except ImportError:
-    from cookielib import CookieJar
 from circuits.web import Controller
+
+from .helpers import build_opener, HTTPCookieProcessor
+from .helpers import CookieJar
+
 
 class Root(Controller):
     def index(self):

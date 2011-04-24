@@ -4,12 +4,15 @@ import pytest
 pytest.skip("Not passing")
 
 from gzip import decompress
-from urllib.request import build_opener, Request
+from urllib.request import Request
 
 from circuits import handler, Component
 
 from circuits.web import Controller
 from circuits.web.tools import gzip
+
+from .helpers import build_opener
+
 
 class Gzip(Component):
 

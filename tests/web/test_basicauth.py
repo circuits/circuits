@@ -1,14 +1,9 @@
-try:
-    from urllib.error import HTTPError
-    from urllib.request import HTTPBasicAuthHandler
-    from urllib.request import urlopen, build_opener, install_opener
-except ImportError:
-    from urllib2 import HTTPError
-    from urllib2 import HTTPBasicAuthHandler
-    from urllib2 import urlopen, build_opener, install_opener
-
 from circuits.web import Controller
 from circuits.web.tools import check_auth, basic_auth
+
+from .helpers import HTTPError, HTTPBasicAuthHandler
+from .helpers import urlopen, build_opener, install_opener
+
 
 class Root(Controller):
 

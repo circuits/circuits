@@ -1,11 +1,6 @@
-try:
-    from urllib.request import urlopen
-    from urllib.error import HTTPError
-except ImportError:
-    from urllib2 import urlopen
-    from urllib2 import HTTPError
-
 from circuits.web import Controller
+
+from .helpers import urlopen, HTTPError
 
 class Root(Controller):
 

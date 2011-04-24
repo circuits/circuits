@@ -21,14 +21,12 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
 
 
 import socket
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
 import random
 import struct
 from hashlib import md5
 import logging
+
+from .helpers import urlparse
 
 
 logger = logging.getLogger()

@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
 import os
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
 from tempfile import mkstemp
 
 from circuits import handler
 from circuits.web import Controller
+
+from .helpers import urlopen
+
 
 class Root(Controller):
 
