@@ -19,7 +19,10 @@ uses the UDP protocol and as such events cannot be guaranteed of their
 order or delivery.
 """
 
-from io import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from pickle import dumps, Unpickler
 
 from .handlers import handler
