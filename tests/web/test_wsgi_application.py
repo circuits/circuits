@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("Not passing")
-
 from circuits.web import Controller
 from circuits.web.wsgi import Application
 

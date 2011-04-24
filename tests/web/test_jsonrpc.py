@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("Not passing")
-
 from circuits import Component
 from circuits.web import Controller, JSONRPC
 
