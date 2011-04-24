@@ -30,7 +30,7 @@ class Test2(Component):
         return data
 
 
-@pytest.mark.skipif("True")
+@pytest.skip("Looping forever")
 def test1(webapp):
     Test1().register(webapp)
     from circuits import Debugger
