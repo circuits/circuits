@@ -31,6 +31,7 @@ except ImportError:
     warnings.warn("No SSL support available.")
     HAS_SSL = 0
 
+
 from circuits.core.utils import findcmp
 from circuits.core import handler, Event, Component
 from circuits.core.pollers import BasePoller, Poller
@@ -344,16 +345,16 @@ class Client(Component):
 
     def _write(self, data):
         try:
-            if isinstance(data, str):
+            if not isinstance(data, bytes):
                 data = data.encode(self._encoding)
 
             if self.secure and self._ssock:
-                bytes = self._ssock.write(data)
+                nbytes = self._ssock.write(data)
             else:
-                bytes = self._sock.send(data)
+                nbytes = self._sock.send(data)
 
-            if bytes < len(data):
-                self._buffer.appendleft(data[bytes:])
+            if nbytes < len(data):
+                self._buffer.appendleft(data[nbytes:])
         except SocketError as e:
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close()
