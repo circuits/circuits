@@ -21,14 +21,14 @@ from circuits.tools import reprhandler
 class Debugger(BaseComponent):
     """Create a new Debugger Component
 
-    Creates a new Debugger Component that filters all events in teh system
+    Creates a new Debugger Component that filters all events in the system
     printing each event to sys.stderr or a Logger Component.
 
     :var IgnoreEvents: list of events (str) to ignore
     :var IgnoreChannels: list of channels (str) to ignore
     :var enabled: Enabled/Disabled flag
 
-    :param log: Logger Component instnace or None (*default*)
+    :param log: Logger Component instance or None (*default*)
     """
 
     IgnoreEvents = []
@@ -86,7 +86,7 @@ class Debugger(BaseComponent):
         """Global Event Handler
 
         Event handler to listen and filter all events printing each event
-        to self.file or a Logger Component instnace by calling self.logger.debug
+        to self.file or a Logger Component instance by calling self.logger.debug
         """
 
         if not self.events:
