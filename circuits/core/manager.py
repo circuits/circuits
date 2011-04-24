@@ -517,7 +517,7 @@ class Manager(object):
         self.fire(Stopped(self))
         if (self._task and HAS_MULTIPROCESSING
                 and type(self._task) is Process
-                and self._task.isAlive()
+                and self._task.is_alive()
                 and not current_process() == self._task):
             self._task.terminate()
         if (self._bridge is not None):
