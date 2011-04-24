@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("Not passing")
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 from circuits.web import Controller
 from circuits.web.wsgi import Application

@@ -3,11 +3,6 @@
 import os
 
 import pytest
-pytest.skip("Not passing...")
-
-from circuits.core.manager import HAS_MULTIPROCESSING
-if not HAS_MULTIPROCESSING:
-    pytest.skip("Skip: No multiprocessing support")
 
 from circuits.net.sockets import Pipe
 from circuits import Event, Component, Bridge

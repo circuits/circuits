@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("Not passing")
-
 from io import BytesIO
 from urllib.request import Request
 
