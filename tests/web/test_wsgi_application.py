@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("Not passing")
-
-from urllib.parse import urlencode
-from urllib.request import urlopen
-from urllib.error import HTTPError
+try:
+    from urllib.parse import urlencode
+    from urllib.request import urlopen
+    from urllib.error import HTTPError
+except ImportError:
+    from urllib import urlencode
+    from urllib2 import urlopen
+    from urllib2 import HTTPError
 
 from circuits.web import Controller
 from circuits.web.wsgi import Application

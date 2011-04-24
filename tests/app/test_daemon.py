@@ -6,10 +6,6 @@ from time import sleep
 from signal import SIGTERM
 from subprocess import Popen
 
-import pytest
-pytest.skip("Failing...")
-pytest.importorskip("pytest_cov")
-
 from tests.app import app
 
 

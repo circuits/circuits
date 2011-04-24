@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 
 import pytest
-pytest.skip()
-
-from circuits.core.manager import HAS_MULTIPROCESSING
-if not HAS_MULTIPROCESSING:
-    pytest.skip("Skip: No multiprocessing support")
 
 from circuits import handler, Event, Component, Manager
 

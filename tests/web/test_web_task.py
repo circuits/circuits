@@ -6,13 +6,6 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
-import pytest
-pytest.skip()
-
-from circuits.core.manager import HAS_MULTIPROCESSING
-if not HAS_MULTIPROCESSING:
-    pytest.skip("Skip: No multiprocessing support")
-
 from circuits.web import Controller
 from circuits import Event, Component
 

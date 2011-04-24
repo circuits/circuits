@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("Not passing")
-
 from gzip import decompress
 from urllib.request import build_opener, Request
 
