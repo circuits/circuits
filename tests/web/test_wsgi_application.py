@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+try:
+    from urllib.parse import urlencode
+    from urllib.request import urlopen
+    from urllib.error import HTTPError
+except ImportError:
+    from urllib import urlencode
+    from urllib2 import urlopen
+    from urllib2 import HTTPError
+
 from circuits.web import Controller
 from circuits.web.wsgi import Application
 
