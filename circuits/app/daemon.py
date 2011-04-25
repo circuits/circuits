@@ -90,7 +90,7 @@ class Daemon(BaseComponent):
             pid = os.fork()
             if pid > 0:
                 # Exit first parent
-                raise SystemExit(0)
+                os._exit(0)
         except OSError as e:
             print >> sys.stderr, "fork #1 failed: (%d) %s\n" % (errno, str(e))
             raise SystemExit(1)
@@ -105,7 +105,7 @@ class Daemon(BaseComponent):
             pid = os.fork()
             if pid > 0:
                 # Exit second parent
-                raise SystemExit(0)
+                os._exit(0)
         except OSError as e:
             print >> sys.stderr, "fork #2 failed: (%d) %s\n" % (e, str(e))
             raise SystemExit(1)
@@ -129,5 +129,5 @@ class Daemon(BaseComponent):
 
     @handler("registered")
     def _on_registered(self, component, manager):
-        if component == self and manager.root.running:
+        if component == self and manager == self and manager.root.running:
             self.push(Daemonize())
