@@ -86,6 +86,7 @@ class Logger(BaseComponent):
 
     def exception(self, msg, *args, **kwargs):
         self.logger.exception(msg, *args)
+        print('exception: %s' % msg)
 
     def critical(self, msg, *args, **kwargs):
         self.logger.critical(msg, *args, **kwargs)

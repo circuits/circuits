@@ -42,6 +42,7 @@ def test(tmpdir):
         assert s == "%s test[log] %s: Hello World!" % (now, level.upper()) or \
             s[(len(now) + 1):] == "test[log] %s: Hello World!" % (level.upper())
     for level in LEVELS:
+        print('1-%s' % level)
         f.seek(0)
         f.truncate()
         test(f, level)
@@ -59,16 +60,24 @@ def test_direct(tmpdir):
         f.seek(0)
         now = strftime("%H:%M:%S")
         s = f.read().strip()
+        print("%s:%s" % (level, s))
         if level == "warn":
             level = "warning"
         if level == "exception":
-            assert s == "%s test[log] ERROR: Hello World!\nNone" % now or \
-                s[(len(now) + 1):] == "test[log] ERROR: Hello World!\nNone"
+            assert s[:len(now)+31] == "%s test[log] ERROR: Hello World!\n" % now or \
+                s[(len(now) + 1):(len(now) + 1)+31] == "test[log] ERROR: Hello World!\n"
         else:
             assert s == "%s test[log] %s: Hello World!" % (now, level.upper()) or \
                 s[(len(now) + 1):] == "test[log] %s: Hello World!" % level.upper()
 
     for level in LEVELS:
+        print('2-%s' % level)
         f.seek(0)
         f.truncate()
-        test(f, level)
+        if level == 'exception':
+            try:
+                raise Exception()
+            except:
+                test(f, level)
+        else:
+            test(f, level)
