@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
 import os
+import sys
 
-import pytest
-pytest.importorskip("pytest_cov")
 
-def test(tmpdir, cov):
+def test(tmpdir):
     if not os.name == "posix":
         py.test.skip("Cannot run test on a non-POSIX platform.")
 
@@ -20,9 +19,9 @@ def test(tmpdir, cov):
     pidfile = str(tmpdir.join(".pid"))
     signalfile = str(tmpdir.join(".signal"))
 
-    args = ["python", signalapp.__file__, pidfile, signalfile]
+    args = [sys.executable, signalapp.__file__, pidfile, signalfile]
     cmd = " ".join(args)
-    p = Popen(cmd, shell=True)
+    p = Popen(cmd, shell=True, env={'PYTHONPATH': ':'.join(sys.path)})
     status = p.wait()
 
     assert status == 0
@@ -48,5 +47,3 @@ def test(tmpdir, cov):
 
     os.remove(pidfile)
     os.remove(signalfile)
-
-    cov.combine()
