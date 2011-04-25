@@ -89,7 +89,7 @@ def compress(body, compress_level):
     )
 
     for chunk in body:
-        if isinstance(chunk, str):
+        if not isinstance(chunk, bytes):
             chunk = chunk.encode("utf-8")
 
         size += len(chunk)
