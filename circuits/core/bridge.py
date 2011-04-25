@@ -19,10 +19,7 @@ uses the UDP protocol and as such events cannot be guaranteed of their
 order or delivery.
 """
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import BytesIO
 from pickle import dumps, Unpickler
 
 from .handlers import handler
@@ -77,7 +74,7 @@ class Bridge(BaseComponent):
             self._values[id].value = obj.value
 
     def _reader(self, data):
-        unpickler = Unpickler(StringIO(data))
+        unpickler = Unpickler(BytesIO(data))
 
         while True:
             try:
