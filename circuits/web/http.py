@@ -83,13 +83,13 @@ class HTTP(BaseComponent):
                 data = None
             self.push(Stream(response, data))
         else:
-            body = "".join(response.body)
+            parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in response.body)
+            body = b"".join(parts)
 
             if body:
                 if response.chunked:
-                    buf = [hex(len(body))[2:], "\r\n", body, "\r\n"]
-                    body = "".join(buf)
-
+                    buf = [hex(len(body))[2:].encode(), b"\r\n", body, b"\r\n"]
+                    body = b"".join(buf)
                 self.push(Write(response.request.sock, body))
 
                 if response.chunked:
