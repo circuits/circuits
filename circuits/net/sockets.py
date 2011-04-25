@@ -637,12 +637,12 @@ class Server(Component):
             return
 
         try:
-            if isinstance(data, str):
+            if not isinstance(data, bytes):
                 data = data.encode(self._encoding)
 
-            bytes = sock.send(data)
-            if bytes < len(data):
-                self._buffers[sock].appendleft(data[bytes:])
+            nbytes = sock.send(data)
+            if nbytes < len(data):
+                self._buffers[sock].appendleft(data[nbytes:])
         except SocketError as e:
             if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
                 self.push(Error(sock, e), "error", self.channel)
