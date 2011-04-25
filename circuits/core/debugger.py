@@ -10,9 +10,9 @@ each event to sys.stderr or to a Logger Component instnace.
 import os
 import sys
 try:
-    from StringIO import StringIO
-except ImportError:
     from io import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 from .handlers import handler
 from .components import BaseComponent
@@ -68,8 +68,14 @@ class Debugger(BaseComponent):
         else:
             handler = reprhandler(self.root, handler)
 
-        s.write("ERROR %s(%s): %s\n" % ("%s " % handler, type, value))
-        s.write("%s\n" % "".join(traceback))
+        msg = "ERROR %s(%s): %s\n" % ("%s " % handler, type, value)
+        if isinstance(msg, bytes):
+           msg = msg.decode('utf-8')
+        s.write(msg)
+        msg = "%s\n" % "".join(traceback)
+        if isinstance(msg, bytes):
+           msg = msg.decode('utf-8') 
+        s.write(msg)
 
         s.seek(0)
 
