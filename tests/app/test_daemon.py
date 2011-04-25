@@ -2,6 +2,7 @@
 
 import os
 import errno
+import sys
 from time import sleep
 from signal import SIGTERM
 from subprocess import Popen
@@ -9,12 +10,12 @@ from subprocess import Popen
 from tests.app import app
 
 
-def test(tmpdir, cov):
+def test(tmpdir):
     tmpdir.ensure("app.pid")
     pid_path = tmpdir.join("app.pid")
 
-    args = ["python", app.__file__, str(pid_path)]
-    status = Popen(args).wait()
+    args = [sys.executable, app.__file__, str(pid_path)]
+    status = Popen(args, env={'PYTHONPATH': ':'.join(sys.path)}).wait()
 
     sleep(1)
 
@@ -32,5 +33,3 @@ def test(tmpdir, cov):
         os.waitpid(pid, os.WTERMSIG(0))
     except OSError as e:
         assert e.args[0] == errno.ECHILD
-
-    cov.combine()
