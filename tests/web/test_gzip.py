@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 
-from gzip import decompress
-from urllib.request import Request
+try:
+    from gzip import decompress
+except ImportError:
+    import zlib
+    decompress = zlib.decompressobj(16+zlib.MAX_WBITS).decompress
+
+try:
+    from urllib.request import Request
+except ImportError:
+    from urllib2 import Request
 
 from circuits import handler, Component
 
