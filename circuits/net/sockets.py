@@ -790,6 +790,8 @@ class UDPServer(Server):
         if self._sock not in self._closeq:
             self._closeq.append(self._sock)
 
+        self.push(Closed(), "closed", self.channel)
+
     def _read(self):
         try:
             data, address = self._sock.recvfrom(self._bufsize)
