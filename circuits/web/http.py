@@ -54,7 +54,7 @@ class HTTP(BaseComponent):
         if data is not None:
             if data:
                 if response.chunked:
-                    buf = [hex(len(data))[2:], "\r\n", data, "\r\n"]
+                    buf = [hex(len(data))[2:], b"\r\n", data, b"\r\n"]
                     data = b"".join(buf)
                 self.push(Write(response.request.sock, data))
             if response.body and not response.done:
@@ -67,7 +67,7 @@ class HTTP(BaseComponent):
             if response.body:
                 response.body.close()
             if response.chunked:
-                self.push(Write(response.request.sock, "0\r\n\r\n"))
+                self.push(Write(response.request.sock, b"0\r\n\r\n"))
             if response.close:
                 self.push(Close(response.request.sock))
             response.done = True
@@ -93,7 +93,7 @@ class HTTP(BaseComponent):
                 self.push(Write(response.request.sock, body))
 
                 if response.chunked:
-                    self.push(Write(response.request.sock, "0\r\n\r\n"))
+                    self.push(Write(response.request.sock, b"0\r\n\r\n"))
 
             if not response.stream:
                 if response.close:
