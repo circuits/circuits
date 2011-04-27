@@ -572,6 +572,8 @@ class Server(Component):
         self.push(Close(), "close", self.channel)
 
     def _close(self, sock):
+        if sock is None:
+            return
         if not sock == self._sock and sock not in self._clients:
             return
 
@@ -582,6 +584,8 @@ class Server(Component):
 
         if sock in self._clients:
             self._clients.remove(sock)
+        else:
+            self._sock = None
 
         try:
             sock.shutdown(2)

@@ -19,10 +19,9 @@ def pytest_generate_tests(metafunc):
     if pollers.HAS_KQUEUE:
         metafunc.addcall(funcargs={"Poller": pollers.KQueue})
 
-def test_tcp(Poller):
-    from circuits import Debugger
+def test_tcp_basic(Poller):
     m = Manager() + Poller()
-    Debugger().register(m)
+
     server = Server() + TCPServer(0)
     client = Client() + TCPClient()
 
@@ -40,7 +39,7 @@ def test_tcp(Poller):
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.push(Write("foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
         client.push(Close())
@@ -72,7 +71,7 @@ def test_tcp_reconnect(Poller):
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.push(Write("foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
         # disconnect
@@ -85,7 +84,7 @@ def test_tcp_reconnect(Poller):
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.push(Write("foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
         client.push(Close())
@@ -114,15 +113,13 @@ def test_tcp_connect_closed_port(Poller):
         assert pytest.wait_for(server, "ready")
 
         host, port = server.host, server.port
-        server.push(Close())
-        assert pytest.wait_for(server, "closed")
         tcp_server._sock.close()
 
         # 1st connect
         client.push(Connect(host, port))
         assert pytest.wait_for(client, "connected")
 
-        client.push(Write("foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(client, "disconnected")
     finally:
         m.stop()
