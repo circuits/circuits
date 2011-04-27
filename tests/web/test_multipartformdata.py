@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 from io import BytesIO
-from urllib.request import Request
+try:
+    from urllib.request import Request
+except ImportError:
+    from urllib2 import Request
 
 from circuits.web import Controller
 
