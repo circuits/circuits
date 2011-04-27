@@ -755,9 +755,12 @@ class UDPServer(Server):
 
     def _create_socket(self):
         sock = socket(AF_INET, SOCK_DGRAM)
+
         sock.bind(self._bind)
 
         sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+
         sock.setblocking(False)
 
         return sock
