@@ -75,7 +75,8 @@ class BaseServer(BaseComponent):
                 SocketType = UNIXServer
 
         self.server = SocketType(bind, **kwargs).register(self)
-        HTTP(channel=self.server.channel).register(self)
+        HTTP(encoding=kwargs.get('encoding', 'utf-8'),
+                channel=self.server.channel).register(self)
 
         Request.server = self
         if isinstance(self.server._bind, tuple):
