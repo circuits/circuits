@@ -21,7 +21,8 @@ class Root(Controller):
         return "Hello World!"
 
     def test_args(self, *args, **kwargs):
-        return "%s\n%s" % (repr(args), repr(kwargs))
+        args = [arg if isinstance(arg, str) else arg.encode() for arg in args]
+        return "%s\n%s" % (repr(tuple(args)), repr(kwargs))
 
     def test_redirect(self):
         return self.redirect("/")
@@ -52,12 +53,12 @@ def test_args(webapp):
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.base, "/".join(args))
-    data = urlencode(kwargs)
+    data = urlencode(kwargs).encode()
 
     f = urlopen(url, data)
-    data = f.read().split("\n")
-    assert data[0] == repr(args)
-    assert data[1] == repr(kwargs)
+    data = f.read().split(b"\n")
+    assert data[0] == repr(args).encode()
+    assert data[1] == repr(kwargs).encode()
 
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
