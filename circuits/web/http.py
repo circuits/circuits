@@ -30,7 +30,7 @@ from .errors import Redirect as RedirectError
 from .exceptions import Redirect as RedirectException
 
 MAX_HEADER_FRAGENTS = 20
-
+HTTP_ENCODING = 'utf-8'
 
 class HTTP(BaseComponent):
     """HTTP Protocol Component
@@ -140,7 +140,7 @@ class HTTP(BaseComponent):
 
             requestline, data = data.split(b"\r\n", 1)
             requestline = requestline.strip().decode(
-                    self._encoding, "replace")
+                    HTTP_ENCODING, "replace")
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
@@ -186,7 +186,7 @@ class HTTP(BaseComponent):
             end_of_headers = data.find(b"\r\n\r\n")
             if end_of_headers > -1:
                 header_data = data[:end_of_headers].decode(
-                        self._encoding, "replace")
+                        HTTP_ENCODING, "replace")
                 headers = request.headers = parse_headers(header_data)
             else:
                 headers = request.headers = Headers([])
