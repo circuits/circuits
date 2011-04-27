@@ -22,10 +22,13 @@ def test():
 
     x = p.push(Task(f))
 
-    assert pytest.wait_for(x, "result")
+    result = pytest.wait_for(x, "result")
+    assert result
 
-    assert x.result
-    v = x.value
-    assert v == 1000000
+    result = x.result
+    assert result
+
+    value = x.value
+    assert value == 1000000
 
     p.stop()
