@@ -30,11 +30,22 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
-import urllib.request, urllib.parse, urllib.error
-import http.client
-import base64
-import types
 import json
+import base64
+
+try:
+    from http.client import HTTPConnection
+    from http.client import HTTPSConnection
+except ImportError:
+    from httplib import HTTP as HTTPConnection
+    from httplib import HTTPS as HTTPSConnection
+
+try:
+    from urllib.parse import unquote
+    from urllib.parse import splithost, splithost, splittype, splituser
+except ImportError:
+    from urllib import unquote
+    from urllib import  splithost, splithost, splittype, splituser
 
 __version__ = "0.0.1"
 
@@ -213,11 +224,11 @@ class Transport:
         if isinstance(host, tuple):
             host, x509 = host
 
-        auth, host = urllib.parse.splituser(host)
+        auth, host = splituser(host)
 
         if auth:
-            auth = base64.encodestring(urllib.parse.unquote(auth))
-            auth = string.join(string.split(auth), "") # get rid of whitespace
+            auth = base64.encodestring(unquote(auth))
+            auth = "".join(auth.split()) # get rid of whitespace
             extra_headers = [
                 ("Authorization", "Basic " + auth)
                 ]
@@ -235,7 +246,7 @@ class Transport:
     def make_connection(self, host):
         # create a HTTP connection object from a host descriptor
         host, extra_headers, x509 = self.get_host_info(host)
-        return http.client.HTTPConnection(host)
+        return HTTPConnection(host)
 
     ##
     # Send request header.
@@ -257,7 +268,7 @@ class Transport:
         host, extra_headers, x509 = self.get_host_info(host)
         connection.putheader("Host", host)
         if extra_headers:
-            if isinstance(extra_headers, DictType):
+            if isinstance(extra_headers, dict):
                 extra_headers = list(extra_headers.items())
             for key, value in extra_headers:
                 connection.putheader(key, value)
@@ -337,7 +348,7 @@ class SafeTransport(Transport):
         # host may be a string, or a (host, x509-dict) tuple
         host, extra_headers, x509 = self.get_host_info(host)
         try:
-            HTTPS = http.client.HTTPSConnection
+            HTTPS = HTTPSConnection
         except AttributeError:
             raise NotImplementedError(
                 "your version of httplib doesn't support HTTPS"
@@ -350,10 +361,10 @@ class ServerProxy(object):
 
     def __init__(self, uri, transport=None, encoding=None,
                  verbose=None, allow_none=0):
-        utype, uri = urllib.parse.splittype(uri)
+        utype, uri = splittype(uri)
         if utype not in ("http", "https"):
             raise IOError("Unsupported JSONRPC protocol")
-        self.__host, self.__handler = urllib.parse.splithost(uri)
+        self.__host, self.__handler = splithost(uri)
         if not self.__handler:
             self.__handler = "/RPC2"
 
