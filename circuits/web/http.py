@@ -83,8 +83,13 @@ class HTTP(BaseComponent):
                 data = None
             self.push(Stream(response, data))
         else:
-            parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in response.body)
-            body = b"".join(parts)
+            if isinstance(response.body, bytes):
+                body = response.body
+            elif type(response.body) == type([]):
+                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in response.body)
+                body = b"".join(parts)
+            else:
+                body = response.body.encode(self._encoding)
 
             if body:
                 if response.chunked:
@@ -147,7 +152,7 @@ class HTTP(BaseComponent):
             protocol = tuple(map(int, protocol[5:].split(".")))
             request = wrappers.Request(sock, method, scheme, path,
                     protocol, qs)
-            response = wrappers.Response(request)
+            response = wrappers.Response(request, encoding=self._encoding)
             self._clients[sock] = request, response
 
             if frag:
@@ -194,7 +199,8 @@ class HTTP(BaseComponent):
             request.body.write(data[(end_of_headers + 4):])
 
             if headers.get("Expect", "") == "100-continue":
-                return self.push(Response(wrappers.Response(request, 100)))
+                return self.push(Response(wrappers.Response(request, 100),
+                    encoding=self._encoding))
 
             contentLength = int(headers.get("Content-Length", "0"))
             if request.body.tell() < contentLength:
