@@ -198,7 +198,7 @@ class Response(object):
 
     protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
 
-    def __init__(self, request, code=None, message=None):
+    def __init__(self, request, encoding='utf-8', code=None, message=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
@@ -213,7 +213,7 @@ class Response(object):
         self.time = time()
 
         self.headers = Headers([])
-        self.headers.add_header("Content-Type", "text/html")
+        self.headers.add_header("Content-Type", "text/html; charset=%s" % encoding)
         self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
 
         if self.request.server:
@@ -275,7 +275,7 @@ class Response(object):
                     self.close = True
 
         if (self.request.server is not None
-                and"Connection" not in self.headers):
+                and "Connection" not in self.headers):
             if self.protocol == "HTTP/1.1":
                 if self.close:
                     self.headers.add_header("Connection", "close")
