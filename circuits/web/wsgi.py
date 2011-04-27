@@ -103,7 +103,7 @@ class Application(BaseComponent):
         start_response(status, headers, exc_info)
         return body
 
-    @handler("response", filter=True, target="http")
+    @handler("response", filter=True, target="web")
     def response(self, response):
         self._finished = True
         return True
