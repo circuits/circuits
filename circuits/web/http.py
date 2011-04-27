@@ -241,7 +241,10 @@ class HTTP(BaseComponent):
             return
         request, response = value.event.args[:2]
         if value.result and not value.errors:
-            response.body = value.value
+            if not instance(response.body, bytes):
+                response.body = value.value.encode(self._encoding)
+            else:
+                response.body = value.value
             self.push(Response(response))
         else:
             # This possibly never occurs.
