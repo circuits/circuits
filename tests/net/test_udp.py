@@ -34,7 +34,7 @@ def test_udp(Poller):
         assert pytest.wait_for(server, "ready")
         assert pytest.wait_for(client, "ready")
 
-        client.push(Write((server.host, server.port), "foo"))
+        client.push(Write((server.host, server.port), b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
     finally:
         m.stop()
