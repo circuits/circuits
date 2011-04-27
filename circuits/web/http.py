@@ -32,6 +32,12 @@ from .exceptions import Redirect as RedirectException
 MAX_HEADER_FRAGENTS = 20
 HTTP_ENCODING = 'utf-8'
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
+
 class HTTP(BaseComponent):
     """HTTP Protocol Component
 
@@ -85,11 +91,11 @@ class HTTP(BaseComponent):
         else:
             if isinstance(response.body, bytes):
                 body = response.body
-            elif type(response.body) == type([]):
+            elif isinstance(response.body, unicode):
+                body = response.body.encode(self._encoding)
+            else:
                 parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in response.body)
                 body = b"".join(parts)
-            else:
-                body = response.body.encode(self._encoding)
 
             if body:
                 if response.chunked:
