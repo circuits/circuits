@@ -4,6 +4,8 @@
 
 """Pools Tests"""
 
+from time import sleep
+
 import pytest
 
 from circuits import Task, Pool
@@ -21,6 +23,8 @@ def test():
     p.start()
 
     x = p.push(Task(f))
+
+    sleep(1)
 
     result = pytest.wait_for(x, "result")
     assert result
