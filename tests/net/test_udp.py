@@ -20,8 +20,9 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs={"Poller": pollers.KQueue})
 
 def test_udp(Poller):
+    from circuits import Debugger
     m = Manager() + Poller()
-
+    Debugger().register(m)
     server = Server() + UDPServer(0)
     client = Client() + UDPClient(0, channel="client")
 
@@ -34,7 +35,7 @@ def test_udp(Poller):
         assert pytest.wait_for(server, "ready")
         assert pytest.wait_for(client, "ready")
 
-        client.push(Write((server.host, server.port), "foo"))
+        client.push(Write((server.host, server.port), b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
     finally:
         m.stop()
