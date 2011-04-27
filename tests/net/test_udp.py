@@ -20,7 +20,8 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs={"Poller": pollers.KQueue})
 
 def test_udp(Poller):
-    Debugger().register(m)
+    m = Manager() + Poller()
+
     server = Server() + UDPServer(0)
     client = Client() + UDPClient(0, channel="client")
 
