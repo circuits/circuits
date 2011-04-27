@@ -34,10 +34,10 @@ def test_pipe(Poller):
         assert pytest.wait_for(a, "ready")
         assert pytest.wait_for(b, "ready")
 
-        a.push(Write("foo"))
+        a.push(Write(b"foo"))
         assert pytest.wait_for(b, "data", b"foo")
 
-        b.push(Write("foo"))
+        b.push(Write(b"foo"))
         assert pytest.wait_for(a, "data", b"foo")
 
         a.push(Close())
