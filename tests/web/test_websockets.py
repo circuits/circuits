@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-
 try:
     from urllib.parse import urlunsplit
 except ImportError:
@@ -30,7 +28,6 @@ class Test2(Component):
         return data
 
 
-@pytest.skip("Looping forever")
 def test1(webapp):
     Test1().register(webapp)
     from circuits import Debugger
