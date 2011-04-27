@@ -225,6 +225,8 @@ class Response(object):
 
         self.protocol = "HTTP/%d.%d" % self.request.server_protocol
 
+        self._encoding = encoding
+
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
                 self.status,
@@ -249,7 +251,7 @@ class Response(object):
 
         if self.body and isinstance(self.body, list):
             if str in list(map(type, self.body)):
-                cLength = sum([len(s) for s in self.body])
+                cLength = sum([len(s.encode(self._encoding)) for s in self.body])
             else:
                 cLength = sum(map(len, self.body))
 
