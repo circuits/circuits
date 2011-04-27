@@ -74,7 +74,9 @@ class HTTP(BaseComponent):
 
     @handler("response")
     def _on_response(self, response):
-        self.push(Write(response.request.sock, str(response).encode(HTTP_ENCODING)))
+        self.push(
+                Write(response.request.sock,
+                    str(response).encode(self._encoding)))
 
         if response.stream and response.body:
             try:
@@ -83,7 +85,8 @@ class HTTP(BaseComponent):
                 data = None
             self.push(Stream(response, data))
         else:
-            parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in response.body)
+            parts = (s if isinstance(s, bytes) else s.encode(self._encoding) \
+                    for s in response.body)
             body = b"".join(parts)
 
             if body:
