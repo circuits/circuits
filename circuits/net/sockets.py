@@ -236,7 +236,7 @@ class Client(Component):
     channel = "client"
 
     def __init__(self, bind=None, bufsize=BUFSIZE,
-            encoding="utf-8", channel=channel):
+            channel=channel):
         super(Client, self).__init__(channel=channel)
 
         if isinstance(bind, int):
@@ -256,7 +256,6 @@ class Client(Component):
             self._sock = self._create_socket()
 
         self._bufsize = bufsize
-        self._encoding = encoding
 
         self._ssock = None
         self._poller = None
@@ -345,9 +344,6 @@ class Client(Component):
 
     def _write(self, data):
         try:
-            if not isinstance(data, bytes):
-                data = data.encode(self._encoding)
-
             if self.secure and self._ssock:
                 nbytes = self._ssock.write(data)
             else:
@@ -488,8 +484,7 @@ class Server(Component):
     channel = "server"
 
     def __init__(self, bind, secure=False, backlog=BACKLOG,
-            bufsize=BUFSIZE, encoding="utf-8", channel=channel,
-            **kwargs):
+            bufsize=BUFSIZE, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
         if type(bind) is int:
@@ -506,7 +501,6 @@ class Server(Component):
 
         self._backlog = backlog
         self._bufsize = bufsize
-        self._encoding = encoding
 
         if isinstance(bind, socket):
             self._sock = bind
@@ -637,9 +631,6 @@ class Server(Component):
             return
 
         try:
-            if not isinstance(data, bytes):
-                data = data.encode(self._encoding)
-
             nbytes = sock.send(data)
             if nbytes < len(data):
                 self._buffers[sock].appendleft(data[nbytes:])
@@ -805,9 +796,6 @@ class UDPServer(Server):
 
     def _write(self, address, data):
         try:
-            if isinstance(data, str):
-                data = data.encode(self._encoding)
-
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
