@@ -48,7 +48,7 @@ def test_unix(tmpdir, Poller):
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.push(Write("foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
         client.push(Close())
