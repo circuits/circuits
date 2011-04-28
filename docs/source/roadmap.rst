@@ -9,6 +9,8 @@ circuits - 1.6 (oceans)
 - Drop Python 2.5 support
 - All tests passing
 - Better documentation
+- More flexible and intuitive channel separation
+  - Deprecates the use of "target"
 
 
 circuits - 1.7 (rocket)
