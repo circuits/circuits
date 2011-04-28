@@ -27,6 +27,8 @@ class Root(Controller):
         return "Hello World!"
 
 def test(webapp):
+    from circuits import Debugger
+    Debugger().register(webapp)
     transport = TCPClient()
     client = Client()
     client += transport + Debugger()
@@ -36,8 +38,8 @@ def test(webapp):
     client.push(Connect(host, port))
     assert pytest.wait_for(transport, "connected")
 
-    client.push(Write("GET / HTTP/1.1\r\n"))
-    client.push(Write("Content-Type: text/plain\r\n\r\n"))
+    client.push(Write(b"GET / HTTP/1.1\r\n"))
+    client.push(Write(b"Content-Type: text/plain\r\n\r\n"))
     assert pytest.wait_for(client, "done")
 
     client.stop()
