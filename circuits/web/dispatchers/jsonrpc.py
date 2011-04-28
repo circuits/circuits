@@ -34,12 +34,13 @@ class JSONRPC(BaseComponent):
         self.target = target
         self.encoding = encoding
 
-    @handler("value_changed")
+    @handler("value_changed", priority=0.1)
     def _on_value_changed(self, value):
         id = value.id
         response = value.response
         response.body = self._response(id, value.value)
         self.push(Response(response), target=self.channel)
+        value.handled = True
 
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, request, response):
@@ -49,7 +50,7 @@ class JSONRPC(BaseComponent):
         response.headers["Content-Type"] = "application/javascript"
 
         try:
-            data = request.body.read()
+            data = request.body.read().decode(self.encoding)
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o["params"]
             if type(params) is dict:
@@ -81,7 +82,7 @@ class JSONRPC(BaseComponent):
                 "result": result,
                 "error": None
                 }
-        return json.dumps(data, encoding=self.encoding)
+        return json.dumps(data).encode(self.encoding)
 
     def _error(self, id, code, message):
         data = {
@@ -93,4 +94,4 @@ class JSONRPC(BaseComponent):
                     "message": message
                     }
                 }
-        return json.dumps(data, encoding=self.encoding)
+        return json.dumps(data).encode(self.encoding)

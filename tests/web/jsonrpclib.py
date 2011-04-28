@@ -93,8 +93,8 @@ class ProtocolError(Error):
             )
 
 
-def getparser():
-    un = Unmarshaller()
+def getparser(encoding):
+    un = Unmarshaller(encoding)
     par = Parser(un)
     return par,un
 
@@ -108,8 +108,9 @@ def dumps(params, methodname=None, methodresponse=None, encoding=None,
         return json.dumps(request)
 
 class Unmarshaller(object):
-    def __init__(self):
+    def __init__(self, encoding):
         self.data = None
+        self.encoding = encoding
         
     def feed(self, data):
         if self.data is None:
@@ -119,7 +120,7 @@ class Unmarshaller(object):
     
     def close(self):
         #try to convert string to json
-        return json.loads(self.data)
+        return json.loads(self.data.decode(self.encoding))
 
 class Parser(object):
     def __init__(self, unmarshaller):
@@ -167,7 +168,7 @@ class Transport:
     # @param verbose Debugging flag.
     # @return Parsed response.
 
-    def request(self, host, handler, request_body, verbose=0):
+    def request(self, host, handler, request_body, encoding, verbose=0):
         # issue JSON-RPC request
 
         h = self.make_connection(host)
@@ -204,16 +205,16 @@ class Transport:
         except AttributeError:
             sock = None
 
-        return self._parse_response(r, sock)
+        return self._parse_response(r, sock, encoding)
 
     ##
     # Create parser.
     #
     # @return A 2-tuple containing a parser and a unmarshaller.
 
-    def getparser(self):
+    def getparser(self, encoding):
         # get parser and unmarshaller
-        return getparser()
+        return getparser(encoding)
 
     ##
     # Get authorization info from host parameter
@@ -321,10 +322,10 @@ class Transport:
     #    could not be accessed).
     # @return Response tuple and target method.
 
-    def _parse_response(self, file, sock):
+    def _parse_response(self, file, sock, encoding):
         # read response from input file/socket, and parse it
 
-        p, u = self.getparser()
+        p, u = self.getparser(encoding)
 
         while 1:
             if sock:
@@ -397,6 +398,7 @@ class ServerProxy(object):
             self.__host,
             self.__handler,
             request.encode(self.__encoding),
+            self.__encoding,
             verbose=self.__verbose
             )
 
