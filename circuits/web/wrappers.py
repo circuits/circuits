@@ -259,11 +259,14 @@ class Response(object):
                 cLength = len(self.body)
             elif isinstance(self.body, unicode):
                 cLength = len(self.body.encode(self._encoding))
-            else:
+            elif isinstance(self.body, list):
                 cLength = sum([len(s.encode(self._encoding)) if not isinstance(s, bytes)
                     else len(s) for s in self.body])
+            else:
+                cLength = None
 
-            self.headers["Content-Length"] = str(cLength)
+            if cLength:
+                self.headers["Content-Length"] = str(cLength)
 
         for k, v in self.cookie.items():
             self.headers.add_header("Set-Cookie", v.OutputString())
