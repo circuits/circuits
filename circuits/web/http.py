@@ -80,7 +80,9 @@ class HTTP(BaseComponent):
 
     @handler("response")
     def _on_response(self, response):
-        self.push(Write(response.request.sock, str(response).encode(HTTP_ENCODING)))
+        self.push(
+                Write(response.request.sock,
+                    str(response).encode(HTTP_ENCODING)))
 
         if response.stream and response.body:
             try:

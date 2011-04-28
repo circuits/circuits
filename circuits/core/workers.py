@@ -43,6 +43,15 @@ class Task(Event):
 
 
 class Worker(BaseComponent):
+    """A thread/process Worker Component
+
+    This Component creates a Worker (either a thread or process) which
+    when given a ``Task``, will execute the given function in the task
+    in the background in it's thread/process.
+
+    :param process: True to start this Worker as a process (Thread otherwise)
+    :type process: bool
+    """
 
     channel = "worker"
 

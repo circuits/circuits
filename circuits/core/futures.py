@@ -17,6 +17,15 @@ from .pools import Pool, Task
 
 
 def future(pool=None):
+    """Decorator to wrap an event handler in a future Task
+
+    This decorator wraps an event handler into a background Task
+    executing the event handler function in the background.
+
+    :param pool: An optional thread/process pool
+    :type pool: Pool
+    """
+
     def decorate(f):
         def wrapper(self, event, *args, **kwargs):
             event.future = True
