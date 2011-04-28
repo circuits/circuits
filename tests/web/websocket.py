@@ -17,7 +17,7 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""        
+"""
 
 
 import socket
@@ -78,7 +78,7 @@ def _parse_url(url):
     port = 0
     if parsed.port:
         port = parsed.port
-   
+
     is_secure = False
     if parsed.scheme == "ws":
         if not port:
@@ -89,12 +89,12 @@ def _parse_url(url):
             port  = 443
     else:
         raise ValueError("scheme %s is invalid" % parsed.scheme)
-    
+
     if parsed.path:
         resource = parsed.path
     else:
         resource = "/"
-    
+
     return (hostname, port, resource, is_secure)
 
 
@@ -111,9 +111,10 @@ def create_connection(url, timeout=None, **options):
     websock.connect(url, **options)
     return websock
 
-_MAX_INTEGER = (1 << 32) -1
+_MAX_INTEGER = (1 << 32) - 1
 _AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)) + list(range(0x3a, 0x7e + 1))
-_MAX_CHAR_BYTE = (1<<8) -1
+_MAX_CHAR_BYTE = (1<<8) - 1
+_MAX_ASCII_BYTE = (1<<7) - 1
 
 # ref. Websocket gets an update, and it breaks stuff.
 # http://axod.blogspot.com/2010/06/websocket-gets-update-and-it-breaks.html
@@ -135,7 +136,7 @@ def _create_sec_websocket_key():
     return number_n, key_n
 
 def _create_key3():
-    return "".join([chr(random.randint(0, _MAX_CHAR_BYTE)) for i in range(8)])
+    return "".join([chr(random.randint(0, _MAX_ASCII_BYTE)) for i in range(8)])
 
 HEADERS_TO_CHECK = {
     "upgrade": "websocket",
@@ -222,7 +223,7 @@ class WebSocket(object):
             hostport = "%s:%d" % (host, port)
         headers.append("Host: %s" % hostport)
         headers.append("Origin: %s" % hostport)
-   
+
         number_1, key_1 = _create_sec_websocket_key()
         headers.append("Sec-WebSocket-Key1: %s" % key_1)
         number_2, key_2 = _create_sec_websocket_key()
@@ -238,10 +239,11 @@ class WebSocket(object):
         sock.send(header_str.encode('utf-8'))
         if traceEnabled:
             logger.debug( "--- request header ---")
-            logger.debug( header_str)
+            logger.debug(header_str)
             logger.debug("-----------------------")
 
         status, resp_headers = self._read_headers()
+
         if status != 101:
             self.close()
             raise WebSocketException("Handshake Status %d" % status)
@@ -249,22 +251,23 @@ class WebSocket(object):
         if not success:
             self.close()
             raise WebSocketException("Invalid WebSocket Header")
-        
+
         if secure:
             resp = self._get_resp()
+
             if not self._validate_resp(number_1, number_2, key3, resp):
                 self.close()
                 raise WebSocketException("challenge-response error")
 
         self.connected = True
-    
+
     def _validate_resp(self, number_1, number_2, key3, resp):
         challenge = struct.pack("!I", number_1)
         challenge += struct.pack("!I", number_2)
-        challenge += key3
+        challenge += key3.encode('utf-8')
         digest = md5(challenge).digest()
-        
-        return  resp == digest
+
+        return resp == digest
 
     def _get_resp(self):
         result = self._recv(16)
@@ -272,7 +275,7 @@ class WebSocket(object):
             logger.debug("--- challenge response result ---")
             logger.debug(repr(result))
             logger.debug("---------------------------------")
-        
+
         return result
 
     def _validate_header(self, headers):
@@ -299,44 +302,45 @@ class WebSocket(object):
             return True, False
 
         return False, False
-            
+
 
     def _read_headers(self):
         status = None
         headers = {}
         if traceEnabled:
             logger.debug("--- response header ---")
-            
+
         while True:
             line = self._recv_line()
-            if line == "\r\n":
+            if line == b"\r\n":
                 break
             line = line.strip()
             if traceEnabled:
                 logger.debug(line)
             if not status:
-                status_info = line.split(" ", 2)
+                status_info = line.split(b" ", 2)
                 status = int(status_info[1])
             else:
-                kv = line.split(":", 1)
+                kv = line.split(b":", 1)
                 if len(kv) == 2:
                     key, value = kv
-                    headers[key.lower()] = value.strip().lower()
+                    headers[key.lower().decode('utf-8')] \
+                        = value.strip().lower().decode('utf-8')
                 else:
                     raise WebSocketException("Invalid header")
 
         if traceEnabled:
             logger.debug("-----------------------")
-        
-        return status, headers    
-    
+
+        return status, headers
+
     def send(self, payload):
         """
         Send the data as string. payload must be utf-8 string or unicoce.
         """
         if isinstance(payload, str):
             payload = payload.encode("utf-8")
-        data = "".join(["\x00", payload, "\xff"])
+        data = b"".join([b"\x00", payload, b"\xff"])
         self.io_sock.send(data)
         if traceEnabled:
             logger.debug("send: " + repr(data))
@@ -346,18 +350,20 @@ class WebSocket(object):
         Reeive utf-8 string data from the server.
         """
         b = self._recv(1)
+
         if enableTrace:
             logger.debug("recv frame: " + repr(b))
         frame_type = ord(b)
+
         if frame_type == 0x00:
             bytes = []
             while True:
                 b = self._recv(1)
-                if b == "\xff":
+                if b == b"\xff":
                     break
                 else:
                     bytes.append(b)
-            return "".join(bytes)
+            return b"".join(bytes)
         elif 0x80 < frame_type < 0xff:
             # which frame type is valid?
             length = self._read_length()
@@ -377,7 +383,7 @@ class WebSocket(object):
             length = length * (1 << 7) + (b & 0x7f)
             if b < 0x80:
                 break
-            
+
         return length
 
     def close(self):
@@ -408,6 +414,7 @@ class WebSocket(object):
         
     def _recv(self, bufsize):
         bytes = self.io_sock.recv(bufsize)
+
         if not bytes:
             raise ConnectionClosedException()
         return bytes
@@ -426,13 +433,13 @@ class WebSocket(object):
         while True:
             c = self._recv(1)
             line.append(c)
-            if c == "\n":
+            if c == b"\n":
                 break
-        return "".join(line)
-            
+        return b"".join(line)
+
 class WebSocketApp(object):
     """
-    Higher level of APIs are provided. 
+    Higher level of APIs are provided.
     The interface is like JavaScript WebSocket object.
     """
     def __init__(self, url,

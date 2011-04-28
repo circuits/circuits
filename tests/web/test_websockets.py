@@ -30,8 +30,6 @@ class Test2(Component):
 
 def test1(webapp):
     Test1().register(webapp)
-    from circuits import Debugger
-    Debugger().register(webapp)
     WebSockets("/websocket").register(webapp)
 
     host = webapp.server.host
@@ -39,10 +37,8 @@ def test1(webapp):
         host = "%s:%d" % (host, webapp.server.port)
 
     url = urlunsplit(("ws", host, "/websocket", "", ""))
-    print('creating connection')
     ws = create_connection(url)
-    print('sending data')
     ws.send(b"Hello World!")
     result = ws.recv()
-    assert result == "Hello World!"
+    assert result == b"Hello World!"
     ws.close()

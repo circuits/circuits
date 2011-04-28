@@ -49,17 +49,17 @@ class WebSockets(BaseComponent):
         self.path = path
 
         self._clients = []
-        self._buffers = defaultdict(str)
+        self._buffers = defaultdict(bytes)
 
     def _parse_messages(self, sock):
         msgs = []
         end_idx = 0
         buf = self._buffers[sock]
         while buf:
-            frame_type = ord(buf[0])
+            frame_type = buf[0] if isinstance(buf[0], int) else ord(buf[0])
             if frame_type == 0:
                 # Normal message.
-                end_idx = buf.find("\xFF")
+                end_idx = buf.find(b"\xFF")
                 if end_idx == -1:  # pragma NO COVER
                     break
                 msgs.append(buf[1:end_idx].decode("utf-8", "replace"))
@@ -86,7 +86,7 @@ class WebSockets(BaseComponent):
 
     @handler("write", target=WebSocketEvent._target)
     def _on_write(self, sock, data):
-        payload = chr(0x00) + data.encode("utf-8") + chr(0xFF)
+        payload = b'\x00' + data.encode("utf-8") + b'\xff'
         self.push(Write(sock, payload))
 
     @handler("value_changed", target=WebSocketEvent._target)

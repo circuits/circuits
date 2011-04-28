@@ -23,6 +23,11 @@ from .errors import HTTPError
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 
 def file_generator(input, chunkSize=BUFSIZE):
     chunk = input.read(chunkSize)
@@ -249,11 +254,14 @@ class Response(object):
         # Set a default content-Type if we don't have one.
         self.headers.setdefault("Content-Type", "text/html")
 
-        if self.body and isinstance(self.body, list):
-            if str in list(map(type, self.body)):
-                cLength = sum([len(s.encode(self._encoding)) for s in self.body])
+        if self.body:
+            if isinstance(self.body, bytes):
+                cLength = len(self.body)
+            elif isinstance(self.body, unicode):
+                cLength = len(self.body.encode(self._encoding))
             else:
-                cLength = sum(map(len, self.body))
+                cLength = sum([len(s.encode(self._encoding)) if not isinstance(s, bytes)
+                    else len(s) for s in self.body])
 
             self.headers["Content-Length"] = str(cLength)
 

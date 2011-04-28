@@ -9,10 +9,8 @@ each event to sys.stderr or to a Logger Component instnace.
 
 import os
 import sys
-try:
-    from io import StringIO
-except ImportError:
-    from StringIO import StringIO
+
+from io import BytesIO
 
 from .handlers import handler
 from .components import BaseComponent
@@ -57,35 +55,28 @@ class Debugger(BaseComponent):
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("exception", priority=100.0)
-    def _on_exception(self, type, value, traceback, handler=None):
+    def _on_exception(self, error_type, value, traceback, handler=None):
         if not self.errors:
             return
 
-        s = StringIO()
+        s = []
 
         if handler is None:
             handler = ""
         else:
             handler = reprhandler(self.root, handler)
 
-        msg = "ERROR %s(%s): %s\n" % ("%s " % handler, type, value)
-        if isinstance(msg, bytes):
-           msg = msg.decode('utf-8')
-        s.write(msg)
-        msg = "%s\n" % "".join(traceback)
-        if isinstance(msg, bytes):
-           msg = msg.decode('utf-8') 
-        s.write(msg)
-
-        s.seek(0)
+        msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
+        s.append(msg)
+        s.extend(traceback)
+        s.append("\n")
 
         if self.logger is not None:
-            self.logger.error(s.getvalue())
+            self.logger.error("".join(s))
         else:
-            self.file.write(s.read())
-            self.file.flush()
-
-        s.close()
+            self.file.write("".join(s))
+            # Bugged on py2
+            #self.file.flush()
 
     @handler(priority=100.0)
     def _on_event(self, event, *args, **kwargs):
