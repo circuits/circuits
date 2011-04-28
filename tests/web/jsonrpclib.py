@@ -179,10 +179,17 @@ class Transport:
         self.send_user_agent(h)
         self.send_content(h, request_body)
 
-        errcode, errmsg, headers = h.getreply()
+        try:
+            errcode, errmsg, headers = h.getreply()
+            r = h.getfile()
+        except AttributeError:
+            r = h.getresponse()
+            errcode = r.status
+            errmsg = r.reason
+            headers = r.getheaders()
 
         if errcode != 200:
-            response = h.getfile().read()
+            response = r.read()
             raise ProtocolError(
                 host + handler,
                 errcode, errmsg,
@@ -197,7 +204,7 @@ class Transport:
         except AttributeError:
             sock = None
 
-        return self._parse_response(h.getfile(), sock)
+        return self._parse_response(r, sock)
 
     ##
     # Create parser.
@@ -389,7 +396,7 @@ class ServerProxy(object):
         response = self.__transport.request(
             self.__host,
             self.__handler,
-            request,
+            request.encode(self.__encoding),
             verbose=self.__verbose
             )
 
