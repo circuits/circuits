@@ -19,14 +19,11 @@ class App(Component):
         Daemon(self.pidfile).register(self)
 
     def signal(self, signal, stack):
-        print 'started writing'
         f = open(self.signalfile, "w")
         f.write(str(signal))
         f.close()
-        print 'done writing'
 
 def main():
-    print 'started'
     _coverage = coverage(data_suffix=True)
     _coverage.start()
 

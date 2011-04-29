@@ -26,6 +26,8 @@ def test(tmpdir):
 
     assert status == 0
 
+    sleep(1)
+
     assert os.path.exists(pidfile)
     assert os.path.isfile(pidfile)
 
