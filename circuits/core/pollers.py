@@ -11,58 +11,33 @@ descriptors for read/write events. Pollers:
 - EPoll
 """
 
-from errno import *
+import select
 from time import time
-from select import select
+from errno import EBADF, EINTR
 from select import error as SelectError
 from socket import error as SocketError
-
-try:
-    from select import poll
-    from select import POLLIN, POLLOUT, POLLHUP, POLLERR, POLLNVAL
-    HAS_POLL = 1
-except ImportError:
-    HAS_POLL = 0
-
-try:
-    from select import epoll
-    from select import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
-    HAS_EPOLL = 2
-except ImportError:
-    try:
-        from select26 import epoll
-        from select26 import EPOLLIN, EPOLLOUT, EPOLLHUP, EPOLLERR
-        HAS_EPOLL = 1
-    except ImportError:
-        HAS_EPOLL = 0
-
-try:
-    # Kqueue
-    from select import kqueue, kevent, KQ_FILTER_READ, KQ_EV_ERROR
-    from select import KQ_FILTER_WRITE, KQ_EV_ADD, KQ_EV_DELETE, KQ_EV_EOF
-    HAS_KQUEUE = 1
-except ImportError:
-    HAS_KQUEUE = 0
 
 from .events import Event
 from .components import BaseComponent
 
-if HAS_POLL:
-    _POLL_DISCONNECTED = (POLLHUP | POLLERR | POLLNVAL)
+TIMEOUT = 0.01  # 10ms timeout
 
-if HAS_EPOLL:
-    _EPOLL_DISCONNECTED = (EPOLLHUP | EPOLLERR)
 
-TIMEOUT = 0.01 # 10ms timeout
+class Read(Event):
+    """Read Event"""
 
-###
-### Events
-###
 
-class Read(Event): pass
-class Write(Event): pass
-class Error(Event): pass
-class Disconnect(Event): pass
+class Write(Event):
+    """Write Event"""
+
+
+class Error(Event):
+    """Error Event"""
+
+
+class Disconnect(Event):
+    """Disconnect Event"""
+
 
 class BasePoller(BaseComponent):
 
@@ -116,6 +91,7 @@ class BasePoller(BaseComponent):
     def getTarget(self, fd):
         return self._targets.get(fd, self.manager)
 
+
 class Select(BasePoller):
     """Select(...) -> new Select Poller Component
 
@@ -137,15 +113,15 @@ class Select(BasePoller):
         for socks in (self._read[:], self._write[:]):
             for sock in socks:
                 try:
-                    select([sock], [sock], [sock], 0)
-                except Exception as e:
+                    select.select([sock], [sock], [sock], 0)
+                except Exception:
                     self.discard(sock)
 
     def __tick__(self):
         try:
             if not any([self._read, self._write]):
                 return
-            r, w, _ = select(self._read, self._write, [], self.timeout)
+            r, w, _ = select.select(self._read, self._write, [], self.timeout)
         except ValueError as e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
@@ -172,10 +148,11 @@ class Select(BasePoller):
         for sock in w:
             if self.isWriting(sock):
                 self.push(Write(sock), "_write", self.getTarget(sock))
-            
+
         for sock in r:
             if self.isReading(sock):
                 self.push(Read(sock), "_read", self.getTarget(sock))
+
 
 class Poll(BasePoller):
     """Poll(...) -> new Poll Poller Component
@@ -190,7 +167,12 @@ class Poll(BasePoller):
         super(Poll, self).__init__(timeout, channel=channel)
 
         self._map = {}
-        self._poller = poll()
+        self._poller = select.poll()
+
+        self._disconnected_flag = (select.POLLHUP
+                | select.POLLERR
+                | select.POLLNVAL
+        )
 
     def _updateRegistration(self, fd):
         fileno = fd.fileno()
@@ -203,9 +185,9 @@ class Poll(BasePoller):
         mask = 0
 
         if fd in self._read:
-            mask = mask | POLLIN
+            mask = mask | select.POLLIN
         if fd in self._write:
-            mask = mask | POLLOUT
+            mask = mask | select.POLLOUT
 
         if mask:
             self._poller.register(fd, mask)
@@ -252,16 +234,16 @@ class Poll(BasePoller):
 
         fd = self._map[fileno]
 
-        if event & _POLL_DISCONNECTED and not (event & POLLIN):
+        if event & self._disconnected_flag and not (event & select.POLLIN):
             self.push(Disconnect(fd), "_disconnect", self.getTarget(fd))
             self._poller.unregister(fileno)
             super(Poll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
-                if event & POLLIN:
+                if event & select.POLLIN:
                     self.push(Read(fd), "_read", self.getTarget(fd))
-                if event & POLLOUT:
+                if event & select.POLLOUT:
                     self.push(Write(fd), "_write", self.getTarget(fd))
             except Exception as e:
                 self.push(Error(fd, e), "_error", self.getTarget(fd))
@@ -269,6 +251,7 @@ class Poll(BasePoller):
                 self._poller.unregister(fileno)
                 super(Poll, self).discard(fd)
                 del self._map[fileno]
+
 
 class EPoll(BasePoller):
     """EPoll(...) -> new EPoll Poller Component
@@ -283,7 +266,9 @@ class EPoll(BasePoller):
         super(EPoll, self).__init__(timeout, channel=channel)
 
         self._map = {}
-        self._poller = epoll()
+        self._poller = select.epoll()
+
+        self._disconnected_flag = (select.EPOLLHUP | select.EPOLLERR)
 
     def _updateRegistration(self, fd):
         try:
@@ -298,9 +283,9 @@ class EPoll(BasePoller):
         mask = 0
 
         if fd in self._read:
-            mask = mask | EPOLLIN
+            mask = mask | select.EPOLLIN
         if fd in self._write:
-            mask = mask | EPOLLOUT
+            mask = mask | select.EPOLLOUT
 
         if mask:
             self._poller.register(fd, mask)
@@ -349,16 +334,16 @@ class EPoll(BasePoller):
 
         fd = self._map[fileno]
 
-        if event & _EPOLL_DISCONNECTED and not (event & POLLIN):
+        if event & self._disconnected_flag and not (event & select.POLLIN):
             self.push(Disconnect(fd), "_disconnect", self.getTarget(fd))
             self._poller.unregister(fileno)
             super(EPoll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
-                if event & EPOLLIN:
+                if event & select.EPOLLIN:
                     self.push(Read(fd), "_read", self.getTarget(fd))
-                if event & EPOLLOUT:
+                if event & select.EPOLLOUT:
                     self.push(Write(fd), "_write", self.getTarget(fd))
             except Exception as e:
                 self.push(Error(fd, e), "_error", self.getTarget(fd))
@@ -366,6 +351,7 @@ class EPoll(BasePoller):
                 self._poller.unregister(fileno)
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
+
 
 class KQueue(BasePoller):
     """KQueue(...) -> new KQueue Poller Component
@@ -379,35 +365,36 @@ class KQueue(BasePoller):
     def __init__(self, timeout=0.00001, channel=channel):
         super(KQueue, self).__init__(timeout, channel=channel)
         self._map = {}
-        self._poller = kqueue()
+        self._poller = select.kqueue()
 
     def addReader(self, source, sock):
         super(KQueue, self).addReader(source, sock)
         self._map[sock.fileno()] = sock
-        self._poller.control([kevent(sock,
-            KQ_FILTER_READ, KQ_EV_ADD)], 0)
+        self._poller.control([select.kevent(sock,
+            select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0)
 
     def addWriter(self, source, sock):
         super(KQueue, self).addWriter(source, sock)
         self._map[sock.fileno()] = sock
-        self._poller.control([kevent(sock,
-            KQ_FILTER_WRITE, KQ_EV_ADD)], 0)
+        self._poller.control([select.kevent(sock,
+            select.KQ_FILTER_WRITE, select.KQ_EV_ADD)], 0)
 
     def removeReader(self, sock):
         super(KQueue, self).removeReader(sock)
-        self._poller.control([kevent(sock,
-            KQ_FILTER_READ, KQ_EV_DELETE)], 0)
+        self._poller.control([select.kevent(sock,
+            select.KQ_FILTER_READ, select.KQ_EV_DELETE)], 0)
 
     def removeWriter(self, sock):
         super(KQueue, self).removeWriter(sock)
-        self._poller.control([kevent(sock,
-            KQ_FILTER_WRITE, KQ_EV_DELETE)], 0)
+        self._poller.control([select.kevent(sock,
+            select.KQ_FILTER_WRITE, select.KQ_EV_DELETE)], 0)
 
     def discard(self, sock):
         super(KQueue, self).discard(sock)
         del self._map[sock.fileno()]
-        self._poller.control([kevent(sock,
-            KQ_FILTER_WRITE|KQ_FILTER_READ, KQ_EV_DELETE)], 0)
+        self._poller.control([select.kevent(sock,
+            select.KQ_FILTER_WRITE | select.KQ_FILTER_READ,
+            select.KQ_EV_DELETE)], 0)
 
     def __tick__(self):
         try:
@@ -426,25 +413,20 @@ class KQueue(BasePoller):
             # shouldn't happen ?
             # we unregister the socket since we don't care about it anymore
             self._poller.control(
-                [kevent(event.ident, event.filter, KQ_EV_DELETE)], 0)
+                [select.kevent(event.ident, event.filter,
+                    select.KQ_EV_DELETE)], 0)
             return
 
         sock = self._map[event.ident]
 
-        if event.flags & KQ_EV_ERROR:
+        if event.flags & select.KQ_EV_ERROR:
             self.push(Error(sock, "error"), "_error", self.getTarget(sock))
-        elif event.flags & KQ_EV_EOF:
+        elif event.flags & select.KQ_EV_EOF:
             self.push(Disconnect(sock), "_disconnect", self.getTarget(sock))
-        elif event.filter == KQ_FILTER_WRITE:
+        elif event.filter == select.KQ_FILTER_WRITE:
             self.push(Write(sock), "_write", self.getTarget(sock))
-        elif event.filter == KQ_FILTER_READ:
+        elif event.filter == select.KQ_FILTER_READ:
             self.push(Read(sock), "_read", self.getTarget(sock))
-
-### FIXME: The EPoll poller has some weird performance issues :/
-#if HAS_EPOLL:
-#    Poller = EPoll
-#else:
-#    Poller = Select
 
 Poller = Select
 

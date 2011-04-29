@@ -3,20 +3,14 @@
 import pytest
 
 from circuits import Manager
-from circuits.core import pollers
 from circuits.net.sockets import Pipe
+from circuits.core.pollers import Select
 from circuits.net.sockets import Close, Write
 
 from .client import Client
 
 def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"Poller": pollers.Select})
-    #if pollers.HAS_POLL:
-    #    metafunc.addcall(funcargs={"Poller": pollers.Poll})
-    #if pollers.HAS_EPOLL:
-    #    metafunc.addcall(funcargs={"Poller": pollers.EPoll})
-    #if pollers.HAS_KQUEUE:
-    #    metafunc.addcall(funcargs={"Poller": pollers.KQueue})
+    metafunc.addcall(funcargs={"Poller": Select})
 
 def test_pipe(Poller):
     m = Manager() + Poller()

@@ -6,21 +6,38 @@ from random import seed, randint
 import pytest
 
 from circuits import Manager
-from circuits.core import pollers
+from circuits.core.pollers import Select
 from circuits.net.sockets import TCPServer, TCPClient
 from circuits.net.sockets import Close, Connect, Write
 
 from .client import Client
 from .server import Server
 
+
 def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"Poller": pollers.Select})
-    if pollers.HAS_POLL:
-        metafunc.addcall(funcargs={"Poller": pollers.Poll})
-    if pollers.HAS_EPOLL:
-        metafunc.addcall(funcargs={"Poller": pollers.EPoll})
-    if pollers.HAS_KQUEUE:
-        metafunc.addcall(funcargs={"Poller": pollers.KQueue})
+    metafunc.addcall(funcargs={"Poller": Select})
+
+    try:
+        from circuits.core.pollers import Poll
+        Poll()
+        metafunc.addcall(funcargs={"Poller": Poll})
+    except AttributeError:
+        pass
+
+    try:
+        from circuits.core.pollers import EPoll
+        EPoll()
+        metafunc.addcall(funcargs={"Poller": EPoll})
+    except AttributeError:
+        pass
+
+    try:
+        from circuits.core.pollers import KQueue
+        KQueue()
+        metafunc.addcall(funcargs={"Poller": KQueue})
+    except AttributeError:
+        pass
+
 
 def test_tcp_basic(Poller):
     m = Manager() + Poller()
@@ -53,6 +70,7 @@ def test_tcp_basic(Poller):
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
+
 
 def test_tcp_reconnect(Poller):
     m = Manager() + Poller()
@@ -126,6 +144,7 @@ def test_tcp_connect_closed_port(Poller):
         assert pytest.wait_for(client, "disconnected")
     finally:
         m.stop()
+
 
 def test_tcp_bind(Poller):
     m = Manager() + Poller()

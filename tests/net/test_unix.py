@@ -9,21 +9,38 @@ if sys.platform in ("win32", "cygwin"):
     pytest.skip("Test Not Applicable on Windows")
 
 from circuits import Manager
-from circuits.core import pollers
+from circuits.core.pollers import Select
 from circuits.net.sockets import Close, Connect, Write
 from circuits.net.sockets import UNIXServer, UNIXClient
 
 from .client import Client
 from .server import Server
 
+
 def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"Poller": pollers.Select})
-    if pollers.HAS_POLL:
-        metafunc.addcall(funcargs={"Poller": pollers.Poll})
-    if pollers.HAS_EPOLL:
-        metafunc.addcall(funcargs={"Poller": pollers.EPoll})
-    if pollers.HAS_KQUEUE:
-        metafunc.addcall(funcargs={"Poller": pollers.KQueue})
+    metafunc.addcall(funcargs={"Poller": Select})
+
+    try:
+        from circuits.core.pollers import Poll
+        Poll()
+        metafunc.addcall(funcargs={"Poller": Poll})
+    except AttributeError:
+        pass
+
+    try:
+        from circuits.core.pollers import EPoll
+        EPoll()
+        metafunc.addcall(funcargs={"Poller": EPoll})
+    except AttributeError:
+        pass
+
+    try:
+        from circuits.core.pollers import KQueue
+        KQueue()
+        metafunc.addcall(funcargs={"Poller": KQueue})
+    except AttributeError:
+        pass
+
 
 def test_unix(tmpdir, Poller):
     m = Manager() + Poller()
