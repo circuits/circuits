@@ -1,13 +1,13 @@
-# Module:   inotify_driver
+# Module:   notify
 # Date:     2nd March 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""INotify Driver
+"""File Notification Support
 
-A driver for the inotify system using the pyinotify library.
+A Component wrapping the inotify API using the pyinotify library.
 """
 
-import time
+from time import sleep, time
 
 try:
     from pyinotify import IN_UNMOUNT
@@ -18,18 +18,42 @@ try:
 except ImportError:
     raise Exception("No pyinotify support available. Is pyinotify installed?")
 
-from circuits.core import Event, Component
+from circuits.core import Event, BaseComponent
 
 MASK = ALL_EVENTS
 
-class Moved(Event): pass
-class Opened(Event): pass
-class Closed(Event): pass
-class Created(Event): pass
-class Deleted(Event): pass
-class Accessed(Event): pass
-class Modified(Event): pass
-class Unmounted(Event): pass
+
+class Moved(Event):
+    """Moved Event"""
+
+
+class Opened(Event):
+    """Opened Event"""
+
+
+class Closed(Event):
+    """Closed Event"""
+
+
+class Created(Event):
+    """Created Event"""
+
+
+class Deleted(Event):
+    """Deleted Event"""
+
+
+class Accessed(Event):
+    """Accessed Event"""
+
+
+class Modified(Event):
+    """Modified Event"""
+
+
+class Unmounted(Event):
+    """Unmounted Event"""
+
 
 EVENT_MAP = {
         IN_MOVED_TO:        Moved,
@@ -44,14 +68,16 @@ EVENT_MAP = {
         IN_ACCESS:          Accessed,
         IN_MODIFY:          Modified,
         IN_ATTRIB:          Modified,
-        IN_UNMOUNT:         Unmounted}
+        IN_UNMOUNT:         Unmounted,
+}
 
-class INotifyDriver(Component):
 
-    channel = "inotify"
+class Notify(BaseComponent):
+
+    channel = "notify"
 
     def __init__(self, freq=1, timeout=1, channel=channel):
-        super(INotifyDriver, self).__init__(channel=channel)
+        super(Notify, self).__init__(channel=channel)
 
         self._freq = freq
         self._wm = WatchManager()
@@ -60,14 +86,14 @@ class INotifyDriver(Component):
     def _sleep(self, rtime):
         # Only consider sleeping if _freq is > 0
         if self._freq > 0:
-            ctime = time.time()
+            ctime = time()
             s = self._freq - (ctime - rtime)
             if s > 0:
-                time.sleep(s)
+                sleep(s)
 
     def __tick__(self):
         self._notifier.process_events()
-        rtime = time.time()
+        rtime = time()
         if self._notifier.check_events():
             self._sleep(rtime)
             self._notifier.read_events()
