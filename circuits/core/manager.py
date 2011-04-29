@@ -317,7 +317,17 @@ class Manager(object):
                 if handler not in self._cmap[channel]:
                     self._cmap[channel].append(handler)
 
-    add = addHandler
+    def add(self, *args, **kwargs):
+        """Deprecated in 1.6
+
+        .. deprecated:: 1.6
+           Use :py:meth:`addHandler` instead.
+        """
+
+        warn(DeprecationWarning("Use .addHandler(...) instead"))
+
+        return self.addHandler(*args, **kwargs)
+
 
     def removeHandler(self, handler, channel=None):
         """Remove an Event Handler
@@ -361,7 +371,17 @@ class Manager(object):
                 if not self._cmap[channel]:
                     del self._cmap[channel]
 
-    remove = removeHandler
+    def remove(self, *args, **kwargs):
+        """Deprecated in 1.6
+
+        .. deprecated:: 1.6
+           Use :py:meth:`removeHandler` instead.
+        """
+
+        warn(DeprecationWarning("Use .removeHandler(...) instead"))
+
+        self.removeHandler(*args, **kwargs)
+
 
     def _fire(self, event, channel):
         self._queue.append((event, channel))
@@ -413,7 +433,18 @@ class Manager(object):
 
         return event.value
 
-    fire = push = fireEvent
+    fire = fireEvent
+
+    def push(self, *args, **kwargs):
+        """Deprecated in 1.6
+
+        .. deprecated:: 1.6
+           Use :py:meth:`fire` instead.
+        """
+
+        warn(DeprecationWarning("Use .fire(...) instead"))
+
+        return self.fire(*args, **kwargs)
 
     def _flush(self):
         q = self._queue
