@@ -11,6 +11,7 @@ class Server(Component):
         self.data = ""
         self.host = None
         self.port = None
+        self.client = None
         self.ready = False
         self.closed = False
         self.connected = False
@@ -25,9 +26,11 @@ class Server(Component):
 
     def connect(self, sock, *args):
         self.connected = True
+        self.client = args
         self.push(Write(sock, b"Ready"))
 
     def disconnect(self, sock):
+        self.client = None
         self.disconnected = True
 
     def read(self, sock, data):

@@ -388,7 +388,7 @@ class TCPClient(Client):
     def _create_socket(self):
         sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
         if self._bind is not None:
-            sock.bind((self._bind, 0))
+            sock.bind(self._bind)
 
         sock.setblocking(False)
         sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)

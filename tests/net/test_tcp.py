@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+from time import time
+from random import seed, randint
+
 import pytest
 
 from circuits import Manager
@@ -123,4 +126,40 @@ def test_tcp_connect_closed_port(Poller):
         assert pytest.wait_for(client, "disconnected")
     finally:
         m.stop()
-    
+
+def test_tcp_bind(Poller):
+    m = Manager() + Poller()
+
+    seed(time())
+    bind_port = randint(1000, 65535)
+
+    server = Server() + TCPServer(0)
+    client = Client() + TCPClient(bind_port)
+
+    server.register(m)
+    client.register(m)
+
+    m.start()
+
+    try:
+        assert pytest.wait_for(client, "ready")
+        assert pytest.wait_for(server, "ready")
+
+        client.push(Connect(server.host, server.port))
+        assert pytest.wait_for(client, "connected")
+        assert pytest.wait_for(server, "connected")
+        assert pytest.wait_for(client, "data", b"Ready")
+
+        assert server.client[1] == bind_port
+
+        client.push(Write(b"foo"))
+        assert pytest.wait_for(server, "data", b"foo")
+
+        client.push(Close())
+        assert pytest.wait_for(client, "disconnected")
+        assert pytest.wait_for(server, "disconnected")
+
+        server.push(Close())
+        assert pytest.wait_for(server, "closed")
+    finally:
+        m.stop()
