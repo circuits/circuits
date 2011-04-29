@@ -10,13 +10,11 @@ class Root(Controller):
         return "Hello World!"
 
 def test(webapp):
-    from circuits import Debugger
-    Debugger().register(webapp)
     client = Client(webapp.server.base)
     client.start()
 
     client.push(Connect())
-    assert pytest.wait_event(client, 'connected')
+    assert pytest.wait_event(client, 'connected', target='client')
 
     client.push(Request("GET", "/"))
     while client.response is None: pass

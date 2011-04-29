@@ -12,7 +12,7 @@ import collections
 class Waiter(object):
     flag = False
 
-    def handler(self, evt, handler, retval):
+    def handler(self, *args, **kwargs):
         self.flag = True
 
 

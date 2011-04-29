@@ -68,7 +68,6 @@ class Client(BaseComponent):
 
     def __init__(self, url, channel=channel):
         super(Client, self).__init__(channel=channel)
-
         self._host, self._port, self._resource, self._secure = parse_url(url)
 
         self._response = None
@@ -99,7 +98,7 @@ class Client(BaseComponent):
             headers = Headers([(k, v) for k, v in headers.items()])
             command = "%s %s HTTP/1.1" % (method, path)
             message = "%s\r\n%s" % (command, headers)
-            self.push(Write(message), target=self._transport)
+            self.push(Write(message.encode('utf-8')), target=self._transport)
             if body:
                 self.push(Write(body), target=self._transport)
         else:
