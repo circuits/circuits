@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from io import StringIO
+from io import BytesIO
+
 try:
     from urllib.request import Request
 except ImportError:
@@ -24,7 +25,7 @@ def test(webapp):
     form = MultiPartForm()
     form["description"] = "Hello World!"
 
-    fd = StringIO("Hello World!")
+    fd = BytesIO("Hello World!")
     form.add_file("file", "helloworld.txt", fd)
 
     # Build the request
