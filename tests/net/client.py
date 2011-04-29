@@ -9,6 +9,7 @@ class Client(Component):
 
         self.data = ""
         self.ready = False
+        self.closed = False
         self.connected = False
         self.disconnected = False
 
@@ -20,6 +21,9 @@ class Client(Component):
 
     def disconnected(self):
         self.disconnected = True
+
+    def closed(self):
+        self.closed = True
 
     def read(self, data):
         self.data = data
