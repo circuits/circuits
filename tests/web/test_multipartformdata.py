@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from io import BytesIO
+from io import StringIO
 
 try:
     from urllib.request import Request
@@ -25,7 +25,7 @@ def test(webapp):
     form = MultiPartForm()
     form["description"] = "Hello World!"
 
-    fd = BytesIO("Hello World!")
+    fd = StringIO(b"Hello World!".decode("utf-8"))
     form.add_file("file", "helloworld.txt", fd)
 
     # Build the request
