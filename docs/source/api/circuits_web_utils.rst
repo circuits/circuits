@@ -19,10 +19,7 @@ Functions
 ---------
 
 .. autofunction :: compress
-.. autofunction :: decompress
 .. autofunction :: dictform
 .. autofunction :: get_ranges
 .. autofunction :: parseQueryString
 .. autofunction :: url
-.. autofunction :: url_quote
-.. autofunction :: url_unquote

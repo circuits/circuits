@@ -6,10 +6,10 @@
 Events
 ------
 
-.. autoclass :: circuits.app.config.LoadConfig
+.. autoclass :: circuits.app.config.Load
    :members:
 
-.. autoclass :: circuits.app.config.SaveConfig
+.. autoclass :: circuits.app.config.Save
    :members:
 
 Components

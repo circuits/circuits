@@ -6,16 +6,16 @@
 Events
 ------
 
-.. autoclass :: circuits.app.env.CreateEnvironment
+.. autoclass :: circuits.app.env.Create
    :members:
 
-.. autoclass :: circuits.app.env.LoadEnvironment
+.. autoclass :: circuits.app.env.Load
    :members:
 
 Components
 ----------
 
-.. autoclass :: circuits.app.env.BaseEnvironment
+.. autoclass :: circuits.app.env.Environment
    :members:
 
 Functions

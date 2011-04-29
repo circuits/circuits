@@ -13,7 +13,7 @@ Events
 Classes
 -------
 
-.. autoclass :: HandlersType
+.. autoclass :: HandlerMetaClass
    :members:
 
 
