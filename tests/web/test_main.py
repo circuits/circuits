@@ -35,9 +35,7 @@ def test():
         try:
             f = urlopen("http://127.0.0.1:8000/hello")
         except URLError as err:
-            import pdb
-            pdb.set_trace()
-            if err.args[0] == ECONNREFUSED:
+            if err.args[0][0] == ECONNREFUSED:
                 sleep(1)
             else:
                 assert False
