@@ -82,7 +82,7 @@ class Manager(object):
 
         self._task = None
         self._thread = None
-        self._process = None
+        self._proc = None
         self._bridge = None
         self._running = False
 
@@ -589,10 +589,10 @@ class Manager(object):
                 self._bridge.start()
                 args += (child,)
 
-            self._process = Process(group, target, name, args)
-            self._process.daemon = True
+            self._proc = Process(group, target, name, args)
+            self._proc.daemon = True
             self.tick()
-            self._process.start()
+            self._proc.start()
             return
 
         self._thread = Thread(group, target, name, args)
@@ -602,9 +602,9 @@ class Manager(object):
     def stop(self):
         self._running = False
         self.fire(Stopped(self))
-        if self._process and self._process.is_alive() \
-                and not current_process() == self._process:
-            self._process.terminate()
+        if self._proc and self._proc.is_alive() \
+                and not current_process() == self._proc:
+            self._proc.terminate()
         if (self._bridge is not None):
             self._bridge = None
         self._process = None
