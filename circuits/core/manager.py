@@ -457,6 +457,8 @@ class Manager(object):
         i = 0
         while not e:
             e = self._task.switch(g, cls)
+            print repr(e)
+            print not e
             if limit and i == limit:
                 return
             i += 1
@@ -477,7 +479,8 @@ class Manager(object):
         self._queue = deque()
 
         for event, channel in q:
-            self._dispatcher(event, channel)
+            g = greenlet(self._dispatcher)
+            g.switch(event, channel)
 
             if event in self._active_handlers:
                 for active_handler in self._active_handlers[event]:
@@ -518,6 +521,7 @@ class Manager(object):
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
+                print(id(event), retval)
                 event.value.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
