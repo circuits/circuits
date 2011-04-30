@@ -582,9 +582,15 @@ class Manager(object):
         if self._task and self._task.parent:
             self._task.parent.switch()
 
-    def run(self, log=True, __mode=None, __socket=None):
+    def run(self, *args, **kwargs):
+        log = kwargs.get("kwargs", True)
+        __mode = kwargs.get("__mode", None)
+        __socket = kwargs.get("__socket", None)
+
         self._task = greenlet(self._run)
         self._task.switch(log, __mode, __socket)
+
+    start = run
 
     def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":
