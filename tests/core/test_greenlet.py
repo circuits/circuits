@@ -2,8 +2,7 @@
 
 import pytest
 
-from circuits.core.events import Started
-from circuits import handler, Component, Event
+from circuits import Component, Event
 
 
 class Foo(Event):
@@ -20,7 +19,7 @@ class BarDone(Event):
 
 class Test(Component):
 
-    def foo(self):
+    def test_wait_class(self):
         x = self.fire(Bar())
         self.waitEvent(Bar)
         return x.value
@@ -29,11 +28,11 @@ class Test(Component):
         return "Foobar!"
 
 
-def test_wait():
+def test_wait_class():
     test = Test()
     test.start()
 
-    x = test.fire(Foo())
+    x = test.fire(Foo(), "test_wait_class")
 
     pytest.wait_for(x, "result")
 
