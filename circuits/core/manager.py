@@ -530,7 +530,7 @@ class Manager(object):
             if retval and attrs["filter"]:
                 if event.filter is not None:
                     self.fire(Filter(event, handler, retval), *event.filter)
-                return # Filter
+                return None, None  # Filter
 
             if error is None and event.success is not None:
                 self.fire(Success(event, handler, retval), *event.success)
