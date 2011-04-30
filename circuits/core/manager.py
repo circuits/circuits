@@ -450,13 +450,15 @@ class Manager(object):
 
         return self.fire(*args, **kwargs)
 
-    def wait_event(self, cls):
+    def waitEvent(self, cls):
         g = greenlet.getcurrent()
         return g.parent.switch(greenlet.getcurrent(), cls)
 
+    wait = waitEvent
+
     def callEvent(self, event, channel=None, target=None):
         self.fire(event, channel, target)
-        e = self.wait_event(event.__class__)
+        e = self.waitEvent(event.__class__)
         return e.value.value
 
     call = callEvent
