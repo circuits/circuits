@@ -43,6 +43,8 @@ except:
     except:
         HAS_MULTIPROCESSING = 0
 
+from greenlet import greenlet
+
 from .values import Value
 from .events import Started, Stopped, Signal
 from .events import Error, Success, Failure, Filter, Start, End
@@ -479,9 +481,9 @@ class Manager(object):
 
             try:
                 if attrs["event"]:
-                    retval = handler(event, *eargs, **ekwargs)
+                    retval = greenlet(handler(event, *eargs, **ekwargs))
                 else:
-                    retval = handler(*eargs, **ekwargs)
+                    retval = greenlet(handler(*eargs, **ekwargs))
                 event.value.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
