@@ -467,17 +467,18 @@ class Manager(object):
     def _flush(self):
         q = self._queue
         self._queue = deque()
+
         for event, channel in q:
-            g = greenlet(self.__handleEvent)
-            green, e = g.switch(event, channel)
+            dispatcher = greenlet(self._dispatcher)
+            new_handler, new_event = dispatcher.switch(event, channel)
 
             if event.__class__ in self._active_handlers:
-                for g in self._active_handlers[event.__class__]:
-                    g.switch(event)
+                for active_handler in self._active_handlers[event.__class__]:
+                    active_handler.switch(event)
                 del self._active_handlers[event.__class__]
 
-            if green and e:
-                self._active_handlers[e].append(green)
+            if new_handler and new_event:
+                self._active_handlers[new_event].append(new_handler)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
@@ -491,7 +492,7 @@ class Manager(object):
 
     flush = flushEvents
 
-    def __handleEvent(self, event, channel):
+    def _dispatcher(self, event, channel):
         eargs = event.args
         ekwargs = event.kwargs
 
