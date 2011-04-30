@@ -18,6 +18,8 @@ from inspect import getargspec
 from traceback import format_tb
 from sys import exc_info as _exc_info
 
+from .events import Event
+
 try:
     from threading import current_thread
 except ImportError:
@@ -66,6 +68,7 @@ class Manager(object):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self._globals = []
+        self._tasks = set()
         self._cmap = dict()
         self._tmap = dict()
         self._queue = deque()
@@ -78,6 +81,8 @@ class Manager(object):
         self._ticks = set()
 
         self._task = None
+        self._thread = None
+        self._process = None
         self._bridge = None
         self._running = False
 
@@ -450,25 +455,41 @@ class Manager(object):
 
         return self.fire(*args, **kwargs)
 
+    def registerTask(self, g):
+        self._tasks.add(g)
+
+    def unregisterTask(self, g):
+        self._tasks.remove(g)
+
     def waitEvent(self, cls, limit=None):
+        if self._thread and self._thread != current_thread():
+            raise Exception('You must be in the manager thread to use waitEvent')
+        if self._process and self._process != current_process():
+            raise Exception('You must be in the manager process to use waitEvent')
+
         g = greenlet.getcurrent()
-        self._active_handlers[cls].append(g)
-        e = None
+
+        is_instance = isinstance(cls, Event)
         i = 0
-        while not e:
-            e = self._task.switch(g, cls)
-            print repr(e)
-            print not e
-            if limit and i == limit:
-                return
-            i += 1
+        e = None
+
+        self.registerTask(g)
+        try:
+            while e != cls if is_instance else e.__class__ != cls:
+                if limit and i == limit or self._task is None:
+                    return
+                e = self._task.switch()
+                i += 1
+        finally:
+            self.unregisterTask(g)
+
         return e
 
     wait = waitEvent
 
     def callEvent(self, event, channel=None, target=None):
         self.fire(event, channel, target)
-        e = self.waitEvent(event.__class__)
+        e = self.waitEvent(event)
         return e.value.value
 
     call = callEvent
@@ -482,14 +503,8 @@ class Manager(object):
             g = greenlet(self._dispatcher)
             g.switch(event, channel)
 
-            if event in self._active_handlers:
-                for active_handler in self._active_handlers[event]:
-                    active_handler.switch(event)
-                del self._active_handlers[event]
-            if event.__class__ in self._active_handlers:
-                for active_handler in self._active_handlers[event.__class__]:
-                    active_handler.switch(event)
-                del self._active_handlers[event.__class__]
+            for task in self._tasks:
+                task.switch(event)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
@@ -521,7 +536,6 @@ class Manager(object):
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
-                print(id(event), retval)
                 event.value.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise
@@ -556,16 +570,44 @@ class Manager(object):
         if signal in [SIGINT, SIGTERM]:
             self.stop()
 
+    def start(self, log=True, link=None, process=False):
+        group = None
+        target = self.run
+        name = self.__class__.__name__
+        mode = "P" if process else "T"
+        args = (log, mode,)
+
+        if process and HAS_MULTIPROCESSING:
+            if link is not None and isinstance(link, Manager):
+                from circuits.net.sockets import Pipe
+                from circuits.core.bridge import Bridge
+                from circuits.core.utils import findroot
+                root = findroot(link)
+                parent, child = Pipe()
+                self._bridge = Bridge(root, socket=parent)
+                self._bridge.start()
+                args += (child,)
+
+            self._process = Process(group, target, name, args)
+            self._process.daemon = True
+            self.tick()
+            self._process.start()
+            return
+
+        self._thread = Thread(group, target, name, args)
+        self._thread.setDaemon(True)
+        self._thread.start()
+
     def stop(self):
         self._running = False
         self.fire(Stopped(self))
-        if (self._task and HAS_MULTIPROCESSING
-                and type(self._task) is Process
-                and self._task.is_alive()
-                and not current_process() == self._task):
-            self._task.terminate()
+        if self._process and self._process.is_alive() \
+                and not current_process() == self._process:
+            self._process.terminate()
         if (self._bridge is not None):
             self._bridge = None
+        self._process = None
+        self._thread = None
         self._task = None
         self.tick()
 
@@ -583,9 +625,6 @@ class Manager(object):
 
         self._flush()
 
-        if self._task and self._task.parent:
-            self._task.parent.switch()
-
     def run(self, *args, **kwargs):
         log = kwargs.get("kwargs", True)
         __mode = kwargs.get("__mode", None)
@@ -593,8 +632,6 @@ class Manager(object):
 
         self._task = greenlet(self._run)
         self._task.switch(log, __mode, __socket)
-
-    start = run
 
     def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":
