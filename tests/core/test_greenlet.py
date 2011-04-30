@@ -24,21 +24,17 @@ class Test(Component):
 
     def test_wait_class(self):
         x = self.fire(Bar())
-        self.waitEvent(BarDone, 30)
+        self.waitEvent(Bar, 30)
         return x.value
 
     def test_wait_instance(self):
-        e = BarDone()
-        x = self.fire(Bar2(e))
+        e = Bar()
+        x = self.fire(e)
         self.waitEvent(e, 30)
         return x.value
 
     def bar(self):
-        self.fire(BarDone())
-        return "Foobar!"
-
-    def bar2(self, e):
-        self.fire(e)
+        self.push(BarDone())
         return "Foobar!"
 
 
