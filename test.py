@@ -21,7 +21,7 @@ class Test(Component):
         self.fire(Foo())
 
     def foo(self):
-        print self.fire(Bar())
+        print self.call(Bar())
 
     def bar(self):
         return "Foobar!"
