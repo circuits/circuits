@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-from circuits import handler, Component, Debugger, Event
+import pytest
+
+from circuits import handler, Component, Event
 
 
 class Foo(Event):
@@ -21,9 +23,21 @@ class Test(Component):
         self.fire(Foo())
 
     def foo(self):
-        print self.call(Bar())
+        return self.call(Bar())
 
     def bar(self):
         return "Foobar!"
 
-(Test() + Debugger(events=False)).run()
+
+def test():
+    test = Test()
+    test.start()
+
+    x = test.fire(Foo())
+
+    assert pytest.wait_for(x, "result")
+
+    value = x.value
+    assert value == "Foobar!"
+
+    test.stop()
