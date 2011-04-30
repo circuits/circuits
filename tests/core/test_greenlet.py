@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from circuits import Component, Event
 from circuits.core.events import Started
+from circuits import handler, Component, Event
 
 
 class Foo(Event):
@@ -29,6 +29,9 @@ def test_wait():
     test = Test()
     test.start()
 
-    assert test.waitEvent(Started)
+    x = test.fire(Foo())
+    assert test.waitEvent(Foo)
+
+    assert x.value == "Foobar!"
 
     test.stop()
