@@ -42,7 +42,7 @@ def test_wait_class():
 
     x = test.fire(Foo(), "test_wait_class")
 
-    x = test.waitEvent(Bar)
+    x = test.waitEvent(Bar, 30)
     value = x.value.value
     assert value == "Foobar!"
 
@@ -55,9 +55,9 @@ def test_wait_instance():
 
     x = test.fire(Foo(), "test_wait_instance")
 
-    pytest.wait_for(x, "result")
+    x = test.waitEvent(Bar, 30)
 
-    value = x.value
+    value = x.value.value
     assert value == "Foobar!"
 
     test.stop()

@@ -450,12 +450,16 @@ class Manager(object):
 
         return self.fire(*args, **kwargs)
 
-    def waitEvent(self, cls):
+    def waitEvent(self, cls, limit=None):
         g = greenlet.getcurrent()
         self._active_handlers[cls].append(g)
         e = None
+        i = 0
         while not e:
             e = self._task.switch(g, cls)
+            if limit and i == limit:
+                return
+            i += 1
         return e
 
     wait = waitEvent
