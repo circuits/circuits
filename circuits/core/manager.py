@@ -460,6 +460,7 @@ class Manager(object):
         for event, channel in q:
             if event.__class__ in self._handler_running:
                 self._handler_running[event.__class__].switch(event)
+                del self._handler_running[event.__class__]
 
             g = greenlet(self.__handleEvent)
             green, e = g.switch(event, channel)
