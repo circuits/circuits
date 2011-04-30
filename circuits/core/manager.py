@@ -71,9 +71,9 @@ class Manager(object):
         self._queue = deque()
         self.channels = dict()
         self._handlers = set()
-        self._handler_running = defaultdict(list)
         self._handlerattrs = dict()
         self._handler_cache = dict()
+        self._active_handlers = defaultdict(list)
 
         self._ticks = set()
 
@@ -471,13 +471,13 @@ class Manager(object):
             g = greenlet(self.__handleEvent)
             green, e = g.switch(event, channel)
 
-            if event.__class__ in self._handler_running:
-                for g in self._handler_running[event.__class__]:
+            if event.__class__ in self._active_handlers:
+                for g in self._active_handlers[event.__class__]:
                     g.switch(event)
-                del self._handler_running[event.__class__]
+                del self._active_handlers[event.__class__]
 
             if green and e:
-                self._handler_running[e].append(green)
+                self._active_handlers[e].append(green)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
