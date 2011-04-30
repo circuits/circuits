@@ -479,6 +479,10 @@ class Manager(object):
         for event, channel in q:
             self._dispatcher(event, channel)
 
+            if event in self._active_handlers:
+                for active_handler in self._active_handlers[event]:
+                    active_handler.switch(event)
+                del self._active_handlers[event]
             if event.__class__ in self._active_handlers:
                 for active_handler in self._active_handlers[event.__class__]:
                     active_handler.switch(event)

@@ -23,7 +23,7 @@ class Test(Component):
         self.fire(Bar())
 
     def test_wait_instance(self):
-        self.fire(Bar())
+        return "Foobar!"
 
     def bar(self):
         return "Foobar!"
