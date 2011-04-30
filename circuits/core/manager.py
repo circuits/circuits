@@ -472,13 +472,14 @@ class Manager(object):
         is_instance = isinstance(cls, Event)
         i = 0
         e = None
+        caller = self._task
 
         self.registerTask(g)
         try:
             while e != cls if is_instance else e.__class__ != cls:
                 if limit and i == limit or self._task is None:
                     return
-                e = self._task.switch()
+                e, caller = caller.switch()
                 i += 1
         finally:
             self.unregisterTask(g)
@@ -502,9 +503,6 @@ class Manager(object):
         for event, channel in q:
             dispatcher = greenlet(self._dispatcher)
             dispatcher.switch(event, channel)
-
-            for task in self._tasks.copy():
-                task.switch(event)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
@@ -563,6 +561,9 @@ class Manager(object):
 
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
+
+        for task in self._tasks.copy():
+            task.switch(event, greenlet.getcurrent())
 
 
     def _signalHandler(self, signal, stack):
