@@ -34,11 +34,11 @@ def test():
     for _ in range(3):
         try:
             f = urlopen("http://127.0.0.1:8000/hello")
-        except URLError as err:
-            if err.args[0][0] == ECONNREFUSED:
+        except URLError as e:
+            if e.args[0][0] == ECONNREFUSED:
                 sleep(1)
             else:
-                assert False
+                raise AssertionError(e)
 
     s = f.read()
     assert s == b"Hello World!"
