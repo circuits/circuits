@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import pytest
+
 from circuits.core.events import Started
 from circuits import handler, Component, Event
 
@@ -19,7 +21,9 @@ class BarDone(Event):
 class Test(Component):
 
     def foo(self):
-        return self.call(Bar())
+        x = self.fire(Bar())
+        self.waitEvent(Bar)
+        return x.value
 
     def bar(self):
         return "Foobar!"
@@ -30,8 +34,10 @@ def test_wait():
     test.start()
 
     x = test.fire(Foo())
-    assert test.waitEvent(Foo)
 
-    assert x.value == "Foobar!"
+    pytest.wait_for(x, "result")
+
+    value = x.value
+    assert value == "Foobar!"
 
     test.stop()
