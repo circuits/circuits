@@ -464,7 +464,7 @@ class Manager(object):
     def waitEvent(self, cls, limit=None):
         if self._thread and self._thread != current_thread():
             raise Exception('You must be in the manager thread to use waitEvent')
-        if self._process and self._process != current_process():
+        if self._proc and self._proc != current_process():
             raise Exception('You must be in the manager process to use waitEvent')
 
         g = greenlet.getcurrent()
