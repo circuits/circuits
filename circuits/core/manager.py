@@ -49,17 +49,6 @@ from .events import Error, Success, Failure, Filter, Start, End
 
 TIMEOUT = 0.01 # 10ms timeout when no tick functions to process
 
-
-class EventLockError(Exception):
-    """Event Lock Exception
-
-    Raised when the Manager detects an Event Lock. An Event Lock is where
-    any event that is triggered causes the same event to be triggered. The
-    Manager detects this by keeping a cache of the last N events through
-    the system and comparing their event handlers.
-    """
-
-
 class Manager(object):
     """Manager
 
@@ -81,7 +70,6 @@ class Manager(object):
         self._handlers = set()
         self._handlerattrs = dict()
         self._handler_cache = dict()
-        self._event_cache = deque(maxlen=5)
 
         self._ticks = set()
 
@@ -476,13 +464,6 @@ class Manager(object):
 
     flush = flushEvents
 
-    def _detect_event_lock(self, event):
-        self._event_cache.appendleft(event)
-
-        for e in self._event_cache:
-            if e is not event and event == e and event.handler == e.handler:
-                return True
-
     def __handleEvent(self, event, channel):
         eargs = event.args
         ekwargs = event.kwargs
@@ -497,11 +478,6 @@ class Manager(object):
             event.handler = handler
 
             try:
-                if self._detect_event_lock(event):
-                    raise EventLockError((
-                        "Event Lock Detected: %r by %r"
-                    ) % (event, handler))
-
                 if attrs["event"]:
                     retval = handler(event, *eargs, **ekwargs)
                 else:
