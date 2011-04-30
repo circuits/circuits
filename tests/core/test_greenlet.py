@@ -36,13 +36,14 @@ class Test(Component):
 
 def test_wait_class():
     test = Test()
-    test.start()
+    from circuits import Debugger
+    Debugger().register(test)
+    test.run()
 
     x = test.fire(Foo(), "test_wait_class")
 
-    pytest.wait_for(x, "result")
-
-    value = x.value
+    x = test.waitEvent(Bar)
+    value = x.value.value
     assert value == "Foobar!"
 
     test.stop()
@@ -50,7 +51,7 @@ def test_wait_class():
 
 def test_wait_instance():
     test = Test()
-    test.start()
+    test.run()
 
     x = test.fire(Foo(), "test_wait_instance")
 

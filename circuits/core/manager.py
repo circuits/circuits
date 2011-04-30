@@ -452,7 +452,11 @@ class Manager(object):
 
     def waitEvent(self, cls):
         g = greenlet.getcurrent()
-        return g.parent.switch(greenlet.getcurrent(), cls)
+        self._active_handlers[cls].append(g)
+        e = None
+        while not e:
+            e = self._task.switch(g, cls)
+        return e
 
     wait = waitEvent
 
@@ -469,16 +473,12 @@ class Manager(object):
         self._queue = deque()
 
         for event, channel in q:
-            dispatcher = greenlet(self._dispatcher)
-            new_handler, new_event = dispatcher.switch(event, channel)
+            self._dispatcher(event, channel)
 
             if event.__class__ in self._active_handlers:
                 for active_handler in self._active_handlers[event.__class__]:
                     active_handler.switch(event)
                 del self._active_handlers[event.__class__]
-
-            if new_handler and new_event:
-                self._active_handlers[new_event].append(new_handler)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
@@ -530,7 +530,7 @@ class Manager(object):
             if retval and attrs["filter"]:
                 if event.filter is not None:
                     self.fire(Filter(event, handler, retval), *event.filter)
-                return None, None  # Filter
+                return # Filter
 
             if error is None and event.success is not None:
                 self.fire(Success(event, handler, retval), *event.success)
@@ -538,40 +538,11 @@ class Manager(object):
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
 
-        return None, None
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
         if signal in [SIGINT, SIGTERM]:
             self.stop()
-
-    def start(self, log=True, link=None, process=False):
-        group = None
-        target = self.run
-        name = self.__class__.__name__
-        mode = "P" if process else "T"
-        args = (log, mode,)
-
-        if process and HAS_MULTIPROCESSING:
-            if link is not None and isinstance(link, Manager):
-                from circuits.net.sockets import Pipe
-                from circuits.core.bridge import Bridge
-                from circuits.core.utils import findroot
-                root = findroot(link)
-                parent, child = Pipe()
-                self._bridge = Bridge(root, socket=parent)
-                self._bridge.start()
-                args += (child,)
-
-            self._task = Process(group, target, name, args)
-            self._task.daemon = True
-            self.tick()
-            self._task.start()
-            return
-
-        self._task = Thread(group, target, name, args)
-        self._task.setDaemon(True)
-        self._task.start()
 
     def stop(self):
         self._running = False
@@ -600,7 +571,14 @@ class Manager(object):
 
         self._flush()
 
+        if self._task and self._task.parent:
+            self._task.parent.switch()
+
     def run(self, log=True, __mode=None, __socket=None):
+        self._task = greenlet(self._run)
+        self._task.switch(log, __mode, __socket)
+
+    def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":
             if os.name == "posix":
                 _registerSignalHandler(SIGHUP, self._signalHandler)
