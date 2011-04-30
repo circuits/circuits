@@ -8,6 +8,7 @@ This module definse the Manager class subclasses by component.BaseComponent
 """
 
 import os
+import greenlet
 from time import sleep
 from warnings import warn
 from itertools import chain
@@ -70,6 +71,7 @@ class Manager(object):
         self._queue = deque()
         self.channels = dict()
         self._handlers = set()
+        self._handler_running = dict()
         self._handlerattrs = dict()
         self._handler_cache = dict()
 
@@ -448,11 +450,22 @@ class Manager(object):
 
         return self.fire(*args, **kwargs)
 
+    def wait_event(self, cls):
+        g = greenlet.getcurrent()
+        return g.parent.switch(greenlet.getcurrent(), cls)
+
     def _flush(self):
         q = self._queue
         self._queue = deque()
         for event, channel in q:
-            self.__handleEvent(event, channel)
+            if event.__class__ in self._handler_running:
+                self._handler_running[event.__class__].switch(event)
+
+            g = greenlet(self.__handleEvent)
+            green, e = g.switch(event, channel)
+
+            if green and e:
+                self._handler_running[e] = green
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
@@ -511,6 +524,8 @@ class Manager(object):
 
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
+
+        return None, None
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
