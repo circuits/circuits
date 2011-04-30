@@ -13,7 +13,7 @@ from time import sleep
 from warnings import warn
 from itertools import chain
 from threading import Thread
-from collections import deque
+from collections import deque, defaultdict
 from inspect import getargspec
 from traceback import format_tb
 from sys import exc_info as _exc_info
@@ -71,7 +71,7 @@ class Manager(object):
         self._queue = deque()
         self.channels = dict()
         self._handlers = set()
-        self._handler_running = dict()
+        self._handler_running = defaultdict(list)
         self._handlerattrs = dict()
         self._handler_cache = dict()
 
@@ -459,14 +459,15 @@ class Manager(object):
         self._queue = deque()
         for event, channel in q:
             if event.__class__ in self._handler_running:
-                self._handler_running[event.__class__].switch(event)
+                for g in self._handler_running[event.__class__]:
+                    g.switch(event)
                 del self._handler_running[event.__class__]
 
             g = greenlet(self.__handleEvent)
             green, e = g.switch(event, channel)
 
             if green and e:
-                self._handler_running[e] = green
+                self._handler_running[e].append(green)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue
