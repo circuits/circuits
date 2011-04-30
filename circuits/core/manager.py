@@ -454,17 +454,25 @@ class Manager(object):
         g = greenlet.getcurrent()
         return g.parent.switch(greenlet.getcurrent(), cls)
 
+    def callEvent(self, event, channel=None, target=None):
+        self.fire(event, channel, target)
+        e = self.wait_event(event.__class__)
+        return e.value.value
+
+    call = callEvent
+
+
     def _flush(self):
         q = self._queue
         self._queue = deque()
         for event, channel in q:
+            g = greenlet(self.__handleEvent)
+            green, e = g.switch(event, channel)
+
             if event.__class__ in self._handler_running:
                 for g in self._handler_running[event.__class__]:
                     g.switch(event)
                 del self._handler_running[event.__class__]
-
-            g = greenlet(self.__handleEvent)
-            green, e = g.switch(event, channel)
 
             if green and e:
                 self._handler_running[e].append(green)
@@ -496,9 +504,9 @@ class Manager(object):
 
             try:
                 if attrs["event"]:
-                    retval = greenlet(handler(event, *eargs, **ekwargs))
+                    retval = handler(event, *eargs, **ekwargs)
                 else:
-                    retval = greenlet(handler(*eargs, **ekwargs))
+                    retval = handler(*eargs, **ekwargs)
                 event.value.value = retval
             except (KeyboardInterrupt, SystemExit):
                 raise

@@ -21,13 +21,12 @@ class Test(Component):
         self.fire(Foo())
 
     def foo(self):
-        self.fire(Bar())
-        e = self.wait_event(BarDone)
-        print e.args[0]
+        result = self.call(Bar())
+        print result
 
 
     def bar(self):
-        self.fire(BarDone("Foobar"))
+        return "Foobar"
 
 (Test() + Debugger(events=False)).run()
 
