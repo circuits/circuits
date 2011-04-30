@@ -16,10 +16,6 @@ class Bar2(Event):
     """Bar Event"""
 
 
-class FooDone(Event):
-    """fire when Foo is done"""
-
-
 class BarDone(Event):
     """fired when Bar is done"""
 
@@ -52,7 +48,7 @@ def test_wait_class():
 
     x = test.fire(Foo(), "test_wait_class")
     pytest.wait_event(test, "bardone")
-    print(repr(x.value))
+
     value = x.value
     assert value == "Foobar!"
 

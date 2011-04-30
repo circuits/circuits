@@ -500,10 +500,10 @@ class Manager(object):
         self._queue = deque()
 
         for event, channel in q:
-            g = greenlet(self._dispatcher)
-            g.switch(event, channel)
+            dispatcher = greenlet(self._dispatcher)
+            dispatcher.switch(event, channel)
 
-            for task in self._tasks:
+            for task in self._tasks.copy():
                 task.switch(event)
 
     def flushEvents(self):
