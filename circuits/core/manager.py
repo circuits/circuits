@@ -576,7 +576,8 @@ class Manager(object):
         target = self.run
         name = self.__class__.__name__
         mode = "P" if process else "T"
-        args = (log, mode,)
+        args = ()
+        kwargs = {'log': log, '__mode': mode}
 
         if process and HAS_MULTIPROCESSING:
             if link is not None and isinstance(link, Manager):
@@ -587,15 +588,15 @@ class Manager(object):
                 parent, child = Pipe()
                 self._bridge = Bridge(root, socket=parent)
                 self._bridge.start()
-                args += (child,)
+                kwargs['__socket'] = child
 
-            self._proc = Process(group, target, name, args)
+            self._proc = Process(group, target, name, args, kwargs)
             self._proc.daemon = True
             self.tick()
             self._proc.start()
             return
 
-        self._thread = Thread(group, target, name, args)
+        self._thread = Thread(group, target, name, args, kwargs)
         self._thread.setDaemon(True)
         self._thread.start()
 
@@ -627,7 +628,7 @@ class Manager(object):
         self._flush()
 
     def run(self, *args, **kwargs):
-        log = kwargs.get("kwargs", True)
+        log = kwargs.get("log", True)
         __mode = kwargs.get("__mode", None)
         __socket = kwargs.get("__socket", None)
 
