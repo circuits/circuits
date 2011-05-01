@@ -76,7 +76,6 @@ class Manager(object):
         self._handlers = set()
         self._handlerattrs = dict()
         self._handler_cache = dict()
-        self._active_handlers = defaultdict(list)
 
         self._ticks = set()
 
