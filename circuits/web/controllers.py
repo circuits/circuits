@@ -7,88 +7,110 @@
 This module implements ...
 """
 
+import json
 from inspect import getargspec
+from collections import Callable
 from functools import update_wrapper
-import collections
-
-try:
-    import json
-    HAS_JSON = 2
-except ImportError:
-    try:
-        import simplejson as json
-        HAS_JSON = 1
-    except ImportError:
-        import warnings
-        HAS_JSON = 0
-        warnings.warn("No json support available.")
 
 from circuits.core import handler, BaseComponent
 
 from . import tools
 from .wrappers import Response
 from .errors import Forbidden, HTTPError, NotFound, Redirect
-from circuits.core.handlers import HandlerMetaClass
 
 
 def expose(*channels, **config):
-   def decorate(f):
-      @handler(*channels, **config)
-      def wrapper(self, event, *args, **kwargs):
-         try:
-            if not hasattr(self, "request"):
-                (self.request, self.response), args = args[:2], args[2:]
-                self.request.args = args
-                self.request.kwargs = kwargs
-                self.cookie = self.request.cookie
-                if hasattr(self.request, "session"):
-                   self.session = self.request.session
-            if not getattr(f, "event", False):
-                return f(self, *args, **kwargs)
-            else:
-                return f(self, event, *args, **kwargs)
-         finally:
-            if hasattr(self, "request"):
-               del self.request
-               del self.response
-               del self.cookie
-            if hasattr(self, "session"):
-               del self.session
- 
-      wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
-              getargspec(f)
-      if wrapper.args and wrapper.args[0] == "self":
-          del wrapper.args[0]
-      wrapper.event = True
+    def decorate(f):
+        @handler(*channels, **config)
+        def wrapper(self, event, *args, **kwargs):
+            try:
+                if not hasattr(self, "request"):
+                    (self.request, self.response), args = args[:2], args[2:]
+                    self.request.args = args
+                    self.request.kwargs = kwargs
+                    self.cookie = self.request.cookie
+                    if hasattr(self.request, "session"):
+                        self.session = self.request.session
+                if not getattr(f, "event", False):
+                    return f(self, *args, **kwargs)
+                else:
+                    return f(self, event, *args, **kwargs)
+            finally:
+                if hasattr(self, "request"):
+                    del self.request
+                    del self.response
+                    del self.cookie
+                if hasattr(self, "session"):
+                    del self.session
 
-      return update_wrapper(wrapper, f)
+        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
+                getargspec(f)
+        if wrapper.args and wrapper.args[0] == "self":
+            del wrapper.args[0]
+        wrapper.event = True
 
-   return decorate
+        return update_wrapper(wrapper, f)
 
-class ExposeType(type):
+    return decorate
+
+
+class ExposeMetaClass(type):
 
     def __init__(cls, name, bases, dct):
-        super(ExposeType, cls).__init__(name, bases, dct)
+        super(ExposeMetaClass, cls).__init__(name, bases, dct)
 
         for k, v in dct.items():
-            if isinstance(v, collections.Callable) and not (k[0] == "_" or hasattr(v, "handler")):
+            if isinstance(v, Callable) \
+                    and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, expose(k)(v))
+
 
 class BaseController(BaseComponent):
 
     channel = "/"
 
     def url(self, *args, **kwargs):
+        """Return the current URL or create a new URL
+
+        If no arguments or keywords arguments are passed, returns the
+        current URL for the current request.
+
+        .. seealso:: :py:func:`circuits.web.utils.url`
+        """
+
         return self.request.url(*args, **kwargs)
 
     def forbidden(self, description=None):
+        """Return a 403 (Forbidden) response
+
+        :param description: Message to display
+        :type description: str
+        """
+
         return Forbidden(self.request, self.response, description=description)
 
     def notfound(self, description=None):
-       return NotFound(self.request, self.response, description=description)
+        """Return a 404 (Not Found) response
+
+        :param description: Message to display
+        :type description: str
+        """
+
+        return NotFound(self.request, self.response, description=description)
 
     def redirect(self, urls, code=None):
-       return Redirect(self.request, self.response, urls, code=code)
+        """Return a 30x (Redirect) response
+
+        Redirect to another location specified by urls with an optional
+        custom response code.
+
+        :param urls: A single URL or list of URLs
+        :type urls: str or list
+
+        :param code: HTTP Redirect code
+        :type code: int
+        """
+        return Redirect(self.request, self.response, urls, code=code)
 
     def serve_file(self, path, type=None, disposition=None, name=None):
         return tools.serve_file(self.request, self.response, path,
@@ -101,60 +123,63 @@ class BaseController(BaseComponent):
     def expires(self, secs=0, force=False):
         tools.expires(self.request, self.response, secs, force)
 
+
 class Controller(BaseController):
     pass
 
-Controller = ExposeType("Controller", (BaseController,), {})
+Controller = ExposeMetaClass("Controller", (BaseController,), {})
 
 
-if HAS_JSON:
-
-    def exposeJSON(*channels, **config):
-       def decorate(f):
-          @handler(*channels, **config)
-          def wrapper(self, *args, **kwargs):
-             try:
+def exposeJSON(*channels, **config):
+    def decorate(f):
+        @handler(*channels, **config)
+        def wrapper(self, *args, **kwargs):
+            try:
                 if not hasattr(self, "request"):
-                    (self.request, self.response), args = args[:2], args[2:]
+                    args = args[2:]
+                    self.request, self.response = args[:2]
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
-                       self.session = self.request.session
+                        self.session = self.request.session
                 result = f(self, *args, **kwargs)
                 if (isinstance(result, HTTPError)
                         or isinstance(result, Response)):
                     return result
                 else:
-                    self.response.headers["Content-Type"] = "application/json"
+                    self.response.headers["Content-Type"] = (
+                            "application/json"
+                    )
                     return json.dumps(result)
-             finally:
+            finally:
                 if hasattr(self, "request"):
-                   del self.request
-                   del self.response
-                   del self.cookie
+                    del self.request
+                    del self.response
+                    del self.cookie
                 if hasattr(self, "session"):
-                   del self.session
- 
-          wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
-                  getargspec(f)
-          if wrapper.args and wrapper.args[0] == "self":
-              del wrapper.args[0]
+                    del self.session
 
-          return update_wrapper(wrapper, f)
+        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
+                getargspec(f)
+        if wrapper.args and wrapper.args[0] == "self":
+            del wrapper.args[0]
 
-       return decorate
+        return update_wrapper(wrapper, f)
 
-    class ExposeJSONType(type):
-
-        def __init__(cls, name, bases, dct):
-            super(ExposeJSONType, cls).__init__(name, bases, dct)
-
-            for k, v in dct.items():
-                if isinstance(v, collections.Callable) and not (k[0] == "_" or hasattr(v, "handler")):
-                    setattr(cls, k, exposeJSON(k)(v))
+    return decorate
 
 
-    class JSONController(BaseController):
-        pass
+class ExposeJSONMetaClass(type):
 
-    JSONController = ExposeJSONType("JSONController", (BaseController,), {})
-    
+    def __init__(cls, name, bases, dct):
+        super(ExposeJSONMetaClass, cls).__init__(name, bases, dct)
+
+        for k, v in dct.items():
+            if isinstance(v, Callable) \
+                    and not (k[0] == "_" or hasattr(v, "handler")):
+                setattr(cls, k, exposeJSON(k)(v))
+
+
+class JSONController(BaseController):
+    pass
+
+JSONController = ExposeJSONMetaClass("JSONController", (BaseController,), {})
