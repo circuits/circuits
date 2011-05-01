@@ -136,8 +136,8 @@ def exposeJSON(*channels, **config):
         def wrapper(self, *args, **kwargs):
             try:
                 if not hasattr(self, "request"):
-                    args = args[2:]
                     self.request, self.response = args[:2]
+                    args = args[2:]
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
