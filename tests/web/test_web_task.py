@@ -26,5 +26,5 @@ def test(webapp):
     t.start(link=webapp, process=True)
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s.decode() == "Hello %d i'm %d" % (os.getpid(), t._task.pid)
+    assert s.decode() == "Hello %d i'm %d" % (os.getpid(), t._proc.pid)
     t.stop()
