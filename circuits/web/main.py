@@ -27,7 +27,6 @@ from circuits.net.pollers import Select
 from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
-from circuits.core.manager import HAS_MULTIPROCESSING
 from circuits.web import BaseServer, Server, Controller, Static, wsgi
 
 try:
@@ -180,11 +179,8 @@ def main():
         print()
         print(inspect(manager))
 
-    if opts.mp and HAS_MULTIPROCESSING:
-        for i in range(opts.mp):
-            manager.start(process=True)
-    else:
-        print("No multiprocessing support available")
+    for i in range(opts.mp):
+        manager.start(process=True)
 
     manager.run()
 
