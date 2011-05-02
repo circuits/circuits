@@ -38,9 +38,18 @@ class Test(Component):
         x = self.callEvent(e)
         return x.value
 
+    def test_call_event2(self):
+        e = Bar2()
+        x = self.callEvent(e)
+        return x.value
+
     def bar(self):
         self.push(BarDone())
         return "Foobar!"
+
+    def bar2(self):
+        self.push(BarDone())
+        return
 
 
 def test_wait_class():
@@ -80,6 +89,12 @@ def test_call_event():
 
     value = x.value
     assert value == "Foobar!"
+
+    x = test.fire(e, "test_call_event2")
+    pytest.wait_event(test, "bardone")
+
+    value = x.value
+    assert value == None
 
     test.stop()
 
