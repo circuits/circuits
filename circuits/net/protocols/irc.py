@@ -52,7 +52,7 @@ def sourceJoin(nick, ident, host):
 def sourceSplit(source):
     """sourceSplit(source) -> str, str, str
 
-    Split the given source into it's parts.
+    Split the given source into its parts.
 
     source must be of the form: nick!ident@host
 

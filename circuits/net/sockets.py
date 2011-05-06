@@ -216,7 +216,7 @@ class Ready(Event):
 class Closed(Event):
     """Closed Event
 
-    This Event is sent when a server has closed it's listening socket.
+    This Event is sent when a server has closed its listening socket.
 
     @note: This event is for Server components.
     """

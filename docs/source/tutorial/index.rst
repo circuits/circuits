@@ -47,8 +47,7 @@ Let's move on to something more interesting...
 Event Handlers
 --------------
 
-Let's now extend our little example to say "Hello World!" when it's
-started.
+Let's now extend our little example to say "Hello World!" when its started.
 
 .. literalinclude:: 003.py
    :language: python
@@ -336,7 +335,7 @@ Running again with our coorection results in the expected output::
    Woof! I'm Bob!
    Woof! I'm Fred!
 
-That's it's folks!
+That's it folks!
 
 Hopefully this gives you a feel of what circuits is all about and a easy
 tutorial on some of the basic concepts. As you're no doubt itching to get
