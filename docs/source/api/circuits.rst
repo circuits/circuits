@@ -8,7 +8,6 @@
    
    circuits_app
    circuits_core
-   circuits_drivers
    circuits_io
    circuits_net
    circuits_tools
