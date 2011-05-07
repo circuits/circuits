@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pytest
+pytest.importorskip("greenlet")
 
 from circuits import Component, Event
 

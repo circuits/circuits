@@ -17,7 +17,11 @@ from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
-from greenlet import getcurrent as getcurrent_greenlet, greenlet
+try:
+    from greenlet import getcurrent as getcurrent_greenlet, greenlet
+    GREENLET = True
+except ImportError:
+    GREENLET = False
 
 from .values import Value
 from .events import Event, Started, Stopped, Signal
@@ -465,9 +469,13 @@ class Manager(object):
         q = self._queue
         self._queue = deque()
 
+        dispatcher = greenlet(self._dispatcher)
+
         for event, channel in q:
-            dispatcher = greenlet(self._dispatcher)
-            dispatcher.switch(event, channel)
+            if GREENLET:
+                dispatcher.switch(event, channel)
+            else:
+                dispatcher(event, channel)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
@@ -522,8 +530,9 @@ class Manager(object):
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
 
-        for task in self._tasks.copy():
-            task.switch(event, getcurrent_greenlet())
+        if GREENLET:
+            for task in self._tasks.copy():
+                task.switch(event, getcurrent_greenlet())
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
@@ -591,8 +600,12 @@ class Manager(object):
         __mode = kwargs.get("__mode", None)
         __socket = kwargs.get("__socket", None)
 
-        self._task = greenlet(self._run)
-        self._task.switch(log, __mode, __socket)
+
+        if GREENLET:
+            self._task = greenlet(self._run)
+            self._task.switch(log, __mode, __socket)
+        else:
+            self._run(log, __mode, __socket)
 
     def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":
