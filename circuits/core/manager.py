@@ -469,13 +469,13 @@ class Manager(object):
         q = self._queue
         self._queue = deque()
 
-        dispatcher = greenlet(self._dispatcher)
-
-        for event, channel in q:
-            if GREENLET:
+        if GREENLET:
+            for event, channel in q:
+                dispatcher = greenlet(self._dispatcher)
                 dispatcher.switch(event, channel)
-            else:
-                dispatcher(event, channel)
+        else:
+            for event, channel in q:
+                self._dispatcher(event, channel)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
