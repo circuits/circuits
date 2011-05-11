@@ -73,7 +73,7 @@ class Client(Component):
         self.ircchannel = opts.channel
 
         self += (TCPClient(channel=self.channel) + IRC(channel=self.channel))
-        self.push(Connect(self.host, self.port), "connect")
+        self.fire(Connect(self.host, self.port), "connect")
 
     def connected(self, host, port):
         print("Connected to %s:%d" % (host, port))
@@ -82,18 +82,18 @@ class Client(Component):
         hostname = self.hostname
         name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
 
-        self.push(USER(nick, hostname, host, name))
-        self.push(NICK(nick))
+        self.fire(USER(nick, hostname, host, name))
+        self.fire(NICK(nick))
 
     def disconnected(self):
-        self.push(Connect(self.opts.host, self.opts.port), "connect")
+        self.fire(Connect(self.opts.host, self.opts.port), "connect")
 
     def numeric(self, source, target, numeric, args, message):
         if numeric == 1:
-            self.push(JOIN(self.ircchannel))
+            self.fire(JOIN(self.ircchannel))
         elif numeric == 433:
             self.nick = newnick = "%s_" % self.nick
-            self.push(Nick(newnick), "NICK")
+            self.fire(Nick(newnick), "NICK")
 
     def join(self, source, channel):
         if source[0].lower() == self.nick.lower():
@@ -112,7 +112,7 @@ class Client(Component):
 
     @handler("read", target="stdin")
     def stdin_read(self, data):
-        self.push(PRIVMSG(self.ircchannel, data.strip()))
+        self.fire(PRIVMSG(self.ircchannel, data.strip()))
 
 ###
 ### Main

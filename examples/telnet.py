@@ -82,7 +82,7 @@ class Telnet(Component):
             dest = host, port
 
         print "Trying %s ..." % host
-        self.push(Connect(*dest), "connect")
+        self.fire(Connect(*dest), "connect")
 
     def connected(self, host, port=None):
         print "Connected to %s" % host
@@ -102,7 +102,7 @@ class Telnet(Component):
 
     @handler("read", target="stdin")
     def stdin_read(self, data):
-        self.push(Write(data), "write")
+        self.fire(Write(data), "write")
 
 ###
 ### Main

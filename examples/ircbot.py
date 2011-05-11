@@ -20,20 +20,20 @@ class Bot(Component):
         self += TCPClient(channel=self.channel) + IRC(channel=self.channel)
 
     def ready(self, component):
-        self.push(Connect(self._host, self._port))
+        self.fire(Connect(self._host, self._port))
 
     def connected(self, host, port):
-        self.push(USER("circuits", host, host, "Test circuits IRC Bot"))
-        self.push(NICK("circuits"))
+        self.fire(USER("circuits", host, host, "Test circuits IRC Bot"))
+        self.fire(NICK("circuits"))
 
     def numeric(self, source, target, numeric, args, message):
         if numeric == ERR_NICKNAMEINUSE:
-            self.push(NICK("%s_" % args))
+            self.fire(NICK("%s_" % args))
         if numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
-            self.push(JOIN("#circuits"))
+            self.fire(JOIN("#circuits"))
 
     def message(self, source, target, message):
-        self.push(PRIVMSG(source[0], message))
+        self.fire(PRIVMSG(source[0], message))
 
 bot = Bot("irc.freenode.net") + Debugger()
 bot.run()

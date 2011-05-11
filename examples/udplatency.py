@@ -9,7 +9,7 @@ class LatencyServer(UDPServer):
     channel = "server"
 
     def read(self, address, data):
-        self.push(Write(address, data))
+        self.fire(Write(address, data))
 
 class LatencyClient(UDPClient):
 
@@ -19,7 +19,7 @@ class LatencyClient(UDPClient):
     data = []
 
     def ready(self, cmp):
-        self.push(Write(("127.0.0.1", 8000), str(time())))
+        self.fire(Write(("127.0.0.1", 8000), str(time())))
 
     def read(self, address, data):
         latency = time() - float(data)
@@ -27,7 +27,7 @@ class LatencyClient(UDPClient):
         print "Round Trip: %0.2fs" % latency
         self.count += 1
         if self.count < 10:
-            self.push(Write(("127.0.0.1", 8000), str(time())))
+            self.fire(Write(("127.0.0.1", 8000), str(time())))
         else:
             average = sum(self.data) / len(self.data)
             print "Average Latency: %0.2fs" % average

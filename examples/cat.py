@@ -9,7 +9,7 @@ class Cat(File):
     stdout = stdout
 
     def read(self, data):
-        self.push(Write(data), target=stdout)
+        self.fire(Write(data), target=stdout)
 
     def eof(self):
         raise SystemExit, 0
