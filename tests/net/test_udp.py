@@ -78,11 +78,11 @@ def test_udp_close(Poller):
         server.push(Close())
         assert pytest.wait_for(server, "disconnected")
 
-        kill(server)
+        kill(server) # FIXME: This fails :/
 
-        #server = Server() + UDPServer(2345)
-        #server.register(m)
+        server = Server() + UDPServer(2345)
+        server.register(m)
 
-        #assert pytest.wait_for(server, "ready")
+        assert pytest.wait_for(server, "ready")
     finally:
         m.stop()
