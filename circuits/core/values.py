@@ -14,7 +14,7 @@ class ValueChanged(Event):
     """Value Changed Event
 
     This Event is triggered when the return Value of an Event Handler has
-    changed it's value.
+    changed its value.
     """
 
     def __init__(self, value):

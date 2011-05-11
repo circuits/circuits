@@ -22,7 +22,7 @@ class BaseComponent(Manager):
 
     This is the Base of the Component which manages registrations to other
     components or managers. Every Base Component and thus Component has a
-    unique Channel that is used as a separation of concern for it's registered
+    unique Channel that is used as a separation of concern for its registered
     Event Handlers. By default, this Channels is None (or also known as the
     Global Channel).
 
@@ -144,7 +144,7 @@ class BaseComponent(Manager):
         """Unregister all registered Event Handlers
         
         This will unregister all registered Event Handlers of this Component
-        from it's registered Component or Manager.
+        from its registered Component or Manager.
 
         @note: It's possible to unregister a Component from itself!
         """

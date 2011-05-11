@@ -4,7 +4,7 @@
 
 """Daemon Component
 
-Component to daemonizae a sytem into the background and detach it from it's
+Component to daemonizae a system into the background and detach it from its
 controlling PTY. Supports pid file writing, logging stdin, stdout and stderr
 and changing the current working directory.
 """
@@ -19,7 +19,7 @@ class Daemonize(Event):
 
     This event can be fired to notify the `Daemon` Component to begin the
     "daemonization" process. This event is (*by default*) used
-    automatically by the `Daemon` Component in it's "started" Event
+    automatically by the `Daemon` Component in its "started" Event
     Handler (*This behavior can be overridden*).
 
     Arguments: *None*

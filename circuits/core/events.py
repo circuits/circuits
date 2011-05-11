@@ -318,7 +318,7 @@ class Registered(Event):
 class Unregistered(Event):
     """Unregistered Event
 
-    This Event is sent when a Component has been unregistered from it's
+    This Event is sent when a Component has been unregistered from its
     Component or Manager.
     """
 

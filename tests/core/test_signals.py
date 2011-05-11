@@ -35,17 +35,14 @@ def test(tmpdir):
     pid = int(f.read().strip())
     f.close()
 
-    os.kill(pid, SIGHUP)
+    os.kill(pid, SIGTERM)
     sleep(1)
 
     f = open(signalfile, "r")
     signal = f.read().strip()
     f.close()
 
-    assert signal == str(SIGHUP)
-
-    os.kill(pid, SIGTERM)
-    assert True
+    assert signal == str(SIGTERM)
 
     os.remove(pidfile)
     os.remove(signalfile)

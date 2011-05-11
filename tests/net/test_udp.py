@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+from time import sleep
+
 import pytest
 
 from circuits import Manager
+from circuits.tools import kill
 from circuits.core.pollers import Select
 from circuits.net.sockets import Close, Write
 from circuits.net.sockets import UDPServer, UDPClient
@@ -59,5 +62,27 @@ def test_udp(Poller):
 
         server.push(Close())
         assert pytest.wait_for(server, "closed")
+    finally:
+        m.stop()
+
+def test_udp_close(Poller):
+    from circuits import Debugger
+    m = Manager() + Poller() + Debugger()
+    server = Server() + UDPServer(2345)
+    server.register(m)
+    m.start()
+
+    try:
+        assert pytest.wait_for(server, "ready")
+
+        server.push(Close())
+        assert pytest.wait_for(server, "disconnected")
+
+        kill(server) # FIXME: This fails :/
+
+        server = Server() + UDPServer(2345)
+        server.register(m)
+
+        assert pytest.wait_for(server, "ready")
     finally:
         m.stop()

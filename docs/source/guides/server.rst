@@ -69,7 +69,7 @@ Server("localhost").run()
 Let's walk through this in details:
 
 1. Create a new Component called ``Server``
-2. Define it's initialization arguments as ``(host, port=8000)``
+2. Define its initialization arguments as ``(host, port=8000)``
 3. Call the super constructor of the underlying Component
    (*This is important as all components need to be initialized properly*)
 4. Register a ``TCPServer`` Component and configure it.

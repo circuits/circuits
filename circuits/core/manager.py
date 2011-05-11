@@ -7,52 +7,28 @@
 This module definse the Manager class subclasses by component.BaseComponent
 """
 
-import os
-import greenlet
 from time import sleep
 from warnings import warn
-from itertools import chain
-from threading import Thread
-from collections import deque, defaultdict
+from collections import deque
 from inspect import getargspec
 from traceback import format_tb
 from sys import exc_info as _exc_info
-
-from .events import Event
+from signal import signal, SIGINT, SIGTERM
+from threading import current_thread, Thread
+from multiprocessing import current_process, Process
 
 try:
-    from threading import current_thread
+    from greenlet import getcurrent as getcurrent_greenlet, greenlet
+    GREENLET = True
 except ImportError:
-    from threading import currentThread as current_thread
-
-if os.name == "posix":
-    from signal import SIGHUP, SIGINT, SIGTERM
-    from signal import signal as _registerSignalHandler
-elif os.name in ["nt", "java"]:
-    from signal import SIGINT, SIGTERM
-    from signal import signal as _registerSignalHandler
-else:
-    raise RuntimeError("Unsupported platform '%s'" % os.name)
-
-try:
-    from multiprocessing import Process
-    from multiprocessing import current_process
-    HAS_MULTIPROCESSING = 2
-except:
-    try:
-        from processing import Process
-        from processing import currentProcess as current_process
-        HAS_MULTIPROCESSING = 1
-    except:
-        HAS_MULTIPROCESSING = 0
-
-from greenlet import greenlet
+    GREENLET = False
 
 from .values import Value
-from .events import Started, Stopped, Signal
+from .events import Event, Started, Stopped, Signal
 from .events import Error, Success, Failure, Filter, Start, End
 
-TIMEOUT = 0.01 # 10ms timeout when no tick functions to process
+TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
+
 
 class Manager(object):
     """Manager
@@ -94,7 +70,7 @@ class Manager(object):
         name = self.__class__.__name__
 
         if hasattr(self, "channel") and self.channel is not None:
-            channel = "/%s" % self.channel 
+            channel = "/%s" % self.channel
         else:
             channel = ""
 
@@ -103,10 +79,7 @@ class Manager(object):
         h = len(self._handlers)
         state = self.state
 
-        if HAS_MULTIPROCESSING:
-            pid = current_process().pid
-        else:
-            pid = os.getpid()
+        pid = current_process().pid
 
         if pid:
             id = "%s:%s" % (pid, current_thread().getName())
@@ -145,7 +118,7 @@ class Manager(object):
 
         y.register(self)
         return self
-    
+
     def __iadd__(self, y):
         """x.__iadd__(y) <==> x += y
 
@@ -220,7 +193,7 @@ class Manager(object):
 
         # Any global channels
         handlers.extend(get(("*", channel), []))
- 
+
         # Any global channels for this target
         handlers.extend(get((channel, "*"), []))
 
@@ -336,7 +309,6 @@ class Manager(object):
 
         return self.addHandler(*args, **kwargs)
 
-
     def removeHandler(self, handler, channel=None):
         """Remove an Event Handler
 
@@ -389,7 +361,6 @@ class Manager(object):
         warn(DeprecationWarning("Use .removeHandler(...) instead"))
 
         self.removeHandler(*args, **kwargs)
-
 
     def _fire(self, event, channel):
         self._queue.append((event, channel))
@@ -462,11 +433,11 @@ class Manager(object):
 
     def waitEvent(self, cls, limit=None):
         if self._thread and self._thread != current_thread():
-            raise Exception('You must be in the manager thread to use waitEvent')
+            raise Exception("Cannot use .waitEvent from other thread")
         if self._proc and self._proc != current_process():
-            raise Exception('You must be in the manager process to use waitEvent')
+            raise Exception("Cannot use .waitEvent from other process")
 
-        g = greenlet.getcurrent()
+        g = getcurrent_greenlet()
 
         is_instance = isinstance(cls, Event)
         i = 0
@@ -494,22 +465,20 @@ class Manager(object):
 
     call = callEvent
 
-
     def _flush(self):
         q = self._queue
         self._queue = deque()
 
-        for event, channel in q:
-            dispatcher = greenlet(self._dispatcher)
-            dispatcher.switch(event, channel)
+        if GREENLET:
+            for event, channel in q:
+                dispatcher = greenlet(self._dispatcher)
+                dispatcher.switch(event, channel)
+        else:
+            for event, channel in q:
+                self._dispatcher(event, channel)
 
     def flushEvents(self):
-        """Flush all Events in the Event Queue
-
-        This will flush all Events in the Event Queue. If this Component's
-        Manager is itself, flush all Events from this Component's Event Queue,
-        otherwise, flush all Events from this Component's Manager's Event Queue.
-        """
+        """Flush all Events in the Event Queue"""
 
         self.root._flush()
 
@@ -553,7 +522,7 @@ class Manager(object):
             if retval and attrs["filter"]:
                 if event.filter is not None:
                     self.fire(Filter(event, handler, retval), *event.filter)
-                return # Filter
+                return  # Filter
 
             if error is None and event.success is not None:
                 self.fire(Success(event, handler, retval), *event.success)
@@ -561,9 +530,9 @@ class Manager(object):
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
 
-        for task in self._tasks.copy():
-            task.switch(event, greenlet.getcurrent())
-
+        if GREENLET:
+            for task in self._tasks.copy():
+                task.switch(event, getcurrent_greenlet())
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
@@ -578,7 +547,7 @@ class Manager(object):
         args = ()
         kwargs = {'log': log, '__mode': mode}
 
-        if process and HAS_MULTIPROCESSING:
+        if process:
             if link is not None and isinstance(link, Manager):
                 from circuits.net.sockets import Pipe
                 from circuits.core.bridge import Bridge
@@ -622,7 +591,7 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
         else:
-            sleep(TIMEOUT) # Nothing to do - Let's not tie up the CUP
+            sleep(TIMEOUT)  # Nothing to do - Let's not tie up the CUP
 
         self._flush()
 
@@ -631,18 +600,20 @@ class Manager(object):
         __mode = kwargs.get("__mode", None)
         __socket = kwargs.get("__socket", None)
 
-        self._task = greenlet(self._run)
-        self._task.switch(log, __mode, __socket)
+
+        if GREENLET:
+            self._task = greenlet(self._run)
+            self._task.switch(log, __mode, __socket)
+        else:
+            self._run(log, __mode, __socket)
 
     def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":
-            if os.name == "posix":
-                _registerSignalHandler(SIGHUP, self._signalHandler)
             try:
-                _registerSignalHandler(SIGINT, self._signalHandler)
-                _registerSignalHandler(SIGTERM, self._signalHandler)
+                signal(SIGINT,  self._signalHandler)
+                signal(SIGTERM, self._signalHandler)
             except ValueError:
-                pass # Ignore if we can't install signal handlers
+                pass  # Ignore if we can't install signal handlers
 
         if __socket is not None:
             from circuits.core.bridge import Bridge
@@ -660,7 +631,8 @@ class Manager(object):
                 self.tick()
         finally:
             if __socket is not None:
-                while bridge or manager: pass
+                while bridge or manager:
+                    self.tick()
                 manager.stop()
                 bridge.stop()
             self.stop()

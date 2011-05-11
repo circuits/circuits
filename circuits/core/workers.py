@@ -8,7 +8,7 @@ Worker components used to perform "work" in independent threads or
 processes. Worker(s) are typically used by a Pool (circuits.core.pools)
 to create a pool of workers. Worker(s) are not registered with a Manager
 or another Component - instead they are managed by the Pool. If a Worker
-is used independently it should not be registered as it causes it's
+is used independently it should not be registered as it causes its
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
@@ -47,7 +47,7 @@ class Worker(BaseComponent):
 
     This Component creates a Worker (either a thread or process) which
     when given a ``Task``, will execute the given function in the task
-    in the background in it's thread/process.
+    in the background in its thread/process.
 
     :param process: True to start this Worker as a process (Thread otherwise)
     :type process: bool

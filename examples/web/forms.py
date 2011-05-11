@@ -13,7 +13,7 @@ class Root(Controller):
   <h1>Basic Form Handling</h1>
   <p>
    Example of using
-   <a href="http://trac.softcircuit.com.au/circuits/">circuits</a> and it's
+   <a href="http://trac.softcircuit.com.au/circuits/">circuits</a> and its
    <b>Web Components</b> to build a simple web application that handles
    some basic form data.
   </p>
