@@ -461,7 +461,7 @@ class Manager(object):
     def callEvent(self, event, channel=None, target=None):
         self.fire(event, channel, target)
         e = self.waitEvent(event)
-        return e.value.value
+        return e.value
 
     call = callEvent
 
