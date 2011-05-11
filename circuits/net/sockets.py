@@ -785,10 +785,12 @@ class UDPServer(Server):
 
     @handler("close", override=True)
     def close(self):
-        if self._sock not in self._closeq:
-            self._closeq.append(self._sock)
-
         self.push(Closed(), "closed", self.channel)
+
+        if self._buffers[self._sock] and self._sock not in self._closeq:
+            self._closeq.append(self._sock)
+        else:
+            self._close(self._sock)
 
     def _read(self):
         try:
@@ -799,6 +801,7 @@ class UDPServer(Server):
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
             self.push(Error(self._sock, e), "error", self.channel)
+            print "Closing socket... (1)"
             self._close(self._sock)
 
     def _write(self, address, data):
@@ -808,6 +811,7 @@ class UDPServer(Server):
                 self._buffers[self._sock].appendleft(data[bytes:])
         except SocketError as e:
             if e.args[0] in (EPIPE, ENOTCONN):
+                print "Closing socket... (2)"
                 self._close(self._sock)
             else:
                 self.push(Error(self._sock, e), "error", self.channel)
@@ -824,6 +828,7 @@ class UDPServer(Server):
 
     @handler("_disconnect", filter=True, override=True)
     def _on_disconnect(self, sock):
+        print "Closing socket... (3)"
         self._close(sock)
 
     @handler("_read", filter=True, override=True)
