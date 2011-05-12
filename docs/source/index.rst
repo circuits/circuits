@@ -18,6 +18,7 @@ Contents
    api/index
    dev/index
    roadmap
+   contributors
    users
    faq
 
