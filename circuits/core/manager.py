@@ -493,8 +493,12 @@ class Manager(object):
 
         for handler in self._getHandlers(channel):
             error = None
-
-            attrs = self._handlerattrs[handler]
+            try:
+                attrs = self._handlerattrs[handler]
+            except KeyError:
+                # When unregistering components, handler may disappear
+                # so we skip those handlers
+                continue
             event.handler = handler
 
             try:
