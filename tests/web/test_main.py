@@ -5,7 +5,7 @@ from threading import Thread
 from errno import ECONNREFUSED
 from subprocess import Popen, PIPE
 
-from .helpers import  urlopen, URLError
+from .helpers import urlopen, URLError, HTTPError
 
 SERVER_CMD = ["python", "-m", "circuits.web.main"]
 
@@ -34,6 +34,8 @@ def test():
     for _ in range(3):
         try:
             f = urlopen("http://127.0.0.1:8000/hello")
+        except HTTPError as e:
+            raise AssertionError(e)
         except URLError as e:
             if e.args[0][0] == ECONNREFUSED:
                 sleep(1)
