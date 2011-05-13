@@ -141,8 +141,8 @@ class BaseComponent(Manager):
         return self
 
     @handler('unregister')
-    def on_unregister(self, component):
-        if component == self:
+    def on_unregister(self, component=None):
+        if component == self or component == None:
             self.unregister()
 
     def unregister(self):
