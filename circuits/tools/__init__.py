@@ -11,6 +11,7 @@ tools are installed as executables with a prefix of "circuits."
 from hashlib import md5
 from warnings import warn
 
+from circuits.core.events import Unregister
 
 def tryimport(modules, message=None):
     if isinstance(modules, str):
@@ -57,7 +58,7 @@ def kill(x):
     for c in x.components.copy():
         kill(c)
     if x.manager != x:
-        x.unregister()
+        x.fire(Unregister(x), target=x.channel)
 
 
 def graph(x, name=None):
