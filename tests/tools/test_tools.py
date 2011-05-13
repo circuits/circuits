@@ -72,9 +72,11 @@ INSPECT = """\
  Registered Components: 0
 
  Tick Functions: 1
-  <bound method A.__tick__ of <A/* %s (queued=0, channels=1, handlers=1) [S]>>
+  <bound method A.__tick__ of <A/* %s (queued=0, channels=2, handlers=2) [S]>>
 
- Channels and Event Handlers: 1
+ Channels and Event Handlers: 2
+  *:unregister; 1
+   <listener on ('unregister',) {target='*', priority=0.0}>
   *:foo; 1
    <listener on ('foo',) {target='*', priority=0.0}>
 """
