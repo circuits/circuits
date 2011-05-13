@@ -341,12 +341,12 @@ class Manager(object):
 
             (target, channel) = channel
 
-            if target in self._tmap and handler in self._tmap:
+            if target in self._tmap and handler in self._tmap[target]:
                 self._tmap[target].remove(handler)
                 if not self._tmap[target]:
                     del self._tmap[target]
 
-            if channel in self._cmap and handler in self._cmap:
+            if channel in self._cmap and handler in self._cmap[channel]:
                 self._cmap[channel].remove(handler)
                 if not self._cmap[channel]:
                     del self._cmap[channel]
