@@ -13,7 +13,7 @@ from inspect import getmembers
 
 from .utils import findroot
 from .manager import Manager
-from .handlers import HandlerMetaClass
+from .handlers import HandlerMetaClass, handler
 from .events import Registered, Unregistered
 import collections
 
@@ -140,6 +140,11 @@ class BaseComponent(Manager):
 
         return self
 
+    @handler('unregister')
+    def on_unregister(self, component):
+        if component == self:
+            self.unregister()
+
     def unregister(self):
         """Unregister all registered Event Handlers
         
@@ -148,7 +153,6 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
-
         def _unregister(c, m, r):
             c._unregisterHandlers(m)
             c.root = self
