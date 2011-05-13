@@ -315,6 +315,20 @@ class Registered(Event):
 
         super(Registered, self).__init__(component, manager)
 
+
+class Unregister(Event):
+    """Unregister Event
+
+    This Event ask for a Component to unregister from its
+    Component or Manager.
+    """
+
+    def __init__(self, component):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(Unregister, self).__init__(component)
+
+
 class Unregistered(Event):
     """Unregistered Event
 
