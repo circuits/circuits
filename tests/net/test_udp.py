@@ -67,8 +67,7 @@ def test_udp(Poller):
         m.stop()
 
 def test_udp_close(Poller):
-    from circuits import Debugger
-    m = Manager() + Poller() + Debugger()
+    m = Manager() + Poller()
     server = Server() + UDPServer(0)
     server.register(m)
     m.start()
@@ -81,7 +80,7 @@ def test_udp_close(Poller):
         server.fire(Close())
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Unregister())
+        server.fire(Unregister(server))
 
         server = Server() + UDPServer((host, port))
         server.register(m)
