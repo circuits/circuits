@@ -7,6 +7,7 @@ import pytest
 from circuits import Manager
 from circuits.tools import kill
 from circuits.core.pollers import Select
+from circuits.core.events import Unregister
 from circuits.net.sockets import Close, Write
 from circuits.net.sockets import UDPServer, UDPClient
 
@@ -80,7 +81,7 @@ def test_udp_close(Poller):
         server.fire(Close())
         assert pytest.wait_for(server, "disconnected")
 
-        kill(server) # FIXME: This fails :/
+        server.fire(Unregister())
 
         server = Server() + UDPServer((host, port))
         server.register(m)
