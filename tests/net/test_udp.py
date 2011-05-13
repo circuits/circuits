@@ -68,19 +68,21 @@ def test_udp(Poller):
 def test_udp_close(Poller):
     from circuits import Debugger
     m = Manager() + Poller() + Debugger()
-    server = Server() + UDPServer(2345)
+    server = Server() + UDPServer(0)
     server.register(m)
     m.start()
 
     try:
         assert pytest.wait_for(server, "ready")
 
+        host, port = server.host, server.port
+
         server.push(Close())
         assert pytest.wait_for(server, "disconnected")
 
         kill(server) # FIXME: This fails :/
 
-        server = Server() + UDPServer(2345)
+        server = Server() + UDPServer((host, port))
         server.register(m)
 
         assert pytest.wait_for(server, "ready")
