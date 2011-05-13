@@ -323,7 +323,7 @@ class Unregister(Event):
     Component or Manager.
     """
 
-    def __init__(self, component):
+    def __init__(self, component=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Unregister, self).__init__(component)
