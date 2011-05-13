@@ -98,7 +98,7 @@ class BaseComponent(Manager):
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():
-            manager.remove(handler)
+            manager.removeHandler(handler)
 
     def register(self, manager):
         """Register all Event Handlers with the given Manager
