@@ -58,7 +58,7 @@ def kill(x):
     for c in x.components.copy():
         kill(c)
     if x.manager != x:
-        x.fire(Unregister(x), target=x.channel)
+        x.unregister()
 
 
 def graph(x, name=None):
