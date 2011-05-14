@@ -163,8 +163,8 @@ class BaseComponent(Manager):
                 if m is not r:
                     r._ticks.remove(getattr(c, "__tick__"))
 
-            for x in c.components.copy():
-                x.unregister()
+            for x in c.components:
+                _unregister(x, m, r)
 
         self.fire(Unregistered(self, self.manager), target=self)
 
