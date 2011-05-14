@@ -31,6 +31,8 @@ def test():
 
     sleep(1)
 
+    f = None
+
     for _ in range(3):
         try:
             f = urlopen("http://127.0.0.1:8000/hello")
@@ -41,6 +43,8 @@ def test():
                 sleep(1)
             else:
                 raise AssertionError(e)
+
+    assert f
 
     s = f.read()
     assert s == b"Hello World!"
