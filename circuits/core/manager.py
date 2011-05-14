@@ -491,15 +491,13 @@ class Manager(object):
         retval = None
         handler = None
 
-        for handler in self._getHandlers(channel):
+        handlers = self._getHandlers(channel)
+        handlerattrs = self._handlerattrs.copy()
+
+        for handler in handlers[:]:
             error = None
-            try:
-                attrs = self._handlerattrs[handler]
-            except KeyError:
-                # When unregistering components, handler may disappear
-                # so we skip those handlers
-                continue
             event.handler = handler
+            attrs = handlerattrs[handler]
 
             try:
                 if attrs["event"]:
