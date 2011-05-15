@@ -4,7 +4,15 @@
 
 """Futures
 
-...
+circuits supports the concept of "future" events. In circuits futures are
+event handlers that are specially designed to be run in the background
+either in a Thread or a Process. If you have event handlers that may
+potentially "block" then wrapping them by the @future decorator unblocks
+the bottle-neck caused by the "blocking" event handler(s).
+
+Support for using a Thread or Process pool is also supported by specifying
+an optional `pool` keyword argument and supplying an instance to a
+``circuits.core.pool.Pool`.
 """
 
 from uuid import uuid4 as uuid
