@@ -86,7 +86,7 @@ class Startup(BaseComponent):
     @handler("start")
     def _on_start(self):
         if self.opts.daemon:
-            pidfile = self.env.config.get("general", "pidfile", "dap.pid")
+            pidfile = self.env.config.get("general", "pidfile", "app.pid")
             Daemon(pidfile, self.env.path).register(self)
 
     @handler("stop")
