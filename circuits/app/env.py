@@ -75,7 +75,7 @@ class Load(EnvironmentEvent):
 
 
 class Verify(EnvironmentEvent):
-    """Verify EEnvironment Event"""
+    """Verify Environment Event"""
 
     success = "verify_success", EnvironmentEvent._target
     failure = "verify_failure", EnvironmentEvent._target
