@@ -5,7 +5,7 @@
 """Daemon Component
 
 Component to daemonizae a system into the background and detach it from its
-controlling PTY. Supports pid file writing, logging stdin, stdout and stderr
+controlling PTY. Supports PID file writing, logging stdin, stdout and stderr
 and changing the current working directory.
 """
 
