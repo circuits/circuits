@@ -4,7 +4,7 @@
 
 """Events
 
-This module define the basic Event object and commmon events.
+This module define the basic Event object and common events.
 """
 
 class Event(object):
@@ -27,7 +27,7 @@ class Event(object):
     :param args: list of arguments
     :type  args: tuple
 
-    :param kwargs: dct of keyword arguments
+    :param kwargs: dict of keyword arguments
     :type  kwargs: dict
     """
 
@@ -169,16 +169,16 @@ class Success(Event):
 class Failure(Event):
     """Failure Event
 
-    This Event is sent when an error has occured with the execution of an
+    This Event is sent when an error has occurred with the execution of an
     Event Handlers.
 
-    :param evt: The event that failued
+    :param evt: The event that failed
     :type  evt: Event
 
     :param handler: The handler that failed
     :type  handler: @handler
 
-    :param error: A tuple containing the exception that occured
+    :param error: A tuple containing the exception that occurred
     :type  error: (etype, evalue, traceback)
     """
 
