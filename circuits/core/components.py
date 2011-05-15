@@ -4,7 +4,7 @@
 
 """Components
 
-This module definse the BaseComponent and the subclassed Component
+This module defines the BaseComponent and the subclass Component
 """
 
 from itertools import chain
@@ -107,9 +107,9 @@ class BaseComponent(Manager):
         given Manager. By default, every Component (Base Component) is
         registered with itself.
         
-        Iif the Component or Manager being registered
+        If the Component or Manager being registered
         with is not the current Component, then any Hidden Components
-        in registered to this Component will also be regsitered with the
+        in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
 
