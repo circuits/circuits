@@ -45,11 +45,11 @@ class Test(Component):
         return x.value
 
     def bar(self):
-        self.push(BarDone())
+        self.fire(BarDone())
         return "Foobar!"
 
     def bar2(self):
-        self.push(BarDone())
+        self.fire(BarDone())
         return
 
 

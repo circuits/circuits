@@ -11,7 +11,7 @@ class Pound(Component):
         self.fred = Fred().register(self)
 
     def started(self, *args):
-        self.push(Event(), "woof", self.bob)
+        self.push(Event(), self.bob, "woof")
 
 class Dog(Component):
 

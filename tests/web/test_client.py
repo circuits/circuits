@@ -13,10 +13,10 @@ def test(webapp):
     client = Client(webapp.server.base)
     client.start()
 
-    client.push(Connect())
+    client.fire(Connect())
     assert pytest.wait_event(client, 'connected', target='client')
 
-    client.push(Request("GET", "/"))
+    client.fire(Request("GET", "/"))
     while client.response is None: pass
 
     client.stop()

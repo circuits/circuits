@@ -480,7 +480,7 @@ class Manager(object):
 
     wait = waitEvent
 
-    def callEvent(self, event, channel=None, target=None):
+    def callEvent(self, event, target=None, channel=None):
         self.fire(event, target, channel)
         e = self.waitEvent(event)
         return e.value
@@ -541,7 +541,7 @@ class Manager(object):
                 if event.failure is not None:
                     self.push(Failure(event, handler, error), *event.failure)
                 else:
-                    self.push(Error(etype, evalue, traceback, handler))
+                    self.fire(Error(etype, evalue, traceback, handler))
 
             if retval and attrs["filter"]:
                 if event.filter is not None:

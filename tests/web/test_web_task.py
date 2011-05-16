@@ -14,7 +14,7 @@ class Hello(Event):
 class Root(Controller):
 
     def index(self):
-        return self.push(Hello(os.getpid()))
+        return self.fire(Hello(os.getpid()))
 
 class Task(Component):
 

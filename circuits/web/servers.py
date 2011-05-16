@@ -163,9 +163,9 @@ class StdinServer(BaseComponent):
 
     @handler("read", target="stdin")
     def read(self, data):
-        self.push(Read(FakeSock(), data), "read", self.channel)
+        self.fire(Read(FakeSock(), data), self.channel)
 
     @handler("write")
     def write(self, sock, data):
-        self.push(Write(data), "write", "stdout")
+        self.fire(Write(data), "stdout")
 

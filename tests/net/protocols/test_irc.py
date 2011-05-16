@@ -91,7 +91,7 @@ def test_sourceSplit():
 def test_PASS(app):
     app.reset()
 
-    app.push(PASS("secret"))
+    app.fire(PASS("secret"))
     while app:
         app.flush()
 
@@ -118,7 +118,7 @@ def test_PASS(app):
 def test_USER(app):
     app.reset()
 
-    app.push(USER("foo", "localhost", "localhost", "Test Client"))
+    app.fire(USER("foo", "localhost", "localhost", "Test Client"))
     while app:
         app.flush()
 
@@ -148,7 +148,7 @@ def test_USER(app):
 def test_NICK(app):
     app.reset()
 
-    app.push(NICK("test"))
+    app.fire(NICK("test"))
     while app:
         app.flush()
 
@@ -175,7 +175,7 @@ def test_NICK(app):
 def test_PING(app):
     app.reset()
 
-    app.push(PING("localhost"))
+    app.fire(PING("localhost"))
     while app:
         app.flush()
 
@@ -202,7 +202,7 @@ def test_PING(app):
 def test_PONG(app):
     app.reset()
 
-    app.push(PONG("localhost"))
+    app.fire(PONG("localhost"))
     while app:
         app.flush()
 
@@ -229,7 +229,7 @@ def test_PONG(app):
 def test_QUIT(app):
     app.reset()
 
-    app.push(QUIT())
+    app.fire(QUIT())
     while app:
         app.flush()
 
@@ -254,7 +254,7 @@ def test_QUIT(app):
 
     app.reset()
 
-    app.push(QUIT("Test"))
+    app.fire(QUIT("Test"))
     while app:
         app.flush()
 
@@ -281,7 +281,7 @@ def test_QUIT(app):
 def test_JOIN(app):
     app.reset()
 
-    app.push(JOIN("#test"))
+    app.fire(JOIN("#test"))
     while app:
         app.flush()
 
@@ -306,7 +306,7 @@ def test_JOIN(app):
 
     app.reset()
 
-    app.push(JOIN("#test", "secret"))
+    app.fire(JOIN("#test", "secret"))
     while app:
         app.flush()
 
@@ -334,7 +334,7 @@ def test_JOIN(app):
 def test_PART(app):
     app.reset()
 
-    app.push(PART("#test"))
+    app.fire(PART("#test"))
     while app:
         app.flush()
 
@@ -359,7 +359,7 @@ def test_PART(app):
 
     app.reset()
 
-    app.push(PART("#test", "Test"))
+    app.fire(PART("#test", "Test"))
     while app:
         app.flush()
 
@@ -387,7 +387,7 @@ def test_PART(app):
 def test_PRIVMSG(app):
     app.reset()
 
-    app.push(PRIVMSG("test", "Hello"))
+    app.fire(PRIVMSG("test", "Hello"))
     while app:
         app.flush()
 
@@ -415,7 +415,7 @@ def test_PRIVMSG(app):
 def test_NOTICE(app):
     app.reset()
 
-    app.push(NOTICE("test", "Hello"))
+    app.fire(NOTICE("test", "Hello"))
     while app:
         app.flush()
 
@@ -443,7 +443,7 @@ def test_NOTICE(app):
 def test_CTCP(app):
     app.reset()
 
-    app.push(CTCP("test", "PING", "1234567890"))
+    app.fire(CTCP("test", "PING", "1234567890"))
     while app:
         app.flush()
 
@@ -477,7 +477,7 @@ def test_CTCP(app):
 def test_CTCPREPLY(app):
     app.reset()
 
-    app.push(CTCPREPLY("test", "PING", "1234567890"))
+    app.fire(CTCPREPLY("test", "PING", "1234567890"))
     while app:
         app.flush()
 
@@ -511,7 +511,7 @@ def test_CTCPREPLY(app):
 def test_KICK(app):
     app.reset()
 
-    app.push(KICK("#test", "test"))
+    app.fire(KICK("#test", "test"))
     while app:
         app.flush()
 
@@ -537,7 +537,7 @@ def test_KICK(app):
 
     app.reset()
 
-    app.push(KICK("#test", "test", "Bye"))
+    app.fire(KICK("#test", "test", "Bye"))
     while app:
         app.flush()
 
@@ -566,7 +566,7 @@ def test_KICK(app):
 def test_TOPIC(app):
     app.reset()
 
-    app.push(TOPIC("#test", "Hello World!"))
+    app.fire(TOPIC("#test", "Hello World!"))
     while app:
         app.flush()
 
@@ -594,7 +594,7 @@ def test_TOPIC(app):
 def test_MODE(app):
     app.reset()
 
-    app.push(MODE("+i"))
+    app.fire(MODE("+i"))
     while app:
         app.flush()
 
@@ -619,7 +619,7 @@ def test_MODE(app):
 
     app.reset()
 
-    app.push(MODE("+o test", "#test"))
+    app.fire(MODE("+o test", "#test"))
     while app:
         app.flush()
 
@@ -647,7 +647,7 @@ def test_MODE(app):
 def test_INVITE(app):
     app.reset()
 
-    app.push(INVITE("test", "#test"))
+    app.fire(INVITE("test", "#test"))
     while app:
         app.flush()
 
@@ -675,7 +675,7 @@ def test_INVITE(app):
 def test_NAMES(app):
     app.reset()
 
-    app.push(NAMES())
+    app.fire(NAMES())
     while app:
         app.flush()
 
@@ -700,7 +700,7 @@ def test_NAMES(app):
 
     app.reset()
 
-    app.push(NAMES("#test"))
+    app.fire(NAMES("#test"))
     while app:
         app.flush()
 
@@ -731,7 +731,7 @@ def test_NAMES(app):
 def test_ping(app):
     app.reset()
 
-    app.push(Read(b"PING :localhost\r\n"))
+    app.fire(Read(b"PING :localhost\r\n"))
     while app:
         app.flush()
 
@@ -770,7 +770,7 @@ def test_ping(app):
 def test_numerics(app):
     app.reset()
 
-    app.push(Read(b":localhost 001 test " +
+    app.fire(Read(b":localhost 001 test " +
         b":Welcome to the circuits Internet Relay Chat Network test\r\n"))
     while app:
         app.flush()
@@ -798,7 +798,7 @@ def test_numerics(app):
 
     app.reset()
 
-    app.push(Read(b":localhost 332 test #test :Hello World!\r\n"))
+    app.fire(Read(b":localhost 332 test #test :Hello World!\r\n"))
     while app:
         app.flush()
 
@@ -824,7 +824,7 @@ def test_numerics(app):
 def test_ctcp(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost PRIVMSG test :TIME\r\n"))
+    app.fire(Read(b":test!foo@localhost PRIVMSG test :TIME\r\n"))
     while app:
         app.flush()
 
@@ -849,7 +849,7 @@ def test_ctcp(app):
 def test_message(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost PRIVMSG test :Hello\r\n"))
+    app.fire(Read(b":test!foo@localhost PRIVMSG test :Hello\r\n"))
     while app:
         app.flush()
 
@@ -873,7 +873,7 @@ def test_message(app):
 def test_notice(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost NOTICE test :Hello\r\n"))
+    app.fire(Read(b":test!foo@localhost NOTICE test :Hello\r\n"))
     while app:
         app.flush()
 
@@ -897,7 +897,7 @@ def test_notice(app):
 def test_join(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost JOIN #test\r\n"))
+    app.fire(Read(b":test!foo@localhost JOIN #test\r\n"))
     while app:
         app.flush()
 
@@ -920,7 +920,7 @@ def test_join(app):
 def test_part(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost PART #test :Leaving\r\n"))
+    app.fire(Read(b":test!foo@localhost PART #test :Leaving\r\n"))
     while app:
         app.flush()
 
@@ -944,7 +944,7 @@ def test_part(app):
 def test_quit(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost QUIT :Leaving\r\n"))
+    app.fire(Read(b":test!foo@localhost QUIT :Leaving\r\n"))
     while app:
         app.flush()
 
@@ -967,7 +967,7 @@ def test_quit(app):
 def test_nick(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost NICK :test_\r\n"))
+    app.fire(Read(b":test!foo@localhost NICK :test_\r\n"))
     while app:
         app.flush()
 
@@ -990,7 +990,7 @@ def test_nick(app):
 def test_mode(app):
     app.reset()
 
-    app.push(Read(b":test!foo@localhost MODE #test +o test\r\n"))
+    app.fire(Read(b":test!foo@localhost MODE #test +o test\r\n"))
     while app:
         app.flush()
 
