@@ -28,7 +28,8 @@ def setupwebapp(request):
 
             self.server = Server(0).register(self)
 
-    webapp = WebApp()
+    from circuits import Debugger
+    webapp = WebApp() + Debugger()
 
     if hasattr(request.module, "application"):
         from circuits.web.wsgi import Gateway

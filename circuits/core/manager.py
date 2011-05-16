@@ -52,6 +52,7 @@ class Manager(object):
         self._handlers = set()
         self._handlerattrs = dict()
         self._handler_cache = dict()
+        self._components = dict()
 
         self._ticks = set()
 
@@ -167,6 +168,7 @@ class Manager(object):
         target, channel = _channel
 
         get = self.channels.get
+        comp_map = self._components.get
         tmap = self._tmap.get
         cmap = self._cmap.get
 
@@ -179,7 +181,10 @@ class Manager(object):
 
         # This channel on all targets
         if channel == "*":
-            handlers.extend(tmap(target, []))
+            if isinstance(target, Manager):
+                handlers.extend(tmap(id(target), []))
+            else:
+                handlers.extend(tmap(target, []))
             handlers.sort(key=_sortkey, reverse=True)
             self._handler_cache[_channel] = handlers
             return handlers
@@ -198,7 +203,10 @@ class Manager(object):
         handlers.extend(get((channel, "*"), []))
 
         # The actual channel and target
-        handlers.extend(get(_channel, []))
+        if isinstance(target, Manager):
+            handlers.extend(comp_map((target, channel), []))
+        else:
+            handlers.extend(get(_channel, []))
 
         handlers.sort(key=_sortkey, reverse=True)
         self._handler_cache[_channel] = handlers
@@ -280,6 +288,14 @@ class Manager(object):
             for channel in channels:
                 self._handlers.add(handler)
 
+                if (handler.im_self, channel) not in self._components:
+                    self._components[(handler.im_self, channel)] = []
+
+                if handler not in self._components[(handler.im_self, channel)]:
+                    self._components[(handler.im_self, channel)].append(handler)
+                    self._components[(handler.im_self, channel)].sort(
+                        key=_sortkey, reverse=True)
+
                 if (target, channel) not in self.channels:
                     self.channels[(target, channel)] = []
 
@@ -341,6 +357,12 @@ class Manager(object):
 
             (target, channel) = channel
 
+            if (handler.im_self, channel) in self._components:
+                if handler in self._components[(handler.im_self, channel)]:
+                    self._components[(handler.im_self, channel)].remove(handler)
+                if not self._components[(handler.im_self, channel)]:
+                    del self._components[(handler.im_self, channel)]
+
             if target in self._tmap and handler in self._tmap[target]:
                 self._tmap[target].remove(handler)
                 if not self._tmap[target]:
@@ -365,7 +387,7 @@ class Manager(object):
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def fireEvent(self, event, channel=None, target=None):
+    def fireEvent(self, event, target=None, channel=None):
         """Fire/Push a new Event into the system (queue)
 
         This will push the given Event, Channel and Target onto the
@@ -397,7 +419,7 @@ class Manager(object):
             channel = channel or event.channel or event.name.lower()
 
         if isinstance(target, Manager):
-            target = getattr(target, "channel", "*")
+            target = target
         else:
             target = target or event.target or getattr(self, "channel", "*")
 
@@ -406,7 +428,7 @@ class Manager(object):
         event.value = Value(event, self)
 
         if event.start is not None:
-            self.fire(Start(event), *event.start)
+            self.push(Start(event), *event.start)
 
         self.root._fire(event, (target, channel))
 
@@ -414,7 +436,7 @@ class Manager(object):
 
     fire = fireEvent
 
-    def push(self, *args, **kwargs):
+    def push(self, event, channel=None, target=None):
         """Deprecated in 1.6
 
         .. deprecated:: 1.6
@@ -423,7 +445,7 @@ class Manager(object):
 
         warn(DeprecationWarning("Use .fire(...) instead"))
 
-        return self.fire(*args, **kwargs)
+        return self.fire(event, target, channel)
 
     def registerTask(self, g):
         self._tasks.add(g)
@@ -459,7 +481,7 @@ class Manager(object):
     wait = waitEvent
 
     def callEvent(self, event, channel=None, target=None):
-        self.fire(event, channel, target)
+        self.fire(event, target, channel)
         e = self.waitEvent(event)
         return e.value
 
@@ -517,20 +539,20 @@ class Manager(object):
                 event.value.value = error
 
                 if event.failure is not None:
-                    self.fire(Failure(event, handler, error), *event.failure)
+                    self.push(Failure(event, handler, error), *event.failure)
                 else:
-                    self.fire(Error(etype, evalue, traceback, handler))
+                    self.push(Error(etype, evalue, traceback, handler))
 
             if retval and attrs["filter"]:
                 if event.filter is not None:
-                    self.fire(Filter(event, handler, retval), *event.filter)
+                    self.push(Filter(event, handler, retval), *event.filter)
                 return  # Filter
 
             if error is None and event.success is not None:
-                self.fire(Success(event, handler, retval), *event.success)
+                self.push(Success(event, handler, retval), *event.success)
 
         if event.end is not None:
-            self.fire(End(event, handler, retval), *event.end)
+            self.push(End(event, handler, retval), *event.end)
 
         if GREENLET:
             for task in self._tasks.copy():
