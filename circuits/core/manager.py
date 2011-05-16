@@ -414,14 +414,16 @@ class Manager(object):
                 target, channel = event.channel
             else:
                 channel = event.channel or event.name.lower()
-                target = event.target or None
-        else:
-            channel = channel or event.channel or event.name.lower()
-
-        if isinstance(target, Manager):
-            target = target
-        else:
-            target = target or event.target or getattr(self, "channel", "*")
+                target = event.target or self
+        elif '.' in target:
+            if target[-1] == '.':
+                channel = channel or event.channel or event.name.lower()
+                target = target[:-1]
+            else:
+                target, channel = target.split('.')
+        elif channel is None:
+            channel = target
+            target = self
 
         event.channel = (target, channel)
 
