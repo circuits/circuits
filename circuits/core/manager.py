@@ -252,16 +252,14 @@ class Manager(BaseManager):
                 handlers.update(tmap(id(target), []))
             else:
                 handlers.update(tmap(target, []))
-            handlers = list(handlers)
-            handlers.sort(key=_sortkey, reverse=True)
+            handlers = sorted(handlers, key=_sortkey, reverse=True)
             self._handler_cache[_channel] = handlers
             return handlers
 
         # Every channel on this target
         if target == "*":
             handlers.update(cmap(channel, []))
-            handlers = list(handlers)
-            handlers.sort(key=_sortkey, reverse=True)
+            handlers = sorted(handlers, key=_sortkey, reverse=True)
             self._handler_cache[_channel] = handlers
             return handlers
 
@@ -277,8 +275,7 @@ class Manager(BaseManager):
         else:
             handlers.update(get(_channel, []))
 
-        handlers = list(handlers)
-        handlers.sort(key=_sortkey, reverse=True)
+        handlers = sorted(handlers, key=_sortkey, reverse=True)
         self._handler_cache[_channel] = handlers
         return handlers
 
