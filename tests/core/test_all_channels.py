@@ -7,7 +7,7 @@
 Test that events can be sent to all channels.
 """
 
-from circuits import Event, Component, Manager
+from circuits import Event, Component, Manager, Debugger
 
 class Base(Component):
 
@@ -20,7 +20,7 @@ class Base(Component):
         self.flag = True
 
 def test():
-    m = Manager()
+    m = Manager() + Debugger()
     a = Base(channel="a")
     b = Base(channel="b")
     c = Base()
