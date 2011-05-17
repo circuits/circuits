@@ -19,9 +19,6 @@ def handler(*channels, **kwargs):
     of the Event Handler defaults to "listener". If kwargs["filter"]
     is defined and is True, the Event Handler is defined as a
     Filter and has priority over Listener Event Handlers.
-    If kwargs["target"] is defined and is not None, the
-    Event Handler will listen for the spcified channels on the
-    spcified Target Component's Channel.
     
     Examples:
        >>> @handler("foo")
@@ -33,9 +30,6 @@ def handler(*channels, **kwargs):
        >>> @handler("foo", "bar")
        ... def foobar():
        ...     pass
-       >>> @handler("x", target="other")
-       ... def x():
-       ...     pass
     """
 
     def wrapper(f):
@@ -46,7 +40,6 @@ def handler(*channels, **kwargs):
         f.handler = True
 
         f.channels = channels
-        f.target = kwargs.get("target", None)
         f.filter = kwargs.get("filter", False)
         f.priority = kwargs.get("priority", 0)
         f.override = kwargs.get("override", False)

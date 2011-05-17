@@ -35,7 +35,7 @@ def test_basic():
     app = App()
     app.register(m)
 
-    assert app.test in m.channels.get(("*", "test"), [])
+    assert app.test in m._channels.get("*.test", [])
 
     app.unregister()
 

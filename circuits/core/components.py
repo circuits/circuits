@@ -10,12 +10,12 @@ This module defines the BaseComponent and the subclass Component
 from itertools import chain
 from types import MethodType
 from inspect import getmembers
+from collections import Callable
 
 from .utils import findroot
 from .manager import Manager
 from .handlers import HandlerMetaClass, handler
 from .events import Registered, Unregistered
-import collections
 
 class BaseComponent(Manager):
     """Base Component
@@ -25,17 +25,6 @@ class BaseComponent(Manager):
     unique Channel that is used as a separation of concern for its registered
     Event Handlers. By default, this Channels is None (or also known as the
     Global Channel).
-
-    When a Component (Base Component) has a set Channel that is not the Global
-    Channel (None), then any Event Handlers will actually listen on a Channel
-    that is a combination of the Component's Channel prefixed with the Event
-    Handler's Channel. The form becomes:
-
-    C{target:channel}
-
-    Where:
-       - target is the Component's Channel
-       - channel is the Event Handler's Channel
 
     :ivar channel: The Component's Channel
     """
@@ -53,7 +42,7 @@ class BaseComponent(Manager):
         for base in cls.__bases__:
             if issubclass(cls, base):
                 for k, v in list(base.__dict__.items()):
-                    p1 = isinstance(v, collections.Callable)
+                    p1 = isinstance(v, Callable)
                     p2 = getattr(v, "handler", False)
                     p3 = overridden(k)
                     if p1 and p2 and not p3:
@@ -69,36 +58,21 @@ class BaseComponent(Manager):
         super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
-        self._registerHandlers()
+        self._register_handlers()
         self.manager = self
 
         for k, v in getmembers(self):
             if isinstance(v, BaseComponent):
                 v.register(self)
 
-    def _registerHandlers(self, manager=None):
-        if manager is None:
-            p = lambda x: isinstance(x, collections.Callable) and getattr(x, "handler", False)
-            handlers = [v for k, v in getmembers(self, p)]
-            for handler in handlers:
-                target = handler.target or getattr(self, "channel", "*")
-                self.add(handler, target=target)
-        else:
-            for handler in chain(self._globals, self._handlers):
-                kwargs = {}
-                kwargs = self._handlerattrs[handler]
-                if not kwargs.get("target"):
-                    kwargs["target"] = getattr(self, "channel", "*")
-                if "channels" in kwargs:
-                    channels = kwargs["channels"]
-                    del kwargs["channels"]
-                else:
-                    channels = ()
-                manager.add(handler, *channels, **kwargs)
+    def _register_handlers(self):
+        p = lambda x: isinstance(x, Callable) and getattr(x, "handler", False)
+        handlers = [v for k, v in getmembers(self, p)]
+        for handler in handlers:
+            self.handlers.add(handler)
 
-    def _unregisterHandlers(self, manager):
-        for handler in self._handlers.copy():
-            manager.removeHandler(handler)
+    def _unregister_handlers(self):
+        self.handlers.clear()
 
     def register(self, manager):
         """Register all Event Handlers with the given Manager
@@ -114,13 +88,11 @@ class BaseComponent(Manager):
         """
 
         def _register(c, m, r):
-            c._registerHandlers(m)
             c.root = r
             if c._queue:
                 m._queue.extend(list(c._queue))
                 c._queue.clear()
             if m is not r:
-                c._registerHandlers(r)
                 if m._queue:
                     r._queue.extend(list(m._queue))
                     m._queue.clear()
@@ -153,11 +125,9 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
+
         def _unregister(c, m, r):
-            c._unregisterHandlers(m)
             c.root = self
-            if m is not r:
-                c._unregisterHandlers(r)
             if hasattr(c, "__tick__"):
                 m._ticks.remove(getattr(c, "__tick__"))
                 if m is not r:
@@ -180,4 +150,3 @@ class BaseComponent(Manager):
         return self
 
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
-

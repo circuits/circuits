@@ -15,7 +15,6 @@ class Event(object):
 
     :ivar name:    The name of the Event
     :ivar channel: The channel this Event is bound for
-    :ivar target:  The target Component this Event is bound for
     :ivar success: An optional channel to use for Event Handler success
     :ivar failure: An optional channel to use for Event Handler failure
     :ivar filter: An optional channel to use if an Event is filtered
@@ -32,7 +31,6 @@ class Event(object):
     """
 
     channel = None
-    target = None
 
     success = None
     failure = None
@@ -51,7 +49,7 @@ class Event(object):
         self.handler = None
 
     def __getstate__(self):
-        keys = ("args", "kwargs", "channel", "target", "success", "failure",
+        keys = ("args", "kwargs", "channel", "success", "failure",
                 "filter", "start", "end", "value", "source")
         return dict([(k, getattr(self, k, None)) for k in keys])
 
@@ -64,7 +62,7 @@ class Event(object):
 
         Tests the equality of Event self against Event y.
         Two Events are considered "equal" iif the name,
-        channel and target are identical as well as their
+        channel are identical as well as their
         args and kwargs passed.
         """
 
@@ -76,11 +74,12 @@ class Event(object):
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        if type(self.channel) is tuple:
-            channel = "%s:%s" % self.channel
-        else:
-            channel = self.channel or ""
-        return "<%s[%s] %s %s>" % (self.name, channel, self.args, self.kwargs)
+        return "<%s[%s] %s %s>" % (
+                self.name,
+                self.channel,
+                self.args,
+                self.kwargs,
+        )
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]

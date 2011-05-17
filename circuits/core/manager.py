@@ -9,10 +9,10 @@ This module definse the Manager class subclasses by component.BaseComponent
 
 from time import sleep
 from warnings import warn
-from collections import deque
 from inspect import getargspec
 from traceback import format_tb
 from sys import exc_info as _exc_info
+from collections import deque, defaultdict
 from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
@@ -30,6 +30,17 @@ from .events import Error, Success, Failure, Filter, Start, End
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
 
+def walk(x, d=0, v=None):
+    if not v:
+        v = set()
+    yield x
+    for c in x.components.copy():
+        if c not in v:
+            v.add(c)
+            for r in walk(c, v):
+                yield r
+
+
 class Manager(object):
     """Manager
 
@@ -43,26 +54,20 @@ class Manager(object):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        self._globals = []
-        self._tasks = set()
-        self._cmap = dict()
-        self._tmap = dict()
-        self._queue = deque()
-        self.channels = dict()
-        self._handlers = set()
-        self._handlerattrs = dict()
-        self._handler_cache = dict()
-
         self._ticks = set()
+        self._tasks = set()
+        self._cache = dict()
+        self._queue = deque()
 
         self._task = None
-        self._thread = None
         self._proc = None
         self._bridge = None
+        self._thread = None
         self._running = False
 
-        self.root = self.manager = self
+        self.handlers = set()
         self.components = set()
+        self.root = self.manager = self
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
@@ -75,8 +80,6 @@ class Manager(object):
             channel = ""
 
         q = len(self._queue)
-        c = len(self.channels)
-        h = len(self._handlers)
         state = self.state
 
         pid = current_process().pid
@@ -86,8 +89,8 @@ class Manager(object):
         else:
             id = current_thread().getName()
 
-        format = "<%s%s %s (queued=%d, channels=%d, handlers=%d) [%s]>"
-        return format % (name, channel, id, q, c, h, state)
+        format = "<%s%s %s (queued=%d) [%s]>"
+        return format % (name, channel, id, q, state)
 
     def __contains__(self, y):
         """x.__contains__(y) <==> y in x
@@ -160,50 +163,6 @@ class Manager(object):
             y.unregister()
         return self
 
-    def _getHandlers(self, _channel):
-        if _channel in self._handler_cache:
-            return self._handler_cache[_channel]
-
-        target, channel = _channel
-
-        get = self.channels.get
-        tmap = self._tmap.get
-        cmap = self._cmap.get
-
-        def _sortkey(handler):
-            return (self._handlerattrs[handler]["priority"],
-                    self._handlerattrs[handler]["filter"])
-
-        # Global Channels
-        handlers = self._globals[:]
-
-        # This channel on all targets
-        if channel == "*":
-            handlers.extend(tmap(target, []))
-            handlers.sort(key=_sortkey, reverse=True)
-            self._handler_cache[_channel] = handlers
-            return handlers
-
-        # Every channel on this target
-        if target == "*":
-            handlers.extend(cmap(channel, []))
-            handlers.sort(key=_sortkey, reverse=True)
-            self._handler_cache[_channel] = handlers
-            return handlers
-
-        # Any global channels
-        handlers.extend(get(("*", channel), []))
-
-        # Any global channels for this target
-        handlers.extend(get((channel, "*"), []))
-
-        # The actual channel and target
-        handlers.extend(get(_channel, []))
-
-        handlers.sort(key=_sortkey, reverse=True)
-        self._handler_cache[_channel] = handlers
-        return handlers
-
     @property
     def name(self):
         """Return the name of this Component/Manager"""
@@ -233,146 +192,14 @@ class Manager(object):
         else:
             return "S"
 
-    def addHandler(self, handler, *channels, **kwargs):
-        """Add a new Event Handler
-
-        Add a new Event Handler to the Event Manager.
-        """
-
-        self._handler_cache.clear()
-
-        channels = getattr(handler, "channels", channels)
-
-        target = kwargs.get("target", getattr(handler, "target",
-            getattr(self, "channel", "*")))
-
-        if isinstance(target, Manager):
-            target = getattr(target, "channel", "*")
-
-        attrs = {}
-        attrs["channels"] = channels
-        attrs["target"] = target
-
-        attrs["filter"] = getattr(handler, "filter",
-                kwargs.get("filter", False))
-        attrs["priority"] = getattr(handler, "priority",
-                kwargs.get("priority", 0))
-
-        if not hasattr(handler, "event"):
-            args = getargspec(handler)[0]
-            if args and args[0] == "self":
-                del args[0]
-            attrs["event"] = bool(args and args[0] == "event")
-        else:
-            attrs["event"] = getattr(handler, "event")
-
-        self._handlerattrs[handler] = attrs
-
-        def _sortkey(handler):
-            return (self._handlerattrs[handler]["priority"],
-                    self._handlerattrs[handler]["filter"])
-
-        if not channels and target == "*":
-            if handler not in self._globals:
-                self._globals.append(handler)
-                self._globals.sort(key=_sortkey, reverse=True)
-        else:
-            for channel in channels:
-                self._handlers.add(handler)
-
-                if (target, channel) not in self.channels:
-                    self.channels[(target, channel)] = []
-
-                if handler not in self.channels[(target, channel)]:
-                    self.channels[(target, channel)].append(handler)
-                    self.channels[(target, channel)].sort(key=_sortkey,
-                            reverse=True)
-
-                if target not in self._tmap:
-                    self._tmap[target] = []
-                if handler not in self._tmap[target]:
-                    self._tmap[target].append(handler)
-
-                if channel not in self._cmap:
-                    self._cmap[channel] = []
-                if handler not in self._cmap[channel]:
-                    self._cmap[channel].append(handler)
-
-    def add(self, *args, **kwargs):
-        """Deprecated in 1.6
-
-        .. deprecated:: 1.6
-           Use :py:meth:`addHandler` instead.
-        """
-
-        warn(DeprecationWarning("Use .addHandler(...) instead"))
-
-        return self.addHandler(*args, **kwargs)
-
-    def removeHandler(self, handler, channel=None):
-        """Remove an Event Handler
-
-        Remove the given Event Handler from the Event Manager
-        removing it from the given channel. if channel is None,
-        remove it from all channels. This will succeed even
-        if the specified  handler has already been removed.
-        """
-
-        self._handler_cache.clear()
-
-        if channel is None:
-            if handler in self._globals:
-                self._globals.remove(handler)
-            channels = list(self.channels.keys())
-        else:
-            channels = [channel]
-
-        if handler in self._handlers:
-            self._handlers.remove(handler)
-
-        if handler in self._handlerattrs:
-            del self._handlerattrs[handler]
-
-        for channel in channels:
-            if handler in self.channels[channel]:
-                self.channels[channel].remove(handler)
-            if not self.channels[channel]:
-                del self.channels[channel]
-
-            (target, channel) = channel
-
-            if target in self._tmap and handler in self._tmap[target]:
-                self._tmap[target].remove(handler)
-                if not self._tmap[target]:
-                    del self._tmap[target]
-
-            if channel in self._cmap and handler in self._cmap[channel]:
-                self._cmap[channel].remove(handler)
-                if not self._cmap[channel]:
-                    del self._cmap[channel]
-
-    def remove(self, *args, **kwargs):
-        """Deprecated in 1.6
-
-        .. deprecated:: 1.6
-           Use :py:meth:`removeHandler` instead.
-        """
-
-        warn(DeprecationWarning("Use .removeHandler(...) instead"))
-
-        self.removeHandler(*args, **kwargs)
-
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def fireEvent(self, event, channel=None, target=None):
+    def fireEvent(self, event, *channel, **kwargs):
         """Fire/Push a new Event into the system (queue)
 
         This will push the given Event, Channel and Target onto the
         Event Queue for later processing.
-
-        if target is None, then target will be set as the Channel of
-        the current Component, self.channel (defaulting back to None).
 
         If this Component's Manager is itself, enqueue on this Component's
         Event Queue, otherwise enqueue on this Component's Manager.
@@ -382,33 +209,15 @@ class Manager(object):
 
         :param channel: The Channel this Event is bound for
         :type  channel: str
-
-        @keyword target: The target Component's channel this Event is bound for
-        :type    target: str or Component
         """
 
-        if channel is None and target is None:
-            if isinstance(event.channel, tuple):
-                target, channel = event.channel
-            else:
-                channel = event.channel or event.name.lower()
-                target = event.target or None
-        else:
-            channel = channel or event.channel or event.name.lower()
-
-        if isinstance(target, Manager):
-            target = getattr(target, "channel", "*")
-        else:
-            target = target or event.target or getattr(self, "channel", "*")
-
-        event.channel = (target, channel)
-
+        event.channel = channel
         event.value = Value(event, self)
 
         if event.start is not None:
-            self.fire(Start(event), *event.start)
+            self.fire(Start(event), event.start)
 
-        self.root._fire(event, (target, channel))
+        self.root._fire(event, channel)
 
         return event.value
 
@@ -458,8 +267,8 @@ class Manager(object):
 
     wait = waitEvent
 
-    def callEvent(self, event, channel=None, target=None):
-        self.fire(event, channel, target)
+    def callEvent(self, event, *channel):
+        self.fire(event, channel)
         e = self.waitEvent(event)
         return e.value
 
@@ -484,6 +293,35 @@ class Manager(object):
 
     flush = flushEvents
 
+    def _find_handlers(self, channel):
+        if channel in self._cache:
+            return self.cache[channel]
+
+        handlers = []
+
+        parts = channel.split(".")
+
+        if len(parts) == 1:
+            for handler in self.handlers:
+                if channel in handler.channels:
+                    handlers.append(handler)
+        elif len(parts) == 2:
+            if parts[0] == "*":
+                components = list(walk(self))
+            else:
+                components = [x for x in walk(self) if x.channel == parts[0]]
+
+            for component in components:
+                for handler in component.handlers:
+                    if parts[1] in handler.channels:
+                        handlers.append(handler)
+        else:
+            raise SyntaxError("Invalid channel %r" % channel)
+
+        self._cache[channel] = handlers
+
+        return handlers
+
     def _dispatcher(self, event, channel):
         eargs = event.args
         ekwargs = event.kwargs
@@ -491,16 +329,14 @@ class Manager(object):
         retval = None
         handler = None
 
-        handlers = self._getHandlers(channel)
-        handlerattrs = self._handlerattrs.copy()
+        handlers = self._find_handlers(channel)
 
         for handler in handlers[:]:
             error = None
             event.handler = handler
-            attrs = handlerattrs[handler]
 
             try:
-                if attrs["event"]:
+                if handler.event:
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
@@ -521,10 +357,10 @@ class Manager(object):
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
-            if retval and attrs["filter"]:
+            if retval and handler.filter:
                 if event.filter is not None:
                     self.fire(Filter(event, handler, retval), *event.filter)
-                return  # Filter
+                return
 
             if error is None and event.success is not None:
                 self.fire(Success(event, handler, retval), *event.success)
