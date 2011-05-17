@@ -17,20 +17,87 @@ from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
-try:
-    from greenlet import getcurrent as getcurrent_greenlet, greenlet
-    GREENLET = True
-except ImportError:
-    GREENLET = False
-
 from .values import Value
 from .events import Event, Started, Stopped, Signal
 from .events import Error, Success, Failure, Filter, Start, End
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
+try:
+    from greenlet import getcurrent as getcurrent_greenlet, greenlet
+    class BaseManager(object):
+        def waitEvent(self, cls, limit=None):
+            if self._thread and self._thread != current_thread():
+                raise Exception("Cannot use .waitEvent from other thread")
+            if self._proc and self._proc != current_process():
+                raise Exception("Cannot use .waitEvent from other process")
 
-class Manager(object):
+            g = getcurrent_greenlet()
+
+            is_instance = isinstance(cls, Event)
+            i = 0
+            e = None
+            caller = self._task
+
+            self.registerTask(g)
+            try:
+                while e != cls if is_instance else e.__class__ != cls:
+                    if limit and i == limit or self._task is None:
+                        return
+                    e, caller = caller.switch()
+                    i += 1
+            finally:
+                self.unregisterTask(g)
+
+            return e
+
+        wait = waitEvent
+
+        def callEvent(self, event, target=None, channel=None):
+            self.fire(event, target, channel)
+            e = self.waitEvent(event)
+            return e.value
+
+        call = callEvent
+
+        def run(self, *args, **kwargs):
+            log = kwargs.get("log", True)
+            __mode = kwargs.get("__mode", None)
+            __socket = kwargs.get("__socket", None)
+
+            self._task = greenlet(self._run)
+            self._task.switch(log, __mode, __socket)
+
+        def _flush(self):
+            q = self._queue
+            self._queue = deque()
+
+            for event, channel in q:
+                dispatcher = greenlet(self._dispatcher)
+                dispatcher.switch(event, channel)
+
+                for task in self._tasks.copy():
+                    task.switch(event, getcurrent_greenlet())
+
+except ImportError:
+    class BaseManager(object):
+        def _flush(self):
+            q = self._queue
+            self._queue = deque()
+
+            for event, channel in q:
+                self._dispatcher(event, channel)
+
+        def run(self, *args, **kwargs):
+            log = kwargs.get("log", True)
+            __mode = kwargs.get("__mode", None)
+            __socket = kwargs.get("__socket", None)
+
+            self._run(log, __mode, __socket)
+
+
+
+class Manager(BaseManager):
     """Manager
 
     This is the base Manager of the BaseComponent which manages an Event Queue,
@@ -455,52 +522,6 @@ class Manager(object):
     def unregisterTask(self, g):
         self._tasks.remove(g)
 
-    def waitEvent(self, cls, limit=None):
-        if self._thread and self._thread != current_thread():
-            raise Exception("Cannot use .waitEvent from other thread")
-        if self._proc and self._proc != current_process():
-            raise Exception("Cannot use .waitEvent from other process")
-
-        g = getcurrent_greenlet()
-
-        is_instance = isinstance(cls, Event)
-        i = 0
-        e = None
-        caller = self._task
-
-        self.registerTask(g)
-        try:
-            while e != cls if is_instance else e.__class__ != cls:
-                if limit and i == limit or self._task is None:
-                    return
-                e, caller = caller.switch()
-                i += 1
-        finally:
-            self.unregisterTask(g)
-
-        return e
-
-    wait = waitEvent
-
-    def callEvent(self, event, target=None, channel=None):
-        self.fire(event, target, channel)
-        e = self.waitEvent(event)
-        return e.value
-
-    call = callEvent
-
-    def _flush(self):
-        q = self._queue
-        self._queue = deque()
-
-        if GREENLET:
-            for event, channel in q:
-                dispatcher = greenlet(self._dispatcher)
-                dispatcher.switch(event, channel)
-        else:
-            for event, channel in q:
-                self._dispatcher(event, channel)
-
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
 
@@ -555,10 +576,6 @@ class Manager(object):
 
         if event.end is not None:
             self.push(End(event, handler, retval), *event.end)
-
-        if GREENLET:
-            for task in self._tasks.copy():
-                task.switch(event, getcurrent_greenlet())
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
@@ -620,18 +637,6 @@ class Manager(object):
             sleep(TIMEOUT)  # Nothing to do - Let's not tie up the CUP
 
         self._flush()
-
-    def run(self, *args, **kwargs):
-        log = kwargs.get("log", True)
-        __mode = kwargs.get("__mode", None)
-        __socket = kwargs.get("__socket", None)
-
-
-        if GREENLET:
-            self._task = greenlet(self._run)
-            self._task.switch(log, __mode, __socket)
-        else:
-            self._run(log, __mode, __socket)
 
     def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":
