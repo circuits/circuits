@@ -481,7 +481,7 @@ class Manager(BaseManager):
                 target, channel = event.channel
             else:
                 channel = event.channel or event.name.lower()
-                target = event.target or self
+                target = event.target or getattr(self, "channel", "*")
         elif isinstance(target, Manager):
             channel = channel or event.channel or event.name.lower()
         elif channel is None and '.' in target:
@@ -492,10 +492,7 @@ class Manager(BaseManager):
                 target, channel = target.split('.')
         elif channel is None:
             channel = target
-            if channel == '*':
-                target = "*"
-            else:
-                target = self
+            target = getattr(self, "channel", "*")
 
         event.channel = (target, channel)
 
@@ -572,8 +569,7 @@ class Manager(BaseManager):
                 if event.failure is not None:
                     self.push(Failure(event, handler, error), *event.failure)
                 else:
-                    self.fire(Error(etype, evalue, traceback, handler),
-                        "*.")
+                    self.fire(Error(etype, evalue, traceback, handler))
 
             if retval and attrs["filter"]:
                 if event.filter is not None:
@@ -641,7 +637,7 @@ class Manager(BaseManager):
                 raise
             except:
                 etype, evalue, etraceback = _exc_info()
-                self.fire(Error(etype, evalue, format_tb(etraceback)), "*.")
+                self.fire(Error(etype, evalue, format_tb(etraceback)))
         else:
             sleep(TIMEOUT)  # Nothing to do - Let's not tie up the CUP
 

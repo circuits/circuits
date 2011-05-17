@@ -114,8 +114,8 @@ class Startup(BaseComponent):
 
     @handler("init")
     def _on_init(self):
-        self.fire(CreateEnvironment(), self.env)
+        self.fire(CreateEnvironment(), '%s.' % self.env)
 
     @handler("upgrade")
     def _on_upgrade(self):
-        self.fire(UpgradeEnvironment(), self.env)
+        self.fire(UpgradeEnvironment(), '%s.' % self.env)

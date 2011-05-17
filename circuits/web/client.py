@@ -89,8 +89,8 @@ class Client(BaseComponent):
     @handler("connect")
     def connect(self):
         if not self._transport.connected:
-            self.push(Connect(self._host, self._port, self._secure),
-                    target=self._transport)
+            self.fire(Connect(self._host, self._port, self._secure),
+                    self._transport)
 
     @handler("request")
     def request(self, method, path, body=None, headers={}):

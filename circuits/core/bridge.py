@@ -74,6 +74,7 @@ class Bridge(BaseComponent):
             self._values[id].value = obj.value
 
     def _reader(self, data):
+        print 'data: %s' % data
         unpickler = Unpickler(BytesIO(data))
 
         while True:
@@ -84,11 +85,15 @@ class Bridge(BaseComponent):
 
     def _writer(self, event):
         try:
+            print 'writing %s' % event
             eid = id(event)
             self._values[eid] = event.value
             s = dumps((eid, event))
             self.fire(Write(s), self._socket)
+            print repr(self)
+            print 'manager: %s' % repr(self._manager)
         except:
+            print 'error'
             return
 
     def _events(self, event, *args, **kwargs):

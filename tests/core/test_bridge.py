@@ -20,13 +20,14 @@ def test():
     a, b = Pipe()
 
     # 1st App (process)
-    p = App()
-    Bridge(p, socket=a)
+    from circuits import Debugger
+    p = App() + Debugger()
+    Bridge(p, socket=a) + Debugger()
     p.start(process=True)
 
     # 2nd App
-    app = App()
-    Bridge(app, socket=b)
+    app = App() + Debugger()
+    Bridge(app, socket=b) + Debugger()
     app.start()
 
     pid = os.getpid()

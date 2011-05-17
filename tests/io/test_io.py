@@ -26,7 +26,8 @@ def test_write(tmpdir):
     sockpath = tmpdir.ensure("helloworld.txt")
     filename = str(sockpath)
 
-    app = App(filename, "w")
+    from circuits import Debugger
+    app = App(filename, "w") + Debugger()
     app.start()
     app.fire(Write(b"Hello World!"))
     sleep(1)

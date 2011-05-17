@@ -136,7 +136,7 @@ class BaseComponent(Manager):
 
         if manager is not self:
             manager.components.add(self)
-            self.fire(Registered(self, manager), target=self)
+            self.fire(Registered(self, manager), self)
 
         return self
 
@@ -166,14 +166,14 @@ class BaseComponent(Manager):
             for x in c.components:
                 _unregister(x, m, r)
 
-        self.fire(Unregistered(self, self.manager), target=self)
+        self.fire(Unregistered(self, self.manager), self)
 
         root = findroot(self.manager)
         _unregister(self, self.manager, root)
 
         self.manager.components.discard(self)
         if not root == self:
-            self.fire(Unregistered(self, self.manager), target=self)
+            self.fire(Unregistered(self, self.manager), self)
 
         self.manager = self
 
