@@ -244,37 +244,40 @@ class Manager(BaseManager):
                     self._handlerattrs[handler]["filter"])
 
         # Global Channels
-        handlers = self._globals[:]
+        handlers = set(self._globals)
 
         # This channel on all targets
         if channel == "*":
             if isinstance(target, Manager):
-                handlers.extend(tmap(id(target), []))
+                handlers.update(tmap(id(target), []))
             else:
-                handlers.extend(tmap(target, []))
+                handlers.update(tmap(target, []))
+            handlers = list(handlers)
             handlers.sort(key=_sortkey, reverse=True)
             self._handler_cache[_channel] = handlers
             return handlers
 
         # Every channel on this target
         if target == "*":
-            handlers.extend(cmap(channel, []))
+            handlers.update(cmap(channel, []))
+            handlers = list(handlers)
             handlers.sort(key=_sortkey, reverse=True)
             self._handler_cache[_channel] = handlers
             return handlers
 
         # Any global channels
-        handlers.extend(get(("*", channel), []))
+        handlers.update(get(("*", channel), []))
 
         # Any global channels for this target
-        handlers.extend(get((channel, "*"), []))
+        handlers.update(get((channel, "*"), []))
 
         # The actual channel and target
         if isinstance(target, Manager):
-            handlers.extend(comp_map((target, channel), []))
+            handlers.update(comp_map((target, channel), []))
         else:
-            handlers.extend(get(_channel, []))
+            handlers.update(get(_channel, []))
 
+        handlers = list(handlers)
         handlers.sort(key=_sortkey, reverse=True)
         self._handler_cache[_channel] = handlers
         return handlers
