@@ -482,7 +482,9 @@ class Manager(BaseManager):
             else:
                 channel = event.channel or event.name.lower()
                 target = event.target or self
-        elif '.' in target:
+        elif isinstance(target, Manager):
+            channel = channel or event.channel or event.name.lower()
+        elif channel is None and '.' in target:
             if target[-1] == '.':
                 channel = channel or event.channel or event.name.lower()
                 target = target[:-1]
@@ -490,7 +492,11 @@ class Manager(BaseManager):
                 target, channel = target.split('.')
         elif channel is None:
             channel = target
-            target = self
+            print 'channel: %s' % channel
+            if channel == '*':
+                target = "*"
+            else:
+                target = self
 
         event.channel = (target, channel)
 
@@ -514,6 +520,9 @@ class Manager(BaseManager):
 
         warn(DeprecationWarning("Use .fire(...) instead"))
 
+        if not target:
+            target = channel
+            channel = None
         return self.fire(event, target, channel)
 
     def registerTask(self, g):
