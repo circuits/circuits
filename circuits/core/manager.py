@@ -584,18 +584,17 @@ class Manager(object):
         self.tick()
 
     def tick(self):
-        if self._ticks:
-            try:
-                [f() for f in self._ticks.copy()]
-            except (KeyboardInterrupt, SystemExit):
-                raise
-            except:
-                etype, evalue, etraceback = _exc_info()
-                self.fire(Error(etype, evalue, format_tb(etraceback)))
-        else:
-            sleep(TIMEOUT)  # Nothing to do - Let's not tie up the CUP
-
-        self._flush()
+        try:
+            [f() for f in self._ticks.copy()]
+            if self:
+                self.flush()
+            else:
+                sleep(TIMEOUT)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            etype, evalue, etraceback = _exc_info()
+            self.fire(Error(etype, evalue, format_tb(etraceback)))
 
     def run(self, *args, **kwargs):
         log = kwargs.get("log", True)
