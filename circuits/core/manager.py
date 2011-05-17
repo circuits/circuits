@@ -495,7 +495,6 @@ class Manager(BaseManager):
                 target, channel = target.split('.')
         elif channel is None:
             channel = target
-            print 'channel: %s' % channel
             if channel == '*':
                 target = "*"
             else:

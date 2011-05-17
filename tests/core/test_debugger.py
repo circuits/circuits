@@ -212,7 +212,7 @@ def test_tick_exceptions():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    print 's: %s' % s
+
     assert s.startswith("<Error[*:exception] [<class 'Exception'>, Exception()") \
         or s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception()")
     stderr.seek(0)
