@@ -562,7 +562,9 @@ class Server(Component):
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
         if self._poller is None:
+            print 'SERVER STARTED'
             self._poller = Poller().register(self)
+            print '=========> POLLER: %s' % self._poller
             self._poller.addReader(self, self._sock)
             self.fire(Ready(self))
             return True

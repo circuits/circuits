@@ -85,7 +85,7 @@ class BaseComponent(Manager):
                 target = handler.target or getattr(self, "channel", "*")
                 self.addHandler(handler, target=target)
         else:
-            print 'MANAGER: %s' % manager
+            #print 'MANAGER: %s' % manager
             for handler in chain(self._globals, self._handlers):
                 kwargs = handler.__dict__.copy()
                 if 'handler' in kwargs:
@@ -97,11 +97,12 @@ class BaseComponent(Manager):
                     del kwargs["channels"]
                 else:
                     channels = ()
-                print 'handler: %s' % handler.__name__
-                print 'channels: %s' % str(channels)
+                #print 'handler: %s' % handler.__name__
+                #print 'channels: %s' % str(channels)
                 manager.addHandler(handler, *channels, **kwargs)
 
     def _unregisterHandlers(self, manager):
+        print 'removing handlers'
         for handler in self._handlers.copy():
             manager.removeHandler(handler)
 
@@ -117,9 +118,9 @@ class BaseComponent(Manager):
         in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
-        print 'REGISTER: %s on %s' % (self, manager)
+        #print 'REGISTER: %s on %s' % (self, manager)
         def _register(c, m, r):
-            print '_register: %s on %s' % (c, m)
+            #print '_register: %s on %s' % (c, m)
             c._registerHandlers(m)
             c.root = r
             if c._queue:
@@ -155,9 +156,7 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
-        if component != self and component != None:
-            return
-
+        print 'unregistering %s' % self
         def _unregister(c, m, r):
             c._unregisterHandlers(m)
             c.root = self
