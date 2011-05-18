@@ -28,16 +28,16 @@ def test_pipe(Poller):
         assert pytest.wait_for(a, "ready")
         assert pytest.wait_for(b, "ready")
 
-        a.push(Write(b"foo"))
+        a.fire(Write(b"foo"))
         assert pytest.wait_for(b, "data", b"foo")
 
-        b.push(Write(b"foo"))
+        b.fire(Write(b"foo"))
         assert pytest.wait_for(a, "data", b"foo")
 
-        a.push(Close())
+        a.fire(Close())
         assert pytest.wait_for(a, "disconnected")
 
-        b.push(Close())
+        b.fire(Close())
         assert pytest.wait_for(b, "disconnected")
     finally:
         m.stop()

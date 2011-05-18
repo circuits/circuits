@@ -28,7 +28,8 @@ def setupwebapp(request):
 
             self.server = Server(0).register(self)
 
-    webapp = WebApp()
+    from circuits import Debugger
+    webapp = WebApp() + Debugger()
 
     if hasattr(request.module, "application"):
         from circuits.web.wsgi import Gateway
@@ -48,5 +49,5 @@ def setupwebapp(request):
 
 def teardownwebapp(webapp):
     from circuits.net.sockets import Close
-    webapp.push(Close(), target=webapp.server)
+    webapp.fire(Close(), webapp.server)
     webapp.stop()

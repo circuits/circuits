@@ -115,7 +115,7 @@ class Value(object):
             if not isinstance(v, Value) and v is not None:
                 o.result = True
                 if o.manager is not None and o.onSet is not None:
-                    o.manager.fireEvent(ValueChanged(o), *o.onSet)
+                    o.manager.push(ValueChanged(o), *o.onSet)
             elif isinstance(v, Value):
                 o.errors = v.errors
                 o.result = v.result

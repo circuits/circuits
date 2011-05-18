@@ -36,7 +36,7 @@ class XMLRPC(BaseComponent):
     def _on_value_changed(self, value):
         response = value.response
         response.body = self._response(value.value)
-        self.push(Response(response), target=self.channel)
+        self.fire(Response(response))
         value.handled = True
 
     @handler("request", filter=True, priority=0.1)
@@ -55,7 +55,7 @@ class XMLRPC(BaseComponent):
             else:
                 t, c = self.target, method
 
-            value = self.push(RPC(*params), c, t)
+            value = self.fire(RPC(*params), t, c)
             value.response = response
             value.onSet = ("value_changed", self)
         except Exception as e:

@@ -62,25 +62,25 @@ class HTTP(BaseComponent):
                 if response.chunked:
                     buf = [hex(len(data))[2:], b"\r\n", data, b"\r\n"]
                     data = b"".join(buf)
-                self.push(Write(response.request.sock, data))
+                self.fire(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
                     data = next(response.body)
                 except StopIteration:
                     data = None
-                self.push(Stream(response, data))
+                self.fire(Stream(response, data))
         else:
             if response.body:
                 response.body.close()
             if response.chunked:
-                self.push(Write(response.request.sock, b"0\r\n\r\n"))
+                self.fire(Write(response.request.sock, b"0\r\n\r\n"))
             if response.close:
-                self.push(Close(response.request.sock))
+                self.fire(Close(response.request.sock))
             response.done = True
 
     @handler("response")
     def _on_response(self, response):
-        self.push(
+        self.fire(
                 Write(response.request.sock,
                     str(response).encode(HTTP_ENCODING)))
 
@@ -89,7 +89,7 @@ class HTTP(BaseComponent):
                 data = next(response.body)
             except StopIteration:
                 data = None
-            self.push(Stream(response, data))
+            self.fire(Stream(response, data))
         else:
             if isinstance(response.body, bytes):
                 body = response.body
@@ -103,14 +103,14 @@ class HTTP(BaseComponent):
                 if response.chunked:
                     buf = [hex(len(body))[2:].encode(), b"\r\n", body, b"\r\n"]
                     body = b"".join(buf)
-                self.push(Write(response.request.sock, body))
+                self.fire(Write(response.request.sock, body))
 
                 if response.chunked:
-                    self.push(Write(response.request.sock, b"0\r\n\r\n"))
+                    self.fire(Write(response.request.sock, b"0\r\n\r\n"))
 
             if not response.stream:
                 if response.close:
-                    self.push(Close(response.request.sock))
+                    self.fire(Close(response.request.sock))
                 response.done = True
 
     @handler("disconnect")
@@ -164,7 +164,7 @@ class HTTP(BaseComponent):
             self._clients[sock] = request, response
 
             if frag:
-                return self.push(HTTPError(request, response, 400))
+                return self.fire(HTTPError(request, response, 400))
 
             if params:
                 path = "%s;%s" % (path, params)
@@ -190,7 +190,7 @@ class HTTP(BaseComponent):
             # the client only understands 1.0. RFC 2616 10.5.6 says we should
             # only return 505 if the _major_ version is different.
             if not request.protocol[0] == request.server_protocol[0]:
-                return self.push(HTTPError(request, response, 505))
+                return self.fire(HTTPError(request, response, 505))
 
             rp = request.protocol
             sp = request.server_protocol
@@ -207,7 +207,7 @@ class HTTP(BaseComponent):
             request.body.write(data[(end_of_headers + 4):])
 
             if headers.get("Expect", "") == "100-continue":
-                return self.push(Response(wrappers.Response(request, 100),
+                return self.fire(Response(wrappers.Response(request, 100),
                     encoding=self._encoding))
 
             contentLength = int(headers.get("Content-Length", "0"))

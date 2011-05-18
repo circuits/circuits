@@ -49,7 +49,7 @@ class HTTP(BaseComponent):
             cLen = int(self._response.headers.get("Content-Length", "0"))
             if cLen and self._response._body.tell() == cLen:
                 self._response._body.seek(0)
-                self.push(Response(self._response))
+                self.fire(Response(self._response))
                 self._response = None
         else:
             statusline, data = data.split(b"\r\n", 1)
@@ -75,4 +75,4 @@ class HTTP(BaseComponent):
                 return
 
             response._body.seek(0)
-            self.push(Response(response))
+            self.fire(Response(response))

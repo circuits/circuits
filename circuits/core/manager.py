@@ -17,20 +17,87 @@ from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
-try:
-    from greenlet import getcurrent as getcurrent_greenlet, greenlet
-    GREENLET = True
-except ImportError:
-    GREENLET = False
-
 from .values import Value
 from .events import Event, Started, Stopped, Signal
 from .events import Error, Success, Failure, Filter, Start, End
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
+try:
+    from greenlet import getcurrent as getcurrent_greenlet, greenlet
+    class BaseManager(object):
+        def waitEvent(self, cls, limit=None):
+            if self._thread and self._thread != current_thread():
+                raise Exception("Cannot use .waitEvent from other thread")
+            if self._proc and self._proc != current_process():
+                raise Exception("Cannot use .waitEvent from other process")
 
-class Manager(object):
+            g = getcurrent_greenlet()
+
+            is_instance = isinstance(cls, Event)
+            i = 0
+            e = None
+            caller = self._task
+
+            self.registerTask(g)
+            try:
+                while e != cls if is_instance else e.__class__ != cls:
+                    if limit and i == limit or self._task is None:
+                        return
+                    e, caller = caller.switch()
+                    i += 1
+            finally:
+                self.unregisterTask(g)
+
+            return e
+
+        wait = waitEvent
+
+        def callEvent(self, event, target=None, channel=None):
+            self.fire(event, target, channel)
+            e = self.waitEvent(event)
+            return e.value
+
+        call = callEvent
+
+        def run(self, *args, **kwargs):
+            log = kwargs.get("log", True)
+            __mode = kwargs.get("__mode", None)
+            __socket = kwargs.get("__socket", None)
+
+            self._task = greenlet(self._run)
+            self._task.switch(log, __mode, __socket)
+
+        def _flush(self):
+            q = self._queue
+            self._queue = deque()
+
+            for event, channel in q:
+                dispatcher = greenlet(self._dispatcher)
+                dispatcher.switch(event, channel)
+
+                for task in self._tasks.copy():
+                    task.switch(event, getcurrent_greenlet())
+
+except ImportError:
+    class BaseManager(object):
+        def _flush(self):
+            q = self._queue
+            self._queue = deque()
+
+            for event, channel in q:
+                self._dispatcher(event, channel)
+
+        def run(self, *args, **kwargs):
+            log = kwargs.get("log", True)
+            __mode = kwargs.get("__mode", None)
+            __socket = kwargs.get("__socket", None)
+
+            self._run(log, __mode, __socket)
+
+
+
+class Manager(BaseManager):
     """Manager
 
     This is the base Manager of the BaseComponent which manages an Event Queue,
@@ -52,6 +119,7 @@ class Manager(object):
         self._handlers = set()
         self._handlerattrs = dict()
         self._handler_cache = dict()
+        self._events = dict()
 
         self._ticks = set()
 
@@ -166,42 +234,31 @@ class Manager(object):
 
         target, channel = _channel
 
-        get = self.channels.get
-        tmap = self._tmap.get
-        cmap = self._cmap.get
-
         def _sortkey(handler):
-            return (self._handlerattrs[handler]["priority"],
-                    self._handlerattrs[handler]["filter"])
+            return (handler.priority, handler.filter)
 
         # Global Channels
-        handlers = self._globals[:]
-
-        # This channel on all targets
-        if channel == "*":
-            handlers.extend(tmap(target, []))
-            handlers.sort(key=_sortkey, reverse=True)
-            self._handler_cache[_channel] = handlers
-            return handlers
-
-        # Every channel on this target
-        if target == "*":
-            handlers.extend(cmap(channel, []))
-            handlers.sort(key=_sortkey, reverse=True)
-            self._handler_cache[_channel] = handlers
-            return handlers
-
-        # Any global channels
-        handlers.extend(get(("*", channel), []))
-
-        # Any global channels for this target
-        handlers.extend(get((channel, "*"), []))
+        handlers = set(self._globals)
 
         # The actual channel and target
-        handlers.extend(get(_channel, []))
+        if isinstance(target, Manager):
+            handler = getattr(target, channel, None)
+            if handler and hasattr(handler, "handler"):
+                handlers.add(handler)
+        else:
+            handlers.update(self._events.get(channel, []))
 
-        handlers.sort(key=_sortkey, reverse=True)
+        #print 'target: %s' % str(target)
+        #print 'channel: %s' % str(channel)
+        #print 'handlers: %s' % str(handlers)
+        #print 'globals: %s' % str(self._globals)
+        #if channel == 'unregister':
+        #    import os
+        #    os._exit(1)
+
+        handlers = sorted(handlers, key=_sortkey, reverse=True)
         self._handler_cache[_channel] = handlers
+
         return handlers
 
     @property
@@ -241,62 +298,37 @@ class Manager(object):
 
         self._handler_cache.clear()
 
+        #print 'addHandler: %s on %s' % (handler, channels)
         channels = getattr(handler, "channels", channels)
 
         target = kwargs.get("target", getattr(handler, "target",
             getattr(self, "channel", "*")))
 
-        if isinstance(target, Manager):
-            target = getattr(target, "channel", "*")
-
-        attrs = {}
-        attrs["channels"] = channels
-        attrs["target"] = target
-
-        attrs["filter"] = getattr(handler, "filter",
-                kwargs.get("filter", False))
-        attrs["priority"] = getattr(handler, "priority",
-                kwargs.get("priority", 0))
-
-        if not hasattr(handler, "event"):
-            args = getargspec(handler)[0]
-            if args and args[0] == "self":
-                del args[0]
-            attrs["event"] = bool(args and args[0] == "event")
-        else:
-            attrs["event"] = getattr(handler, "event")
-
-        self._handlerattrs[handler] = attrs
-
         def _sortkey(handler):
-            return (self._handlerattrs[handler]["priority"],
-                    self._handlerattrs[handler]["filter"])
+            return (handler.priority, handler.filter)
 
-        if not channels and target == "*":
+        if "*" in channels and target == "*":
             if handler not in self._globals:
+                #print 'registering global %s on %s' % (handler, self)
                 self._globals.append(handler)
                 self._globals.sort(key=_sortkey, reverse=True)
         else:
+            self._handlers.add(handler)
             for channel in channels:
-                self._handlers.add(handler)
+                # bind handler for a specific instance
+                if isinstance(target, Manager):
+                    chandler = getattr(target, channel)
+                    if chandler and handler != chandler:
+                        handler.chandler = chandler
+                        chandler.handlers.add(handler)
 
-                if (target, channel) not in self.channels:
-                    self.channels[(target, channel)] = []
+                if channel not in self._events:
+                    self._events[channel] = []
 
-                if handler not in self.channels[(target, channel)]:
-                    self.channels[(target, channel)].append(handler)
-                    self.channels[(target, channel)].sort(key=_sortkey,
+                if handler not in self._events[channel]:
+                    self._events[channel].append(handler)
+                    self._events[channel].sort(key=_sortkey,
                             reverse=True)
-
-                if target not in self._tmap:
-                    self._tmap[target] = []
-                if handler not in self._tmap[target]:
-                    self._tmap[target].append(handler)
-
-                if channel not in self._cmap:
-                    self._cmap[channel] = []
-                if handler not in self._cmap[channel]:
-                    self._cmap[channel].append(handler)
 
     def add(self, *args, **kwargs):
         """Deprecated in 1.6
@@ -309,7 +341,7 @@ class Manager(object):
 
         return self.addHandler(*args, **kwargs)
 
-    def removeHandler(self, handler, channel=None):
+    def removeHandler(self, handler, channels=[]):
         """Remove an Event Handler
 
         Remove the given Event Handler from the Event Manager
@@ -320,36 +352,27 @@ class Manager(object):
 
         self._handler_cache.clear()
 
-        if channel is None:
-            if handler in self._globals:
-                self._globals.remove(handler)
-            channels = list(self.channels.keys())
-        else:
-            channels = [channel]
+        channels = getattr(handler, "channels", channels)
+        #print 'removing handler: %s on %s' % (handler, channels)
+
 
         if handler in self._handlers:
             self._handlers.remove(handler)
 
-        if handler in self._handlerattrs:
-            del self._handlerattrs[handler]
-
         for channel in channels:
-            if handler in self.channels[channel]:
-                self.channels[channel].remove(handler)
-            if not self.channels[channel]:
-                del self.channels[channel]
+            # remove binding from handler for a specific instance
+            if handler.chandler:
+                handler.chandler.handlers.remove(handler)
 
-            (target, channel) = channel
+            if channel == '*' and handler in self._globals:
+                self._globals.remove(handler)
 
-            if target in self._tmap and handler in self._tmap[target]:
-                self._tmap[target].remove(handler)
-                if not self._tmap[target]:
-                    del self._tmap[target]
+            if handler in self._events[channel]:
+                self._events[channel].remove(handler)
+            if not self._events[channel]:
+                del self._events[channel]
 
-            if channel in self._cmap and handler in self._cmap[channel]:
-                self._cmap[channel].remove(handler)
-                if not self._cmap[channel]:
-                    del self._cmap[channel]
+
 
     def remove(self, *args, **kwargs):
         """Deprecated in 1.6
@@ -365,7 +388,7 @@ class Manager(object):
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def fireEvent(self, event, channel=None, target=None):
+    def fireEvent(self, event, target=None, channel=None):
         """Fire/Push a new Event into the system (queue)
 
         This will push the given Event, Channel and Target onto the
@@ -392,21 +415,25 @@ class Manager(object):
                 target, channel = event.channel
             else:
                 channel = event.channel or event.name.lower()
-                target = event.target or None
-        else:
+                target = event.target or getattr(self, "channel", "*")
+        elif isinstance(target, Manager):
             channel = channel or event.channel or event.name.lower()
-
-        if isinstance(target, Manager):
-            target = getattr(target, "channel", "*")
-        else:
-            target = target or event.target or getattr(self, "channel", "*")
+        elif channel is None and '.' in target:
+            if target[-1] == '.':
+                channel = channel or event.channel or event.name.lower()
+                target = target[:-1]
+            else:
+                target, channel = target.split('.')
+        elif channel is None:
+            channel = target
+            target = getattr(self, "channel", "*")
 
         event.channel = (target, channel)
 
         event.value = Value(event, self)
 
         if event.start is not None:
-            self.fire(Start(event), *event.start)
+            self.push(Start(event), *event.start)
 
         self.root._fire(event, (target, channel))
 
@@ -414,7 +441,7 @@ class Manager(object):
 
     fire = fireEvent
 
-    def push(self, *args, **kwargs):
+    def push(self, event, channel=None, target=None):
         """Deprecated in 1.6
 
         .. deprecated:: 1.6
@@ -423,59 +450,16 @@ class Manager(object):
 
         warn(DeprecationWarning("Use .fire(...) instead"))
 
-        return self.fire(*args, **kwargs)
+        if not target:
+            target = channel
+            channel = None
+        return self.fire(event, target, channel)
 
     def registerTask(self, g):
         self._tasks.add(g)
 
     def unregisterTask(self, g):
         self._tasks.remove(g)
-
-    def waitEvent(self, cls, limit=None):
-        if self._thread and self._thread != current_thread():
-            raise Exception("Cannot use .waitEvent from other thread")
-        if self._proc and self._proc != current_process():
-            raise Exception("Cannot use .waitEvent from other process")
-
-        g = getcurrent_greenlet()
-
-        is_instance = isinstance(cls, Event)
-        i = 0
-        e = None
-        caller = self._task
-
-        self.registerTask(g)
-        try:
-            while e != cls if is_instance else e.__class__ != cls:
-                if limit and i == limit or self._task is None:
-                    return
-                e, caller = caller.switch()
-                i += 1
-        finally:
-            self.unregisterTask(g)
-
-        return e
-
-    wait = waitEvent
-
-    def callEvent(self, event, channel=None, target=None):
-        self.fire(event, channel, target)
-        e = self.waitEvent(event)
-        return e.value
-
-    call = callEvent
-
-    def _flush(self):
-        q = self._queue
-        self._queue = deque()
-
-        if GREENLET:
-            for event, channel in q:
-                dispatcher = greenlet(self._dispatcher)
-                dispatcher.switch(event, channel)
-        else:
-            for event, channel in q:
-                self._dispatcher(event, channel)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
@@ -492,15 +476,14 @@ class Manager(object):
         handler = None
 
         handlers = self._getHandlers(channel)
-        handlerattrs = self._handlerattrs.copy()
-
-        for handler in handlers[:]:
+        #print '=======> fetched %s handlers: %s' % (channel, str(handlers))
+        for handler in handlers:
+            #print 'handling: %s' % handler
             error = None
             event.handler = handler
-            attrs = handlerattrs[handler]
 
             try:
-                if attrs["event"]:
+                if handler.event:
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
@@ -517,24 +500,20 @@ class Manager(object):
                 event.value.value = error
 
                 if event.failure is not None:
-                    self.fire(Failure(event, handler, error), *event.failure)
+                    self.push(Failure(event, handler, error), *event.failure)
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
-            if retval and attrs["filter"]:
+            if retval and handler.filter:
                 if event.filter is not None:
-                    self.fire(Filter(event, handler, retval), *event.filter)
+                    self.push(Filter(event, handler, retval), *event.filter)
                 return  # Filter
 
             if error is None and event.success is not None:
-                self.fire(Success(event, handler, retval), *event.success)
+                self.push(Success(event, handler, retval), *event.success)
 
         if event.end is not None:
-            self.fire(End(event, handler, retval), *event.end)
-
-        if GREENLET:
-            for task in self._tasks.copy():
-                task.switch(event, getcurrent_greenlet())
+            self.push(End(event, handler, retval), *event.end)
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
@@ -586,27 +565,16 @@ class Manager(object):
     def tick(self):
         try:
             [f() for f in self._ticks.copy()]
-            if self:
-                self.flush()
-            else:
-                sleep(TIMEOUT)
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
             etype, evalue, etraceback = _exc_info()
             self.fire(Error(etype, evalue, format_tb(etraceback)))
 
-    def run(self, *args, **kwargs):
-        log = kwargs.get("log", True)
-        __mode = kwargs.get("__mode", None)
-        __socket = kwargs.get("__socket", None)
-
-
-        if GREENLET:
-            self._task = greenlet(self._run)
-            self._task.switch(log, __mode, __socket)
+        if self:
+            self.flush()
         else:
-            self._run(log, __mode, __socket)
+            sleep(TIMEOUT)
 
     def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":

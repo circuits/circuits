@@ -78,7 +78,7 @@ class Debugger(BaseComponent):
             # Bugged on py2
             #self.file.flush()
 
-    @handler(priority=100.0)
+    @handler("*", priority=100.0)
     def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 

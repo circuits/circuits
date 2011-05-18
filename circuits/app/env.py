@@ -115,7 +115,7 @@ class Environment(BaseComponent):
     @handler("load", priority=1.0)
     def load(self, verify=False):
         if verify:
-            return self.push(Verify())
+            return self.fire(Verify())
         else:
             return self._load()
 
@@ -174,11 +174,11 @@ class Environment(BaseComponent):
                         "path": self.path,
                     }
                 self.config.set(section, option, value)
-        return self.push(config.Save(), target=self.config)
+        return self.fire(config.Save(), '%s.' % self.config)
 
     def _load(self):
         # Create Config Component
         configfile = joinpath(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile).register(self)
-        self.push(config.Load(), target=self.config)
+        self.fire(config.Load(), '%s.' % self.config)
         return True

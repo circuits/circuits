@@ -24,7 +24,9 @@ class Root(Controller):
         return self.notfound()
 
 def test(webapp):
+    print 'before urlopen'
     f = urlopen(webapp.server.base)
+    print 'after urlopen'
     s = f.read()
     assert s == b"Hello World!"
 

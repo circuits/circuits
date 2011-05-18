@@ -17,7 +17,7 @@ app.register(m)
 while app: app.flush()
 
 def test_fire():
-    x = m.push(Test())
+    x = m.fire(Test())
     m.flush()
     assert x.value == "Hello World!"
 

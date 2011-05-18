@@ -34,7 +34,7 @@ def test():
     while app:
         app.flush()
 
-    app.push(Test())
+    app.fire(Test())
     while app:
         app.flush()
 

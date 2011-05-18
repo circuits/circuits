@@ -20,19 +20,20 @@ def test():
     a, b = Pipe()
 
     # 1st App (process)
-    p = App()
-    Bridge(p, socket=a)
+    from circuits import Debugger
+    p = App() + Debugger()
+    Bridge(p, socket=a) + Debugger()
     p.start(process=True)
 
     # 2nd App
-    app = App()
-    Bridge(app, socket=b)
+    app = App() + Debugger()
+    Bridge(app, socket=b) + Debugger()
     app.start()
 
     pid = os.getpid()
     e = Hello()
     assert e.future == False
-    x = app.push(e)
+    x = app.fire(e)
 
     assert pytest.wait_for(e, "future", True)
     assert e.future == True

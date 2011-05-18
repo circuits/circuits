@@ -73,7 +73,7 @@ class Client(Component):
         self.ircchannel = opts.channel
 
         self += (TCPClient(channel=self.channel) + IRC(channel=self.channel))
-        self.fire(Connect(self.host, self.port), "connect")
+        self.push(Connect(self.host, self.port), "connect")
 
     def connected(self, host, port):
         print("Connected to %s:%d" % (host, port))
@@ -86,14 +86,14 @@ class Client(Component):
         self.fire(NICK(nick))
 
     def disconnected(self):
-        self.fire(Connect(self.opts.host, self.opts.port), "connect")
+        self.push(Connect(self.opts.host, self.opts.port), "connect")
 
     def numeric(self, source, target, numeric, args, message):
         if numeric == 1:
             self.fire(JOIN(self.ircchannel))
         elif numeric == 433:
             self.nick = newnick = "%s_" % self.nick
-            self.fire(Nick(newnick), "NICK")
+            self.push(Nick(newnick), "NICK")
 
     def join(self, source, channel):
         if source[0].lower() == self.nick.lower():
