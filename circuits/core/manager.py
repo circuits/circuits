@@ -586,15 +586,16 @@ class Manager(object):
     def tick(self):
         try:
             [f() for f in self._ticks.copy()]
-            if self:
-                self.flush()
-            else:
-                sleep(TIMEOUT)
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
             etype, evalue, etraceback = _exc_info()
             self.fire(Error(etype, evalue, format_tb(etraceback)))
+
+        if self:
+            self.flush()
+        else:
+            sleep(TIMEOUT)
 
     def run(self, *args, **kwargs):
         log = kwargs.get("log", True)
