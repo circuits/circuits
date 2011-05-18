@@ -291,24 +291,24 @@ def main():
     if not opts.wait:
         if opts.concurrency > 1:
             for c in range(int(opts.concurrency)):
-                manager.push(Hello("hello"), "hello", c)
+                manager.fire(Hello("hello"), target=c)
         else:
-            manager.push(Hello("hello"))
+            manager.fire(Hello("hello"))
 
     while not state.done:
         try:
             manager.flush()
 
             for i in range(opts.fill):
-                manager.push(Foo())
+                manager.fire(Foo())
 
             if opts.events > 0 and monitor.events > opts.events:
-                manager.push(Stop())
+                manager.fire(Stop())
             if opts.time > 0 and (time.time() - monitor.sTime) > opts.time:
-                manager.push(Stop())
+                manager.fire(Stop())
 
         except KeyboardInterrupt:
-            manager.push(Stop())
+            manager.fire(Stop())
 
     if opts.verbose:
         print()

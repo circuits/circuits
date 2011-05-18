@@ -66,7 +66,7 @@ class Bridge(BaseComponent):
     def _process(self, id, obj):
         if isinstance(obj, Event):
             obj.remote = True
-            value = self._manager.push(obj)
+            value = self._manager.fire(obj)
             self._values[value] = id
             value.manager = self._manager
             value.onSet = "value",

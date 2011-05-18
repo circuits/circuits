@@ -23,7 +23,7 @@ def test():
     while app: app.flush()
 
     e = Test()
-    app.push(e)
+    app.fire(e)
     app.flush()
 
     s = dumps(e, -1)

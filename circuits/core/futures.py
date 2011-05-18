@@ -44,7 +44,7 @@ def future(pool=None):
                 setattr(self, "_pool", p)
                 return self.fire(Task(f, self, *args, **kwargs), target=p)
             else:
-                return Worker(channel=str(uuid())).push(
+                return Worker(channel=str(uuid())).fire(
                         Task(f, self, *args, **kwargs))
         wrapper.event = True
         return update_wrapper(wrapper, f)

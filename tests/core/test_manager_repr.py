@@ -21,6 +21,10 @@ class App(Component):
     def test(self, event, *args, **kwargs):
         pass
 
+class Test(Event):
+    pass
+
+
 def test():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
@@ -34,7 +38,7 @@ def test():
     m.flush()
     assert repr(m) == "<Manager %s (queued=0, channels=2, handlers=2) [S]>" % id
 
-    m.push(Event(), "test")
+    m.fire(Test())
     assert repr(m) == "<Manager %s (queued=1, channels=2, handlers=2) [S]>" % id
 
     m.flush()
