@@ -17,6 +17,6 @@ class App(BaseComponent):
 def test():
     app = App()
     while app: app.flush()
-    x = app.push(Test())
+    x = app.fire(Test())
     app.flush()
     assert x.value == "Hello World!"

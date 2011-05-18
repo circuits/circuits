@@ -8,7 +8,6 @@ from time import sleep
 
 import collections
 
-
 class Waiter(object):
     flag = False
 
