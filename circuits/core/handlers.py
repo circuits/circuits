@@ -50,13 +50,15 @@ def handler(*channels, **kwargs):
         f.filter = kwargs.get("filter", False)
         f.priority = kwargs.get("priority", 0)
         f.override = kwargs.get("override", False)
+        f.handlers = kwargs.get("handlers", set())
+        f.chandler = None
 
         args = getargspec(f)[0]
 
         if args and args[0] == "self":
             del args[0]
         f.event = getattr(f, "event", bool(args and args[0] == "event"))
-
+        print 'wrapping %s' % f.__name__
         return f
 
     return wrapper
@@ -76,7 +78,7 @@ class HandlerMetaClass(type):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(HandlerMetaClass, cls).__init__(name, bases, dct)
-
+        print 'creating %s' % name
         for k, v in dct.items():
             if (isinstance(v, Callable)
                     and not (k[0] == "_" or hasattr(v, "handler"))):

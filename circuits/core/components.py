@@ -79,7 +79,7 @@ class BaseComponent(Manager):
     def _registerHandlers(self, manager=None):
         if manager is None:
             p = lambda x: isinstance(x, collections.Callable) \
-                and getattr(x, "handler", False)
+                and getattr(x, "handler", False) is True
             handlers = [v for k, v in getmembers(self, p)]
             for handler in handlers:
                 target = handler.target or getattr(self, "channel", "*")

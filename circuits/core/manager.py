@@ -248,10 +248,10 @@ class Manager(BaseManager):
         else:
             handlers.update(self._events.get(channel, []))
 
-        print 'target: %s' % str(target)
-        print 'channel: %s' % str(channel)
-        print 'handlers: %s' % str(handlers)
-        print 'globals: %s' % str(self._globals)
+        #print 'target: %s' % str(target)
+        #print 'channel: %s' % str(channel)
+        #print 'handlers: %s' % str(handlers)
+        #print 'globals: %s' % str(self._globals)
         #if channel == 'unregister':
         #    import os
         #    os._exit(1)
@@ -298,7 +298,7 @@ class Manager(BaseManager):
 
         self._handler_cache.clear()
 
-        print 'addHandler: %s on %s' % (handler, channels)
+        #print 'addHandler: %s on %s' % (handler, channels)
         channels = getattr(handler, "channels", channels)
 
         target = kwargs.get("target", getattr(handler, "target",
@@ -309,12 +309,18 @@ class Manager(BaseManager):
 
         if "*" in channels and target == "*":
             if handler not in self._globals:
-                print 'registering global %s on %s' % (handler, self)
+                #print 'registering global %s on %s' % (handler, self)
                 self._globals.append(handler)
                 self._globals.sort(key=_sortkey, reverse=True)
         else:
             self._handlers.add(handler)
             for channel in channels:
+                # bind handler for a specific instance
+                if isinstance(target, Manager):
+                    chandler = getattr(target, channel)
+                    if chandler and handler != chandler:
+                        handler.chandler = chandler
+                        chandler.handlers.add(handler)
 
                 if channel not in self._events:
                     self._events[channel] = []
@@ -347,13 +353,17 @@ class Manager(BaseManager):
         self._handler_cache.clear()
 
         channels = getattr(handler, "channels", channels)
-        print 'removing handler: %s on %s' % (handler, channels)
+        #print 'removing handler: %s on %s' % (handler, channels)
 
 
         if handler in self._handlers:
             self._handlers.remove(handler)
 
         for channel in channels:
+            # remove binding from handler for a specific instance
+            if handler.chandler:
+                handler.chandler.handlers.remove(handler)
+
             if channel == '*' and handler in self._globals:
                 self._globals.remove(handler)
 
@@ -466,9 +476,9 @@ class Manager(BaseManager):
         handler = None
 
         handlers = self._getHandlers(channel)
-        print '=======> fetched %s handlers: %s' % (channel, str(handlers))
+        #print '=======> fetched %s handlers: %s' % (channel, str(handlers))
         for handler in handlers:
-            print 'handling: %s' % handler
+            #print 'handling: %s' % handler
             error = None
             event.handler = handler
 
