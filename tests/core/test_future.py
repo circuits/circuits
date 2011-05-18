@@ -20,7 +20,7 @@ class App(Component):
 
     @future()
     def test(self):
-        return self.push(Hello())
+        return self.fire(Hello())
 
     @future()
     def error(self):
@@ -35,7 +35,7 @@ class BaseApp(BaseComponent):
     @handler("test")
     @future()
     def _on_test(self):
-        return self.push(Hello())
+        return self.fire(Hello())
 
     @handler("error")
     @future()

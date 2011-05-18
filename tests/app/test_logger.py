@@ -13,7 +13,7 @@ class Test(Event):
 class App(Component):
 
     def test(self, level="debug"):
-        self.push(Log(level, "Hello World!"))
+        self.fire(Log(level, "Hello World!"))
 
 def test(tmpdir):
     filepath = tmpdir.ensure("test.log")

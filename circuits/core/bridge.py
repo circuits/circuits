@@ -59,7 +59,7 @@ class Bridge(BaseComponent):
         try:
             eid = self._values[value]
             s = dumps((eid, value), -1)
-            self.push(Write(s), target=self._socket)
+            self.fire(Write(s), target=self._socket)
         except:
             return
 
@@ -87,7 +87,7 @@ class Bridge(BaseComponent):
             eid = id(event)
             self._values[eid] = event.value
             s = dumps((eid, event))
-            self.push(Write(s), target=self._socket)
+            self.fire(Write(s), target=self._socket)
         except:
             return
 

@@ -20,7 +20,7 @@ class App(Component):
         return "Hello World!"
 
     def test(self):
-        return self.push(Hello())
+        return self.fire(Hello())
 
     def error(self):
         raise Exception("Error!")
@@ -35,7 +35,7 @@ class App(Component):
 
     @handler("values", priority=0.0)
     def _value3(self):
-        return self.push(Hello())
+        return self.fire(Hello())
 
 
 m = Manager()
