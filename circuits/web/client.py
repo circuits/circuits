@@ -79,12 +79,12 @@ class Client(BaseComponent):
     @handler("write")
     def write(self, data):
         if self._transport.connected:
-            self.fire(Write(data), self._transport)
+            self.fire(Write(data), target=self._transport)
 
     @handler("close")
     def close(self):
         if self._transport.connected:
-            self.fire(Close(), self._transport)
+            self.fire(Close(), target=self._transport)
 
     @handler("connect")
     def connect(self):
@@ -98,9 +98,9 @@ class Client(BaseComponent):
             headers = Headers([(k, v) for k, v in headers.items()])
             command = "%s %s HTTP/1.1" % (method, path)
             message = "%s\r\n%s" % (command, headers)
-            self.fire(Write(message.encode('utf-8')), self._transport)
+            self.fire(Write(message.encode('utf-8')), target=self._transport)
             if body:
-                self.fire(Write(body), self._transport)
+                self.fire(Write(body), target=self._transport)
         else:
             raise NotConnected()
 
@@ -108,7 +108,7 @@ class Client(BaseComponent):
     def _on_response(self, response):
         self._response = response
         if response.headers.get("Connection") == "Close":
-            self.fire(Close(), self._transport)
+            self.fire(Close(), target=self._transport)
 
     @property
     def connected(self):

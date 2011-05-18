@@ -50,7 +50,7 @@ def test():
     while app: app.flush()
     e = Test()
     assert e.future == False
-    x = app.fire(e)
+    x = app.push(e)
     while not x.result:
         app.flush()
     assert e.future == True
@@ -61,7 +61,7 @@ def test_error():
     while app: app.flush()
     e = Error()
     assert e.future == False
-    x = app.fire(e)
+    x = app.push(e)
     while not x.errors:
         app.flush()
     assert e.future == True
@@ -76,7 +76,7 @@ def test_base():
     while app: app.flush()
     e = Test()
     assert e.future == False
-    x = app.fire(e)
+    x = app.push(e)
     while not x.result:
         app.flush()
     assert e.future == True
@@ -87,7 +87,7 @@ def test_base_error():
     while app: app.flush()
     e = Error()
     assert e.future == False
-    x = app.fire(e)
+    x = app.push(e)
     while not x.errors:
         app.flush()
     assert e.future == True

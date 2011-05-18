@@ -78,7 +78,7 @@ def test():
         app.flush()
 
     e = Test()
-    x = app.fire(e)
+    x = app.push(e)
 
     app.flush()
 
@@ -114,7 +114,7 @@ def test_failure():
         app.flush()
 
     e = Test(error=True)
-    x = app.fire(e)
+    x = app.push(e)
 
     app.flush()
 
@@ -153,7 +153,7 @@ def test_filter():
         app.flush()
 
     e = Test(filter=True)
-    x = app.fire(e)
+    x = app.push(e)
 
     app.flush()
 

@@ -29,7 +29,7 @@ def test(tmpdir):
     f = open(filename, "r+")
 
     def test(f, level="debug"):
-        app.fire(Test(level))
+        app.push(Test(level))
         while app:
             app.flush()
         now = strftime("%H:%M:%S")

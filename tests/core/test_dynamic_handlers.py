@@ -25,7 +25,7 @@ def test():
     app = App()
 
     e = Test()
-    app.fire(e)
+    app.push(e)
     app.flush()
 
     assert app._event == e
@@ -34,7 +34,7 @@ def test_target():
     app = App()
 
     e = Test()
-    app.fire(e, "foo")
+    app.push(e, target="foo")
     app.flush()
 
     assert app._event == e

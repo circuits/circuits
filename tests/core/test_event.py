@@ -25,7 +25,7 @@ def test_repr():
     s = repr(e)
     assert s == "<Test[] [] {}>"
 
-    app.fire(e)
+    app.push(e)
 
     s = repr(e)
     assert s == "<Test[*:test] [] {}>"

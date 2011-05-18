@@ -19,7 +19,7 @@ def test():
 
     loader.load("app")
 
-    x = m.fire(Test())
+    x = m.push(Test())
 
     assert pytest.wait_for(x, "result")
 

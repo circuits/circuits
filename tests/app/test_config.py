@@ -24,7 +24,7 @@ def pytest_funcarg__config(request):
     Debugger().register(config)
     config.start()
 
-    config.fire(Load())
+    config.push(Load())
 
     assert pytest.wait_event(config, "load_success")
 
@@ -83,7 +83,7 @@ def test_load(tmpdir):
     Debugger().register(config)
     config.start()
 
-    config.fire(Load())
+    config.push(Load())
 
     assert pytest.wait_event(config, "load_success")
 
@@ -106,7 +106,7 @@ def test_save(tmpdir):
     config.add_section("test")
     config.set("test", "foo", "bar")
 
-    config.fire(Save())
+    config.push(Save())
 
     assert pytest.wait_event(config, "save_success")
 

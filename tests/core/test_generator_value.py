@@ -24,7 +24,7 @@ def test_return_generator():
     app = App()
     while app: app.flush()
 
-    v = app.fire(Test())
+    v = app.push(Test())
     app.flush()
 
     g = v.value
@@ -35,7 +35,7 @@ def test_yield():
     app = App()
     while app: app.flush()
 
-    v = app.fire(Hello())
+    v = app.push(Hello())
     app.flush()
 
     g = v.value

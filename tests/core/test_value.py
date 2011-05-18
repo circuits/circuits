@@ -45,19 +45,19 @@ app.register(m)
 while m: m.flush()
 
 def test_value():
-    x = m.fire(Hello())
+    x = m.push(Hello())
     while m: m.flush()
     assert "Hello World!" in x
     assert x.value == "Hello World!"
 
 def test_nested_value():
-    x = m.fire(Test())
+    x = m.push(Test())
     while m: m.flush()
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
 
 def test_error_value():
-    x = m.fire(Error())
+    x = m.push(Error())
     while m: m.flush()
     etype, evalue, etraceback = x
     assert etype is Exception
@@ -65,7 +65,7 @@ def test_error_value():
     assert isinstance(etraceback, list)
 
 def test_multiple_values():
-    v = m.fire(Values())
+    v = m.push(Values())
     while m: m.flush()
     assert isinstance(v.value, list)
     x = list(v)

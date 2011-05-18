@@ -50,7 +50,7 @@ class Command(Component):
     @handler("disconnect", target="server")
     def disconnect(self, sock):
         if sock == self._request.sock:
-            self.fire(Kill(), self)
+            self.fire(Kill(), target=self)
 
     @handler("response", target="http", priority=-1)
     def response(self, response):
@@ -63,14 +63,14 @@ class Command(Component):
 
     def input(self, data):
         if self._stdin is not None:
-            self.fire(Write(data), self._stdin)
+            self.fire(Write(data), target=self._stdin)
 
     def _on_stdout_eof(self):
         if self._buffer is not None:
             self._buffer.flush()
             data = self._buffer.getvalue()
-            self.fire(Stream(self._response, data), "http")
-        self.fire(Stream(self._response, None), "http")
+            self.fire(Stream(self._response, data), target="http")
+        self.fire(Stream(self._response, None), target="http")
         self.fire(Kill())
 
     def _on_stdout_read(self, data):
@@ -84,9 +84,9 @@ class Command(Component):
                 self._buffer.flush()
                 data = self._buffer.getvalue()
                 self._buffer = None
-                self.fire(Stream(self._response, data), "http")
+                self.fire(Stream(self._response, data), target="http")
             else:
-                self.fire(Stream(self._response, data), "http")
+                self.fire(Stream(self._response, data), target="http")
 
 class Root(Controller):
 

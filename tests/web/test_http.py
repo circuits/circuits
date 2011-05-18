@@ -33,11 +33,11 @@ def test(webapp):
     client.start()
 
     host, port, resource, secure = parse_url(webapp.server.base)
-    client.fire(Connect(host, port))
+    client.push(Connect(host, port))
     assert pytest.wait_for(transport, "connected")
 
-    client.fire(Write(b"GET / HTTP/1.1\r\n"))
-    client.fire(Write(b"Content-Type: text/plain\r\n\r\n"))
+    client.push(Write(b"GET / HTTP/1.1\r\n"))
+    client.push(Write(b"Content-Type: text/plain\r\n\r\n"))
     assert pytest.wait_for(client, "done")
 
     client.stop()

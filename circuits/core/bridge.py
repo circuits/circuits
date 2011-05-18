@@ -59,14 +59,14 @@ class Bridge(BaseComponent):
         try:
             eid = self._values[value]
             s = dumps((eid, value), -1)
-            self.fire(Write(s), self._socket)
+            self.fire(Write(s), target=self._socket)
         except:
             return
 
     def _process(self, id, obj):
         if isinstance(obj, Event):
             obj.remote = True
-            value = self._manager.fire(obj)
+            value = self._manager.push(obj)
             self._values[value] = id
             value.manager = self._manager
             value.onSet = "value",
@@ -87,7 +87,7 @@ class Bridge(BaseComponent):
             eid = id(event)
             self._values[eid] = event.value
             s = dumps((eid, event))
-            self.fire(Write(s), self._socket)
+            self.fire(Write(s), target=self._socket)
         except:
             return
 

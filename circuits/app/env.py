@@ -174,11 +174,11 @@ class Environment(BaseComponent):
                         "path": self.path,
                     }
                 self.config.set(section, option, value)
-        return self.fire(config.Save(), self.config)
+        return self.fire(config.Save(), target=self.config)
 
     def _load(self):
         # Create Config Component
         configfile = joinpath(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile).register(self)
-        self.fire(config.Load(), self.config)
+        self.fire(config.Load(), target=self.config)
         return True

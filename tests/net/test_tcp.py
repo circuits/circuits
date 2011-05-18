@@ -54,19 +54,19 @@ def test_tcp_basic(Poller):
         assert pytest.wait_for(client, "ready")
         assert pytest.wait_for(server, "ready")
 
-        client.fire(Connect(server.host, server.port))
+        client.push(Connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.push(Close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.push(Close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
@@ -87,32 +87,32 @@ def test_tcp_reconnect(Poller):
         assert pytest.wait_for(server, "ready")
 
         # 1st connect
-        client.fire(Connect(server.host, server.port))
+        client.push(Connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
         # disconnect
-        client.fire(Close())
+        client.push(Close())
         assert pytest.wait_for(client, "disconnected")
 
         # 2nd reconnect
-        client.fire(Connect(server.host, server.port))
+        client.push(Connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.push(Close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.push(Close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
@@ -137,10 +137,10 @@ def test_tcp_connect_closed_port(Poller):
         tcp_server._sock.close()
 
         # 1st connect
-        client.fire(Connect(host, port))
+        client.push(Connect(host, port))
         assert pytest.wait_for(client, "connected")
 
-        client.fire(Write(b"foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(client, "disconnected")
     finally:
         m.stop()
@@ -164,21 +164,21 @@ def test_tcp_bind(Poller):
         assert pytest.wait_for(client, "ready")
         assert pytest.wait_for(server, "ready")
 
-        client.fire(Connect(server.host, server.port))
+        client.push(Connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
         assert server.client[1] == bind_port
 
-        client.fire(Write(b"foo"))
+        client.push(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.push(Close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.push(Close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()

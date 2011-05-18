@@ -68,7 +68,7 @@ class Startup(BaseComponent):
 
     @handler("environment_loaded", target="env")
     def _on_environment_loaded(self, *args):
-        self.fire(Command(), self, self.command)
+        self.fire(Command(), self.command, self)
 
     @handler("started")
     def _on_started(self, component, mode):
@@ -76,12 +76,12 @@ class Startup(BaseComponent):
             if not os.path.exists(self.env.path):
                 raise Error("Environment does not exist!")
             else:
-                self.fire(LoadEnvironment(), self.env)
+                self.fire(LoadEnvironment(), target=self.env)
         else:
             if os.path.exists(self.env.path):
                 raise Error("Environment already exists!")
             else:
-                self.fire(Command(), self, self.command)
+                self.fire(Command(), self.command, self)
 
     @handler("start")
     def _on_start(self):
@@ -102,9 +102,9 @@ class Startup(BaseComponent):
 
     @handler("restart")
     def _on_restart(self):
-        self.fire(Command(), self.channel, "stop")
+        self.fire(Command(), "stop", self.channel)
         sleep(1)
-        self.fire(Command(), self.channel, "start")
+        self.fire(Command(), "start", self.channel)
 
     @handler("rehash")
     def _on_rehash(self):
@@ -114,8 +114,8 @@ class Startup(BaseComponent):
 
     @handler("init")
     def _on_init(self):
-        self.fire(CreateEnvironment(), self.env)
+        self.fire(CreateEnvironment(), target=self.env)
 
     @handler("upgrade")
     def _on_upgrade(self):
-        self.fire(UpgradeEnvironment(), self.env)
+        self.fire(UpgradeEnvironment(), target=self.env)

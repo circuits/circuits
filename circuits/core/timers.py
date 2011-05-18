@@ -45,7 +45,7 @@ class Timer(BaseComponent):
 
     def __tick__(self):
         if time() > self._eTime:
-            self.fire(self.e, self.t, self.c)
+            self.fire(self.e, self.c, self.t)
 
             if self.persist:
                 self.reset()

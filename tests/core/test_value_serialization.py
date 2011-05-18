@@ -22,7 +22,7 @@ def test():
     app = App()
     while app: app.flush()
 
-    v = app.fire(Test())
+    v = app.push(Test())
     while app: app.flush()
 
     s = dumps(v, -1)

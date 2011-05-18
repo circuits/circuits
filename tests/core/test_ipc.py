@@ -21,7 +21,7 @@ def test():
 
     assert pytest.wait_for(app._bridge, "ready")
 
-    x = m.fire(Hello())
+    x = m.push(Hello())
 
     assert pytest.wait_for(x, "result")
     s = str(x)

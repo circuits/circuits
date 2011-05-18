@@ -366,9 +366,9 @@ class Manager(object):
         self._queue.append((event, channel))
 
     def fireEvent(self, event, channel=None, target=None):
-        """Fire a new Event into the System
+        """Fire/Push a new Event into the system (queue)
 
-        This will fire the given Event, Channel and Target onto the
+        This will push the given Event, Channel and Target onto the
         Event Queue for later processing.
 
         if target is None, then target will be set as the Channel of
@@ -586,15 +586,16 @@ class Manager(object):
     def tick(self):
         try:
             [f() for f in self._ticks.copy()]
-            if self:
-                self.flush()
-            else:
-                sleep(TIMEOUT)
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
             etype, evalue, etraceback = _exc_info()
             self.fire(Error(etype, evalue, format_tb(etraceback)))
+
+        if self:
+            self.flush()
+        else:
+            sleep(TIMEOUT)
 
     def run(self, *args, **kwargs):
         log = kwargs.get("log", True)
