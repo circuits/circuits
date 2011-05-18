@@ -632,15 +632,16 @@ class Manager(BaseManager):
     def tick(self):
         try:
             [f() for f in self._ticks.copy()]
-            if self:
-                self.flush()
-            else:
-                sleep(TIMEOUT)
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
             etype, evalue, etraceback = _exc_info()
             self.fire(Error(etype, evalue, format_tb(etraceback)))
+
+        if self:
+            self.flush()
+        else:
+            sleep(TIMEOUT)
 
     def _run(self, log, __mode, __socket):
         if current_thread().getName() == "MainThread":
