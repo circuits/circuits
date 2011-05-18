@@ -78,15 +78,18 @@ class BaseComponent(Manager):
 
     def _registerHandlers(self, manager=None):
         if manager is None:
-            p = lambda x: isinstance(x, collections.Callable) and getattr(x, "handler", False)
+            p = lambda x: isinstance(x, collections.Callable) \
+                and getattr(x, "handler", False)
             handlers = [v for k, v in getmembers(self, p)]
             for handler in handlers:
                 target = handler.target or getattr(self, "channel", "*")
-                self.add(handler, target=target)
+                self.addHandler(handler, target=target)
         else:
+            print 'MANAGER: %s' % manager
             for handler in chain(self._globals, self._handlers):
-                kwargs = {}
-                kwargs = self._handlerattrs[handler]
+                kwargs = handler.__dict__.copy()
+                if 'handler' in kwargs:
+                    del kwargs['handler']
                 if not kwargs.get("target"):
                     kwargs["target"] = getattr(self, "channel", "*")
                 if "channels" in kwargs:
@@ -94,7 +97,9 @@ class BaseComponent(Manager):
                     del kwargs["channels"]
                 else:
                     channels = ()
-                manager.add(handler, *channels, **kwargs)
+                print 'handler: %s' % handler.__name__
+                print 'channels: %s' % str(channels)
+                manager.addHandler(handler, *channels, **kwargs)
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():
@@ -112,8 +117,9 @@ class BaseComponent(Manager):
         in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
-
+        print 'REGISTER: %s on %s' % (self, manager)
         def _register(c, m, r):
+            print '_register: %s on %s' % (c, m)
             c._registerHandlers(m)
             c.root = r
             if c._queue:
@@ -141,11 +147,7 @@ class BaseComponent(Manager):
         return self
 
     @handler('unregister')
-    def on_unregister(self, component=None):
-        if component == self or component == None:
-            self.unregister()
-
-    def unregister(self):
+    def unregister(self, component=None):
         """Unregister all registered Event Handlers
         
         This will unregister all registered Event Handlers of this Component
@@ -153,6 +155,9 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
+        if component != self and component != None:
+            return
+
         def _unregister(c, m, r):
             c._unregisterHandlers(m)
             c.root = self

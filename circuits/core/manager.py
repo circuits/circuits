@@ -119,7 +119,7 @@ class Manager(BaseManager):
         self._handlers = set()
         self._handlerattrs = dict()
         self._handler_cache = dict()
-        self._components = dict()
+        self._events = dict()
 
         self._ticks = set()
 
@@ -234,49 +234,29 @@ class Manager(BaseManager):
 
         target, channel = _channel
 
-        get = self.channels.get
-        comp_map = self._components.get
-        tmap = self._tmap.get
-        cmap = self._cmap.get
-
         def _sortkey(handler):
-            return (self._handlerattrs[handler]["priority"],
-                    self._handlerattrs[handler]["filter"])
+            return (handler.priority, handler.filter)
 
         # Global Channels
         handlers = set(self._globals)
 
-        # This channel on all targets
-        if channel == "*":
-            if isinstance(target, Manager):
-                handlers.update(tmap(id(target), []))
-            else:
-                handlers.update(tmap(target, []))
-            handlers = sorted(handlers, key=_sortkey, reverse=True)
-            self._handler_cache[_channel] = handlers
-            return handlers
-
-        # Every channel on this target
-        if target == "*":
-            handlers.update(cmap(channel, []))
-            handlers = sorted(handlers, key=_sortkey, reverse=True)
-            self._handler_cache[_channel] = handlers
-            return handlers
-
-        # Any global channels
-        handlers.update(get(("*", channel), []))
-
-        # Any global channels for this target
-        handlers.update(get((channel, "*"), []))
-
         # The actual channel and target
         if isinstance(target, Manager):
-            handlers.update(comp_map((target, channel), []))
+            handler = getattr(target, channel, None)
+            if handler and hasattr(handler, "handler"):
+                handlers.add(handler)
         else:
-            handlers.update(get(_channel, []))
+            handlers.update(self._events.get(channel, []))
+
+        #print _channel
+        #print handlers
+        print 'globals: %s' % str(self._globals)
+        #import os
+        #os._exit()
 
         handlers = sorted(handlers, key=_sortkey, reverse=True)
         self._handler_cache[_channel] = handlers
+
         return handlers
 
     @property
@@ -317,69 +297,31 @@ class Manager(BaseManager):
         self._handler_cache.clear()
 
         channels = getattr(handler, "channels", channels)
+        #print handler
+        #print channels
 
         target = kwargs.get("target", getattr(handler, "target",
             getattr(self, "channel", "*")))
 
-        if isinstance(target, Manager):
-            target = getattr(target, "channel", "*")
-
-        attrs = {}
-        attrs["channels"] = channels
-        attrs["target"] = target
-
-        attrs["filter"] = getattr(handler, "filter",
-                kwargs.get("filter", False))
-        attrs["priority"] = getattr(handler, "priority",
-                kwargs.get("priority", 0))
-
-        if not hasattr(handler, "event"):
-            args = getargspec(handler)[0]
-            if args and args[0] == "self":
-                del args[0]
-            attrs["event"] = bool(args and args[0] == "event")
-        else:
-            attrs["event"] = getattr(handler, "event")
-
-        self._handlerattrs[handler] = attrs
-
         def _sortkey(handler):
-            return (self._handlerattrs[handler]["priority"],
-                    self._handlerattrs[handler]["filter"])
+            return (handler.priority, handler.filter)
 
-        if not channels and target == "*":
+        if "*" in channels and target == "*":
             if handler not in self._globals:
+                print 'registering global %s on %s' % (handler, self)
                 self._globals.append(handler)
                 self._globals.sort(key=_sortkey, reverse=True)
         else:
+            self._handlers.add(handler)
             for channel in channels:
-                self._handlers.add(handler)
 
-                if (handler.im_self, channel) not in self._components:
-                    self._components[(handler.im_self, channel)] = []
+                if channel not in self._events:
+                    self._events[channel] = []
 
-                if handler not in self._components[(handler.im_self, channel)]:
-                    self._components[(handler.im_self, channel)].append(handler)
-                    self._components[(handler.im_self, channel)].sort(
-                        key=_sortkey, reverse=True)
-
-                if (target, channel) not in self.channels:
-                    self.channels[(target, channel)] = []
-
-                if handler not in self.channels[(target, channel)]:
-                    self.channels[(target, channel)].append(handler)
-                    self.channels[(target, channel)].sort(key=_sortkey,
+                if handler not in self._events[channel]:
+                    self._events[channel].append(handler)
+                    self._events[channel].sort(key=_sortkey,
                             reverse=True)
-
-                if target not in self._tmap:
-                    self._tmap[target] = []
-                if handler not in self._tmap[target]:
-                    self._tmap[target].append(handler)
-
-                if channel not in self._cmap:
-                    self._cmap[channel] = []
-                if handler not in self._cmap[channel]:
-                    self._cmap[channel].append(handler)
 
     def add(self, *args, **kwargs):
         """Deprecated in 1.6
@@ -417,28 +359,13 @@ class Manager(BaseManager):
             del self._handlerattrs[handler]
 
         for channel in channels:
-            if handler in self.channels[channel]:
-                self.channels[channel].remove(handler)
-            if not self.channels[channel]:
-                del self.channels[channel]
-
             (target, channel) = channel
+            if handler in self._events[channel]:
+                self._events[channel].remove(handler)
+            if not self._events[channel]:
+                del self._events[channel]
 
-            if (handler.im_self, channel) in self._components:
-                if handler in self._components[(handler.im_self, channel)]:
-                    self._components[(handler.im_self, channel)].remove(handler)
-                if not self._components[(handler.im_self, channel)]:
-                    del self._components[(handler.im_self, channel)]
 
-            if target in self._tmap and handler in self._tmap[target]:
-                self._tmap[target].remove(handler)
-                if not self._tmap[target]:
-                    del self._tmap[target]
-
-            if channel in self._cmap and handler in self._cmap[channel]:
-                self._cmap[channel].remove(handler)
-                if not self._cmap[channel]:
-                    del self._cmap[channel]
 
     def remove(self, *args, **kwargs):
         """Deprecated in 1.6
@@ -547,10 +474,9 @@ class Manager(BaseManager):
         for handler in handlers[:]:
             error = None
             event.handler = handler
-            attrs = handlerattrs[handler]
 
             try:
-                if attrs["event"]:
+                if handler.event:
                     retval = handler(event, *eargs, **ekwargs)
                 else:
                     retval = handler(*eargs, **ekwargs)
@@ -571,7 +497,7 @@ class Manager(BaseManager):
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
-            if retval and attrs["filter"]:
+            if retval and handler.filter:
                 if event.filter is not None:
                     self.push(Filter(event, handler, retval), *event.filter)
                 return  # Filter

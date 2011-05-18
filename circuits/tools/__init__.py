@@ -111,13 +111,11 @@ def reprhandler(c, h):
     @rtype:  str
     """
 
-    attrs = c._handlerattrs[h]
-
     format = "<%s on %s {target=%s, priority=%0.1f}>"
-    channels = repr(attrs["channels"])
-    f = "filter" if attrs["filter"] else "listener"
-    t = repr(attrs["target"])
-    p = attrs["priority"]
+    channels = repr(h.channels)
+    f = "filter" if h.filter else "listener"
+    t = repr(h.target)
+    p = h.priority
     return format % (f, channels, t, p)
 
 
