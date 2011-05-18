@@ -8,8 +8,10 @@ from time import sleep
 
 import collections
 
+from circuits import Component
 
-class Waiter(object):
+
+class Waiter(Component):
     flag = False
 
     def handler(self, *args, **kwargs):
