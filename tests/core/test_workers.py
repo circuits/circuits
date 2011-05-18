@@ -17,7 +17,7 @@ def f():
 def test():
     w = Worker()
 
-    x = w.push(Task(f))
+    x = w.fire(Task(f))
 
     while not x.result: pass
 

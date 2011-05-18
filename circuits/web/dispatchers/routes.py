@@ -153,7 +153,7 @@ class Routes(BaseComponent):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.push(req, channel, target=target)
+            return self.fire(req, channel, target=target)
 
     @handler("registered", target="*")
     def _on_registered(self, event, component, manager):

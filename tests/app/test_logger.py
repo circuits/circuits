@@ -13,7 +13,7 @@ class Test(Event):
 class App(Component):
 
     def test(self, level="debug"):
-        self.push(Log(level, "Hello World!"))
+        self.fire(Log(level, "Hello World!"))
 
 def test(tmpdir):
     filepath = tmpdir.ensure("test.log")
@@ -29,7 +29,7 @@ def test(tmpdir):
     f = open(filename, "r+")
 
     def test(f, level="debug"):
-        app.push(Test(level))
+        app.fire(Test(level))
         while app:
             app.flush()
         now = strftime("%H:%M:%S")

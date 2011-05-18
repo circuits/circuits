@@ -32,7 +32,7 @@ def test():
     pid = os.getpid()
     e = Hello()
     assert e.future == False
-    x = app.push(e)
+    x = app.fire(e)
 
     assert pytest.wait_for(e, "future", True)
     assert e.future == True

@@ -39,7 +39,7 @@ class JSONRPC(BaseComponent):
         id = value.id
         response = value.response
         response.body = self._response(id, value.value)
-        self.push(Response(response), target=self.channel)
+        self.fire(Response(response), target=self.channel)
         value.handled = True
 
     @handler("request", filter=True, priority=0.1)
@@ -62,9 +62,9 @@ class JSONRPC(BaseComponent):
                 t, c = self.target, method
 
             if type(params) is dict:
-                value = self.push(RPC(**params), c, t)
+                value = self.fire(RPC(**params), c, t)
             else:
-                value = self.push(RPC(*params), c, t)
+                value = self.fire(RPC(*params), c, t)
 
             value.id = id
             value.response = response

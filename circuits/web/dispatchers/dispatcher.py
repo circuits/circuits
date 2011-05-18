@@ -169,4 +169,4 @@ class Dispatcher(BaseComponent):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.push(req, channel, target)
+            return self.fire(req, channel, target)

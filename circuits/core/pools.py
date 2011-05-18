@@ -41,9 +41,9 @@ class Pool(BaseComponent):
         for worker in self._workers:
             if len(worker) < _avg:
                 assigned = worker.channel
-                return worker.push(Task(f, *args, **kwargs), target=worker)
+                return worker.fire(Task(f, *args, **kwargs), worker)
 
         if not assigned:
             worker = choice(self._workers)
             assigned = worker.channel
-            return worker.push(Task(f, *args, **kwargs), target=worker)
+            return worker.fire(Task(f, *args, **kwargs), worker)

@@ -366,9 +366,9 @@ class Manager(object):
         self._queue.append((event, channel))
 
     def fireEvent(self, event, channel=None, target=None):
-        """Fire/Push a new Event into the system (queue)
+        """Fire a new Event into the System
 
-        This will push the given Event, Channel and Target onto the
+        This will fire the given Event, Channel and Target onto the
         Event Queue for later processing.
 
         if target is None, then target will be set as the Channel of
