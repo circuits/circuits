@@ -7,9 +7,18 @@
 This module defines utilities used by circuits.
 """
 
+import re
 import sys
 
 from imp import reload
+
+UNCAMELRE1 = re.compile("(.)([A-Z][a-z]+)")
+UNCAMELRE2 = re.compile("([a-z0-9])([A-Z])")
+
+
+def uncamel(name):
+    s1 = UNCAMELRE1.sub("\1_\2", name)
+    return UNCAMELRE2.sub("\1_\2", s1).lower()
 
 
 def itercmp(x, c, subclass=True):
@@ -27,6 +36,7 @@ def itercmp(x, c, subclass=True):
                 for component in itercmp(component, c, subclass):
                     yield component
 
+
 def findcmp(x, c, subclass=True):
     components = itercmp(x, c, subclass)
     try:
@@ -34,11 +44,13 @@ def findcmp(x, c, subclass=True):
     except StopIteration:
         return None
 
+
 def findroot(x):
     if x.manager == x:
         return x
     else:
         return findroot(x.manager)
+
 
 def safeimport(name):
     modules = sys.modules.copy()

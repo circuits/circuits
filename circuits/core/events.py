@@ -7,6 +7,10 @@
 This module define the basic Event object and common events.
 """
 
+
+from .utils import uncamel
+
+
 class Event(object):
     """Create a new Event Object
 
@@ -61,7 +65,9 @@ class Event(object):
 
     @property
     def name(self):
-        return self.__class__.__name__
+        """Return the un-camel-case version of the class name"""
+
+        return uncamel(self.__class__.__name__)
 
     def __eq__(self, other):
         """ x.__eq__(other) <==> x==other
@@ -281,6 +287,7 @@ class Stopped(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Stopped, self).__init__(component)
+
 
 class Signal(Event):
     """Signal Event
