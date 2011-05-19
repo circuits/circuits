@@ -19,6 +19,11 @@ class Base(Component):
     def foo(self, event, *args, **kwargs):
         self.flag = True
 
+
+class Foo(Event):
+    pass
+
+
 def test():
     m = Manager()
     a = Base(channel="a")
@@ -32,7 +37,7 @@ def test():
     while m:
         m.flush()
 
-    m.push(Event(), "*")
+    m.fire(Foo(), "*")
     m.flush()
 
     assert not a.flag

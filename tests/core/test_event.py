@@ -28,7 +28,7 @@ def test_repr():
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*:test] [] {}>"
+    assert s == "<Test[*] [] {}>"
 
 def test_create():
     app = App()
@@ -42,7 +42,7 @@ def test_create():
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*:test] [] {}>"
+    assert s == "<Test[*] [] {}>"
 
 def test_getitem():
     app = App()

@@ -188,19 +188,16 @@ class Manager(object):
             return "S"
 
     def getHandlers(self, event, channel):
-        #print '%s getHandlers %s on %s' % (self, event.name, channel)
-        #print self._handlers
         name = event.name.lower()
 
         handlers = set()
 
-        handler = getattr(self, name, None)
         if name in self._handlers:
             for handler in self._handlers[name]:
                 handler_target = handler.target if handler.target else \
                     handler.im_self.channel
-                if channel is None or handler_target == channel \
-                    or handler.target == "*":
+                if channel == "*" or handler_target == "*" \
+                    or handler_target == channel:
                     handlers.add(handler)
 
         handlers.update(self._globals)
@@ -208,11 +205,12 @@ class Manager(object):
         for c in self.components:
             handlers.update(c.getHandlers(event, channel))
 
-        #print handlers
         return handlers
 
     def registerChild(self, component):
         self.components.add(component)
+        self.manager._queue.extend(list(component._queue))
+        component._queue.clear()
 
     def unregisterChild(self, component):
         self.components.remove(component)
@@ -241,9 +239,11 @@ class Manager(object):
         @keyword target: The target Component's channel this Event is bound for
         :type    target: str or Component
         """
-        #print 'firing %s on %s' % (event.name, target)
 
-        event.channel = target
+        if target:
+            event.channel = target
+        elif not event.channel:
+            event.channel = "*"
 
         event.value = Value(event, self)
 
@@ -327,7 +327,6 @@ class Manager(object):
     flush = flushEvents
 
     def _dispatcher(self, event, channel):
-        print 'dispatching %s on %s' % (event.name, channel)
         eargs = event.args
         ekwargs = event.kwargs
 
@@ -337,14 +336,16 @@ class Manager(object):
         def _sortkey(handler):
             return (handler.priority, handler.filter)
 
-        handlers = sorted(self.getHandlers(event, channel),
-            key=_sortkey, reverse=True)
-        #print 'handlers for %s' % event.name
-        #print handlers
+        if (event, channel) in self._handler_cache:
+            handlers = self._handler_cache[(event, channel)]
+        else:
+            handlers = sorted(self.getHandlers(event, channel),
+                key=_sortkey, reverse=True)
+            self._handler_cache[(event, channel)] = handlers
+
         for handler in handlers:
             error = None
             event.handler = handler
-            #print 'executing handler: %s' % handler
             try:
                 if handler.event:
                     retval = handler(event, *eargs, **ekwargs)

@@ -93,7 +93,6 @@ class BaseComponent(Manager):
         given Manager. A Registered Event will also be sent.
         """
         if manager != self:
-            #print 'registering %s on %s' % (self, manager)
             manager.registerChild(self)
 
         # what's the difference between manager and root ?

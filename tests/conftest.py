@@ -8,7 +8,9 @@ from time import sleep
 
 import collections
 
-class Waiter(object):
+from circuits import Component
+
+class Waiter(Component):
     flag = False
 
     def handler(self, *args, **kwargs):
@@ -23,12 +25,14 @@ def wait_event(m, channel, target=None, timeout=3.0):
     if target is None:
         target = m
 
-    m.addHandler(waiter.handler, channel, target=target)
-
-    for i in range(int(timeout / TIMEOUT)):
-        if waiter.flag:
-            return True
-        sleep(TIMEOUT)
+    waiter.register(m)
+    try:
+        for i in range(int(timeout / TIMEOUT)):
+            if waiter.flag:
+                return True
+            sleep(TIMEOUT)
+    finally:
+        waiter.unregister()
 
 
 def wait_for(obj, attr, value=True, timeout=3.0):
