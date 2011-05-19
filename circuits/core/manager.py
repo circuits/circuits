@@ -334,12 +334,12 @@ class Manager(object):
         def _sortkey(handler):
             return (handler.priority, handler.filter)
 
-        if (event, channel) in self._handler_cache:
-            handlers = self._handler_cache[(event, channel)]
+        if (event.name, channel) in self._handler_cache:
+            handlers = self._handler_cache[(event.name, channel)]
         else:
             handlers = sorted(self.getHandlers(event, channel),
                 key=_sortkey, reverse=True)
-            self._handler_cache[(event, channel)] = handlers
+            self._handler_cache[(event.name, channel)] = handlers
 
         for handler in handlers:
             error = None
