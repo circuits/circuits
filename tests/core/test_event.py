@@ -30,6 +30,20 @@ def test_repr():
     s = repr(e)
     assert s == "<Test[*:test] [] {}>"
 
+def test_create():
+    app = App()
+    while app: app.flush()
+
+    e = Event.create("Test")
+
+    s = repr(e)
+    assert s == "<Test[] [] {}>"
+
+    app.fire(e)
+
+    s = repr(e)
+    assert s == "<Test[*:test] [] {}>"
+
 def test_getitem():
     app = App()
     while app: app.flush()

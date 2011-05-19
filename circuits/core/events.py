@@ -40,6 +40,10 @@ class Event(object):
     start = None
     end = None
 
+    @classmethod
+    def create(cls, name, *args, **kwargs):
+        return type(cls)(name, (cls,), {})(*args, **kwargs)
+
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
