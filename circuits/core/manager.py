@@ -197,7 +197,7 @@ class Manager(object):
         if name in self._handlers:
             for handler in self._handlers[name]:
                 handler_target = handler.target if handler.target else \
-                    handler.im_self.channel
+                    handler.__self__.channel
                 if channel == "*" or handler_target == "*" \
                     or handler_target == channel:
                     handlers.add(handler)
