@@ -27,7 +27,7 @@ except ImportError:
 from .values import Value
 from .events import Event, Started, Stopped, Signal
 from .events import Error, Success, Failure, Filter, Start, End
-
+from circuits.tools import convert_capitals
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
 
@@ -188,7 +188,7 @@ class Manager(object):
             return "S"
 
     def getHandlers(self, event, channel):
-        name = event.name.lower()
+        name = convert_capitals(event.name)
 
         handlers = set()
 
