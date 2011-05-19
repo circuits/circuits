@@ -16,6 +16,7 @@ from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
+from itertools import chain
 
 try:
     from greenlet import getcurrent as getcurrent_greenlet, greenlet
@@ -47,8 +48,9 @@ class Manager(object):
         self._tasks = set()
         self._queue = deque()
         self.channels = dict()
-        self._handlers = set()
+        self._handlers = dict()
         self._handler_cache = dict()
+        self._children_channels = dict()
 
         self._ticks = set()
 
@@ -186,6 +188,42 @@ class Manager(object):
         else:
             return "S"
 
+    def getHandlers(self, _channel):
+        target, channel = _channel
+        targets = [target]
+        #name = event.name.lower()
+        name = channel
+
+        handlers = set()
+
+        handler = getattr(self, name, None)
+        if handler and getattr(handler, 'handler', False) is True:
+            for target in targets:
+                if target in handler.channels:
+                    handlers.add(handler)
+                    break
+
+        for target in targets:
+            for c in self._children_channels.get(target, ()):
+                handlers.update(c.getHandlers(targets, event))
+
+        def _sortkey(handler):
+             return (handler.priority, handler.filter)
+
+        return sorted(handlers, key=_sortkey, reverse=True)
+
+    def registerChild(self, component):
+        channels = chain(component._handlers.keys(),
+            component._children_channels)
+        for channel in channels:
+            if channel not in self._children_channels:
+                self._children_channels[channel] = set()
+            self._children_channels[channel].add(component)
+
+    def unregisterChild(self, component):
+        for channel, components in self._children_channels:
+            components.remove(component)
+
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
@@ -315,7 +353,7 @@ class Manager(object):
         retval = None
         handler = None
 
-        for handler in self._getHandlers(channel):
+        for handler in self.getHandlers(channel):
             error = None
             event.handler = handler
 
