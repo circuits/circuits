@@ -16,7 +16,7 @@ try:
     import hotshot
     import hotshot.stats
 except ImportError:
-    hostshot = None
+    hotshot = None
 
 try:
     import psyco
