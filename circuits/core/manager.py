@@ -45,7 +45,6 @@ class Manager(object):
         self._globals = set()
         self._tasks = set()
         self._queue = deque()
-        self.channels = dict()
         self._handlers = dict()
         self._handler_cache = dict()
 
@@ -71,7 +70,6 @@ class Manager(object):
             channel = ""
 
         q = len(self._queue)
-        c = len(self.channels)
         h = len(self._handlers)
         state = self.state
 
@@ -82,8 +80,8 @@ class Manager(object):
         else:
             id = current_thread().getName()
 
-        format = "<%s%s %s (queued=%d, channels=%d, handlers=%d) [%s]>"
-        return format % (name, channel, id, q, c, h, state)
+        format = "<%s%s %s (queued=%d, handlers=%d) [%s]>"
+        return format % (name, channel, id, q, h, state)
 
     def __contains__(self, y):
         """x.__contains__(y) <==> y in x
@@ -185,23 +183,26 @@ class Manager(object):
         else:
             return "S"
 
-    def getHandlers(self, event, channel):
+    def getHandlers(self, event, *channels):
         name = event.name
 
         handlers = set()
 
         if name in self._handlers:
-            for handler in self._handlers[name]:
-                handler_target = handler.target if handler.target else \
-                    handler.im_self.channel
-                if channel == "*" or handler_target == "*" \
-                    or handler_target == channel:
+            for channel in channels:
+                for handler in self._handlers[name]:
+                    channel = handler.channel if handler.channel else \
+                            handler.im_self.channel
+
+                if channel == "*" or channel == "*" \
+                    or channel == channel:
                     handlers.add(handler)
 
         handlers.update(self._globals)
 
-        for c in self.components:
-            handlers.update(c.getHandlers(event, channel))
+        for channel in channels:
+            for c in self.components:
+                handlers.update(c.getHandlers(event, channel))
 
         return handlers
 
@@ -216,39 +217,23 @@ class Manager(object):
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def fireEvent(self, event, target=None):
-        """Fire/Push a new Event into the system (queue)
+    def fireEvent(self, event, *channels):
+        """Fire an event into the system
 
-        This will push the given Event, Channel and Target onto the
-        Event Queue for later processing.
-
-        if target is None, then target will be set as the Channel of
-        the current Component, self.channel (defaulting back to None).
-
-        If this Component's Manager is itself, enqueue on this Component's
-        Event Queue, otherwise enqueue on this Component's Manager.
-
-        :param event: The Event Object
-        :type  event: Event
-
-        :param channel: The Channel this Event is bound for
-        :type  channel: str
-
-        @keyword target: The target Component's channel this Event is bound for
-        :type    target: str or Component
+        ...
         """
 
-        if target:
-            event.channel = target
+        if channels:
+            event.channels = channels
         elif not event.channel:
-            event.channel = "*"
+            event.channels = "*"
 
         event.value = Value(event, self)
 
-        if event.start is not None:
-            self.fire(Start(event), *event.start)
+        #if event.start is not None:
+        #    self.fire(Start(event), *event.start)
 
-        self.root._fire(event, target)
+        self.root._fire(event, channels)
 
         return event.value
 
@@ -298,8 +283,8 @@ class Manager(object):
 
     wait = waitEvent
 
-    def callEvent(self, event, channel=None, target=None):
-        self.fire(event, channel, target)
+    def callEvent(self, event, *channels):
+        self.fire(event, *channels)
         e = self.waitEvent(event)
         return e.value
 

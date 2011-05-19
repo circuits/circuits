@@ -20,24 +20,7 @@ import collections
 class BaseComponent(Manager):
     """Base Component
 
-    This is the Base of the Component which manages registrations to other
-    components or managers. Every Base Component and thus Component has a
-    unique Channel that is used as a separation of concern for its registered
-    Event Handlers. By default, this Channels is None (or also known as the
-    Global Channel).
-
-    When a Component (Base Component) has a set Channel that is not the Global
-    Channel (None), then any Event Handlers will actually listen on a Channel
-    that is a combination of the Component's Channel prefixed with the Event
-    Handler's Channel. The form becomes:
-
-    C{target:channel}
-
-    Where:
-       - target is the Component's Channel
-       - channel is the Event Handler's Channel
-
-    :ivar channel: The Component's Channel
+    ...
     """
 
     channel = "*"
@@ -72,10 +55,10 @@ class BaseComponent(Manager):
 
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
-                if not v.channels and v.target is None:
+                if not v.names and v.target is None:
                     self._globals.add(v)
-                for channel in v.channels:
-                    self._handlers.setdefault(channel, set()).add(v)
+                for name in v.names:
+                    self._handlers.setdefault(name, set()).add(v)
             if isinstance(v, BaseComponent):
                 v.register(self)
 
