@@ -49,7 +49,7 @@ class Event(object):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
 
     def __new__(cls, *args, **kwargs):
-        self = super(Event, cls).__new__(cls, *args, **kwargs)
+        self = super(Event, cls).__new__(cls)
 
         self.name = uncamel(cls.__name__)
 
