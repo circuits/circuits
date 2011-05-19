@@ -69,38 +69,11 @@ class BaseComponent(Manager):
         super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
-        self._registerHandlers()
         self.manager = self
 
         for k, v in getmembers(self):
             if isinstance(v, BaseComponent):
                 v.register(self)
-
-    def _registerHandlers(self, manager=None):
-        if manager is None:
-            p = lambda x: isinstance(x, collections.Callable) \
-                and getattr(x, "handler", False) is True
-            handlers = [v for k, v in getmembers(self, p)]
-            for handler in handlers:
-                target = handler.target or getattr(self, "channel", "*")
-                self.add(handler, target=target)
-        else:
-            handlers = list(chain(self._globals, self._handlers))
-            for handler in handlers:
-                kwargs = {}
-                kwargs = self._handlerattrs[handler]
-                if not kwargs.get("target"):
-                    kwargs["target"] = getattr(self, "channel", "*")
-                if "channels" in kwargs:
-                    channels = kwargs["channels"]
-                    del kwargs["channels"]
-                else:
-                    channels = ()
-                manager.add(handler, *channels, **kwargs)
-
-    def _unregisterHandlers(self, manager):
-        for handler in self._handlers.copy():
-            manager.removeHandler(handler)
 
     def register(self, manager):
         """Register all Event Handlers with the given Manager
@@ -115,37 +88,9 @@ class BaseComponent(Manager):
         given Manager. A Registered Event will also be sent.
         """
 
-        def _register(c, m, r):
-            c._registerHandlers(m)
-            c.root = r
-            if c._queue:
-                m._queue.extend(list(c._queue))
-                c._queue.clear()
-            if m is not r:
-                c._registerHandlers(r)
-                if m._queue:
-                    r._queue.extend(list(m._queue))
-                    m._queue.clear()
-            if hasattr(c, "__tick__"):
-                m._ticks.add(getattr(c, "__tick__"))
-                if m is not r:
-                    r._ticks.add(getattr(c, "__tick__"))
-            [_register(x, m, r) for x in c.components]
-
-        _register(self, manager, findroot(manager))
-
-        self.manager = manager
-
-        if manager is not self:
-            manager.components.add(self)
-            self.fire(Registered(self, manager), target=self)
+        self.fire(Registered(self, manager))
 
         return self
-
-    @handler('unregister')
-    def on_unregister(self, component=None):
-        if component == self or component == None:
-            self.unregister()
 
     def unregister(self):
         """Unregister all registered Event Handlers
@@ -155,27 +100,7 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
-        def _unregister(c, m, r):
-            c._unregisterHandlers(m)
-            c.root = self
-            if m is not r:
-                c._unregisterHandlers(r)
-            if hasattr(c, "__tick__"):
-                m._ticks.remove(getattr(c, "__tick__"))
-                if m is not r:
-                    r._ticks.remove(getattr(c, "__tick__"))
-
-            for x in c.components:
-                _unregister(x, m, r)
-
-        self.fire(Unregistered(self, self.manager), target=self)
-
-        root = findroot(self.manager)
-        _unregister(self, self.manager, root)
-
-        self.manager.components.discard(self)
-        if not root == self:
-            self.fire(Unregistered(self, self.manager), target=self)
+        self.fire(Unregistered(self, self.manager))
 
         self.manager = self
 
