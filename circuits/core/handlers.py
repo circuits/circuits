@@ -11,42 +11,21 @@ from inspect import getargspec
 from collections import Callable
 
 
-def handler(*channels, **kwargs):
+def handler(*names, **kwargs):
     """Creates an Event Handler
 
-    Decorator to wrap a callable into an Event Handler that
-    listens on a set of channels defined by channels. The type
-    of the Event Handler defaults to "listener". If kwargs["filter"]
-    is defined and is True, the Event Handler is defined as a
-    Filter and has priority over Listener Event Handlers.
-    If kwargs["target"] is defined and is not None, the
-    Event Handler will listen for the spcified channels on the
-    spcified Target Component's Channel.
-    
-    Examples:
-       >>> @handler("foo")
-       ... def foo():
-       ...     pass
-       >>> @handler("bar", filter=True)
-       ... def bar():
-       ...     pass
-       >>> @handler("foo", "bar")
-       ... def foobar():
-       ...     pass
-       >>> @handler("x", target="other")
-       ... def x():
-       ...     pass
+    ...
     """
 
     def wrapper(f):
-        if channels and type(channels[0]) is bool and not channels[0]:
+        if names and type(names[0]) is bool and not names[0]:
             f.handler = False
             return f
 
         f.handler = True
 
-        f.channels = channels
-        f.target = kwargs.get("target", None)
+        f.names = names
+        f.channel = kwargs.get("channel", None)
         f.filter = kwargs.get("filter", False)
         f.priority = kwargs.get("priority", 0)
         f.override = kwargs.get("override", False)
