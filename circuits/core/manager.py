@@ -10,13 +10,11 @@ This module definse the Manager class subclasses by component.BaseComponent
 from time import sleep
 from warnings import warn
 from collections import deque
-from inspect import getargspec
 from traceback import format_tb
 from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
-from itertools import chain
 
 try:
     from greenlet import getcurrent as getcurrent_greenlet, greenlet
@@ -27,7 +25,7 @@ except ImportError:
 from .values import Value
 from .events import Event, Started, Stopped, Signal
 from .events import Error, Success, Failure, Filter, Start, End
-from circuits.tools import convert_capitals
+
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
 
@@ -188,7 +186,7 @@ class Manager(object):
             return "S"
 
     def getHandlers(self, event, channel):
-        name = convert_capitals(event.name)
+        name = event.name
 
         handlers = set()
 
@@ -448,7 +446,6 @@ class Manager(object):
         log = kwargs.get("log", True)
         __mode = kwargs.get("__mode", None)
         __socket = kwargs.get("__socket", None)
-
 
         if GREENLET:
             self._task = greenlet(self._run)
