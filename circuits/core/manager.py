@@ -44,13 +44,12 @@ class Manager(object):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        self._globals = []
+        self._globals = set()
         self._tasks = set()
         self._queue = deque()
         self.channels = dict()
         self._handlers = dict()
         self._handler_cache = dict()
-        self._children_channels = dict()
 
         self._ticks = set()
 
@@ -188,46 +187,38 @@ class Manager(object):
         else:
             return "S"
 
-    def getHandlers(self, _channel):
-        target, channel = _channel
-        targets = [target]
-        #name = event.name.lower()
-        name = channel
+    def getHandlers(self, event, channel):
+        #print '%s getHandlers %s on %s' % (self, event.name, channel)
+        #print self._handlers
+        name = event.name.lower()
 
         handlers = set()
 
         handler = getattr(self, name, None)
-        if handler and getattr(handler, 'handler', False) is True:
-            for target in targets:
-                if target in handler.channels:
+        if name in self._handlers:
+            for handler in self._handlers[name]:
+                if channel is None or handler.target == channel \
+                    or not handler.target:
                     handlers.add(handler)
-                    break
 
-        for target in targets:
-            for c in self._children_channels.get(target, ()):
-                handlers.update(c.getHandlers(targets, event))
+        handlers.update(self._globals)
 
-        def _sortkey(handler):
-             return (handler.priority, handler.filter)
+        for c in self.components:
+            handlers.update(c.getHandlers(event, channel))
 
-        return sorted(handlers, key=_sortkey, reverse=True)
+        #print handlers
+        return handlers
 
     def registerChild(self, component):
-        channels = chain(component._handlers.keys(),
-            component._children_channels)
-        for channel in channels:
-            if channel not in self._children_channels:
-                self._children_channels[channel] = set()
-            self._children_channels[channel].add(component)
+        self.components.add(component)
 
     def unregisterChild(self, component):
-        for channel, components in self._children_channels:
-            components.remove(component)
+        self.components.remove(component)
 
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def fireEvent(self, event, channel=None, target=None):
+    def fireEvent(self, event, target=None):
         """Fire/Push a new Event into the system (queue)
 
         This will push the given Event, Channel and Target onto the
@@ -248,29 +239,16 @@ class Manager(object):
         @keyword target: The target Component's channel this Event is bound for
         :type    target: str or Component
         """
+        #print 'firing %s on %s' % (event.name, target)
 
-        if channel is None and target is None:
-            if isinstance(event.channel, tuple):
-                target, channel = event.channel
-            else:
-                channel = event.channel or event.name.lower()
-                target = event.target or None
-        else:
-            channel = channel or event.channel or event.name.lower()
-
-        if isinstance(target, Manager):
-            target = getattr(target, "channel", "*")
-        else:
-            target = target or event.target or getattr(self, "channel", "*")
-
-        event.channel = (target, channel)
+        event.channel = target
 
         event.value = Value(event, self)
 
         if event.start is not None:
             self.fire(Start(event), *event.start)
 
-        self.root._fire(event, (target, channel))
+        self.root._fire(event, target)
 
         return event.value
 
@@ -347,13 +325,21 @@ class Manager(object):
     flush = flushEvents
 
     def _dispatcher(self, event, channel):
+        print 'dispatching %s on %s' % (event.name, channel)
         eargs = event.args
         ekwargs = event.kwargs
 
         retval = None
         handler = None
 
-        for handler in self.getHandlers(channel):
+        def _sortkey(handler):
+            return (handler.priority, handler.filter)
+
+        handlers = sorted(self.getHandlers(event, channel),
+            key=_sortkey, reverse=True)
+        print 'handlers for %s' % event.name
+        print handlers
+        for handler in handlers:
             error = None
             event.handler = handler
 

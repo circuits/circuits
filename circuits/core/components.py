@@ -71,20 +71,15 @@ class BaseComponent(Manager):
         self.channel = kwargs.get("channel", self.channel) or "*"
         self.manager = self
 
-        self._registerHandlers()
-
         for k, v in getmembers(self):
+            if getattr(v, "handler", False) is True:
+                if not v.channels and v.target is None:
+                    print 'GLOBAL %s' % v
+                    self._globals.add(v)
+                for channel in v.channels:
+                    self._handlers.setdefault(channel, set()).add(v)
             if isinstance(v, BaseComponent):
                 v.register(self)
-
-    def _registerHandlers(self):
-        for name, handler in getmembers(self):
-            if getattr(handler, 'handler', False) is True:
-                for channel in handler.channels:
-                    if channel not in self._handlers:
-                        self._handlers[channel] = set()
-                    self._handlers[channel].add(handler)
-
 
     def register(self, manager):
         """Register all Event Handlers with the given Manager
@@ -98,10 +93,10 @@ class BaseComponent(Manager):
         in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
-
         self.fire(Registered(self, manager))
 
         if manager != self:
+            print 'registerting %s on %s' % (self, manager)
             manager.registerChild(self)
 
         self.manager = manager
