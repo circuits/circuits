@@ -69,7 +69,6 @@ class BaseComponent(Manager):
         super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
-        self.manager = self
 
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
@@ -80,7 +79,7 @@ class BaseComponent(Manager):
             if isinstance(v, BaseComponent):
                 v.register(self)
 
-    def register(self, manager):
+    def register(self, parent):
         """Register all Event Handlers with the given Manager
         
         This will register all Event Handlers of this Component to the
@@ -92,14 +91,14 @@ class BaseComponent(Manager):
         in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
-        if manager != self:
-            manager.registerChild(self)
+        if parent != self:
+            parent.registerChild(self)
 
         # what's the difference between manager and root ?
-        self.manager = manager
-        self.root = manager
+        self.parent = parent
+        self.root = parent.root
 
-        self.fire(Registered(self, manager))
+        self.fire(Registered(self, self.parent))
         return self
 
     def unregister(self):
@@ -110,11 +109,11 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
-        self.fire(Unregistered(self, self.manager))
+        self.fire(Unregistered(self, self.parent))
 
-        self.manager.unregisterChild(self)
+        self.parent.unregisterChild(self)
 
-        self.manager = self
+        self.parent = self.root = self
 
         return self
 

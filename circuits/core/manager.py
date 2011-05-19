@@ -59,7 +59,7 @@ class Manager(object):
         self._bridge = None
         self._running = False
 
-        self.root = self.manager = self
+        self.root = self.parent = self
         self.components = set()
 
     def __repr__(self):
@@ -209,7 +209,7 @@ class Manager(object):
 
     def registerChild(self, component):
         self.components.add(component)
-        self.manager._queue.extend(list(component._queue))
+        self.parent._queue.extend(list(component._queue))
         component._queue.clear()
 
     def unregisterChild(self, component):
