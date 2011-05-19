@@ -26,17 +26,25 @@ TIMEOUT = 0.01  # 10ms timeout
 class Read(Event):
     """Read Event"""
 
+    channel = "_read"
+
 
 class Write(Event):
     """Write Event"""
+
+    channel = "_write"
 
 
 class Error(Event):
     """Error Event"""
 
+    channel = "_error"
+
 
 class Disconnect(Event):
     """Disconnect Event"""
+
+    channel = "_disconnect"
 
 
 class BasePoller(BaseComponent):
@@ -96,7 +104,7 @@ class Select(BasePoller):
     """Select(...) -> new Select Poller Component
 
     Creates a new Select Poller Component that uses the select poller
-    implementation. This poller is not reccomneded but is available for legacy
+    implementation. This poller is not recommended but is available for legacy
     reasons as most systems implement select-based polling for backwards
     compatibility.
     """
@@ -147,11 +155,11 @@ class Select(BasePoller):
 
         for sock in w:
             if self.isWriting(sock):
-                self.fire(Write(sock), "_write", self.getTarget(sock))
+                self.fire(Write(sock), target=self.getTarget(sock))
 
         for sock in r:
             if self.isReading(sock):
-                self.fire(Read(sock), "_read", self.getTarget(sock))
+                self.fire(Read(sock), target=self.getTarget(sock))
 
 
 class Poll(BasePoller):
@@ -235,19 +243,19 @@ class Poll(BasePoller):
         fd = self._map[fileno]
 
         if event & self._disconnected_flag and not (event & select.POLLIN):
-            self.fire(Disconnect(fd), "_disconnect", self.getTarget(fd))
+            self.fire(Disconnect(fd), target=self.getTarget(fd))
             self._poller.unregister(fileno)
             super(Poll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & select.POLLIN:
-                    self.fire(Read(fd), "_read", self.getTarget(fd))
+                    self.fire(Read(fd), target=self.getTarget(fd))
                 if event & select.POLLOUT:
-                    self.fire(Write(fd), "_write", self.getTarget(fd))
+                    self.fire(Write(fd), target=self.getTarget(fd))
             except Exception as e:
-                self.fire(Error(fd, e), "_error", self.getTarget(fd))
-                self.fire(Disconnect(fd), "_disconnect", self.getTarget(fd))
+                self.fire(Error(fd, e), target=self.getTarget(fd))
+                self.fire(Disconnect(fd), target=self.getTarget(fd))
                 self._poller.unregister(fileno)
                 super(Poll, self).discard(fd)
                 del self._map[fileno]
@@ -335,19 +343,19 @@ class EPoll(BasePoller):
         fd = self._map[fileno]
 
         if event & self._disconnected_flag and not (event & select.POLLIN):
-            self.fire(Disconnect(fd), "_disconnect", self.getTarget(fd))
+            self.fire(Disconnect(fd), target=self.getTarget(fd))
             self._poller.unregister(fileno)
             super(EPoll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & select.EPOLLIN:
-                    self.fire(Read(fd), "_read", self.getTarget(fd))
+                    self.fire(Read(fd), target=self.getTarget(fd))
                 if event & select.EPOLLOUT:
-                    self.fire(Write(fd), "_write", self.getTarget(fd))
+                    self.fire(Write(fd), target=self.getTarget(fd))
             except Exception as e:
-                self.fire(Error(fd, e), "_error", self.getTarget(fd))
-                self.fire(Disconnect(fd), "_disconnect", self.getTarget(fd))
+                self.fire(Error(fd, e), target=self.getTarget(fd))
+                self.fire(Disconnect(fd), target=self.getTarget(fd))
                 self._poller.unregister(fileno)
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
@@ -420,13 +428,13 @@ class KQueue(BasePoller):
         sock = self._map[event.ident]
 
         if event.flags & select.KQ_EV_ERROR:
-            self.fire(Error(sock, "error"), "_error", self.getTarget(sock))
+            self.fire(Error(sock, "error"), target=self.getTarget(sock))
         elif event.flags & select.KQ_EV_EOF:
-            self.fire(Disconnect(sock), "_disconnect", self.getTarget(sock))
+            self.fire(Disconnect(sock), target=self.getTarget(sock))
         elif event.filter == select.KQ_FILTER_WRITE:
-            self.fire(Write(sock), "_write", self.getTarget(sock))
+            self.fire(Write(sock), target=self.getTarget(sock))
         elif event.filter == select.KQ_FILTER_READ:
-            self.fire(Read(sock), "_read", self.getTarget(sock))
+            self.fire(Read(sock), target=self.getTarget(sock))
 
 Poller = Select
 
