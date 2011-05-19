@@ -8,18 +8,8 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
-import re
 from hashlib import md5
 from warnings import warn
-
-from circuits.core.events import Unregister
-
-first_cap_re = re.compile('(.)([A-Z][a-z]+)')
-all_cap_re = re.compile('([a-z0-9])([A-Z])')
-
-def convert_capitals(name):
-    s1 = first_cap_re.sub(r'\1_\2', name)
-    return all_cap_re.sub(r'\1_\2', s1).lower()
 
 
 def tryimport(modules, message=None):
