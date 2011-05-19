@@ -85,7 +85,8 @@ class BaseComponent(Manager):
                 target = handler.target or getattr(self, "channel", "*")
                 self.add(handler, target=target)
         else:
-            for handler in chain(self._globals, self._handlers):
+            handlers = list(chain(self._globals, self._handlers))
+            for handler in handlers:
                 kwargs = {}
                 kwargs = self._handlerattrs[handler]
                 if not kwargs.get("target"):
