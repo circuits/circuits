@@ -197,8 +197,10 @@ class Manager(object):
         handler = getattr(self, name, None)
         if name in self._handlers:
             for handler in self._handlers[name]:
-                if channel is None or handler.target == channel \
-                    or not handler.target:
+                handler_target = handler.target if handler.target else \
+                    handler.im_self.channel
+                if channel is None or handler_target == channel \
+                    or handler.target == "*":
                     handlers.add(handler)
 
         handlers.update(self._globals)
@@ -337,12 +339,12 @@ class Manager(object):
 
         handlers = sorted(self.getHandlers(event, channel),
             key=_sortkey, reverse=True)
-        print 'handlers for %s' % event.name
-        print handlers
+        #print 'handlers for %s' % event.name
+        #print handlers
         for handler in handlers:
             error = None
             event.handler = handler
-
+            #print 'executing handler: %s' % handler
             try:
                 if handler.event:
                     retval = handler(event, *eargs, **ekwargs)
@@ -361,7 +363,8 @@ class Manager(object):
                 event.value.value = error
 
                 if event.failure is not None:
-                    self.fire(Failure(event, handler, error), *event.failure)
+                    self.fire(Failure(event, handler, error),
+                     *event.failure)
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
@@ -372,7 +375,6 @@ class Manager(object):
 
             if error is None and event.success is not None:
                 self.fire(Success(event, handler, retval), *event.success)
-
         if event.end is not None:
             self.fire(End(event, handler, retval), *event.end)
 

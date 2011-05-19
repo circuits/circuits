@@ -74,7 +74,6 @@ class BaseComponent(Manager):
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
                 if not v.channels and v.target is None:
-                    print 'GLOBAL %s' % v
                     self._globals.add(v)
                 for channel in v.channels:
                     self._handlers.setdefault(channel, set()).add(v)
@@ -93,14 +92,15 @@ class BaseComponent(Manager):
         in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
-        self.fire(Registered(self, manager))
-
         if manager != self:
-            print 'registerting %s on %s' % (self, manager)
+            #print 'registering %s on %s' % (self, manager)
             manager.registerChild(self)
 
+        # what's the difference between manager and root ?
         self.manager = manager
+        self.root = manager
 
+        self.fire(Registered(self, manager))
         return self
 
     def unregister(self):
