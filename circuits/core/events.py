@@ -48,6 +48,13 @@ class Event(object):
     def create(cls, name, *args, **kwargs):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
 
+    def __new__(cls, *args, **kwargs):
+        self = super(Event, cls).__new__(cls, *args, **kwargs)
+
+        self.name = uncamel(cls.__name__)
+
+        return self
+
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
@@ -62,12 +69,6 @@ class Event(object):
         keys = ("args", "kwargs", "channel", "target", "success", "failure",
                 "filter", "start", "end", "value", "source")
         return dict([(k, getattr(self, k, None)) for k in keys])
-
-    @property
-    def name(self):
-        """Return the un-camel-case version of the class name"""
-
-        return uncamel(self.__class__.__name__)
 
     def __eq__(self, other):
         """ x.__eq__(other) <==> x==other
