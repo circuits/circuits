@@ -25,9 +25,9 @@ def handler(*names, **kwargs):
         f.handler = True
 
         f.names = names
-        f.channel = kwargs.get("channel", None)
-        f.filter = kwargs.get("filter", False)
         f.priority = kwargs.get("priority", 0)
+        f.filter = kwargs.get("filter", False)
+        f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
 
         args = getargspec(f)[0]
@@ -40,23 +40,13 @@ def handler(*names, **kwargs):
 
     return wrapper
 
+
 class HandlerMetaClass(type):
-    """Handler Meta Class
 
-    metaclass used by the Component to pick up any methods defined in the
-    new Component and turn them into Event Handlers by applying the
-    @handlers decorator on them. This is done for all methods defined in
-    the Component that:
-    - Do not start with a single '_'. or
-    - Have previously been decorated with the @handlers decorator
-    """
+    def __init__(cls, name, bases, ns):
+        super(HandlerMetaClass, cls).__init__(name, bases, ns)
 
-    def __init__(cls, name, bases, dct):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(HandlerMetaClass, cls).__init__(name, bases, dct)
-
-        for k, v in dct.items():
-            if (isinstance(v, Callable)
-                    and not (k[0] == "_" or hasattr(v, "handler"))):
-                setattr(cls, k, handler(k)(v))
+        callables = (x for x in ns.items() if isinstance(x[1], Callable))
+        for name, callable in callables:
+            if not (name[0] == "_" or hasattr(callable, "handler")):
+                setattr(cls, name, handler(name)(callable))
