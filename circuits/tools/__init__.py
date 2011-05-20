@@ -110,10 +110,13 @@ def reprhandler(c, h):
     @rtype:  str
     """
 
-    format = "<%s on %s {target=%s, priority=%0.1f}>"
+    format = "<%s on %s {channel=%s, priority=%0.1f}>"
     names = repr(h.names)
     f = h.filter if h.filter else "listener"
-    channel = repr(h.channel)
+    if h.channel:
+        channel = repr(h.channel)
+    else:
+        channel = repr("*")
     p = h.priority
     return format % (f, names, channel, p)
 

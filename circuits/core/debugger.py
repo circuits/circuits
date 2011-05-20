@@ -78,7 +78,7 @@ class Debugger(BaseComponent):
             # Bugged on py2
             #self.file.flush()
 
-    @handler(priority=100.0)
+    @handler(priority=101.0)
     def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 
@@ -91,7 +91,7 @@ class Debugger(BaseComponent):
 
         channels = event.channels
 
-        if True in [event.name == x.__name__ for x in self.IgnoreEvents]:
+        if True in [event.__class__.__name__ == x.__name__ for x in self.IgnoreEvents]:
             return
         elif all(channel in self.IgnoreChannels for channel in channels):
             return
