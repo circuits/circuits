@@ -15,6 +15,7 @@ from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
+from itertools import chain
 
 try:
     from greenlet import getcurrent as getcurrent_greenlet, greenlet
@@ -215,23 +216,22 @@ class Manager(object):
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def fireEvent(self, event, channel=None):
+    def fireEvent(self, event, *channels):
         """Fire an event into the system
 
         ...
         """
 
-        if channel:
-            event.channel = channel
-        elif not event.channel:
-            event.channel = "*"
+        if not channels:
+            channels = ("*", )
+        event.channels = channels
 
         event.value = Value(event, self)
 
         #if event.start is not None:
         #    self.fire(Start(event), *event.start)
 
-        self.root._fire(event, channel)
+        self.root._fire(event, channels)
 
         return event.value
 
@@ -293,12 +293,12 @@ class Manager(object):
         self._queue = deque()
 
         if GREENLET:
-            for event, channel in q:
+            for event, channels in q:
                 dispatcher = greenlet(self._dispatcher)
-                dispatcher.switch(event, channel)
+                dispatcher.switch(event, channels)
         else:
-            for event, channel in q:
-                self._dispatcher(event, channel)
+            for event, channels in q:
+                self._dispatcher(event, channels)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
@@ -307,7 +307,7 @@ class Manager(object):
 
     flush = flushEvents
 
-    def _dispatcher(self, event, channel):
+    def _dispatcher(self, event, channels):
         eargs = event.args
         ekwargs = event.kwargs
 
@@ -317,12 +317,12 @@ class Manager(object):
         def _sortkey(handler):
             return (handler.priority, handler.filter)
 
-        if (event.name, channel) in self._handler_cache:
-            handlers = self._handler_cache[(event.name, channel)]
+        if (event.name, channels) in self._handler_cache:
+            handlers = self._handler_cache[(event.name, channels)]
         else:
-            handlers = sorted(self.getHandlers(event, channel),
-                key=_sortkey, reverse=True)
-            self._handler_cache[(event.name, channel)] = handlers
+            h = (self.getHandlers(event, channel) for channel in channels)
+            handlers = sorted(chain(*h), key=_sortkey, reverse=True)
+            self._handler_cache[(event.name, channels)] = handlers
 
         for handler in handlers:
             error = None
