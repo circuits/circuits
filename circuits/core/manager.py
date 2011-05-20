@@ -25,7 +25,8 @@ except ImportError:
 
 from .values import Value
 from .events import Event, Started, Stopped, Signal
-from .events import Error, Success, Failure, Filter, Start, End
+from .events import Success, Failure, Filter, Start, End
+from .events import Exception as CircuitsException
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
@@ -352,7 +353,8 @@ class Manager(object):
                     e = Event.create(event.failure[0], event, handler, retval)
                     self.fire(e, event.failure[1:])
                 else:
-                    self.fire(Error(etype, evalue, traceback, handler))
+                    self.fire(CircuitsException(etype, evalue,
+                        traceback, handler))
 
             if retval and handler.filter:
                 if event.filter is not None:
@@ -438,7 +440,7 @@ class Manager(object):
             raise
         except:
             etype, evalue, etraceback = _exc_info()
-            self.fire(Error(etype, evalue, format_tb(etraceback)))
+            self.fire(CircuitsException(etype, evalue, format_tb(etraceback)))
 
         if self:
             self.flush()

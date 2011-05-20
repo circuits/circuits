@@ -129,7 +129,7 @@ class Event(object):
             raise TypeError("Expected int or str, got %r" % type(i))
 
 
-class Error(Event):
+class Exception(Event):
     """Error Event
 
     This Event is sent for any exceptions that occur during the execution
@@ -148,12 +148,10 @@ class Error(Event):
     :type  kwargs: dict
     """
 
-    channel = "exception"
-
     def __init__(self, type, value, traceback, handler=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Error, self).__init__(type, value, traceback, handler)
+        super(Exception, self).__init__(type, value, traceback, handler)
 
 
 class Success(Event):
