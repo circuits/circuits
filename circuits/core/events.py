@@ -35,7 +35,7 @@ class Event(object):
     :type  kwargs: dict
     """
 
-    channel = None
+    channels = None
     target = None
 
     success = None
@@ -87,11 +87,12 @@ class Event(object):
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        if type(self.channel) is tuple:
-            channel = "%s:%s" % self.channel
+        if self.channels:
+            channels = ','.join(self.channels)
         else:
-            channel = self.channel or ""
-        return "<%s[%s] %s %s>" % (self.name, channel, self.args, self.kwargs)
+            channels = ''
+        name = self.__class__.__name__
+        return "<%s[%s] %s %s>" % (name, channels, self.args, self.kwargs)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
