@@ -183,28 +183,24 @@ class Manager(object):
         else:
             return "S"
 
-    def getHandlers(self, event, *channels):
+    def getHandlers(self, event, channel):
         name = event.name
 
         handlers = set()
 
         if name in self._handlers:
-            for channel in channels:
-                if isinstance(channel, Manager) and channel != self:
-                    continue
-                for handler in self._handlers[name]:
-                    channel = handler.channel if handler.channel else \
-                            handler.__self__.channel
+            for handler in self._handlers[name]:
+                channel = handler.channel if handler.channel else \
+                        handler.__self__.channel
 
-                if channel == "*" or channel == "*" \
-                    or channel == channel:
-                    handlers.add(handler)
+            if channel == "*" or channel == "*" \
+                or channel == channel:
+                handlers.add(handler)
 
         handlers.update(self._globals)
 
-        for channel in channels:
-            for c in self.components:
-                handlers.update(c.getHandlers(event, channel))
+        for c in self.components:
+            handlers.update(c.getHandlers(event, channel))
 
         return handlers
 
@@ -219,23 +215,23 @@ class Manager(object):
     def _fire(self, event, channel):
         self._queue.append((event, channel))
 
-    def fireEvent(self, event, *channels):
+    def fireEvent(self, event, channel=None):
         """Fire an event into the system
 
         ...
         """
 
-        if channels:
-            event.channels = channels
+        if channel:
+            event.channel = channel
         elif not event.channel:
-            event.channels = "*"
+            event.channel = "*"
 
         event.value = Value(event, self)
 
         #if event.start is not None:
         #    self.fire(Start(event), *event.start)
 
-        self.root._fire(event, channels)
+        self.root._fire(event, channel)
 
         return event.value
 
@@ -285,8 +281,8 @@ class Manager(object):
 
     wait = waitEvent
 
-    def callEvent(self, event, *channels):
-        self.fire(event, *channels)
+    def callEvent(self, event, channel):
+        self.fire(event, channel)
         e = self.waitEvent(event)
         return e.value
 
