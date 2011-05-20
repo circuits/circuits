@@ -89,11 +89,11 @@ class Debugger(BaseComponent):
         if not self.events:
             return
 
-        channel = event.channel
+        channels = event.channels
 
         if True in [event.name == x.__name__ for x in self.IgnoreEvents]:
             return
-        elif channel in self.IgnoreChannels:
+        elif all(channel in self.IgnoreChannels for channel in channels):
             return
         else:
             s = repr(event)

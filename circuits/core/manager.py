@@ -49,7 +49,7 @@ class Manager(object):
         self._handlers = dict()
         self._handler_cache = dict()
 
-        self._ticks = set()
+        self._ticks_cache = None
 
         self._task = None
         self._thread = None
@@ -209,9 +209,11 @@ class Manager(object):
         self.components.add(component)
         self.parent._queue.extend(list(component._queue))
         component._queue.clear()
+        self._ticks_cache = None
 
     def unregisterChild(self, component):
         self.components.remove(component)
+        self._ticks_cache = None
 
     def _fire(self, event, channel):
         self._queue.append((event, channel))
@@ -224,7 +226,8 @@ class Manager(object):
 
         if not channels:
             channels = ("*", )
-        event.channels = channels
+        event.channels = ["*" if channel is None else channel \
+            for channel in channels]
 
         event.value = Value(event, self)
 
@@ -415,9 +418,22 @@ class Manager(object):
         self._task = None
         self.tick()
 
+    def getTicks(self):
+        ticks = set()
+
+        if getattr(self, '__tick__', False):
+            ticks.add(self.__tick__)
+
+        for c in self.components:
+            ticks.update(c.getTicks())
+
+        return ticks
+
     def tick(self):
+        if self._ticks_cache is None:
+            self._ticks_cache = self.getTicks()
         try:
-            [f() for f in self._ticks.copy()]
+            [f() for f in self._ticks_cache]
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
