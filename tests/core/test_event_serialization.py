@@ -32,7 +32,7 @@ def test():
     assert e == x
     assert hasattr(x, "args")
     assert hasattr(x, "kwargs")
-    assert hasattr(x, "channel")
+    assert hasattr(x, "channels")
     assert hasattr(x, "target")
     assert hasattr(x, "success")
     assert hasattr(x, "failure")

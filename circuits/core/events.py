@@ -66,7 +66,7 @@ class Event(object):
         self.handler = None
 
     def __getstate__(self):
-        keys = ("args", "kwargs", "channel", "target", "success", "failure",
+        keys = ("args", "kwargs", "channels", "target", "success", "failure",
                 "filter", "start", "end", "value", "source")
         return dict([(k, getattr(self, k, None)) for k in keys])
 
