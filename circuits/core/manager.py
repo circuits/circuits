@@ -228,8 +228,9 @@ class Manager(object):
 
         event.value = Value(event, self)
 
-        #if event.start is not None:
-        #    self.fire(Start(event), *event.start)
+        if event.start is not None:
+            e = Event.create(event.start[0], event)
+            self.fire(e, event.start[1:])
 
         self.root._fire(event, channels)
 
@@ -345,20 +346,23 @@ class Manager(object):
                 event.value.value = error
 
                 if event.failure is not None:
-                    self.fire(Failure(event, handler, error),
-                     *event.failure)
+                    e = Event.create(event.failure[0], event, handler, retval)
+                    self.fire(e, event.failure[1:])
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
             if retval and handler.filter:
                 if event.filter is not None:
-                    self.fire(Filter(event, handler, retval), *event.filter)
+                    e = Event.create(event.filter[0], event, handler, retval)
+                    self.fire(e, event.filter[1:])
                 return  # Filter
 
             if error is None and event.success is not None:
-                self.fire(Success(event, handler, retval), *event.success)
+                e = Event.create(event.success[0], event, handler, retval)
+                self.fire(e, event.success[1:])
         if event.end is not None:
-            self.fire(End(event, handler, retval), *event.end)
+            e = Event.create(event.end[0], event, handler, retval)
+            self.fire(e, event.end[1:])
 
         if GREENLET:
             for task in self._tasks.copy():

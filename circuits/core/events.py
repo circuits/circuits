@@ -80,7 +80,7 @@ class Event(object):
         """
 
         return (self.__class__ is other.__class__
-                and self.channel == other.channel
+                and self.channels == other.channels
                 and self.args == other.args
                 and self.kwargs == other.kwargs)
 
