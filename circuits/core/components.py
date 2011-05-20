@@ -53,6 +53,8 @@ class BaseComponent(Manager):
 
         self.channel = kwargs.get("channel", self.channel) or "*"
 
+        self._handlers['unregister'] = set([self.unregister])
+
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
                 if not v.names and v.channel == "*":
@@ -84,7 +86,7 @@ class BaseComponent(Manager):
         self.fire(Registered(self, self.parent))
         return self
 
-    def unregister(self):
+    def unregister(self, component=None):
         """Unregister all registered Event Handlers
         
         This will unregister all registered Event Handlers of this Component
@@ -92,11 +94,14 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
+        if component is not None and component != self:
+            return
+
         self.fire(Unregistered(self, self.parent))
 
-        self.parent.unregisterChild(self)
-
-        self.parent = self
+        if self.parent != self:
+            self.parent.unregisterChild(self)
+            self.parent = self
 
         self._updateRoot(self)
 
