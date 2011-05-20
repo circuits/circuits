@@ -315,5 +315,5 @@ def test_Logger_error():
     app.fire(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("ERROR <listener on ('test',) {target='*', priority=0.0}> (<class 'Exception'>):") \
-        or logger.msg.startswith("ERROR <listener on ('test',) {target='*', priority=0.0}> (<type 'exceptions.Exceptio")
+    assert logger.msg.startswith("ERROR <listener on ('test',) {channel='*', priority=0.0}> (<class 'Exception'>):") \
+        or logger.msg.startswith("ERROR <listener on ('test',) {channel='*', priority=0.0}> (<type 'exceptions.Exceptio")
