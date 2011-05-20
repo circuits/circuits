@@ -191,12 +191,12 @@ class Manager(object):
 
         if name in self._handlers:
             for handler in self._handlers[name]:
-                channel = handler.channel if handler.channel else \
+                hchannel = handler.channel if handler.channel else \
                         handler.__self__.channel
 
-            if channel == "*" or channel == "*" \
-                or channel == channel:
-                handlers.add(handler)
+                if hchannel == "*" or channel == "*" \
+                        or hchannel == channel:
+                    handlers.add(handler)
 
         handlers.update(self._globals)
 
