@@ -96,9 +96,17 @@ class BaseComponent(Manager):
 
         self.parent.unregisterChild(self)
 
-        self.parent = self.root = self
+        self.parent = self
+
+        self._updateRoot(self)
 
         return self
+
+    def _updateRoot(self, root):
+        self.root = root
+        for c in self.components:
+            c._updateRoot(root)
+
 
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
 
