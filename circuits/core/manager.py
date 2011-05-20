@@ -286,7 +286,7 @@ class Manager(object):
 
     wait = waitEvent
 
-    def callEvent(self, event, channel):
+    def callEvent(self, event, channel="*"):
         self.fire(event, channel)
         e = self.waitEvent(event)
         return e.value
