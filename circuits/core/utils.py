@@ -46,10 +46,10 @@ def findcmp(x, c, subclass=True):
 
 
 def findroot(x):
-    if x.manager == x:
+    if x.parent == x:
         return x
     else:
-        return findroot(x.manager)
+        return findroot(x.parent)
 
 
 def safeimport(name):

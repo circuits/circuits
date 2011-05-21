@@ -29,23 +29,23 @@ def test():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
     m = Manager()
-    assert repr(m) == "<Manager %s (queued=0, channels=0, handlers=0) [S]>" % id
+    assert repr(m) == "<Manager %s (queued=0) [S]>" % id
 
     app = App()
     app.register(m)
-    assert repr(m) == "<Manager %s (queued=1, channels=2, handlers=2) [S]>" % id
+    s = repr(m)
+    assert s == "<Manager %s (queued=1) [S]>" % id
 
-    m.flush()
-    assert repr(m) == "<Manager %s (queued=0, channels=2, handlers=2) [S]>" % id
+    m.start()
+    while m:
+        m.tick()
 
-    m.fire(Test())
-    assert repr(m) == "<Manager %s (queued=1, channels=2, handlers=2) [S]>" % id
+    s = repr(m)
+    assert s == "<Manager %s (queued=0) [R]>" % id
 
-    m.flush()
-    assert repr(m) == "<Manager %s (queued=0, channels=2, handlers=2) [S]>" % id
+    m.stop()
+    while m:
+        m.tick()
 
-    app.unregister()
-    assert repr(m) == "<Manager %s (queued=1, channels=0, handlers=0) [S]>" % id
-
-    m.flush()
-    assert repr(m) == "<Manager %s (queued=0, channels=0, handlers=0) [S]>" % id
+    s = repr(m)
+    assert s == "<Manager %s (queued=0) [S]>" % id

@@ -9,13 +9,13 @@ This module definse the Manager class subclasses by component.BaseComponent
 
 from time import sleep
 from warnings import warn
+from itertools import chain
 from collections import deque
 from traceback import format_tb
 from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
-from itertools import chain
 
 try:
     from greenlet import getcurrent as getcurrent_greenlet, greenlet
@@ -53,10 +53,11 @@ class Manager(object):
         self._ticks_cache = None
 
         self._task = None
-        self._thread = None
-        self._proc = None
         self._bridge = None
         self._running = False
+
+        if GREENLET:
+            self._greenlet = None
 
         self.root = self.parent = self
         self.components = set()
@@ -72,7 +73,6 @@ class Manager(object):
             channel = ""
 
         q = len(self._queue)
-        h = len(self._handlers)
         state = self.state
 
         pid = current_process().pid
@@ -82,8 +82,8 @@ class Manager(object):
         else:
             id = current_thread().getName()
 
-        format = "<%s%s %s (queued=%d, handlers=%d) [%s]>"
-        return format % (name, channel, id, q, h, state)
+        format = "<%s%s %s (queued=%d) [%s]>"
+        return format % (name, channel, id, q, state)
 
     def __contains__(self, y):
         """x.__contains__(y) <==> y in x
@@ -178,9 +178,9 @@ class Manager(object):
          - [S]topped
         """
 
-        if self.running or (self._task and self._task.isAlive()):
+        if self.running or (self._task and self._task.is_alive()):
             return "R"
-        elif self._task and not self._task.isAlive():
+        elif self._task and not self._task.is_alive():
             return "D"
         else:
             return "S"
@@ -260,17 +260,18 @@ class Manager(object):
         self._tasks.remove(g)
 
     def waitEvent(self, cls, limit=None):
-        if self._thread and self._thread != current_thread():
-            raise Exception("Cannot use .waitEvent from other thread")
-        if self._proc and self._proc != current_process():
-            raise Exception("Cannot use .waitEvent from other process")
+        if self._task is not None  and self._task not in [current_process(),
+                current_thread()]:
+            raise Exception((
+                "Cannot use .waitEvent from other threads or processes"
+            ))
 
         g = getcurrent_greenlet()
 
         is_instance = isinstance(cls, Event)
         i = 0
         e = None
-        caller = self._task
+        caller = self._greenlet
 
         self.registerTask(g)
         try:
@@ -397,27 +398,23 @@ class Manager(object):
                 self._bridge.start()
                 kwargs['__socket'] = child
 
-            self._proc = Process(group, target, name, args, kwargs)
-            self._proc.daemon = True
-            self.tick()
-            self._proc.start()
-            return
+            self._task = Process(group, target, name, args, kwargs)
+            self._task.daemon = True
+        else:
+            self._task = Thread(group, target, name, args, kwargs)
+            self._task.daemon = True
 
-        self._thread = Thread(group, target, name, args, kwargs)
-        self._thread.setDaemon(True)
-        self._thread.start()
+        self._task.start()
 
     def stop(self):
         self._running = False
         self.fire(Stopped(self))
-        if self._proc and self._proc.is_alive() \
-                and not current_process() == self._proc:
-            self._proc.terminate()
-        if (self._bridge is not None):
+
+        if self._bridge is not None:
             self._bridge = None
-        self._process = None
-        self._thread = None
+
         self._task = None
+
         self.tick()
 
     def getTicks(self):
@@ -453,8 +450,8 @@ class Manager(object):
         __socket = kwargs.get("__socket", None)
 
         if GREENLET:
-            self._task = greenlet(self._run)
-            self._task.switch(log, __mode, __socket)
+            self._greenlet = greenlet(self._run)
+            self._greenlet.switch(log, __mode, __socket)
         else:
             self._run(log, __mode, __socket)
 

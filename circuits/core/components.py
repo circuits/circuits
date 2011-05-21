@@ -76,17 +76,17 @@ class BaseComponent(Manager):
         in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
-        if parent != self:
-            parent.registerChild(self)
 
-        # what's the difference between manager and root ?
         self.parent = parent
         self.root = parent.root
 
-        self.fire(Registered(self, self.parent))
+        if not parent == self:
+            parent.registerChild(self)
+            self.fire(Registered(self, self.parent))
+
         return self
 
-    def unregister(self, component=None):
+    def unregister(self):
         """Unregister all registered Event Handlers
         
         This will unregister all registered Event Handlers of this Component
@@ -94,14 +94,12 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
-        if component is not None and component != self:
-            return
 
-        self.fire(Unregistered(self, self.parent))
-
-        if self.parent != self:
+        if not self.parent == self:
             self.parent.unregisterChild(self)
             self.parent = self
+
+        self.fire(Unregistered(self, self.parent))
 
         self._updateRoot(self)
 
@@ -112,6 +110,4 @@ class BaseComponent(Manager):
         for c in self.components:
             c._updateRoot(root)
 
-
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
-
