@@ -28,7 +28,7 @@ class App(Component):
         self.errors = []
         self.handlers = []
 
-    @handler(filter=True)
+    @handler("*", filter=True)
     def event(self, event, *args, **kwargs):
         """Global Event Handler (filter)"""
 

@@ -23,12 +23,12 @@ def test_repr():
     e = Test()
 
     s = repr(e)
-    assert s == "<Test[] [] {}>"
+    assert s == "<Test[.test] ( )>"
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*] [] {}>"
+    assert s == "<Test[*.test] ( )>"
 
 def test_create():
     app = App()
@@ -37,12 +37,12 @@ def test_create():
     e = Event.create("Test")
 
     s = repr(e)
-    assert s == "<Test[] [] {}>"
+    assert s == "<Test[.test] ( )>"
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*] [] {}>"
+    assert s == "<Test[*.test] ( )>"
 
 def test_getitem():
     app = App()

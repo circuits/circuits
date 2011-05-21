@@ -27,7 +27,7 @@ def handler(*names, **kwargs):
         f.names = names
         f.priority = kwargs.get("priority", 0)
         f.filter = kwargs.get("filter", False)
-        f.channel = kwargs.get("channel", "*")
+        f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
 
         args = getargspec(f)[0]

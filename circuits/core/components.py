@@ -7,15 +7,14 @@
 This module defines the BaseComponent and the subclass Component
 """
 
-from itertools import chain
 from types import MethodType
 from inspect import getmembers
+from collections import Callable
 
-from .utils import findroot
 from .manager import Manager
-from .handlers import HandlerMetaClass, handler
 from .events import Registered, Unregistered
-import collections
+from .handlers import handler, HandlerMetaClass
+
 
 class BaseComponent(Manager):
     """Base Component
@@ -36,7 +35,7 @@ class BaseComponent(Manager):
         for base in cls.__bases__:
             if issubclass(cls, base):
                 for k, v in list(base.__dict__.items()):
-                    p1 = isinstance(v, collections.Callable)
+                    p1 = isinstance(v, Callable)
                     p2 = getattr(v, "handler", False)
                     p3 = overridden(k)
                     if p1 and p2 and not p3:
@@ -53,8 +52,6 @@ class BaseComponent(Manager):
 
         self.channel = kwargs.get("channel", self.channel) or "*"
 
-        self._handlers['unregister'] = set([self.unregister])
-
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
                 if not v.names and v.channel == "*":
@@ -65,36 +62,18 @@ class BaseComponent(Manager):
                 v.register(self)
 
     def register(self, parent):
-        """Register all Event Handlers with the given Manager
-        
-        This will register all Event Handlers of this Component to the
-        given Manager. By default, every Component (Base Component) is
-        registered with itself.
-        
-        If the Component or Manager being registered
-        with is not the current Component, then any Hidden Components
-        in registered to this Component will also be registered with the
-        given Manager. A Registered Event will also be sent.
-        """
-
         self.parent = parent
         self.root = parent.root
 
-        if not parent == self:
+        if parent is not self:
             parent.registerChild(self)
             self.fire(Registered(self, self.parent))
+
+        self._updateRoot(parent.root)
 
         return self
 
     def unregister(self):
-        """Unregister all registered Event Handlers
-        
-        This will unregister all registered Event Handlers of this Component
-        from its registered Component or Manager.
-
-        @note: It's possible to unregister a Component from itself!
-        """
-
         if not self.parent == self:
             self.parent.unregisterChild(self)
             self.parent = self

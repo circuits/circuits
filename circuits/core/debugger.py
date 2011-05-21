@@ -54,7 +54,7 @@ class Debugger(BaseComponent):
         self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
-    @handler("exception", priority=100.0)
+    @handler("exception", channel="*", priority=100.0)
     def _on_exception(self, error_type, value, traceback, handler=None):
         if not self.errors:
             return
@@ -78,7 +78,7 @@ class Debugger(BaseComponent):
             # Bugged on py2
             #self.file.flush()
 
-    @handler(priority=101.0)
+    @handler(channel="*", priority=101.0)
     def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 

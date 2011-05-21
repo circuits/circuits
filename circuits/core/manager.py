@@ -192,14 +192,14 @@ class Manager(object):
 
         if name in self._handlers:
             for handler in self._handlers[name]:
-                hchannel = handler.channel if handler.channel else \
+                handler_channel = handler.channel if handler.channel else \
                         handler.__self__.channel
 
-                if hchannel == "*" or channel == "*" \
-                        or hchannel == channel:
+                if channel == "*" or handler_channel in ("*", channel,):
                     handlers.add(handler)
 
         handlers.update(self._globals)
+        handlers.update(self._handlers.get("*", set()))
 
         for c in self.components:
             handlers.update(c.getHandlers(event, channel))
@@ -208,7 +208,7 @@ class Manager(object):
 
     def registerChild(self, component):
         self.components.add(component)
-        self.parent._queue.extend(list(component._queue))
+        self.root._queue.extend(list(component._queue))
         component._queue.clear()
         self._ticks_cache = None
 
@@ -226,9 +226,9 @@ class Manager(object):
         """
 
         if not channels:
-            channels = ("*", )
-        event.channels = ["*" if channel is None else channel \
-            for channel in channels]
+            channels = (getattr(self, "channel", "*") or "*",)
+
+        event.channels = channels
 
         event.value = Value(event, self)
 

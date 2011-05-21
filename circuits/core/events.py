@@ -12,31 +12,8 @@ from .utils import uncamel
 
 
 class Event(object):
-    """Create a new Event Object
 
-    Create a new Event Object populating it with the given list of arguments
-    and keyword arguments.
-
-    :ivar name:    The name of the Event
-    :ivar channel: The channel this Event is bound for
-    :ivar target:  The target Component this Event is bound for
-    :ivar success: An optional channel to use for Event Handler success
-    :ivar failure: An optional channel to use for Event Handler failure
-    :ivar filter: An optional channel to use if an Event is filtered
-    :ivar start: An optional channel to use before an Event starts
-    :ivar end: An optional channel to use when an Event ends
-
-    :ivar value: The future Value object used to store the result of an event
-
-    :param args: list of arguments
-    :type  args: tuple
-
-    :param kwargs: dict of keyword arguments
-    :type  kwargs: dict
-    """
-
-    channels = None
-    target = None
+    channels = ()
 
     success = None
     failure = None
@@ -51,7 +28,7 @@ class Event(object):
     def __new__(cls, *args, **kwargs):
         self = super(Event, cls).__new__(cls)
 
-        self.name = uncamel(cls.__name__)
+        self.name = getattr(self, "name", uncamel(cls.__name__))
 
         return self
 
@@ -66,19 +43,11 @@ class Event(object):
         self.handler = None
 
     def __getstate__(self):
-        keys = ("args", "kwargs", "channels", "target", "success", "failure",
+        keys = ("args", "kwargs", "channels", "success", "failure",
                 "filter", "start", "end", "value", "source")
         return dict([(k, getattr(self, k, None)) for k in keys])
 
     def __eq__(self, other):
-        """ x.__eq__(other) <==> x==other
-
-        Tests the equality of Event self against Event y.
-        Two Events are considered "equal" iif the name,
-        channel and target are identical as well as their
-        args and kwargs passed.
-        """
-
         return (self.__class__ is other.__class__
                 and self.channels == other.channels
                 and self.args == other.args
@@ -87,12 +56,18 @@ class Event(object):
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        if self.channels:
-            channels = ','.join(self.channels)
-        else:
-            channels = ''
-        name = self.__class__.__name__
-        return "<%s[%s] %s %s>" % (name, channels, self.args, self.kwargs)
+        name = self.name
+        type = self.__class__.__name__
+        channels = ",".join(self.channels)
+
+        data = "%s %s" % (
+                ", ".join(repr(arg) for arg in self.args),
+                ", ".join("%s=%s" % (k, repr(v)) for k, v in
+                    self.kwargs.items()
+                )
+        )
+
+        return "<%s[%s.%s] (%s)>" % (type, channels, name, data)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]

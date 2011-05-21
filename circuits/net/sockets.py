@@ -274,7 +274,7 @@ class Client(Component):
     def connected(self):
         return getattr(self, "_connected", None)
 
-    @handler("registered", target="*")
+    @handler("registered", channel="*")
     def _on_registered(self, component, manager):
         if self._poller is None:
             if isinstance(component, BasePoller):
@@ -289,14 +289,15 @@ class Client(Component):
                     self._poller = Poller().register(self)
                     self.fire(Ready(self))
 
-    @handler("started", filter=True, target="*")
+    @handler("started", filter=True, channel="*")
     def _on_started(self, component, mode):
         if self._poller is None:
             self._poller = Poller().register(self)
             self.fire(Ready(self))
+
             return True
 
-    @handler("stopped", target="*")
+    @handler("stopped", channel="*")
     def _on_stopped(self, component):
         self.fire(Close())
 
@@ -441,7 +442,7 @@ class UNIXClient(Client):
 
         return sock
 
-    @handler("registered", target="*")
+    @handler("registered", channel="*")
     def _on_registered(self, component, manager):
         pass
 
@@ -541,7 +542,7 @@ class Server(Component):
             if isinstance(sockname, tuple):
                 return sockname[1]
 
-    @handler("registered", target="*")
+    @handler("registered", channel="*")
     def _on_registered(self, component, manager):
         if self._poller is None:
             if isinstance(component, BasePoller):
@@ -559,7 +560,7 @@ class Server(Component):
                     self._poller.addReader(self, self._sock)
                     self.fire(Ready(self))
 
-    @handler("started", filter=True, target="*")
+    @handler("started", filter=True, channel="*")
     def _on_started(self, component, mode):
         if self._poller is None:
             self._poller = Poller().register(self)
@@ -567,7 +568,7 @@ class Server(Component):
             self.fire(Ready(self))
             return True
 
-    @handler("stopped", target="*")
+    @handler("stopped", channel="*")
     def _on_stopped(self, component):
         self.fire(Close())
 

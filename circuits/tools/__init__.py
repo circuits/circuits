@@ -56,7 +56,7 @@ def findroot(x):
 def kill(x):
     for c in x.components.copy():
         kill(c)
-    if x.manager != x:
+    if x.parent is not x:
         x.unregister()
 
 
@@ -97,28 +97,17 @@ def graph(x, name=None):
     return "\n".join(walk(x, printer))
 
 
-def reprhandler(c, h):
-    """Display a nicely formatted Event Handler, h from Component c.
+def reprhandler(handler):
+    format = "<%s[%s.%s] (%s.%s)>"
 
-    :param c: A Component that contains Event Handler h
-    :type c: Manager or Manager subclass
+    channel = handler.channel
+    names = ".".join(handler.names)
+    type = "filter" if handler.filter else "listener"
 
-    :param x: An Event Handler
-    :type  x: function or method
+    instance = handler.im_self.__class__.__name__
+    method = handler.__name__
 
-    @return: A nicely formatted representation of the Event Handler, x
-    @rtype:  str
-    """
-
-    format = "<%s on %s {channel=%s, priority=%0.1f}>"
-    names = repr(h.names)
-    f = h.filter if h.filter else "listener"
-    if h.channel:
-        channel = repr(h.channel)
-    else:
-        channel = repr("*")
-    p = h.priority
-    return format % (f, names, channel, p)
+    return format % (type, channel, names, instance, method)
 
 
 def inspect(x):
