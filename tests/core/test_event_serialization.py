@@ -35,8 +35,5 @@ def test():
     assert hasattr(x, "channels")
     assert hasattr(x, "success")
     assert hasattr(x, "failure")
-    assert hasattr(x, "filter")
-    assert hasattr(x, "start")
-    assert hasattr(x, "end")
     assert hasattr(x, "value")
     assert hasattr(x, "source")

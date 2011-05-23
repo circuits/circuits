@@ -17,9 +17,6 @@ class Event(object):
 
     success = None
     failure = None
-    filter = None
-    start = None
-    end = None
 
     @classmethod
     def create(cls, name, *args, **kwargs):
@@ -44,7 +41,7 @@ class Event(object):
 
     def __getstate__(self):
         keys = ("args", "kwargs", "channels", "success", "failure",
-                "filter", "start", "end", "value", "source")
+                "value", "source")
         return dict([(k, getattr(self, k, None)) for k in keys])
 
     def __eq__(self, other):
@@ -104,7 +101,7 @@ class Event(object):
             raise TypeError("Expected int or str, got %r" % type(i))
 
 
-class Exception(Event):
+class Error(Event):
     """Error Event
 
     This Event is sent for any exceptions that occur during the execution
@@ -126,7 +123,7 @@ class Exception(Event):
     def __init__(self, type, value, traceback, handler=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Exception, self).__init__(type, value, traceback, handler)
+        super(Error, self).__init__(type, value, traceback, handler)
 
 
 class Success(Event):
@@ -134,21 +131,7 @@ class Success(Event):
 
     This Event is sent when an Event Handler's execution has completed
     successfully.
-
-    :param evt: The event that succeeded
-    :type  evt: Event
-
-    :param handler: The handler that executed this event
-    :type  handler: @handler
-
-    :param retval: The returned value of the handler
-    :type  retval: object
     """
-
-    def __init__(self, event, handler, retval):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Success, self).__init__(event, handler, retval)
 
 
 class Failure(Event):
@@ -157,77 +140,9 @@ class Failure(Event):
     This Event is sent when an error has occurred with the execution of an
     Event Handlers.
 
-    :param evt: The event that failed
-    :type  evt: Event
-
-    :param handler: The handler that failed
-    :type  handler: @handler
-
-    :param error: A tuple containing the exception that occurred
-    :type  error: (etype, evalue, traceback)
+    :param event: The event that failed
+    :type  event: Event
     """
-
-    def __init__(self, event, handler, error):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Failure, self).__init__(event, handler, error)
-
-
-class Filter(Event):
-    """Filter Event
-
-    This Event is sent when an Event is filtered by some Event Handler.
-
-    :param evt: The event that was filtered
-    :type  evt: Event
-
-    :param handler: The handler that filtered this event
-    :type  handler: @handler
-
-    :param retval: The returned value of the handler
-    :type  retval: object
-    """
-
-    def __init__(self, event, handler, retval):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Filter, self).__init__(event, handler, retval)
-
-
-class Start(Event):
-    """Start Event
-
-    This Event is sent just before an Event is started
-
-    :param evt: The event about to start
-    :type  evt: Event
-    """
-
-    def __init__(self, event):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Start, self).__init__(event)
-
-
-class End(Event):
-    """End Event
-
-    This Event is sent just after an Event has ended
-
-    :param evt: The event that has finished
-    :type  evt: Event
-
-    :param handler: The last handler that executed this event
-    :type  handler: @handler
-
-    :param retval: The returned value of the last handler
-    :type  retval: object
-    """
-
-    def __init__(self, event, handler, retval):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(End, self).__init__(event, handler, retval)
 
 
 class Started(Event):

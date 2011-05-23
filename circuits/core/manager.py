@@ -24,9 +24,8 @@ except ImportError:
     GREENLET = False
 
 from .values import Value
-from .events import Event, Started, Stopped, Signal
-from .events import Success, Failure, Filter, Start, End
-from .events import Exception as CircuitsException
+from .events import Success, Failure
+from .events import Event, Error, Started, Stopped, Signal
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
@@ -232,10 +231,6 @@ class Manager(object):
 
         event.value = Value(event, self)
 
-        if event.start is not None:
-            e = Event.create(event.start[0], event)
-            self.fire(e, event.start[1:])
-
         self.root._fire(event, channels)
 
         return event.value
@@ -317,9 +312,6 @@ class Manager(object):
         eargs = event.args
         ekwargs = event.kwargs
 
-        retval = None
-        handler = None
-
         def _sortkey(handler):
             return (handler.priority, handler.filter)
 
@@ -330,15 +322,15 @@ class Manager(object):
             handlers = sorted(chain(*h), key=_sortkey, reverse=True)
             self._handler_cache[(event.name, channels)] = handlers
 
+        error = None
+
         for handler in handlers:
-            error = None
             event.handler = handler
             try:
                 if handler.event:
-                    retval = handler(event, *eargs, **ekwargs)
+                    event.value.value = handler(event, *eargs, **ekwargs)
                 else:
-                    retval = handler(*eargs, **ekwargs)
-                event.value.value = retval
+                    event.value.value = handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
@@ -350,25 +342,16 @@ class Manager(object):
 
                 event.value.value = error
 
-                if event.failure is not None:
-                    e = Event.create(event.failure[0], event, handler, retval)
-                    self.fire(e, event.failure[1:])
+                if event.failure:
+                    self.fire(Failure.create("%s_failure" % event.name))
                 else:
-                    self.fire(CircuitsException(etype, evalue,
-                        traceback, handler))
+                    self.fire(Error(etype, evalue, traceback, handler))
 
-            if retval and handler.filter:
-                if event.filter is not None:
-                    e = Event.create(event.filter[0], event, handler, retval)
-                    self.fire(e, event.filter[1:])
-                return  # Filter
+            if event.value.value and handler.filter:
+                break
 
-            if error is None and event.success is not None:
-                e = Event.create(event.success[0], event, handler, retval)
-                self.fire(e, event.success[1:])
-        if event.end is not None:
-            e = Event.create(event.end[0], event, handler, retval)
-            self.fire(e, event.end[1:])
+        if error is None and event.success:
+            self.fire(Success.create("%s_success" % event.name))
 
         if GREENLET:
             for task in self._tasks.copy():
@@ -437,7 +420,7 @@ class Manager(object):
             raise
         except:
             etype, evalue, etraceback = _exc_info()
-            self.fire(CircuitsException(etype, evalue, format_tb(etraceback)))
+            self.fire(Error(etype, evalue, format_tb(etraceback)))
 
         if self:
             self.flush()
