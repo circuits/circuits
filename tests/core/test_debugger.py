@@ -168,7 +168,7 @@ def test_exceptions():
     app.flush()
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<Exception[*.exception]")
+    assert s.startswith("<Error[*.error]")
     stderr.seek(0)
     stderr.truncate()
 
@@ -211,7 +211,7 @@ def test_tick_exceptions():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<Exception[*.exception] (<type 'exceptions.Exception'>")
+    assert s.startswith("<Error[*.error] (<type 'exceptions.Exception'>")
 
     stderr.seek(0)
     stderr.truncate()
@@ -314,4 +314,4 @@ def test_Logger_error():
     app.fire(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("<Exception[*.exception] (<type 'exceptions.Exception'>")
+    assert logger.msg.startswith("<Error[*.error] (<type 'exceptions.Exception'>")
