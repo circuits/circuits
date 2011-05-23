@@ -43,13 +43,13 @@ class Manager(object):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        self._globals = set()
         self._tasks = set()
+        self._cache = dict()
         self._queue = deque()
+        self._globals = set()
         self._handlers = dict()
-        self._handler_cache = dict()
 
-        self._ticks_cache = None
+        self._ticks = None
 
         self._task = None
         self._bridge = None
@@ -209,11 +209,11 @@ class Manager(object):
         self.components.add(component)
         self.root._queue.extend(list(component._queue))
         component._queue.clear()
-        self._ticks_cache = None
+        self._ticks = None
 
     def unregisterChild(self, component):
         self.components.remove(component)
-        self._ticks_cache = None
+        self._ticks = None
 
     def _fire(self, event, channel):
         self._queue.append((event, channel))
@@ -315,12 +315,12 @@ class Manager(object):
         def _sortkey(handler):
             return (handler.priority, handler.filter)
 
-        if (event.name, channels) in self._handler_cache:
-            handlers = self._handler_cache[(event.name, channels)]
+        if (event.name, channels) in self._cache:
+            handlers = self._cache[(event.name, channels)]
         else:
             h = (self.getHandlers(event, channel) for channel in channels)
             handlers = sorted(chain(*h), key=_sortkey, reverse=True)
-            self._handler_cache[(event.name, channels)] = handlers
+            self._cache[(event.name, channels)] = handlers
 
         error = None
 
@@ -412,10 +412,10 @@ class Manager(object):
         return ticks
 
     def tick(self):
-        if self._ticks_cache is None:
-            self._ticks_cache = self.getTicks()
+        if self._ticks is None:
+            self._ticks = self.getTicks()
         try:
-            [f() for f in self._ticks_cache]
+            [f() for f in self._ticks.copy()]
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
