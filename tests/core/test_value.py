@@ -8,8 +8,8 @@ class Hello(Event):
 class Test(Event):
     "Test Event"
 
-class FooBar(Event):
-    "FooBar Event"
+class Foo(Event):
+    "Foo Event"
 
 class Values(Event):
     "Values Event"
@@ -22,8 +22,8 @@ class App(Component):
     def test(self):
         return self.fire(Hello())
 
-    def foo_bar(self):
-        raise Exception("FooBar!")
+    def foo(self):
+        raise Exception("ERROR")
 
     @handler("values", priority=2.0)
     def _value1(self):
@@ -38,13 +38,12 @@ class App(Component):
         return self.fire(Hello())
 
 
-from circuits import Debugger
-
-m = Manager() + Debugger()
+m = Manager()
 app = App()
 app.register(m)
 
-while m: m.flush()
+while m:
+    m.flush()
 
 def test_value():
     x = m.fire(Hello())
@@ -59,13 +58,12 @@ def test_nested_value():
     assert str(x) == "Hello World!"
 
 def test_error_value():
-    x = m.fire(FooBar())
-    while m: m.flush()
-    import pdb
-    pdb.set_trace()
+    x = m.fire(Foo())
+    while m:
+        m.flush()
     etype, evalue, etraceback = x
     assert etype is Exception
-    assert str(evalue) == "FooBar!"
+    assert str(evalue) == "ERROR"
     assert isinstance(etraceback, list)
 
 def test_multiple_values():
