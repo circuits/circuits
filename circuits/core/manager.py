@@ -344,7 +344,7 @@ class Manager(object):
 
                 if event.failure:
                     self.fire(Failure.create("%sFailure" %
-                        event.__class__.__name__))
+                        event.__class__.__name__, event))
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
@@ -353,7 +353,7 @@ class Manager(object):
 
         if error is None and event.success:
             self.fire(Success.create("%sSuccess" %
-                event.__class__.__name__))
+                event.__class__.__name__, event))
 
         if GREENLET:
             for task in self._tasks.copy():
