@@ -21,6 +21,7 @@ def wait_event(m, channel, target=None, timeout=3.0):
     from circuits.core.manager import TIMEOUT
 
     waiter = Waiter()
+    waiter._handlers[channel] = set([waiter.handler])
 
     if target is None:
         target = m
