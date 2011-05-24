@@ -209,11 +209,11 @@ class Manager(object):
         self.components.add(component)
         self.root._queue.extend(list(component._queue))
         component._queue.clear()
-        self._ticks = None
+        self.root._ticks = None
 
     def unregisterChild(self, component):
         self.components.remove(component)
-        self._ticks = None
+        self.root._ticks = None
 
     def _fire(self, event, channel):
         self._queue.append((event, channel))
