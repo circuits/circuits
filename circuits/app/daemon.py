@@ -77,7 +77,7 @@ class Daemon(BaseComponent):
             else:
                 setattr(self, stdio_attrs[i], "/dev/null")
 
-    @handler("writepid")
+    @handler("write_pid")
     def _on_writepid(self):
         f = open(self._pidfile, "w")
         f.write(str(os.getpid()))
