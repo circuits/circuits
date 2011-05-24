@@ -345,8 +345,7 @@ class Manager(object):
                 if event.failure:
                     self.fire(Failure.create("%sFailure" %
                         event.__class__.__name__, event))
-                else:
-                    self.fire(Error(etype, evalue, traceback, handler))
+                self.fire(Error(etype, evalue, traceback, handler))
 
             if event.value.value and handler.filter:
                 break
