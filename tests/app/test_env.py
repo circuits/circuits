@@ -46,6 +46,8 @@ def test_create(env, path):
 def test_load(env, path):
     from circuits.app.env import Create, Load
 
+    from circuits import Debugger
+    Debugger().register(env)
     env.fire(Create())
 
     assert pytest.wait_event(env, "create_success")
