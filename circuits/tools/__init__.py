@@ -128,15 +128,17 @@ def inspect(x):
         write("  %s\n" % component)
     write("\n")
 
-    write(" Tick Functions: %d\n" % len(x._ticks))
-    for tick in x._ticks:
+    ticks = x.getTicks()
+    write(" Tick Functions: %d\n" % len(ticks))
+    for tick in ticks:
         write("  %s\n" % tick)
     write("\n")
 
-    write(" Channels and Event Handlers: %d\n" % len(x.channels))
-    for (t, c) in x.channels:
-        write("  %s:%s; %d\n" % (t, c, len(x.channels[(t, c)])))
-        for handler in x.channels[(t, c)]:
-            write("   %s\n" % reprhandler(x, handler))
+    write(" Channels and Event Handlers: %d\n" % len(x._handlers))
+    print repr(x._handlers)
+    for event, handlers in x._handlers.items():
+        write("  %s; %d\n" % (event, len(x._handlers[event])))
+        for handler in x._handlers[event]:
+            write("   %s\n" % reprhandler(handler))
 
     return "".join(s)
