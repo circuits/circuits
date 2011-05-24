@@ -21,6 +21,7 @@ class App(Component):
     def __init__(self):
         super(App, self).__init__()
 
+        self.e = None
         self.success = False
         self.failure = False
 
@@ -35,10 +36,12 @@ class App(Component):
 
         return "Hello World!"
 
-    def test_success(self, event):
+    def test_success(self, e):
+        self.e = e
         self.success = True
 
-    def test_failure(self, event):
+    def test_failure(self, e):
+        self.e = e
         self.failure = True
 
 
@@ -64,7 +67,9 @@ def test_success():
     while app:
         app.flush()
 
+    assert app.e == e
     assert app.success
+    assert app.e.value == x
 
 
 def test_failure():
@@ -84,5 +89,7 @@ def test_failure():
     while app:
         app.flush()
 
-    assert not app.success
+    assert app.e == e
     assert app.failure
+    assert not app.success
+    assert app.e.value == x
