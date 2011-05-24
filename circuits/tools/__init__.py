@@ -47,10 +47,10 @@ def edges(x, e=None, v=None):
 
 
 def findroot(x):
-    if x.manager == x:
+    if x.parent == x:
         return x
     else:
-        return findroot(x.manager)
+        return findroot(x.parent)
 
 
 def kill(x):
