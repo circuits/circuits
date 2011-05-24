@@ -261,22 +261,26 @@ class HTTP(BaseComponent):
             # This possibly never occurs.
             self.fire(HTTPError(request, response, error=value.value))
 
-    @handler("request_success", "request_filtered")
-    def _on_request_success_or_filtered(self, evt, handler, retval):
-        request, response = evt.args[:2]
+    @handler("request_success")
+    def _on_request_success(self, e):
+        import pdb
+        pdb.set_trace()
 
-        if not request.handled and retval is not None:
+        value = e.value.value
+        request, response = e.args[:2]
+
+        if not request.handled and value is not None:
             request.handled = True
-            if isinstance(retval, HTTPError):
-                self.fire(retval)
-            elif isinstance(retval, wrappers.Response):
-                self.fire(Response(retval))
-            elif isinstance(retval, Value):
-                if retval.result and not retval.errors:
-                    response.body = retval.value
+            if isinstance(value, HTTPError):
+                self.fire(value)
+            elif isinstance(value, wrappers.Response):
+                self.fire(Response(value))
+            elif isinstance(value, Value):
+                if value.result and not value.errors:
+                    response.body = value.value
                     self.fire(Response(response))
-                elif retval.errors:
-                    error = retval.value
+                elif value.errors:
+                    error = value.value
                     etype, evalue, traceback = error
                     if isinstance(evalue, RedirectException):
                         self.fire(RedirectError(request, response,
@@ -291,12 +295,12 @@ class HTTP(BaseComponent):
                     else:
                         self.fire(HTTPError(request, response, error=error))
                 else:
-                    if retval.manager is None:
-                        retval.manager = self
-                    retval.event = evt
-                    retval.onSet = "value_changed", self
-            elif type(retval) is not bool:
-                response.body = retval
+                    if value.manager is None:
+                        value.manager = self
+                    value.event = evt
+                    value.onSet = "value_changed", self
+            elif type(value) is not bool:
+                response.body = value
                 self.fire(Response(response))
 
     @handler("request_failure", "response_failure")
