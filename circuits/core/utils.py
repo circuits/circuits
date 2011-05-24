@@ -12,13 +12,11 @@ import sys
 
 from imp import reload
 
-UNCAMELRE1 = re.compile("(.)([A-Z][a-z]+)")
-UNCAMELRE2 = re.compile("([a-z0-9])([A-Z])")
+UNCAMELRE = re.compile("([a-z])([A-Z])")
 
 
-def uncamel(name):
-    s1 = UNCAMELRE1.sub("\1_\2", name)
-    return UNCAMELRE2.sub("\1_\2", s1).lower()
+def uncamel(s):
+    return UNCAMELRE.sub("\g<1>_\g<2>", s).lower()
 
 
 def itercmp(x, c, subclass=True):
