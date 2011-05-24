@@ -343,7 +343,8 @@ class Manager(object):
                 event.value.value = error
 
                 if event.failure:
-                    self.fire(Failure.create("%s_failure" % event.name))
+                    self.fire(Failure.create("%sFailure" %
+                        event.__class__.__name__))
                 else:
                     self.fire(Error(etype, evalue, traceback, handler))
 
@@ -351,7 +352,8 @@ class Manager(object):
                 break
 
         if error is None and event.success:
-            self.fire(Success.create("%s_success" % event.name))
+            self.fire(Success.create("%sSuccess" %
+                event.__class__.__name__))
 
         if GREENLET:
             for task in self._tasks.copy():
