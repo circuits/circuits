@@ -301,6 +301,11 @@ class Client(Component):
     def _on_stopped(self, component):
         self.fire(Close())
 
+    @handler("read_value_changed")
+    def _on_read_value_changed(self, value):
+        if isinstnace(value, str):
+            self.fire(Write(value))
+
     def _close(self):
         if not self._connected:
             return
@@ -333,7 +338,7 @@ class Client(Component):
                 data = self._sock.recv(self._bufsize)
 
             if data:
-                self.fire(Read(data))
+                self.fire(Read(data)).notify = True
             else:
                 self.close()
         except SocketError as e:
@@ -572,6 +577,12 @@ class Server(Component):
     def _on_stopped(self, component):
         self.fire(Close())
 
+    @handler("read_value_changed")
+    def _on_read_value_changed(self, value):
+        if isinstance(value.value, str):
+            sock = value.event.args[0]
+            self.fire(Write(sock, value.value))
+
     def _close(self, sock):
         if sock is None:
             return
@@ -621,7 +632,7 @@ class Server(Component):
         try:
             data = sock.recv(self._bufsize)
             if data:
-                self.fire(Read(sock, data))
+                self.fire(Read(sock, data)).notify = True
             else:
                 self.close(sock)
         except SocketError as e:

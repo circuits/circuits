@@ -61,6 +61,7 @@ def test_tcp_basic(Poller):
 
         client.fire(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
+        assert pytest.wait_for(client, "data", b"foo")
 
         client.fire(Close())
         assert pytest.wait_for(client, "disconnected")
