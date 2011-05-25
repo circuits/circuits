@@ -48,5 +48,13 @@ class HandlerMetaClass(type):
 
         callables = (x for x in ns.items() if isinstance(x[1], Callable))
         for name, callable in callables:
-            if not (name[0] == "_" or hasattr(callable, "handler")):
+            if not (name.startswith("_") or hasattr(callable, "handler")):
                 setattr(cls, name, handler(name)(callable))
+
+        def unregister(self, component):
+            if component is not self:
+                return
+            return self.unregister()
+
+        setattr(cls, 'on_unregister', handler('unregister')(unregister))
+

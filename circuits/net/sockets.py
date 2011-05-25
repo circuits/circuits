@@ -549,6 +549,8 @@ class Server(Component):
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
+        if component is not self:
+            return
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component

@@ -74,7 +74,7 @@ class BaseComponent(Manager):
         return self
 
     def unregister(self):
-        if not self.parent == self:
+        if self.parent is not self:
             self.parent.unregisterChild(self)
             self.parent = self
 

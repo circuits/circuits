@@ -219,6 +219,7 @@ class Manager(object):
 
     def unregisterChild(self, component):
         self.components.remove(component)
+        self.root._cache = dict()
         self.root._ticks = None
 
     def _fire(self, event, channel):

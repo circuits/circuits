@@ -83,6 +83,9 @@ def test_udp_close(Poller):
         assert pytest.wait_for(server, "disconnected")
 
         server.fire(Unregister(server))
+        def test(obj, attr):
+            return attr not in obj.components
+        assert pytest.wait_for(m, server, value=test)
 
         server = Server() + UDPServer((host, port))
         server.register(m)
