@@ -70,6 +70,8 @@ def test_udp_close(Poller):
     m = Manager() + Poller()
     server = Server() + UDPServer(0)
     server.register(m)
+    from circuits import Debugger
+    Debugger().register(m)
     m.start()
 
     try:

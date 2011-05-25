@@ -290,7 +290,7 @@ class Client(Component):
                     self.fire(Ready(self))
 
     @handler("started", filter=True, channel="*")
-    def _on_started(self, component, mode):
+    def _on_started(self, component):
         if self._poller is None:
             self._poller = Poller().register(self)
             self.fire(Ready(self))
@@ -566,7 +566,7 @@ class Server(Component):
                     self.fire(Ready(self))
 
     @handler("started", filter=True, channel="*")
-    def _on_started(self, component, mode):
+    def _on_started(self, component):
         if self._poller is None:
             self._poller = Poller().register(self)
             self._poller.addReader(self, self._sock)

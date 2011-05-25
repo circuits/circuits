@@ -71,7 +71,7 @@ class Startup(BaseComponent):
         self.fire(Command(), self.command, self)
 
     @handler("started")
-    def _on_started(self, component, mode):
+    def _on_started(self, component):
         if not self.command == "init":
             if not os.path.exists(self.env.path):
                 raise Error("Environment does not exist!")
