@@ -75,9 +75,8 @@ INSPECT = """\
   <bound method A.__tick__ of <A/* %s (queued=0) [S]>>
 
  Event Handlers: 2
-  unregister; 2
-   <listener[*.unregister] (A.unregister)>
-   <listener[*.unregister] (A.unregister)>
+  unregister; 1
+   <listener[*.unregister] (A._on_unregister)>
   foo; 1
    <listener[*.foo] (A.foo)>
 """
