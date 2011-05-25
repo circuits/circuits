@@ -43,8 +43,13 @@ class Pool(BaseComponent):
 
     @handler("task")
     def _on_task(self, f, *args, **kwargs):
-        workers = float(len(self._workers))
-        tasks = [float(len(worker)) for worker in self._workers]
+        workers = len(self._workers)
+        if not workers:
+            worker = Worker(process=self._processes)
+            self._workers.append(worker)
+            return worker.fire(Task(f, *args, **kwargs), worker)
+
+        tasks = [len(worker) for worker in self._workers]
         total = sum(tasks)
         avg = total / workers
 
