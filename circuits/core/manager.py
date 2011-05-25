@@ -185,6 +185,10 @@ class Manager(object):
             return "S"
 
     def getHandlers(self, event, channel):
+        channel_is_instance = isinstance(channel, Manager)
+        if channel_is_instance and channel != self:
+            return channel.getHandlers(event, channel)
+
         name = event.name
 
         handlers = set()
@@ -194,14 +198,16 @@ class Manager(object):
                 handler_channel = handler.channel if handler.channel else \
                         handler.__self__.channel
 
-                if channel == "*" or handler_channel in ("*", channel,):
+                if channel == "*" or handler_channel in ("*", channel,) \
+                        or channel_is_instance:
                     handlers.add(handler)
 
         handlers.update(self._globals)
         handlers.update(self._handlers.get("*", set()))
 
-        for c in self.components:
-            handlers.update(c.getHandlers(event, channel))
+        if not channel_is_instance:
+            for c in self.components:
+                handlers.update(c.getHandlers(event, channel))
 
         return handlers
 
