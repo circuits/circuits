@@ -263,9 +263,6 @@ class HTTP(BaseComponent):
 
     @handler("request_success")
     def _on_request_success(self, e):
-        import pdb
-        pdb.set_trace()
-
         value = e.value.value
         request, response = e.args[:2]
 
