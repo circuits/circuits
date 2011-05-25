@@ -33,8 +33,6 @@ class BaseComponent(Manager):
         overridden = lambda x: x in handlers and handlers[x].override
 
         for base in cls.__bases__:
-            print repr(base)
-            print base.__dict__
             if issubclass(cls, base):
                 for k, v in list(base.__dict__.items()):
                     p1 = isinstance(v, Callable)
@@ -54,12 +52,8 @@ class BaseComponent(Manager):
 
         self.channel = kwargs.get("channel", self.channel) or "*"
 
-        print 'members'
-
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
-                print '* %s' % repr(k)
-                print '  * %s' % repr(v)
                 if not v.names and v.channel == "*":
                     self._globals.add(v)
                 for name in v.names:

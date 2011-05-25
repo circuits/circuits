@@ -50,4 +50,3 @@ class HandlerMetaClass(type):
         for name, callable in callables:
             if not (name.startswith("_") or hasattr(callable, "handler")):
                 setattr(cls, name, handler(name)(callable))
-
