@@ -7,6 +7,7 @@
 This module definse the Manager class subclasses by component.BaseComponent
 """
 
+import atexit
 from time import sleep
 from warnings import warn
 from itertools import chain
@@ -394,12 +395,13 @@ class Manager(object):
         self._running = False
         self.fire(Stopped(self))
 
+        for _ in range(3):
+            self.tick()
+
         if self._bridge is not None:
             self._bridge = None
 
         self._task = None
-
-        self.tick()
 
     def getTicks(self):
         ticks = set()
@@ -440,6 +442,8 @@ class Manager(object):
             self._run(log, __mode, __socket)
 
     def _run(self, log, __mode, __socket):
+        atexit.register(self.stop)
+
         if current_thread().getName() == "MainThread":
             try:
                 signal(SIGINT,  self._signalHandler)
