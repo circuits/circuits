@@ -74,11 +74,11 @@ class BaseComponent(Manager):
         return self
 
     def unregister(self):
+        self.fire(Unregistered(self, self.parent))
+
         if self.parent is not self:
             self.parent.unregisterChild(self)
             self.parent = self
-
-        self.fire(Unregistered(self, self.parent))
 
         self._updateRoot(self)
 
