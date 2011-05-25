@@ -4,36 +4,27 @@
 
 """Event Serialization Tests"""
 
-from pickle import dumps, loads
 
-from circuits import Event, Component
+
+from circuits import Event
 
 class Test(Event):
     """Test Event"""
 
-    success = ("test_successful",)
-
-class App(Component):
-
-    def test(self):
-        return "Hello World!"
 
 def test():
-    app = App()
-    while app: app.flush()
+    from circuits.core.events import loads
 
-    e = Test()
-    app.fire(e)
-    app.flush()
+    e = Test(1, 2, 3, foo="bar")
+    e.success = True
+    e.failure = False
 
-    s = dumps(e, -1)
+    s = e.dumps()
     x = loads(s)
 
     assert e == x
     assert hasattr(x, "args")
     assert hasattr(x, "kwargs")
-    assert hasattr(x, "channels")
     assert hasattr(x, "success")
     assert hasattr(x, "failure")
-    assert hasattr(x, "value")
-    assert hasattr(x, "source")
+    assert hasattr(x, "channels")

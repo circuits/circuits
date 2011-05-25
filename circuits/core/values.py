@@ -10,6 +10,7 @@ This defines the Value object used by components and events.
 
 from .events import Event
 
+
 class ValueChanged(Event):
     """Value Changed Event
 
@@ -57,10 +58,6 @@ class Value(object):
         self.parent = self
 
         self._value = None
-
-    def __getstate__(self):
-        keys = ("event", "notify", "result", "errors", "_value")
-        return dict([(k, getattr(self, k, None)) for k in keys])
 
     def __contains__(self, y):
         value = self.value
@@ -125,7 +122,7 @@ class Value(object):
                 o.parent.errors = o.errors
                 o.parent.result = o.result
                 update(o.parent, v)
-        
+
         update(self, value)
 
     value = property(getValue, setValue, None, "Value of this Value")

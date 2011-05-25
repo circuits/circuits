@@ -8,7 +8,46 @@ This module define the basic Event object and common events.
 """
 
 
+import json
+
 from .utils import uncamel
+
+
+def loads(s):
+    obj = json.loads(s)
+
+    name = "".join(x.title() for x in str(obj["name"]).split("_"))
+    data = obj["data"]
+    attrs = obj["attrs"]
+
+    args = []
+    for arg in data["args"]:
+        if isinstance(arg, unicode):
+            try:
+                args.append(str(arg))
+            except UnicodeDecodeError:
+                args.append(arg)
+        else:
+            args.append(arg)
+
+    kwargs = {}
+    for k, v in data["kwargs"].items():
+        if isinstance(v, unicode):
+            try:
+                kwargs[str(k)] = str(v)
+            except UnicodeDecodeError:
+                kwargs[str(k)] = v
+        else:
+            kwargs[str(k)] = v
+
+    e = Event.create(name, *args, **kwargs)
+
+    for k, v in attrs.items():
+        setattr(e, k, v)
+
+    e.channels = tuple(e.channels)
+
+    return e
 
 
 class Event(object):
@@ -39,13 +78,8 @@ class Event(object):
         self.future = False
         self.handler = None
 
-    def __getstate__(self):
-        keys = ("args", "kwargs", "channels", "success", "failure",
-                "value", "source")
-        return dict([(k, getattr(self, k, None)) for k in keys])
-
     def __eq__(self, other):
-        return (self.__class__ is other.__class__
+        return (self.name == other.name
                 and self.channels == other.channels
                 and self.args == other.args
                 and self.kwargs == other.kwargs)
@@ -104,6 +138,24 @@ class Event(object):
             self.kwargs[i] = y
         else:
             raise TypeError("Expected int or str, got %r" % type(i))
+
+    def dumps(self):
+        obj = {}
+
+        obj["name"] = self.name
+
+        obj["data"] = {
+                "args": self.args,
+                "kwargs": self.kwargs,
+        }
+
+        obj["attrs"] = {
+                "channels": self.channels,
+                "success": self.success,
+                "failure": self.failure,
+        }
+
+        return json.dumps(obj)
 
 
 class Error(Event):
