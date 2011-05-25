@@ -88,7 +88,7 @@ def test_value_notify():
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
-    assert app.value == "Hello World!"
+    assert app.value is x
 
     app.value = None
 
@@ -102,7 +102,7 @@ def test_nested_value_notify():
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
-    assert app.value == "Hello World!"
+    assert app.value is x
 
     app.value = None
 

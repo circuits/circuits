@@ -110,20 +110,21 @@ class Value(object):
         else:
             self._value = value
 
-        def notify(o, v):
-            if not isinstance(v, Value) and v is not None:
+        def update(o, v):
+            if isinstance(v, Value):
+                o.errors = v.errors
+                o.result = v.result
+            if v is not None:
                 o.result = True
                 if o.manager is not None and o.notify:
                     o.manager.fireEvent(Event.create("%sValueChanged" %
-                        self.event.__class__.__name__, v))
-            elif isinstance(v, Value):
-                o.errors = v.errors
-                o.result = v.result
-            if not o.parent == o:
+                        self.event.__class__.__name__, o))
+
+            if o.parent is not o:
                 o.parent.errors = o.errors
                 o.parent.result = o.result
-                notify(o.parent, v)
+                update(o.parent, v)
         
-        notify(self, value)
+        update(self, value)
 
     value = property(getValue, setValue, None, "Value of this Value")
