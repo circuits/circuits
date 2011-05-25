@@ -69,16 +69,17 @@ class F(Component):
         print("F!")
 
 INSPECT = """\
- Registered Components: 0
+ Components: 0
 
  Tick Functions: 1
   <bound method A.__tick__ of <A/* %s (queued=0) [S]>>
 
- Channels and Event Handlers: 2
-  *:unregister; 1
-   <listener on ('unregister',) {target='*', priority=0.0}>
-  *:foo; 1
-   <listener on ('foo',) {target='*', priority=0.0}>
+ Event Handlers: 2
+  unregister; 2
+   <listener[*.unregister] (A.unregister)>
+   <listener[*.unregister] (A.unregister)>
+  foo; 1
+   <listener[*.foo] (A.foo)>
 """
 
 def test_kill():
@@ -135,7 +136,6 @@ def test_kill():
 def test_inspect():
     a = A()
     s = inspect(a)
-
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
     assert s == INSPECT % id
@@ -159,8 +159,8 @@ def test_findroot():
 
 def test_reprhandler():
     a = A()
-    s = reprhandler(a, a.foo)
-    assert s == "<listener on ('foo',) {target='*', priority=0.0}>"
+    s = reprhandler(a.foo)
+    assert s == "<listener[*.foo] (A.foo)>"
 
     f = lambda: None
-    py.test.raises(KeyError, reprhandler, a, f)
+    py.test.raises(AttributeError, reprhandler, f)

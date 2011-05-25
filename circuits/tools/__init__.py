@@ -100,7 +100,7 @@ def graph(x, name=None):
 def reprhandler(handler):
     format = "<%s[%s.%s] (%s.%s)>"
 
-    channel = handler.channel
+    channel = handler.channel or "*"
     names = ".".join(handler.names)
     type = "filter" if handler.filter else "listener"
 
@@ -123,7 +123,7 @@ def inspect(x):
     s = []
     write = s.append
 
-    write(" Registered Components: %d\n" % len(x.components))
+    write(" Components: %d\n" % len(x.components))
     for component in x.components:
         write("  %s\n" % component)
     write("\n")
@@ -134,8 +134,7 @@ def inspect(x):
         write("  %s\n" % tick)
     write("\n")
 
-    write(" Channels and Event Handlers: %d\n" % len(x._handlers))
-    print repr(x._handlers)
+    write(" Event Handlers: %d\n" % len(x._handlers.values()))
     for event, handlers in x._handlers.items():
         write("  %s; %d\n" % (event, len(x._handlers[event])))
         for handler in x._handlers[event]:
