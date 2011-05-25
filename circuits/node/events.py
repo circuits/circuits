@@ -15,3 +15,7 @@ class Remote(Event):
 
     ...
     """
+
+    def __init__(self, event, node, channel=None, errors="ignore"):
+        super(Remote, self).__init__(event, node, channel=channel,
+                errors=errors)
