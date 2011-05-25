@@ -114,8 +114,9 @@ class Value(object):
             if isinstance(v, Value):
                 o.errors = v.errors
                 o.result = v.result
-            if v is not None:
+            elif v is not None:
                 o.result = True
+
                 if o.manager is not None and o.notify:
                     o.manager.fireEvent(Event.create("%sValueChanged" %
                         self.event.__class__.__name__, o))
