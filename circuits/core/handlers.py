@@ -51,10 +51,3 @@ class HandlerMetaClass(type):
             if not (name.startswith("_") or hasattr(callable, "handler")):
                 setattr(cls, name, handler(name)(callable))
 
-        def unregister(self, component):
-            if component is not self:
-                return
-            return self.unregister()
-
-        setattr(cls, 'on_unregister', handler('unregister')(unregister))
-
