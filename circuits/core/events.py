@@ -55,10 +55,12 @@ class Event(object):
 
         name = self.name
         type = self.__class__.__name__
-        if len(self.channels) == 1:
+        if len(self.channels) > 1:
+            channels = repr(self.channels)
+        elif len(self.channels) == 1:
             channels = str(self.channels[0])
         else:
-            channels = repr(self.channels)
+            channels = ""
 
         data = "%s %s" % (
                 ", ".join(repr(arg) for arg in self.args),
