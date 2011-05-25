@@ -53,7 +53,6 @@ class Manager(object):
         self._ticks = None
 
         self._task = None
-        self._bridge = None
         self._running = False
 
         if GREENLET:
@@ -364,42 +363,23 @@ class Manager(object):
         if signal in [SIGINT, SIGTERM]:
             self.stop()
 
-    def start(self, log=True, link=None, process=False):
-        group = None
-        target = self.run
-        name = self.__class__.__name__
-        mode = "P" if process else "T"
-        args = ()
-        kwargs = {'log': log, '__mode': mode}
+    def start(self, process=False):
+        Task = Process if process else Thread
 
-        if process:
-            if link is not None and isinstance(link, Manager):
-                from circuits.net.sockets import Pipe
-                from circuits.core.bridge import Bridge
-                from circuits.core.utils import findroot
-                root = findroot(link)
-                parent, child = Pipe()
-                self._bridge = Bridge(root, socket=parent)
-                self._bridge.start()
-                kwargs['__socket'] = child
+        self._task = Task(target=self.run, name=self.name)
 
-            self._task = Process(group, target, name, args, kwargs)
-            self._task.daemon = True
-        else:
-            self._task = Thread(group, target, name, args, kwargs)
-            self._task.daemon = True
-
+        self._task.daemon = True
         self._task.start()
 
     def stop(self):
+        if not self.running:
+            return
+
         self._running = False
         self.fire(Stopped(self))
 
         for _ in range(3):
             self.tick()
-
-        if self._bridge is not None:
-            self._bridge = None
 
         self._task = None
 
@@ -430,18 +410,14 @@ class Manager(object):
         else:
             sleep(TIMEOUT)
 
-    def run(self, *args, **kwargs):
-        log = kwargs.get("log", True)
-        __mode = kwargs.get("__mode", None)
-        __socket = kwargs.get("__socket", None)
-
+    def run(self):
         if GREENLET:
             self._greenlet = greenlet(self._run)
-            self._greenlet.switch(log, __mode, __socket)
+            self._greenlet.switch()
         else:
-            self._run(log, __mode, __socket)
+            self._run()
 
-    def _run(self, log, __mode, __socket):
+    def _run(self):
         atexit.register(self.stop)
 
         if current_thread().getName() == "MainThread":
@@ -449,26 +425,15 @@ class Manager(object):
                 signal(SIGINT,  self._signalHandler)
                 signal(SIGTERM, self._signalHandler)
             except ValueError:
-                pass  # Ignore if we can't install signal handlers
-
-        if __socket is not None:
-            from circuits.core.bridge import Bridge
-            manager = Manager()
-            bridge = Bridge(manager, socket=__socket)
-            self.register(manager)
-            manager.start()
+                # Ignore if we can't install signal handlers
+                pass
 
         self._running = True
 
-        self.fire(Started(self, __mode))
+        self.fire(Started(self))
 
         try:
             while self or self.running:
                 self.tick()
         finally:
-            if __socket is not None:
-                while bridge or manager:
-                    self.tick()
-                manager.stop()
-                bridge.stop()
-            self.stop()
+            self.tick()

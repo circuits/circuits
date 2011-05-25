@@ -8,11 +8,10 @@ Test Manager's representation string.
 """
 
 import os
+from time import sleep
+from threading import current_thread
 
-try:
-    from threading import current_thread
-except ImportError:
-    from threading import currentThread as current_thread
+import pytest
 
 from circuits import Event, Component, Manager
 
@@ -37,15 +36,15 @@ def test():
     assert s == "<Manager %s (queued=1) [S]>" % id
 
     m.start()
-    while m:
-        m.tick()
+
+    pytest.wait_for(m, "_running", True)
 
     s = repr(m)
     assert s == "<Manager %s (queued=0) [R]>" % id
 
     m.stop()
-    while m:
-        m.tick()
+
+    pytest.wait_for(m, "_running", False)
 
     s = repr(m)
     assert s == "<Manager %s (queued=0) [S]>" % id
