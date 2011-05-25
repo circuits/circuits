@@ -59,7 +59,7 @@ class Value(object):
         self._value = None
 
     def __getstate__(self):
-        keys = ("event", "result", "errors", "_value")
+        keys = ("event", "notify", "result", "errors", "_value")
         return dict([(k, getattr(self, k, None)) for k in keys])
 
     def __contains__(self, y):

@@ -29,13 +29,13 @@ def test():
     x = loads(s)
 
     assert hasattr(x, "event")
-    assert hasattr(x, "onSet")
+    assert hasattr(x, "notify")
     assert hasattr(x, "result")
     assert hasattr(x, "errors")
     assert hasattr(x, "_value")
 
     assert x.event == v.event
-    assert x.onSet == v.onSet
+    assert x.notify == v.notify
     assert x.result == v.result
     assert x.errors == v.errors
     assert x._value == v._value
