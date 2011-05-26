@@ -7,11 +7,12 @@
 ...
 """
 
-from .events import Remote
+from hashlib import sha256
+
 from .client import Client
 from .server import Server
 
-from circuits import handler, BaseComponent, Event
+from circuits import handler, BaseComponent
 
 
 class Node(BaseComponent):
@@ -22,20 +23,25 @@ class Node(BaseComponent):
 
     channel = "node"
 
-    def __init__(self, bind, hosts, channel=channel):
+    def __init__(self, bind=None, channel=channel):
         super(Node, self).__init__(channel=channel)
 
-        self._hosts = []
-        self._clients = []
+        self._bind = bind
 
-        for i in range(hosts):
-            client = Client(channel="%s.client%d" % (self.channel, i))
-            client.register(self)
-            self._clients.append(client)
+        self._nodes = {}
 
-        self._server = Server(bind, channel="%s.server" % self.channel)
-        self._server.register(self)
+        if self._bind is not None:
+            Server(self._bind).register(self)
 
-    @handler(channel="*", priority=101.0)
-    def _on_event(self, event, *args, **kwargs):
-        print event
+    def add(self, name, host, port):
+        channel = sha256("%s:%d" % (host, port)).hexdigest()
+        node = Client(host, port, channel=channel)
+        node.register(self)
+
+        self._nodes[name] = node
+
+    @handler("remote")
+    def _on_remote(self, e, name, *channels):
+        node = self._nodes[name]
+        e.channels = channels
+        node.send(e)

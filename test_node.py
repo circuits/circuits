@@ -1,21 +1,22 @@
-# Module:   test_pools
-# Date:     22nd February 2011
-# Author:   James Mills, prologic at shortcircuit dot net dot au
+#!/usr/bin/env python
 
-"""Pools Tests"""
-
-from circuits import Task, Pool
+from circuits.node import Node, Remote
+from circuits import Component, Debugger, Event
 
 
-def f():
-    x = 0
-    i = 0
-    while i < 1000000:
-        x += 1
-        i += 1
-    return x
+class Foo(Event):
+    """Foo Event"""
 
 
-from circuits import Debugger
-p = Pool() + Debugger()
-p.start()
+class App(Component):
+
+    def foo(self):
+        return "Hello World!"
+
+a1 = App() + Debugger()
+n1 = Node().register(a1)
+a1.start()
+
+a2 = App() + Debugger()
+n2 = Node(7000).register(a2)
+a2.start(process=True)

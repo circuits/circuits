@@ -12,6 +12,8 @@ from circuits.net.sockets import Close, Connect, TCPClient, Write
 
 from .events import Packet
 
+DELIMITER = "\r\n\r\n"
+
 
 class Client(BaseComponent):
     """Client
@@ -19,12 +21,17 @@ class Client(BaseComponent):
     ...
     """
 
-    channel = "node.client"
+    channel = "node"
 
-    def __init__(self, channel=channel):
+    def __init__(self, host, port, channel=channel):
         super(Client, self).__init__(channel=channel)
 
+        self._host = host
+        self._port = port
+        self._buffer = ""
+
         TCPClient(channel=self.channel).register(self)
+        self.fire(Connect(self._host, self._port))
 
     def close(self):
         self.fire(Close())
@@ -32,9 +39,17 @@ class Client(BaseComponent):
     def connect(self, host, port):
         self.fire(Connect(host, port))
 
-    def write(self, data):
-        self.fire(Write(data))
+    def send(self, e):
+        data = e.dumps()
+        self.fire(Write("%s%s" % (data, DELIMITER)))
 
     @handler("read")
     def _on_read(self, data):
-        self.fire(Packet(data), self.parent)
+        self._buffer += data
+
+        delimiter = self._buffer.find(DELIMITER)
+        if delimiter > 0:
+            packet = self._buffer[:delimiter]
+            self._buffer = self._buffer[(delimiter + len(DELIMITER)):]
+
+            self.fire(Packet(packet), self.parent)
