@@ -1,26 +1,29 @@
-# Module:   test_event_serialization
-# Date:     13th February 2010
-# Author:   James Mills, prologic at shortcircuit dot net dot au
+# Module:   test_utils
+# Date:     ...
+# Author:   ...
 
-"""Event Serialization Tests"""
+"""test_utils
 
+...
+"""
 
 
 from circuits import Event
+
 
 class Test(Event):
     """Test Event"""
 
 
 def test():
-    from circuits.core.events import loads
+    from circuits.node.utils import dump_event, load_event
 
     e = Test(1, 2, 3, foo="bar")
     e.success = True
     e.failure = False
 
-    s = e.dumps()
-    x = loads(s)
+    s = dump_event(e)
+    x = load_event(s)
 
     assert e == x
     assert hasattr(x, "args")

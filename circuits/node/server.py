@@ -7,9 +7,10 @@
 ...
 """
 
-from circuits.core.events import loads
 from circuits import handler, BaseComponent, Event
 from circuits.net.sockets import Close, TCPServer, Write
+
+from .utils import load_event
 
 DELIMITER = "\r\n\r\n"
 
@@ -30,8 +31,23 @@ class Server(BaseComponent):
         TCPServer(bind, channel=self.channel).register(self)
 
     def process(self, packet):
-        e = loads(packet)
-        self.fire(e, *e.channels)
+        e = load_event(packet)
+
+        name = "%s_value_changed" % e.name
+        channel = e.channels[0] if e.channels else self
+        
+        @handler(name, channel=channel)
+        def on_value_changed(self, value):
+            self.send(value)
+
+        self._handlers.setdefault(name, set()).add(on_value_changed)
+
+        v = self.fire(e, *e.channels)
+        v.notify = True
+
+    def send(self, v):
+        data = v.dumps()
+        self.fire(Write("V%s%s" % (data, DELIMITER)))
 
     @handler("read")
     def _on_read(self, sock, data):
