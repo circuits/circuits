@@ -1,0 +1,60 @@
+# Package:  utils
+# Date:     ...
+# Author:   ...
+
+"""Utils
+
+...
+"""
+
+
+import json
+
+from circuits.core import Event, Value
+
+
+def load_event(s):
+    data = json.loads(s)
+
+    name = "".join(x.title() for x in str(data["name"]).split("_"))
+
+    args = []
+    for arg in data["args"]:
+        if isinstance(arg, unicode):
+            try:
+                args.append(str(arg))
+            except UnicodeDecodeError:
+                args.append(arg)
+        else:
+            args.append(arg)
+
+    kwargs = {}
+    for k, v in data["kwargs"].items():
+        if isinstance(v, unicode):
+            try:
+                kwargs[str(k)] = str(v)
+            except UnicodeDecodeError:
+                kwargs[str(k)] = v
+        else:
+            kwargs[str(k)] = v
+
+    e = Event.create(name, *args, **kwargs)
+
+    e.success = bool(data["success"])
+    e.failure = bool(data["failure"])
+    e.channels = tuple(data["channels"])
+
+    return e
+
+
+def dump_event(e):
+    data = {
+            "name": e.name,
+            "args": e.args,
+            "kwargs": e.kwargs,
+            "success": e.success,
+            "failure": e.failure,
+            "channels": e.channels,
+    }
+
+    return json.dumps(data)
