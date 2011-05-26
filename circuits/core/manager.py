@@ -243,8 +243,6 @@ class Manager(object):
         else:
             method = f
 
-        delattr(self, method.__name__)
-
         if event is None:
             names = method.names
         else:
@@ -252,6 +250,8 @@ class Manager(object):
 
         for name in names:
             self._handlers[name].remove(method)
+            if not self._handlers[name]:
+                delattr(self, method.__name__)
 
         self.root._cache.clear()
 
