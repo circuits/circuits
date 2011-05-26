@@ -41,7 +41,8 @@ class Node(BaseComponent):
         self._nodes[name] = node
 
     @handler("remote")
-    def _on_remote(self, e, name, *channels):
+    def _on_remote(self, e, name, channel=None):
         node = self._nodes[name]
-        e.channels = channels
-        node.send(e)
+        if channel is not None:
+            e.channels = (channel,)
+        return node.send(e)

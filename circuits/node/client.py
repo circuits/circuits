@@ -33,6 +33,10 @@ class Client(BaseComponent):
         TCPClient(channel=self.channel).register(self)
         self.fire(Connect(self._host, self._port))
 
+    def process(self, packet):
+        v = load_value(packet)
+        # XXX: ...
+
     def close(self):
         self.fire(Close())
 
@@ -40,6 +44,7 @@ class Client(BaseComponent):
         self.fire(Connect(host, port))
 
     def send(self, e):
+        self._values[e] = e.value
         data = e.dumps()
         self.fire(Write("%s%s" % (data, DELIMITER)))
 
@@ -51,5 +56,4 @@ class Client(BaseComponent):
         if delimiter > 0:
             packet = self._buffer[:delimiter]
             self._buffer = self._buffer[(delimiter + len(DELIMITER)):]
-
-            self.fire(Packet(packet), self.parent)
+            self.process(packet)
