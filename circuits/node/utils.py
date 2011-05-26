@@ -44,11 +44,12 @@ def load_event(s):
     e.failure = bool(data["failure"])
     e.channels = tuple(data["channels"])
 
-    return e
+    return e, data["id"]
 
 
-def dump_event(e):
+def dump_event(e, id):
     data = {
+            "id": id,
             "name": e.name,
             "args": e.args,
             "kwargs": e.kwargs,

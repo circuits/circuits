@@ -7,6 +7,8 @@
 ...
 """
 
+from weakref import WeakValueDictionary
+
 from circuits import handler, BaseComponent
 from circuits.net.sockets import Close, Connect, TCPClient, Write
 
@@ -28,14 +30,20 @@ class Client(BaseComponent):
 
         self._host = host
         self._port = port
+
+        self._nid = 0
         self._buffer = ""
+        self._values = WeakValueDictionary()
+
 
         TCPClient(channel=self.channel).register(self)
         self.fire(Connect(self._host, self._port))
 
     def process(self, packet):
-        v = load_value(packet)
-        # XXX: ...
+        v, id = load_value(packet)
+
+        if id in self._values:
+            self._values[id] = v
 
     def close(self):
         self.fire(Close())
@@ -44,8 +52,12 @@ class Client(BaseComponent):
         self.fire(Connect(host, port))
 
     def send(self, e):
-        self._values[e] = e.value
-        data = e.dumps()
+        id = self._nid
+        self._nid += 1
+
+        self._values[id] = e.value
+        data = dump_event(e, id)
+
         self.fire(Write("%s%s" % (data, DELIMITER)))
 
     @handler("read")
