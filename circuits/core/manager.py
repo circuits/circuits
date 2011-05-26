@@ -8,6 +8,7 @@ This module definse the Manager class subclasses by component.BaseComponent
 """
 
 import atexit
+import types
 from time import sleep
 from warnings import warn
 from itertools import chain
@@ -195,8 +196,12 @@ class Manager(object):
 
         if name in self._handlers:
             for handler in self._handlers[name]:
-                handler_channel = handler.channel if handler.channel else \
-                        handler.__self__.channel
+                if handler.channel:
+                    handler_channel = handler.channel
+                elif hasattr(handler, '__self__'):
+                    handler_channel = handler.__self__.channel
+                else:
+                    handler_channel = None
 
                 if channel == "*" or handler_channel in ("*", channel,) \
                         or channel_is_instance:
@@ -210,6 +215,14 @@ class Manager(object):
                 handlers.update(c.getHandlers(event, channel))
 
         return handlers
+
+    def addHandler(event, f):
+        self._handlers.setdefault(event.name, set()).add(f)
+        self.root._cache = dict()
+
+    def removeHandler(event, f):
+        self._handlers[event.name].remove(f)
+        self.root._cache = dict()
 
     def registerChild(self, component):
         self.components.add(component)
