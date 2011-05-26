@@ -10,6 +10,10 @@
 from circuits import Event
 
 
+class Packet(Event):
+    """Packet Event"""
+
+
 class Remote(Event):
     """Remote Event
 

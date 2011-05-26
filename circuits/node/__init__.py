@@ -7,6 +7,5 @@
 Distributed and Inter-Processing support for circuits
 """
 
+from .node import Node
 from .events import Remote
-from .client import Client
-from .server import Server
