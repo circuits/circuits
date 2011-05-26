@@ -13,6 +13,7 @@ from circuits import handler, BaseComponent
 from circuits.net.sockets import Close, Connect, TCPClient, Write
 
 from .events import Packet
+from .utils import dump_event
 
 DELIMITER = "\r\n\r\n"
 
@@ -51,11 +52,11 @@ class Client(BaseComponent):
     def connect(self, host, port):
         self.fire(Connect(host, port))
 
-    def send(self, e):
+    def send(self, event, e):
         id = self._nid
         self._nid += 1
 
-        self._values[id] = e.value
+        self._values[id] = event.value
         data = dump_event(e, id)
 
         self.fire(Write("%s%s" % (data, DELIMITER)))

@@ -31,7 +31,7 @@ class Server(BaseComponent):
         TCPServer(bind, channel=self.channel).register(self)
 
     def process(self, packet):
-        e = load_event(packet)
+        e, id = load_event(packet)
 
         name = "%s_value_changed" % e.name
         channel = e.channels[0] if e.channels else self
