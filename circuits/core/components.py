@@ -54,10 +54,7 @@ class BaseComponent(Manager):
 
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
-                if not v.names and v.channel == "*":
-                    self._globals.add(v)
-                for name in v.names:
-                    self._handlers.setdefault(name, set()).add(v)
+                self.addHandler(v)
             if isinstance(v, BaseComponent):
                 v.register(self)
 

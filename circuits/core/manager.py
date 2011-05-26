@@ -8,15 +8,16 @@ This module definse the Manager class subclasses by component.BaseComponent
 """
 
 import atexit
-import types
 from time import sleep
 from warnings import warn
 from itertools import chain
+from types import MethodType
 from collections import deque
 from traceback import format_tb
 from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from threading import current_thread, Thread
+from inspect import getmembers, isfunction, ismethod
 from multiprocessing import current_process, Process
 
 try:
@@ -198,8 +199,9 @@ class Manager(object):
             for handler in self._handlers[name]:
                 if handler.channel:
                     handler_channel = handler.channel
-                elif hasattr(handler, '__self__'):
-                    handler_channel = handler.__self__.channel
+                elif hasattr(handler, "__self__"):
+                    handler_channel = getattr(handler.__self__, "channel",
+                            None)
                 else:
                     handler_channel = None
 
@@ -216,13 +218,42 @@ class Manager(object):
 
         return handlers
 
-    def addHandler(event, f):
-        self._handlers.setdefault(event.name, set()).add(f)
-        self.root._cache = dict()
+    def addHandler(self, f):
+        if isfunction(f):
+            method = MethodType(f, self, self.__class__)
+        else:
+            method = f
 
-    def removeHandler(event, f):
-        self._handlers[event.name].remove(f)
-        self.root._cache = dict()
+        setattr(self, method.__name__, method)
+
+        if not method.names and method.channel == "*":
+            self._globals.add(f)
+        elif not method.names:
+            # XXX: We need this no ?
+            pass
+        else:
+            for name in method.names:
+                self._handlers.setdefault(name, set()).add(method)
+
+        self.root._cache.clear()
+
+    def removeHandler(self, f, event=None):
+        if isfunction(f):
+            method = MethodType(f, self, self.__class__)
+        else:
+            method = f
+
+        delattr(self, method.__name__)
+
+        if event is None:
+            names = method.names
+        else:
+            names = [event]
+
+        for name in names:
+            self._handlers[name].remove(method)
+
+        self.root._cache.clear()
 
     def registerChild(self, component):
         self.components.add(component)
@@ -232,7 +263,7 @@ class Manager(object):
 
     def unregisterChild(self, component):
         self.components.remove(component)
-        self.root._cache = dict()
+        self.root._cache.clear()
         self.root._ticks = None
 
     def _fire(self, event, channel):
