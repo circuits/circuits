@@ -38,6 +38,7 @@ class Event(object):
         self.value = None
         self.future = False
         self.handler = None
+        self.notify = False
 
     def __eq__(self, other):
         return (self.name == other.name
