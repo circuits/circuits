@@ -18,7 +18,7 @@ class Flag(object):
 
 def wait_event(m, name, channel=None, timeout=3.0):
     if channel is None:
-        channel = m.channel
+        channel = getattr(m, "channel", None)
 
     flag = Flag()
 
