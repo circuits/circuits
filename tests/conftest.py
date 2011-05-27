@@ -8,30 +8,32 @@ from time import sleep
 
 import collections
 
-from circuits import handler
-from circuits.core.manager import TIMEOUT
+from circuits import Component
 
-
-def wait_event(m, name, channel=None, timeout=3.0):
-    if channel is None:
-        channel = m
-
+class Waiter(Component):
     flag = False
 
-    @handler(name, channel=channel)
-    def on_event(self, *args, **kwargs):
-        global flag
-        flag = True
+    def handler(self, *args, **kwargs):
+        self.flag = True
 
-    m.addHandler(on_event)
 
+def wait_event(m, channel, target=None, timeout=3.0):
+    from circuits.core.manager import TIMEOUT
+
+    waiter = Waiter()
+    waiter._handlers[channel] = set([waiter.handler])
+
+    if target is None:
+        target = m
+
+    waiter.register(m)
     try:
         for i in range(int(timeout / TIMEOUT)):
-            if flag:
+            if waiter.flag:
                 return True
             sleep(TIMEOUT)
     finally:
-        m.removeHandler(on_event)
+        waiter.unregister()
 
 
 def wait_for(obj, attr, value=True, timeout=3.0):
