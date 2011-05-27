@@ -41,16 +41,12 @@ class Client(BaseComponent):
         self.fire(Connect(self._host, self._port))
 
     def process(self, packet):
-        print 'processing %s' % repr(packet)
         v, id, errors = load_value(packet)
 
         if id in self._values:
             value = self._values[id]
-            print 'setting value %s' % repr(value)
             value.value = v
             value.errors = errors
-            print 'notify: %s' % value.notify
-            print 'setting value %s' % repr(value)
 
     def close(self):
         self.fire(Close())
@@ -63,7 +59,6 @@ class Client(BaseComponent):
         self._nid += 1
 
         self._values[id] = event.value
-        print 'values: %s' % self._values
         data = dump_event(e, id)
 
         self.fire(Write("%s%s" % (data, DELIMITER)))

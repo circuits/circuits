@@ -38,12 +38,10 @@ class Server(BaseComponent):
         
         @handler(name, channel=channel)
         def on_value_changed(self, event, value):
-            print 'value changed intercepted %s' % repr(event)
             self.send(value)
 
         self.addHandler(on_value_changed)
 
-        print 'firing %s' % repr(e)
         v = self.fire(e, *e.channels)
         v.node_trn = id
         v.node_sock = sock
