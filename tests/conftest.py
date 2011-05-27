@@ -12,22 +12,25 @@ from circuits import handler
 from circuits.core.manager import TIMEOUT
 
 
+class Flag(object):
+    status = False
+
+
 def wait_event(m, name, channel=None, timeout=3.0):
     if channel is None:
-        channel = m
+        channel = m.channel
 
-    flag = False
+    flag = Flag()
 
     @handler(name, channel=channel)
     def on_event(self, *args, **kwargs):
-        global flag
-        flag = True
+        flag.status = True
 
     m.addHandler(on_event)
 
     try:
         for i in range(int(timeout / TIMEOUT)):
-            if flag:
+            if flag.status:
                 return True
             sleep(TIMEOUT)
     finally:
