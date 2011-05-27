@@ -31,7 +31,7 @@ class Node(BaseComponent):
         self._nodes = {}
 
         if self._bind is not None:
-            Server(self._bind).register(self)
+            self.server = Server(self._bind).register(self)
 
     def add(self, name, host, port):
         channel = sha256("%s:%d" % (host, port)).hexdigest()
