@@ -22,8 +22,9 @@ def test():
     e.success = True
     e.failure = False
 
-    s = dump_event(e)
-    x = load_event(s)
+    id = 1
+    s = dump_event(e, id)
+    x, id = load_event(s)
 
     assert e == x
     assert hasattr(x, "args")
