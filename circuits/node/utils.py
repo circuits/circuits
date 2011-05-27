@@ -42,6 +42,7 @@ def load_event(s):
 
     e.success = bool(data["success"])
     e.failure = bool(data["failure"])
+    e.notify = bool(data["notify"])
     e.channels = tuple(data["channels"])
 
     return e, data["id"]
@@ -56,6 +57,20 @@ def dump_event(e, id):
             "success": e.success,
             "failure": e.failure,
             "channels": e.channels,
+            "notify": e.notify
     }
-
     return json.dumps(data)
+
+
+def dump_value(v):
+    data = {
+        "id": v.node_trn,
+        "errors": v.errors,
+        "value": v._value,
+    }
+    return json.dumps(data)
+
+
+def load_value(v):
+    data = json.loads(v)
+    return data['value'], data['id'], data['errors']

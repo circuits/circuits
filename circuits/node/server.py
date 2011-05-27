@@ -10,7 +10,7 @@
 from circuits import handler, BaseComponent, Event
 from circuits.net.sockets import Close, TCPServer, Write
 
-from .utils import load_event
+from .utils import load_event, dump_event, dump_value
 
 DELIMITER = "\r\n\r\n"
 
@@ -30,24 +30,27 @@ class Server(BaseComponent):
 
         TCPServer(bind, channel=self.channel).register(self)
 
-    def process(self, packet):
+    def process(self, sock, packet):
         e, id = load_event(packet)
 
         name = "%s_value_changed" % e.name
         channel = e.channels[0] if e.channels else self
         
         @handler(name, channel=channel)
-        def on_value_changed(self, value):
+        def on_value_changed(self, event, value):
+            print 'value changed intercepted %s' % repr(event)
             self.send(value)
 
-        self._handlers.setdefault(name, set()).add(on_value_changed)
+        self.addHandler(on_value_changed)
 
+        print 'firing %s' % repr(e)
         v = self.fire(e, *e.channels)
-        v.notify = True
+        v.node_trn = id
+        v.node_sock = sock
 
     def send(self, v):
-        data = v.dumps()
-        self.fire(Write("V%s%s" % (data, DELIMITER)))
+        data = dump_value(v)
+        self.fire(Write(v.node_sock, "%s%s" % (data, DELIMITER)))
 
     @handler("read")
     def _on_read(self, sock, data):
@@ -59,4 +62,4 @@ class Server(BaseComponent):
         if delimiter > 0:
             packet = buffer[:delimiter]
             self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
-            self.process(packet)
+            self.process(sock, packet)

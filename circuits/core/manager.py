@@ -280,8 +280,8 @@ class Manager(object):
 
         event.channels = channels
 
-        event.value = Value(event, self)
-
+        event.value = Value(event, self, getattr(event, 'notify', False))
+        print 'value: %s,%s' % (event,event.value)
         self.root._fire(event, channels)
 
         return event.value

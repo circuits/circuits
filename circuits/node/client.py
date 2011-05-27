@@ -13,7 +13,7 @@ from circuits import handler, BaseComponent
 from circuits.net.sockets import Close, Connect, TCPClient, Write
 
 from .events import Packet
-from .utils import dump_event
+from .utils import dump_event, load_value
 
 DELIMITER = "\r\n\r\n"
 
@@ -41,10 +41,16 @@ class Client(BaseComponent):
         self.fire(Connect(self._host, self._port))
 
     def process(self, packet):
-        v, id = load_value(packet)
+        print 'processing %s' % repr(packet)
+        v, id, errors = load_value(packet)
 
         if id in self._values:
-            self._values[id] = v
+            value = self._values[id]
+            print 'setting value %s' % repr(value)
+            value.value = v
+            value.errors = errors
+            print 'notify: %s' % value.notify
+            print 'setting value %s' % repr(value)
 
     def close(self):
         self.fire(Close())
@@ -57,6 +63,7 @@ class Client(BaseComponent):
         self._nid += 1
 
         self._values[id] = event.value
+        print 'values: %s' % self._values
         data = dump_event(e, id)
 
         self.fire(Write("%s%s" % (data, DELIMITER)))
@@ -64,7 +71,7 @@ class Client(BaseComponent):
     @handler("read")
     def _on_read(self, data):
         self._buffer += data
-
+    
         delimiter = self._buffer.find(DELIMITER)
         if delimiter > 0:
             packet = self._buffer[:delimiter]
