@@ -233,7 +233,7 @@ def test_IgnoreEvents():
 
     assert debugger.events
 
-    debugger.IgnoreEvents.extend([Test])
+    debugger.IgnoreEvents.extend(["test"])
 
     e = Event()
     app.fire(e)
