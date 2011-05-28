@@ -33,7 +33,7 @@ class Debugger(BaseComponent):
     IgnoreChannels = []
 
     def __init__(self, errors=True, events=True, file=None, logger=None,
-            chop=False, **kwargs):
+            prefix=None, trim=None, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Debugger, self).__init__()
@@ -49,7 +49,8 @@ class Debugger(BaseComponent):
             self.file = sys.stderr
 
         self.logger = logger
-        self.chop = chop
+        self.prefix = prefix
+        self.trim = trim
 
         self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
@@ -96,13 +97,18 @@ class Debugger(BaseComponent):
 
         if all(channel in self.IgnoreChannels for channel in channels):
             return
+
+        s = repr(event)
+
+        if self.prefix:
+            s = "%s: %s" % (self.prefix, s)
+
+        if self.trim:
+            s = "%s ...>" % s[:self.trim]
+
+        if self.logger is not None:
+            self.logger.debug(s)
         else:
-            s = repr(event)
-            if self.chop:
-                s = "%s ...>" % s[:75]
-            if self.logger is not None:
-                self.logger.debug(s)
-            else:
-                self.file.write(s)
-                self.file.write("\n")
-                self.file.flush()
+            self.file.write(s)
+            self.file.write("\n")
+            self.file.flush()
