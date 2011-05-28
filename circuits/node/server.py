@@ -43,6 +43,7 @@ class Server(BaseComponent):
         self.addHandler(on_value_changed)
 
         v = self.fire(e, *e.channels)
+        v.notify = True
         v.node_trn = id
         v.node_sock = sock
 
