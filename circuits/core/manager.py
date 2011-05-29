@@ -229,8 +229,7 @@ class Manager(object):
         if not method.names and method.channel == "*":
             self._globals.add(f)
         elif not method.names:
-            # XXX: We need this no ?
-            pass
+            self._handlers.setdefault("*", set()).add(method)
         else:
             for name in method.names:
                 self._handlers.setdefault(name, set()).add(method)
