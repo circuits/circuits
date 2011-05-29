@@ -192,25 +192,25 @@ class Manager(object):
             return channel.getHandlers(event, channel)
 
         name = event.name
-
         handlers = set()
 
+        handlers_chain = [self._handlers.get("*", set())]
         if name in self._handlers:
-            for handler in self._handlers[name]:
-                if handler.channel:
-                    handler_channel = handler.channel
-                elif hasattr(handler, "__self__"):
-                    handler_channel = getattr(handler.__self__, "channel",
-                            None)
-                else:
-                    handler_channel = None
+            handlers_chain.append(self._handlers[name])
 
-                if channel == "*" or handler_channel in ("*", channel,) \
-                        or channel_is_instance:
-                    handlers.add(handler)
+        for handler in chain(*handlers_chain):
+            if handler.channel:
+                handler_channel = handler.channel
+            elif hasattr(handler, "__self__"):
+                handler_channel = getattr(handler.__self__, "channel", None)
+            else:
+                handler_channel = None
+
+            if channel == "*" or handler_channel in ("*", channel,) \
+                    or channel_is_instance:
+                handlers.add(handler)
 
         handlers.update(self._globals)
-        handlers.update(self._handlers.get("*", set()))
 
         if not channel_is_instance:
             for c in self.components:
