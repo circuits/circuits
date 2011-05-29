@@ -195,6 +195,7 @@ class Manager(object):
         handlers = set()
 
         handlers_chain = [self._handlers.get("*", set())]
+
         if name in self._handlers:
             handlers_chain.append(self._handlers[name])
 
