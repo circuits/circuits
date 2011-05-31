@@ -16,8 +16,8 @@ from circuits.web.errors import HTTPError
 from circuits.web.controllers import BaseController
 from circuits.web.utils import parseQueryString, dictform
 
-from circuits.web.events import Response
 from circuits.web.errors import HTTPError
+from circuits.web.events import Request, Response
 from circuits.web.controllers import BaseController
 from circuits.web.tools import expires, serve_file
 from circuits.web.utils import parseQueryString, dictform
@@ -160,5 +160,5 @@ class Dispatcher(BaseComponent):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.fire(req.create(name.title(),
+            return self.fire(Request.create(name.title(),
                 *req.args, **req.kwargs), channel)
