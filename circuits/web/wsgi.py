@@ -130,9 +130,6 @@ class Gateway(BaseComponent):
 
         self._request = self._response = None
 
-        self.addHandler(self._on_request, "request", filter=True,
-                priority=len(path))
-
     def createEnviron(self):
         environ = {}
         req = self._request
@@ -172,6 +169,7 @@ class Gateway(BaseComponent):
         for header in headers:
             self._response.headers.add_header(*header)
 
+    @handler("request", filter=True, priority=0.2)
     def _on_request(self, event, request, response):
         if self.path and not request.path.startswith(self.path):
             return
