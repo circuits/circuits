@@ -29,7 +29,7 @@ class Dispatcher(BaseComponent):
     def __init__(self, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
 
-        self.paths = set(["/"])
+        self.paths = dict()
 
     def _parseBody(self, request, response, params):
         body = request.body
@@ -57,18 +57,7 @@ class Dispatcher(BaseComponent):
 
         return True
 
-    def _getChannel(self, request):
-        """_getChannel(request) -> channel
-
-        Find and return an appropriate channel for the given request.
-
-        The channel is found by traversing the system's event channels,
-        and matching path components to successive channels in the system.
-
-        If a channel cannot be found for a given path, but there is
-        a default channel, then this will be used.
-        """
-
+    def _get_request_handler(self, request):
         path = request.path
 
         method = request.method.upper()
@@ -77,11 +66,16 @@ class Dispatcher(BaseComponent):
         names = [x for x in path.strip("/").split("/") if x]
 
         if not names:
-            for default in ("index", method, "default"):
-                k = ("/", default)
-                if k in self.channels:
-                    return default, "/", []
+            component = self.paths.get("/", None)
+            if component is not None:
+                for default in ("index", method, "default"):
+                    if default in component._handlers:
+                        return default, component, []
             return None, None, []
+
+        return None, None, []
+
+        # XXX: Fix me  ...
 
         i = 0
         matches = [""]
@@ -138,19 +132,17 @@ class Dispatcher(BaseComponent):
             else:
                 return channel, candidate, vpath
 
-    @handler("registered", target="*")
-    def _on_registered(self, c, m):
-        if isinstance(c, BaseController) and c not in self.components:
-            self.paths.add(c.channel)
-            c.unregister()
-            self += c
+    @handler("registered", channel="*")
+    def _on_registered(self, component, manager):
+        if (isinstance(component, BaseController) and component.channel not
+                in self.paths):
+            self.paths[component.channel] = component
 
-    @handler("unregistered", target="*")
-    def _on_unregistered(self, c, m):
-        if (isinstance(c, BaseController)
-                and c in self.components
-                and m == self):
-            self.paths.remove(c.channel)
+    @handler("unregistered", channel="*")
+    def _on_unregistered(self, component, manager):
+        if (isinstance(component, BaseController) and component.channel in
+                self.paths):
+            del self.paths[component.channel]
 
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, event, request, response, peer_cert=None):
@@ -158,15 +150,17 @@ class Dispatcher(BaseComponent):
         if peer_cert:
             req.peer_cert = peer_cert
 
-        channel, target, vpath = self._getChannel(request)
+        name, channel, vpath = self._get_request_handler(request)
 
-        if channel and target:
+        if name is not None and channel is not None:
             req.kwargs = parseQueryString(request.qs)
             v = self._parseBody(request, response, req.kwargs)
             if not v:
-                return v  # MaxSizeExceeded (return the HTTPError)
+                # MaxSizeExceeded (return the HTTPError)
+                return v
 
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.fire(req, channel, target)
+            return self.fire(req.create(name.title(),
+                *req.args, **req.kwargs), channel)
