@@ -24,22 +24,22 @@ class JSONRPC(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, path=None, target="*", encoding="utf-8"):
+    def __init__(self, path=None, encoding="utf-8", rpc_channel="*"):
         super(JSONRPC, self).__init__()
 
         if json is None:
             raise RuntimeError("No json support available")
 
         self.path = path
-        self.target = target
         self.encoding = encoding
+        self.rpc_channel = rpc_channel
 
     @handler("value_changed", priority=0.1)
     def _on_value_changed(self, value):
         id = value.id
         response = value.response
         response.body = self._response(id, value.value)
-        self.fire(Response(response), target=self.channel)
+        self.fire(Response(response), self.channel)
         value.handled = True
 
     @handler("request", filter=True, priority=0.1)
@@ -57,14 +57,14 @@ class JSONRPC(BaseComponent):
                 params = dict([(str(k), v) for k, v in params.iteritems()])
 
             if "." in method:
-                t, c = method.split(".", 1)
+                channel, name = method.split(".", 1)
             else:
-                t, c = self.target, method
+                channel, name = self.tpc_channel, method
 
             if type(params) is dict:
-                value = self.fire(RPC(**params), c, t)
+                value = self.fire(RPC.create(name, **params), channel)
             else:
-                value = self.fire(RPC(*params), c, t)
+                value = self.fire(RPC.create(name, *params), channel)
 
             value.id = id
             value.response = response

@@ -25,18 +25,18 @@ class XMLRPC(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, path=None, target="*", encoding="utf-8"):
+    def __init__(self, path=None, encoding="utf-8", rpc_channel="*"):
         super(XMLRPC, self).__init__()
 
         self.path = path
-        self.target = target
         self.encoding = encoding
+        self.rpc_channel = rpc_channel
 
     @handler("value_changed", priority=0.1)
     def _on_value_changed(self, value):
         response = value.response
         response.body = self._response(value.value)
-        self.fire(Response(response), target=self.channel)
+        self.fire(Response(response), self.channel)
         value.handled = True
 
     @handler("request", filter=True, priority=0.1)
@@ -51,11 +51,11 @@ class XMLRPC(BaseComponent):
             params, method = loads(data)
 
             if "." in method:
-                t, c = method.split(".", 1)
+                channel, name = method.split(".", 1)
             else:
-                t, c = self.target, method
+                channel, name = self.rpc_channel, method
 
-            value = self.fire(RPC(*params), c, t)
+            value = self.fire(RPC.create(name, *params), channel)
             value.response = response
             value.onSet = ("value_changed", self)
         except Exception as e:
