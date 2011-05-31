@@ -116,7 +116,7 @@ class Value(object):
 
                 if o.manager is not None and o.notify:
                     o.manager.fireEvent(Event.create("%sValueChanged" %
-                        self.event.__class__.__name__, o))
+                        o.event.__class__.__name__, o))
 
             if o.parent is not o:
                 o.parent.errors = o.errors
