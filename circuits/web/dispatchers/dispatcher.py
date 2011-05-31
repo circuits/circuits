@@ -63,9 +63,9 @@ class Dispatcher(BaseComponent):
         method = request.method.upper()
         request.index = request.path.endswith("/")
 
-        names = [x for x in path.strip("/").split("/") if x]
+        parts = [x for x in path.strip("/").split("/") if x]
 
-        if not names:
+        if not parts:
             component = self.paths.get("/", None)
             if component is not None:
                 for default in ("index", method, "default"):
@@ -73,19 +73,15 @@ class Dispatcher(BaseComponent):
                         return default, component, []
             return None, None, []
 
-        return None, None, []
-
-        # XXX: Fix me  ...
-
         i = 0
         matches = [""]
         candidates = []
-        while i <= len(names):
+        while i <= len(parts):
             x = "/".join(matches) or "/"
             if x in self.paths:
                 candidates.append([i, x])
-                if i < len(names):
-                    matches.append(names[i])
+                if i < len(parts):
+                    matches.append(parts[i])
             else:
                 break
             i += 1
@@ -94,43 +90,45 @@ class Dispatcher(BaseComponent):
             return None, None, []
 
         vpath = []
-        channel = None
+        name = None
         for i, candidate in reversed(candidates):
-            if i < len(names):
-                channels = [names[i], "index", method, "default"]
+            if i < len(parts):
+                names = [parts[i], "index", method, "default"]
             else:
-                channels = ["index", method, "default"]
+                names = ["index", method, "default"]
 
             found = False
-            for channel in channels:
-                if (candidate, channel) in self.channels:
-                    if i < len(names) and channel == names[i]:
+            for name in names:
+                if name in self.paths[candidate]._handlers:
+                    if i < len(names) and name == names[i]:
                         i += 1
                     found = True
                     break
 
             if found:
-                if channel == "index" and not request.index:
+                if name == "index" and not request.index:
                     continue
                 else:
                     break
 
-        if channel is not None:
-            if i < len(names):
-                vpath = [x.replace("%2F", "/") for x in names[i:]]
+        if name is not None:
+            if i < len(parts):
+                vpath = [x.replace("%2F", "/") for x in parts[i:]]
             else:
                 vpath = []
 
-        if not (candidate, channel) in self.channels:
+        component = self.paths.get(candidate, None)
+        if component is None:
             return None, None, []
-        else:
-            handler = self.channels[(candidate, channel)][0]
-            if vpath and not (handler.args
-                    or handler.varargs
-                    or handler.varkw):
-                return None, None, []
-            else:
-                return channel, candidate, vpath
+
+        if name not in component._handlers:
+            return None, None, []
+
+        handler = list(component._handlers[name])[0]
+        if vpath and not (handler.args or handler.varargs or handler.varkw):
+            return None, None, []
+
+        return name, candidate, vpath
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
