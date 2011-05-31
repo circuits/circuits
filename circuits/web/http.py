@@ -301,7 +301,7 @@ class HTTP(BaseComponent):
                 self.fire(Response(response))
 
     @handler("request_failure", "response_failure")
-    def _on_request_or_response_failure(self, evt, handler, error):
+    def _on_request_or_response_failure(self, e):
         if len(evt.args) == 1:
             response = evt.args[0]
             request = response.request
@@ -316,7 +316,7 @@ class HTTP(BaseComponent):
         if not request.handled:
             request.handled = True
 
-        etype, evalue, traceback = error
+        etype, evalue, traceback = e.args
 
         if isinstance(evalue, RedirectException):
             self.fire(RedirectError(request, response,
@@ -324,23 +324,21 @@ class HTTP(BaseComponent):
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
                 self.fire(HTTPError(request, response, evalue.code,
-                    description=evalue.description, error=error))
+                    description=evalue.description, error=e.args))
             else:
                 self.fire(HTTPError(request, response, evalue.code,
                     description=evalue.description))
         else:
-            self.fire(HTTPError(request, response, error=error))
+            self.fire(HTTPError(request, response, error=e.args))
 
-    @handler("request_completed")
-    def _on_request_completed(self, evt, handler, retval):
-        request, response = evt.args[:2]
+    @handler("request_success")
+    def _on_request_success(self, e):
+        request, response = e.args[:2]
 
         # Return a 404 response on any of the following:
         # 1) The request was not successful (request.handled)
-        # 2) The request was not handled by any handler (handler)
-        # 3) The value is both None and is not a future.
+        # 2) The value is both None and is not a future.
         #    (evt.value.value, evt.future)
 
-        if not request.handled or handler is None or \
-                (evt.value.value is None and not evt.future):
+        if not request.handled or (e.value.value is None and not e.future):
             self.fire(NotFound(request, response))
