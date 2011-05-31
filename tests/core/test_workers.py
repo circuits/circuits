@@ -4,6 +4,8 @@
 
 """Workers Tests"""
 
+import pytest
+
 from circuits import Task, Worker
 
 def f():
@@ -17,9 +19,9 @@ def f():
 def test():
     w = Worker()
 
-    x = w.push(Task(f))
+    x = w.fire(Task(f))
 
-    while not x.result: pass
+    assert pytest.wait_for(x, "result")
 
     assert x.result
     assert x.value == 1000000

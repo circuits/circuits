@@ -7,23 +7,19 @@
 This module implements the several Web Server components.
 """
 
-import time
-import sys
-
-from socket import gethostname as _gethostname
-
 from circuits.core import handler, BaseComponent
 
 from circuits import io
 
+from circuits.net.sockets import Read, Write
 from circuits.net.sockets import TCPServer, UNIXServer
-from circuits.net.sockets import TCPClient, Read, Write
 
 from .http import HTTP
 from .events import WebEvent
 from .wrappers import Request, Host
 from .constants import SERVER_VERSION
 from .dispatchers import Dispatcher
+
 
 class BaseServer(BaseComponent):
     """Create a Base Web Server
@@ -58,13 +54,12 @@ class BaseServer(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, bind, **kwargs):
+    def __init__(self, bind, encoding="utf-8", channel=channel):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        kwargs.setdefault("channel", self.channel)
-        super(BaseServer, self).__init__(**kwargs)
+        super(BaseServer, self).__init__(channel=channel)
 
-        WebEvent._target = kwargs["channel"]
+        WebEvent.channels = (channel,)
 
         if type(bind) in (int, list, tuple):
             SocketType = TCPServer
@@ -74,9 +69,8 @@ class BaseServer(BaseComponent):
             else:
                 SocketType = UNIXServer
 
-        self.server = SocketType(bind, **kwargs).register(self)
-        HTTP(encoding=kwargs.get('encoding', 'utf-8'),
-                channel=self.server.channel).register(self)
+        self.server = SocketType(bind, channel=channel).register(self)
+        HTTP(encoding=encoding, channel=channel).register(self)
 
         Request.server = self
         if isinstance(self.server._bind, tuple):
@@ -126,6 +120,7 @@ class BaseServer(BaseComponent):
 
         return tpl % (scheme, host, port)
 
+
 class Server(BaseServer):
     """Create a Web Server
 
@@ -143,29 +138,35 @@ class Server(BaseServer):
 
         Dispatcher(channel=self.channel).register(self)
 
+
 class FakeSock():
     def getpeername(self):
         return (None, None)
 
+
 class StdinServer(BaseComponent):
+
     channel = "web"
 
-    def __init__(self, **kwargs):
-        kwargs.setdefault("channel", self.channel)
-        super(StdinServer, self).__init__(**kwargs)
-        WebEvent._target = kwargs["channel"]
+    def __init__(self, encoding="utf-8", channel=channel):
+        super(StdinServer, self).__init__(channel=channel)
 
-        self.server = io.stdin + io.stdout + HTTP(**kwargs)
+        WebEvent.channels = (channel,)
+
+        self.server = (io.stdin
+                + io.stdout
+                + HTTP(encoding=encoding, channel=channel)
+        )
+
         self += self.server
 
         Request.server = self
         Dispatcher(channel=self.channel).register(self)
 
-    @handler("read", target="stdin")
+    @handler("read", channel="stdin")
     def read(self, data):
-        self.push(Read(FakeSock(), data), "read", self.channel)
+        self.fire(Read(FakeSock(), data))
 
     @handler("write")
     def write(self, sock, data):
-        self.push(Write(data), "write", "stdout")
-
+        self.fire(Write(data))

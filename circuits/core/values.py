@@ -10,6 +10,7 @@ This defines the Value object used by components and events.
 
 from .events import Event
 
+
 class ValueChanged(Event):
     """Value Changed Event
 
@@ -36,8 +37,8 @@ class Value(object):
     :param manager: The Manager/Component used to trigger notifications.
     :type  manager: A Manager/Component instance.
 
-    :param onSet: The channel used when triggering ValueChagned events.
-    :type  onSet: A (channel, target) tuple.
+    :param notify: True to notify of changes to this value
+    :type  notify: bool
 
     :ivar result: True if this value has been changed.
     :ivar errors: True if while setting this value an exception occured.
@@ -45,23 +46,18 @@ class Value(object):
     This is a Future/Promise implementation.
     """
 
-    def __init__(self, event=None, manager=None, onSet=None):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+    def __init__(self, event=None, manager=None, notify=False):
+        super(Value, self).__init__()
 
         self.event = event
         self.manager = manager
-
-        self.onSet = onSet
+        self.notify = notify
 
         self.result = False
         self.errors = False
-        self._parent = self
-        self._value = None
-        self.handled = False
+        self.parent = self
 
-    def __getstate__(self):
-        keys = ("event", "onSet", "result", "errors", "_value")
-        return dict([(k, getattr(self, k, None)) for k in keys])
+        self._value = None
 
     def __contains__(self, y):
         value = self.value
@@ -101,7 +97,7 @@ class Value(object):
 
     def setValue(self, value):
         if isinstance(value, Value):
-            value._parent = self
+            value.parent = self
 
         if self.result and isinstance(self._value, list):
             self._value.append(value)
@@ -111,19 +107,22 @@ class Value(object):
         else:
             self._value = value
 
-        def notify(o, v):
-            if not isinstance(v, Value) and v is not None:
-                o.result = True
-                if o.manager is not None and o.onSet is not None:
-                    o.manager.fireEvent(ValueChanged(o), *o.onSet)
-            elif isinstance(v, Value):
+        def update(o, v):
+            if isinstance(v, Value):
                 o.errors = v.errors
                 o.result = v.result
-            if not o._parent == o:
-                o._parent.errors = o.errors
-                o._parent.result = o.result
-                notify(o._parent, v)
-        
-        notify(self, value)
+            elif v is not None:
+                o.result = True
+
+                if o.manager is not None and o.notify:
+                    o.manager.fireEvent(Event.create("%sValueChanged" %
+                        o.event.__class__.__name__, o))
+
+            if o.parent is not o:
+                o.parent.errors = o.errors
+                o.parent.result = o.result
+                update(o.parent, v)
+
+        update(self, value)
 
     value = property(getValue, setValue, None, "Value of this Value")

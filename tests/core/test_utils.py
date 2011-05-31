@@ -4,8 +4,6 @@ import os
 import sys
 from types import ModuleType
 
-from circuits.core.utils import safeimport
-
 FOO = """\
 def foo():
     return "Hello World!"
@@ -16,9 +14,9 @@ def foo();
     return "Hello World!'
 """
 
-from circuits.core.utils import safeimport
+def test_safeimport(tmpdir):
+    from circuits.core.utils import safeimport
 
-def test(tmpdir):
     sys.path.insert(0, str(tmpdir))
 
     foo_path = tmpdir.ensure("foo.py")
@@ -41,3 +39,10 @@ def test(tmpdir):
     foo = safeimport("foo")
     assert foo is None
     assert foo not in sys.modules
+
+def test_uncamel():
+    from circuits.core.utils import uncamel
+
+    s = "FooBar"
+    x = uncamel(s)
+    assert x == "foo_bar"

@@ -8,11 +8,10 @@ Test Manager's representation string.
 """
 
 import os
+from time import sleep
+from threading import current_thread
 
-try:
-    from threading import current_thread
-except ImportError:
-    from threading import currentThread as current_thread
+import pytest
 
 from circuits import Event, Component, Manager
 
@@ -21,27 +20,31 @@ class App(Component):
     def test(self, event, *args, **kwargs):
         pass
 
+class Test(Event):
+    pass
+
+
 def test():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
     m = Manager()
-    assert repr(m) == "<Manager %s (queued=0, channels=0, handlers=0) [S]>" % id
+    assert repr(m) == "<Manager %s (queued=0) [S]>" % id
 
     app = App()
     app.register(m)
-    assert repr(m) == "<Manager %s (queued=1, channels=2, handlers=2) [S]>" % id
+    s = repr(m)
+    assert s == "<Manager %s (queued=1) [S]>" % id
 
-    m.flush()
-    assert repr(m) == "<Manager %s (queued=0, channels=2, handlers=2) [S]>" % id
+    m.start()
 
-    m.push(Event(), "test")
-    assert repr(m) == "<Manager %s (queued=1, channels=2, handlers=2) [S]>" % id
+    pytest.wait_for(m, "_running", True)
 
-    m.flush()
-    assert repr(m) == "<Manager %s (queued=0, channels=2, handlers=2) [S]>" % id
+    s = repr(m)
+    assert s == "<Manager %s (queued=0) [R]>" % id
 
-    app.unregister()
-    assert repr(m) == "<Manager %s (queued=1, channels=0, handlers=0) [S]>" % id
+    m.stop()
 
-    m.flush()
-    assert repr(m) == "<Manager %s (queued=0, channels=0, handlers=0) [S]>" % id
+    pytest.wait_for(m, "_running", False)
+
+    s = repr(m)
+    assert s == "<Manager %s (queued=0) [S]>" % id

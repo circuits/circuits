@@ -26,7 +26,7 @@ class Timer(BaseComponent):
     persist := Sets this timer as persistent if True.
     """
 
-    def __init__(self, s, e, c="timer", t=None, persist=False):
+    def __init__(self, s, e, c=None, persist=False):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Timer, self).__init__()
@@ -38,14 +38,13 @@ class Timer(BaseComponent):
 
         self.e = e
         self.c = c
-        self.t = t
         self.persist = persist
 
         self.reset()
 
     def __tick__(self):
         if time() > self._eTime:
-            self.push(self.e, self.c, self.t)
+            self.fire(self.e, self.c)
 
             if self.persist:
                 self.reset()

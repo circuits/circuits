@@ -8,19 +8,28 @@ Test that Event Handlers set as Filters are added and sorted
 such that Filters preceed non-filters.
 """
 
-from circuits import handler, Component
+from circuits import handler, Component, Event
+
+class Test(Event):
+    pass
 
 
 class App(Component):
+    def __init__(self):
+        super(App, self).__init__()
+        self.events_executed = []
 
     def test(self, event, *args, **kwargs):
-        pass
+        self.events_executed.append('test')
 
     @handler("test", filter=True)
     def on_test(self, event, *args, **kwargs):
-        pass
+        self.events_executed.append('test_filter')
+        return True
 
 def test():
     app = App()
-    handlers = app.channels.get(("*", "test"), [])
-    assert handlers and handlers[0] == app.on_test
+    app.fire(Test())
+    while app:
+        app.flush()
+    assert app.events_executed == ['test_filter']

@@ -124,7 +124,7 @@ class HTTPREPL(object):
 class WebConsole(Controller):
 
     @handler("started", target="*")
-    def _on_started(self, component, mode):
+    def _on_started(self, component):
         self.repl = HTTPREPL(locals={"root": self.root})
 
     def index(self):
