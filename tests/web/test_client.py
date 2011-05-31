@@ -14,7 +14,7 @@ def test(webapp):
     client.start()
 
     client.fire(Connect())
-    assert pytest.wait_event(client, 'connected', target='client')
+    assert pytest.wait_event(client, 'connected', channel='client')
 
     client.fire(Request("GET", "/"))
     while client.response is None: pass
