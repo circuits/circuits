@@ -331,14 +331,14 @@ class HTTP(BaseComponent):
         else:
             self.fire(HTTPError(request, response, error=e.args))
 
-    @handler("request_success")
-    def _on_request_success(self, e):
-        request, response = e.args[:2]
-
-        # Return a 404 response on any of the following:
-        # 1) The request was not successful (request.handled)
-        # 2) The value is both None and is not a future.
-        #    (evt.value.value, evt.future)
-
-        if not request.handled or (e.value.value is None and not e.future):
-            self.fire(NotFound(request, response))
+#    @handler("request_success")
+#    def _on_request_success(self, e):
+#        request, response = e.args[:2]
+#
+#        # Return a 404 response on any of the following:
+#        # 1) The request was not successful (request.handled)
+#        # 2) The value is both None and is not a future.
+#        #    (evt.value.value, evt.future)
+#
+#        if not request.handled or (e.value.value is None and not e.future):
+#            self.fire(NotFound(request, response))
