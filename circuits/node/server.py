@@ -7,10 +7,10 @@
 ...
 """
 
-from circuits import handler, BaseComponent, Event
-from circuits.net.sockets import Close, TCPServer, Write
+from circuits import handler, BaseComponent
+from circuits.net.sockets import TCPServer, Write
 
-from .utils import load_event, dump_event, dump_value
+from .utils import load_event, dump_value
 
 DELIMITER = "\r\n\r\n"
 
@@ -35,7 +35,7 @@ class Server(BaseComponent):
 
         name = "%s_value_changed" % e.name
         channel = e.channels[0] if e.channels else self
-        
+
         @handler(name, channel=channel)
         def on_value_changed(self, event, value):
             self.send(value)

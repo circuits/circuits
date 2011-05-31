@@ -12,7 +12,6 @@ from weakref import WeakValueDictionary
 from circuits import handler, BaseComponent
 from circuits.net.sockets import Close, Connect, TCPClient, Write
 
-from .events import Packet
 from .utils import dump_event, load_value
 
 DELIMITER = "\r\n\r\n"
@@ -35,7 +34,6 @@ class Client(BaseComponent):
         self._nid = 0
         self._buffer = ""
         self._values = WeakValueDictionary()
-
 
         TCPClient(channel=self.channel).register(self)
         self.fire(Connect(self._host, self._port))
@@ -66,7 +64,7 @@ class Client(BaseComponent):
     @handler("read")
     def _on_read(self, data):
         self._buffer += data
-    
+
         delimiter = self._buffer.find(DELIMITER)
         if delimiter > 0:
             packet = self._buffer[:delimiter]
