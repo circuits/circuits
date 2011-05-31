@@ -200,7 +200,7 @@ def test_tick_exceptions():
     debugger = Debugger(file=stderr)
     debugger.register(app)
     while app:
-        app.flush()
+        app.tick()
     stderr.seek(0)
     stderr.truncate()
 
@@ -212,8 +212,9 @@ def test_tick_exceptions():
 
     stderr.seek(0)
     s = stderr.read().strip()
+
     assert s.startswith("<Error[*:exception] [<class 'Exception'>, Exception()") \
-        or s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception()")
+            or s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception()")
     stderr.seek(0)
     stderr.truncate()
 
