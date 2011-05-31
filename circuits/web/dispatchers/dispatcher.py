@@ -160,5 +160,8 @@ class Dispatcher(BaseComponent):
             if vpath:
                 req.args += tuple(vpath)
 
+            if isinstance(name, unicode):
+                name = str(name)
+
             return self.fire(Request.create(name.title(),
                 *req.args, **req.kwargs), channel)

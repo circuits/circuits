@@ -246,8 +246,6 @@ class HTTP(BaseComponent):
         HTTPError instance or a subclass thereof.
         """
 
-        response.body = str(event)
-        self.fire(Response(response))
 
     @handler("value_changed")
     def _on_value_changed(self, value):
@@ -270,7 +268,8 @@ class HTTP(BaseComponent):
             self.fire(NotFound(request, response))
 
         if isinstance(value, HTTPError):
-            self.fire(value)
+            response.body = str(value)
+            self.fire(Response(response))
         elif isinstance(value, wrappers.Response):
             self.fire(Response(value))
         elif isinstance(value, Value):
@@ -306,11 +305,11 @@ class HTTP(BaseComponent):
 
     @handler("request_failure", "response_failure")
     def _on_request_or_response_failure(self, e):
-        if len(evt.args) == 1:
-            response = evt.args[0]
+        if len(e.args) == 1:
+            response = e.args[0]
             request = response.request
         else:
-            request, response = evt.args[:2]
+            request, response = e.args[:2]
 
         # Ignore filtered requests already handled (eg: HTTPException(s)).
         # Ignore failed "response" handlers (eg: Loggers or Tools)
