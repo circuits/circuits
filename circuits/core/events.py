@@ -7,38 +7,28 @@
 This module define the basic Event object and common events.
 """
 
-class Event(object):
-    """Create a new Event Object
 
-    Create a new Event Object populating it with the given list of arguments
-    and keyword arguments.
+from .utils import uncamel
 
-    :ivar name:    The name of the Event
-    :ivar channel: The channel this Event is bound for
-    :ivar target:  The target Component this Event is bound for
-    :ivar success: An optional channel to use for Event Handler success
-    :ivar failure: An optional channel to use for Event Handler failure
-    :ivar filter: An optional channel to use if an Event is filtered
-    :ivar start: An optional channel to use before an Event starts
-    :ivar end: An optional channel to use when an Event ends
 
-    :ivar value: The future Value object used to store the result of an event
+class EventMetaClass(type):
 
-    :param args: list of arguments
-    :type  args: tuple
+    def __init__(cls, name, bases, ns):
+        super(EventMetaClass, cls).__init__(name, bases, ns)
 
-    :param kwargs: dict of keyword arguments
-    :type  kwargs: dict
-    """
+        setattr(cls, "name", ns.get("name", uncamel(cls.__name__)))
 
-    channel = None
-    target = None
+
+class BaseEvent(object):
+
+    channels = ()
 
     success = None
     failure = None
-    filter = None
-    start = None
-    end = None
+
+    @classmethod
+    def create(cls, name, *args, **kwargs):
+        return type(cls)(name, (cls,), {})(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -49,38 +39,34 @@ class Event(object):
         self.value = None
         self.future = False
         self.handler = None
-
-    def __getstate__(self):
-        keys = ("args", "kwargs", "channel", "target", "success", "failure",
-                "filter", "start", "end", "value", "source")
-        return dict([(k, getattr(self, k, None)) for k in keys])
-
-    @property
-    def name(self):
-        return self.__class__.__name__
+        self.notify = False
 
     def __eq__(self, other):
-        """ x.__eq__(other) <==> x==other
-
-        Tests the equality of Event self against Event y.
-        Two Events are considered "equal" iif the name,
-        channel and target are identical as well as their
-        args and kwargs passed.
-        """
-
-        return (self.__class__ is other.__class__
-                and self.channel == other.channel
+        return (self.name == other.name
+                and self.channels == other.channels
                 and self.args == other.args
                 and self.kwargs == other.kwargs)
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        if type(self.channel) is tuple:
-            channel = "%s:%s" % self.channel
+        name = self.name
+        type = self.__class__.__name__
+        if len(self.channels) > 1:
+            channels = repr(self.channels)
+        elif len(self.channels) == 1:
+            channels = str(self.channels[0])
         else:
-            channel = self.channel or ""
-        return "<%s[%s] %s %s>" % (self.name, channel, self.args, self.kwargs)
+            channels = ""
+
+        data = "%s %s" % (
+                ", ".join(repr(arg) for arg in self.args),
+                ", ".join("%s=%s" % (k, repr(v)) for k, v in
+                    self.kwargs.items()
+                )
+        )
+
+        return "<%s[%s.%s] (%s)>" % (type, channels, name, data)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
@@ -116,6 +102,8 @@ class Event(object):
         else:
             raise TypeError("Expected int or str, got %r" % type(i))
 
+Event = EventMetaClass("Event", (BaseEvent,), {})
+
 
 class Error(Event):
     """Error Event
@@ -136,8 +124,6 @@ class Error(Event):
     :type  kwargs: dict
     """
 
-    channel = "exception"
-
     def __init__(self, type, value, traceback, handler=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
@@ -149,21 +135,7 @@ class Success(Event):
 
     This Event is sent when an Event Handler's execution has completed
     successfully.
-
-    :param evt: The event that succeeded
-    :type  evt: Event
-
-    :param handler: The handler that executed this event
-    :type  handler: @handler
-
-    :param retval: The returned value of the handler
-    :type  retval: object
     """
-
-    def __init__(self, event, handler, retval):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Success, self).__init__(event, handler, retval)
 
 
 class Failure(Event):
@@ -172,77 +144,9 @@ class Failure(Event):
     This Event is sent when an error has occurred with the execution of an
     Event Handlers.
 
-    :param evt: The event that failed
-    :type  evt: Event
-
-    :param handler: The handler that failed
-    :type  handler: @handler
-
-    :param error: A tuple containing the exception that occurred
-    :type  error: (etype, evalue, traceback)
+    :param event: The event that failed
+    :type  event: Event
     """
-
-    def __init__(self, event, handler, error):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Failure, self).__init__(event, handler, error)
-
-
-class Filter(Event):
-    """Filter Event
-
-    This Event is sent when an Event is filtered by some Event Handler.
-
-    :param evt: The event that was filtered
-    :type  evt: Event
-
-    :param handler: The handler that filtered this event
-    :type  handler: @handler
-
-    :param retval: The returned value of the handler
-    :type  retval: object
-    """
-
-    def __init__(self, event, handler, retval):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Filter, self).__init__(event, handler, retval)
-
-
-class Start(Event):
-    """Start Event
-
-    This Event is sent just before an Event is started
-
-    :param evt: The event about to start
-    :type  evt: Event
-    """
-
-    def __init__(self, event):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(Start, self).__init__(event)
-
-
-class End(Event):
-    """End Event
-
-    This Event is sent just after an Event has ended
-
-    :param evt: The event that has finished
-    :type  evt: Event
-
-    :param handler: The last handler that executed this event
-    :type  handler: @handler
-
-    :param retval: The returned value of the last handler
-    :type  retval: object
-    """
-
-    def __init__(self, event, handler, retval):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(End, self).__init__(event, handler, retval)
 
 
 class Started(Event):
@@ -252,16 +156,12 @@ class Started(Event):
 
     :param component: The component that was started
     :type  component: Component or Manager
-
-    :param mode: The mode in which the Component was started,
-                 P (Process), T (Thread) or None (Main Thread / Main Process).
-    :type  str:  str or None
     """
 
-    def __init__(self, component, mode):
+    def __init__(self, component):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Started, self).__init__(component, mode)
+        super(Started, self).__init__(component)
 
 
 class Stopped(Event):
@@ -277,6 +177,7 @@ class Stopped(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Stopped, self).__init__(component)
+
 
 class Signal(Event):
     """Signal Event

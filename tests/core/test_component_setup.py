@@ -35,7 +35,7 @@ def test_basic():
     app = App()
     app.register(m)
 
-    assert app.test in m.channels.get(("*", "test"), [])
+    assert app.test in app._handlers.get("test", set())
 
     app.unregister()
 
@@ -52,19 +52,19 @@ def test_complex():
 
     assert a in m
     assert a.root == m
-    assert a.manager == m
+    assert a.parent == m
     assert b in a
     assert b.root == m
-    assert b.manager == a
+    assert b.parent == a
 
     a.unregister()
 
     assert a not in m
     assert a.root == a
-    assert a.manager == a
+    assert a.parent == a
     assert b in a
     assert b.root == a
-    assert b.manager == a
+    assert b.parent == a
 
 def test_subclassing_with_custom_channel():
     base = Base()

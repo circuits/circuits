@@ -21,15 +21,12 @@ def f():
 def test():
     p = Pool()
     p.start()
+    try:
+        x = p.fire(Task(f))
 
-    x = p.push(Task(f))
+        assert pytest.wait_for(x, "result")
+        assert x.result
+        assert x.value == 1000000
 
-    assert pytest.wait_for(x, "result")
-
-    result = x.result
-    assert result
-
-    value = x.value
-    assert value == 1000000
-
-    p.stop()
+    finally:
+        p.stop()

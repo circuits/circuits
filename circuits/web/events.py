@@ -11,7 +11,8 @@ from circuits import Event
 
 class WebEvent(Event):
 
-    _target = "web"
+    channels = ("web",)
+
 
 class Request(WebEvent):
     """Request(WebEvent) -> Request WebEvent
@@ -19,11 +20,9 @@ class Request(WebEvent):
     args: request, response
     """
 
-    success = "request_success", WebEvent._target
-    failure = "request_failure", WebEvent._target
-    filter = "request_filtered", WebEvent._target
-    start = "request_started", WebEvent._target
-    end = "request_completed", WebEvent._target
+    success = True
+    failure = True
+
 
 class Response(WebEvent):
     """Response(WebEvent) -> Response WebEvent
@@ -31,11 +30,9 @@ class Response(WebEvent):
     args: request, response
     """
 
-    success = "response_success", WebEvent._target
-    failure = "response_failure", WebEvent._target
-    filter = "response_filtered", WebEvent._target
-    start = "response_started", WebEvent._target
-    end = "response_completed", WebEvent._target
+    success = True
+    failure = True
+
 
 class Stream(WebEvent):
     """Stream(WebEvent) -> Stream WebEvent
@@ -43,8 +40,5 @@ class Stream(WebEvent):
     args: request, response
     """
 
-    success = "stream_success", WebEvent._target
-    failure = "stream_failure", WebEvent._target
-    filter = "stream_filtered", WebEvent._target
-    start = "stream_started", WebEvent._target
-    end = "stream_completed", WebEvent._target
+    success = True
+    failure = True

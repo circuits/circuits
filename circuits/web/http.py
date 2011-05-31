@@ -62,25 +62,25 @@ class HTTP(BaseComponent):
                 if response.chunked:
                     buf = [hex(len(data))[2:], b"\r\n", data, b"\r\n"]
                     data = b"".join(buf)
-                self.push(Write(response.request.sock, data))
+                self.fire(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
                     data = next(response.body)
                 except StopIteration:
                     data = None
-                self.push(Stream(response, data))
+                self.fire(Stream(response, data))
         else:
             if response.body:
                 response.body.close()
             if response.chunked:
-                self.push(Write(response.request.sock, b"0\r\n\r\n"))
+                self.fire(Write(response.request.sock, b"0\r\n\r\n"))
             if response.close:
-                self.push(Close(response.request.sock))
+                self.fire(Close(response.request.sock))
             response.done = True
 
     @handler("response")
     def _on_response(self, response):
-        self.push(
+        self.fire(
                 Write(response.request.sock,
                     str(response).encode(HTTP_ENCODING)))
 
@@ -89,7 +89,7 @@ class HTTP(BaseComponent):
                 data = next(response.body)
             except StopIteration:
                 data = None
-            self.push(Stream(response, data))
+            self.fire(Stream(response, data))
         else:
             if isinstance(response.body, bytes):
                 body = response.body
@@ -103,14 +103,14 @@ class HTTP(BaseComponent):
                 if response.chunked:
                     buf = [hex(len(body))[2:].encode(), b"\r\n", body, b"\r\n"]
                     body = b"".join(buf)
-                self.push(Write(response.request.sock, body))
+                self.fire(Write(response.request.sock, body))
 
                 if response.chunked:
-                    self.push(Write(response.request.sock, b"0\r\n\r\n"))
+                    self.fire(Write(response.request.sock, b"0\r\n\r\n"))
 
             if not response.stream:
                 if response.close:
-                    self.push(Close(response.request.sock))
+                    self.fire(Close(response.request.sock))
                 response.done = True
 
     @handler("disconnect")
@@ -164,7 +164,7 @@ class HTTP(BaseComponent):
             self._clients[sock] = request, response
 
             if frag:
-                return self.push(HTTPError(request, response, 400))
+                return self.fire(HTTPError(request, response, 400))
 
             if params:
                 path = "%s;%s" % (path, params)
@@ -190,7 +190,7 @@ class HTTP(BaseComponent):
             # the client only understands 1.0. RFC 2616 10.5.6 says we should
             # only return 505 if the _major_ version is different.
             if not request.protocol[0] == request.server_protocol[0]:
-                return self.push(HTTPError(request, response, 505))
+                return self.fire(HTTPError(request, response, 505))
 
             rp = request.protocol
             sp = request.server_protocol
@@ -207,7 +207,7 @@ class HTTP(BaseComponent):
             request.body.write(data[(end_of_headers + 4):])
 
             if headers.get("Expect", "") == "100-continue":
-                return self.push(Response(wrappers.Response(request, 100),
+                return self.fire(Response(wrappers.Response(request, 100),
                     encoding=self._encoding))
 
             contentLength = int(headers.get("Content-Length", "0"))
@@ -235,7 +235,7 @@ class HTTP(BaseComponent):
         else:
             req = Request(request, response)
 
-        self.push(req)
+        self.fire(req)
 
     @handler("httperror")
     def _on_httperror(self, event, request, response, code, **kwargs):
@@ -246,8 +246,6 @@ class HTTP(BaseComponent):
         HTTPError instance or a subclass thereof.
         """
 
-        response.body = str(event)
-        self.push(Response(response))
 
     @handler("value_changed")
     def _on_value_changed(self, value):
@@ -256,56 +254,62 @@ class HTTP(BaseComponent):
         request, response = value.event.args[:2]
         if value.result and not value.errors:
             response.body = value.value
-            self.push(Response(response))
+            self.fire(Response(response))
         else:
             # This possibly never occurs.
-            self.push(HTTPError(request, response, error=value.value))
+            self.fire(HTTPError(request, response, error=value.value))
 
-    @handler("request_success", "request_filtered")
-    def _on_request_success_or_filtered(self, evt, handler, retval):
-        request, response = evt.args[:2]
+    @handler("request_success")
+    def _on_request_success(self, e):
+        value = e.value.value
+        request, response = e.args[:2]
 
-        if not request.handled and retval is not None:
-            request.handled = True
-            if isinstance(retval, HTTPError):
-                self.push(retval)
-            elif isinstance(retval, wrappers.Response):
-                self.push(Response(retval))
-            elif isinstance(retval, Value):
-                if retval.result and not retval.errors:
-                    response.body = retval.value
-                    self.push(Response(response))
-                elif retval.errors:
-                    error = retval.value
-                    etype, evalue, traceback = error
-                    if isinstance(evalue, RedirectException):
-                        self.push(RedirectError(request, response,
-                            evalue.urls, evalue.status))
-                    elif isinstance(evalue, HTTPException):
-                        if evalue.traceback:
-                            self.push(HTTPError(request, response, evalue.code,
-                                description=evalue.description, error=error))
-                        else:
-                            self.push(HTTPError(request, response, evalue.code,
-                                description=evalue.description))
+        if value is None and not e.future:
+            self.fire(NotFound(request, response))
+
+        if isinstance(value, HTTPError):
+            response.body = str(value)
+            self.fire(Response(response))
+        elif isinstance(value, wrappers.Response):
+            self.fire(Response(value))
+        elif isinstance(value, Value):
+            if value.result and not value.errors:
+                response.body = value.value
+                self.fire(Response(response))
+            elif value.errors:
+                error = value.value
+                etype, evalue, traceback = error
+                if isinstance(evalue, RedirectException):
+                    self.fire(RedirectError(request, response,
+                        evalue.urls, evalue.status))
+                elif isinstance(evalue, HTTPException):
+                    if evalue.traceback:
+                        self.fire(HTTPError(request, response, evalue.code,
+                            description=evalue.description, error=error))
                     else:
-                        self.push(HTTPError(request, response, error=error))
+                        self.fire(HTTPError(request, response, evalue.code,
+                            description=evalue.description))
                 else:
-                    if retval.manager is None:
-                        retval.manager = self
-                    retval.event = evt
-                    retval.onSet = "value_changed", self
-            elif type(retval) is not bool:
-                response.body = retval
-                self.push(Response(response))
+                    self.fire(HTTPError(request, response, error=error))
+            else:
+                if value.manager is None:
+                    value.manager = self
+                value.event = evt
+                value.onSet = "value_changed", self
+        elif type(value) is not bool:
+            response.body = value
+            self.fire(Response(response))
+        else:
+            self.fire(HTTPError(request, response,
+                description="Invalid value for response"))
 
     @handler("request_failure", "response_failure")
-    def _on_request_or_response_failure(self, evt, handler, error):
-        if len(evt.args) == 1:
-            response = evt.args[0]
+    def _on_request_or_response_failure(self, e):
+        if len(e.args) == 1:
+            response = e.args[0]
             request = response.request
         else:
-            request, response = evt.args[:2]
+            request, response = e.args[:2]
 
         # Ignore filtered requests already handled (eg: HTTPException(s)).
         # Ignore failed "response" handlers (eg: Loggers or Tools)
@@ -315,31 +319,17 @@ class HTTP(BaseComponent):
         if not request.handled:
             request.handled = True
 
-        etype, evalue, traceback = error
+        etype, evalue, traceback = e.args
 
         if isinstance(evalue, RedirectException):
-            self.push(RedirectError(request, response,
+            self.fire(RedirectError(request, response,
                 evalue.urls, evalue.status))
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
-                self.push(HTTPError(request, response, evalue.code,
-                    description=evalue.description, error=error))
+                self.fire(HTTPError(request, response, evalue.code,
+                    description=evalue.description, error=e.args))
             else:
-                self.push(HTTPError(request, response, evalue.code,
+                self.fire(HTTPError(request, response, evalue.code,
                     description=evalue.description))
         else:
-            self.push(HTTPError(request, response, error=error))
-
-    @handler("request_completed")
-    def _on_request_completed(self, evt, handler, retval):
-        request, response = evt.args[:2]
-
-        # Return a 404 response on any of the following:
-        # 1) The request was not successful (request.handled)
-        # 2) The request was not handled by any handler (handler)
-        # 3) The value is both None and is not a future.
-        #    (evt.value.value, evt.future)
-
-        if not request.handled or handler is None or \
-                (evt.value.value is None and not evt.future):
-            self.push(NotFound(request, response))
+            self.fire(HTTPError(request, response, error=e.args))

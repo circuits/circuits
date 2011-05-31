@@ -8,7 +8,6 @@ Thread and Process based "worker" pools.
 """
 
 from time import time
-from uuid import uuid4 as uuid
 from random import seed, choice
 
 from circuits.core.workers import Task, Worker
@@ -21,29 +20,42 @@ class Pool(BaseComponent):
 
     channel = "pool"
 
-    def __init__(self, min=5, max=10, process=False, channel=channel):
+    def __init__(self, min=5, max=10, processes=False, channel=channel):
         super(Pool, self).__init__(channel=channel)
+
+        self._min = min
+        self._max = max
+        self._processes = processes
 
         self._workers = []
 
-        for i in range(min):
-            self._workers.append(Worker(process=process, channel=str(uuid())))
+    @handler("started", channel="*")
+    def _on_started(self, *args):
+        for i in range(self._min):
+            worker = Worker(process=self._processes, channel=self.channel + str(i + 1))
+            self._workers.append(worker)
+
+    @handler("stopped", channel="*")
+    def _on_stopped(self, *args):
+        for worker in self._workers[:]:
+            worker.stop()
+        self._workers = []
 
     @handler("task")
     def _on_task(self, f, *args, **kwargs):
-        workers = float(len(self._workers))
-        tasks = [float(len(worker)) for worker in self._workers]
-        total = sum(tasks)
-        _avg = total / workers
+        workers = len(self._workers)
+        if not workers:
+            worker = Worker(process=self._processes)
+            self._workers.append(worker)
+            return worker.fire(Task(f, *args, **kwargs), worker)
 
-        assigned = None
+        tasks = [len(worker) for worker in self._workers]
+        total = sum(tasks)
+        avg = total / workers
 
         for worker in self._workers:
-            if len(worker) < _avg:
-                assigned = worker.channel
-                return worker.push(Task(f, *args, **kwargs), target=worker)
+            if len(worker) < avg:
+                return worker.fire(Task(f, *args, **kwargs), worker)
 
-        if not assigned:
-            worker = choice(self._workers)
-            assigned = worker.channel
-            return worker.push(Task(f, *args, **kwargs), target=worker)
+        worker = choice(self._workers)
+        return worker.fire(Task(f, *args, **kwargs), worker)
