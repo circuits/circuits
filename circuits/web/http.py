@@ -246,6 +246,8 @@ class HTTP(BaseComponent):
         HTTPError instance or a subclass thereof.
         """
 
+        response.body = str(event)
+        self.fire(Response(response))
 
     @handler("value_changed")
     def _on_value_changed(self, value):
@@ -299,9 +301,6 @@ class HTTP(BaseComponent):
         elif type(value) is not bool:
             response.body = value
             self.fire(Response(response))
-        else:
-            self.fire(HTTPError(request, response,
-                description="Invalid value for response"))
 
     @handler("request_failure", "response_failure")
     def _on_request_or_response_failure(self, e):

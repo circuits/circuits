@@ -32,13 +32,6 @@ class XMLRPC(BaseComponent):
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("value_changed", priority=0.1)
-    def _on_value_changed(self, value):
-        response = value.response
-        response.body = self._response(value.value)
-        self.fire(Response(response), self.channel)
-        value.handled = True
-
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
@@ -55,9 +48,21 @@ class XMLRPC(BaseComponent):
             else:
                 channel, name = self.rpc_channel, method
 
-            value = self.fire(RPC.create(name, *params), channel)
+            if isinstance(name, unicode):
+                name = str(name)
+
+            @handler("%s_value_changed" % name, priority=0.1)
+            def _on_value_changed(self, value):
+                response = value.response
+                response.body = self._response(value.value)
+                self.fire(Response(response), self.channel)
+                value.handled = True
+
+            self.addHandler(_on_value_changed)
+
+            value = self.fire(RPC.create(name.title(), *params), channel)
             value.response = response
-            value.onSet = ("value_changed", self)
+            value.notify = True
         except Exception as e:
             r = self._error(1, "%s: %s" % (type(e), e))
             return r
