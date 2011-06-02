@@ -18,9 +18,8 @@ __author__ = "James Mills"
 __date__ = "12th February 2011"
 __version__ = "1.6"
 
-from circuits.core import handler, BaseComponent, Component, Event
 from circuits.core import future, Pool, Task, Worker
-from circuits.core import Bridge, Debugger, Timer
-from circuits.core import Loader, Manager
+from circuits.core import Debugger, Loader, Manager, Timer
+from circuits.core import handler, BaseComponent, Component, Event
 
 # hghooks: no-pyflakes
