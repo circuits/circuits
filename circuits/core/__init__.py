@@ -19,11 +19,6 @@ from .futures import future
 
 from .timers import Timer
 
-try:
-    from .bridge import Bridge
-except:
-     Bridge = None
-
 from .pools import Pool
 from .workers import Task, Worker
 from .debugger import Debugger

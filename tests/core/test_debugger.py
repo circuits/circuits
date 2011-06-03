@@ -199,7 +199,7 @@ def test_tick_exceptions():
     debugger = Debugger(file=stderr)
     debugger.register(app)
     while app:
-        app.flush()
+        app.tick()
     stderr.seek(0)
     stderr.truncate()
 

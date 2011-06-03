@@ -89,7 +89,7 @@ class MemoryMonitor(Controller):
         else:
             self.samples = samples
     
-    @handler("stopped", target="*")
+    @handler("stopped", channel="*")
     def stop(self, component):
         self._running = False
     

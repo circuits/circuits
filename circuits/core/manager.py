@@ -447,13 +447,15 @@ class Manager(object):
     def tick(self):
         if self._ticks is None:
             self._ticks = self.getTicks()
-        try:
-            [f() for f in self._ticks.copy()]
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
-            etype, evalue, etraceback = _exc_info()
-            self.fire(Error(etype, evalue, format_tb(etraceback)))
+
+        for f in self._ticks.copy():
+            try:
+                f()
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except:
+                etype, evalue, etraceback = _exc_info()
+                self.fire(Error(etype, evalue, format_tb(etraceback)))
 
         if self:
             self.flush()

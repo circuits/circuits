@@ -11,7 +11,15 @@ This module define the basic Event object and common events.
 from .utils import uncamel
 
 
-class Event(object):
+class EventMetaClass(type):
+
+    def __init__(cls, name, bases, ns):
+        super(EventMetaClass, cls).__init__(name, bases, ns)
+
+        setattr(cls, "name", ns.get("name", uncamel(cls.__name__)))
+
+
+class BaseEvent(object):
 
     channels = ()
 
@@ -21,13 +29,6 @@ class Event(object):
     @classmethod
     def create(cls, name, *args, **kwargs):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
-
-    def __new__(cls, *args, **kwargs):
-        self = super(Event, cls).__new__(cls)
-
-        self.name = getattr(self, "name", uncamel(cls.__name__))
-
-        return self
 
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
@@ -100,6 +101,8 @@ class Event(object):
             self.kwargs[i] = y
         else:
             raise TypeError("Expected int or str, got %r" % type(i))
+
+Event = EventMetaClass("Event", (BaseEvent,), {})
 
 
 class Error(Event):
