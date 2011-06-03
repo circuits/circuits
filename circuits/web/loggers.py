@@ -38,7 +38,7 @@ class Logger(BaseComponent):
 
         self.logger = logger
 
-    @handler("response")
+    @handler("response", priority=-0.1)
     def response(self, response):
         self.log(response)
 
