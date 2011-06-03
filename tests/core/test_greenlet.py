@@ -66,7 +66,7 @@ def test_wait_class():
     test.start()
 
     x = test.fire(Foo())
-    pytest.wait_event(test, "bardone")
+    pytest.wait_event(test, "bar_done")
 
     value = x.value
     assert value == "Foobar!"
@@ -80,7 +80,7 @@ def test_wait_instance():
 
     e = Foo2()
     x = test.fire(e)
-    pytest.wait_event(test, "bardone")
+    pytest.wait_event(test, "bar_done")
 
     value = x.value
     assert value == "Foobar!"
@@ -94,14 +94,14 @@ def test_call_event():
 
     e = Foo3()
     x = test.fire(e)
-    pytest.wait_event(test, "bardone")
+    pytest.wait_event(test, "bar_done")
 
     value = x.value
     assert value == "Foobar!"
 
     e = Foo4()
     x = test.fire(e)
-    pytest.wait_event(test, "bardone")
+    pytest.wait_event(test, "bar_done")
 
     value = x.value
     assert value == None
