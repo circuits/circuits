@@ -23,7 +23,6 @@ class BaseComponent(Manager):
     """
 
     channel = "*"
-    _initialized = False
 
     def __new__(cls, *args, **kwargs):
         self = super(BaseComponent, cls).__new__(cls)
@@ -52,18 +51,11 @@ class BaseComponent(Manager):
         super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
-        self._initialize()
 
-    def _initialize(self):
-        self._initialized = True
-        self._registerHandlers()
-
-    def _registerHandlers(self):
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
                 self.addHandler(v)
-            if v is not self and isinstance(v, BaseComponent) \
-                    and k not in ('parent', 'root'):
+            if isinstance(v, BaseComponent):
                 v.register(self)
 
     def register(self, parent):
@@ -73,9 +65,6 @@ class BaseComponent(Manager):
         if parent is not self:
             parent.registerChild(self)
             self.fire(Registered(self, self.parent))
-
-        if not self._initialized:
-            self._initialize()
 
         self._updateRoot(parent.root)
 
@@ -102,10 +91,5 @@ class BaseComponent(Manager):
         self.root = root
         for c in self.components:
             c._updateRoot(root)
-
-    def _run(self, *args, **kwargs):
-        if not self._initialized:
-            self._initialize()
-        super(BaseComponent, self)._run(*args, **kwargs)
 
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
