@@ -55,7 +55,8 @@ class BaseComponent(Manager):
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
                 self.addHandler(v)
-            if isinstance(v, BaseComponent):
+            if v is not self and isinstance(v, BaseComponent) \
+                    and v not in ('parent', 'root'):
                 v.register(self)
 
     def register(self, parent):
