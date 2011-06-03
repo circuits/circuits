@@ -378,9 +378,9 @@ class Manager(object):
             event.handler = handler
             try:
                 if handler.event:
-                    event.value.value = handler(event, *eargs, **ekwargs)
+                    value = handler(event, *eargs, **ekwargs)
                 else:
-                    event.value.value = handler(*eargs, **ekwargs)
+                    value = handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
@@ -390,14 +390,16 @@ class Manager(object):
 
                 event.value.errors = True
 
-                event.value.value = error
+                value = error
 
                 if event.failure:
                     self.fire(Failure.create("%sFailure" %
                         event.__class__.__name__, event))
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if event.value.value and handler.filter:
+            event.value.value = value
+
+            if value and handler.filter:
                 break
 
         if error is None and event.success:
