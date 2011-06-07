@@ -12,6 +12,7 @@ from circuits.net.sockets import Close, Connect, Write
 from .client import Client
 from .server import Server
 
+
 def wait_host(server):
     def checker(obj, attr):
         return all((getattr(obj, a) for a in attr))
