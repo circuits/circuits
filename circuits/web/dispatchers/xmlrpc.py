@@ -48,8 +48,8 @@ class XMLRPC(BaseComponent):
             else:
                 channel, name = self.rpc_channel, method
 
-            if isinstance(name, unicode):
-                name = str(name)
+            if not isinstance(name, bytes):
+                name = name.encode('utf-8')
 
             @handler("%s_value_changed" % name, priority=0.1)
             def _on_value_changed(self, value):
