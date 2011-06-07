@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import pytest
-pytest.skip("XXX: Failing")
 
 from circuits.web import Server, Controller
 
