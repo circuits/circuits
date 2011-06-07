@@ -179,7 +179,4 @@ class ExposeJSONMetaClass(type):
                 setattr(cls, k, exposeJSON(k)(v))
 
 
-class JSONController(BaseController):
-    pass
-
 JSONController = ExposeJSONMetaClass("JSONController", (BaseController,), {})
