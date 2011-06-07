@@ -43,7 +43,6 @@ def test(webapp):
     assert s == b"Hello World!"
 
 def test_404(webapp):
-    pytest.skip("XXX: Failing")
     try:
         urlopen("%s/foo" % webapp.server.base)
     except HTTPError as e:

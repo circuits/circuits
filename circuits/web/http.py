@@ -96,7 +96,8 @@ class HTTP(BaseComponent):
             elif isinstance(response.body, unicode):
                 body = response.body.encode(self._encoding)
             else:
-                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in response.body)
+                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) \
+                    for s in response.body if s is not None)
                 body = b"".join(parts)
 
             if body:
