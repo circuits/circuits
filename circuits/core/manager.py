@@ -259,6 +259,7 @@ class Manager(object):
         self.components.add(component)
         self.root._queue.extend(list(component._queue))
         component._queue.clear()
+        self.root._cache.clear()
         self.root._ticks = None
 
     def unregisterChild(self, component):
