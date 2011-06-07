@@ -34,14 +34,6 @@ class JSONRPC(BaseComponent):
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("value_changed", priority=0.1)
-    def _on_value_changed(self, value):
-        id = value.id
-        response = value.response
-        response.body = self._response(id, value.value)
-        self.fire(Response(response), self.channel)
-        value.handled = True
-
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
@@ -59,7 +51,20 @@ class JSONRPC(BaseComponent):
             if "." in method:
                 channel, name = method.split(".", 1)
             else:
-                channel, name = self.tpc_channel, method
+                channel, name = self.rpc_channel, method
+
+            if not isinstance(name, bytes):
+                name = name.encode('utf-8')
+
+            @handler("%s_value_changed" % name, priority=0.1)
+            def _on_value_changed(self, value):
+                id = value.id
+                response = value.response
+                response.body = self._response(id, value.value)
+                self.fire(Response(response), self.channel)
+                value.handled = True
+
+            self.addHandler(_on_value_changed)
 
             if type(params) is dict:
                 value = self.fire(RPC.create(name, **params), channel)
@@ -68,7 +73,7 @@ class JSONRPC(BaseComponent):
 
             value.id = id
             value.response = response
-            value.onSet = ("value_changed", self)
+            value.notify = True
         except Exception as e:
             r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
             return r
