@@ -124,9 +124,6 @@ class BaseController(BaseComponent):
         tools.expires(self.request, self.response, secs, force)
 
 
-class Controller(BaseController):
-    pass
-
 Controller = ExposeMetaClass("Controller", (BaseController,), {})
 
 
