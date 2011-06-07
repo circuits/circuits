@@ -214,7 +214,7 @@ class Manager(object):
         handlers.update(self._globals)
 
         if not channel_is_instance:
-            for c in self.components:
+            for c in self.components.copy():
                 handlers.update(c.getHandlers(event, channel))
 
         return handlers
