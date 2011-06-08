@@ -16,25 +16,32 @@ class Flag(object):
     status = False
 
 
-def wait_event(m, name, channel=None, timeout=3.0):
-    if channel is None:
-        channel = getattr(m, "channel", None)
+class WaitEvent(object):
+    def __init__(self, manager, name, channel=None, timeout=3.0):
+        if channel is None:
+            channel = getattr(manager, "channel", None)
 
-    flag = Flag()
+        self.timeout = timeout
+        self.manager = manager
 
-    @handler(name, channel=channel)
-    def on_event(self, *args, **kwargs):
-        flag.status = True
+        flag = Flag()
 
-    m.addHandler(on_event)
+        @handler(name, channel=channel)
+        def on_event(self, *args, **kwargs):
+            flag.status = True
 
-    try:
-        for i in range(int(timeout / TIMEOUT)):
-            if flag.status:
-                return True
-            sleep(TIMEOUT)
-    finally:
-        m.removeHandler(on_event)
+        self.manager.addHandler(on_event)
+        self.flag = flag
+        self.handler = on_event
+
+    def wait(self):
+        try:
+            for i in range(int(self.timeout / TIMEOUT)):
+                if self.flag.status:
+                    return True
+                sleep(TIMEOUT)
+        finally:
+            self.manager.removeHandler(self.handler)
 
 
 def wait_for(obj, attr, value=True, timeout=3.0):
@@ -50,6 +57,6 @@ def wait_for(obj, attr, value=True, timeout=3.0):
 
 def pytest_namespace():
     return dict((
-        ("wait_event", wait_event),
+        ("WaitEvent", WaitEvent),
         ("wait_for", wait_for),
     ))

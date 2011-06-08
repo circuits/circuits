@@ -17,9 +17,9 @@ def test_addHandler():
 
     m.addHandler(on_foo)
 
+    waiter = pytest.WaitEvent(m, "foo")
     x = m.fire(Foo())
-
-    pytest.wait_event(m, "foo")
+    waiter.wait()
 
     s = x.value[0]
     assert s == "Hello World!"
@@ -33,18 +33,18 @@ def test_removeHandler():
 
     m.addHandler(on_foo)
 
+    waiter = pytest.WaitEvent(m, "foo")
     x = m.fire(Foo())
-
-    pytest.wait_event(m, "foo")
+    waiter.wait()
 
     s = x.value[0]
     assert s == "Hello World!"
 
     m.removeHandler(on_foo)
 
+    waiter = pytest.WaitEvent(m, "foo")
     x = m.fire(Foo())
-
-    pytest.wait_event(m, "foo")
+    waiter.wait()
 
     assert x.value is None
 
