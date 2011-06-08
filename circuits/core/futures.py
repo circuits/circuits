@@ -42,7 +42,7 @@ def future(pool=None):
                 p = findcmp(self.root, Pool)
             if p is not None:
                 setattr(self, "_pool", p)
-                return self.fire(Task(f, self, *args, **kwargs), target=p)
+                return self.fire(Task(f, self, *args, **kwargs), p)
             else:
                 return Worker(channel=str(uuid())).fire(
                         Task(f, self, *args, **kwargs))

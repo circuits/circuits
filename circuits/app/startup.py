@@ -61,12 +61,12 @@ class Startup(BaseComponent):
         if not self.command == "start" and not self:
             self.stop()
 
-    @handler("signal", target="*")
+    @handler("signal", channel="*")
     def _on_signal(self, signal, track):
         if signal in (SIGINT, SIGTERM):
             self.fire(Terminate())
 
-    @handler("environment_loaded", target="env")
+    @handler("environment_loaded", channel="env")
     def _on_environment_loaded(self, *args):
         self.fire(Command(), self.command, self)
 
@@ -76,7 +76,7 @@ class Startup(BaseComponent):
             if not os.path.exists(self.env.path):
                 raise Error("Environment does not exist!")
             else:
-                self.fire(LoadEnvironment(), target=self.env)
+                self.fire(LoadEnvironment(), self.env)
         else:
             if os.path.exists(self.env.path):
                 raise Error("Environment already exists!")
@@ -114,8 +114,8 @@ class Startup(BaseComponent):
 
     @handler("init")
     def _on_init(self):
-        self.fire(CreateEnvironment(), target=self.env)
+        self.fire(CreateEnvironment(), self.env)
 
     @handler("upgrade")
     def _on_upgrade(self):
-        self.fire(UpgradeEnvironment(), target=self.env)
+        self.fire(UpgradeEnvironment(), self.env)

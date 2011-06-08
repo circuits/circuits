@@ -135,7 +135,7 @@ class Environment(BaseComponent):
     def _on_verify_success(self, evt, handler, retval):
         return self._load()
 
-    @handler("load_success", target="config")
+    @handler("load_success", channel="config")
     def _on_config_load_success(self, evt, handler, retval):
         # Create Logger Component
         logname = self.envname
