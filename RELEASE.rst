@@ -6,9 +6,9 @@ Python 3 Support
 ................
 
 This is the third attempt at getting Python 3 support for circuits working
-while still maintaining Python 2 compatibility. These release finally adds
+while still maintaining Python 2 compatibility. This release finally adds
 full support for Python 3 as well as maintaining compatibility with Python
-2.6 and 2.7 with the same codebase.
+2.6 and 2.7 with the same code-base.
 
 .. note::
    Python 2.5 support has been dropped as of this release and will no
@@ -26,15 +26,6 @@ including Python 2.6, Python 2.7 and Python 3.2
 Features
 ........
 
-...
-
-
-Bug Fixes
-.........
-
-...
-
-
 - Added an example WebSockets server using circuits.web
 - Added support for specifying a ``Poll`` instance to use when using the
   ``@future`` decorator to create "future" event handlers.
@@ -45,65 +36,41 @@ Bug Fixes
 - Added a ``_on_signal`` event handler on the ``BaseEnvironment`` Component
   so that environments can be reloaded by listening to ``SIGHUP`` signals.
 - Added support for using absolute paths in ``app.env.Environment``.
+- Added support in circuits.web ``HTTP`` protocol to limit the no. of
+  header fragments. This prevents OOM exploits.
+- Added a ticks limit to waitEvent
+- Added deprecation warnings for .push .add and .remove methods
+- NEW ``Loader`` Component in ``circuits.core`` for simple plugin support.
+- NEW ``app.env`` and ``app.config`` modules including a new ``app.startup``
+  modules integrating a common startup for applications.
+- NEW ``KQueue`` poller
 
-- Fixed ``Server.host`` and ``Server.port`` properties in
-  ``circuits.net.sockets``.
 
-The ``Server.host`` property will reteurn what ``getsockname()`` returns
-on the underlying listening socket and return it's first item if it's a
-tuple, otherwise it will return the entire string (eg: a UNIX Socket).
-
-The ``Server.port`` property does a similar thing but returns ``None``
-in the case of ``getsockname()`` **not** returning a tuple.
-
-- New ``Loader`` Component in ``circuits.core`` for simple plugin support.
-
-- Fixed Issue #10
+Bug Fixes
+.........
 
 - Renamed ``circuits.web.main`` module to ``circuits.web.__main__`` so that
   ``python -m circuits.web`` just works.
-
+- Fixed ``Server.host`` and ``Server.port`` properties in
+  ``circuits.net.sockets``.
+- Fixed Issue #10
 - Fixed ``app.Daemon`` Component to correctly open the stderr file.
-
-- circuits.core: Always trigger a ``Success`` event if no errors.
-
-When an event handler has fired successfully and no errors have occured
-always trigger a ``Success`` event so that defining the ``success``
-attribute on an ``Event`` class definition makes sense.
-
-
-- New ``app.env`` and ``app.config`` modules including a new ``app.startup``
-  modules integrating a common startup for applications.
-
-- New ``KQueue`` poller
-
+- Fixed triggering of ``Success`` events.
 - Fixed duplicate broadcast handler in ``UDPServer``
-
-
 - Fixed duplicate ``Disconnect`` event from being triggered twice on
   ``Client`` socket components.
-
 - Removed dynamic timeout code from ``Select`` poller.
-
-This is considered broken as it does not work correctly in all cases and
-causes things to hang -- especially when integrating with Naali.
-Thanks Toni for identifying this!
-
 - Fixed a bug in the circuits.web ``HTTP`` protocol where headers were
   not being buffered per client.
-- Added support in circuits.web ``HTTP`` protocol to limit the no. of
-  header fragments. This prevents OOM exploits.
 - Fixes a missing Event ``Closed()`` not being triggered for ``UDPServer``.
-- Make underlying ``UDPServer`` socket reuseable by setting ``SO_REUSEADDR``
+- Make underlying ``UDPServer`` socket reusable by setting ``SO_REUSEADDR``
 - Fixes Server socket being discarded twice on close + disconnect
 - Socket.write now expects bytes (bytes for python3 and str for python2)
 - Better handling of encoding in HTTP Component (allow non utf-8 encoding)
 - Always encode http headers in utf-8
 - Fixes error after getting socket.ERRCONNREFUSED
 - Allows TCPClient to bind to a specific port
-- Addes deprecation warnings for .push .add and .remove methods
 - Improved docs
-- Addes a ticks limit to waitEvent
 - Handles closing of udpserver socket when no client is connected
 - Adds an unregister handler for components
 - Allows utils.kill to work from a different thread
