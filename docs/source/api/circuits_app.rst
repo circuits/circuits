@@ -1,5 +1,5 @@
-:mod:`circuits.app` -- Application Componetns
-=============================================
+:mod:`circuits.app` -- Application Support
+==========================================
 
 .. automodule :: circuits.app
 
