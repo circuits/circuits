@@ -5,6 +5,7 @@ Future of circuits
 circuits - 1.7 (rocket)
 -----------------------
 
+- IPv6 support
 - Fix performance of Poll/EPoll pollers
 - Result Object Proxying
 - Auto Component Init
