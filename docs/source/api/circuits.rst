@@ -9,6 +9,7 @@
    circuits_app
    circuits_core
    circuits_io
+   circuits_io_notify
    circuits_net
    circuits_tools
    circuits_web

@@ -12,7 +12,7 @@ the bottle-neck caused by the "blocking" event handler(s).
 
 Support for using a Thread or Process pool is also supported by specifying
 an optional `pool` keyword argument and supplying an instance to a
-``circuits.core.pool.Pool`.
+``circuits.core.pool.Pool``.
 """
 
 from uuid import uuid4 as uuid
