@@ -111,11 +111,11 @@ class Notify(BaseComponent):
                 c = e.name.lower()
                 self.push(e, c)
 
-    def add(self, path, mask=None, recursive=False):
+    def addPath(self, path, mask=None, recursive=False):
         mask = mask or MASK
         self._wm.add_watch(path, mask, rec=recursive)
 
-    def remove(self, path, recursive=False):
+    def removePath(self, path, recursive=False):
         wd = self._wm.get_wd(path)
         if wd:
             self._wm.rm_watch(wd, rec=recursive)
