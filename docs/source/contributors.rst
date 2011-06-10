@@ -15,6 +15,6 @@ The following users and developers have contributed to circuits:
 - Alex Mayfield
 - Toni Alatalo
 
-Anyone not listed here (**apologies as this list is taken directly from
-Mercurial's churn command and output**). We appreciate any and all
+Anyone not listed here (*apologies as this list is taken directly from
+Mercurial's churn command and output*). We appreciate any and all
 contributions to circuits.
