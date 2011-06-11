@@ -6,5 +6,5 @@ from circuits import Debugger
 from circuits.io import Notify
 
 driver = Notify() + Debugger()
-driver.addPath(sys.argv[1])
+driver.add_path(sys.argv[1])
 driver.run()
