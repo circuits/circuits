@@ -3,6 +3,8 @@ circuits-1.6 (oceans) - 13th June 2011
 
 - Added Python 3 support
 - 80% Code Coverage
+- Added optional greenlet support adding two new primitives.
+  ``.waitEvent(...)`` and ``.callEvent(...)``.
 - Added an example WebSockets server using circuits.web
 - Added support for specifying a ``Poll`` instance to use when using the
   ``@future`` decorator to create "future" event handlers.
