@@ -60,6 +60,7 @@ Features
 Bug Fixes
 .........
 
+- Fixed Issue #17
 - Renamed ``circuits.web.main`` module to ``circuits.web.__main__`` so that
   ``python -m circuits.web`` just works.
 - Fixed ``Server.host`` and ``Server.port`` properties in
