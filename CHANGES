@@ -23,12 +23,12 @@ circuits-1.6 (oceans) - 13th June 2011
 - NEW ``app.env`` and ``app.config`` modules including a new ``app.startup``
   modules integrating a common startup for applications.
 - NEW ``KQueue`` poller
-- Fixed Issue #17
+- Fixed :bbissue:`17`
 - Renamed ``circuits.web.main`` module to ``circuits.web.__main__`` so that
   ``python -m circuits.web`` just works.
 - Fixed ``Server.host`` and ``Server.port`` properties in
   ``circuits.net.sockets``.
-- Fixed Issue #10
+- Fixed :bbissue:`10`
 - Fixed ``app.Daemon`` Component to correctly open the stderr file.
 - Fixed triggering of ``Success`` events.
 - Fixed duplicate broadcast handler in ``UDPServer``

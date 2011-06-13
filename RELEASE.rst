@@ -60,12 +60,12 @@ Features
 Bug Fixes
 .........
 
-- Fixed Issue #17
+- Fixed :bbissue:`17`
 - Renamed ``circuits.web.main`` module to ``circuits.web.__main__`` so that
   ``python -m circuits.web`` just works.
 - Fixed ``Server.host`` and ``Server.port`` properties in
   ``circuits.net.sockets``.
-- Fixed Issue #10
+- Fixed :bbissue:`10`
 - Fixed ``app.Daemon`` Component to correctly open the stderr file.
 - Fixed triggering of ``Success`` events.
 - Fixed duplicate broadcast handler in ``UDPServer``
