@@ -16,6 +16,17 @@ full support for Python 3 as well as maintaining compatibility with Python
    specifically for Python 2.5 if required.
 
 
+Greenlet Support
+................
+
+circuits now includes two new primitives which work by integrating
+`greenlet <http://pypi.python.org/pypi/greenlet>`_.
+
+- ``.waitEvent(...)`` -- Wait for the given event to complete.
+- ``.callEvent(...)`` -- Call event handlers for the given event.
+
+.. note:: These new primitives add (*as long as greenlet is installed*) the ability to write semi-synchronous code in your event handlers while still taking full advantage of the asynchronous and component framework that circuits has to offer.
+
 Code Coverage
 .............
 
