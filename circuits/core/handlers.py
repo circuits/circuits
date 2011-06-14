@@ -29,6 +29,7 @@ def handler(*names, **kwargs):
         f.filter = kwargs.get("filter", False)
         f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
+        f.tick = kwargs.get("tick", False)
 
         args = getargspec(f)[0]
 
@@ -39,6 +40,10 @@ def handler(*names, **kwargs):
         return f
 
     return wrapper
+
+
+def tick(f):
+    return handler(f.__name__, tick=True)(f)
 
 
 class HandlerMetaClass(type):

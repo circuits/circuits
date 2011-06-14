@@ -60,8 +60,9 @@ def test_tcp_basic(Poller):
         assert pytest.wait_for(server, "ready")
         wait_host(server)
 
+        waiter = pytest.WaitEvent(client, 'connected')
         client.fire(Connect(server.host, server.port))
-        assert pytest.wait_for(client, "connected")
+        waiter.wait()
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
