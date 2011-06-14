@@ -8,7 +8,7 @@ from time import sleep
 
 import collections
 
-from circuits import Component, handler, tick
+from circuits import Component, handler, tick, Manager
 from circuits.core.manager import TIMEOUT
 
 
@@ -42,23 +42,38 @@ class WaitEvent(object):
 
     def wait(self):
         try:
-            while self.flag.ticks < self.timeout:
+            ticks = 0
+            while self.flag.ticks < self.timeout and ticks < self.timeout:
                 if self.flag.status:
                     return True
                 sleep(TIMEOUT)
+                ticks += 1
         finally:
             self.manager.removeHandler(self.handler)
 
 
 def wait_for(obj, attr, value=True, timeout=30):
     from circuits.core.manager import TIMEOUT
-    for i in range(timeout):
-        if isinstance(value, collections.Callable):
-            if value(obj, attr):
+    flag = Flag()
+
+    @tick
+    def on_tick(self):
+        flag.ticks += 1
+    if isinstance(obj, Manager):
+        obj.addHandler(on_tick)
+    try:
+        ticks = 0
+        while flag.ticks < timeout and ticks < timeout:
+            if isinstance(value, collections.Callable):
+                if value(obj, attr):
+                    return True
+            elif getattr(obj, attr) == value:
                 return True
-        elif getattr(obj, attr) == value:
-            return True
-        sleep(TIMEOUT)
+            sleep(TIMEOUT)
+            ticks += 1
+    finally:
+        if isinstance(obj, Manager):
+            obj.removeHandler(on_tick)
 
 
 def pytest_namespace():
