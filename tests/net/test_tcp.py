@@ -152,6 +152,10 @@ def test_tcp_connect_closed_port(Poller):
 
         client.fire(Write(b"foo"))
         assert pytest.wait_for(client, "disconnected")
+
+        client.disconnected = False
+        client.push(Write(b"foo"))
+        assert pytest.wait_for(client, "disconnected", timeout=20) is None
     finally:
         m.stop()
 
