@@ -14,6 +14,7 @@ class Base(Component):
 
 class App1(Base):
 
+    @handler("test", priority=-1)
     def test(self):
         return "Foobar"
 
