@@ -54,7 +54,7 @@ release = '1.6'
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = True
+devel = False
 
 if devel:
     release += "dev"
