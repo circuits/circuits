@@ -1,0 +1,4 @@
+circuits-1.6.1 YYYYMMDD
+-----------------------
+
+- Fixed missing import of sys in ``circuits.io``

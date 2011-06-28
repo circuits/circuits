@@ -1,5 +1,5 @@
-:mod:`circuits.web` -- circuits.web Framework
-=============================================
+:mod:`circuits.web` -- Web Framework
+====================================
 
 .. automodule :: circuits.web
 

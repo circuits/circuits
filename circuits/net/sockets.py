@@ -19,8 +19,8 @@ from _socket import socket as SocketType
 from socket import gaierror, error as SocketError
 from socket import gethostname, gethostbyname, socket
 
+from socket import AF_INET, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
 from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
-from socket import AF_INET, AF_UNIX, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
 
 try:
     from ssl import wrap_socket as ssl_socket
@@ -439,6 +439,8 @@ class TCPClient(Client):
 class UNIXClient(Client):
 
     def _create_socket(self):
+        from socket import AF_UNIX
+
         sock = socket(AF_UNIX, SOCK_STREAM)
         if self._bind is not None:
             sock.bind(self._bind)
@@ -762,6 +764,8 @@ class TCPServer(Server):
 class UNIXServer(Server):
 
     def _create_socket(self):
+        from socket import AF_UNIX
+
         if os.path.exists(self._bind):
             os.unlink(self._bind)
 
