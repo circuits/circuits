@@ -12,7 +12,7 @@ from .helpers import urlopen
 class Root(Controller):
 
     @handler("started", priority=1.0, target="*")
-    def _on_started(self, component, mode):
+    def _on_started(self, component):
         fd, self.filename = mkstemp()
         os.write(fd, b"Hello World!")
         os.close(fd)

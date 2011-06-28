@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import pytest
 
 from circuits.web import Server, Controller
@@ -5,7 +7,6 @@ from circuits.web.client import parse_url
 from circuits.net.sockets import TCPServer, TCPClient
 from circuits.net.sockets import Close, Connect, Write
 from circuits import Component
-from circuits import Debugger
 
 class Client(Component):
     def __init__(self, *args, **kwargs):
@@ -29,15 +30,15 @@ class Root(Controller):
 def test(webapp):
     transport = TCPClient()
     client = Client()
-    client += transport + Debugger()
+    client += transport
     client.start()
 
     host, port, resource, secure = parse_url(webapp.server.base)
-    client.push(Connect(host, port))
+    client.fire(Connect(host, port))
     assert pytest.wait_for(transport, "connected")
 
-    client.push(Write(b"GET / HTTP/1.1\r\n"))
-    client.push(Write(b"Content-Type: text/plain\r\n\r\n"))
+    client.fire(Write(b"GET / HTTP/1.1\r\n"))
+    client.fire(Write(b"Content-Type: text/plain\r\n\r\n"))
     assert pytest.wait_for(client, "done")
 
     client.stop()

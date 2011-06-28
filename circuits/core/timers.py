@@ -13,39 +13,28 @@ from datetime import datetime
 from .components import BaseComponent
 
 class Timer(BaseComponent):
-    """Timer(s, e, c, t, persist) -> new timer component
-
-    Creates a new timer object which when triggered
-    will push the given event onto the event queue.
-
-    s := no. of seconds to delay
-    e := event to be fired
-    c := channel to fire event to
-    t := target to fire event to
-
-    persist := Sets this timer as persistent if True.
+    """
+    ...
     """
 
-    def __init__(self, s, e, c="timer", t=None, persist=False):
-        "initializes x; see x.__class__.__doc__ for signature"
-
+    def __init__(self, interval, event, *channels, **kwargs):
         super(Timer, self).__init__()
 
-        if isinstance(s, datetime):
-            self.s = mktime(s.timetuple()) - time()
+        if isinstance(interval, datetime):
+            self.interval = mktime(interval.timetuple()) - time()
         else:
-            self.s = s
+            self.interval = interval
 
-        self.e = e
-        self.c = c
-        self.t = t
-        self.persist = persist
+        self.event = event
+        self.channels = channels
+
+        self.persist = kwargs.get("persist", False)
 
         self.reset()
 
     def __tick__(self):
         if time() > self._eTime:
-            self.push(self.e, self.c, self.t)
+            self.fire(self.event, *self.channels)
 
             if self.persist:
                 self.reset()
@@ -58,4 +47,4 @@ class Timer(BaseComponent):
         Reset the timer.
         """
 
-        self._eTime = time() + self.s
+        self._eTime = time() + self.interval

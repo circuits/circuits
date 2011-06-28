@@ -48,5 +48,5 @@ def setupwebapp(request):
 
 def teardownwebapp(webapp):
     from circuits.net.sockets import Close
-    webapp.push(Close(), target=webapp.server)
+    webapp.fire(Close(), webapp.server)
     webapp.stop()

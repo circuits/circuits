@@ -7,16 +7,17 @@
 This module implements a routes based dispatcher.
 """
 
+from cgi import FieldStorage
+
 from circuits.tools import tryimport
 
 routes = tryimport("routes")
 
 from circuits import handler, BaseComponent
 
-from cgi import FieldStorage
+from circuits.web.events import Request
 from circuits.web.errors import HTTPError
 from circuits.web.utils import parseQueryString, dictform
-
 
 class RoutesError(Exception):
     pass
@@ -139,9 +140,9 @@ class Routes(BaseComponent):
         req = event
 
         # retrieve a channel (handler) for this request
-        channel, target, vpath, params = self._getChannel(request)
+        name, channel, vpath, params = self._get_request_handler(request)
 
-        if channel:
+        if channel is not None:
             # add the params from the routes match
             req.kwargs = params
             # update with any query string params
@@ -153,9 +154,10 @@ class Routes(BaseComponent):
             if vpath:
                 req.args += tuple(vpath)
 
-            return self.push(req, channel, target=target)
+            return self.fire(Request.create(name, *req.args, **req.kwargs),
+                    channel)
 
-    @handler("registered", target="*")
+    @handler("registered", channel="*")
     def _on_registered(self, event, component, manager):
         """
         Listen for controllers being added to the system and add them
@@ -165,7 +167,7 @@ class Routes(BaseComponent):
         if component.channel and component.channel.startswith("/"):
             self.controllers[component.channel.strip("/")] = component.channel
 
-    @handler("unregistered", target="*")
+    @handler("unregistered", channel="*")
     def _on_unregistered(self, event, component, manager):
         """
         Listen for controllers being removed from the system and remove them

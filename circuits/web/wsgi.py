@@ -89,7 +89,7 @@ class Application(BaseComponent):
 
     def __call__(self, environ, start_response, exc_info=None):
         self.request, self.response = self.getRequestResponse(environ)
-        self.push(Request(self.request, self.response))
+        self.fire(Request(self.request, self.response))
 
         self._finished = False
         while not self._finished:
@@ -103,7 +103,7 @@ class Application(BaseComponent):
         start_response(status, headers, exc_info)
         return body
 
-    @handler("response", filter=True, target="web")
+    @handler("response", filter=True, channel="web")
     def response(self, response):
         self._finished = True
         return True
@@ -129,9 +129,6 @@ class Gateway(BaseComponent):
         self._errors = StringIO()
 
         self._request = self._response = None
-
-        self.addHandler(self._on_request, "request", filter=True,
-                priority=len(path))
 
     def createEnviron(self):
         environ = {}
@@ -172,6 +169,7 @@ class Gateway(BaseComponent):
         for header in headers:
             self._response.headers.add_header(*header)
 
+    @handler("request", filter=True, priority=0.2)
     def _on_request(self, event, request, response):
         if self.path and not request.path.startswith(self.path):
             return

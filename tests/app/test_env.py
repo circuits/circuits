@@ -34,7 +34,7 @@ def teardown_env(env):
 def test_create(env, path):
     from circuits.app.env import Create
 
-    env.push(Create())
+    env.fire(Create())
     assert pytest.wait_event(env, "create_success")
 
     files = ("conf/test.ini", "README", "VERSION")
@@ -46,7 +46,7 @@ def test_create(env, path):
 def test_load(env, path):
     from circuits.app.env import Create, Load
 
-    env.push(Create())
+    env.fire(Create())
 
     assert pytest.wait_event(env, "create_success")
 
@@ -55,7 +55,7 @@ def test_load(env, path):
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
 
-    env.push(Load())
+    env.fire(Load())
 
     assert pytest.wait_event(env, "load_success")
 
@@ -63,7 +63,7 @@ def test_load(env, path):
 def test_load_verify(env, path):
     from circuits.app.env import Create, Load
 
-    env.push(Create())
+    env.fire(Create())
 
     assert pytest.wait_event(env, "create_success")
 
@@ -72,7 +72,7 @@ def test_load_verify(env, path):
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
 
-    env.push(Load(verify=True))
+    env.fire(Load(verify=True))
 
     assert pytest.wait_event(env, "load_success")
 
@@ -81,7 +81,7 @@ def test_load_verify_fail(env, path):
     from circuits.app.env import Create, Load
     from circuits.app.env import EnvironmentError, ERRORS
 
-    env.push(Create())
+    env.fire(Create())
 
     assert pytest.wait_event(env, "create_success")
 
@@ -92,7 +92,7 @@ def test_load_verify_fail(env, path):
 
     path.join("VERSION").write("")
 
-    v = env.push(Load(verify=True))
+    v = env.fire(Load(verify=True))
 
     assert pytest.wait_event(env, "verify_failure")
 
@@ -104,7 +104,7 @@ def test_load_verify_upgrade(env, path):
     from circuits.app.env import Create, Load
     from circuits.app.env import EnvironmentError, ERRORS
 
-    env.push(Create())
+    env.fire(Create())
 
     assert pytest.wait_event(env, "create_success")
 
@@ -115,7 +115,7 @@ def test_load_verify_upgrade(env, path):
 
     env.version = 100
 
-    v = env.push(Load(verify=True))
+    v = env.fire(Load(verify=True))
 
     assert pytest.wait_event(env, "verify_failure")
 

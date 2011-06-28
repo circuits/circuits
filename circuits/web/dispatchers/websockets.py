@@ -30,13 +30,11 @@ class MalformedWebSocket(ValueError):
 class WebSocketEvent(Event):
     """WebSocket Event"""
 
-    _target = WEBSOCKETS_CHANNEL
+    channels = (WEBSOCKETS_CHANNEL,)
 
 
 class Message(WebSocketEvent):
     """Message Event"""
-
-    target = WebSocketEvent._target
 
 
 class WebSockets(BaseComponent):
@@ -77,25 +75,24 @@ class WebSockets(BaseComponent):
         self._buffers[sock] = buf
         return msgs
 
-    @handler("disconnect", target="web")
+    @handler("disconnect", channel="web")
     def _on_disconnect(self, sock):
         if sock in self._clients:
             self._clients.remove(sock)
         if sock in self._buffers:
             del self._buffers[sock]
 
-    @handler("write", target=WebSocketEvent._target)
+    @handler("write", channel=WebSocketEvent.channels[0])
     def _on_write(self, sock, data):
         payload = b'\x00' + data.encode("utf-8") + b'\xff'
-        self.push(Write(sock, payload))
+        self.fire(Write(sock, payload))
 
-    @handler("value_changed", target=WebSocketEvent._target)
+    @handler("value_changed", channel=WebSocketEvent.channels[0])
     def _on_value_changed(self, value):
         sock, message = value.event.args
         result, data = value.result, value.value
         if result and isinstance(data, basestring):
-                self.push(Write(sock, data),
-                        target=WebSocketEvent._target)
+                self.fire(Write(sock, data), WebSocketEvent.channels[0])
 
     @handler("read", filter=True)
     def _on_read(self, sock, data):
@@ -103,8 +100,8 @@ class WebSockets(BaseComponent):
             self._buffers[sock] += data
             messages = self._parse_messages(sock)
             for message in messages:
-                value = self.push(Message(sock, message))
-                value.onSet = "value_changed", WebSocketEvent._target
+                value = self.fire(Message(sock, message))
+                value.onSet = "value_changed", WebSocketEvent.channels[0]
             return True
 
     @handler("request", filter=True, priority=0.2)

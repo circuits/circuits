@@ -24,23 +24,15 @@ class JSONRPC(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, path=None, target="*", encoding="utf-8"):
+    def __init__(self, path=None, encoding="utf-8", rpc_channel="*"):
         super(JSONRPC, self).__init__()
 
         if json is None:
             raise RuntimeError("No json support available")
 
         self.path = path
-        self.target = target
         self.encoding = encoding
-
-    @handler("value_changed", priority=0.1)
-    def _on_value_changed(self, value):
-        id = value.id
-        response = value.response
-        response.body = self._response(id, value.value)
-        self.push(Response(response), target=self.channel)
-        value.handled = True
+        self.rpc_channel = rpc_channel
 
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, request, response):
@@ -57,18 +49,31 @@ class JSONRPC(BaseComponent):
                 params = dict([(str(k), v) for k, v in params.iteritems()])
 
             if "." in method:
-                t, c = method.split(".", 1)
+                channel, name = method.split(".", 1)
             else:
-                t, c = self.target, method
+                channel, name = self.rpc_channel, method
+
+            if not isinstance(name, bytes):
+                name = name.encode('utf-8')
+
+            @handler("%s_value_changed" % name, priority=0.1)
+            def _on_value_changed(self, value):
+                id = value.id
+                response = value.response
+                response.body = self._response(id, value.value)
+                self.fire(Response(response), self.channel)
+                value.handled = True
+
+            self.addHandler(_on_value_changed)
 
             if type(params) is dict:
-                value = self.push(RPC(**params), c, t)
+                value = self.fire(RPC.create(name, **params), channel)
             else:
-                value = self.push(RPC(*params), c, t)
+                value = self.fire(RPC.create(name, *params), channel)
 
             value.id = id
             value.response = response
-            value.onSet = ("value_changed", self)
+            value.notify = True
         except Exception as e:
             r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
             return r

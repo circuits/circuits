@@ -42,9 +42,9 @@ def future(pool=None):
                 p = findcmp(self.root, Pool)
             if p is not None:
                 setattr(self, "_pool", p)
-                return self.push(Task(f, self, *args, **kwargs), target=p)
+                return self.fire(Task(f, self, *args, **kwargs), p)
             else:
-                return Worker(channel=str(uuid())).push(
+                return Worker(channel=str(uuid())).fire(
                         Task(f, self, *args, **kwargs))
         wrapper.event = True
         return update_wrapper(wrapper, f)

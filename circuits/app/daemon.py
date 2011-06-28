@@ -77,7 +77,7 @@ class Daemon(BaseComponent):
             else:
                 setattr(self, stdio_attrs[i], "/dev/null")
 
-    @handler("writepid")
+    @handler("write_pid")
     def _on_writepid(self):
         f = open(self._pidfile, "w")
         f.write(str(os.getpid()))
@@ -120,14 +120,14 @@ class Daemon(BaseComponent):
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
-        self.push(WritePID())
+        self.fire(WritePID())
 
-    @handler("started", filter=True, priority=100.0, target="*")
-    def _on_started(self, manager, mode):
-        if not manager == self and mode is None:
-            self.push(Daemonize())
+    @handler("started", filter=True, priority=100.0, channel="*")
+    def _on_started(self, component):
+        if component is not self:
+            self.fire(Daemonize())
 
     @handler("registered")
     def _on_registered(self, component, manager):
         if component == self and manager == self and manager.root.running:
-            self.push(Daemonize())
+            self.fire(Daemonize())

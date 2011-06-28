@@ -4,14 +4,18 @@ import pytest
 
 from circuits import future, handler, BaseComponent, Component, Event
 
+
 class Hello(Event):
     """Hello Event"""
+
 
 class Test(Event):
     """Test Event"""
 
+
 class Error(Event):
     """Error Event"""
+
 
 class App(Component):
 
@@ -20,11 +24,12 @@ class App(Component):
 
     @future()
     def test(self):
-        return self.push(Hello())
+        return self.fire(Hello())
 
     @future()
     def error(self):
         raise Exception("Hello World!")
+
 
 class BaseApp(BaseComponent):
 
@@ -35,33 +40,43 @@ class BaseApp(BaseComponent):
     @handler("test")
     @future()
     def _on_test(self):
-        return self.push(Hello())
+        return self.fire(Hello())
 
     @handler("error")
     @future()
     def _on_error(self):
         raise Exception("Hello World!")
 
+
 def reraise(e):
     raise e
 
+
 def test():
-    app = App()
-    while app: app.flush()
+    from circuits import Debugger
+    app = App() + Debugger()
+    while app:
+        app.flush()
+
     e = Test()
     assert e.future == False
-    x = app.push(e)
+
+    x = app.fire(e)
     while not x.result:
         app.flush()
     assert e.future == True
     assert x.value == "Hello World!"
 
+
 def test_error():
     app = App()
-    while app: app.flush()
+
+    while app:
+        app.flush()
+
     e = Error()
     assert e.future == False
-    x = app.push(e)
+    x = app.fire(e)
     while not x.errors:
         app.flush()
     assert e.future == True
@@ -71,23 +86,31 @@ def test_error():
     pytest.raises(Exception, lambda e: reraise(e), evalue)
     assert isinstance(etraceback, list)
 
+
 def test_base():
     app = BaseApp()
-    while app: app.flush()
+
+    while app:
+        app.flush()
+
     e = Test()
     assert e.future == False
-    x = app.push(e)
+    x = app.fire(e)
     while not x.result:
         app.flush()
     assert e.future == True
     assert x.value == "Hello World!"
 
+
 def test_base_error():
     app = BaseApp()
-    while app: app.flush()
+
+    while app:
+        app.flush()
+
     e = Error()
     assert e.future == False
-    x = app.push(e)
+    x = app.fire(e)
     while not x.errors:
         app.flush()
     assert e.future == True

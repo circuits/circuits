@@ -20,7 +20,7 @@ class App(Component):
     def test(self):
         return x
 
-    def exception(self, etype, evalue, etraceback, handler=None):
+    def error(self, etype, evalue, etraceback, handler=None):
         self.etype = etype
         self.evalue = evalue
         self.etraceback = etraceback
@@ -34,7 +34,7 @@ def test():
     while app:
         app.flush()
 
-    app.push(Test())
+    app.fire(Test())
     while app:
         app.flush()
 
