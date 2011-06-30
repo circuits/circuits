@@ -16,8 +16,8 @@ from collections import deque
 from traceback import format_tb
 from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
+from inspect import getmembers, isfunction
 from threading import current_thread, Thread
-from inspect import getmembers, isfunction, ismethod
 from multiprocessing import current_process, Process
 
 try:
@@ -439,9 +439,10 @@ class Manager(object):
     def getTicks(self):
         ticks = set()
 
-        def is_ticker(f):
+        def is_tick(f):
             return callable(f) and getattr(f, 'tick', False) is True
-        for k,v in getmembers(self, is_ticker):
+
+        for k, v in getmembers(self, is_tick):
             ticks.add(v)
 
         # Kept for backward compatibility
