@@ -449,7 +449,7 @@ class Manager(object):
         if getattr(self, '__tick__', False):
             ticks.add(self.__tick__)
 
-        for c in self.components:
+        for c in self.components.copy():
             ticks.update(c.getTicks())
 
         return ticks
