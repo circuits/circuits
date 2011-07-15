@@ -7,9 +7,6 @@ from circuits.core import handler, BaseComponent, Event
 class Request(Event):
     """Request Event"""
 
-    success = "request_success",
-    failure = "request_failure",
-
 class Response(Event):
     """Response Event"""
 
