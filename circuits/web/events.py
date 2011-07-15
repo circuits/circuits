@@ -20,7 +20,7 @@ class Request(WebEvent):
     args: request, response
     """
 
-    success = True
+    success = False
     failure = True
 
 
@@ -42,3 +42,9 @@ class Stream(WebEvent):
 
     success = True
     failure = True
+
+class GenerateResponse(WebEvent):
+    """GenerateResponse(WebEvent) -> GenerateResponse WebEvent
+    
+    args: request
+    """

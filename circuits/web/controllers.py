@@ -13,8 +13,10 @@ from collections import Callable
 from functools import update_wrapper
 
 from circuits.core import handler, BaseComponent
+from circuits import Event
 
 from . import tools
+from .events import GenerateResponse
 from .wrappers import Response
 from .errors import Forbidden, HTTPError, NotFound, Redirect
 
@@ -24,6 +26,22 @@ def expose(*channels, **config):
         @handler(*channels, **config)
         def wrapper(self, event, *args, **kwargs):
             try:
+                @handler("%s_success" % event.name)
+                def _on_request_success(_self, value):
+                    class RequestSuccess(Event):
+                        pass
+                    self.fire(RequestSuccess(value), self.channel)
+
+                self.addHandler(_on_request_success)
+
+                @handler("%s_failure" % event.name)
+                def _on_request_failure(_self, value):
+                    class RequestFailure(Event):
+                        pass
+                    self.fire(RequestFailure(value), self.channel)
+
+                self.addHandler(_on_request_failure)
+
                 if not hasattr(self, "request"):
                     (self.request, self.response), args = args[:2], args[2:]
                     self.request.args = args
@@ -123,6 +141,9 @@ class BaseController(BaseComponent):
     def expires(self, secs=0, force=False):
         tools.expires(self.request, self.response, secs, force)
 
+    @handler('request_success')
+    def _on_request_success(self, e):
+        self.fire(GenerateResponse(e), "*")
 
 Controller = ExposeMetaClass("Controller", (BaseController,), {})
 

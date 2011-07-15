@@ -163,5 +163,7 @@ class Dispatcher(BaseComponent):
             if isinstance(name, unicode):
                 name = str(name)
 
-            return self.fire(Request.create(name.title(),
-                *req.args, **req.kwargs), channel)
+            e = Request.create(name.title(), *req.args, **req.kwargs)
+            e.success = True
+            e.failure = True
+            return self.fire(e, channel)
