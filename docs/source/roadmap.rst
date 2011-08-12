@@ -13,3 +13,5 @@ circuits - 1.7 (rocket)
   - Deprecates the use of "target"
 - Greatly simplified API
 - Enhanced Timers
+- Docs on readthedocs.org
+- More client examples
