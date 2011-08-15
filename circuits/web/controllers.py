@@ -26,18 +26,6 @@ def expose(*channels, **config):
         @handler(*channels, **config)
         def wrapper(self, event, *args, **kwargs):
             try:
-                @handler("%s_success" % event.name)
-                def _on_request_success(_self, value):
-                    self.fire(RequestSuccess(value), self.channel)
-
-                self.addHandler(_on_request_success)
-
-                @handler("%s_failure" % event.name)
-                def _on_request_failure(_self, value):
-                    self.fire(RequestFailure(value), self.channel)
-
-                self.addHandler(_on_request_failure)
-
                 if not hasattr(self, "request"):
                     (self.request, self.response), args = args[:2], args[2:]
                     self.request.args = args
@@ -76,6 +64,17 @@ class ExposeMetaClass(type):
         for k, v in dct.items():
             if isinstance(v, Callable) \
                     and not (k[0] == "_" or hasattr(v, "handler")):
+
+                @handler("%s_success" % k)
+                def _on_request_success(self, value):
+                    self.fire(RequestSuccess(value), self.channel)
+                setattr(cls, "%s_success" % k, _on_request_success)
+
+                @handler("%s_failure" % k)
+                def _on_request_failure(self, value):
+                    self.fire(RequestFailure(value), self.channel)
+                setattr(cls, "%s_failure" % k, _on_request_failure)
+
                 setattr(cls, k, expose(k)(v))
 
 
