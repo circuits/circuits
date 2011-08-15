@@ -25,6 +25,8 @@ class Root(Controller):
         return self.notfound()
 
 def test_simple(webapp):
+    from circuits import Debugger
+    Debugger().register(webapp)
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"

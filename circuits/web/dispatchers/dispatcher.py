@@ -164,6 +164,4 @@ class Dispatcher(BaseComponent):
                 name = str(name)
 
             e = Request.create(name.title(), *req.args, **req.kwargs)
-            e.success = True
-            e.failure = True
             return self.fire(e, channel)

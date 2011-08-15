@@ -17,6 +17,8 @@ class Root(Controller):
         return "foobar"
 
 def test(webapp):
+    from circuits import Debugger
+    Debugger().register(webapp)
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"

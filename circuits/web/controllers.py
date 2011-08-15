@@ -34,9 +34,11 @@ def expose(*channels, **config):
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
                 if not getattr(f, "event", False):
-                    return f(self, *args, **kwargs)
+                    result = f(self, *args, **kwargs)
                 else:
-                    return f(self, event, *args, **kwargs)
+                    result = f(self, event, *args, **kwargs)
+                self.fire(RequestSuccess(event), self.channel)
+                return result
             finally:
                 if hasattr(self, "request"):
                     del self.request
@@ -44,6 +46,7 @@ def expose(*channels, **config):
                     del self.cookie
                 if hasattr(self, "session"):
                     del self.session
+                self.fire(RequestFailure(event), self.channel)
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
                 getargspec(f)
@@ -64,17 +67,6 @@ class ExposeMetaClass(type):
         for k, v in dct.items():
             if isinstance(v, Callable) \
                     and not (k[0] == "_" or hasattr(v, "handler")):
-
-                @handler("%s_success" % k)
-                def _on_request_success(self, value):
-                    self.fire(RequestSuccess(value), self.channel)
-                setattr(cls, "%s_success" % k, _on_request_success)
-
-                @handler("%s_failure" % k)
-                def _on_request_failure(self, value):
-                    self.fire(RequestFailure(value), self.channel)
-                setattr(cls, "%s_failure" % k, _on_request_failure)
-
                 setattr(cls, k, expose(k)(v))
 
 
@@ -146,7 +138,7 @@ Controller = ExposeMetaClass("Controller", (BaseController,), {})
 def exposeJSON(*channels, **config):
     def decorate(f):
         @handler(*channels, **config)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self, event, *args, **kwargs):
             try:
                 if not hasattr(self, "request"):
                     self.request, self.response = args[:2]
@@ -154,7 +146,11 @@ def exposeJSON(*channels, **config):
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
-                result = f(self, *args, **kwargs)
+                if not getattr(f, "event", False):
+                    result = f(self, *args, **kwargs)
+                else:
+                    result = f(self, event, *args, **kwargs)
+                self.fire(RequestSuccess(event), self.channel)
                 if (isinstance(result, HTTPError)
                         or isinstance(result, Response)):
                     return result
@@ -170,6 +166,7 @@ def exposeJSON(*channels, **config):
                     del self.cookie
                 if hasattr(self, "session"):
                     del self.session
+                self.fire(RequestFailure(event), self.channel)
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
                 getargspec(f)
@@ -189,17 +186,6 @@ class ExposeJSONMetaClass(type):
         for k, v in dct.items():
             if isinstance(v, Callable) \
                     and not (k[0] == "_" or hasattr(v, "handler")):
-
-                @handler("%s_success" % k)
-                def _on_request_success(self, value):
-                    self.fire(RequestSuccess(value), self.channel)
-                setattr(cls, "%s_success" % k, _on_request_success)
-
-                @handler("%s_failure" % k)
-                def _on_request_failure(self, value):
-                    self.fire(RequestFailure(value), self.channel)
-                setattr(cls, "%s_failure" % k, _on_request_failure)
-
                 setattr(cls, k, exposeJSON(k)(v))
 
 
