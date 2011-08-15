@@ -48,3 +48,11 @@ class GenerateResponse(WebEvent):
     
     args: request
     """
+
+
+class RequestSuccess(Event):
+    pass
+
+
+class RequestFailure(Event):
+    pass

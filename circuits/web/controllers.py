@@ -16,7 +16,7 @@ from circuits.core import handler, BaseComponent
 from circuits import Event
 
 from . import tools
-from .events import GenerateResponse
+from .events import GenerateResponse, RequestSuccess, RequestFailure
 from .wrappers import Response
 from .errors import Forbidden, HTTPError, NotFound, Redirect
 
@@ -28,16 +28,12 @@ def expose(*channels, **config):
             try:
                 @handler("%s_success" % event.name)
                 def _on_request_success(_self, value):
-                    class RequestSuccess(Event):
-                        pass
                     self.fire(RequestSuccess(value), self.channel)
 
                 self.addHandler(_on_request_success)
 
                 @handler("%s_failure" % event.name)
                 def _on_request_failure(_self, value):
-                    class RequestFailure(Event):
-                        pass
                     self.fire(RequestFailure(value), self.channel)
 
                 self.addHandler(_on_request_failure)
