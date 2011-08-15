@@ -189,6 +189,17 @@ class ExposeJSONMetaClass(type):
         for k, v in dct.items():
             if isinstance(v, Callable) \
                     and not (k[0] == "_" or hasattr(v, "handler")):
+
+                @handler("%s_success" % k)
+                def _on_request_success(self, value):
+                    self.fire(RequestSuccess(value), self.channel)
+                setattr(cls, "%s_success" % k, _on_request_success)
+
+                @handler("%s_failure" % k)
+                def _on_request_failure(self, value):
+                    self.fire(RequestFailure(value), self.channel)
+                setattr(cls, "%s_failure" % k, _on_request_failure)
+
                 setattr(cls, k, exposeJSON(k)(v))
 
 
