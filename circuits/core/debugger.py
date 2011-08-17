@@ -75,9 +75,11 @@ class Debugger(BaseComponent):
         if self.logger is not None:
             self.logger.error("".join(s))
         else:
-            self.file.write("".join(s))
-            # Bugged on py2
-            #self.file.flush()
+            try:
+                self.file.write("".join(s))
+                self.file.flush()
+            except IOError:
+                pass
 
     @handler(channel="*", priority=101.0)
     def _on_event(self, event, *args, **kwargs):
@@ -109,6 +111,9 @@ class Debugger(BaseComponent):
         if self.logger is not None:
             self.logger.debug(s)
         else:
-            self.file.write(s)
-            self.file.write("\n")
-            self.file.flush()
+            try:
+                self.file.write(s)
+                self.file.write("\n")
+                self.file.flush()
+            except IOError:
+                pass
