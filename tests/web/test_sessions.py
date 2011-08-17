@@ -17,6 +17,8 @@ class Root(Controller):
         return "Hello %s" % name
 
 def test(webapp):
+    from circuits import Debugger
+    Debugger().register(webapp)
     Sessions().register(webapp)
 
     cj = CookieJar()

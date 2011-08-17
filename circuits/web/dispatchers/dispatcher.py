@@ -16,11 +16,12 @@ from circuits.web.errors import HTTPError
 from circuits.web.controllers import BaseController
 from circuits.web.utils import parseQueryString, dictform
 
-from circuits.web.errors import HTTPError
+from circuits.web.errors import HTTPError, NotFound
 from circuits.web.events import Request, Response
 from circuits.web.controllers import BaseController
 from circuits.web.tools import expires, serve_file
 from circuits.web.utils import parseQueryString, dictform
+from ..events import RequestSuccess
 
 class Dispatcher(BaseComponent):
 
@@ -165,3 +166,7 @@ class Dispatcher(BaseComponent):
 
             e = Request.create(name.title(), *req.args, **req.kwargs)
             return self.fire(e, channel)
+        else:
+            # this event will have none in the value thus triggering a 404 in request_success
+            # this seems convoluted to me
+            self.fire(RequestSuccess(event), "web")

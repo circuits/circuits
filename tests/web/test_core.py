@@ -30,7 +30,6 @@ def test_simple(webapp):
     assert s == b"Hello World!"
 
 def test_404(webapp):
-    pytest.skip("XXX: Failing")
     from circuits import Debugger
     Debugger().register(webapp)
     try:

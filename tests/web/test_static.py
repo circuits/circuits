@@ -4,7 +4,6 @@ from .helpers import urlopen, HTTPError
 
 
 import pytest
-pytest.skip("XXX: Failing")
 
 
 class Root(Controller):
@@ -27,6 +26,7 @@ def test_404(webapp):
         assert False
 
 def test_file(webapp):
+    pytest.skip("XXX: Failing")
     url = "%s/static/helloworld.txt" % webapp.server.base
     f = urlopen(url)
     s = f.read().strip()
@@ -42,6 +42,7 @@ def test_file404(webapp):
         assert False
 
 def test_directory(webapp):
+    pytest.skip("XXX: Failing")
     f = urlopen("%s/static/" % webapp.server.base)
     s = f.read()
     assert b"helloworld.txt" in s

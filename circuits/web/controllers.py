@@ -37,8 +37,11 @@ def expose(*channels, **config):
                     result = f(self, *args, **kwargs)
                 else:
                     result = f(self, event, *args, **kwargs)
-                self.fire(RequestSuccess(event), self.channel)
+                self.fire(RequestSuccess(event), "web")
                 return result
+            except Exception as e:
+                self.fire(RequestFailure(event), "web")
+                raise
             finally:
                 if hasattr(self, "request"):
                     del self.request
@@ -46,7 +49,6 @@ def expose(*channels, **config):
                     del self.cookie
                 if hasattr(self, "session"):
                     del self.session
-                self.fire(RequestFailure(event), self.channel)
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
                 getargspec(f)
@@ -128,9 +130,6 @@ class BaseController(BaseComponent):
     def expires(self, secs=0, force=False):
         tools.expires(self.request, self.response, secs, force)
 
-    @handler('request_success')
-    def _on_request_success(self, e):
-        self.fire(GenerateResponse(e), "*")
 
 Controller = ExposeMetaClass("Controller", (BaseController,), {})
 
@@ -150,7 +149,7 @@ def exposeJSON(*channels, **config):
                     result = f(self, *args, **kwargs)
                 else:
                     result = f(self, event, *args, **kwargs)
-                self.fire(RequestSuccess(event), self.channel)
+                self.fire(RequestSuccess(event), "web")
                 if (isinstance(result, HTTPError)
                         or isinstance(result, Response)):
                     return result
@@ -159,6 +158,9 @@ def exposeJSON(*channels, **config):
                             "application/json"
                     )
                     return json.dumps(result)
+            except Exception as e:
+                self.fire(RequestFailure(event), "web")
+                raise
             finally:
                 if hasattr(self, "request"):
                     del self.request
@@ -166,7 +168,6 @@ def exposeJSON(*channels, **config):
                     del self.cookie
                 if hasattr(self, "session"):
                     del self.session
-                self.fire(RequestFailure(event), self.channel)
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
                 getargspec(f)

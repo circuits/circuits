@@ -262,7 +262,7 @@ class HTTP(BaseComponent):
             # This possibly never occurs.
             self.fire(HTTPError(request, response, error=value.value))
 
-    @handler("generate_response")
+    @handler("request_success")
     def _on_request_success(self, e):
         value = e.value.value
         request, response = e.args[:2]

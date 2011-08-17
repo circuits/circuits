@@ -23,7 +23,7 @@ class Root(JSONController):
 
         return {"success": True, "message": "Hello %s" % name}
 
-def test(webapp):
+def test_simple(webapp):
     f = urlopen(webapp.server.base)
     data = f.read()
     data = data.decode("utf-8")
