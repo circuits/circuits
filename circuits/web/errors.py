@@ -166,5 +166,11 @@ class Redirect(HTTPError):
             raise ValueError("The %s status code is unknown." % code)
 
     def __repr__(self):
-        return "<%s %d %s %s>" % (self.__class__.__name__, self.code, self.name,
+        if len(self.channels) > 1:
+            channels = repr(self.channels)
+        elif len(self.channels) == 1:
+            channels = str(self.channels[0])
+        else:
+            channels = ""
+        return "<%s %d[%s.%s] %s>" % (self.__class__.__name__, self.code, channels, self.name,
                 " ".join(self.urls))
