@@ -11,6 +11,8 @@ import json
 from inspect import getargspec
 from collections import Callable
 from functools import update_wrapper
+from sys import exc_info as _exc_info
+from traceback import format_tb
 
 from circuits.core import handler, BaseComponent
 from circuits import Event
@@ -19,6 +21,7 @@ from . import tools
 from .events import GenerateResponse, RequestSuccess, RequestFailure
 from .wrappers import Response
 from .errors import Forbidden, HTTPError, NotFound, Redirect
+from .exceptions import HTTPException
 
 
 def expose(*channels, **config):
@@ -39,7 +42,14 @@ def expose(*channels, **config):
                     result = f(self, event, *args, **kwargs)
                 self.fire(RequestSuccess(event), "web")
                 return result
+            except HTTPException as e:
+                etype, evalue, etraceback = _exc_info()
+                traceback = format_tb(etraceback)
+                error = (etype, evalue, traceback)
+                self.fire(RequestFailure(event), "web")
+                return error
             except Exception as e:
+                print '============> %r' % type(e)
                 self.fire(RequestFailure(event), "web")
                 raise
             finally:

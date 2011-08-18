@@ -319,17 +319,18 @@ class HTTP(BaseComponent):
         if not request.handled:
             request.handled = True
 
-        etype, evalue, traceback = e.args
+        etype, evalue, traceback = e.value.value
 
         if isinstance(evalue, RedirectException):
-            self.fire(RedirectError(request, response,
+            response.body = str(RedirectError(request, response,
                 evalue.urls, evalue.status))
+            self.fire(Response(response))
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
                 self.fire(HTTPError(request, response, evalue.code,
-                    description=evalue.description, error=e.args))
+                    description=evalue.description, error=(etype, evalue, traceback)))
             else:
                 self.fire(HTTPError(request, response, evalue.code,
                     description=evalue.description))
         else:
-            self.fire(HTTPError(request, response, error=e.args))
+            self.fire(HTTPError(request, response, error=(etype, evalue, traceback)))
