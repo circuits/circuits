@@ -21,7 +21,7 @@ class Request(WebEvent):
     """
 
     success = False
-    failure = True
+    failure = False
 
 
 class Response(WebEvent):
