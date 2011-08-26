@@ -25,6 +25,7 @@ class BaseEvent(object):
 
     success = None
     failure = None
+    end = None
 
     @classmethod
     def create(cls, name, *args, **kwargs):
@@ -128,6 +129,13 @@ class Error(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Error, self).__init__(type, value, traceback, handler)
+
+
+class End(Event):
+    """End Event
+
+    This Event is sent just after all handlers for an event have been run
+    """
 
 
 class Success(Event):

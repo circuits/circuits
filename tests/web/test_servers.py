@@ -22,12 +22,12 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-import pytest
-pytest.skip("XXX: Failing")
 
 def test_baseserver():
     server = BaseServer(0)
     BaseRoot().register(server)
+    from circuits import Debugger
+    Debugger().register(server)
     server.start()
 
     try:

@@ -27,7 +27,7 @@ except ImportError:
     GREENLET = False
 
 from .values import Value
-from .events import Success, Failure
+from .events import Success, Failure, End
 from .events import Event, Error, Started, Stopped, Signal
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
@@ -406,6 +406,9 @@ class Manager(object):
         if error is None and event.success:
             self.fire(Success.create("%sSuccess" %
                 event.__class__.__name__, event))
+
+        if event.end:
+            self.fire(End.create("%sEnd" % event.__class__.__name__, event))
 
         if GREENLET:
             for task in self._tasks.copy():
