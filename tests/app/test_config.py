@@ -20,8 +20,6 @@ def pytest_funcarg__config(request):
     path.write(CONFIG)
 
     config = Config(str(path))
-    from circuits import Debugger
-    Debugger().register(config)
     config.start()
 
     config.push(Load())
