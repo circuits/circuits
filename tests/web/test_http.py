@@ -29,7 +29,7 @@ class Root(Controller):
 def test(webapp):
     transport = TCPClient()
     client = Client()
-    client += transport + Debugger()
+    client += transport
     client.start()
 
     host, port, resource, secure = parse_url(webapp.server.base)
