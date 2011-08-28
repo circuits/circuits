@@ -22,7 +22,7 @@ def pytest_funcarg__config(request):
     config = Config(str(path))
     config.start()
 
-    config.push(Load())
+    config.fire(Load())
 
     assert pytest.wait_event(config, "load_success")
 
@@ -77,11 +77,9 @@ def test_load(tmpdir):
     path.write(CONFIG)
 
     config = Config(str(path))
-    from circuits import Debugger
-    Debugger().register(config)
     config.start()
 
-    config.push(Load())
+    config.fire(Load())
 
     assert pytest.wait_event(config, "load_success")
 
@@ -97,14 +95,12 @@ def test_save(tmpdir):
     path = tmpdir.ensure("test.ini")
 
     config = Config(str(path))
-    from circuits import Debugger
-    Debugger().register(config)
     config.start()
 
     config.add_section("test")
     config.set("test", "foo", "bar")
 
-    config.push(Save())
+    config.fire(Save())
 
     assert pytest.wait_event(config, "save_success")
 
