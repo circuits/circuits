@@ -82,7 +82,7 @@ class BaseComponent(Manager):
             handlers = [v for k, v in getmembers(self, p)]
             for handler in handlers:
                 target = handler.target or getattr(self, "channel", "*")
-                self.add(handler, target=target)
+                self.addHandler(handler, target=target)
         else:
             for handler in chain(self._globals, self._handlers):
                 kwargs = {}
@@ -94,7 +94,7 @@ class BaseComponent(Manager):
                     del kwargs["channels"]
                 else:
                     channels = ()
-                manager.add(handler, *channels, **kwargs)
+                manager.addHandler(handler, *channels, **kwargs)
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():

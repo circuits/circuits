@@ -305,7 +305,7 @@ class Manager(object):
            Use :py:meth:`addHandler` instead.
         """
 
-        warn(DeprecationWarning("Use .addHandler(...) instead"))
+        warn(DeprecationWarning("Use .addHandler(...) instead"), DeprecationWarning, 2)
 
         return self.addHandler(*args, **kwargs)
 
@@ -421,7 +421,7 @@ class Manager(object):
            Use :py:meth:`fire` instead.
         """
 
-        warn(DeprecationWarning("Use .fire(...) instead"))
+        warn(DeprecationWarning("Use .fire(...) instead"), DeprecationWarning, 2)
 
         return self.fire(*args, **kwargs)
 
