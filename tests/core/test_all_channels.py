@@ -32,7 +32,7 @@ def test():
     while m:
         m.flush()
 
-    m.push(Event(), "*")
+    m.fire(Event(), "*")
     m.flush()
 
     assert not a.flag

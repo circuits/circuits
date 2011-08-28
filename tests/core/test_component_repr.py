@@ -30,7 +30,7 @@ def test():
     app.flush()
     assert repr(app) == "<App/* %s (queued=0, channels=2, handlers=2) [S]>" % id
 
-    app.push(Event(), "test")
+    app.fire(Event(), "test")
     assert repr(app) == "<App/* %s (queued=1, channels=2, handlers=2) [S]>" % id
 
     app.flush()

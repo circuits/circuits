@@ -102,12 +102,12 @@ class LP(BaseComponent):
             data, = args
             lines, self.buffer = self.splitter(data, self.buffer)
             for line in lines:
-                self.push(Line(line.decode(self.encoding, "replace")))
+                self.fire(Line(line.decode(self.encoding, "replace")))
         else:
             # Server read
             sock, data = args
             lines, buffer = self.splitter(data, self.getBuffer(sock))
             self.updateBuffer(sock, buffer)
             for line in lines:
-                self.push(Line(sock,
+                self.fire(Line(sock,
                     line.decode(self.encoding, "replace")))

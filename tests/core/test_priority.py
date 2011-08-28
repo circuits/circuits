@@ -26,7 +26,7 @@ app.register(m)
 while m: m.flush()
 
 def test():
-    v = m.push(Test())
+    v = m.fire(Test())
     while m: m.flush()
     x = list(v)
     assert x == [3, 2, 0]

@@ -116,7 +116,7 @@ class Notify(Component):
             if mask & k:
                 e = v(name, path, pathname, dir)
                 c = e.name.lower()
-                self.push(e, c)
+                self.fire(e, c)
 
     def add_path(self, path, mask=None, recursive=False):
         mask = mask or MASK

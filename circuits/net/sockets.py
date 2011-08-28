@@ -279,26 +279,26 @@ class Client(Component):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
-                self.push(Ready(self), "ready", self.channel)
+                self.fire(Ready(self), "ready", self.channel)
             else:
                 component = findcmp(self.root, BasePoller, subclass=False)
                 if component is not None:
                     self._poller = component
-                    self.push(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self), "ready", self.channel)
                 else:
                     self._poller = Poller().register(self)
-                    self.push(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self), "ready", self.channel)
 
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
         if self._poller is None:
             self._poller = Poller().register(self)
-            self.push(Ready(self), "ready", self.channel)
+            self.fire(Ready(self), "ready", self.channel)
             return True
 
     @handler("stopped", target="*")
     def _on_stopped(self, component):
-        self.push(Close(), "close", self.channel)
+        self.fire(Close(), "close", self.channel)
 
     def _close(self):
         if not self._connected:
@@ -316,7 +316,7 @@ class Client(Component):
         except SocketError:
             pass
 
-        self.push(Disconnected(), "disconnected", self.channel)
+        self.fire(Disconnected(), "disconnected", self.channel)
 
     def close(self):
         if not self._buffer:
@@ -332,14 +332,14 @@ class Client(Component):
                 data = self._sock.recv(self._bufsize)
 
             if data:
-                self.push(Read(data), "read", self.channel)
+                self.fire(Read(data), "read", self.channel)
             else:
                 self.close()
         except SocketError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.push(Error(e), "error", self.channel)
+                self.fire(Error(e), "error", self.channel)
                 self._close()
 
     def _write(self, data):
@@ -355,7 +355,7 @@ class Client(Component):
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
-                self.push(Error(e), "error", self.channel)
+                self.fire(Error(e), "error", self.channel)
 
     def write(self, data):
         if not self._poller.isWriting(self._sock):
@@ -417,7 +417,7 @@ class TCPClient(Client):
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.push(Error(r), "error", self.channel)
+                self.fire(Error(r), "error", self.channel)
                 return
 
         self._connected = True
@@ -427,7 +427,7 @@ class TCPClient(Client):
         if self.secure:
             self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
-        self.push(Connected(host, port), "connected", self.channel)
+        self.fire(Connected(host, port), "connected", self.channel)
 
 
 class UNIXClient(Client):
@@ -468,7 +468,7 @@ class UNIXClient(Client):
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.push(Error(r), "error", self.channel)
+                self.fire(Error(r), "error", self.channel)
                 return
 
         self._connected = True
@@ -478,7 +478,7 @@ class UNIXClient(Client):
         if self.secure:
             self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
-        self.push(Connected(gethostname(), path), "connected", self.channel)
+        self.fire(Connected(gethostname(), path), "connected", self.channel)
 
 
 class Server(Component):
@@ -549,29 +549,29 @@ class Server(Component):
             if isinstance(component, BasePoller):
                 self._poller = component
                 self._poller.addReader(self, self._sock)
-                self.push(Ready(self), "ready", self.channel)
+                self.fire(Ready(self), "ready", self.channel)
             else:
                 component = findcmp(self.root, BasePoller, subclass=False)
                 if component is not None:
                     self._poller = component
                     self._poller.addReader(self, self._sock)
-                    self.push(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self), "ready", self.channel)
                 else:
                     self._poller = Poller().register(self)
                     self._poller.addReader(self, self._sock)
-                    self.push(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self), "ready", self.channel)
 
     @handler("started", filter=True, target="*")
     def _on_started(self, component, mode):
         if self._poller is None:
             self._poller = Poller().register(self)
             self._poller.addReader(self, self._sock)
-            self.push(Ready(self), "ready", self.channel)
+            self.fire(Ready(self), "ready", self.channel)
             return True
 
     @handler("stopped", target="*")
     def _on_stopped(self, component):
-        self.push(Close(), "close", self.channel)
+        self.fire(Close(), "close", self.channel)
 
     def _close(self, sock):
         if sock is None:
@@ -595,7 +595,7 @@ class Server(Component):
         except SocketError:
             pass
 
-        self.push(Disconnect(sock), "disconnect", self.channel)
+        self.fire(Disconnect(sock), "disconnect", self.channel)
 
     def close(self, sock=None):
         closed = sock is None
@@ -613,7 +613,7 @@ class Server(Component):
                 self._closeq.append(sock)
 
         if closed:
-            self.push(Closed(), "closed", self.channel)
+            self.fire(Closed(), "closed", self.channel)
 
     def _read(self, sock):
         if sock not in self._clients:
@@ -622,14 +622,14 @@ class Server(Component):
         try:
             data = sock.recv(self._bufsize)
             if data:
-                self.push(Read(sock, data), "read", self.channel)
+                self.fire(Read(sock, data), "read", self.channel)
             else:
                 self.close(sock)
         except SocketError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.push(Error(sock, e), "error", self.channel)
+                self.fire(Error(sock, e), "error", self.channel)
                 self._close(sock)
 
     def _write(self, sock, data):
@@ -642,7 +642,7 @@ class Server(Component):
                 self._buffers[sock].appendleft(data[nbytes:])
         except SocketError as e:
             if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
-                self.push(Error(sock, e), "error", self.channel)
+                self.fire(Error(sock, e), "error", self.channel)
                 self._close(sock)
             else:
                 self._buffers[sock].appendleft(data)
@@ -700,7 +700,7 @@ class Server(Component):
         newsock.setblocking(False)
         self._poller.addReader(self, newsock)
         self._clients.append(newsock)
-        self.push(Connect(newsock, *host), "connect", self.channel)
+        self.fire(Connect(newsock, *host), "connect", self.channel)
 
     @handler("_disconnect", filter=True)
     def _on_disconnect(self, sock):
@@ -788,11 +788,11 @@ class UDPServer(Server):
         except SocketError:
             pass
 
-        self.push(Disconnect(sock), "disconnect", self.channel)
+        self.fire(Disconnect(sock), "disconnect", self.channel)
 
     @handler("close", override=True)
     def close(self):
-        self.push(Closed(), "closed", self.channel)
+        self.fire(Closed(), "closed", self.channel)
 
         if self._buffers[self._sock] and self._sock not in self._closeq:
             self._closeq.append(self._sock)
@@ -803,11 +803,11 @@ class UDPServer(Server):
         try:
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
-                self.push(Read(address, data), "read", self.channel)
+                self.fire(Read(address, data), "read", self.channel)
         except SocketError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
-            self.push(Error(self._sock, e), "error", self.channel)
+            self.fire(Error(self._sock, e), "error", self.channel)
             self._close(self._sock)
 
     def _write(self, address, data):
@@ -819,7 +819,7 @@ class UDPServer(Server):
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:
-                self.push(Error(self._sock, e), "error", self.channel)
+                self.fire(Error(self._sock, e), "error", self.channel)
 
     @handler("write", override=True)
     def write(self, address, data):

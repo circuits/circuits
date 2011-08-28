@@ -28,7 +28,7 @@ def test_write(tmpdir):
 
     app = App(filename, "w")
     app.start()
-    app.push(Write(b"Hello World!"))
+    app.fire(Write(b"Hello World!"))
     sleep(1)
     app.stop()
 

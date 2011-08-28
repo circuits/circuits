@@ -87,14 +87,14 @@ class WebSockets(BaseComponent):
     @handler("write", target=WebSocketEvent._target)
     def _on_write(self, sock, data):
         payload = b'\x00' + data.encode("utf-8") + b'\xff'
-        self.push(Write(sock, payload))
+        self.fire(Write(sock, payload))
 
     @handler("value_changed", target=WebSocketEvent._target)
     def _on_value_changed(self, value):
         sock, message = value.event.args
         result, data = value.result, value.value
         if result and isinstance(data, basestring):
-                self.push(Write(sock, data),
+                self.fire(Write(sock, data),
                         target=WebSocketEvent._target)
 
     @handler("read", filter=True)
@@ -103,7 +103,7 @@ class WebSockets(BaseComponent):
             self._buffers[sock] += data
             messages = self._parse_messages(sock)
             for message in messages:
-                value = self.push(Message(sock, message))
+                value = self.fire(Message(sock, message))
                 value.onSet = "value_changed", WebSocketEvent._target
             return True
 

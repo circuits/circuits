@@ -89,7 +89,7 @@ class Application(BaseComponent):
 
     def __call__(self, environ, start_response, exc_info=None):
         self.request, self.response = self.getRequestResponse(environ)
-        self.push(Request(self.request, self.response))
+        self.fire(Request(self.request, self.response))
 
         self._finished = False
         while not self._finished:

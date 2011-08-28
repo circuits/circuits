@@ -57,7 +57,7 @@ class Serial(Component):
 
         self._read.append(self._fd)
 
-        self.push(Opened(self.port))
+        self.fire(Opened(self.port))
 
     def __tick__(self):
         r, w, e = select.select(self._read, self._write, [], self._timeout)
@@ -72,12 +72,12 @@ class Serial(Component):
                     if not self._buffer and self._fd in self._write:
                         self._write.remove(self._fd)
             except OSError as error:
-                self.push(Error(error))
+                self.fire(Error(error))
 
         if r:
             data = os.read(self._fd, self._bufsize)
             if data:
-                self.push(Read(data))
+                self.fire(Read(data))
 
     def write(self, data):
         if self._fd not in self._write:
@@ -89,4 +89,4 @@ class Serial(Component):
         self._read = []
         self._write = []
         self._serial.close()
-        self.push(Closed(self.port))
+        self.fire(Closed(self.port))
