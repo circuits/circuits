@@ -112,7 +112,7 @@ def test_tcp_reconnect(Poller):
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.push(Close())
+        server.fire(Close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
@@ -182,7 +182,7 @@ def test_tcp_bind(Poller):
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.push(Close())
+        server.fire(Close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
