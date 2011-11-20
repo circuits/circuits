@@ -3,8 +3,7 @@
 # stdlib
 import ssl
 
-from circuits import Event, Component, Debugger
-from circuits.net.sockets import TCPClient
+from circuits import Debugger
 from circuits.web import Server, Controller
 
 class Root(Controller):

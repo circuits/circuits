@@ -22,7 +22,6 @@ This example makes use of:
 
 import os
 import optparse
-from socket import gethostname
 
 from circuits.io import stdin
 from circuits import handler, Component
@@ -89,11 +88,9 @@ class Telnet(Component):
 
     def error(self, *args):
         if len(args) == 3:
-            type, value, traceback = args
+            value = args[1]
         else:
             value = args[0]
-            type = type(value)
-            traceback = None
 
         print "ERROR: %s" % value
 

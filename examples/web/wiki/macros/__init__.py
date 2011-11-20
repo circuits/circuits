@@ -47,7 +47,7 @@ def loadMacros():
             name = name.replace("_", "-")
             try:
                 macros[name] = function
-            except Exception, e:
+            except Exception:
                 continue
 
     return macros
