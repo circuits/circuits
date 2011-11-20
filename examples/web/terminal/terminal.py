@@ -6,9 +6,9 @@ import signal
 from StringIO import StringIO
 from subprocess import Popen, PIPE
 
-from circuits.io import File
-from circuits.tools import kill
+from circuits.io import File, Write
 from circuits.web.events import Stream
+from circuits.tools import inspect, kill
 from circuits import handler, Event, Component
 from circuits.web import Server, Controller, Logger, Static, Sessions
 

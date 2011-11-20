@@ -5,7 +5,6 @@
 against /etc/passwd and /etc/shadow before letting them into the web site."""
 
 import os, re
-from commands import getstatusoutput
 from circuits import handler, Component
 from circuits.web import _httpauth, Server, Controller
 from circuits.web.errors import HTTPError, Unauthorized
