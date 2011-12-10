@@ -288,17 +288,6 @@ class Manager(object):
 
     fire = fireEvent
 
-    def push(self, *args, **kwargs):
-        """Deprecated in 1.6
-
-        .. deprecated:: 1.6
-           Use :py:meth:`fire` instead.
-        """
-
-        warn(DeprecationWarning("Use .fire(...) instead"))
-
-        return self.fire(*args, **kwargs)
-
     def registerTask(self, g):
         self._tasks.add(g)
 
