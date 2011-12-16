@@ -60,19 +60,19 @@ def test_unix(tmpdir, Poller):
         assert pytest.wait_for(server, "ready")
         assert pytest.wait_for(client, "ready")
 
-        client.push(Connect(filename))
+        client.fire(Connect(filename))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.push(Write(b"foo"))
+        client.fire(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.push(Close())
+        client.fire(Close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.push(Close())
+        server.fire(Close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()

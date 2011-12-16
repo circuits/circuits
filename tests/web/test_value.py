@@ -17,7 +17,7 @@ class Test(Component):
 class Root(Controller):
 
     def index(self):
-        return self.push(Hello())
+        return self.fire(Hello())
 
 def test(webapp):
     Test().register(webapp)

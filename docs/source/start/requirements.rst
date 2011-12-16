@@ -3,7 +3,7 @@
 Requirements and Dependencies
 =============================
 
-circuits has no **requird** dependencies beyond the `Python Standard Library`_.
+circuits has no **required** dependencies beyond the `Python Standard Library`_.
 (*with the exception of Python 2.5 installations*).
 
 Python 2.5
@@ -18,7 +18,7 @@ Python 2.5
 Other Optional Dependencies
 ---------------------------
 
-These depdencies are not strictly requiree and only add additional
+These dependencies are not strictly required and only add additional
 features such as the option for a routes dispatcher for circuits.web
 and rendering of component graphs for your application.
 

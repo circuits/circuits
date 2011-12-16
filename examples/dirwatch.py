@@ -3,8 +3,8 @@
 import sys
 
 from circuits import Debugger
-from circuits.drivers._inotify import INotifyDriver
+from circuits.io import Notify
 
-driver = INotifyDriver() + Debugger()
-driver.add(sys.argv[1])
+driver = Notify() + Debugger()
+driver.add_path(sys.argv[1])
 driver.run()

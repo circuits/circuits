@@ -18,10 +18,17 @@ try:
 except ImportError:
     raise Exception("No pyinotify support available. Is pyinotify installed?")
 
-from circuits.core import Event, BaseComponent
+from circuits.core import Event, Component
 
 MASK = ALL_EVENTS
 
+class AddPath(Event):
+    """Add path to watch"""
+    channel = 'add_path'
+
+class RemovePath(Event):
+    """Remove path from watch"""
+    channel = 'remove_path'
 
 class Moved(Event):
     """Moved Event"""
@@ -72,7 +79,7 @@ EVENT_MAP = {
 }
 
 
-class Notify(BaseComponent):
+class Notify(Component):
 
     channel = "notify"
 
@@ -109,13 +116,13 @@ class Notify(BaseComponent):
             if mask & k:
                 e = v(name, path, pathname, dir)
                 c = e.name.lower()
-                self.push(e, c)
+                self.fire(e, c)
 
-    def add(self, path, mask=None, recursive=False):
+    def add_path(self, path, mask=None, recursive=False):
         mask = mask or MASK
         self._wm.add_watch(path, mask, rec=recursive)
 
-    def remove(self, path, recursive=False):
+    def remove_path(self, path, recursive=False):
         wd = self._wm.get_wd(path)
         if wd:
             self._wm.rm_watch(wd, rec=recursive)

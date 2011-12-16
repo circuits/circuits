@@ -4,7 +4,7 @@
 
 """Components
 
-This module definse the BaseComponent and the subclassed Component
+This module defines the BaseComponent and the subclass Component
 """
 
 from itertools import chain
@@ -13,7 +13,7 @@ from inspect import getmembers
 
 from .utils import findroot
 from .manager import Manager
-from .handlers import HandlerMetaClass
+from .handlers import HandlerMetaClass, handler
 from .events import Registered, Unregistered
 import collections
 
@@ -82,7 +82,7 @@ class BaseComponent(Manager):
             handlers = [v for k, v in getmembers(self, p)]
             for handler in handlers:
                 target = handler.target or getattr(self, "channel", "*")
-                self.add(handler, target=target)
+                self.addHandler(handler, target=target)
         else:
             for handler in chain(self._globals, self._handlers):
                 kwargs = {}
@@ -94,11 +94,11 @@ class BaseComponent(Manager):
                     del kwargs["channels"]
                 else:
                     channels = ()
-                manager.add(handler, *channels, **kwargs)
+                manager.addHandler(handler, *channels, **kwargs)
 
     def _unregisterHandlers(self, manager):
         for handler in self._handlers.copy():
-            manager.remove(handler)
+            manager.removeHandler(handler)
 
     def register(self, manager):
         """Register all Event Handlers with the given Manager
@@ -107,9 +107,9 @@ class BaseComponent(Manager):
         given Manager. By default, every Component (Base Component) is
         registered with itself.
         
-        Iif the Component or Manager being registered
+        If the Component or Manager being registered
         with is not the current Component, then any Hidden Components
-        in registered to this Component will also be regsitered with the
+        in registered to this Component will also be registered with the
         given Manager. A Registered Event will also be sent.
         """
 
@@ -140,6 +140,11 @@ class BaseComponent(Manager):
 
         return self
 
+    @handler('unregister')
+    def on_unregister(self, component=None):
+        if component == self or component == None:
+            self.unregister()
+
     def unregister(self):
         """Unregister all registered Event Handlers
         
@@ -148,7 +153,6 @@ class BaseComponent(Manager):
 
         @note: It's possible to unregister a Component from itself!
         """
-
         def _unregister(c, m, r):
             c._unregisterHandlers(m)
             c.root = self

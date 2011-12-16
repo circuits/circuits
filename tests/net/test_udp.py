@@ -7,6 +7,7 @@ import pytest
 from circuits import Manager
 from circuits.tools import kill
 from circuits.core.pollers import Select
+from circuits.core.events import Unregister
 from circuits.net.sockets import Close, Write
 from circuits.net.sockets import UDPServer, UDPClient
 
@@ -54,33 +55,34 @@ def test_udp(Poller):
         assert pytest.wait_for(server, "ready")
         assert pytest.wait_for(client, "ready")
 
-        client.push(Write((server.host, server.port), b"foo"))
+        client.fire(Write((server.host, server.port), b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.push(Close())
+        client.fire(Close())
         assert pytest.wait_for(client, "closed")
 
-        server.push(Close())
+        server.fire(Close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
 
 def test_udp_close(Poller):
-    from circuits import Debugger
-    m = Manager() + Poller() + Debugger()
-    server = Server() + UDPServer(2345)
+    m = Manager() + Poller()
+    server = Server() + UDPServer(0)
     server.register(m)
     m.start()
 
     try:
         assert pytest.wait_for(server, "ready")
 
-        server.push(Close())
+        host, port = server.host, server.port
+
+        server.fire(Close())
         assert pytest.wait_for(server, "disconnected")
 
-        kill(server) # FIXME: This fails :/
+        server.fire(Unregister(server))
 
-        server = Server() + UDPServer(2345)
+        server = Server() + UDPServer((host, port))
         server.register(m)
 
         assert pytest.wait_for(server, "ready")

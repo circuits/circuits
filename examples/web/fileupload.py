@@ -44,7 +44,6 @@ class Root(Controller):
         if file is None:
             return UPLOAD_FORM
         else:
-            filename = file.filename
             return UPLOADED_FILE % (file.filename, desc, file.value)
 
 (Server(8000) + Debugger() + Root()).run()

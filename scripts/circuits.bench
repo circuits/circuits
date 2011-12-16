@@ -144,20 +144,20 @@ class Sender(Base):
     concurrency = 1
 
     def received(self, message=""):
-        self.push(Hello("hello"))
+        self.fire(Hello("hello"))
 
 class Receiver(Base):
 
     def helo(self, address, port):
-        self.push(Hello("hello"))
+        self.fire(Hello("hello"))
 
     def hello(self, message=""):
-        self.push(Received(message))
+        self.fire(Received(message))
 
 class SpeedTest(Base):
 
     def hello(self, message):
-        self.push(Hello(message))
+        self.fire(Hello(message))
 
 class LatencyTest(Base):
 
@@ -166,18 +166,18 @@ class LatencyTest(Base):
     def received(self, message=""):
         print("Latency: %0.3f us" % ((time.time() - self.t) * 1e6))
         time.sleep(1)
-        self.push(Hello("hello"))
+        self.fire(Hello("hello"))
 
     def hello(self, message=""):
         self.t = time.time()
-        self.push(Received(message))
+        self.fire(Received(message))
     
 class State(Base):
 
     done = False
 
     def stop(self):
-        self.push(Term())
+        self.fire(Term())
 
     def term(self):
         self.done = True

@@ -25,16 +25,16 @@ def test():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
     app = App()
-    assert repr(app) == "<App/* %s (queued=0, channels=1, handlers=1) [S]>" % id
+    assert repr(app) == "<App/* %s (queued=0, channels=2, handlers=2) [S]>" % id
 
     app.flush()
-    assert repr(app) == "<App/* %s (queued=0, channels=1, handlers=1) [S]>" % id
+    assert repr(app) == "<App/* %s (queued=0, channels=2, handlers=2) [S]>" % id
 
-    app.push(Event(), "test")
-    assert repr(app) == "<App/* %s (queued=1, channels=1, handlers=1) [S]>" % id
+    app.fire(Event(), "test")
+    assert repr(app) == "<App/* %s (queued=1, channels=2, handlers=2) [S]>" % id
 
     app.flush()
-    assert repr(app) == "<App/* %s (queued=0, channels=1, handlers=1) [S]>" % id
+    assert repr(app) == "<App/* %s (queued=0, channels=2, handlers=2) [S]>" % id
 
     app.unregister()
     assert repr(app) == "<App/* %s (queued=1, channels=0, handlers=0) [S]>" % id

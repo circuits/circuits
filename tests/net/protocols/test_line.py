@@ -35,7 +35,7 @@ def test():
     while app:
         app.flush()
 
-    app.push(Read(b"1\n2\r\n3\n4"))
+    app.fire(Read(b"1\n2\r\n3\n4"))
 
     while app:
         app.flush()
@@ -54,8 +54,8 @@ def test_server():
     while app:
         app.flush()
 
-    app.push(Read(1, b"1\n2\r\n3\n4"))
-    app.push(Read(2, b"1\n2\r\n3\n4"))
+    app.fire(Read(1, b"1\n2\r\n3\n4"))
+    app.fire(Read(2, b"1\n2\r\n3\n4"))
 
     while app:
         app.flush()

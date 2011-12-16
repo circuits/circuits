@@ -45,5 +45,4 @@ class MultiPartForm(dict):
         flattened = list(itertools.chain(*parts))
         flattened.append("--%s--" % self.boundary)
         flattened.append("")
-        print(repr(flattened))
         return "\r\n".join(flattened)

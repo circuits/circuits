@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from circuits.io import File
-from circuits import Component, Debugger
+from circuits import Component
 
 import sys
 import tty

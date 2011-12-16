@@ -11,6 +11,7 @@ tools are installed as executables with a prefix of "circuits."
 from hashlib import md5
 from warnings import warn
 
+from circuits.core.events import Unregister
 
 def tryimport(modules, message=None):
     if isinstance(modules, str):

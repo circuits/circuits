@@ -4,7 +4,7 @@
 
 """
 Debugger component used to debug each event in a system by printing
-each event to sys.stderr or to a Logger Component instnace.
+each event to sys.stderr or to a Logger Component instance.
 """
 
 import os
@@ -74,9 +74,11 @@ class Debugger(BaseComponent):
         if self.logger is not None:
             self.logger.error("".join(s))
         else:
-            self.file.write("".join(s))
-            # Bugged on py2
-            #self.file.flush()
+            try:
+                self.file.write("".join(s))
+                self.file.flush()
+            except IOError:
+                pass
 
     @handler(priority=100.0)
     def _on_event(self, event, *args, **kwargs):
@@ -102,6 +104,9 @@ class Debugger(BaseComponent):
             if self.logger is not None:
                 self.logger.debug(s)
             else:
-                self.file.write(s)
-                self.file.write("\n")
-                self.file.flush()
+                try:
+                    self.file.write(s)
+                    self.file.write("\n")
+                    self.file.flush()
+                except IOError:
+                    pass

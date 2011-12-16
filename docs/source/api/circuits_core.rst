@@ -1,5 +1,5 @@
-:mod:`circuits.core` -- Core
-============================
+:mod:`circuits.core` -- Core Functionality
+==========================================
 
 .. automodule :: circuits.core
 

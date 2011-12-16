@@ -27,7 +27,7 @@ class Server(Component):
     def connect(self, sock, *args):
         self.connected = True
         self.client = args
-        self.push(Write(sock, b"Ready"))
+        self.fire(Write(sock, b"Ready"))
 
     def disconnect(self, sock):
         self.client = None

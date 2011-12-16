@@ -46,4 +46,4 @@ class Pool(BaseComponent):
         if not assigned:
             worker = choice(self._workers)
             assigned = worker.channel
-            return worker.push(Task(f, *args, **kwargs), target=worker)
+            return worker.fire(Task(f, *args, **kwargs), target=worker)

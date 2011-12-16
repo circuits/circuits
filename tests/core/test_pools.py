@@ -22,7 +22,7 @@ def test():
     p = Pool()
     p.start()
 
-    x = p.push(Task(f))
+    x = p.fire(Task(f))
 
     assert pytest.wait_for(x, "result")
 

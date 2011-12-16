@@ -305,7 +305,7 @@ class Manager(object):
            Use :py:meth:`addHandler` instead.
         """
 
-        warn(DeprecationWarning("Use .addHandler(...) instead"))
+        warn(DeprecationWarning("Use .addHandler(...) instead"), DeprecationWarning, 2)
 
         return self.addHandler(*args, **kwargs)
 
@@ -341,12 +341,12 @@ class Manager(object):
 
             (target, channel) = channel
 
-            if target in self._tmap and handler in self._tmap:
+            if target in self._tmap and handler in self._tmap[target]:
                 self._tmap[target].remove(handler)
                 if not self._tmap[target]:
                     del self._tmap[target]
 
-            if channel in self._cmap and handler in self._cmap:
+            if channel in self._cmap and handler in self._cmap[channel]:
                 self._cmap[channel].remove(handler)
                 if not self._cmap[channel]:
                     del self._cmap[channel]
@@ -421,7 +421,7 @@ class Manager(object):
            Use :py:meth:`fire` instead.
         """
 
-        warn(DeprecationWarning("Use .fire(...) instead"))
+        warn(DeprecationWarning("Use .fire(...) instead"), DeprecationWarning, 2)
 
         return self.fire(*args, **kwargs)
 
@@ -461,7 +461,7 @@ class Manager(object):
     def callEvent(self, event, channel=None, target=None):
         self.fire(event, channel, target)
         e = self.waitEvent(event)
-        return e.value.value
+        return e.value
 
     call = callEvent
 
@@ -491,11 +491,13 @@ class Manager(object):
         retval = None
         handler = None
 
-        for handler in self._getHandlers(channel):
-            error = None
+        handlers = self._getHandlers(channel)
+        handlerattrs = self._handlerattrs.copy()
 
-            attrs = self._handlerattrs[handler]
+        for handler in handlers[:]:
+            error = None
             event.handler = handler
+            attrs = handlerattrs[handler]
 
             try:
                 if attrs["event"]:
@@ -582,18 +584,19 @@ class Manager(object):
         self.tick()
 
     def tick(self):
-        if self._ticks:
+        for f in self._ticks.copy():
             try:
-                [f() for f in self._ticks.copy()]
+                f()
             except (KeyboardInterrupt, SystemExit):
                 raise
             except:
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
-        else:
-            sleep(TIMEOUT)  # Nothing to do - Let's not tie up the CUP
 
-        self._flush()
+        if self:
+            self.flush()
+        else:
+            sleep(TIMEOUT)
 
     def run(self, *args, **kwargs):
         log = kwargs.get("log", True)
