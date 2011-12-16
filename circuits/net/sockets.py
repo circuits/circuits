@@ -20,7 +20,12 @@ from socket import gaierror, error as SocketError
 from socket import gethostname, gethostbyname, socket
 
 from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
-from socket import AF_INET, AF_UNIX, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
+from socket import AF_INET, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
+try:
+    from socket import AF_UNIX
+except:
+    # not running on Unix
+    pass
 
 try:
     from ssl import wrap_socket as ssl_socket
