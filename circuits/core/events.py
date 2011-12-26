@@ -141,8 +141,8 @@ class End(Event):
 class Success(Event):
     """Success Event
 
-    This Event is sent when an Event Handler's execution has completed
-    successfully.
+    This Event is sent when all handlers (for a particular event) have been
+    executed successfully.
     """
 
 
