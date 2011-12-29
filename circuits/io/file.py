@@ -57,7 +57,7 @@ class File(Component):
         if any([m for m in "r+" if m in self._fd.mode]):
             self._read.append(self._fd)
 
-        self.push(Opened(self.filename), "opened")
+        self.fire(Opened(self.filename))
 
     @property
     def closed(self):
@@ -93,9 +93,9 @@ class File(Component):
                         data = None
 
                 if data:
-                    self.push(Read(data), "read")
+                    self.fire(Read(data), "read")
                 elif self.autoclose:
-                    self.push(EOF())
+                    self.fire(EOF())
                     self.close()
 
     def write(self, data):
