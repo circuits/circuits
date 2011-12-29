@@ -26,8 +26,6 @@ def main():
 
     pidfile = os.path.abspath(sys.argv[1])
     app = App(pidfile)
-    from circuits import Debugger
-    Debugger().register(app)
     app.run()
 
     if HAS_COVERAGE:

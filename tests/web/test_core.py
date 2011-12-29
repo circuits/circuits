@@ -30,8 +30,6 @@ def test_simple(webapp):
     assert s == b"Hello World!"
 
 def test_404(webapp):
-    from circuits import Debugger
-    Debugger().register(webapp)
     try:
         urlopen("%s/foo" % webapp.server.base)
     except HTTPError as e:

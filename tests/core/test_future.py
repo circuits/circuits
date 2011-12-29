@@ -53,8 +53,7 @@ def reraise(e):
 
 
 def test():
-    from circuits import Debugger
-    app = App() + Debugger()
+    app = App()
     while app:
         app.flush()
 
