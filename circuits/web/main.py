@@ -23,19 +23,19 @@ try:
 except ImportError:
     psyco = None
 
-from circuits.net.pollers import Select
+from circuits.core.pollers import Select
 from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
 from circuits.web import BaseServer, Server, Controller, Static, wsgi
 
 try:
-    from circuits.net.pollers import Poll
+    from circuits.core.pollers import Poll
 except ImportError:
     Poll = None
 
 try:
-    from circuits.net.pollers import EPoll
+    from circuits.core.pollers import EPoll
 except ImportError:
     EPoll = None
 
