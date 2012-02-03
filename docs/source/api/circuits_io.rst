@@ -1,31 +1,10 @@
-:mod:`circuits.io` -- Input/Output Components
-=============================================
+:mod:`circuits.io` -- I/O Support
+=================================
 
-.. module :: circuits.io
+.. automodule :: circuits.io
 
-Events
-------
-
-.. autoclass :: circuits.io.Close
-   :members:
-
-.. autoclass :: circuits.io.Read
-   :members:
-
-.. autoclass :: circuits.io.Write
-   :members:
-
-
-Components
-----------
-
-.. autoclass :: circuits.io.File
-   :members:
-
-.. autoclass :: circuits.io.Serial
-   :members:
-
-Functions
----------
-
-
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   
+   circuits_io*

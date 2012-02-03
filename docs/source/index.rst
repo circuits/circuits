@@ -18,6 +18,7 @@ Contents
    api/index
    dev/index
    roadmap
+   changes
    contributors
    users
    faq
@@ -39,7 +40,7 @@ Contents
 Indices and tables
 ==================
 
-* :ref:`General Index <genindex>`
+* :ref:`Index <genindex>`
 * :ref:`modindex`
 * :ref:`search`
 * :doc:`glossary`
