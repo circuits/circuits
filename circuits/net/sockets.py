@@ -534,18 +534,24 @@ class Server(Component):
     @property
     def host(self):
         if hasattr(self, "_sock"):
-            sockname = self._sock.getsockname()
-            if isinstance(sockname, tuple):
-                return sockname[0]
-            else:
-                return sockname
+            try:
+                sockname = self._sock.getsockname()
+                if isinstance(sockname, tuple):
+                    return sockname[0]
+                else:
+                    return sockname
+            except SocketError:
+                return None
 
     @property
     def port(self):
         if hasattr(self, "_sock"):
-            sockname = self._sock.getsockname()
-            if isinstance(sockname, tuple):
-                return sockname[1]
+            try:
+                sockname = self._sock.getsockname()
+                if isinstance(sockname, tuple):
+                    return sockname[1]
+            except SocketError:
+                return None
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
