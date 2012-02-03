@@ -9,9 +9,13 @@ This module implements the necessary Events needed.
 
 from circuits import Event
 
+
 class WebEvent(Event):
 
     channels = ("web",)
+
+    success = True
+    failure = True
 
 
 class Request(WebEvent):
@@ -20,9 +24,6 @@ class Request(WebEvent):
     args: request, response
     """
 
-    success = True
-    failure = True
-
 
 class Response(WebEvent):
     """Response(WebEvent) -> Response WebEvent
@@ -30,15 +31,9 @@ class Response(WebEvent):
     args: request, response
     """
 
-    success = True
-    failure = True
-
 
 class Stream(WebEvent):
     """Stream(WebEvent) -> Stream WebEvent
 
     args: request, response
     """
-
-    success = True
-    failure = True
