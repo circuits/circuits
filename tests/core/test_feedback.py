@@ -15,6 +15,9 @@ class Test(Event):
     success = True
     failure = True
 
+class Test2(Event):
+    end = True
+
 
 class App(Component):
 
@@ -24,6 +27,8 @@ class App(Component):
         self.e = None
         self.success = False
         self.failure = False
+        self.end = False
+        self.failed_end = False
 
     @handler("*", filter=True)
     def event(self, event, *args, **kwargs):
@@ -36,6 +41,20 @@ class App(Component):
 
         return "Hello World!"
 
+    def test2(self):
+        if self.end:
+            self.failed_end = True
+
+    @handler("test2")
+    def test22(self):
+        return self.test2(self)
+
+
+    def test2_end(self, e):
+        self.e = e
+        if not self.failed_end:
+            self.end = True
+
     def test_success(self, e):
         self.e = e
         self.success = True
@@ -47,6 +66,23 @@ class App(Component):
 
 def reraise(e):
     raise e
+
+
+def test_end():
+    app = App()
+    from circuits import Debugger
+    Debugger().register(app)
+    while app:
+        app.flush()
+
+    e = Test2()
+    x = app.fire(e)
+
+    while app:
+        app.flush()
+
+    assert app.e == e
+    assert app.end
 
 
 def test_success():
