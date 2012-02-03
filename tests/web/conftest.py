@@ -6,6 +6,9 @@
 
 import os
 
+import pytest
+
+
 DOCROOT = os.path.join(os.path.dirname(__file__), "static")
 
 
@@ -43,6 +46,10 @@ def setupwebapp(request):
 
     Static("/static", DOCROOT, dirlisting=True).register(webapp)
     webapp.start()
+
+    waiter = pytest.WaitEvent(webapp, "ready")
+    assert waiter.wait()
+
     return webapp
 
 
