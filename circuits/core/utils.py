@@ -12,7 +12,7 @@ import sys
 
 from imp import reload
 
-UNCAMELRE = re.compile("([a-z])([A-Z])")
+UNCAMELRE = re.compile("([a-z0-9])([A-Z])")
 
 
 def uncamel(s):
