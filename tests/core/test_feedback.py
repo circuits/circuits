@@ -70,8 +70,6 @@ def reraise(e):
 
 def test_end():
     app = App()
-    from circuits import Debugger
-    Debugger().register(app)
     while app:
         app.flush()
 
