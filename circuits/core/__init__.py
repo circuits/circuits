@@ -7,7 +7,7 @@
 This package contains the essential core parts of the circuits framework.
 """
 
-from .handlers import handler
+from .handlers import handler, tick
 
 from .events import Event
 from .loader import Loader
