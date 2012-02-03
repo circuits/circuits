@@ -1,3 +1,9 @@
+circuits-1.7 YYYYMMDD
+---------------------
+
+- Removed ``.push(...)`` -- Deprecated in 1.6
+- Removed ``circuits.net.pollers`` module. -- Deprecated in 1.6
+
 circuits-1.6.1 YYYYMMDD
 -----------------------
 
