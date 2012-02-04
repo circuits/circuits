@@ -68,7 +68,7 @@ class Client(UDPClient):
     def read(self, address, data):
         print "%r: %r" % (address, data.strip())
 
-    @handler("read", target="stdin")
+    @handler("read", "stdin")
     def stdin_read(self, data):
         self.write(self.dest, data)
 

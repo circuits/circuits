@@ -110,7 +110,7 @@ class Client(Component):
         else:
             print("-%s- %s" % (source, message))
 
-    @handler("read", target="stdin")
+    @handler("read", channel="stdin")
     def stdin_read(self, data):
         self.fire(PRIVMSG(self.ircchannel, data.strip()))
 

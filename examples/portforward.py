@@ -48,13 +48,13 @@ class Server(TCPServer):
     channel = "server"
 
     def connect(self, sock, host, port):
-        self.fire(ClientConnected(host, port), target="client")
+        self.fire(ClientConnected(host, port), "client")
 
     def disconnect(self, sock):
-        self.fire(ClientDisconnected(), target="client")
+        self.fire(ClientDisconnected(), "client")
 
     def read(self, sock, data):
-        self.fire(ClientRead(data), target="client")
+        self.fire(ClientRead(data), "client")
     
     def clientwrite(self, data):
         self.broadcast(data)
@@ -79,7 +79,7 @@ class Client(TCPClient):
         self.fire(Write(data))
 
     def read(self, data):
-        self.fire(ClientWrite(data), target="server")
+        self.fire(ClientWrite(data), "server")
 
 def main():
     opts, args = parse_options()

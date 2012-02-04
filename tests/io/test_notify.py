@@ -19,15 +19,13 @@ class App(Component):
     def remove_path(self, path):
         self.remove_path = True
 
-    @handler('created', target='notify')
+    @handler('created', channel='notify')
     def created(self, *args, **kwargs):
         self.created = True
 
 def test_notify(tmpdir):
     app = App()
     Notify().register(app)
-    from circuits import Debugger
-    Debugger().register(app)
     app.start()
     try:
         app.fire(AddPath(str(tmpdir)))

@@ -100,7 +100,7 @@ class Telnet(Component):
     def read(self, data):
         print data.strip()
 
-    @handler("read", target="stdin")
+    @handler("read", "stdin")
     def stdin_read(self, data):
         self.fire(Write(data))
 

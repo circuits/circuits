@@ -291,7 +291,7 @@ def main():
     if not opts.wait:
         if opts.concurrency > 1:
             for c in range(int(opts.concurrency)):
-                manager.fire(Hello("hello"), target=c)
+                manager.fire(Hello("hello"), c)
         else:
             manager.fire(Hello("hello"))
 
