@@ -1,0 +1,58 @@
+.TH circuits.bench 1 "Jun 2011" "circuits 1.6" "User Commands"
+.SH NAME
+circuits.bench \- simple benchmaking of the circuits library
+.SH SYNOPSIS
+.B circuits.bench
+[\fIoptions\fR]
+.SH DESCRIPTION
+circuits.bench does some simple benchmaking of the circuits library.
+.SH OPTIONS
+.TP
+\fB-b\fR \fIaddress:[port]\fR
+Bind to address:[port] (UDP) to test remote events. Default address is 0.0.0.0.
+.TP
+\fB-c\fR \fIinteger\fR
+Set concurrency level to \fIinteger\fR. Default is 1.
+.TP
+\fB-d\fR
+Enable debug mode.
+.TP
+\fB-e\fR \fInumber\fR
+Stop after specified \fInumber\fR of events. Default is 0.
+.TP
+\fB-f\fR \fInumber\fR
+\fInumber\fR of dummy events to fill queue with. Default is 0.
+.TP
+\fB-l\fR
+Listen on 0.0.0.0:8000 (UDP) to test remote events.
+.TP
+\fB-m\fR \fImode\fR
+Set operation mode. \fImode\fR can be \fIlatency\fR, \fIspeed\fR or \fIsync\fR.
+Default \fImode\fR is \fIspeed\fR.
+.TP
+\fB-o\fR \fIformat\fR
+Specify output format.
+For example \fIformat\fR can be:"cicuits.bench: events:%s, speed:%s, time:%s"
+.TP
+\fB-p\fR
+Enable execution profiling support.
+.TP
+\fB-q\fR
+Suppress output.
+.TP
+\fB-s\fR
+Enable psyco (circuits on speed!) if it is available.
+.TP
+\fB-t\fR \fIseconds\fR
+Stop after specified elapsed \fIseconds\fR.
+.TP
+\fB-w\fR
+Wait for remote nodes to connect.
+.TP
+\fB--version\fR
+Output version information and exit.
+.SH AUTHOR
+James Mills <prologic@shortcircuit.net.au>
+.PP
+This manual page was written by Daniele Tricoli <eriol@mornie.org>, for the
+Debian project (but may be used by others).

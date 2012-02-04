@@ -2,10 +2,11 @@
 
 import optparse
 
-from circuits import __version__
-from circuits import Event, Component, Debugger
+from circuits import Event
 from circuits.net.sockets import TCPClient, TCPServer
 from circuits.net.sockets import Close, Connect, Write
+
+__version__ = "0.1"
 
 USAGE = "%prog [options]"
 VERSION = "%prog v" + __version__
@@ -97,7 +98,7 @@ def main():
     else:
         target = (opts.target, 8000)
 
-    (Server(bind) + Client(*target) + Debugger()).run()
+    (Server(bind) + Client(*target)).run()
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,44 @@
+.TH circuits.web 1 "Jun 2011" "circuits 1.6" "User Commands"
+.SH NAME
+circuits.web \- Web Server and testing tool
+.SH SYNOPSIS
+.B circuits.web
+[\fIoptions\fR] [\fIdocroot\fR]
+.SH DESCRIPTION
+circuits.web is a component based, event-driven light weight and high
+performance HTTP/WSGI framework. circuits.web applications are stand-alone
+applications with a high performance, multi-process web server with great
+concurrent scalability with full support for WSGI and deployment with other web
+servers.
+.SH OPTIONS
+.TP
+\fB-b\fR \fIaddress:[port]\fR
+Bind to address:[port]. Default address is 0.0.0.0:8000.
+.TP
+\fB-d\fR
+Enable debug mode.
+.TP
+\fB-j\fR
+Use python JIT (psyco) if it is available.
+.TP
+\fB-m\fR \fInumber\fR
+Specify \fInumber\fR of processes to start (multiprocessing).
+.TP
+\fB-p\fR
+Enable execution profiling support.
+.TP
+\fB-s\fR \fIserver\fR
+Specify server to use.
+.TP
+\fB-t\fR \fItype\fR
+Specify type of poller to use. \fItype\fR can be \fIepoll\fR, \fIpoll\fR or
+\fIselect\fR.
+Default \fItype\fR is \fIselect\fR.
+.TP
+\fB-v\fR
+Enable WSGI validation mode.
+.SH AUTHOR
+James Mills <prologic@shortcircuit.net.au>
+.PP
+This manual page was written by Daniele Tricoli <eriol@mornie.org>, for the
+Debian project (but may be used by others).
