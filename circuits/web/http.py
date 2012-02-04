@@ -250,8 +250,8 @@ class HTTP(BaseComponent):
         response.body = str(event)
         self.fire(Response(response))
 
-    @handler("value_changed")
-    def _on_value_changed(self, value):
+    @handler("request_value_changed")
+    def _on_request_value_changed(self, value):
         if value.handled:
             return
         request, response = value.event.args[:2]
@@ -298,7 +298,7 @@ class HTTP(BaseComponent):
                 if value.manager is None:
                     value.manager = self
                 value.event = evt
-                value.onSet = "value_changed", self
+                value.notify = True
         elif type(value) is not bool:
             response.body = value
             self.fire(Response(response))
