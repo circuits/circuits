@@ -64,7 +64,7 @@ def parse_options():
 
     parser.add_option("-w", "--wait",
             action="store_true", default=False, dest="wait",
-            help="Wait for remove ndoes to conenct")
+            help="Wait for remote nodes to conenct")
 
     parser.add_option("-b", "--bind",
             action="store", type="string", default="0.0.0.0", dest="bind",
