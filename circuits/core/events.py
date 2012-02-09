@@ -43,7 +43,8 @@ class BaseEvent(object):
         self.notify = False
 
     def __eq__(self, other):
-        return (self.name == other.name
+        return (type(self) is type(other)
+                and self.name == other.name
                 and self.channels == other.channels
                 and self.args == other.args
                 and self.kwargs == other.kwargs)
