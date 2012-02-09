@@ -20,34 +20,46 @@ from collections import defaultdict
 from circuits.net.sockets import Write
 from circuits import handler, BaseComponent, Event
 
-WEBSOCKETS_CHANNEL = "ws"
-
 
 class MalformedWebSocket(ValueError):
     """Malformed WebSocket Error"""
 
 
-class WebSocketEvent(Event):
-    """WebSocket Event"""
-
-    channels = (WEBSOCKETS_CHANNEL,)
-
-
-class Message(WebSocketEvent):
+class Message(Event):
     """Message Event"""
+
+
+class WebSocketsMediator(BaseComponent):
+
+    channel = "ws"
+
+    @handler("write")
+    def _on_write(self, sock, data):
+        payload = b'\x00' + data.encode("utf-8") + b'\xff'
+        self.fire(Write(sock, payload), self.parent.channel)
+
+    @handler("message_value_changed")
+    def _on_message_value_changed(self, value):
+        sock, message = value.event.args
+        result, data = value.result, value.value
+        if result and isinstance(data, basestring):
+                self.fire(Write(sock, data))
 
 
 class WebSockets(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, wschannel="ws"):
         super(WebSockets, self).__init__()
 
         self.path = path
+        self.wschannel = wschannel
 
         self._clients = []
         self._buffers = defaultdict(bytes)
+
+        WebSocketsMediator(channel=wschannel).register(self)
 
     def _parse_messages(self, sock):
         msgs = []
@@ -75,24 +87,12 @@ class WebSockets(BaseComponent):
         self._buffers[sock] = buf
         return msgs
 
-    @handler("disconnect", channel="web")
+    @handler("disconnect")
     def _on_disconnect(self, sock):
         if sock in self._clients:
             self._clients.remove(sock)
         if sock in self._buffers:
             del self._buffers[sock]
-
-    @handler("write", channel=WebSocketEvent.channels[0])
-    def _on_write(self, sock, data):
-        payload = b'\x00' + data.encode("utf-8") + b'\xff'
-        self.fire(Write(sock, payload))
-
-    @handler("value_changed", channel=WebSocketEvent.channels[0])
-    def _on_value_changed(self, value):
-        sock, message = value.event.args
-        result, data = value.result, value.value
-        if result and isinstance(data, basestring):
-                self.fire(Write(sock, data), WebSocketEvent.channels[0])
 
     @handler("read", filter=True)
     def _on_read(self, sock, data):
@@ -100,8 +100,8 @@ class WebSockets(BaseComponent):
             self._buffers[sock] += data
             messages = self._parse_messages(sock)
             for message in messages:
-                value = self.fire(Message(sock, message))
-                value.onSet = "value_changed", WebSocketEvent.channels[0]
+                value = self.fire(Message(sock, message), self.wschannel)
+                value.notify = True
             return True
 
     @handler("request", filter=True, priority=0.2)
