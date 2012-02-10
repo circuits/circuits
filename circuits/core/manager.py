@@ -389,7 +389,8 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            event.value.value = value
+            if value is not None:
+                event.value.value = value
 
             if value and handler.filter:
                 break

@@ -21,7 +21,7 @@ def test_addHandler():
     x = m.fire(Foo())
     waiter.wait()
 
-    s = x.value[0]
+    s = x.value
     assert s == "Hello World!"
 
     m.stop()
@@ -37,7 +37,7 @@ def test_removeHandler():
     x = m.fire(Foo())
     waiter.wait()
 
-    s = x.value[0]
+    s = x.value
     assert s == "Hello World!"
 
     m.removeHandler(on_foo)
