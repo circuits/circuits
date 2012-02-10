@@ -26,7 +26,6 @@ def test_events():
     s = dump_event(e, id)
     x, id = load_event(s)
 
-    assert e == x
     assert hasattr(x, "args")
     assert hasattr(x, "kwargs")
     assert hasattr(x, "success")

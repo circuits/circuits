@@ -42,13 +42,6 @@ class BaseEvent(object):
         self.handler = None
         self.notify = False
 
-    def __eq__(self, other):
-        return (type(self) is type(other)
-                and self.name == other.name
-                and self.channels == other.channels
-                and self.args == other.args
-                and self.kwargs == other.kwargs)
-
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
