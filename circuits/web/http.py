@@ -304,12 +304,12 @@ class HTTP(BaseComponent):
             self.fire(Response(response))
 
     @handler("request_failure", "response_failure")
-    def _on_request_or_response_failure(self, e):
-        if len(e.args) == 1:
-            response = e.args[0]
+    def _on_request_or_response_failure(self, evt, err):
+        if len(evt.args) == 1:
+            response = evt.args[0]
             request = response.request
         else:
-            request, response = e.args[:2]
+            request, response = evt.args[:2]
 
         # Ignore filtered requests already handled (eg: HTTPException(s)).
         # Ignore failed "response" handlers (eg: Loggers or Tools)
@@ -319,7 +319,7 @@ class HTTP(BaseComponent):
         if not request.handled:
             request.handled = True
 
-        etype, evalue, traceback = e.args
+        etype, evalue, traceback = err
 
         if isinstance(evalue, RedirectException):
             self.fire(RedirectError(request, response,
@@ -327,9 +327,9 @@ class HTTP(BaseComponent):
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
                 self.fire(HTTPError(request, response, evalue.code,
-                    description=evalue.description, error=e.args))
+                    description=evalue.description, error=err))
             else:
                 self.fire(HTTPError(request, response, evalue.code,
                     description=evalue.description))
         else:
-            self.fire(HTTPError(request, response, error=e.args))
+            self.fire(HTTPError(request, response, error=err))

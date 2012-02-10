@@ -25,6 +25,7 @@ class App(Component):
         super(App, self).__init__()
 
         self.e = None
+        self.error = None
         self.success = False
         self.failure = False
         self.end = False
@@ -59,8 +60,9 @@ class App(Component):
         self.e = e
         self.success = True
 
-    def test_failure(self, e):
+    def test_failure(self, e, error):
         self.e = e
+        self.error = error
         self.failure = True
 
 
@@ -124,6 +126,11 @@ def test_failure():
         app.flush()
 
     assert app.e == e
+
+    etype, evalue, etraceback = app.error
+    py.test.raises(Exception, lambda x: reraise(x), evalue)
+    assert etype == Exception
+
     assert app.failure
     assert not app.success
     assert app.e.value == x
