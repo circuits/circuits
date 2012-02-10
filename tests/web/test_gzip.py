@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("XXX: Failing")
-
 try:
     from gzip import decompress
 except ImportError:
@@ -26,8 +23,9 @@ class Gzip(Component):
 
     channel = "web"
 
-    def response_started(self, event, response_event):
-        event[0] = gzip(response_event[0])
+    @handler("response", filter=True)
+    def _on_response(self, event, *args, **kwargs):
+        event[0] = gzip(event[0])
 
 class Root(Controller):
 
@@ -35,6 +33,9 @@ class Root(Controller):
         return "Hello World!"
 
 def test(webapp):
+    from circuits import Debugger
+    Debugger().register(webapp)
+
     gzip = Gzip()
     gzip.register(webapp)
 
