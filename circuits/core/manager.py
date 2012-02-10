@@ -384,7 +384,8 @@ class Manager(object):
 
                 if event.failure:
                     self.fire(Failure.create("%sFailure" %
-                        event.__class__.__name__, event))
+                        event.__class__.__name__, event), *event.channels)
+
                 self.fire(Error(etype, evalue, traceback, handler))
 
             event.value.value = value
@@ -394,10 +395,11 @@ class Manager(object):
 
         if error is None and event.success:
             self.fire(Success.create("%sSuccess" %
-                event.__class__.__name__, event))
+                event.__class__.__name__, event), *event.channels)
 
         if event.end:
-            self.fire(End.create("%sEnd" % event.__class__.__name__, event))
+            self.fire(End.create("%sEnd" %
+                event.__class__.__name__, event), *event.channels)
 
         if GREENLET:
             for task in self._tasks.copy():
