@@ -21,13 +21,14 @@ from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 class HTTPError(Event):
 
-    channel = "httperror"
-
     code = 500
     description = ""
 
     def __init__(self, request, response, code=None, **kwargs):
         super(HTTPError, self).__init__(request, response, code, **kwargs)
+
+        # Override HTTPError subclasses
+        self.name = "httperror"
 
         self.request = request
         self.response = response
@@ -172,5 +173,5 @@ class Redirect(HTTPError):
             channels = str(self.channels[0])
         else:
             channels = ""
-        return "<%s %d[%s.%s] %s>" % (self.__class__.__name__, self.code, channels, self.name,
-                " ".join(self.urls))
+        return "<%s %d[%s.%s] %s>" % (self.__class__.__name__,
+                self.code, channels, self.name, " ".join(self.urls))

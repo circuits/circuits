@@ -23,10 +23,9 @@ from circuits.core import handler, BaseComponent, Value
 from . import wrappers
 from .utils import quoted_slash
 from .exceptions import HTTPException
-from .errors import HTTPError, NotFound
 from .headers import parse_headers, Headers
 from .events import Request, Response, Stream
-from .errors import Redirect as RedirectError
+from .errors import HTTPError, NotFound, Redirect
 from .exceptions import Redirect as RedirectException
 
 MAX_HEADER_FRAGENTS = 20
@@ -283,7 +282,7 @@ class HTTP(BaseComponent):
                 error = value.value
                 etype, evalue, traceback = error
                 if isinstance(evalue, RedirectException):
-                    self.fire(RedirectError(request, response,
+                    self.fire(Redirect(request, response,
                         evalue.urls, evalue.status))
                 elif isinstance(evalue, HTTPException):
                     if evalue.traceback:
@@ -299,6 +298,21 @@ class HTTP(BaseComponent):
                     value.manager = self
                 value.event = evt
                 value.notify = True
+        elif type(value) is tuple:
+            etype, evalue, traceback = error = value
+
+            if isinstance(evalue, RedirectException):
+                self.fire(Redirect(request, response,
+                    evalue.urls, evalue.status))
+            elif isinstance(evalue, HTTPException):
+                if evalue.traceback:
+                    self.fire(HTTPError(request, response, evalue.code,
+                        description=evalue.description, error=error))
+                else:
+                    self.fire(HTTPError(request, response, evalue.code,
+                        description=evalue.description))
+            else:
+                self.fire(HTTPError(request, response, error=error))
         elif type(value) is not bool:
             response.body = value
             self.fire(Response(response))
@@ -322,7 +336,7 @@ class HTTP(BaseComponent):
         etype, evalue, traceback = err
 
         if isinstance(evalue, RedirectException):
-            self.fire(RedirectError(request, response,
+            self.fire(Redirect(request, response,
                 evalue.urls, evalue.status))
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
