@@ -92,7 +92,7 @@ class Application(BaseComponent):
         self.fire(Request(self.request, self.response))
 
         self._finished = False
-        while not self._finished:
+        while self or not self._finished:
             self.tick()
 
         self.response.prepare()
@@ -127,7 +127,6 @@ class Gateway(BaseComponent):
         self.path = path
 
         self._errors = StringIO()
-
         self._request = self._response = None
 
     def createEnviron(self):
@@ -176,6 +175,7 @@ class Gateway(BaseComponent):
 
         self._request = request
         self._response = response
+        self._errors = StringIO()
 
         environ = self.createEnviron()
         try:
