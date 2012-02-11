@@ -264,13 +264,11 @@ class HTTP(BaseComponent):
     @handler("request_success")
     def _on_request_success(self, e):
         # We don't want to decapsulate all the values because
-        # we want to check for futures
+        # if value._value is a Value we want to be notified when it changes
+        # and display the response then
         value = e.value.getValue(chain=False)
-        # If it is a future we wait to deapsulate the event
-        # till after its value changed event
-        # else decapsulate it now
-        if isinstance(value, Value) and not value.event.future:
-            value = value.value
+        if isinstance(value, Value):
+            value = value.getValue(chain=False)
 
         request, response = e.args[:2]
 
@@ -303,6 +301,8 @@ class HTTP(BaseComponent):
             else:
                 if value.manager is None:
                     value.manager = self
+                # We want to be notify on the changes of this value
+                value = e.value.getValue(chain=False)
                 value.event = e
                 value.notify = True
         elif type(value) is tuple:
