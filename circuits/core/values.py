@@ -56,6 +56,7 @@ class Value(object):
         self.result = False
         self.errors = False
         self.parent = self
+        self.handled = False
 
         self._value = None
 
@@ -89,10 +90,11 @@ class Value(object):
 
         return str(self.value)
 
-    def getValue(self):
+    def getValue(self, chain=True):
         value = self._value
-        while isinstance(value, Value):
-            value = value._value
+        if chain:
+            while isinstance(value, Value):
+                value = value._value
         return value
 
     def setValue(self, value):

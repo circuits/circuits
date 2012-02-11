@@ -263,13 +263,20 @@ class HTTP(BaseComponent):
 
     @handler("request_success")
     def _on_request_success(self, e):
-        value = e.value.value
+        # We don't want to decapsulate all the values because
+        # we want to check for futures
+        value = e.value.getValue(chain=False)
+        # If it is a future we wait to deapsulate the event
+        # till after its value changed event
+        # else decapsulate it now
+        if isinstance(value, Value) and not value.event.future:
+            value = value.value
+
         request, response = e.args[:2]
 
-        if value is None and not e.future:
+        if value is None:
             self.fire(NotFound(request, response))
-
-        if isinstance(value, HTTPError):
+        elif isinstance(value, HTTPError):
             response.body = str(value)
             self.fire(Response(response))
         elif isinstance(value, wrappers.Response):
@@ -296,7 +303,7 @@ class HTTP(BaseComponent):
             else:
                 if value.manager is None:
                     value.manager = self
-                value.event = evt
+                value.event = e
                 value.notify = True
         elif type(value) is tuple:
             etype, evalue, traceback = error = value
