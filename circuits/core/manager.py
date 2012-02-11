@@ -9,7 +9,6 @@ This module definse the Manager class subclasses by component.BaseComponent
 
 import atexit
 from time import sleep
-from warnings import warn
 from itertools import chain
 from types import MethodType
 from collections import deque
@@ -33,6 +32,10 @@ from .events import Event, Error, Started, Stopped, Signal
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
 
+def _sortkey(handler):
+    return (handler.priority, handler.filter)
+
+
 class Manager(object):
     """Manager
 
@@ -47,12 +50,11 @@ class Manager(object):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self._tasks = set()
+        self._ticks = set()
         self._cache = dict()
         self._queue = deque()
         self._globals = set()
         self._handlers = dict()
-
-        self._ticks = None
 
         self._task = None
         self._running = False
@@ -260,12 +262,12 @@ class Manager(object):
         self.root._queue.extend(list(component._queue))
         component._queue.clear()
         self.root._cache.clear()
-        self.root._ticks = None
+        self.root._ticks = self.root.getTicks()
 
     def unregisterChild(self, component):
         self.components.remove(component)
         self.root._cache.clear()
-        self.root._ticks = None
+        self.root._ticks = self.root.getTicks()
 
     def _fire(self, event, channel):
         self._queue.append((event, channel))
@@ -351,9 +353,6 @@ class Manager(object):
     def _dispatcher(self, event, channels):
         eargs = event.args
         ekwargs = event.kwargs
-
-        def _sortkey(handler):
-            return (handler.priority, handler.filter)
 
         if (event.name, channels) in self._cache:
             handlers = self._cache[(event.name, channels)]
@@ -449,9 +448,6 @@ class Manager(object):
         return ticks
 
     def tick(self):
-        if self._ticks is None:
-            self._ticks = self.getTicks()
-
         for f in self._ticks.copy():
             try:
                 f()
