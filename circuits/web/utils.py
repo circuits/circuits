@@ -32,6 +32,7 @@ from .constants import HTTP_STATUS_CODES
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile("[0-9]+,[0-9]+")
 
+
 def parseQueryString(query_string, keep_blank_values=True):
     """parseQueryString(query_string) -> dict
 
@@ -49,6 +50,7 @@ def parseQueryString(query_string, keep_blank_values=True):
         pm = parse_qs(query_string, keep_blank_values)
         return dict((k, v[0]) for k, v in pm.items() if v)
 
+
 def dictform(form):
     d = {}
     for key in list(form.keys()):
@@ -57,17 +59,18 @@ def dictform(form):
             d[key] = []
             for item in values:
                 if item.filename is not None:
-                    value = item # It's a file upload
+                    value = item  # It's a file upload
                 else:
-                    value = item.value # It's a regular field
+                    value = item.value  # It's a regular field
                 d[key].append(value)
         else:
             if values.filename is not None:
-                value = values # It's a file upload
+                value = values  # It's a file upload
             else:
-                value = values.value # It's a regular field
+                value = values.value  # It's a regular field
             d[key] = value
     return d
+
 
 def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
@@ -100,24 +103,25 @@ def compress(body, compress_level):
             + struct.pack("<l", crc) \
             + struct.pack("<L", size & 0xFFFFFFFF)
 
+
 def url(request, path="", qs="", script_name=None, base=None, relative=None):
     """Create an absolute URL for the given path.
-    
+
     If 'path' starts with a slash ('/'), this will return
        - (base + script_name + path + qs).
     If it does not start with a slash, this returns
        - (base + script_name [+ request.path] + path + qs).
-    
+
     If script_name is None, request will be used
     to find a script_name, if available.
-    
+
     If base is None, request.base will be used (if available).
-    
+
     Finally, note that this function can be used to obtain an absolute URL
     for the current request path (minus the querystring) by passing no args.
     If you call url(qs=request.qs), you should get the
     original browser URL (assuming no internal redirections).
-    
+
     If relative is False the output will be an absolute URL
     (including the scheme, host, vhost, and script_name).
     If True, the output will instead be a URL that is relative to the
@@ -127,7 +131,7 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
     """
     if qs:
         qs = '?' + qs
-    
+
     if not path.startswith("/"):
         # Append/remove trailing slash from request.path as needed
         # (this is to support mistyped URL's without redirecting;
@@ -139,19 +143,19 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
         elif request.index is False:
             if pi.endswith('/') and pi != '/':
                 pi = pi[:-1]
-        
+
         if path == "":
             path = pi
         else:
             path = _urljoin(pi, path)
-    
+
     if script_name is None:
         script_name = request.script_name
     if base is None:
         base = request.base
-        
+
     newurl = base + script_name + path + qs
-    
+
     if './' in newurl:
         # Normalize the URL by removing ./ and ../
         atoms = []
@@ -163,9 +167,9 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
             else:
                 atoms.append(atom)
         newurl = '/'.join(atoms)
-    
+
     # At this point, we should have a fully-qualified absolute URL.
-    
+
     # See http://www.ietf.org/rfc/rfc2396.txt
     if relative == 'server':
         # "A relative reference beginning with a single slash character is
@@ -185,23 +189,24 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
             new.pop(0)
         new = (['..'] * len(old)) + new
         newurl = '/'.join(new)
-    
+
     return newurl
+
 
 def get_ranges(headervalue, content_length):
     """Return a list of (start, stop) indices from a Range header, or None.
-    
+
     Each (start, stop) tuple will be composed of two ints, which are suitable
     for use in a slicing operation. That is, the header "Range: bytes=3-6",
     if applied against a Python string, is requesting resource[3:7]. This
     function will return the list [(3, 7)].
-    
+
     If this function returns an empty list, you should return HTTP 416.
     """
-    
+
     if not headervalue:
         return None
-    
+
     result = []
     bytesunit, byteranges = headervalue.split("=", 1)
     for brange in byteranges.split(","):
@@ -235,5 +240,5 @@ def get_ranges(headervalue, content_length):
                 return None
             # Negative subscript (last N bytes)
             result.append((content_length - int(stop), content_length))
-    
+
     return result

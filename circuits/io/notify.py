@@ -22,13 +22,16 @@ from circuits.core import Event, Component
 
 MASK = ALL_EVENTS
 
+
 class AddPath(Event):
     """Add path to watch"""
     channel = 'add_path'
 
+
 class RemovePath(Event):
     """Remove path from watch"""
     channel = 'remove_path'
+
 
 class Moved(Event):
     """Moved Event"""

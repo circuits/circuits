@@ -14,6 +14,7 @@ import sys
 
 from circuits.core import handler, BaseComponent, Event
 
+
 class Daemonize(Event):
     """Daemonize Event
 
@@ -25,6 +26,7 @@ class Daemonize(Event):
     Arguments: *None*
     """
 
+
 class WritePID(Event):
     """"WritePID Event
 
@@ -34,6 +36,7 @@ class WritePID(Event):
     is used automatically by the `Daemon` Component after the
     :class:`Daemonize`.
     """
+
 
 class Daemon(BaseComponent):
     """Daemon Component

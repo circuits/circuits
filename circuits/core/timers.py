@@ -12,6 +12,7 @@ from datetime import datetime
 
 from .components import BaseComponent
 
+
 class Timer(BaseComponent):
     """
     ...

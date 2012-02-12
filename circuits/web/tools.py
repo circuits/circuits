@@ -27,25 +27,26 @@ from . import _httpauth
 from .utils import get_ranges, compress
 from .errors import HTTPError, NotFound, Redirect, Unauthorized
 
+
 def expires(request, response, secs=0, force=False):
     """Tool for influencing cache mechanisms using the 'Expires' header.
-    
+
     'secs' must be either an int or a datetime.timedelta, and indicates the
     number of seconds between response.time and when the response should
     expire. The 'Expires' header will be set to (response.time + secs).
-    
+
     If 'secs' is zero, the 'Expires' header is set one year in the past, and
     the following "cache prevention" headers are also set:
     - 'Pragma': 'no-cache'
     - 'Cache-Control': 'no-cache, must-revalidate'
-    
+
     If 'force' is False (the default), the following headers are checked:
     'Etag', 'Last-Modified', 'Age', 'Expires'. If any are already present,
     none of the above response headers are set.
     """
-    
+
     headers = response.headers
-    
+
     cacheable = False
     if not force:
         # some header names that indicate that the response can be cached
@@ -53,11 +54,11 @@ def expires(request, response, secs=0, force=False):
             if indicator in headers:
                 cacheable = True
                 break
-    
+
     if not cacheable:
         if isinstance(secs, timedelta):
             secs = (86400 * secs.days) + secs.seconds
-        
+
         if secs == 0:
             if force or "Pragma" not in headers:
                 headers["Pragma"] = "no-cache"
@@ -66,7 +67,7 @@ def expires(request, response, secs=0, force=False):
                     headers["Cache-Control"] = "no-cache, must-revalidate"
             # Set an explicit Expires date in the past.
             now = datetime.now()
-            lastyear = now.replace(year=now.year-1)
+            lastyear = now.replace(year=now.year - 1)
             expiry = formatdate(mktime(lastyear.timetuple()),
                     usegmt=True)
         else:
@@ -77,36 +78,36 @@ def expires(request, response, secs=0, force=False):
 
 def serve_file(request, response, path, type=None, disposition=None, name=None):
     """Set status, headers, and body in order to serve the given file.
-    
+
     The Content-Type header will be set to the type arg, if provided.
     If not provided, the Content-Type will be guessed by the file extension
     of the 'path' argument.
-    
+
     If disposition is not None, the Content-Disposition header will be set
     to "<disposition>; filename=<name>". If name is None, it will be set
     to the basename of path. If disposition is None, no Content-Disposition
     header will be written.
     """
-    
+
     if not os.path.isabs(path):
         raise ValueError("'%s' is not an absolute path." % path)
-    
+
     try:
         st = os.stat(path)
     except OSError:
         return NotFound(request, response)
-    
+
     # Check if path is a directory.
     if stat.S_ISDIR(st.st_mode):
         # Let the caller deal with it as they like.
         return NotFound(request, response)
-    
+
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
     response.headers['Last-Modified'] = formatdate(st.st_mtime,
             usegmt=True)
     validate_since(request, response)
-    
+
     if type is None:
         # Set content-type based on filename extension
         ext = ""
@@ -115,18 +116,18 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
             ext = path[i:].lower()
         type = mimetypes.types_map.get(ext, "text/plain")
     response.headers['Content-Type'] = type
-    
+
     if disposition is not None:
         if name is None:
             name = os.path.basename(path)
         cd = '%s; filename="%s"' % (disposition, name)
         response.headers["Content-Disposition"] = cd
-    
+
     # Set Content-Length and use an iterable (file object)
     #   this way CP won't load the whole file in memory
     c_len = st.st_size
     bodyfile = open(path, 'rb')
-    
+
     # HTTP/1.0 didn't have Range/Accept-Ranges headers, or the 206 code
     if request.protocol >= (1, 1):
         response.headers["Accept-Ranges"] = "bytes"
@@ -154,11 +155,11 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                 if "Content-Length" in response.headers:
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
-                
+
                 def file_ranges():
                     # Apache compatibility:
                     yield "\r\n"
-                    
+
                     for start, stop in r:
                         yield "--" + boundary
                         yield "\r\nContent-type: %s" % type
@@ -169,7 +170,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                         yield "\r\n"
                     # Final boundary
                     yield "--" + boundary + "--"
-                    
+
                     # Apache compatibility:
                     yield "\r\n"
                 response.body = file_ranges()
@@ -182,6 +183,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
 
     return response
 
+
 def serve_download(request, response, path, name=None):
     """Serve 'path' as an application/x-download attachment."""
 
@@ -190,14 +192,15 @@ def serve_download(request, response, path, name=None):
 
     return serve_file(request, response, path, type, disposition, name)
 
+
 def validate_etags(request, response, autotags=False):
     """Validate the current ETag against If-Match, If-None-Match headers.
-    
+
     If autotags is True, an ETag response-header value will be provided
     from an MD5 hash of the response body (unless some other code has
     already provided an ETag header). If False (the default), the ETag
     will not be automatic.
-    
+
     WARNING: the autotags feature is not designed for URL's which allow
     methods other than GET. For example, if a POST to the same URL returns
     no content, the automatic ETag will be incorrect, breaking a fundamental
@@ -206,24 +209,24 @@ def validate_etags(request, response, autotags=False):
     will be incorrect, and your application will break.
     See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24
     """
-    
+
     # Guard against being run twice.
     if hasattr(response, "ETag"):
         return
-    
+
     code = response.code
-    
+
     etag = response.headers.get('ETag')
-    
+
     # Automatic ETag generation. See warning in docstring.
     if (not etag) and autotags:
         if code == 200:
             etag = response.collapse_body()
             etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
             response.headers['ETag'] = etag
-    
+
     response.ETag = etag
-    
+
     # "If the request would, without the If-Match header field, result in
     # anything other than a 2xx or 412 status, then the If-Match header
     # MUST be ignored."
@@ -234,7 +237,7 @@ def validate_etags(request, response, autotags=False):
             return HTTPError(request, response, 412,
                     description="If-Match failed: ETag %r did not match %r" % (
                         etag, conditions))
-        
+
         conditions = request.headers.elements('If-None-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions == ["*"] or etag in conditions:
@@ -246,9 +249,10 @@ def validate_etags(request, response, autotags=False):
                             "If-None-Match failed: ETag %r matched %r" % (
                                 etag, conditions)))
 
+
 def validate_since(request, response):
     """Validate the current Last-Modified against If-Modified-Since headers.
-    
+
     If no code has set the Last-Modified response header, then no validation
     will be performed.
     """
@@ -256,12 +260,12 @@ def validate_since(request, response):
     lastmod = response.headers.get('Last-Modified')
     if lastmod:
         code = response.code
-        
+
         since = request.headers.get('If-Unmodified-Since')
         if since and since != lastmod:
             if (code >= 200 and code <= 299) or code == 412:
                 return HTTPError(request, response, 412)
-        
+
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod:
             if (code >= 200 and code <= 299) or code == 304:
@@ -269,6 +273,7 @@ def validate_since(request, response):
                     return Redirect(request, response, [], code=304)
                 else:
                     return HTTPError(request, response, 412)
+
 
 def check_auth(request, response, realm, users, encrypt=None):
     """Check Authentication
@@ -292,18 +297,18 @@ def check_auth(request, response, realm, users, encrypt=None):
         ah = _httpauth.parseAuthorization(request.headers['authorization'])
         if ah is None:
             return HTTPError(request, response, 400)
-        
+
         if not encrypt:
             encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
-        
+
         if isinstance(users, collections.Callable):
             try:
                 # backward compatibility
-                users = users() # expect it to return a dictionary
+                users = users()  # expect it to return a dictionary
 
                 if not isinstance(users, dict):
                     raise ValueError("Authentication users must be a dict")
-                
+
                 # fetch the user password
                 password = users.get(ah["username"], None)
             except TypeError:
@@ -312,26 +317,27 @@ def check_auth(request, response, realm, users, encrypt=None):
         else:
             if not isinstance(users, dict):
                 raise ValueError("Authentication users must be a dict")
-            
+
             # fetch the user password
             password = users.get(ah["username"], None)
-        
+
         # validate the authorization by re-computing it here
         # and compare it with what the user-agent provided
         if _httpauth.checkResponse(ah, password, method=request.method,
                                   encrypt=encrypt, realm=realm):
             request.login = ah["username"]
             return True
-    
+
         request.login = False
     return False
 
+
 def basic_auth(request, response, realm, users, encrypt=None):
     """Perform Basic Authentication
-    
+
     If auth fails, returns an Unauthorized error  with a
     basic authentication header.
-    
+
     :param realm: The authentication realm.
     :type  realm: str
 
@@ -346,17 +352,18 @@ def basic_auth(request, response, realm, users, encrypt=None):
 
     if check_auth(request, response, realm, users, encrypt):
         return
-    
+
     # inform the user-agent this path is protected
     response.headers["WWW-Authenticate"] = _httpauth.basicAuth(realm)
 
     return Unauthorized(request, response)
-    
+
+
 def digest_auth(request, response, realm, users):
     """Perform Digest Authentication
-    
+
     If auth fails, raise 401 with a digest authentication header.
-    
+
     :param realm: The authentication realm.
     :type  realm: str
 
@@ -367,18 +374,19 @@ def digest_auth(request, response, realm, users):
 
     if check_auth(request, response, realm, users):
         return
-    
+
     # inform the user-agent this path is protected
     response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
-    
+
     return Unauthorized(request, response)
+
 
 def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
     """Try to gzip the response body if Content-Type in mime_types.
-    
+
     response.headers['Content-Type'] must be set to one of the
     values in the mime_types arg before calling this function.
-    
+
     No compression is performed if any of the following hold:
         * The client sends no Accept-Encoding request header
         * No 'gzip' or 'x-gzip' is present in the Accept-Encoding header
@@ -389,12 +397,12 @@ def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
     if not response.body:
         # Response body is empty (might be a 304 for instance)
         return response
-    
+
     # If returning cached content (which should already have been gzipped),
     # don't re-zip.
     if getattr(response.request, "cached", False):
         return response
-    
+
     acceptable = response.request.headers.elements('Accept-Encoding')
     if not acceptable:
         # If no Accept-Encoding field is present in a request,
@@ -405,7 +413,7 @@ def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
         # information that a different content-coding is meaningful
         # to the client.
         return response
-    
+
     ct = response.headers.get('Content-Type', 'text/html').split(';')[0]
     for coding in acceptable:
         if coding.value == 'identity' and coding.qvalue != 0:
@@ -420,7 +428,7 @@ def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
                 if "Accept-Encoding" not in varies:
                     varies.append("Accept-Encoding")
                 response.headers['Vary'] = ", ".join(varies)
-                
+
                 response.headers['Content-Encoding'] = 'gzip'
                 response.body = compress(response.body, level)
                 if "Content-Length" in response.headers:

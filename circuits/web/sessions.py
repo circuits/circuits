@@ -13,6 +13,7 @@ from collections import defaultdict
 
 from circuits import handler, Component
 
+
 class Sessions(Component):
 
     channel = "web"

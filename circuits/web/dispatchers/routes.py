@@ -19,6 +19,7 @@ from circuits.web.events import Request
 from circuits.web.errors import HTTPError
 from circuits.web.utils import parseQueryString, dictform
 
+
 class RoutesError(Exception):
     pass
 

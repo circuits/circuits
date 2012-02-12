@@ -32,7 +32,8 @@ class Pool(BaseComponent):
     @handler("started", channel="*")
     def _on_started(self, *args):
         for i in range(self._min):
-            worker = Worker(process=self._processes, channel=self.channel + str(i + 1))
+            worker = Worker(process=self._processes,
+                            channel=self.channel + str(i + 1))
             self._workers.append(worker)
 
     @handler("stopped", channel="*")

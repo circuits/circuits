@@ -470,7 +470,7 @@ class Manager(object):
 
         if current_thread().getName() == "MainThread":
             try:
-                signal(SIGINT,  self._signalHandler)
+                signal(SIGINT, self._signalHandler)
                 signal(SIGTERM, self._signalHandler)
             except ValueError:
                 # Ignore if we can't install signal handlers

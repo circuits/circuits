@@ -16,6 +16,7 @@ from .handlers import handler
 from .components import BaseComponent
 from circuits.tools import reprhandler
 
+
 class Debugger(BaseComponent):
     """Create a new Debugger Component
 
@@ -85,8 +86,9 @@ class Debugger(BaseComponent):
     def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 
-        Event handler to listen and filter all events printing each event
-        to self.file or a Logger Component instance by calling self.logger.debug
+        Event handler to listen and filter all events printing
+        each event to self.file or a Logger Component instance
+        by calling self.logger.debug
         """
 
         if not self.events:

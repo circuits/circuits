@@ -22,6 +22,7 @@ from circuits.web.controllers import BaseController
 from circuits.web.tools import expires, serve_file
 from circuits.web.utils import parseQueryString, dictform
 
+
 class Dispatcher(BaseComponent):
 
     channel = "web"

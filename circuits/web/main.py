@@ -47,6 +47,7 @@ VERSION = "%prog v" + systemVersion
 ### Functions
 ###
 
+
 def parse_options():
     """parse_options() -> opts, args
 
@@ -96,12 +97,14 @@ def parse_options():
 ### Components
 ###
 
+
 class HelloWorld(Component):
 
     channel = "web"
 
     def request(self, request, response):
         return "Hello World!"
+
 
 class Root(Controller):
 
@@ -111,6 +114,7 @@ class Root(Controller):
 ###
 ### Main
 ###
+
 
 def main():
     opts, args = parse_options()
@@ -132,7 +136,7 @@ def main():
 
         httpd = make_server(address, port, app)
         httpd.serve_forever()
-        
+
         raise SystemExit(0)
 
     manager = Manager()

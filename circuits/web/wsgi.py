@@ -24,6 +24,7 @@ from .headers import Headers
 from .errors import HTTPError
 from .dispatchers import Dispatcher
 
+
 class Application(BaseComponent):
 
     channel = "web"
@@ -108,6 +109,7 @@ class Application(BaseComponent):
         self._finished = True
         return True
 
+
 class _Empty(str):
 
     def __bool__(self):
@@ -115,6 +117,7 @@ class _Empty(str):
 
 empty = _Empty()
 del _Empty
+
 
 class Gateway(BaseComponent):
 

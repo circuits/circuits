@@ -15,6 +15,7 @@ from circuits.web import Controller
 
 docroot = os.path.abspath(os.path.join(os.path.dirname(__file__), "htdocs"))
 
+
 class HTTPREPL(object):
 
     def __init__(self, locals=None):
@@ -120,6 +121,7 @@ class HTTPREPL(object):
             arglist.append("**%s" % varkw)
         doc = getattr(result, "__doc__", "") or ""
         return "%s(%s)\n%s" % (line, ", ".join(arglist), doc)
+
 
 class WebConsole(Controller):
 

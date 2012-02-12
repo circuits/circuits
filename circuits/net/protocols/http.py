@@ -4,11 +4,14 @@ from io import BytesIO
 from circuits.web.headers import parse_headers
 from circuits.core import handler, BaseComponent, Event
 
+
 class Request(Event):
     """Request Event"""
 
+
 class Response(Event):
     """Response Event"""
+
 
 class ResponseObject(object):
 
@@ -26,6 +29,7 @@ class ResponseObject(object):
 
     def read(self):
         return self._body.read()
+
 
 class HTTP(BaseComponent):
 
