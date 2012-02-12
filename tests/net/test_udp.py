@@ -96,6 +96,6 @@ def test_udp_close(Poller):
         server = Server() + UDPServer((host, port))
         server.register(m)
 
-        assert pytest.wait_for(server, "ready")
+        assert pytest.wait_for(server, "ready", timeout=6.0)
     finally:
         m.stop()
