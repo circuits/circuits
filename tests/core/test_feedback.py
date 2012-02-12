@@ -15,9 +15,6 @@ class Test(Event):
     success = True
     failure = True
 
-class Test2(Event):
-    end = True
-
 
 class App(Component):
 
@@ -26,10 +23,9 @@ class App(Component):
 
         self.e = None
         self.error = None
+        self.value = None
         self.success = False
         self.failure = False
-        self.end = False
-        self.failed_end = False
 
     @handler("*", filter=True)
     def event(self, event, *args, **kwargs):
@@ -42,22 +38,9 @@ class App(Component):
 
         return "Hello World!"
 
-    def test2(self):
-        if self.end:
-            self.failed_end = True
-
-    @handler("test2")
-    def test22(self):
-        return self.test2(self)
-
-
-    def test2_end(self, e):
+    def test_success(self, e, value):
         self.e = e
-        if not self.failed_end:
-            self.end = True
-
-    def test_success(self, e):
-        self.e = e
+        self.value = value
         self.success = True
 
     def test_failure(self, e, error):
@@ -70,34 +53,19 @@ def reraise(e):
     raise e
 
 
-def test_end():
-    app = App()
-    while app:
-        app.flush()
-
-    e = Test2()
-    x = app.fire(e)
-
-    while app:
-        app.flush()
-
-    assert app.e == e
-    assert app.end
-
-
 def test_success():
     app = App()
     while app:
         app.flush()
 
     e = Test()
-    x = app.fire(e)
+    value = app.fire(e)
 
     while app:
         app.flush()
 
     # The Event
-    s = x.value
+    s = value.value
     assert s == "Hello World!"
 
     while app:
@@ -105,7 +73,8 @@ def test_success():
 
     assert app.e == e
     assert app.success
-    assert app.e.value == x
+    assert app.e.value == value
+    assert app.value == value.value
 
 
 def test_failure():

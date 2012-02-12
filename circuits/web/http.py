@@ -262,7 +262,7 @@ class HTTP(BaseComponent):
             self.fire(HTTPError(request, response, error=value.value))
 
     @handler("request_success")
-    def _on_request_success(self, e):
+    def _on_request_success(self, e, value):
         # We only want the non-recursive value at this point.
         # If the value is an instance of Value we will set
         # the .notify flag and be notified of changes to the value.
