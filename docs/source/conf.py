@@ -40,7 +40,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'circuits'
-copyright = u'2004-2011, James Mills'
+copyright = u'2004-2012, James Mills'
 url = "http://bitbucket.org/prologic/circuits/"
 
 # The version info for the project you're documenting, acts as replacement for

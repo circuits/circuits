@@ -8,7 +8,7 @@ circuits is a **Lightweight** **Event** driven and **Asynchronous**
 **Application Framework** for the `Python Programming Language`_
 with a strong **Component** Architecture.
 
-:copyright: CopyRight (C) 2004-2011 by James Mills
+:copyright: CopyRight (C) 2004-2012 by James Mills
 :license: MIT (See: LICENSE)
 
 .. _Python Programming Language: http://www.python.org/
