@@ -90,11 +90,15 @@ class Value(object):
 
         return str(self.value)
 
-    def getValue(self, chain=True):
+    def getValue(self, recursive=True):
         value = self._value
-        if chain:
-            while isinstance(value, Value):
-                value = value._value
+
+        if not recursive:
+            return value
+
+        while isinstance(value, Value):
+            value = value._value
+
         return value
 
     def setValue(self, value):

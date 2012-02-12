@@ -263,12 +263,13 @@ class HTTP(BaseComponent):
 
     @handler("request_success")
     def _on_request_success(self, e):
-        # We don't want to decapsulate all the values because
-        # if value._value is a Value we want to be notified when it changes
-        # and display the response then
-        value = e.value.getValue(chain=False)
+        # We only want the non-recursive value at this point.
+        # If the value is an instance of Value we will set
+        # the .notify flag and be notified of changes to the value.
+        value = e.value.getValue(recursive=False)
+
         if isinstance(value, Value):
-            value = value.getValue(chain=False)
+            value = value.getValue(recursive=False)
 
         request, response = e.args[:2]
 
@@ -299,10 +300,8 @@ class HTTP(BaseComponent):
                 else:
                     self.fire(HTTPError(request, response, error=error))
             else:
-                if value.manager is None:
-                    value.manager = self
-                # We want to be notify on the changes of this value
-                value = e.value.getValue(chain=False)
+                # We want to be notified of changes to the value
+                value = e.value.getValue(recursive=False)
                 value.event = e
                 value.notify = True
         elif type(value) is tuple:
