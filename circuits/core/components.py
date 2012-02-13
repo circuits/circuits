@@ -8,12 +8,33 @@ This module defines the BaseComponent and the subclass Component
 """
 
 from types import MethodType
-from inspect import getmembers
 from collections import Callable
+from inspect import getmembers, isclass
 
 from .manager import Manager
+from .utils import flatten, findroot
 from .events import Registered, Unregistered
 from .handlers import handler, HandlerMetaClass
+
+
+def check_singleton(x, y):
+    """Return False if x is a singleton and already a member of y"""
+
+    singleton = getattr(x, "singleton", False)
+
+    if isclass(singleton) and issubclass(singleton, Manager):
+        return any([isinstance(c, singleton) for c in flatten(findroot(y))])
+    elif singleton:
+        return any([type(x) in c for c in flatten(findroot(y))])
+    else:
+        return False
+
+
+class SingletonError(Exception):
+    """Singleton Error
+
+    Raised if a Component with the `singleton` class attribute is True.
+    """
 
 
 class BaseComponent(Manager):
@@ -23,6 +44,7 @@ class BaseComponent(Manager):
     """
 
     channel = "*"
+    singleton = False
 
     def __new__(cls, *args, **kwargs):
         self = super(BaseComponent, cls).__new__(cls)
@@ -60,6 +82,9 @@ class BaseComponent(Manager):
                 v.register(self)
 
     def register(self, parent):
+        if check_singleton(self, parent):
+            raise SingletonError(self)
+
         self.parent = parent
         self.root = parent.root
 

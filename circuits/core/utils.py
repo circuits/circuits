@@ -19,6 +19,17 @@ def uncamel(s):
     return UNCAMELRE.sub("\g<1>_\g<2>", s).lower()
 
 
+def flatten(x, v=None):
+    if not v:
+        v = set()
+    yield x
+    for c in x.components.copy():
+        if c not in v:
+            v.add(c)
+            for r in flatten(c, v):
+                yield r
+
+
 def itercmp(x, c, subclass=True):
     if subclass and issubclass(x.__class__, c):
         yield x
