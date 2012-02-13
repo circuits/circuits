@@ -4,7 +4,7 @@
 
 """Manager
 
-This module definse the Manager class subclasses by component.BaseComponent
+This module defines the Manager class subclasses by component.BaseComponent
 """
 
 import atexit
@@ -408,6 +408,11 @@ class Manager(object):
             self.stop()
 
     def start(self, process=False):
+        """
+        Start a new thread or process that invokes this manager's
+        ``run()`` method. The invocation of this method returns
+        immediately after the task or process has been started.
+        """
         Task = Process if process else Thread
 
         self._task = Task(target=self.run, name=self.name)
@@ -416,6 +421,11 @@ class Manager(object):
         self._task.start()
 
     def stop(self):
+        """
+        Stop this manager. Invoking this method either causes
+        an invocation of ``run()`` to return or terminates the
+        thread or process associated with the manager. 
+        """
         if not self.running:
             return
 
@@ -459,6 +469,19 @@ class Manager(object):
             sleep(TIMEOUT)
 
     def run(self):
+        """
+        Run this manager. The method continuously checks for events
+        on the event queue of the component hierarchy, and invoke
+        associated handlers. It also invokes the component's 
+        "tick"-handlers at regular intervals.
+        
+        The method returns when the manager's ``stop()`` method is invoked.
+        
+        If invoked by a programs main thread, a signal handler for
+        the ``INT`` and ``TERM`` signals is installed. This handler
+        fires the corresponding :class:`circuits.core.events.Signal`
+        events and then calls ``stop()`` for the manager. 
+        """
         if GREENLET:
             self._greenlet = greenlet(self._run)
             self._greenlet.switch()
