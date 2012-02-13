@@ -14,7 +14,39 @@ from collections import Callable
 def handler(*names, **kwargs):
     """Creates an Event Handler
 
-    ...
+    This decorator can be applied to methods of classes derived from
+    :class:`circuits.core.components.BaseComponent`. It marks the 
+    method as a handler for the events passed as arguments
+    to the ``@handler`` decorator. The events are specified by their name.
+    
+    The decorated method's arguments must match the arguments passed to the
+    :class:`circuits.core.events.Event` on creation. Optionally, the
+    method may have an additional first argument named *event*. If declared,
+    the event object that caused the handler to be invoked is assigned to it.
+    
+    By default, the handler is invoked for events that are propagated on
+    the channel determined by the BaseComponent's *channel* attribute.
+    This may be overridden by specifying a different channel as a keyword
+    parameter of the decorator (``channel=...``).
+    
+    Keyword argument ``priority`` influences the order in which handlers
+    for a specific event are invoked. The higher the priority, the earlier
+    the handler is executed.
+    
+    A handler may also be specified as a filter by adding
+    the keyword argument ``filter=True`` to the decorator.
+    If such a handler returns a value different from ``None``, no more
+    handlers are invoked for the handled event. Filtering handlers are
+    invoked before normal handlers with the same priority (but after any
+    handlers with higher priority).
+    
+    If you want to override a handler defined in a base class of your
+    component, you must specify ``override=True``, else your method becomes
+    an additional handler for the event.
+    
+    Finally, a handler may be defined as a "tick"-handler by
+    specifying ``tick=True``.
+    Such a handler is invoked at regular intervals ("polling").
     """
 
     def wrapper(f):

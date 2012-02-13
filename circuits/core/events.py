@@ -22,6 +22,7 @@ class EventMetaClass(type):
 class BaseEvent(object):
 
     channels = ()
+    "The channels this message is send to."
 
     success = None
     failure = None
@@ -31,7 +32,31 @@ class BaseEvent(object):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+        """Base Event
+        
+        An Event is a message send to one or more channels. It is eventually
+        dispatched to all components that have handlers for one
+        of the channels and the event type.
+        
+        All normal arguments and keyword arguments passed to the constructor
+        of an event are passed on to the handler. When declaring a 
+        handler, its argument list must therefore match the arguments
+        used for creating the event.
+        
+        Every event has a ``name`` attribute that is used for matching
+        the event with the handlers. By default, the name is the uncameled
+        class name of the event.
+   
+        :cvar channels: An attribute that specifies the channels 
+            that the event will be delivered to as a tuple. The attribute is 
+            initialized as a class level attribute with an empty tuple in 
+            this base event class, meaning that events will be delivered 
+            to all channels. 
+            
+        :ivar value: This is a :class:`circuits.core.values.Value` 
+            object that holds the results returned by the handlers invoked
+            for the event.
+        """
 
         self.args = list(args)
         self.kwargs = kwargs
