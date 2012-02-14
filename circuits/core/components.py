@@ -97,8 +97,9 @@ class BaseComponent(Manager):
                 v.register(self)
 
     def register(self, parent):
-        if check_singleton(self, parent):
-            raise SingletonError(self)
+        # FIXME: This might have some strange behaior. Disabled temporarily.
+        #if check_singleton(self, parent):
+        #    raise SingletonError(self)
 
         self.parent = parent
         self.root = parent.root
