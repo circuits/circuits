@@ -4,14 +4,14 @@ from io import BytesIO
 from circuits.web.headers import parse_headers
 from circuits.core import handler, BaseComponent, Event
 
+
 class Request(Event):
     """Request Event"""
 
-    success = "request_success",
-    failure = "request_failure",
 
 class Response(Event):
     """Response Event"""
+
 
 class ResponseObject(object):
 
@@ -30,6 +30,7 @@ class ResponseObject(object):
     def read(self):
         return self._body.read()
 
+
 class HTTP(BaseComponent):
 
     channel = "web"
@@ -42,7 +43,7 @@ class HTTP(BaseComponent):
         self._response = None
         self._buffer = BytesIO()
 
-    @handler("read", target="client")
+    @handler("read", channel="client")
     def _on_client_read(self, data):
         if self._response is not None:
             self._response._body.write(data)

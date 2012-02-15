@@ -52,7 +52,6 @@ def test():
     e = Event()
     app.fire(e)
     app.flush()
-
     stderr.seek(0)
     s = stderr.read().strip()
     assert s == str(e)
@@ -169,7 +168,7 @@ def test_exceptions():
     app.flush()
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<Error[*:exception]")
+    assert s.startswith("<Error[*.error]")
     stderr.seek(0)
     stderr.truncate()
 
@@ -212,9 +211,8 @@ def test_tick_exceptions():
 
     stderr.seek(0)
     s = stderr.read().strip()
+    assert s.startswith("<Error[*.error] (<type 'exceptions.Exception'>")
 
-    assert s.startswith("<Error[*:exception] [<class 'Exception'>, Exception()") \
-            or s.startswith("<Error[*:exception] [<type 'exceptions.Exception'>, Exception()")
     stderr.seek(0)
     stderr.truncate()
 
@@ -235,7 +233,7 @@ def test_IgnoreEvents():
 
     assert debugger.events
 
-    debugger.IgnoreEvents.extend([Test])
+    debugger.IgnoreEvents.extend(["test"])
 
     e = Event()
     app.fire(e)
@@ -316,5 +314,4 @@ def test_Logger_error():
     app.fire(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("ERROR <listener on ('test',) {target='*', priority=0.0}> (<class 'Exception'>):") \
-        or logger.msg.startswith("ERROR <listener on ('test',) {target='*', priority=0.0}> (<type 'exceptions.Exceptio")
+    assert logger.msg.startswith("<Error[*.error] (<type 'exceptions.Exception'>")

@@ -7,38 +7,59 @@
 This module defines utilities used by circuits.
 """
 
+import re
 import sys
 
 from imp import reload
 
+UNCAMELRE = re.compile("([a-z0-9])([A-Z])")
 
-def itercmp(x, c, subclass=True):
-    if subclass and issubclass(x.__class__, c):
-        yield x
-    elif isinstance(x, c):
-        yield x
+
+def uncamel(s):
+    return UNCAMELRE.sub("\g<1>_\g<2>", s).lower()
+
+
+def flatten(root, visited=None):
+    if not visited:
+        visited = set()
+    yield root
+    for component in root.components.copy():
+        if component not in visited:
+            visited.add(component)
+            for child in flatten(component, visited):
+                yield child
+
+
+def findchannel(root, channel, all=False):
+    components = [x for x in flatten(root)
+            if x.channel == channel]
+
+    if all:
+        return components
+
+    if components:
+        return components[0]
+
+
+def findtype(root, component, all=False):
+    components = [x for x in flatten(root)
+            if issubclass(type(x), component)]
+
+    if all:
+        return components
+
+    if components:
+        return components[0]
+
+findcmp = findtype
+
+
+def findroot(component):
+    if component.parent == component:
+        return component
     else:
-        for component in x.components:
-            if subclass and issubclass(component.__class__, c):
-                yield component
-            elif isinstance(component, c):
-                yield component
-            else:
-                for component in itercmp(component, c, subclass):
-                    yield component
+        return findroot(component.parent)
 
-def findcmp(x, c, subclass=True):
-    components = itercmp(x, c, subclass)
-    try:
-        return next(components)
-    except StopIteration:
-        return None
-
-def findroot(x):
-    if x.manager == x:
-        return x
-    else:
-        return findroot(x.manager)
 
 def safeimport(name):
     modules = sys.modules.copy()

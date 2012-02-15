@@ -6,6 +6,9 @@
 
 import os
 
+import pytest
+
+
 DOCROOT = os.path.join(os.path.dirname(__file__), "static")
 
 
@@ -43,10 +46,14 @@ def setupwebapp(request):
 
     Static("/static", DOCROOT, dirlisting=True).register(webapp)
     webapp.start()
+
+    waiter = pytest.WaitEvent(webapp, "ready")
+    assert waiter.wait()
+
     return webapp
 
 
 def teardownwebapp(webapp):
     from circuits.net.sockets import Close
-    webapp.fire(Close(), target=webapp.server)
+    webapp.fire(Close(), webapp.server)
     webapp.stop()

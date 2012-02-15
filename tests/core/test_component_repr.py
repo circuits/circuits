@@ -21,23 +21,17 @@ class App(Component):
     def test(self, event, *args, **kwargs):
         pass
 
+class Test(Event):
+    pass
+
 def test():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
-
     app = App()
-    assert repr(app) == "<App/* %s (queued=0, channels=2, handlers=2) [S]>" % id
+
+    assert repr(app) == "<App/* %s (queued=0) [S]>" % id
+
+    app.fire(Test())
+    assert repr(app) == "<App/* %s (queued=1) [S]>" % id
 
     app.flush()
-    assert repr(app) == "<App/* %s (queued=0, channels=2, handlers=2) [S]>" % id
-
-    app.fire(Event(), "test")
-    assert repr(app) == "<App/* %s (queued=1, channels=2, handlers=2) [S]>" % id
-
-    app.flush()
-    assert repr(app) == "<App/* %s (queued=0, channels=2, handlers=2) [S]>" % id
-
-    app.unregister()
-    assert repr(app) == "<App/* %s (queued=1, channels=0, handlers=0) [S]>" % id
-
-    app.flush()
-    assert repr(app) == "<App/* %s (queued=0, channels=0, handlers=0) [S]>" % id
+    assert repr(app) == "<App/* %s (queued=0) [S]>" % id

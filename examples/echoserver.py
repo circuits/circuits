@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from circuits.net.sockets import TCPServer, Write
+from circuits.net.sockets import TCPServer
 
 class EchoServer(TCPServer):
 
     def read(self, sock, data):
-        self.fire(Write(sock, data))
+        return data
     
-EchoServer(8000).run()
+(EchoServer(8000)).run()

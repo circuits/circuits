@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-from circuits.web import Controller, BaseServer
+from circuits.web import Controller
 
 from .helpers import urlencode, urlopen, HTTPError
-import pytest
 
 
 class Root(Controller):
@@ -24,7 +23,7 @@ class Root(Controller):
     def test_notfound(self):
         return self.notfound()
 
-def test_simple(webapp):
+def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
@@ -70,13 +69,3 @@ def test_notfound(webapp):
         assert e.msg == "Not Found"
     else:
         assert False
-
-def test_dual_server(webapp):
-    server = BaseServer(0, channel='web2')
-    server.register(webapp)
-    try:
-        f = urlopen('%s/alt' % server.base)
-        assert False
-    except HTTPError as e:
-        assert e.code == 404
-    

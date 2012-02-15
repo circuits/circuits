@@ -7,40 +7,63 @@
 This module defines the BaseComponent and the subclass Component
 """
 
-from itertools import chain
 from types import MethodType
-from inspect import getmembers
+from collections import Callable
+from inspect import getmembers, isclass
 
-from .utils import findroot
 from .manager import Manager
-from .handlers import HandlerMetaClass, handler
+from .utils import flatten, findroot
 from .events import Registered, Unregistered
-import collections
+from .handlers import handler, HandlerMetaClass
+
+
+def check_singleton(x, y):
+    """Return True if x contains a singleton that is already a member of y"""
+
+    singletons = filter(lambda i: getattr(i, "singleton", False), flatten(x))
+
+    for component in singletons:
+        singleton = getattr(component, "singleton", False)
+        if isclass(singleton) and issubclass(singleton, Manager):
+            if any([isinstance(c, singleton) for c in flatten(findroot(y))]):
+                return True
+        elif singleton:
+            if any([type(component) in c for c in flatten(findroot(y))]):
+                return True
+
+    return False
+
+
+class SingletonError(Exception):
+    """Singleton Error
+
+    Raised if a Component with the `singleton` class attribute is True.
+    """
+
 
 class BaseComponent(Manager):
     """Base Component
 
-    This is the Base of the Component which manages registrations to other
-    components or managers. Every Base Component and thus Component has a
-    unique Channel that is used as a separation of concern for its registered
-    Event Handlers. By default, this Channels is None (or also known as the
-    Global Channel).
+    This is the base class for all components in a circuits based application.
+    Components can (and should, except for root components) be registered
+    with a parent component.
 
-    When a Component (Base Component) has a set Channel that is not the Global
-    Channel (None), then any Event Handlers will actually listen on a Channel
-    that is a combination of the Component's Channel prefixed with the Event
-    Handler's Channel. The form becomes:
+    BaseComponents can declare methods as event handlers using the
+    handler decoration (see :func:`circuits.core.handlers.handler`). The
+    handlers are invoked for matching events from the
+    component's channel (specified as the component's ``channel`` attribute).
 
-    C{target:channel}
+    BaseComponents inherit from :class:`circuits.core.manager.Manager`.
+    This provides components with the
+    :func:`circuits.core.manager.Manager.fireEvent` method that can
+    be used to fire events as the result of some computation.
 
-    Where:
-       - target is the Component's Channel
-       - channel is the Event Handler's Channel
-
-    :ivar channel: The Component's Channel
+    Apart from the ``fireEvent()`` method, the Manager nature is important
+    for root components that are started or run.
     """
 
     channel = "*"
+    singleton = False
 
     def __new__(cls, *args, **kwargs):
         self = super(BaseComponent, cls).__new__(cls)
@@ -53,7 +76,7 @@ class BaseComponent(Manager):
         for base in cls.__bases__:
             if issubclass(cls, base):
                 for k, v in list(base.__dict__.items()):
-                    p1 = isinstance(v, collections.Callable)
+                    p1 = isinstance(v, Callable)
                     p2 = getattr(v, "handler", False)
                     p3 = overridden(k)
                     if p1 and p2 and not p3:
@@ -69,115 +92,57 @@ class BaseComponent(Manager):
         super(BaseComponent, self).__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
-        self._registerHandlers()
-        self.manager = self
 
         for k, v in getmembers(self):
-            if isinstance(v, BaseComponent):
+            if getattr(v, "handler", False) is True:
+                self.addHandler(v)
+            if v is not self and isinstance(v, BaseComponent) \
+                    and v not in ('parent', 'root'):
                 v.register(self)
 
-    def _registerHandlers(self, manager=None):
-        if manager is None:
-            p = lambda x: isinstance(x, collections.Callable) and getattr(x, "handler", False)
-            handlers = [v for k, v in getmembers(self, p)]
-            for handler in handlers:
-                target = handler.target or getattr(self, "channel", "*")
-                self.addHandler(handler, target=target)
-        else:
-            for handler in chain(self._globals, self._handlers):
-                kwargs = {}
-                kwargs = self._handlerattrs[handler]
-                if not kwargs.get("target"):
-                    kwargs["target"] = getattr(self, "channel", "*")
-                if "channels" in kwargs:
-                    channels = kwargs["channels"]
-                    del kwargs["channels"]
-                else:
-                    channels = ()
-                manager.addHandler(handler, *channels, **kwargs)
+    def register(self, parent):
+        if check_singleton(self, parent):
+            raise SingletonError(self)
 
-    def _unregisterHandlers(self, manager):
-        for handler in self._handlers.copy():
-            manager.removeHandler(handler)
+        self.parent = parent
+        self.root = parent.root
 
-    def register(self, manager):
-        """Register all Event Handlers with the given Manager
-        
-        This will register all Event Handlers of this Component to the
-        given Manager. By default, every Component (Base Component) is
-        registered with itself.
-        
-        If the Component or Manager being registered
-        with is not the current Component, then any Hidden Components
-        in registered to this Component will also be registered with the
-        given Manager. A Registered Event will also be sent.
-        """
+        if parent is not self:
+            parent.registerChild(self)
+            self.fire(Registered(self, self.parent))
 
-        def _register(c, m, r):
-            c._registerHandlers(m)
-            c.root = r
-            if c._queue:
-                m._queue.extend(list(c._queue))
-                c._queue.clear()
-            if m is not r:
-                c._registerHandlers(r)
-                if m._queue:
-                    r._queue.extend(list(m._queue))
-                    m._queue.clear()
-            if hasattr(c, "__tick__"):
-                m._ticks.add(getattr(c, "__tick__"))
-                if m is not r:
-                    r._ticks.add(getattr(c, "__tick__"))
-            [_register(x, m, r) for x in c.components]
-
-        _register(self, manager, findroot(manager))
-
-        self.manager = manager
-
-        if manager is not self:
-            manager.components.add(self)
-            self.fire(Registered(self, manager), target=self)
+        self._updateRoot(parent.root)
 
         return self
 
     @handler('unregister')
-    def on_unregister(self, component=None):
-        if component == self or component == None:
-            self.unregister()
+    def _on_unregister(self, component):
+        if component is not self:
+            return
+        return self.unregister()
 
     def unregister(self):
-        """Unregister all registered Event Handlers
-        
-        This will unregister all registered Event Handlers of this Component
-        from its registered Component or Manager.
+        self.fire(Unregistered(self, self.parent))
 
-        @note: It's possible to unregister a Component from itself!
-        """
-        def _unregister(c, m, r):
-            c._unregisterHandlers(m)
-            c.root = self
-            if m is not r:
-                c._unregisterHandlers(r)
-            if hasattr(c, "__tick__"):
-                m._ticks.remove(getattr(c, "__tick__"))
-                if m is not r:
-                    r._ticks.remove(getattr(c, "__tick__"))
+        if self.parent is not self:
+            self.parent.unregisterChild(self)
+            self.parent = self
 
-            for x in c.components:
-                _unregister(x, m, r)
-
-        self.fire(Unregistered(self, self.manager), target=self)
-
-        root = findroot(self.manager)
-        _unregister(self, self.manager, root)
-
-        self.manager.components.discard(self)
-        if not root == self:
-            self.fire(Unregistered(self, self.manager), target=self)
-
-        self.manager = self
+        self._updateRoot(self)
 
         return self
 
-Component = HandlerMetaClass("Component", (BaseComponent,), {})
+    def _updateRoot(self, root):
+        self.root = root
+        for c in self.components:
+            c._updateRoot(root)
 
+Component = HandlerMetaClass("Component", (BaseComponent,), {})
+"""
+If you use Component instead of BaseComponent as base class for your own
+component class, then all methods that are not marked as private
+(i.e: start with an underscore) are automatically decorated as handlers.
+
+The methods are invoked for all events from the component's channel
+where the event's name matches the method's name.
+"""

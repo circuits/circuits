@@ -62,7 +62,7 @@ class Logger(BaseComponent):
         else:
             self.logger.setLevel(logging.WARNING)
 
-        formatter = logging.Formatter(format,dateFormat)
+        formatter = logging.Formatter(format, dateFormat)
         hdlr.setFormatter(formatter)
         self.logger.addHandler(hdlr)
 

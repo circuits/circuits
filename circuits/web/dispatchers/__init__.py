@@ -20,9 +20,4 @@ try:
 except ImportError:
     pass
 
-try:
-    from circuits.web.dispatchers.routes import Routes
-except ImportError:
-    pass
-
 # hghooks: no-pyflakes

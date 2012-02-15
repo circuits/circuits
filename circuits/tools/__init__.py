@@ -11,7 +11,6 @@ tools are installed as executables with a prefix of "circuits."
 from hashlib import md5
 from warnings import warn
 
-from circuits.core.events import Unregister
 
 def tryimport(modules, message=None):
     if isinstance(modules, str):
@@ -48,16 +47,16 @@ def edges(x, e=None, v=None):
 
 
 def findroot(x):
-    if x.manager == x:
+    if x.parent == x:
         return x
     else:
-        return findroot(x.manager)
+        return findroot(x.parent)
 
 
 def kill(x):
     for c in x.components.copy():
         kill(c)
-    if x.manager != x:
+    if x.parent is not x:
         x.unregister()
 
 
@@ -98,27 +97,17 @@ def graph(x, name=None):
     return "\n".join(walk(x, printer))
 
 
-def reprhandler(c, h):
-    """Display a nicely formatted Event Handler, h from Component c.
+def reprhandler(handler):
+    format = "<%s[%s.%s] (%s.%s)>"
 
-    :param c: A Component that contains Event Handler h
-    :type c: Manager or Manager subclass
+    channel = handler.channel or "*"
+    names = ".".join(handler.names)
+    type = "filter" if handler.filter else "listener"
 
-    :param x: An Event Handler
-    :type  x: function or method
+    instance = handler.im_self.__class__.__name__
+    method = handler.__name__
 
-    @return: A nicely formatted representation of the Event Handler, x
-    @rtype:  str
-    """
-
-    attrs = c._handlerattrs[h]
-
-    format = "<%s on %s {target=%s, priority=%0.1f}>"
-    channels = repr(attrs["channels"])
-    f = "filter" if attrs["filter"] else "listener"
-    t = repr(attrs["target"])
-    p = attrs["priority"]
-    return format % (f, channels, t, p)
+    return format % (type, channel, names, instance, method)
 
 
 def inspect(x):
@@ -134,20 +123,21 @@ def inspect(x):
     s = []
     write = s.append
 
-    write(" Registered Components: %d\n" % len(x.components))
+    write(" Components: %d\n" % len(x.components))
     for component in x.components:
         write("  %s\n" % component)
     write("\n")
 
-    write(" Tick Functions: %d\n" % len(x._ticks))
-    for tick in x._ticks:
+    ticks = x.getTicks()
+    write(" Tick Functions: %d\n" % len(ticks))
+    for tick in ticks:
         write("  %s\n" % tick)
     write("\n")
 
-    write(" Channels and Event Handlers: %d\n" % len(x.channels))
-    for (t, c) in x.channels:
-        write("  %s:%s; %d\n" % (t, c, len(x.channels[(t, c)])))
-        for handler in x.channels[(t, c)]:
-            write("   %s\n" % reprhandler(x, handler))
+    write(" Event Handlers: %d\n" % len(x._handlers.values()))
+    for event, handlers in x._handlers.items():
+        write("  %s; %d\n" % (event, len(x._handlers[event])))
+        for handler in x._handlers[event]:
+            write("   %s\n" % reprhandler(handler))
 
     return "".join(s)

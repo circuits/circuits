@@ -23,10 +23,9 @@ from circuits.core import handler, BaseComponent, Value
 from . import wrappers
 from .utils import quoted_slash
 from .exceptions import HTTPException
-from .errors import HTTPError, NotFound
 from .headers import parse_headers, Headers
 from .events import Request, Response, Stream
-from .errors import Redirect as RedirectError
+from .errors import HTTPError, NotFound, Redirect
 from .exceptions import Redirect as RedirectException
 
 MAX_HEADER_FRAGENTS = 20
@@ -96,7 +95,8 @@ class HTTP(BaseComponent):
             elif isinstance(response.body, unicode):
                 body = response.body.encode(self._encoding)
             else:
-                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in response.body)
+                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) \
+                    for s in response.body if s is not None)
                 body = b"".join(parts)
 
             if body:
@@ -249,8 +249,8 @@ class HTTP(BaseComponent):
         response.body = str(event)
         self.fire(Response(response))
 
-    @handler("value_changed")
-    def _on_value_changed(self, value):
+    @handler("request_value_changed")
+    def _on_request_value_changed(self, value):
         if value.handled:
             return
         request, response = value.event.args[:2]
@@ -261,46 +261,70 @@ class HTTP(BaseComponent):
             # This possibly never occurs.
             self.fire(HTTPError(request, response, error=value.value))
 
-    @handler("request_success", "request_filtered")
-    def _on_request_success_or_filtered(self, evt, handler, retval):
-        request, response = evt.args[:2]
+    @handler("request_success")
+    def _on_request_success(self, e, value):
+        # We only want the non-recursive value at this point.
+        # If the value is an instance of Value we will set
+        # the .notify flag and be notified of changes to the value.
+        value = e.value.getValue(recursive=False)
 
-        if not request.handled and retval is not None:
-            request.handled = True
-            if isinstance(retval, HTTPError):
-                self.fire(retval)
-            elif isinstance(retval, wrappers.Response):
-                self.fire(Response(retval))
-            elif isinstance(retval, Value):
-                if retval.result and not retval.errors:
-                    response.body = retval.value
-                    self.fire(Response(response))
-                elif retval.errors:
-                    error = retval.value
-                    etype, evalue, traceback = error
-                    if isinstance(evalue, RedirectException):
-                        self.fire(RedirectError(request, response,
-                            evalue.urls, evalue.status))
-                    elif isinstance(evalue, HTTPException):
-                        if evalue.traceback:
-                            self.fire(HTTPError(request, response, evalue.code,
-                                description=evalue.description, error=error))
-                        else:
-                            self.fire(HTTPError(request, response, evalue.code,
-                                description=evalue.description))
-                    else:
-                        self.fire(HTTPError(request, response, error=error))
-                else:
-                    if retval.manager is None:
-                        retval.manager = self
-                    retval.event = evt
-                    retval.onSet = "value_changed", self
-            elif type(retval) is not bool:
-                response.body = retval
+        if isinstance(value, Value):
+            value = value.getValue(recursive=False)
+
+        request, response = e.args[:2]
+
+        if value is None:
+            self.fire(NotFound(request, response))
+        elif isinstance(value, HTTPError):
+            response.body = str(value)
+            self.fire(Response(response))
+        elif isinstance(value, wrappers.Response):
+            self.fire(Response(value))
+        elif isinstance(value, Value):
+            if value.result and not value.errors:
+                response.body = value.value
                 self.fire(Response(response))
+            elif value.errors:
+                error = value.value
+                etype, evalue, traceback = error
+                if isinstance(evalue, RedirectException):
+                    self.fire(Redirect(request, response,
+                        evalue.urls, evalue.status))
+                elif isinstance(evalue, HTTPException):
+                    if evalue.traceback:
+                        self.fire(HTTPError(request, response, evalue.code,
+                            description=evalue.description, error=error))
+                    else:
+                        self.fire(HTTPError(request, response, evalue.code,
+                            description=evalue.description))
+                else:
+                    self.fire(HTTPError(request, response, error=error))
+            else:
+                # We want to be notified of changes to the value
+                value = e.value.getValue(recursive=False)
+                value.event = e
+                value.notify = True
+        elif type(value) is tuple:
+            etype, evalue, traceback = error = value
+
+            if isinstance(evalue, RedirectException):
+                self.fire(Redirect(request, response,
+                    evalue.urls, evalue.status))
+            elif isinstance(evalue, HTTPException):
+                if evalue.traceback:
+                    self.fire(HTTPError(request, response, evalue.code,
+                        description=evalue.description, error=error))
+                else:
+                    self.fire(HTTPError(request, response, evalue.code,
+                        description=evalue.description))
+            else:
+                self.fire(HTTPError(request, response, error=error))
+        elif type(value) is not bool:
+            response.body = value
+            self.fire(Response(response))
 
     @handler("request_failure", "response_failure")
-    def _on_request_or_response_failure(self, evt, handler, error):
+    def _on_request_or_response_failure(self, evt, err):
         if len(evt.args) == 1:
             response = evt.args[0]
             request = response.request
@@ -315,31 +339,17 @@ class HTTP(BaseComponent):
         if not request.handled:
             request.handled = True
 
-        etype, evalue, traceback = error
+        etype, evalue, traceback = err
 
         if isinstance(evalue, RedirectException):
-            self.fire(RedirectError(request, response,
+            self.fire(Redirect(request, response,
                 evalue.urls, evalue.status))
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
                 self.fire(HTTPError(request, response, evalue.code,
-                    description=evalue.description, error=error))
+                    description=evalue.description, error=err))
             else:
                 self.fire(HTTPError(request, response, evalue.code,
                     description=evalue.description))
         else:
-            self.fire(HTTPError(request, response, error=error))
-
-    @handler("request_completed")
-    def _on_request_completed(self, evt, handler, retval):
-        request, response = evt.args[:2]
-
-        # Return a 404 response on any of the following:
-        # 1) The request was not successful (request.handled)
-        # 2) The request was not handled by any handler (handler)
-        # 3) The value is both None and is not a future.
-        #    (evt.value.value, evt.future)
-
-        if not request.handled or handler is None or \
-                (evt.value.value is None and not evt.future):
-            self.fire(NotFound(request, response))
+            self.fire(HTTPError(request, response, error=err))

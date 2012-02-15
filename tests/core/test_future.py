@@ -4,14 +4,18 @@ import pytest
 
 from circuits import future, handler, BaseComponent, Component, Event
 
+
 class Hello(Event):
     """Hello Event"""
+
 
 class Test(Event):
     """Test Event"""
 
+
 class Error(Event):
     """Error Event"""
+
 
 class App(Component):
 
@@ -25,6 +29,7 @@ class App(Component):
     @future()
     def error(self):
         raise Exception("Hello World!")
+
 
 class BaseApp(BaseComponent):
 
@@ -42,23 +47,32 @@ class BaseApp(BaseComponent):
     def _on_error(self):
         raise Exception("Hello World!")
 
+
 def reraise(e):
     raise e
 
+
 def test():
     app = App()
-    while app: app.flush()
+    while app:
+        app.flush()
+
     e = Test()
     assert e.future == False
+
     x = app.fire(e)
     while not x.result:
         app.flush()
     assert e.future == True
     assert x.value == "Hello World!"
 
+
 def test_error():
     app = App()
-    while app: app.flush()
+
+    while app:
+        app.flush()
+
     e = Error()
     assert e.future == False
     x = app.fire(e)
@@ -71,9 +85,13 @@ def test_error():
     pytest.raises(Exception, lambda e: reraise(e), evalue)
     assert isinstance(etraceback, list)
 
+
 def test_base():
     app = BaseApp()
-    while app: app.flush()
+
+    while app:
+        app.flush()
+
     e = Test()
     assert e.future == False
     x = app.fire(e)
@@ -82,9 +100,13 @@ def test_base():
     assert e.future == True
     assert x.value == "Hello World!"
 
+
 def test_base_error():
     app = BaseApp()
-    while app: app.flush()
+
+    while app:
+        app.flush()
+
     e = Error()
     assert e.future == False
     x = app.fire(e)

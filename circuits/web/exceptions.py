@@ -10,10 +10,11 @@ Note: This code is mostly borrowed from werkzeug and adapted for circuits.web
 """
 
 import sys
+from cgi import escape
 from inspect import isclass
 
-from .utils import escape
 from .constants import HTTP_STATUS_CODES
+
 
 class HTTPException(Exception):
     """
@@ -41,6 +42,7 @@ class HTTPException(Exception):
     def __repr__(self):
         return '<%s \'%s\'>' % (self.__class__.__name__, self)
 
+
 class BadRequest(HTTPException):
     """*400* `Bad Request`
 
@@ -53,11 +55,13 @@ class BadRequest(HTTPException):
         'not understand.</p>'
     )
 
+
 class UnicodeError(HTTPException):
     """
     raised by the request functions if they were unable to decode the
     incoming data properly.
     """
+
 
 class Unauthorized(HTTPException):
     """*401* `Unauthorized`
@@ -121,6 +125,7 @@ class MethodNotAllowed(HTTPException):
                     '<p>The method %s is not allowed '
                     'for the requested URL.</p>'
                     ) % method
+
 
 class NotAcceptable(HTTPException):
     """*406* `Not Acceptable`
@@ -278,6 +283,7 @@ class ServiceUnavailable(HTTPException):
         'maintenance downtime or capacity problems.  Please try again '
         'later.</p>'
     )
+
 
 class Redirect(HTTPException):
 

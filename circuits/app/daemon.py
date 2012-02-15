@@ -14,6 +14,7 @@ import sys
 
 from circuits.core import handler, BaseComponent, Event
 
+
 class Daemonize(Event):
     """Daemonize Event
 
@@ -25,6 +26,7 @@ class Daemonize(Event):
     Arguments: *None*
     """
 
+
 class WritePID(Event):
     """"WritePID Event
 
@@ -34,6 +36,7 @@ class WritePID(Event):
     is used automatically by the `Daemon` Component after the
     :class:`Daemonize`.
     """
+
 
 class Daemon(BaseComponent):
     """Daemon Component
@@ -77,7 +80,7 @@ class Daemon(BaseComponent):
             else:
                 setattr(self, stdio_attrs[i], "/dev/null")
 
-    @handler("writepid")
+    @handler("write_pid")
     def _on_writepid(self):
         f = open(self._pidfile, "w")
         f.write(str(os.getpid()))
@@ -122,9 +125,9 @@ class Daemon(BaseComponent):
 
         self.fire(WritePID())
 
-    @handler("started", filter=True, priority=100.0, target="*")
-    def _on_started(self, manager, mode):
-        if not manager == self and mode is None:
+    @handler("started", filter=True, priority=100.0, channel="*")
+    def _on_started(self, component):
+        if component is not self:
             self.fire(Daemonize())
 
     @handler("registered")

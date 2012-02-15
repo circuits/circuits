@@ -261,7 +261,7 @@ class Response(object):
                 cLength = len(self.body.encode(self._encoding))
             elif isinstance(self.body, list):
                 cLength = sum([len(s.encode(self._encoding)) if not isinstance(s, bytes)
-                    else len(s) for s in self.body])
+                    else len(s) for s in self.body if s is not None])
             else:
                 cLength = None
 

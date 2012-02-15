@@ -15,6 +15,7 @@ from circuits.web import Controller
 
 docroot = os.path.abspath(os.path.join(os.path.dirname(__file__), "htdocs"))
 
+
 class HTTPREPL(object):
 
     def __init__(self, locals=None):
@@ -121,10 +122,11 @@ class HTTPREPL(object):
         doc = getattr(result, "__doc__", "") or ""
         return "%s(%s)\n%s" % (line, ", ".join(arglist), doc)
 
+
 class WebConsole(Controller):
 
-    @handler("started", target="*")
-    def _on_started(self, component, mode):
+    @handler("started", channel="*")
+    def _on_started(self, component):
         self.repl = HTTPREPL(locals={"root": self.root})
 
     def index(self):

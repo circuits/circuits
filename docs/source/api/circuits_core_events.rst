@@ -4,8 +4,15 @@
 .. automodule :: circuits.core.events
 
 
-Events
-------
+Classes
+-------
+
+.. autoclass :: Event
+   :members:
+      
+
+Common Events
+-------------
 
 .. autoclass :: End
 .. autoclass :: Error
@@ -18,13 +25,6 @@ Events
 .. autoclass :: Stopped
 .. autoclass :: Success
 .. autoclass :: Unregistered
-
-
-Classes
--------
-
-.. autoclass :: Event
-   :members:
 
 
 Components

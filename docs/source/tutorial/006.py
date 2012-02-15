@@ -2,6 +2,11 @@
 
 from circuits import Component, Event
 
+
+class Woof(Event):
+    """Woof Event"""
+
+
 class Pound(Component):
 
     def __init__(self):
@@ -11,15 +16,18 @@ class Pound(Component):
         self.fred = Fred().register(self)
 
     def started(self, *args):
-        self.fireEvent(Event(), "woof")
+        self.fire(Woof())
+
 
 class Dog(Component):
 
     def woof(self):
         print("Woof! I'm %s!" % self.name)
 
+
 class Bob(Dog):
     """Bob"""
+
 
 class Fred(Dog):
     """Fred"""

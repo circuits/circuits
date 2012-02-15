@@ -6,9 +6,9 @@ import signal
 from StringIO import StringIO
 from subprocess import Popen, PIPE
 
-from circuits.io import File, Write
+from circuits.io import File
+from circuits.tools import kill
 from circuits.web.events import Stream
-from circuits.tools import inspect, kill
 from circuits import handler, Event, Component
 from circuits.web import Server, Controller, Logger, Static, Sessions
 
@@ -42,17 +42,17 @@ class Command(Component):
 
         self._stdout = File(self._p.stdout, channel="%s.stdout" % channel)
         self.addHandler(self._on_stdout_eof, "eof",
-                target="%s.stdout" % channel)
+                channel="%s.stdout" % channel)
         self.addHandler(self._on_stdout_read, "read",
-                target="%s.stdout" % channel)
+                channel="%s.stdout" % channel)
         self._stdout.register(self)
 
-    @handler("disconnect", target="server")
+    @handler("disconnect", channel="server")
     def disconnect(self, sock):
         if sock == self._request.sock:
-            self.fire(Kill(), target=self)
+            self.fire(Kill(), self)
 
-    @handler("response", target="http", priority=-1)
+    @handler("response", channel="http", priority=-1)
     def response(self, response):
         if response == self._response:
             self._state = STREAMING
@@ -63,14 +63,14 @@ class Command(Component):
 
     def input(self, data):
         if self._stdin is not None:
-            self.fire(Write(data), target=self._stdin)
+            self.fire(Write(data), self._stdin)
 
     def _on_stdout_eof(self):
         if self._buffer is not None:
             self._buffer.flush()
             data = self._buffer.getvalue()
-            self.fire(Stream(self._response, data), target="http")
-        self.fire(Stream(self._response, None), target="http")
+            self.fire(Stream(self._response, data), "http")
+        self.fire(Stream(self._response, None), "http")
         self.fire(Kill())
 
     def _on_stdout_read(self, data):
@@ -84,9 +84,9 @@ class Command(Component):
                 self._buffer.flush()
                 data = self._buffer.getvalue()
                 self._buffer = None
-                self.fire(Stream(self._response, data), target="http")
+                self.fire(Stream(self._response, data), "http")
             else:
-                self.fire(Stream(self._response, data), target="http")
+                self.fire(Stream(self._response, data), "http")
 
 class Root(Controller):
 

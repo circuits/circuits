@@ -3,6 +3,7 @@
 .. _Python Standard Library: http://docs.python.org/library/
 .. _circuits Website: https://bitbucket.org/prologic/circuits/
 .. _circuits Page on PyPI: http://pypi.python.org/pypi/circuits
+.. _circuits Read the Docs: http://readthedocs.org/docs/circuits/en/latest/
 .. _MIT License: http://www.opensource.org/licenses/mit-license.php
 .. _Create an Issue: https://bitbucket.org/prologic/circuits/issue/new
 .. _circuits Mailing List: http://groups.google.com/group/circuits-users
@@ -31,6 +32,8 @@ this in mind and circuits "eats its own dog food" by having a
 feature-rich library of components built atop the core components.
 
 **Documentation**: http://packages.python.org/circuits
+
+Also available on `circuits Read the Docs`_.
 
 **Project website**: https://bitbucket.org/prologic/circuits/
 

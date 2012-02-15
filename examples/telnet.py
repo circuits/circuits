@@ -22,6 +22,7 @@ This example makes use of:
 
 import os
 import optparse
+from socket import gethostname
 
 from circuits.io import stdin
 from circuits import handler, Component
@@ -88,16 +89,18 @@ class Telnet(Component):
 
     def error(self, *args):
         if len(args) == 3:
-            value = args[1]
+            type, value, traceback = args
         else:
             value = args[0]
+            type = type(value)
+            traceback = None
 
         print "ERROR: %s" % value
 
     def read(self, data):
         print data.strip()
 
-    @handler("read", target="stdin")
+    @handler("read", "stdin")
     def stdin_read(self, data):
         self.fire(Write(data))
 

@@ -11,45 +11,57 @@ from inspect import getargspec
 from collections import Callable
 
 
-def handler(*channels, **kwargs):
+def handler(*names, **kwargs):
     """Creates an Event Handler
 
-    Decorator to wrap a callable into an Event Handler that
-    listens on a set of channels defined by channels. The type
-    of the Event Handler defaults to "listener". If kwargs["filter"]
-    is defined and is True, the Event Handler is defined as a
-    Filter and has priority over Listener Event Handlers.
-    If kwargs["target"] is defined and is not None, the
-    Event Handler will listen for the spcified channels on the
-    spcified Target Component's Channel.
+    This decorator can be applied to methods of classes derived from
+    :class:`circuits.core.components.BaseComponent`. It marks the 
+    method as a handler for the events passed as arguments
+    to the ``@handler`` decorator. The events are specified by their name.
     
-    Examples:
-       >>> @handler("foo")
-       ... def foo():
-       ...     pass
-       >>> @handler("bar", filter=True)
-       ... def bar():
-       ...     pass
-       >>> @handler("foo", "bar")
-       ... def foobar():
-       ...     pass
-       >>> @handler("x", target="other")
-       ... def x():
-       ...     pass
+    The decorated method's arguments must match the arguments passed to the
+    :class:`circuits.core.events.Event` on creation. Optionally, the
+    method may have an additional first argument named *event*. If declared,
+    the event object that caused the handler to be invoked is assigned to it.
+    
+    By default, the handler is invoked for events that are propagated on
+    the channel determined by the BaseComponent's *channel* attribute.
+    This may be overridden by specifying a different channel as a keyword
+    parameter of the decorator (``channel=...``).
+    
+    Keyword argument ``priority`` influences the order in which handlers
+    for a specific event are invoked. The higher the priority, the earlier
+    the handler is executed.
+    
+    A handler may also be specified as a filter by adding
+    the keyword argument ``filter=True`` to the decorator.
+    If such a handler returns a value different from ``None``, no more
+    handlers are invoked for the handled event. Filtering handlers are
+    invoked before normal handlers with the same priority (but after any
+    handlers with higher priority).
+    
+    If you want to override a handler defined in a base class of your
+    component, you must specify ``override=True``, else your method becomes
+    an additional handler for the event.
+    
+    Finally, a handler may be defined as a "tick"-handler by
+    specifying ``tick=True``.
+    Such a handler is invoked at regular intervals ("polling").
     """
 
     def wrapper(f):
-        if channels and type(channels[0]) is bool and not channels[0]:
+        if names and type(names[0]) is bool and not names[0]:
             f.handler = False
             return f
 
         f.handler = True
 
-        f.channels = channels
-        f.target = kwargs.get("target", None)
-        f.filter = kwargs.get("filter", False)
+        f.names = names
         f.priority = kwargs.get("priority", 0)
+        f.filter = kwargs.get("filter", False)
+        f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
+        f.tick = kwargs.get("tick", False)
 
         args = getargspec(f)[0]
 
@@ -61,23 +73,17 @@ def handler(*channels, **kwargs):
 
     return wrapper
 
+
+def tick(f):
+    return handler(f.__name__, tick=True)(f)
+
+
 class HandlerMetaClass(type):
-    """Handler Meta Class
 
-    metaclass used by the Component to pick up any methods defined in the
-    new Component and turn them into Event Handlers by applying the
-    @handlers decorator on them. This is done for all methods defined in
-    the Component that:
-    - Do not start with a single '_'. or
-    - Have previously been decorated with the @handlers decorator
-    """
+    def __init__(cls, name, bases, ns):
+        super(HandlerMetaClass, cls).__init__(name, bases, ns)
 
-    def __init__(cls, name, bases, dct):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(HandlerMetaClass, cls).__init__(name, bases, dct)
-
-        for k, v in dct.items():
-            if (isinstance(v, Callable)
-                    and not (k[0] == "_" or hasattr(v, "handler"))):
-                setattr(cls, k, handler(k)(v))
+        callables = (x for x in ns.items() if isinstance(x[1], Callable))
+        for name, callable in callables:
+            if not (name.startswith("_") or hasattr(callable, "handler")):
+                setattr(cls, name, handler(name)(callable))

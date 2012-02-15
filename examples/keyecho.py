@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from circuits.io import File
-from circuits import Component
+from circuits import Component, Debugger
 
 import sys
 import tty
@@ -19,7 +19,7 @@ def restore_tty_settings(fd):
 class Echo(Component):
 
     def read(self, data):
-        if data.lower() == "q":
+        if data.lower() in "q":
             raise SystemExit, 0
         else:
             sys.stdout.write(data)

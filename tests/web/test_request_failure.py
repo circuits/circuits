@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from circuits import Component
 
 from .helpers import urlopen, HTTPError

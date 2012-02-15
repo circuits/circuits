@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import pytest
 
 from circuits.web import Server, Controller
@@ -13,8 +15,9 @@ def test(webapp):
     client = Client(webapp.server.base)
     client.start()
 
+    waiter = pytest.WaitEvent(client, 'connected', channel='client')
     client.fire(Connect())
-    assert pytest.wait_event(client, 'connected', target='client')
+    assert waiter.wait()
 
     client.fire(Request("GET", "/"))
     while client.response is None: pass

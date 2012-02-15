@@ -21,7 +21,7 @@ from circuits import handler, BaseComponent, Event
 class ConfigEvent(Event):
     """Config Event"""
 
-    _target =  "config"
+    _target = "config"
 
 
 class Load(ConfigEvent):

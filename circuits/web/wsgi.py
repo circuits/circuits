@@ -24,6 +24,7 @@ from .headers import Headers
 from .errors import HTTPError
 from .dispatchers import Dispatcher
 
+
 class Application(BaseComponent):
 
     channel = "web"
@@ -92,7 +93,7 @@ class Application(BaseComponent):
         self.fire(Request(self.request, self.response))
 
         self._finished = False
-        while not self._finished:
+        while self or not self._finished:
             self.tick()
 
         self.response.prepare()
@@ -103,10 +104,11 @@ class Application(BaseComponent):
         start_response(status, headers, exc_info)
         return body
 
-    @handler("response", filter=True, target="web")
+    @handler("response", filter=True, channel="web")
     def response(self, response):
         self._finished = True
         return True
+
 
 class _Empty(str):
 
@@ -115,6 +117,7 @@ class _Empty(str):
 
 empty = _Empty()
 del _Empty
+
 
 class Gateway(BaseComponent):
 
@@ -127,11 +130,7 @@ class Gateway(BaseComponent):
         self.path = path
 
         self._errors = StringIO()
-
         self._request = self._response = None
-
-        self.addHandler(self._on_request, "request", filter=True,
-                priority=len(path))
 
     def createEnviron(self):
         environ = {}
@@ -172,12 +171,14 @@ class Gateway(BaseComponent):
         for header in headers:
             self._response.headers.add_header(*header)
 
+    @handler("request", filter=True, priority=0.2)
     def _on_request(self, event, request, response):
         if self.path and not request.path.startswith(self.path):
             return
 
         self._request = request
         self._response = response
+        self._errors = StringIO()
 
         environ = self.createEnviron()
         try:
