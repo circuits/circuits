@@ -281,7 +281,7 @@ class Client(Component):
                 self._poller = component
                 self.fire(Ready(self))
             else:
-                component = findcmp(self.root, BasePoller, subclass=False)
+                component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component
                     self.fire(Ready(self))
@@ -565,7 +565,7 @@ class Server(Component):
                 self._poller.addReader(self, self._sock)
                 self.fire(Ready(self))
             else:
-                component = findcmp(self.root, BasePoller, subclass=False)
+                component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component
                     self._poller.addReader(self, self._sock)

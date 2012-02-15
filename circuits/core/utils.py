@@ -19,46 +19,38 @@ def uncamel(s):
     return UNCAMELRE.sub("\g<1>_\g<2>", s).lower()
 
 
-def flatten(x, v=None):
-    if not v:
-        v = set()
-    yield x
-    for c in x.components.copy():
-        if c not in v:
-            v.add(c)
-            for r in flatten(c, v):
-                yield r
+def flatten(root, visited=None):
+    if not visited:
+        visited = set()
+    yield root
+    for component in root.components.copy():
+        if component not in visited:
+            visited.add(component)
+            for child in flatten(component, visited):
+                yield child
 
 
-def itercmp(x, c, subclass=True):
-    if subclass and issubclass(x.__class__, c):
-        yield x
-    elif isinstance(x, c):
-        yield x
+def findchannel(root, channel):
+    components = [x for x in flatten(root)
+            if x.channel == channel]
+    if components:
+        return components[0]
+
+
+def findtype(root, component):
+    components = [x for x in flatten(root)
+            if issubclass(type(x), component)]
+    if components:
+        return components[0]
+
+findcmp = findtype
+
+
+def findroot(component):
+    if component.parent == component:
+        return component
     else:
-        for component in x.components:
-            if subclass and issubclass(component.__class__, c):
-                yield component
-            elif isinstance(component, c):
-                yield component
-            else:
-                for component in itercmp(component, c, subclass):
-                    yield component
-
-
-def findcmp(x, c, subclass=True):
-    components = itercmp(x, c, subclass)
-    try:
-        return next(components)
-    except StopIteration:
-        return None
-
-
-def findroot(x):
-    if x.parent == x:
-        return x
-    else:
-        return findroot(x.parent)
+        return findroot(component.parent)
 
 
 def safeimport(name):
