@@ -86,7 +86,7 @@ class NotFound(HTTPError):
 class Redirect(HTTPError):
 
     def __init__(self, request, response, urls, code=None):
-        if isinstance(urls, str):
+        if isinstance(urls, basestring):
             urls = [urls]
         
         abs_urls = []
