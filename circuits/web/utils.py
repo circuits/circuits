@@ -11,30 +11,51 @@ import re
 import zlib
 import time
 import struct
-from cgi import escape
+import urllib
+from cgi import FieldStorage
+
 try:
     from urllib.parse import urljoin as _urljoin
 except ImportError:
     from urlparse import urljoin as _urljoin
 
 try:
-    from io import StringIO
+    from urllib.parse import parse_qs as _parse_qs
 except ImportError:
-    from io import StringIO
+    from cgi import parse_qs as _parse_qs
 
-try:
-    from urllib.parse import parse_qs
-except ImportError:
-    from cgi import parse_qs
-
-from .constants import HTTP_STATUS_CODES
+from .exceptions import InternalServerError, RequestEntityTooLarge
 
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile("[0-9]+,[0-9]+")
 
 
-def parseQueryString(query_string, keep_blank_values=True):
-    """parseQueryString(query_string) -> dict
+def parse_body(request, response, params):
+    body = request.body
+    headers = request.headers
+
+    if "Content-Type" not in headers:
+        headers["Content-Type"] = ""
+
+    try:
+        form = FieldStorage(fp=body,
+            headers=headers,
+            environ={"REQUEST_METHOD": "POST"},
+            keep_blank_values=True)
+    except Exception as e:
+        if e.__class__.__name__ == 'MaxSizeExceeded':
+            # Post data is too big
+            raise RequestEntityTooLarge()
+        raise InternalServerError()
+
+    if form.file:
+        request.body = form.file
+    else:
+        params.update(dictform(form))
+
+
+def parse_qs(query_string, keep_blank_values=True):
+    """parse_qs(query_string) -> dict
 
     Build a params dictionary from a query_string.
     If keep_blank_values is True (the default), keep
@@ -47,7 +68,7 @@ def parseQueryString(query_string, keep_blank_values=True):
         pm = query_string.split(",")
         return {"x": int(pm[0]), "y": int(pm[1])}
     else:
-        pm = parse_qs(query_string, keep_blank_values)
+        pm = _parse_qs(query_string, keep_blank_values)
         return dict((k, v[0]) for k, v in pm.items() if v)
 
 
