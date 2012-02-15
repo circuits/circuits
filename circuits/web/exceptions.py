@@ -10,9 +10,9 @@ Note: This code is mostly borrowed from werkzeug and adapted for circuits.web
 """
 
 import sys
+from cgi import escape
 from inspect import isclass
 
-from .utils import escape
 from .constants import HTTP_STATUS_CODES
 
 

@@ -7,6 +7,8 @@
 This module implements a set of standard HTTP Errors.
 """
 
+from cgi import escape
+
 try:
     from urllib.parse import urljoin as _urljoin
 except ImportError:
@@ -15,7 +17,6 @@ except ImportError:
 from circuits import Event
 
 from . import utils
-from .utils import escape
 from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
