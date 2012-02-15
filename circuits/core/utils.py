@@ -30,16 +30,24 @@ def flatten(root, visited=None):
                 yield child
 
 
-def findchannel(root, channel):
+def findchannel(root, channel, all=False):
     components = [x for x in flatten(root)
             if x.channel == channel]
+
+    if all:
+        return components
+
     if components:
         return components[0]
 
 
-def findtype(root, component):
+def findtype(root, component, all=False):
     components = [x for x in flatten(root)
             if issubclass(type(x), component)]
+
+    if all:
+        return components
+
     if components:
         return components[0]
 
