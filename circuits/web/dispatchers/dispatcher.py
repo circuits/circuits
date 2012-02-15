@@ -101,7 +101,7 @@ class Dispatcher(BaseComponent):
             found = False
             for name in names:
                 if name in self.paths[candidate]._handlers:
-                    if i < len(names) and name == names[i]:
+                    if i < len(names):
                         i += 1
                     found = True
                     break
