@@ -45,20 +45,20 @@ class BaseComponent(Manager):
     """Base Component
 
     This is the base class for all components in a circuits based application.
-    Components can (and should, except for root components) be registered 
+    Components can (and should, except for root components) be registered
     with a parent component.
-    
+
     BaseComponents can declare methods as event handlers using the
     handler decoration (see :func:`circuits.core.handlers.handler`). The
-    handlers are invoked for matching events from the 
+    handlers are invoked for matching events from the
     component's channel (specified as the component's ``channel`` attribute).
-    
+
     BaseComponents inherit from :class:`circuits.core.manager.Manager`.
-    This provides components with the 
+    This provides components with the
     :func:`circuits.core.manager.Manager.fireEvent` method that can
-    be used to fire events as the result of some computation. 
-    
-    Apart from the ``fireEvent()`` method, the Manager nature is important 
+    be used to fire events as the result of some computation.
+
+    Apart from the ``fireEvent()`` method, the Manager nature is important
     for root components that are started or run.
     """
 
@@ -140,10 +140,9 @@ class BaseComponent(Manager):
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
 """
 If you use Component instead of BaseComponent as base class for your own
-component class, then all methods that are not marked as private (i.e. 
-start with an underscore) are automatically decorated as handlers.
+component class, then all methods that are not marked as private
+(i.e: start with an underscore) are automatically decorated as handlers.
 
-The methods are invoked for all events from the component's channel 
+The methods are invoked for all events from the component's channel
 where the event's name matches the method's name.
 """
-
