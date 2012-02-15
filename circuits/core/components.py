@@ -18,16 +18,20 @@ from .handlers import handler, HandlerMetaClass
 
 
 def check_singleton(x, y):
-    """Return False if x is a singleton and already a member of y"""
+    """Return True if x contains a singleton that is already a member of y"""
 
-    singleton = getattr(x, "singleton", False)
+    singletons = filter(lambda i: getattr(i, "singleton", False), flatten(x))
 
-    if isclass(singleton) and issubclass(singleton, Manager):
-        return any([isinstance(c, singleton) for c in flatten(findroot(y))])
-    elif singleton:
-        return any([type(x) in c for c in flatten(findroot(y))])
-    else:
-        return False
+    for component in singletons:
+        singleton = getattr(component, "singleton", False)
+        if isclass(singleton) and issubclass(singleton, Manager):
+            if any([isinstance(c, singleton) for c in flatten(findroot(y))]):
+                return True
+        elif singleton:
+            if any([type(component) in c for c in flatten(findroot(y))]):
+                return True
+
+    return False
 
 
 class SingletonError(Exception):
@@ -97,9 +101,8 @@ class BaseComponent(Manager):
                 v.register(self)
 
     def register(self, parent):
-        # FIXME: This might have some strange behaior. Disabled temporarily.
-        #if check_singleton(self, parent):
-        #    raise SingletonError(self)
+        if check_singleton(self, parent):
+            raise SingletonError(self)
 
         self.parent = parent
         self.root = parent.root

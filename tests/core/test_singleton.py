@@ -39,18 +39,17 @@ def test():
     pytest.raises(SingletonError, f)
 
 
-def test_type():
+def test_child_singleton():
     m = Manager()
     app = App()
     app.register(m)
-
-    a = A()
-    a.register(app)
 
     while m:
         m.flush()
 
     def f():
-        B().register(app)
+        inter = Component()
+        App().register(inter)
+        inter.register(m)
 
     pytest.raises(SingletonError, f)
