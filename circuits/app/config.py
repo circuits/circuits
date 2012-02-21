@@ -21,21 +21,18 @@ from circuits import handler, BaseComponent, Event
 class ConfigEvent(Event):
     """Config Event"""
 
-    _target = "config"
+    channels = ("config",)
+
+    success = True
+    failure = True
 
 
 class Load(ConfigEvent):
     """Load Config Event"""
 
-    success = "load_success", ConfigEvent._target
-    failure = "load_failure", ConfigEvent._target
-
 
 class Save(ConfigEvent):
     """Save Config Event"""
-
-    success = "save_success", ConfigEvent._target
-    failure = "save_failure", ConfigEvent._target
 
 
 class Config(BaseComponent):
