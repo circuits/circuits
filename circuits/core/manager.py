@@ -279,7 +279,9 @@ class Manager(object):
         """
 
         if not channels:
-            channels = (getattr(self, "channel", "*") or "*",)
+            channels = event.channels \
+                    or (getattr(self, "channel", "*"),) \
+                    or ("*",)
 
         event.channels = channels
 
