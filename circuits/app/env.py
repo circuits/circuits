@@ -57,7 +57,7 @@ class EnvironmentError(Exception):
 class EnvironmentEvent(Event):
     """Environment Event"""
 
-    _target = "env"
+    channels = ("env",)
 
 
 class Create(EnvironmentEvent):
@@ -132,11 +132,11 @@ class Environment(BaseComponent):
                 raise EnvironmentError(*ERRORS[1])
 
     @handler("verify_success", filter=True)
-    def _on_verify_success(self, evt, handler, retval):
+    def _on_verify_success(self, evt, retval):
         return self._load()
 
     @handler("load_success", channel="config")
-    def _on_config_load_success(self, evt, handler, retval):
+    def _on_config_load_success(self, evt, retval):
         # Create Logger Component
         logname = self.envname
         logtype = self.config.get("logging", "type", "file")
