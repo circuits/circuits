@@ -303,7 +303,7 @@ class Client(Component):
 
     @handler("read_value_changed")
     def _on_read_value_changed(self, value):
-        if isinstnace(value, str):
+        if isinstance(value, str):
             self.fire(Write(value))
 
     def _close(self):
