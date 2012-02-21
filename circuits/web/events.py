@@ -12,8 +12,6 @@ from circuits import Event
 
 class WebEvent(Event):
 
-    channels = ("web",)
-
     success = True
     failure = True
 

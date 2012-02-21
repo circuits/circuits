@@ -59,8 +59,6 @@ class BaseServer(BaseComponent):
 
         super(BaseServer, self).__init__(channel=channel)
 
-        WebEvent.channels = (channel,)
-
         if type(bind) in (int, list, tuple):
             SocketType = TCPServer
         else:
