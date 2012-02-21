@@ -273,9 +273,16 @@ class Manager(object):
         self._queue.append((event, channel))
 
     def fireEvent(self, event, *channels):
-        """Fire an event into the system
+        """Fire an event into the system.
 
-        ...
+        :param event: The event that is to be fired.
+        :param channels: The channels that this event is delivered on.
+           If no channels are specified, the event is delivered to the
+           channels found in the event's :attr:`channel` attribute.
+           If this attribute is not set, the event is delivered to
+           the firing component's channel. And eventually, 
+           when set neither, the event is delivered on all
+           channels ("*"). 
         """
 
         if not channels:
