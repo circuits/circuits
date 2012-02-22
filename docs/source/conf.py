@@ -48,13 +48,13 @@ url = "http://bitbucket.org/prologic/circuits/"
 # built documents.
 #
 # The short X.Y version.
-version = '1.6'
+version = '1.7'
 # The full version, including alpha/beta/rc tags.
-release = '1.6'
+release = '1.7'
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = False
+devel = True
 
 if devel:
     release += "dev"
