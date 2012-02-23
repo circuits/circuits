@@ -1,10 +1,11 @@
 import pytest
 
-from circuits.node import Node, Remote
-from circuits import Component, Debugger, Event, handler
-from circuits.net.sockets import UDPServer
+from circuits import Component, Event
 from circuits.net.sockets import Close
+from circuits.node import Node, Remote
+from circuits.net.sockets import UDPServer
 from circuits.core.events import Unregister
+
 
 class Foo(Event):
     """Foo Event"""
@@ -45,10 +46,7 @@ def test_return_value():
     a1.start()
 
     host, port = get_free_port(a1)
-
-    a2 = App()
-    n2 = Node((host, port)).register(a2)
-    a2.start(process=True)
+    (App() + Node((host, port))).start(process=True)
 
     n1.add('bar', host, port)
 
@@ -61,5 +59,3 @@ def test_return_value():
     assert pytest.wait_for(a1, "value")
 
     assert value.value == "Hello World!"
-
-
