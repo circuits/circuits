@@ -24,7 +24,7 @@ class Dispatcher(BaseComponent):
 
         self.paths = dict()
 
-    def _get_request_handler(self, request):
+    def find_handler(self, request):
         path = request.path
 
         method = request.method.upper()
@@ -114,7 +114,7 @@ class Dispatcher(BaseComponent):
         if peer_cert:
             event.peer_cert = peer_cert
 
-        name, channel, vpath = self._get_request_handler(request)
+        name, channel, vpath = self.find_handler(request)
 
         if name is not None and channel is not None:
             event.kwargs = parse_qs(request.qs)
