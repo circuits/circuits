@@ -2,8 +2,9 @@ syntax: glob
 
 *.pyc
 *.pyo
-build
+tmp
 dist
+build
 hgtools*
 .coverage*
 coverage
