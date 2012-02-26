@@ -823,7 +823,7 @@ class UDPServer(Server):
         try:
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
-                self.fire(Read(address, data))
+                self.fire(Read(address, data)).notify = True
         except SocketError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
