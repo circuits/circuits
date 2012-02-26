@@ -1,7 +1,7 @@
-:mod:`circuits.core.bridge` -- Bridge
+:mod:`circuits.node.server` -- Server
 =====================================
 
-.. automodule :: circuits.core.bridge
+.. automodule :: circuits.node.server
 
 
 Events
@@ -13,8 +13,9 @@ Events
 Components
 ----------
 
-.. autoclass :: Bridge
+.. autoclass :: Server
    :members:
+
 
 Functions
 ---------

@@ -14,16 +14,14 @@ Classes
 Common Events
 -------------
 
-.. autoclass :: End
 .. autoclass :: Error
 .. autoclass :: Failure
-.. autoclass :: Filter
 .. autoclass :: Registered
 .. autoclass :: Signal
-.. autoclass :: Start
 .. autoclass :: Started
 .. autoclass :: Stopped
 .. autoclass :: Success
+.. autoclass :: Unregister
 .. autoclass :: Unregistered
 
 
