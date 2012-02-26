@@ -16,7 +16,7 @@ with a strong **Component** Architecture.
 
 __author__ = "James Mills"
 __date__ = "12th February 2011"
-__version__ = "1.6"
+__version__ = "1.7dev"
 
 from circuits.core import future, Pool, Task, Worker
 from circuits.core import Debugger, Loader, Manager, Timer
