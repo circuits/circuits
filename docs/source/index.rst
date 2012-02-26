@@ -19,8 +19,8 @@ Contents
    dev/index
    roadmap
    changes
-   contributors
    users
+   contributors
    faq
 
 .. toctree::
