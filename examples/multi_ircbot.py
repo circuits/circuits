@@ -7,6 +7,7 @@ from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
 from circuits.net.protocols.irc import ERR_NICKNAMEINUSE
 from circuits.net.protocols.irc import RPL_ENDOFMOTD, ERR_NOMOTD
 
+
 class Bot(Component):
 
     channel = "ircbot"
