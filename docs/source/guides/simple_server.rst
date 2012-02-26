@@ -11,23 +11,29 @@ start chatting with other users that are connected.
 
 
 Prerequisites
-.............
+^^^^^^^^^^^^^
 
 - `Python <http://www.python.org>`_
 - `circuits <http://pypi.python.org/circuits>`_
 
 
-Components
-..........
+Components Used
+"""""""""""""""
 
 - :py:class:`~circuits.core.components.Component`
 - :py:class:`~circuits.net.sockets.TCPServer`
 
 
+Events Used
+"""""""""""
+
+- :py:class:`~circuits.net.sockets.Write`
+
+
 Step 1 - Setting up
 -------------------
 
-Let's start off by importing the components we need:
+Let's start off by importing the components and events we'll need.
 
 .. code-block:: python
 
@@ -41,7 +47,18 @@ Step 2 - Building the Server
 ----------------------------
 
 Next let's define our ``Server`` Component with a simple event handler that
-broadcats all incoming messages to every connected client.
+broadcasts all incoming messages to every connected client. We'll keep a list
+of clients connected to our server in ``self._clients``.
+
+We need to define three event handlers.
+
+#. An event handler to update our list of connected clients when a new client
+   connects.
+#. An event handler to update our list of connected clients when a client has
+   disconnected.
+#. An event handler to handle messages from connected clients and broadcast
+   them to every other connected client.
+
 
 .. code-block:: python
    
@@ -64,8 +81,8 @@ broadcats all incoming messages to every connected client.
            for client in self._clients:
                if not client == sock:
                    self.fire(Write(client, data.strip()))
-   
-Server("localhost").run()
+
+
 Let's walk through this in details:
 
 1. Create a new Component called ``Server``
@@ -75,9 +92,9 @@ Let's walk through this in details:
 4. Register a ``TCPServer`` Component and configure it.
 5. Create Event Handlers for:
 
-   - Dealgin with new connecting clients.
-   - Dealing with clients whom have disconnected
-   - Dealing with messages from connected clients
+   - Dealiig with new connecting clients.
+   - Dealing with clients whom have disconnected.
+   - Dealing with messages from connected clients.
 
 
 Step 3 - Running the Server
@@ -102,8 +119,8 @@ Enjoy!
 Source Code
 -----------
 
-.. literalinclude:: server.py
+.. literalinclude:: simple_server.py
    :language: python
    :linenos:
 
-:download:`Download server.py <server.py>`
+:download:`Download simple_server.py <simple_server.py>`

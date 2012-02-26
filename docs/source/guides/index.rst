@@ -5,4 +5,4 @@ HowTo Guides
 .. toctree::
    :maxdepth: 1
 
-   server
+   simple_server
