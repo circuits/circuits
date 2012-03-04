@@ -8,6 +8,11 @@ This module implements a basic URL to Channel dispatcher.
 This is the default dispatcher used by circuits.web
 """
 
+try:
+    unicodestr = unicode
+except NameError:
+    unicodestr = str
+
 from circuits import handler, BaseComponent
 
 from circuits.web.events import Request
@@ -123,7 +128,7 @@ class Dispatcher(BaseComponent):
             if vpath:
                 event.args += tuple(vpath)
 
-            if isinstance(name, unicode):
+            if isinstance(name, unicodestr):
                 name = str(name)
 
             return self.fire(Request.create(name.title(),
