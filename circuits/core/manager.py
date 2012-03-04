@@ -76,7 +76,7 @@ class Manager(object):
             channel = ""
 
         q = len(self._queue)
-        state = self.state
+        state = "R" if self.running else "S"
 
         pid = current_process().pid
 
@@ -170,23 +170,6 @@ class Manager(object):
         """Return the running state of this Component/Manager"""
 
         return self._running
-
-    @property
-    def state(self):
-        """Return the current state of this Component/Manager
-
-        The state can be one of:
-         - [R]unning
-         - [D]ead
-         - [S]topped
-        """
-
-        if self.running or (self._task and self._task.is_alive()):
-            return "R"
-        elif self._task and not self._task.is_alive():
-            return "D"
-        else:
-            return "S"
 
     def getHandlers(self, event, channel):
         channel_is_instance = isinstance(channel, Manager)
