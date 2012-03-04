@@ -102,22 +102,16 @@ class PortForwarder(Component):
         bind = 0
         channel = uuid()
 
-        if self._protocol == "tcp":
-            client = TCPClient(bind, channel=channel)
-        else:
-            client = UDPClient(bind, secure=self._secure, channel=channel)
-
+        client = TCPClient(bind, channel=channel)
         client.register(self)
 
-        if self._protocol == "tcp":
+        self.addHandler(
+                handler("disconnected", channel=channel)
+                (_on_target_disconnected))
 
-            self.addHandler(
-                    handler("disconnected", channel=channel)
-                    (_on_target_disconnected))
-
-            self.addHandler(
-                    handler("ready", channel=channel)
-                    (_on_target_ready))
+        self.addHandler(
+                handler("ready", channel=channel)
+                (_on_target_ready))
 
         self.addHandler(
                 handler("read", channel=channel)
@@ -128,9 +122,12 @@ class PortForwarder(Component):
 
     @handler("read", channel="source")
     def _on_source_read(self, sock, data):
-        client = self._clients[sock]
-
-        self.fire(Write(data), client.channel)
+        if self._protocol == "tcp":
+            client = self._clients[sock]
+            self.fire(Write(data), client.channel)
+        else:
+            host, port = sock
+            self.fire(Write(sock, data), "source")
 
 
 def sanitize(s):
