@@ -1,6 +1,62 @@
 circuits-1.7 YYYYMMDD
 ---------------------
 
+- Removed start and end feedback channels.
+- Added Singleton support. It is now possible to specify that a component
+  only be registered once. For example:
+
+.. code-block:: python
+   :linenos:
+
+   #!/usr/bin/env python
+
+   from circuits import Component
+
+
+   class App(Component):
+
+      singleton = True
+
+- Added ``findtype()``, ``findchannel()`` to ``circuits.core.utils`` in favor
+  of ``itercmp()``.
+- Removed ``itercmp()`` function from ``circuits.core.utils``.
+- When firing an event using ``.fire(event, *channels)``, channels is optional
+  and the following order is obeyed:
+
+ - Use the channels specified in the ``*channels`` argument.
+ - Otherwise if no channels are specified use ``event.channels``
+ - Otherwise if the event's channels are empty use ``self.channel``
+ - Finally defaulting to ``*``
+
+- Fixed Issue #26
+- Removed deprecated ``circuits.sniff`` tool.
+- Added man pages for ``circuits.bench`` and ``circuits.web`` CLI tools.
+- Added Eclipse support
+- Fixed Issue #29
+- Added support for ``value_changed`` event notifications on the ``read``
+  channels for sockets. This enables you to specify much simpler event
+  handlers that handle requests. For example:
+
+.. code-block:: python
+   :linenos:
+
+   #!/usr/bin/env python
+
+   """A Simple Echo Server"""
+
+   
+   from circuits.net.sockets import TCPServer
+
+
+   class EchoServer(TCPServer):
+
+      def read(self, sock, data):
+         return data
+
+
+   EchoServer(8000).run()
+
+- Removed ``.state`` property from components.
 - Removed ``.push(...)`` -- Deprecated in 1.6
 - Removed ``circuits.net.pollers`` module. -- Deprecated in 1.6
 
