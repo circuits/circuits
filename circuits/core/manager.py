@@ -292,7 +292,7 @@ class Manager(object):
         g = getcurrent_greenlet()
 
         i = 0
-        e = None
+        event = None
         caller = self._greenlet
 
         self.registerTask(g)
@@ -300,18 +300,19 @@ class Manager(object):
         try:
             while True:
                 if limit and i == limit or self._task is None:
+                    self.unregisterTask(g)
                     return
 
-                e, caller = caller.switch()
+                event, caller = caller.switch()
 
-                if e is not None and e.name == name:
+                if event is not None and event.name == name:
                     break
 
                 i += 1
         finally:
             self.unregisterTask(g)
 
-        return e
+        return event
 
     wait = waitEvent
 
