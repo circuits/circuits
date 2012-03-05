@@ -1,6 +1,24 @@
 circuits-1.7 YYYYMMDD
 ---------------------
 
+- Implemented ``Component.init()`` support whereby one can define an
+  alternative ``init()`` without needing to remmeber to call ``super(...)``
+  ``init()`` takes the same arguments as the normal ``__init__(...)``
+  constructor.
+  Example:
+
+.. code-block:: python
+   :linenos:
+
+   #!/usr/bin/env python
+
+   from circuits import Component
+
+   class App(Component):
+
+      def init(self, ...):
+         ...
+
 - Removed start and end feedback channels.
 - Added Singleton support. It is now possible to specify that a component
   only be registered once. For example:
