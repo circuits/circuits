@@ -19,11 +19,7 @@ from inspect import getmembers, isfunction
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
-try:
-    from greenlet import getcurrent as getcurrent_greenlet, greenlet
-    GREENLET = True
-except ImportError:
-    GREENLET = False
+from greenlet import getcurrent as getcurrent_greenlet, greenlet
 
 from .values import Value
 from .events import Success, Failure
@@ -57,10 +53,8 @@ class Manager(object):
         self._handlers = dict()
 
         self._task = None
+        self._greenlet = None
         self._running = False
-
-        if GREENLET:
-            self._greenlet = None
 
         self.root = self.parent = self
         self.components = set()
@@ -288,7 +282,7 @@ class Manager(object):
     def unregisterTask(self, g):
         self._tasks.remove(g)
 
-    def waitEvent(self, cls, limit=None):
+    def waitEvent(self, name, limit=None):
         if self._task is not None  and self._task not in [current_process(),
                 current_thread()]:
             raise Exception((
@@ -297,17 +291,22 @@ class Manager(object):
 
         g = getcurrent_greenlet()
 
-        is_instance = isinstance(cls, Event)
         i = 0
         e = None
         caller = self._greenlet
 
         self.registerTask(g)
+
         try:
-            while e != cls if is_instance else e.__class__ != cls:
+            while True:
                 if limit and i == limit or self._task is None:
                     return
+
                 e, caller = caller.switch()
+
+                if e is not None and e.name == name:
+                    break
+
                 i += 1
         finally:
             self.unregisterTask(g)
@@ -316,9 +315,9 @@ class Manager(object):
 
     wait = waitEvent
 
-    def callEvent(self, event, channel="*"):
-        self.fire(event, channel)
-        e = self.waitEvent(event)
+    def callEvent(self, event, *channels):
+        self.fire(event, *channels)
+        e = self.waitEvent(event.name)
         return e.value
 
     call = callEvent
@@ -327,13 +326,9 @@ class Manager(object):
         q = self._queue
         self._queue = deque()
 
-        if GREENLET:
-            for event, channels in q:
-                dispatcher = greenlet(self._dispatcher)
-                dispatcher.switch(event, channels)
-        else:
-            for event, channels in q:
-                self._dispatcher(event, channels)
+        for event, channels in q:
+            dispatcher = greenlet(self._dispatcher)
+            dispatcher.switch(event, channels)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
@@ -390,9 +385,8 @@ class Manager(object):
             self.fire(Success.create("%sSuccess" %
                 event.__class__.__name__, event, value), *event.channels)
 
-        if GREENLET:
-            for task in self._tasks.copy():
-                task.switch(event, getcurrent_greenlet())
+        for task in self._tasks.copy():
+            task.switch(event, getcurrent_greenlet())
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
@@ -474,11 +468,9 @@ class Manager(object):
         fires the corresponding :class:`circuits.core.events.Signal`
         events and then calls ``stop()`` for the manager. 
         """
-        if GREENLET:
-            self._greenlet = greenlet(self._run)
-            self._greenlet.switch()
-        else:
-            self._run()
+
+        self._greenlet = greenlet(self._run)
+        self._greenlet.switch()
 
     def _run(self):
         atexit.register(self.stop)
