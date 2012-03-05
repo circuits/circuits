@@ -283,7 +283,7 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
-    def waitEvent(self, name, limit=None):
+    def waitEvent(self, name, channel=None, limit=None):
         if self._task is not None  and self._task not in [current_process(),
                 current_thread()]:
             raise Exception((
@@ -306,8 +306,11 @@ class Manager(object):
 
                 event, caller = caller.switch()
 
-                if event is not None and event.name == name:
-                    break
+                if event is not None:
+                    p1 = event.name == name
+                    p2 = channel in event.channels if channel else True
+                    if p1 and p2:
+                        break
 
                 i += 1
         finally:
