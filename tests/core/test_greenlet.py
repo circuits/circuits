@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pytest
+pytest.importorskip("greenlet")
 
 from circuits import Component, Event
 
@@ -8,12 +9,19 @@ from circuits import Component, Event
 class Foo(Event):
     """Foo Event"""
 
-
 class Foo2(Event):
     """Foo2 Event"""
 
+class Foo3(Event):
+    """Foo3 Event"""
+
+class Foo4(Event):
+    """Foo4 Event"""
 
 class Bar(Event):
+    """Bar Event"""
+
+class Bar2(Event):
     """Bar Event"""
 
 
@@ -25,11 +33,23 @@ class Test(Component):
 
     def foo(self):
         x = self.fire(Bar())
-        self.waitEvent("bar", 30)
+        self.waitEvent(Bar, 30)
         return x.value
 
     def foo2(self):
-        x = self.callEvent(Bar())
+        e = Bar()
+        x = self.fire(e)
+        self.waitEvent(e, 30)
+        return x.value
+
+    def foo3(self):
+        e = Bar()
+        x = self.callEvent(e)
+        return x.value
+
+    def foo4(self):
+        e = Bar2()
+        x = self.callEvent(e)
         return x.value
 
     def bar(self):
@@ -41,7 +61,7 @@ class Test(Component):
         return
 
 
-def test_wait():
+def test_wait_class():
     test = Test()
     test.start()
 
@@ -55,7 +75,7 @@ def test_wait():
     test.stop()
 
 
-def test_call():
+def test_wait_instance():
     test = Test()
     test.start()
 
@@ -68,3 +88,27 @@ def test_call():
     assert value == "Foobar!"
 
     test.stop()
+
+
+def test_call_event():
+    test = Test()
+    test.start()
+
+    e = Foo3()
+    waiter = pytest.WaitEvent(test, "bar_done")
+    x = test.fire(e)
+    waiter.wait()
+
+    value = x.value
+    assert value == "Foobar!"
+
+    e = Foo4()
+    waiter = pytest.WaitEvent(test, "bar_done")
+    x = test.fire(e)
+    waiter.wait()
+
+    value = x.value
+    assert value == None
+
+    test.stop()
+

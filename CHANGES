@@ -1,12 +1,6 @@
 circuits-1.7 YYYYMMDD
 ---------------------
 
-- **Greenlets** are here to stay. circuits now depends on the "greenlet"
-  library to support two very important core features.
-
- - ``.wait(...)`` - Wait for the given event to complete before resuming.
- - ``.call(...)`` - Call the given event in a synchronous-style manner.
-
 - Implemented ``Component.init()`` support whereby one can define an
   alternative ``init()`` without needing to remmeber to call ``super(...)``
   ``init()`` takes the same arguments as the normal ``__init__(...)``
