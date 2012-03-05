@@ -100,6 +100,9 @@ class BaseComponent(Manager):
                     and v not in ('parent', 'root'):
                 v.register(self)
 
+        if hasattr(self, "init") and callable(self.init):
+            self.init(*args, **kwargs)
+
     def register(self, parent):
         if check_singleton(self, parent):
             raise SingletonError(self)
