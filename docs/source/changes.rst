@@ -2,7 +2,7 @@
 
 .. _changes:
 
-History of circuits
-===================
+ChangeLog
+=========
 
 .. include:: ../../CHANGES

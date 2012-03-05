@@ -40,9 +40,6 @@ except IOError:
 import circuits
 
 setup(
-    #cmdclass={
-    #    "test": Test,
-    #},
     name="circuits",
     version=circuits.__version__,
     description="Asynchronous Component based Event Application Framework",

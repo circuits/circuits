@@ -13,7 +13,8 @@ Contents
 
    start/index
    tutorial/index
-   guides/index
+   howtos/index
+   man/index
    web/index
    api/index
    dev/index

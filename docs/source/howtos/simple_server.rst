@@ -1,5 +1,5 @@
-How to build a Simple Server
-============================
+How To: Build a Simple Server
+=============================
 
 
 Overview
