@@ -100,7 +100,7 @@ class Dispatcher(BaseComponent):
         if vpath and not (handler.args or handler.varargs or handler.varkw):
             return None, None, []
 
-        return name, candidate, vpath
+        return name, component, vpath
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
