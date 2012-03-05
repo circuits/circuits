@@ -280,7 +280,8 @@ class Manager(object):
         self._tasks.add(g)
 
     def unregisterTask(self, g):
-        self._tasks.remove(g)
+        if g in self._tasks:
+            self._tasks.remove(g)
 
     def waitEvent(self, name, limit=None):
         if self._task is not None  and self._task not in [current_process(),
