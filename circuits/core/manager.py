@@ -355,6 +355,7 @@ class Manager(object):
             handlers = sorted(chain(*h), key=_sortkey, reverse=True)
             self._cache[(event.name, channels)] = handlers
 
+        value = None
         error = None
 
         for handler in handlers:
