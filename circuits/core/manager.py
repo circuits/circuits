@@ -370,9 +370,14 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
+            print 'return value', repr(value)
             if type(value) is GeneratorType:
-                self.registerTask((event, value))
-                continue
+                gen = value.next()
+                if type(gen) is Manager.WaitEvent:
+                    gen.task = value
+                    self.registerTask((event, gen))
+                else:
+                    event.value.value = chain([gen], value)
             elif value is not None:
                 event.value.value = value
 

@@ -71,7 +71,9 @@ def test_call():
     x = test.fire(TestCall())
     waiter.wait()
 
-    value = x.value
-    assert value == "Hello World!"
+    import time
+    time.sleep(1)
+    value = [v.value for v in x.value]
+    assert value == ["Hello World!"]
 
     test.stop()
