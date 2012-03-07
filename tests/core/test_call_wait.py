@@ -38,6 +38,8 @@ class Test(Component):
 
 def test_simple():
     test = Test()
+    from circuits import Debugger
+    Debugger().register(test)
     test.start()
 
     waiter = pytest.WaitEvent(test, "hello")
@@ -71,8 +73,6 @@ def test_call():
     x = test.fire(TestCall())
     waiter.wait()
 
-    import time
-    time.sleep(1)
     value = [v.value for v in x.value]
     assert value == ["Hello World!"]
 
