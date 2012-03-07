@@ -60,8 +60,8 @@ def test_wait():
     x = test.fire(TestWait())
     waiter.wait()
 
-    value = x.value
-    assert value == "Hello World!"
+    value = [v.value for v in x.value]
+    assert value == ["Hello World!"]
 
     test.stop()
 

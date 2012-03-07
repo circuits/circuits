@@ -370,7 +370,6 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            print 'return value', repr(value)
             if type(value) is GeneratorType:
                 gen = value.next()
                 if type(gen) is Manager.WaitEvent:
@@ -458,7 +457,7 @@ class Manager(object):
                         gen.task = waiter.task
                         self.registerTask((event, gen))
                     else:
-                        event.value.value = chain([gen], value)
+                        event.value.value = chain([gen], waiter.task)
 
         if self:
             self.flush()
