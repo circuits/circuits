@@ -65,8 +65,10 @@ def test_wait():
 
     test.stop()
 
-def test_call():
+def test_call_event():
     test = Test()
+    from circuits import Debugger
+    Debugger().register(test)
     test.start()
 
     waiter = pytest.WaitEvent(test, "test_call")
