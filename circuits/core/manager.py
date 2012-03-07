@@ -449,22 +449,16 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
-        for event, task in self._tasks.copy():
-            if type(task) is Manager.WaitEvent:
-                if task.done():
-                    self.unregisterTask((event, task))
-                    self.registerTask((event, task.task))
-            else:
-                try:
-                    value = task.next()
-                    if type(value) is Manager.WaitEvent:
-                        value.task = task
-                        self.registerTask((event, value))
-                        raise StopIteration
-                    elif value is not None:
-                         event.value.value = value
-                except StopIteration:
-                    self.unregisterTask((event, task))
+        for event, waiter in self._tasks.copy():
+            if type(waiter) is Manager.WaitEvent:
+                if waiter.done():
+                    self.unregisterTask((event, waiter))
+                    gen = waiter.task.next()
+                    if type(gen) is Manager.WaitEvent:
+                        gen.task = waiter.task
+                        self.registerTask((event, gen))
+                    else:
+                        event.value.value = chain([gen], value)
 
         if self:
             self.flush()
