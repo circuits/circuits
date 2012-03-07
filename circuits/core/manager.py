@@ -453,7 +453,14 @@ class Manager(object):
             if type(task) is Manager.WaitEvent:
                 if task.done():
                     self.unregisterTask((event, task))
-                    self.registerTask((event, task.task))
+                    value = task.task
+                    gen = value.next()
+                    if type(gen) is Manager.WaitEvent:
+                        gen.task = value
+                        self.registerTask((event, gen))
+                    else:
+                        event.value.value = chain([gen], value)
+                        self.registerTask((event, task.task))
             else:
                 try:
                     value = task.next()
