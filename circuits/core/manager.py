@@ -53,7 +53,6 @@ class Manager(object):
 
         self._task = None
         self._running = False
-        self._wait_event_yield = False
 
         self.root = self.parent = self
         self.components = set()
@@ -282,21 +281,34 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
+    class WaitEvent(object):
+        def __init__(self, manager, name, channel):
+            self._manager = manager
+            self._flag = False
+            self._event = None
+            self.name = name
+            self.channel = channel
+            self.task = None
+
+            waitobj = self
+            @handler(name, channel=channel)
+            def _on_event(self, event, *args, **kwargs):
+                print 'called ON EVENT', repr(waitobj)
+                waitobj._flag = True
+                waitobj._event = event
+            self._on_event = _on_event
+
+            self._manager.addHandler(_on_event)
+
+        def done(self):
+            print 'called DONE'
+            if self._flag:
+                self._manager.removeHandler(self._on_event)
+                return True
+            return False
+
     def waitEvent(self, name, channel=None):
-        _flag = False
-        _event = None
-
-        @handler(name, channel=channel)
-        def _on_event(self, event, *args, **kwargs):
-            _flag = True
-            _event = event
-
-        self.addHandler(_on_event)
-
-        while not _flag:
-            yield None
-
-        self.removeHandler(_on_event, _event)
+        return Manager.WaitEvent(self, name, channel)
 
     wait = waitEvent
 
@@ -335,6 +347,7 @@ class Manager(object):
         value = None
         error = None
 
+        print 'handlers', handlers
         for handler in handlers:
             event.handler = handler
             try:
@@ -360,15 +373,15 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if type(value) is GeneratorType and self._wait_event_yield:
+            print 'return value', repr(value)
+            if type(value) is GeneratorType:
+                print 'event', repr(event)
+                print 'value', repr(value)
                 self.registerTask((event, value))
                 continue
             elif value is not None:
+                print 'setting value'
                 event.value.value = value
-
-            if self._wait_event_yield:
-                # TODO: fire error
-                self._wait_event_yield = False
 
             if value and handler.filter:
                 break
@@ -438,18 +451,26 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
+        print 'iterating tasks', repr(self._tasks)
         for event, task in self._tasks.copy():
-            try:
-                value = task.next()
-                if type(value) is GeneratorType and self._wait_event_yield:
-                    self.registerTask((event, value))
-                elif value is not None:
-                    event.value.value = value
-                if self._wait_event_yield:
-                    # TODO: fire error
-                    self._wait_event_yield = False
-            except StopIteration:
-                self.unregisterTask((event, task))
+            if type(task) is Manager.WaitEvent:
+                if task.done():
+                    print 'DONE WAS TRUE'
+                    self.unregisterTask((event, task))
+                    self.registerTask((event, task.task))
+                else:
+                    print 'done was false'
+            else:
+                try:
+                    value = task.next()
+                    if type(value) is Manager.WaitEvent:
+                        value.task = task
+                        self.registerTask((event, value))
+                        raise StopIteration
+                    elif value is not None:
+                         event.value.value = value
+                except StopIteration:
+                    self.unregisterTask((event, task))
 
         if self:
             self.flush()

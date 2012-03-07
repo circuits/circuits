@@ -29,8 +29,8 @@ def test_return_generator():
     app.tick()
     app.tick()
 
-    x = list(islice(v.value, 0, 2))
-    assert x == ["Hello", "Hello"]
+    x = v.value
+    assert x == "Hello"
 
 def test_yield():
     app = App()
@@ -41,5 +41,5 @@ def test_yield():
     app.tick()
     app.tick()
 
-    x = list(v.value)
+    x = v.value
     assert x == ["Hello ", "World!"]
