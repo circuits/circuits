@@ -293,7 +293,6 @@ class Manager(object):
             waitobj = self
             @handler(name, channel=channel)
             def _on_event(self, event, *args, **kwargs):
-                print 'called ON EVENT', repr(waitobj)
                 waitobj._flag = True
                 waitobj._event = event
             self._on_event = _on_event
@@ -301,7 +300,6 @@ class Manager(object):
             self._manager.addHandler(_on_event)
 
         def done(self):
-            print 'called DONE'
             if self._flag:
                 self._manager.removeHandler(self._on_event)
                 return True
@@ -347,7 +345,6 @@ class Manager(object):
         value = None
         error = None
 
-        print 'handlers', handlers
         for handler in handlers:
             event.handler = handler
             try:
@@ -373,14 +370,10 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            print 'return value', repr(value)
             if type(value) is GeneratorType:
-                print 'event', repr(event)
-                print 'value', repr(value)
                 self.registerTask((event, value))
                 continue
             elif value is not None:
-                print 'setting value'
                 event.value.value = value
 
             if value and handler.filter:
@@ -451,15 +444,11 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
-        print 'iterating tasks', repr(self._tasks)
         for event, task in self._tasks.copy():
             if type(task) is Manager.WaitEvent:
                 if task.done():
-                    print 'DONE WAS TRUE'
                     self.unregisterTask((event, task))
                     self.registerTask((event, task.task))
-                else:
-                    print 'done was false'
             else:
                 try:
                     value = task.next()
