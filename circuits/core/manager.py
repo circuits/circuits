@@ -53,6 +53,7 @@ class Manager(object):
 
         self._task = None
         self._running = False
+        self._wait_event_yield = False
 
         self.root = self.parent = self
         self.components = set()
@@ -359,11 +360,15 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if type(value) is GeneratorType:
+            if type(value) is GeneratorType and self._wait_event_yield:
                 self.registerTask((event, value))
                 continue
             elif value is not None:
                 event.value.value = value
+
+            if self._wait_event_yield:
+                # TODO: fire error
+                self._wait_event_yield = False
 
             if value and handler.filter:
                 break
@@ -436,10 +441,13 @@ class Manager(object):
         for event, task in self._tasks.copy():
             try:
                 value = task.next()
-                if type(value) is GeneratorType:
+                if type(value) is GeneratorType and self._wait_event_yield:
                     self.registerTask((event, value))
                 elif value is not None:
                     event.value.value = value
+                if self._wait_event_yield:
+                    # TODO: fire error
+                    self._wait_event_yield = False
             except StopIteration:
                 self.unregisterTask((event, task))
 
