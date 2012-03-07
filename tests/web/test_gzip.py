@@ -33,9 +33,6 @@ class Root(Controller):
         return "Hello World!"
 
 def test(webapp):
-    from circuits import Debugger
-    Debugger().register(webapp)
-
     gzip = Gzip()
     gzip.register(webapp)
 

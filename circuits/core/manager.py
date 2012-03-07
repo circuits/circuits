@@ -281,21 +281,32 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
+    class WaitEvent(object):
+        def __init__(self, manager, name, channel):
+            self._manager = manager
+            self._flag = False
+            self._event = None
+            self.name = name
+            self.channel = channel
+            self.task = None
+
+            waitobj = self
+            @handler(name, channel=channel)
+            def _on_event(self, event, *args, **kwargs):
+                waitobj._flag = True
+                waitobj._event = event
+            self._on_event = _on_event
+
+            self._manager.addHandler(_on_event)
+
+        def done(self):
+            if self._flag:
+                self._manager.removeHandler(self._on_event)
+                return True
+            return False
+
     def waitEvent(self, name, channel=None):
-        _flag = False
-        _event = None
-
-        @handler(name, channel=channel)
-        def _on_event(self, event, *args, **kwargs):
-            _flag = True
-            _event = event
-
-        self.addHandler(_on_event)
-
-        while not _flag:
-            yield None
-
-        self.removeHandler(_on_event, _event)
+        return Manager.WaitEvent(self, name, channel)
 
     wait = waitEvent
 
@@ -359,9 +370,14 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
+            print 'return value', repr(value)
             if type(value) is GeneratorType:
-                self.registerTask((event, value))
-                continue
+                gen = value.next()
+                if type(gen) is Manager.WaitEvent:
+                    gen.task = value
+                    self.registerTask((event, gen))
+                else:
+                    event.value.value = chain([gen], value)
             elif value is not None:
                 event.value.value = value
 
@@ -434,14 +450,21 @@ class Manager(object):
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
         for event, task in self._tasks.copy():
-            try:
-                value = task.next()
-                if type(value) is GeneratorType:
-                    self.registerTask((event, value))
-                elif value is not None:
-                    event.value.value = value
-            except StopIteration:
-                self.unregisterTask((event, task))
+            if type(task) is Manager.WaitEvent:
+                if task.done():
+                    self.unregisterTask((event, task))
+                    self.registerTask((event, task.task))
+            else:
+                try:
+                    value = task.next()
+                    if type(value) is Manager.WaitEvent:
+                        value.task = task
+                        self.registerTask((event, value))
+                        raise StopIteration
+                    elif value is not None:
+                         event.value.value = value
+                except StopIteration:
+                    self.unregisterTask((event, task))
 
         if self:
             self.flush()

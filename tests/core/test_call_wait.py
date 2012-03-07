@@ -17,11 +17,16 @@ class Hello(Event):
     """Hello Event"""
 
 
+class Bar(Event):
+    """Bar Event"""
+
+
 class Test(Component):
 
     def test_wait(self):
         x = self.fire(Hello())
-        yield self.wait("bar")
+        yield self.wait("hello")
+        self.fire(Bar())
         yield x
 
     def test_call(self):
@@ -31,8 +36,10 @@ class Test(Component):
         return "Hello World!"
 
 
-def test():
+def test_simple():
     test = Test()
+    from circuits import Debugger
+    Debugger().register(test)
     test.start()
 
     waiter = pytest.WaitEvent(test, "hello")
@@ -49,7 +56,7 @@ def test_wait():
     test = Test()
     test.start()
 
-    waiter = pytest.WaitEvent(test, "test_wait")
+    waiter = pytest.WaitEvent(test, "bar")
     x = test.fire(TestWait())
     waiter.wait()
 
@@ -66,7 +73,7 @@ def test_call():
     x = test.fire(TestCall())
     waiter.wait()
 
-    value = x.value
-    assert value == "Hello World!"
+    value = [v.value for v in x.value]
+    assert value == ["Hello World!"]
 
     test.stop()
