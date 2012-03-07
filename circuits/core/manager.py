@@ -10,22 +10,17 @@ This module defines the Manager class subclasses by component.BaseComponent
 import atexit
 from time import sleep
 from itertools import chain
-from types import MethodType
 from collections import deque
 from traceback import format_tb
 from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from inspect import getmembers, isfunction
+from types import MethodType, GeneratorType
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
-try:
-    from greenlet import getcurrent as getcurrent_greenlet, greenlet
-    GREENLET = True
-except ImportError:
-    GREENLET = False
-
 from .values import Value
+from .handlers import handler
 from .events import Success, Failure
 from .events import Event, Error, Started, Stopped, Signal
 
@@ -58,9 +53,6 @@ class Manager(object):
 
         self._task = None
         self._running = False
-
-        if GREENLET:
-            self._greenlet = None
 
         self.root = self.parent = self
         self.components = set()
@@ -213,7 +205,7 @@ class Manager(object):
         setattr(self, method.__name__, method)
 
         if not method.names and method.channel == "*":
-            self._globals.add(f)
+            self._globals.add(method)
         elif not method.names:
             self._handlers.setdefault("*", set()).add(method)
         else:
@@ -289,39 +281,28 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
-    def waitEvent(self, cls, limit=None):
-        if self._task is not None  and self._task not in [current_process(),
-                current_thread()]:
-            raise Exception((
-                "Cannot use .waitEvent from other threads or processes"
-            ))
+    def waitEvent(self, name, channel=None):
+        _flag = False
+        _event = None
 
-        g = getcurrent_greenlet()
+        @handler(name, channel=channel)
+        def _on_event(self, event, *args, **kwargs):
+            _flag = True
+            _event = event
 
-        is_instance = isinstance(cls, Event)
-        i = 0
-        e = None
-        caller = self._greenlet
+        self.addHandler(_on_event)
 
-        self.registerTask(g)
-        try:
-            while e != cls if is_instance else e.__class__ != cls:
-                if limit and i == limit or self._task is None:
-                    self.unregisterTask(g)
-                    return
-                e, caller = caller.switch()
-                i += 1
-        finally:
-            self.unregisterTask(g)
+        while not _flag:
+            yield None
 
-        return e
+        self.removeHandler(_on_event, _event)
 
     wait = waitEvent
 
-    def callEvent(self, event, channel="*"):
-        self.fire(event, channel)
-        e = self.waitEvent(event)
-        return e.value
+    def callEvent(self, event, *channels):
+        value = self.fire(event, *channels)
+        self.waitEvent(event.name)
+        return value
 
     call = callEvent
 
@@ -329,13 +310,8 @@ class Manager(object):
         q = self._queue
         self._queue = deque()
 
-        if GREENLET:
-            for event, channels in q:
-                dispatcher = greenlet(self._dispatcher)
-                dispatcher.switch(event, channels)
-        else:
-            for event, channels in q:
-                self._dispatcher(event, channels)
+        for event, channels in q:
+            self._dispatcher(event, channels)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
@@ -383,7 +359,10 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if value is not None:
+            if type(value) is GeneratorType:
+                self.registerTask((event, value))
+                continue
+            elif value is not None:
                 event.value.value = value
 
             if value and handler.filter:
@@ -392,10 +371,6 @@ class Manager(object):
         if error is None and event.success:
             self.fire(Success.create("%sSuccess" %
                 event.__class__.__name__, event, value), *event.channels)
-
-        if GREENLET:
-            for task in self._tasks.copy():
-                task.switch(event, getcurrent_greenlet())
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
@@ -458,6 +433,16 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
+        for event, task in self._tasks.copy():
+            try:
+                value = task.next()
+                if type(value) is GeneratorType:
+                    self.registerTask((event, value))
+                elif value is not None:
+                    event.value.value = value
+            except StopIteration:
+                self.unregisterTask((event, task))
+
         if self:
             self.flush()
         else:
@@ -477,13 +462,6 @@ class Manager(object):
         fires the corresponding :class:`circuits.core.events.Signal`
         events and then calls ``stop()`` for the manager. 
         """
-        if GREENLET:
-            self._greenlet = greenlet(self._run)
-            self._greenlet.switch()
-        else:
-            self._run()
-
-    def _run(self):
         atexit.register(self.stop)
 
         if current_thread().getName() == "MainThread":
