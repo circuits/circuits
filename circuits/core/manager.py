@@ -19,15 +19,13 @@ from inspect import getmembers, isfunction
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
-try:
-    from greenlet import getcurrent as getcurrent_greenlet, greenlet
-    GREENLET = True
-except ImportError:
-    GREENLET = False
+from ..tools import tryimport
 
 from .values import Value
 from .events import Success, Failure
-from .events import Event, Error, Started, Stopped, Signal
+from .events import Error, Started, Stopped, Signal
+
+greenlet = tryimport("greenlet")
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
@@ -36,20 +34,17 @@ def _sortkey(handler):
     return (handler.priority, handler.filter)
 
 
-class Manager(object):
-    """Manager
+class BaseManager(object):
+    """BaseManager
 
     This is the base Manager of the BaseComponent which manages an Event Queue,
     a set of Event Handlers, Channels, Tick Functions, Registered and Hidden
     Components, a Task and the Running State.
-
-    :ivar manager: The Manager of this Component or Manager
     """
 
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        self._tasks = set()
         self._ticks = set()
         self._cache = dict()
         self._queue = deque()
@@ -58,9 +53,6 @@ class Manager(object):
 
         self._task = None
         self._running = False
-
-        if GREENLET:
-            self._greenlet = None
 
         self.root = self.parent = self
         self.components = set()
@@ -263,9 +255,9 @@ class Manager(object):
            If no channels are specified, the event is delivered to the
            channels found in the event's :attr:`channel` attribute.
            If this attribute is not set, the event is delivered to
-           the firing component's channel. And eventually, 
+           the firing component's channel. And eventually,
            when set neither, the event is delivered on all
-           channels ("*"). 
+           channels ("*").
         """
 
         if not channels:
@@ -282,60 +274,12 @@ class Manager(object):
 
     fire = fireEvent
 
-    def registerTask(self, g):
-        self._tasks.add(g)
-
-    def unregisterTask(self, g):
-        if g in self._tasks:
-            self._tasks.remove(g)
-
-    def waitEvent(self, cls, limit=None):
-        if self._task is not None  and self._task not in [current_process(),
-                current_thread()]:
-            raise Exception((
-                "Cannot use .waitEvent from other threads or processes"
-            ))
-
-        g = getcurrent_greenlet()
-
-        is_instance = isinstance(cls, Event)
-        i = 0
-        e = None
-        caller = self._greenlet
-
-        self.registerTask(g)
-        try:
-            while e != cls if is_instance else e.__class__ != cls:
-                if limit and i == limit or self._task is None:
-                    self.unregisterTask(g)
-                    return
-                e, caller = caller.switch()
-                i += 1
-        finally:
-            self.unregisterTask(g)
-
-        return e
-
-    wait = waitEvent
-
-    def callEvent(self, event, channel="*"):
-        self.fire(event, channel)
-        e = self.waitEvent(event)
-        return e.value
-
-    call = callEvent
-
     def _flush(self):
         q = self._queue
         self._queue = deque()
 
-        if GREENLET:
-            for event, channels in q:
-                dispatcher = greenlet(self._dispatcher)
-                dispatcher.switch(event, channels)
-        else:
-            for event, channels in q:
-                self._dispatcher(event, channels)
+        for event, channels in q:
+            self._dispatcher(event, channels)
 
     def flushEvents(self):
         """Flush all Events in the Event Queue"""
@@ -393,10 +337,6 @@ class Manager(object):
             self.fire(Success.create("%sSuccess" %
                 event.__class__.__name__, event, value), *event.channels)
 
-        if GREENLET:
-            for task in self._tasks.copy():
-                task.switch(event, getcurrent_greenlet())
-
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
         if signal in [SIGINT, SIGTERM]:
@@ -419,7 +359,7 @@ class Manager(object):
         """
         Stop this manager. Invoking this method either causes
         an invocation of ``run()`` to return or terminates the
-        thread or process associated with the manager. 
+        thread or process associated with the manager.
         """
         if not self.running:
             return
@@ -467,23 +407,17 @@ class Manager(object):
         """
         Run this manager. The method continuously checks for events
         on the event queue of the component hierarchy, and invoke
-        associated handlers. It also invokes the component's 
+        associated handlers. It also invokes the component's
         "tick"-handlers at regular intervals.
-        
+
         The method returns when the manager's ``stop()`` method is invoked.
-        
+
         If invoked by a programs main thread, a signal handler for
         the ``INT`` and ``TERM`` signals is installed. This handler
         fires the corresponding :class:`circuits.core.events.Signal`
-        events and then calls ``stop()`` for the manager. 
+        events and then calls ``stop()`` for the manager.
         """
-        if GREENLET:
-            self._greenlet = greenlet(self._run)
-            self._greenlet.switch()
-        else:
-            self._run()
 
-    def _run(self):
         atexit.register(self.stop)
 
         if current_thread().getName() == "MainThread":
@@ -503,3 +437,83 @@ class Manager(object):
                 self.tick()
         finally:
             self.tick()
+
+
+class GreenletManager(BaseManager):
+
+    def __init__(self, *args, **kwargs):
+        super(GreenletManager, self).__init__(*args, **kwargs)
+
+        if greenlet is None:
+            raise RuntimeError("No greenlet support available")
+
+        self._tasks = set()
+        self._greenlet = None
+
+    def registerTask(self, g):
+        self._tasks.add(g)
+
+    def unregisterTask(self, g):
+        if g in self._tasks:
+            self._tasks.remove(g)
+
+    def waitEvent(self, name, limit=None):
+        if self._task is not None  and self._task not in [current_process(),
+                current_thread()]:
+            raise Exception((
+                "Cannot use .waitEvent from other threads or processes"
+            ))
+
+        g = greenlet.getcurrent()
+
+        i = 0
+        event = None
+        caller = self._greenlet
+
+        self.registerTask(g)
+        try:
+            while True:
+                if event is not None and event.name == name:
+                    break
+
+                if limit and i == limit or self._task is None:
+                    break
+
+                event, caller = caller.switch()
+
+                i += 1
+        finally:
+            self.unregisterTask(g)
+
+    wait = waitEvent
+
+    def callEvent(self, event, *channels):
+        value = self.fire(event, *channels)
+        self.wait(event.name)
+        return value
+
+    call = callEvent
+
+    def _dispatcher(self, event, channels):
+        super(GreenletManager, self)._dispatcher(event, channels)
+
+        for task in self._tasks.copy():
+            task.switch(event, greenlet.getcurrent())
+
+    def _flush(self):
+        q = self._queue
+        self._queue = deque()
+
+        for event, channels in q:
+            dispatcher = greenlet.greenlet(self._dispatcher)
+            dispatcher.switch(event, channels)
+
+    def run(self):
+        self._greenlet = greenlet.greenlet(super(GreenletManager, self).run)
+        self._greenlet.switch()
+
+
+if greenlet is not None:
+    Manager = GreenletManager
+else:
+    Manager = BaseManager

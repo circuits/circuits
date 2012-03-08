@@ -13,7 +13,7 @@ from threading import current_thread
 
 import pytest
 
-from circuits import Event, Component, Manager
+from circuits import Event, Component, BaseManager
 
 class App(Component):
 
@@ -27,24 +27,24 @@ class Test(Event):
 def test():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
-    m = Manager()
-    assert repr(m) == "<Manager %s (queued=0) [S]>" % id
+    m = BaseManager()
+    assert repr(m) == "<BaseManager %s (queued=0) [S]>" % id
 
     app = App()
     app.register(m)
     s = repr(m)
-    assert s == "<Manager %s (queued=1) [S]>" % id
+    assert s == "<BaseManager %s (queued=1) [S]>" % id
 
     m.start()
 
     pytest.wait_for(m, "_running", True)
 
     s = repr(m)
-    assert s == "<Manager %s (queued=0) [R]>" % id
+    assert s == "<BaseManager %s (queued=0) [R]>" % id
 
     m.stop()
 
     pytest.wait_for(m, "_running", False)
 
     s = repr(m)
-    assert s == "<Manager %s (queued=0) [S]>" % id
+    assert s == "<BaseManager %s (queued=0) [S]>" % id

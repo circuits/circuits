@@ -11,7 +11,7 @@ from .handlers import handler, tick
 
 from .events import Event
 from .loader import Loader
-from .manager import Manager
+from .manager import BaseManager, Manager
 from .components import BaseComponent, Component
 
 from .values import Value
@@ -26,7 +26,7 @@ from .debugger import Debugger
 __all__ = ("handler", "BaseComponent", "Component", "Event",
         "future", "Pool", "Task", "Worker",
         "Bridge", "Debugger", "Timer",
-        "Manager",
+        "BaseManager", "Manager",
 )
 
 # hghooks: no-pyflakes
