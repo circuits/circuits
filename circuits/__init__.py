@@ -19,7 +19,7 @@ __date__ = "12th February 2011"
 __version__ = "1.7dev"
 
 from circuits.core import future, Pool, Task, Worker
-from circuits.core import Debugger, Loader, BaseManager, Manager, Timer
+from circuits.core import Debugger, Loader, Manager, Timer
 from circuits.core import handler, tick, BaseComponent, Component, Event
 
 # hghooks: no-pyflakes

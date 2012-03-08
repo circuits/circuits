@@ -10,22 +10,20 @@ This module defines the Manager class subclasses by component.BaseComponent
 import atexit
 from time import sleep
 from itertools import chain
-from types import MethodType
 from collections import deque
 from traceback import format_tb
 from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from inspect import getmembers, isfunction
+from types import MethodType, GeneratorType
 from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
-from ..tools import tryimport
-
 from .values import Value
+from .handlers import handler
 from .events import Success, Failure
 from .events import Error, Started, Stopped, Signal
 
-greenlet = tryimport("greenlet")
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
@@ -34,8 +32,8 @@ def _sortkey(handler):
     return (handler.priority, handler.filter)
 
 
-class BaseManager(object):
-    """BaseManager
+class Manager(object):
+    """Manager
 
     This is the base Manager of the BaseComponent which manages an Event Queue,
     a set of Event Handlers, Channels, Tick Functions, Registered and Hidden
@@ -45,6 +43,7 @@ class BaseManager(object):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
+        self._tasks = set()
         self._ticks = set()
         self._cache = dict()
         self._queue = deque()
@@ -205,7 +204,7 @@ class BaseManager(object):
         setattr(self, method.__name__, method)
 
         if not method.names and method.channel == "*":
-            self._globals.add(f)
+            self._globals.add(method)
         elif not method.names:
             self._handlers.setdefault("*", set()).add(method)
         else:
@@ -274,6 +273,38 @@ class BaseManager(object):
 
     fire = fireEvent
 
+    def registerTask(self, g):
+        self._tasks.add(g)
+
+    def unregisterTask(self, g):
+        if g in self._tasks:
+            self._tasks.remove(g)
+
+    def waitEvent(self, name, channel=None):
+        _flag = False
+        _event = None
+
+        @handler(name, channel=channel)
+        def _on_event(self, event, *args, **kwargs):
+            _flag = True
+            _event = event
+
+        self.addHandler(_on_event)
+
+        while not _flag:
+            yield None
+
+        self.removeHandler(_on_event, _event)
+
+    wait = waitEvent
+
+    def callEvent(self, event, *channels):
+        value = self.fire(event, *channels)
+        self.waitEvent(event.name)
+        return value
+
+    call = callEvent
+
     def _flush(self):
         q = self._queue
         self._queue = deque()
@@ -327,7 +358,10 @@ class BaseManager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if value is not None:
+            if type(value) is GeneratorType:
+                self.registerTask((event, value))
+                continue
+            elif value is not None:
                 event.value.value = value
 
             if value and handler.filter:
@@ -398,6 +432,16 @@ class BaseManager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
+        for event, task in self._tasks.copy():
+            try:
+                value = task.next()
+                if type(value) is GeneratorType:
+                    self.registerTask((event, value))
+                elif value is not None:
+                    event.value.value = value
+            except StopIteration:
+                self.unregisterTask((event, task))
+
         if self:
             self.flush()
         else:
@@ -417,7 +461,6 @@ class BaseManager(object):
         fires the corresponding :class:`circuits.core.events.Signal`
         events and then calls ``stop()`` for the manager.
         """
-
         atexit.register(self.stop)
 
         if current_thread().getName() == "MainThread":
@@ -437,83 +480,3 @@ class BaseManager(object):
                 self.tick()
         finally:
             self.tick()
-
-
-class GreenletManager(BaseManager):
-
-    def __init__(self, *args, **kwargs):
-        super(GreenletManager, self).__init__(*args, **kwargs)
-
-        if greenlet is None:
-            raise RuntimeError("No greenlet support available")
-
-        self._tasks = set()
-        self._greenlet = None
-
-    def registerTask(self, g):
-        self._tasks.add(g)
-
-    def unregisterTask(self, g):
-        if g in self._tasks:
-            self._tasks.remove(g)
-
-    def waitEvent(self, name, limit=None):
-        if self._task is not None  and self._task not in [current_process(),
-                current_thread()]:
-            raise Exception((
-                "Cannot use .waitEvent from other threads or processes"
-            ))
-
-        g = greenlet.getcurrent()
-
-        i = 0
-        event = None
-        caller = self._greenlet
-
-        self.registerTask(g)
-        try:
-            while True:
-                if event is not None and event.name == name:
-                    break
-
-                if limit and i == limit or self._task is None:
-                    break
-
-                event, caller = caller.switch()
-
-                i += 1
-        finally:
-            self.unregisterTask(g)
-
-    wait = waitEvent
-
-    def callEvent(self, event, *channels):
-        value = self.fire(event, *channels)
-        self.wait(event.name)
-        return value
-
-    call = callEvent
-
-    def _dispatcher(self, event, channels):
-        super(GreenletManager, self)._dispatcher(event, channels)
-
-        for task in self._tasks.copy():
-            task.switch(event, greenlet.getcurrent())
-
-    def _flush(self):
-        q = self._queue
-        self._queue = deque()
-
-        for event, channels in q:
-            dispatcher = greenlet.greenlet(self._dispatcher)
-            dispatcher.switch(event, channels)
-
-    def run(self):
-        self._greenlet = greenlet.greenlet(super(GreenletManager, self).run)
-        self._greenlet.switch()
-
-
-if greenlet is not None:
-    Manager = GreenletManager
-else:
-    Manager = BaseManager

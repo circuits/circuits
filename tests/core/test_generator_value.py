@@ -25,19 +25,20 @@ def test_return_generator():
     while app: app.flush()
 
     v = app.fire(Test())
-    app.flush()
+    app.tick()
+    app.tick()
 
-    g = v.value
-    s = next(g)
-    assert s == "Hello"
+    x = v.value
+    assert x == "Hello"
 
 def test_yield():
     app = App()
     while app: app.flush()
 
     v = app.fire(Hello())
-    app.flush()
+    app.tick()
+    app.tick()
+    app.tick()
 
-    g = v.value
-    s = "".join(g)
-    assert s == "Hello World!"
+    x = v.value
+    assert x == ["Hello ", "World!"]

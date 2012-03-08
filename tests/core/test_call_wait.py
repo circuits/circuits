@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import pytest
-pytest.importorskip("greenlet")
 
 from circuits import Component, Event
 
@@ -24,12 +23,11 @@ class Test(Component):
 
     def test_wait(self):
         x = self.fire(Hello())
-        self.wait("hello")
-        return x.value
+        yield self.wait("bar")
+        yield x
 
     def test_call(self):
-        x = self.call(Hello())
-        return x.value
+        yield self.call(Hello())
 
     def hello(self):
         return "Hello World!"

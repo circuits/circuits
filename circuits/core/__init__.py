@@ -11,7 +11,7 @@ from .handlers import handler, tick
 
 from .events import Event
 from .loader import Loader
-from .manager import BaseManager, Manager
+from .manager import Manager
 from .components import BaseComponent, Component
 
 from .values import Value
