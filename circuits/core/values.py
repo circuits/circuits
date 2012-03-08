@@ -53,6 +53,8 @@ class Value(object):
         self.manager = manager
         self.notify = notify
 
+        self.promise = False
+
         self.result = False
         self.errors = False
         self.parent = self
@@ -90,6 +92,14 @@ class Value(object):
 
         return str(self.value)
 
+    def inform(self, force=False):
+        if self.promise and not force:
+            return
+
+        if self.manager is not None and self.notify:
+            self.manager.fire(Event.create("%sValueChanged" %
+                self.event.__class__.__name__, self))
+
     def getValue(self, recursive=True):
         value = self._value
 
@@ -120,9 +130,7 @@ class Value(object):
             elif v is not None:
                 o.result = True
 
-                if o.manager is not None and o.notify:
-                    o.manager.fireEvent(Event.create("%sValueChanged" %
-                        o.event.__class__.__name__, o))
+                o.inform()
 
             if o.parent is not o:
                 o.parent.errors = o.errors

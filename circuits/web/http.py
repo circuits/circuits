@@ -268,7 +268,7 @@ class HTTP(BaseComponent):
         # the .notify flag and be notified of changes to the value.
         value = e.value.getValue(recursive=False)
 
-        if isinstance(value, Value):
+        if isinstance(value, Value) and not value.promise:
             value = value.getValue(recursive=False)
 
         request, response = e.args[:2]

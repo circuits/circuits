@@ -359,6 +359,7 @@ class Manager(object):
                 self.fire(Error(etype, evalue, traceback, handler))
 
             if type(value) is GeneratorType:
+                event.value.promise = True
                 self.registerTask((event, value))
                 continue
             elif value is not None:
@@ -367,7 +368,7 @@ class Manager(object):
             if value and handler.filter:
                 break
 
-        if error is None and event.success:
+        if error is None and event.success and not event.value.promise:
             self.fire(Success.create("%sSuccess" %
                 event.__class__.__name__, event, value), *event.channels)
 
@@ -433,6 +434,7 @@ class Manager(object):
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
         for event, task in self._tasks.copy():
+            value = None
             try:
                 value = task.next()
                 if type(value) is GeneratorType:
@@ -440,7 +442,30 @@ class Manager(object):
                 elif value is not None:
                     event.value.value = value
             except StopIteration:
+                event.value.inform(True)
                 self.unregisterTask((event, task))
+
+                if event.success:
+                    self.fire(Success.create("%sSuccess" %
+                        event.__class__.__name__, event, value),
+                        *event.channels)
+            except:
+                self.unregisterTask((event, task))
+
+                etype, evalue, etraceback = _exc_info()
+                traceback = format_tb(etraceback)
+                error = (etype, evalue, traceback)
+
+                event.value.value = value
+                event.value.errors = True
+                event.value.inform(True)
+
+                if event.failure:
+                    self.fire(Failure.create("%sFailure" %
+                        event.__class__.__name__, event, error),
+                        *event.channels)
+
+                self.fire(Error(etype, evalue, traceback, handler))
 
         if self:
             self.flush()
