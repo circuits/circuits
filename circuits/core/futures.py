@@ -1,6 +1,7 @@
 # Module:   future
 # Date:     6th February 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+from inspect import getargspec
 
 """Futures
 
@@ -40,12 +41,21 @@ def future(pool=None):
             p = getattr(self, "_pool", pool)
             if p is None:
                 p = findcmp(self.root, Pool)
+            if wrapper.wrapped_event:
+                task = Task(f, self, event, *args, **kwargs)
+            else:
+                task = Task(f, self, *args, **kwargs)    
             if p is not None:
                 setattr(self, "_pool", p)
-                return self.fire(Task(f, self, *args, **kwargs), p)
+                return self.fire(task, p)
             else:
-                return Worker(channel=str(uuid())).fire(
-                        Task(f, self, *args, **kwargs))
+                return Worker(channel=str(uuid())).fire(task)
+                
+        args = getargspec(f)[0]
+        if args and args[0] == "self":
+            del args[0]
+        wrapper.wrapped_event = getattr(f, "event", 
+                                        bool(args and args[0] == "event"))
         wrapper.event = True
         return update_wrapper(wrapper, f)
     return decorate
