@@ -33,16 +33,16 @@ class BaseEvent(object):
 
     def __init__(self, *args, **kwargs):
         """Base Event
-        
+
         An Event is a message send to one or more channels. It is eventually
         dispatched to all components that have handlers for one
         of the channels and the event type.
-        
+
         All normal arguments and keyword arguments passed to the constructor
-        of an event are passed on to the handler. When declaring a 
+        of an event are passed on to the handler. When declaring a
         handler, its argument list must therefore match the arguments
         used for creating the event.
-        
+
         Every event has a :attr:`name` attribute that is used for matching
         the event with the handlers. By default, the name is the uncameled
         class name of the event.
@@ -50,15 +50,15 @@ class BaseEvent(object):
         :cvar channels: An optional attribute that may be set before firing
             the event. If defined (usually as a class variable), the attribute
             specifies the channels that the event should be delivered
-            to as a tuple. This overrides the default behavior 
+            to as a tuple. This overrides the default behavior
             of sending the event to the firing component's channel.
 
             When an event is fired, the value in this attribute
             is replaced for the instance with the channels that
             the event is actually sent to. This information may be used
             e.g. when the event is passed as a parameter to a handler.
-            
-        :ivar value: This is a :class:`circuits.core.values.Value` 
+
+        :ivar value: This is a :class:`circuits.core.values.Value`
             object that holds the results returned by the handlers invoked
             for the event.
         """
