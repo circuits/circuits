@@ -300,8 +300,9 @@ class Manager(object):
 
     def callEvent(self, event, *channels):
         value = self.fire(event, *channels)
-        self.waitEvent(event.name)
-        return value
+        for r in self.waitEvent(event.name):
+            yield r
+        yield value
 
     call = callEvent
 
