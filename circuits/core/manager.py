@@ -395,12 +395,13 @@ class Manager(object):
 
         if event.alert_done:
             self.fire(Done.create("%sDone" %
-                event.__class__.__name__, event, event.value),
+                event.__class__.__name__, event, event.value.value),
                 *event.channels)
 
         if error is None and event.success:
             self.fire(Success.create("%sSuccess" %
-                event.__class__.__name__, event, event.value), *event.channels)
+                event.__class__.__name__, event, event.value.value),
+                *event.channels)
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
