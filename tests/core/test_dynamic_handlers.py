@@ -49,6 +49,6 @@ def test_removeHandler():
     assert x.value is None
 
     assert on_foo not in dir(m)
-    assert len(m._handlers["foo"]) == 0
+    assert "foo" not in m._handlers
 
     m.stop()
