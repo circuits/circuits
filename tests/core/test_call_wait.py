@@ -47,7 +47,7 @@ class Test(Component):
     def test_long_wait(self):
         x = self.fire(Foo())
         yield self.wait("foo")
-        yield x.value
+        yield x
 
     def test_long_call(self):
         yield self.call(Foo())
