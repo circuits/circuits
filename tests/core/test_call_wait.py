@@ -31,6 +31,18 @@ class Foo(Event):
     """Foo Event"""
 
 
+class GetX(Event):
+    """Get X Event"""
+
+
+class GetY(Event):
+    """Get Y Event"""
+
+
+class TestEval(Event):
+    """Test Eval Event"""
+
+
 class Test(Component):
 
     def test_wait(self):
@@ -55,6 +67,17 @@ class Test(Component):
     def foo(self):
         for i in xrange(1, 10):
             yield i
+
+    def get_x(self):
+        return 1
+
+    def get_y(self):
+        return 2
+
+    def test_eval(self):
+        x = self.call(GetX())
+        y = self.call(GetY())
+        return x.value + y.value
 
 
 def test_wait():
@@ -99,5 +122,16 @@ def test_long_wait():
 
     value = x.value
     assert value == range(1, 10)
+
+    test.stop()
+
+
+def test_eval():
+    test = Test()
+    test.start()
+
+    x = pytest.call_event(test, TestEval())
+    value = x.value
+    assert value == 3
 
     test.stop()
