@@ -16,6 +16,21 @@ class Flag(object):
     status = False
 
 
+def call_event_from_name(manager, event, event_name, *channels):
+    fired = False
+    value = None
+    for r in manager.waitEvent(event_name):
+        if not fired:
+            fired = True
+            value = manager.fire(event, *channels)
+        sleep(0.1)
+    return value
+
+
+def call_event(manager, event, *channels):
+    return call_event_from_name(manager, event, event.name, *channels)
+
+
 class WaitEvent(object):
     def __init__(self, manager, name, channel=None, timeout=3.0):
         if channel is None:
@@ -59,4 +74,6 @@ def pytest_namespace():
     return dict((
         ("WaitEvent", WaitEvent),
         ("wait_for", wait_for),
+        ("call_event", call_event),
+        ("call_event_from_name", call_event_from_name),
     ))

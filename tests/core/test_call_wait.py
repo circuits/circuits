@@ -35,7 +35,7 @@ class Test(Component):
 
     def test_wait(self):
         x = self.fire(Hello())
-        yield self.wait("bar")
+        yield self.wait("hello")
         yield x
 
     def test_call(self):
@@ -61,10 +61,7 @@ def test_wait():
     test = Test()
     test.start()
 
-    waiter = pytest.WaitEvent(test, "hello_success")
-    x = test.fire(TestWait())
-    waiter.wait()
-
+    x = pytest.call_event_from_name(test, TestWait(), "hello_success")
     value = x.value
     assert value == "Hello World!"
 
@@ -75,10 +72,7 @@ def test_call():
     test = Test()
     test.start()
 
-    waiter = pytest.WaitEvent(test, "hello_success")
-    x = test.fire(TestCall())
-    waiter.wait()
-
+    x = pytest.call_event(test, TestCall())
     value = x.value
     assert value == "Hello World!"
 
@@ -87,13 +81,9 @@ def test_call():
 
 def test_long_call():
     test = Test()
-    from circuits import Debugger
-    Debugger().register(test)
     test.start()
 
-    waiter = pytest.WaitEvent(test, "test_long_call")
-    x = test.fire(TestLongCall())
-    waiter.wait()
+    x = pytest.call_event(test, TestLongCall())
 
     value = x.value
     assert value == range(1, 10)
@@ -103,13 +93,9 @@ def test_long_call():
 
 def test_long_wait():
     test = Test()
-    from circuits import Debugger
-    Debugger().register(test)
     test.start()
 
-    waiter = pytest.WaitEvent(test, "test_long_wait")
-    x = test.fire(TestLongWait())
-    waiter.wait()
+    x = pytest.call_event(test, TestLongWait())
 
     value = x.value
     assert value == range(1, 10)

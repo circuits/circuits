@@ -24,8 +24,10 @@ class BaseEvent(object):
     channels = ()
     "The channels this message is send to."
 
-    success = None
-    failure = None
+    success = False
+    failure = False
+    alert_done = False
+    waitingHandlers = 0
 
     @classmethod
     def create(cls, name, *args, **kwargs):
@@ -153,6 +155,13 @@ class Error(Event):
 
         super(Error, self).__init__(type, value, traceback, handler)
 
+
+class Done(Event):
+    """Done Event
+
+    This Event is sent when an event is done. It is used by the wait and call
+    primitives to know when to stop waiting
+    """
 
 class Success(Event):
     """Success Event

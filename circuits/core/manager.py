@@ -21,7 +21,7 @@ from multiprocessing import current_process, Process
 
 from .values import Value
 from .handlers import handler
-from .events import Success, Failure
+from .events import Done, Success, Failure
 from .events import Error, Started, Stopped, Signal
 
 
@@ -227,7 +227,12 @@ class Manager(object):
         for name in names:
             self._handlers[name].remove(method)
             if not self._handlers[name]:
-                delattr(self, method.__name__)
+                del self._handlers[name]
+                try:
+                    delattr(self, method.__name__)
+                except AttributeError:
+                    # Handler was never part of self
+                    pass
 
         self.root._cache.clear()
 
@@ -280,21 +285,34 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
-    def waitEvent(self, name, channel=None):
-        _flag = False
-        _event = None
+    def waitEvent(self, event, channel=None):
+        state = {
+            'run': False,
+            'flag': False,
+            'event': None,
+        }
+        _event = event
 
-        @handler(name, channel=channel)
+        @handler(event, channel=channel)
         def _on_event(self, event, *args, **kwargs):
-            _flag = True
-            _event = event
+            if not state['run']:
+                self.removeHandler(_on_event, _event)
+                event.alert_done = True
+                state['run'] = True
+                state['event'] = event
+
+        @handler("%s_done" % event, channel=channel)
+        def _on_done(self, event, source, *args, **kwargs):
+            if state['event'] == source:
+                state['flag'] = True
 
         self.addHandler(_on_event)
+        self.addHandler(_on_done)
 
-        while not _flag:
+        while not state['flag']:
             yield None
 
-        self.removeHandler(_on_event, _event)
+        self.removeHandler(_on_done, "%s_done" % event)
 
     wait = waitEvent
 
@@ -360,18 +378,29 @@ class Manager(object):
                 self.fire(Error(etype, evalue, traceback, handler))
 
             if type(value) is GeneratorType:
+                event.waitingHandlers += 1
                 event.value.promise = True
                 self.registerTask((event, value))
-                continue
             elif value is not None:
                 event.value.value = value
 
             if value and handler.filter:
                 break
 
-        if error is None and event.success and not event.value.promise:
+        self._eventDone(event, error)
+
+    def _eventDone(self, event, error=None):
+        if event.waitingHandlers:
+            return
+
+        if event.alert_done:
+            self.fire(Done.create("%sDone" %
+                event.__class__.__name__, event, event.value),
+                *event.channels)
+
+        if error is None and event.success:
             self.fire(Success.create("%sSuccess" %
-                event.__class__.__name__, event, value), *event.channels)
+                event.__class__.__name__, event, event.value), *event.channels)
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
@@ -424,6 +453,46 @@ class Manager(object):
 
         return ticks
 
+
+    def processTask(self, event, task, parent=None):
+        value = None
+        try:
+            value = task.next()
+            if type(value) is GeneratorType:
+                event.waitingHandlers += 1
+                self.registerTask((event, value, task))
+                self.unregisterTask((event, task))
+                # We want to process all the tasks because
+                # we bind handlers in there
+                self.processTask(event, value)
+            elif value is not None:
+                event.value.value = value
+        except StopIteration:
+            self.unregisterTask((event, task))
+            if parent:
+                self.registerTask((event, parent))
+            event.waitingHandlers -= 1
+            if event.waitingHandlers == 0:
+                event.value.inform(True)
+                self._eventDone(event)
+        except:
+            self.unregisterTask((event, task))
+
+            etype, evalue, etraceback = _exc_info()
+            traceback = format_tb(etraceback)
+            error = (etype, evalue, traceback)
+
+            event.value.value = value
+            event.value.errors = True
+            event.value.inform(True)
+
+            if event.failure:
+                self.fire(Failure.create("%sFailure" %
+                    event.__class__.__name__, event, error),
+                    *event.channels)
+
+            self.fire(Error(etype, evalue, traceback, handler))
+
     def tick(self):
         for f in self._ticks.copy():
             try:
@@ -434,39 +503,8 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
-        for event, task in self._tasks.copy():
-            value = None
-            try:
-                value = task.next()
-                if type(value) is GeneratorType:
-                    self.registerTask((event, value))
-                elif value is not None:
-                    event.value.value = value
-            except StopIteration:
-                event.value.inform(True)
-                self.unregisterTask((event, task))
-
-                if event.success:
-                    self.fire(Success.create("%sSuccess" %
-                        event.__class__.__name__, event, value),
-                        *event.channels)
-            except:
-                self.unregisterTask((event, task))
-
-                etype, evalue, etraceback = _exc_info()
-                traceback = format_tb(etraceback)
-                error = (etype, evalue, traceback)
-
-                event.value.value = value
-                event.value.errors = True
-                event.value.inform(True)
-
-                if event.failure:
-                    self.fire(Failure.create("%sFailure" %
-                        event.__class__.__name__, event, error),
-                        *event.channels)
-
-                self.fire(Error(etype, evalue, traceback, handler))
+        for task in self._tasks.copy():
+            self.processTask(*task)
 
         if self:
             self.flush()
