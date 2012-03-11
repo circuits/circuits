@@ -51,7 +51,8 @@ class Test(Component):
         yield x
 
     def test_call(self):
-        yield self.call(Hello())
+        x = yield self.call(Hello())
+        yield x
 
     def hello(self):
         return "Hello World!"
@@ -62,7 +63,8 @@ class Test(Component):
         yield x
 
     def test_long_call(self):
-        yield self.call(Foo())
+        x = yield self.call(Foo())
+        yield x
 
     def foo(self):
         for i in xrange(1, 10):
@@ -126,7 +128,6 @@ def test_long_wait():
     test.stop()
 
 
-@pytest.skip("XXX: This test fails")
 def test_eval():
     test = Test()
     test.start()

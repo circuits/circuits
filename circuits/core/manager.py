@@ -32,6 +32,11 @@ def _sortkey(handler):
     return (handler.priority, handler.filter)
 
 
+class CallValue(object):
+    def __init__(self, value):
+        self.value = value
+
+
 class Manager(object):
     """Manager
 
@@ -320,7 +325,7 @@ class Manager(object):
         value = self.fire(event, *channels)
         for r in self.waitEvent(event.name):
             yield r
-        yield value
+        yield CallValue(value)
 
     call = callEvent
 
@@ -377,7 +382,7 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if type(value) is GeneratorType:
+            if isinstance(value, GeneratorType):
                 event.waitingHandlers += 1
                 event.value.promise = True
                 self.registerTask((event, value))
@@ -394,12 +399,12 @@ class Manager(object):
             return
 
         if event.alert_done:
-            self.fire(Done.create("%sDone" %
+            self.fire(Done.create("%s_Done" %
                 event.__class__.__name__, event, event.value.value),
                 *event.channels)
 
         if error is None and event.success:
-            self.fire(Success.create("%sSuccess" %
+            self.fire(Success.create("%s_Success" %
                 event.__class__.__name__, event, event.value.value),
                 *event.channels)
 
@@ -459,21 +464,39 @@ class Manager(object):
         value = None
         try:
             value = task.next()
-            if type(value) is GeneratorType:
+            if isinstance(value, CallValue):
+                # We are in a callEvent
+                value = parent.send(value.value)
+                # Done here, next() will StopIteration anyway
+                self.unregisterTask((event, task, parent))
+                if isinstance(value, GeneratorType):
+                    # We loose a yield but we gain one, we don't need to change
+                    # event.waitingHandlers
+                    self.registerTask((event, value, parent))
+                    self.processTask(event, value, parent)
+                else:
+                    event.waitingHandlers -= 1
+                    if value is not None:
+                        event.value.value = value
+                    self.registerTask((event, parent))
+            elif isinstance(value, GeneratorType):
                 event.waitingHandlers += 1
                 self.registerTask((event, value, task))
                 self.unregisterTask((event, task))
                 # We want to process all the tasks because
                 # we bind handlers in there
-                self.processTask(event, value)
+                self.processTask(event, value, task)
             elif value is not None:
                 event.value.value = value
         except StopIteration:
-            self.unregisterTask((event, task))
+            event.waitingHandlers -= 1
+            if parent:
+                self.unregisterTask((event, task, parent))
+            else:
+                self.unregisterTask((event, task))
             if parent:
                 self.registerTask((event, parent))
-            event.waitingHandlers -= 1
-            if event.waitingHandlers == 0:
+            elif event.waitingHandlers == 0:
                 event.value.inform(True)
                 self._eventDone(event)
         except:
