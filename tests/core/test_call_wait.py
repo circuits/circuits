@@ -75,9 +75,9 @@ class Test(Component):
         return 2
 
     def test_eval(self):
-        x = self.call(GetX())
-        y = self.call(GetY())
-        return x.value + y.value
+        x = yield self.call(GetX())
+        y = yield self.call(GetY())
+        yield x.value + y.value
 
 
 def test_wait():
