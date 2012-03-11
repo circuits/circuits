@@ -47,6 +47,34 @@ def handler(*names, **kwargs):
     Finally, a handler may be defined as a "tick"-handler by
     specifying ``tick=True``.
     Such a handler is invoked at regular intervals ("polling").
+    
+    **Return value**
+    
+    Normally, the results returned by the handlers for an event are 
+    simply collected in the :class:`circuits.core.events.Event`'s 
+    :attr:`value` attribute. As a special case, a handler may
+    return a :class:`types.GeneratorType`. This signals to the
+    dispatcher that the handler isn't ready to deliver a result yet.
+    Rather, it has interrupted it's execution with a ``yield None`` 
+    statement, thus preserving its current execution state.
+
+    The dispatcher saves the returned generator object as a task.
+    All tasks are reexamined (i.e. their :meth:`next()` method is invoked)
+    when the pending events have been executed. 
+    
+    This feature avoids an unnecessarily complicated chaining of event
+    handlers. Imagine a handler A that needs the results from firing an 
+    event E in order to complete. Then without this feature, the final
+    action of A would be to fire event E, and another handler for
+    an event ``SuccessE`` would be required to complete handler A's
+    operation, now having the result from invoking E available
+    (actually it's even a bit more complicated).
+    
+    Using this "suspend" feature, the handler simply fires event E and
+    then yields ``None`` until e.g. it finds a result in E's :attr:`value`
+    attribute. For the simplest scenario, there even is a utility
+    method :meth:`circuits.core.manager.Manager.callEvent` that combines
+    firing and waiting. 
     """
 
     def wrapper(f):

@@ -63,6 +63,16 @@ class BaseEvent(object):
         :ivar value: This is a :class:`circuits.core.values.Value`
             object that holds the results returned by the handlers invoked
             for the event.
+            
+        If the optional attribute ":attr:`success`" of an event is set to
+        ``True``, an associated event ``EventSuccess`` (original name
+        with "Success" appended) will automatically be fired when all
+        handlers for the event have been invoked successfully.
+        
+        The success event is, by default, delivered to same channels
+        as the successfully dispatched event itself. This may be
+        overridden by specifying an alternative list of destinations
+        in the optional attribute ":attr:`success_channels`"
         """
 
         self.args = list(args)
@@ -160,7 +170,8 @@ class Done(Event):
     """Done Event
 
     This Event is sent when an event is done. It is used by the wait and call
-    primitives to know when to stop waiting
+    primitives to know when to stop waiting. Don't use this for application
+    development, use :class:`Success` instead.
     """
 
 class Success(Event):

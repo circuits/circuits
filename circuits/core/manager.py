@@ -322,6 +322,15 @@ class Manager(object):
     wait = waitEvent
 
     def callEvent(self, event, *channels):
+        """
+        Fire the given event to the specified channels and suspend 
+        execution until it has been dispatched. This method may only
+        be invoked as argument to a ``yield`` on the top execution level
+        of a handler (e.g. "``yield self.callEvent(event)``"). 
+        It effectively creates and returns a generator
+        that will be invoked by the main loop until the event has 
+        been dispatched (see :func:`circuits.core.handlers.handler`).
+        """
         value = self.fire(event, *channels)
         for r in self.waitEvent(event.name):
             yield r
@@ -398,15 +407,20 @@ class Manager(object):
         if event.waitingHandlers:
             return
 
+        # The "%s_Done" event is for internal use by waitEvent only.
+        # Use the "%s_Success" event in you application if you are
+        # interested in being notified about the last handler for
+        # an event having been invoked.
         if event.alert_done:
             self.fire(Done.create("%s_Done" %
                 event.__class__.__name__, event, event.value.value),
                 *event.channels)
 
         if error is None and event.success:
+            channels = getattr(event, "success_channels", event.channels)
             self.fire(Success.create("%s_Success" %
                 event.__class__.__name__, event, event.value.value),
-                *event.channels)
+                *channels)
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
