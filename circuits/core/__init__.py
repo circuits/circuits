@@ -26,7 +26,7 @@ from .debugger import Debugger
 __all__ = ("handler", "BaseComponent", "Component", "Event",
         "future", "Pool", "Task", "Worker",
         "Bridge", "Debugger", "Timer",
-        "BaseManager", "Manager",
+        "Manager",
 )
 
 # hghooks: no-pyflakes
