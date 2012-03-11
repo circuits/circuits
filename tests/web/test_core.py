@@ -23,7 +23,7 @@ class Root(Controller):
     def test_notfound(self):
         return self.notfound()
 
-def test(webapp):
+def test_root(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"

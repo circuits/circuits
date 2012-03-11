@@ -29,78 +29,44 @@ class Dispatcher(BaseComponent):
 
         self.paths = dict()
 
+    def resolve_path(self, paths, parts):
+        resolved = []
+        paths = self.paths
+
+        if not parts:
+            return '/', ['index']
+
+        while paths:
+            paths = paths.get(parts[0], None)
+            if paths:
+                p = parts.pop(0)
+                resolved.append(p)
+
+        return '/'.join(resolved), parts
+
+    def resolve_method(self, parts):
+        if not parts:
+            return 'index', ''
+        method = parts.pop(0)
+        vpath = parts
+        return method, vpath
+
     def find_handler(self, request):
         path = request.path
-
         method = request.method.upper()
         request.index = request.path.endswith("/")
 
+        # Split /hello/world to ['hello', 'world']
         parts = [x for x in path.strip("/").split("/") if x]
 
-        if not parts:
-            component = self.paths.get("/", None)
-            if component is not None:
-                for default in ("index", method, "default"):
-                    if default in component._handlers:
-                        return default, component, []
-            return None, None, []
+        path, parts = self.resolve_path(self.paths, parts)
+        method, vpath = self.resolve_method(parts)
 
-        i = 0
-        matches = [""]
-        candidates = []
-        while i <= len(parts):
-            x = "/".join(matches) or "/"
-            if x in self.paths:
-                candidates.append([i, x])
-                if i < len(parts):
-                    matches.append(parts[i])
-            else:
-                break
-            i += 1
-
-        if not candidates:
-            return None, None, []
-
-        vpath = []
-        name = None
-        for i, candidate in reversed(candidates):
-            if i < len(parts):
-                names = [parts[i], "index", method, "default"]
-            else:
-                names = ["index", method, "default"]
-
-            found = False
-            for name in names:
-                if name in self.paths[candidate]._handlers:
-                    if i < len(parts) and name == parts[i]:
-                        i += 1
-                    found = True
-                    break
-
-            if found:
-                if name == "index" and not request.index:
-                    continue
-                else:
-                    break
-
-        if name is not None:
-            if i < len(parts):
-                vpath = [x.replace("%2F", "/") for x in parts[i:]]
-            else:
-                vpath = []
-
-        component = self.paths.get(candidate, None)
-        if component is None:
-            return None, None, []
-
-        if name not in component._handlers:
-            return None, None, []
-
-        handler = list(component._handlers[name])[0]
-        if vpath and not (handler.args or handler.varargs or handler.varkw):
-            return None, None, []
-
-        return name, component, vpath
+        if not path:
+            path = '/'
+        if not method:
+            method = 'index'
+        return method, path, vpath
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
