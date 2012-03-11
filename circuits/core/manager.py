@@ -417,9 +417,10 @@ class Manager(object):
                 *event.channels)
 
         if error is None and event.success:
+            channels = getattr(event, "success_channels", event.channels)
             self.fire(Success.create("%s_Success" %
                 event.__class__.__name__, event, event.value.value),
-                *event.channels)
+                *channels)
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))

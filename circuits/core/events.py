@@ -67,7 +67,12 @@ class BaseEvent(object):
         If the optional attribute ":attr:`success`" of an event is set to
         ``True``, an associated event ``EventSuccess`` (original name
         with "Success" appended) will automatically be fired when all
-        handlers for the event have been invoked successfully. 
+        handlers for the event have been invoked successfully.
+        
+        The success event is, by default, delivered to same channels
+        as the successfully dispatched event itself. This may be
+        overridden by specifying an alternative list of destinations
+        in the optional attribute ":attr:`success_channels`"
         """
 
         self.args = list(args)
