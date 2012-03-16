@@ -26,6 +26,7 @@ class BaseEvent(object):
 
     success = False
     failure = False
+    complete = False
     alert_done = False
     waitingHandlers = 0
 
@@ -181,6 +182,13 @@ class Success(Event):
     executed successfully.
     """
 
+class Complete(Event):
+    """Complete Event
+
+    This Event is sent when all handlers (for a particular event) have been
+    executed and (recursively) all handlers for all events fired by those 
+    handlers have been executed. 
+    """
 
 class Failure(Event):
     """Failure Event

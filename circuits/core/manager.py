@@ -21,7 +21,7 @@ from multiprocessing import current_process, Process
 
 from .values import Value
 from .handlers import handler
-from .events import Done, Success, Failure
+from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal
 
 
@@ -43,6 +43,11 @@ class Manager(object):
     This is the base Manager of the BaseComponent which manages an Event Queue,
     a set of Event Handlers, Channels, Tick Functions, Registered and Hidden
     Components, a Task and the Running State.
+    """
+
+    _currently_handling = None
+    """
+    The event currently being handled.
     """
 
     def __init__(self, *args, **kwargs):
@@ -254,6 +259,9 @@ class Manager(object):
         self.root._ticks = self.root.getTicks()
 
     def _fire(self, event, channel):
+        if self._currently_handling and self._currently_handling.complete:
+            event.cause = self._currently_handling
+            self._currently_handling.effects += 1
         self._queue.append((event, channel))
 
     def fireEvent(self, event, *channels):
@@ -353,6 +361,9 @@ class Manager(object):
     flush = flushEvents
 
     def _dispatcher(self, event, channels):
+        self._currently_handling = event
+        if event.complete:
+            event.effects = 0
         eargs = event.args
         ekwargs = event.kwargs
 
@@ -401,6 +412,7 @@ class Manager(object):
             if value and handler.filter:
                 break
 
+        self._currently_handling = None
         self._eventDone(event, error)
 
     def _eventDone(self, event, error=None):
@@ -421,6 +433,17 @@ class Manager(object):
             self.fire(Success.create("%s_Success" %
                 event.__class__.__name__, event, event.value.value),
                 *channels)
+            
+        cause = getattr(event, "cause", None)
+        if cause:
+            cause.effects -= 1
+            if cause.effects == 0:
+                channels = getattr(cause, "complete_channels", cause.channels)
+                self.fire(Complete.create("%s_Complete" %
+                    event.__class__.__name__, event, event.value.value),
+                    *channels)
+            delattr(event, "cause")
+                
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
