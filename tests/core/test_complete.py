@@ -1,70 +1,51 @@
 #!/usr/bin/python
 
-from circuits import Event, Component
+import pytest
 
-state = "Old state"
-state_when_success = None
-state_when_complete = None
+from circuits import Event, Component
 
 
 class Test(Event):
     """Test Event"""
-    success = True
+
+    complete = True
 
 
-class Nested2(Component):
-    channel = "nested2"
+class Nested(Component):
 
-    def test(self):
-        """ Updating state. """
-        global state
-        state = "New state"
+    channel = "nested"
 
-
-class Nested1(Component):
-    channel = "nested1"
+    def init(self, app):
+        self.app = app
 
     def test(self):
-        """ State change involves other components as well. """
-        self.fire(Test(), Nested2.channel)
+        self.app.state += 1
 
 
 class App(Component):
+
     channel = "app"
 
+    def init(self):
+        self.state = 0
+
     def test(self):
-        """ Fire the test event that should produce a state change. """
-        evt = Test()
-        evt.complete = True
-        evt.complete_channels = [self.channel]
-        self.fire(evt, Nested1.channel)
+        self.fire(Test(), "nested")
 
-    def test_success(self, e, value):
-        """ Test event has been processed, save the achieved state."""
-        global state_when_success, state
-        state_when_success = state
-
-    def test_complete(self, e, value):
-        """
-        Test event has been completely processed, save the achieved state.
-        """
-
-        global state_when_complete, state
-        state_when_complete = state
-
-from circuits import Debugger
-app = App() + Debugger()
-Nested1().register(app)
-Nested2().register(app)
-
-while app:
-    app.flush()
+    def test_complete(self, e, v):
+        self.state += 1
 
 
 def test_state():
-    app.fire(Test())
-    while app:
-        app.flush()
+    from circuits import Debugger
+    app = App() + Debugger()
+    Nested(app).register(app)
+    app.start()
 
-    assert state_when_success == "Old state"
-    assert state_when_complete == "New state"
+    pytest.WaitEvent(app, "started").wait()
+
+    waiter = pytest.WaitEvent(app, "test_complete")
+    app.fire(Test())
+    waiter.wait()
+
+    assert app.state == 2
