@@ -180,7 +180,10 @@ class Success(Event):
     """Success Event
 
     This Event is sent when all handlers (for a particular event) have been
-    executed successfully.
+    executed successfully, see :class:`~.manager.Manager`.
+
+    :param event: The event that has completed.
+    :type  event: Event
     """
 
 
@@ -189,7 +192,7 @@ class Complete(Event):
 
     This Event is sent when all handlers (for a particular event) have been
     executed and (recursively) all handlers for all events fired by those
-    handlers have been executed.
+    handlers etc., see :class:`~.manager.Manager`.
 
     :param event: The event that has completed.
     :type  event: Event
