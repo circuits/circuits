@@ -24,7 +24,8 @@ def handler(*names, **kwargs):
     method may have an additional first argument named *event*. If declared,
     the event object that caused the handler to be invoked is assigned to it.
     
-    By default, the handler is invoked for events that are propagated on
+    By default, the handler is invoked by the component's 
+    root :class:`~.manager.Manager` for events that are propagated on
     the channel determined by the BaseComponent's *channel* attribute.
     This may be overridden by specifying a different channel as a keyword
     parameter of the decorator (``channel=...``).
