@@ -1,51 +1,70 @@
 #!/usr/bin/python
 
-import pytest
-
 from circuits import Event, Component
+
+state = "Old state"
+state_when_success = None
+state_when_complete = None
 
 
 class Test(Event):
     """Test Event"""
+    success = True
 
-    complete = True
 
-
-class Nested(Component):
-
-    channel = "nested"
-
-    def init(self, app):
-        self.app = app
+class Nested2(Component):
+    channel = "nested2"
 
     def test(self):
-        self.app.state += 1
+        """ Updating state. """
+        global state
+        state = "New state"
+
+
+class Nested1(Component):
+    channel = "nested1"
+
+    def test(self):
+        """ State change involves other components as well. """
+        self.fire(Test(), Nested2.channel)
 
 
 class App(Component):
-
     channel = "app"
 
-    def init(self):
-        self.state = 0
-
     def test(self):
-        self.fire(Test(), "nested")
+        """ Fire the test event that should produce a state change. """
+        evt = Test()
+        evt.complete = True
+        evt.complete_channels = [self.channel]
+        self.fire(evt, Nested1.channel)
 
-    def test_complete(self, e, v):
-        self.state += 1
+    def test_success(self, e, value):
+        """ Test event has been processed, save the achieved state."""
+        global state_when_success, state
+        state_when_success = state
+
+    def test_complete(self, e, value):
+        """
+        Test event has been completely processed, save the achieved state.
+        """
+
+        global state_when_complete, state
+        state_when_complete = state
+
+from circuits import Debugger
+app = App() + Debugger()
+Nested1().register(app)
+Nested2().register(app)
+
+while app:
+    app.flush()
 
 
 def test_state():
-    from circuits import Debugger
-    app = App() + Debugger()
-    Nested(app).register(app)
-    app.start()
-
-    pytest.WaitEvent(app, "started").wait()
-
-    waiter = pytest.WaitEvent(app, "test_complete")
     app.fire(Test())
-    waiter.wait()
+    while app:
+        app.flush()
 
-    assert app.state == 2
+    assert state_when_success == "Old state"
+    assert state_when_complete == "New state"
