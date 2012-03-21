@@ -2,14 +2,24 @@
 
 from circuits import Event, Component
 
-state = "Old state"
-state_when_success = None
-state_when_complete = None
 
+class SimpleEvent(Event):
+    complete = True
 
 class Test(Event):
     """Test Event"""
     success = True
+
+
+class Nested3(Component):
+    channel = "nested3"
+
+    def test(self):
+        """ Updating state. Must be called twice to reach final state."""
+        if self.root._state != "Pre final state":
+            self.root._state = "Pre final state"
+        else:
+            self.root._state = "Final state"
 
 
 class Nested2(Component):
@@ -17,8 +27,10 @@ class Nested2(Component):
 
     def test(self):
         """ Updating state. """
-        global state
-        state = "New state"
+        self.root._state = "New state"
+        # State change involves even more components as well.
+        self.fire(Test(), Nested3.channel)
+        self.fire(Test(), Nested3.channel)
 
 
 class Nested1(Component):
@@ -31,6 +43,13 @@ class Nested1(Component):
 
 class App(Component):
     channel = "app"
+    _simple_event_completed = False
+    _state = "Old state"
+    _state_when_success = None
+    _state_when_complete = None
+
+    def simple_event_complete(self, e, value):
+        self._simple_event_completed = True
 
     def test(self):
         """ Fire the test event that should produce a state change. """
@@ -41,30 +60,37 @@ class App(Component):
 
     def test_success(self, e, value):
         """ Test event has been processed, save the achieved state."""
-        global state_when_success, state
-        state_when_success = state
+        self._state_when_success = self._state
 
     def test_complete(self, e, value):
         """
         Test event has been completely processed, save the achieved state.
         """
-
-        global state_when_complete, state
-        state_when_complete = state
+        self._state_when_complete = self._state
 
 from circuits import Debugger
 app = App() + Debugger()
 Nested1().register(app)
 Nested2().register(app)
+Nested3().register(app)
 
 while app:
     app.flush()
 
+def test_complete_simple():
+    """
+    Test if complete works for an event without further effects
+    """
+    app.fire(SimpleEvent())
+    while app:
+        app.flush()
 
-def test_state():
+    assert app._simple_event_completed == True
+
+def test_complete_nested():
     app.fire(Test())
     while app:
         app.flush()
 
-    assert state_when_success == "Old state"
-    assert state_when_complete == "New state"
+    assert app._state_when_success == "Old state"
+    assert app._state_when_complete == "Final state"

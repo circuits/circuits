@@ -305,8 +305,10 @@ class Manager(object):
         self.root._ticks = self.root.getTicks()
 
     def _fire(self, event, channel):
-        if self._currently_handling and self._currently_handling.complete:
+        if self._currently_handling \
+            and getattr(self._currently_handling, "cause", None):
             event.cause = self._currently_handling
+            event.effects = 1
             self._currently_handling.effects += 1
         self._queue.append((event, channel))
 
@@ -413,7 +415,9 @@ class Manager(object):
     def _dispatcher(self, event, channels):
         self._currently_handling = event
         if event.complete:
-            event.effects = 0
+            if not getattr(event, "cause", None):
+                event.cause = event
+            event.effects = 1 # event itself counts (must be done)
         eargs = event.args
         ekwargs = event.kwargs
 
@@ -484,16 +488,25 @@ class Manager(object):
                 event.__class__.__name__, event, event.value.value),
                 *channels)
             
-        cause = getattr(event, "cause", None)
-        if cause:
-            cause.effects -= 1
-            if cause.effects == 0:
-                channels = getattr(cause, "complete_channels", cause.channels)
-                self.fire(Complete.create("%s_Complete" %
-                    event.__class__.__name__, event, event.value.value),
-                    *channels)
+        while True:
+            # cause attributes indicates interest in completion event
+            cause = getattr(event, "cause", None)
+            if not cause:
+                break
+            # event takes part in complete detection (as nested or root event)
+            event.effects -= 1
+            if event.effects > 0:
+                break # some nested events remain to be completed
+            if event.complete: # does this event want signaling?
+                self.fire\
+                    (Complete.create("%s_Complete" %
+                         event.__class__.__name__, event, event.value.value),
+                     *getattr(event, "complete_channels", event.channels))
+            # this event and nested events are done now
             delattr(event, "cause")
-                
+            delattr(event, "effects")
+            # cause has one of its nested events done, decrement and check
+            event = cause
 
     def _signalHandler(self, signal, stack):
         self.fire(Signal(signal, stack))
