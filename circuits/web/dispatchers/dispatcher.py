@@ -34,20 +34,11 @@ class Dispatcher(BaseComponent):
         def rebuild_path(url_parts):
             return '/%s' % '/'.join(url_parts)
         
-        resolved = []
-        path = True
+        left_over = []
+        while parts and rebuild_path(parts) not in self.paths:
+            left_over.append(parts.pop())
 
-        if not parts:
-            return '/', ['index']
-
-        while parts and path:
-            key = rebuild_path(resolved + [parts[0]])
-            path = self.paths.get(key, None)
-            if path is not None:
-                p = parts.pop(0)
-                resolved.append(p)
-
-        return rebuild_path(resolved), parts
+        return rebuild_path(parts), left_over
 
     def resolve_method(self, parts):
         if not parts:

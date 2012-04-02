@@ -3,16 +3,20 @@
 import pytest
 
 from circuits.web import Server, Controller
-
 from circuits.web.client import Client, Connect, Request
 
+
 class Root(Controller):
+    def __init__(self, *args, **kwargs):
+        super(Root, self).__init__(*args, **kwargs)
+        self += Leaf()
 
     def index(self):
         return "Hello World!"
     
     def name(self):
         return "Earth"
+
 
 class Leaf(Controller):
 
@@ -23,6 +27,7 @@ class Leaf(Controller):
 
     def city(self):
         return "Hello City!"
+
 
 def request(webapp, path):
     client = Client(webapp.server.base)
@@ -41,11 +46,13 @@ def request(webapp, path):
     s = response.read()
     return response.status, s
 
+
 def test_root(webapp):
     status, content = request(webapp, "/")
     
     assert status == 200
     assert content == b"Hello World!"
+
 
 def test_root_name(webapp):
     status, content = request(webapp, "/name")
@@ -53,11 +60,13 @@ def test_root_name(webapp):
     assert status == 200
     assert content == b"Earth"
 
+
 def test_leaf(webapp):
     status, content = request(webapp, "/world/country/region")
     
     assert status == 200
     assert content == b"Hello cities!"
+
 
 def test_city(webapp):
     status, content = request(webapp, "/world/country/region/city")
