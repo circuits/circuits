@@ -25,6 +25,7 @@ class Root(Controller):
     def query(req, test):
         return 'query %s' % test
 
+
 class Hello(Controller):
     channel = "/hello"
 
@@ -73,7 +74,7 @@ def test_controller_index(webapp):
     f = urlopen(url)
     s = f.read()
     assert s == b"hello index"
- 
+
     url = "%s/world/" % webapp.server.base
     f = urlopen(url)
     s = f.read()
