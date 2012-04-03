@@ -141,6 +141,33 @@ class BaseEvent(object):
 
 Event = EventMetaClass("Event", (BaseEvent,), {})
 
+class LiteralEvent(Event):
+    """
+    An event whose name is not uncameled when looking for a handler.
+    """
+    @staticmethod
+    def create(cls, name, *args, **kwargs):
+        """
+        Utility method to create an event that inherits from
+        a base event class (passed in as *cls*) and from
+        LiteralEvent.
+        """
+        return type(cls)(name, (cls, LiteralEvent),
+                         {"name": name})(*args, **kwargs)
+
+
+class DerivedEvent(Event):
+    
+    @classmethod
+    def create(cls, topic, event, *args, **kwargs):
+        if isinstance(event, LiteralEvent):
+            name = "%s%s" % (event.__class__.__name__, uncamel("_%s" % topic))
+            return type(cls)(name, (cls,), 
+                             {"name": name})(event, *args, **kwargs)
+        else:
+            name = "%s_%s" % (event.__class__.__name__, topic)
+            return type(cls)(name, (cls,), {})(event, *args, **kwargs)
+    
 
 class Error(Event):
     """Error Event
@@ -167,7 +194,7 @@ class Error(Event):
         super(Error, self).__init__(type, value, traceback, handler)
 
 
-class Done(Event):
+class Done(DerivedEvent):
     """Done Event
 
     This Event is sent when an event is done. It is used by the wait and call
@@ -176,7 +203,7 @@ class Done(Event):
     """
 
 
-class Success(Event):
+class Success(DerivedEvent):
     """Success Event
 
     This Event is sent when all handlers (for a particular event) have been
@@ -187,7 +214,7 @@ class Success(Event):
     """
 
 
-class Complete(Event):
+class Complete(DerivedEvent):
     """Complete Event
 
     This Event is sent when all handlers (for a particular event) have been
@@ -199,7 +226,7 @@ class Complete(Event):
     """
 
 
-class Failure(Event):
+class Failure(DerivedEvent):
     """Failure Event
 
     This Event is sent when an error has occurred with the execution of an

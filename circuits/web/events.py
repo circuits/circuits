@@ -1,6 +1,7 @@
 # Module:   events
 # Date:     3rd February 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+from circuits.core.events import LiteralEvent
 
 """Events
 
@@ -21,6 +22,12 @@ class Request(WebEvent):
 
     args: request, response
     """
+    @classmethod
+    def create(cls, name, *args, **kwargs):
+        """
+        All classes derived dynamically from Request are LiteralEvents.
+        """
+        return LiteralEvent.create(cls, name, *args, **kwargs)
 
 
 class Response(WebEvent):

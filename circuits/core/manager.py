@@ -450,8 +450,7 @@ class Manager(object):
                 value = error
 
                 if event.failure:
-                    self.fire(Failure.create("%sFailure" %
-                        event.__class__.__name__, event, error),
+                    self.fire(Failure.create("Failure", event, error),
                         *event.channels)
 
                 self.fire(Error(etype, evalue, traceback, handler))
@@ -478,14 +477,12 @@ class Manager(object):
         # interested in being notified about the last handler for
         # an event having been invoked.
         if event.alert_done:
-            self.fire(Done.create("%s_Done" %
-                event.__class__.__name__, event, event.value.value),
+            self.fire(Done.create("Done", event, event.value.value),
                 *event.channels)
 
         if error is None and event.success:
             channels = getattr(event, "success_channels", event.channels)
-            self.fire(Success.create("%s_Success" %
-                event.__class__.__name__, event, event.value.value),
+            self.fire(Success.create("Success", event, event.value.value),
                 *channels)
             
         while True:
@@ -499,8 +496,7 @@ class Manager(object):
                 break # some nested events remain to be completed
             if event.complete: # does this event want signaling?
                 self.fire\
-                    (Complete.create("%s_Complete" %
-                         event.__class__.__name__, event, event.value.value),
+                    (Complete.create("Complete", event, event.value.value),
                      *getattr(event, "complete_channels", event.channels))
             # this event and nested events are done now
             delattr(event, "cause")
@@ -611,8 +607,7 @@ class Manager(object):
             event.value.inform(True)
 
             if event.failure:
-                self.fire(Failure.create("%sFailure" %
-                    event.__class__.__name__, event, error),
+                self.fire(Failure.create("Failure", event, error),
                     *event.channels)
 
             self.fire(Error(etype, evalue, traceback, handler))
