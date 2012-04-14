@@ -64,7 +64,7 @@ class Request(Event):
 
 class Client(BaseComponent):
 
-    channel = "web"
+    channel = "client"
 
     def __init__(self, url, channel=channel):
         super(Client, self).__init__(channel=channel)
@@ -72,9 +72,9 @@ class Client(BaseComponent):
 
         self._response = None
 
-        self._transport = TCPClient().register(self)
+        self._transport = TCPClient(channel=channel).register(self)
 
-        HTTP().register(self._transport)
+        HTTP(channel=channel).register(self._transport)
 
     @handler("write")
     def write(self, data):

@@ -43,7 +43,7 @@ class HTTP(BaseComponent):
         self._response = None
         self._buffer = BytesIO()
 
-    @handler("read", channel="client")
+    @handler("read")
     def _on_client_read(self, data):
         if self._response is not None:
             self._response._body.write(data)
