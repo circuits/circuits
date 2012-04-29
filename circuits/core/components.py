@@ -1,6 +1,7 @@
 # Package:  components
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+from circuits.core.events import Event
 
 """Components
 
@@ -39,6 +40,36 @@ class SingletonError(Exception):
 
     Raised if a Component with the `singleton` class attribute is True.
     """
+
+class PrepareUnregister(Event):
+    """PrepareUnregister Event
+    
+    This event is sent when a component is about to be unregistered
+    from the component tree. Unregistering a component actually
+    detaches the complete subtree that the unregistered component 
+    is the root of. Components that need to know if they
+    are removed from the main tree (e.g. because they maintain
+    relationships to other components in the tree) handle this
+    event, check if the component being unregistered is one
+    of their ancestors and act accordingly.
+    
+    :param component: the component that will be unregistered
+    :type  type: :class:`~.BaseComponent`
+    """
+    
+    complete = True
+    
+    def in_subtree(self, component):
+        """
+        Convenience method that checks if the given *component*
+        is in the subtree that is about to be detached.
+        """
+        while True:
+            if component == self.args[0]:
+                return True
+            if component == component._root:
+                return False
+            component = component._parent
 
 
 class BaseComponent(Manager):
@@ -125,6 +156,13 @@ class BaseComponent(Manager):
         return self.unregister()
 
     def unregister(self):
+        evt = PrepareUnregister(self)
+        evt.complete_channels = (self,)
+        self.fire(evt, self)
+        return self
+
+    @handler("prepare_unregister_complete")
+    def _on_prepare_unregister_complete(self, e, value):
         self.fire(Unregistered(self, self.parent))
 
         if self.parent is not self:
@@ -132,7 +170,6 @@ class BaseComponent(Manager):
             self.parent = self
 
         self._updateRoot(self)
-
         return self
 
     def _updateRoot(self, root):

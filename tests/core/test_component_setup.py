@@ -38,6 +38,8 @@ def test_basic():
     assert app.test in app._handlers.get("test", set())
 
     app.unregister()
+    while m:
+        m.flush()
 
     assert not m._handlers
 
@@ -58,6 +60,8 @@ def test_complex():
     assert b.parent == a
 
     a.unregister()
+    while m:
+        m.flush()
 
     assert a not in m
     assert a.root == a

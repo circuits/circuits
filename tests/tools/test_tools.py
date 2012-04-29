@@ -74,11 +74,13 @@ INSPECT = """\
  Tick Functions: 1
   <bound method A.__tick__ of <A/* %s (queued=0) [S]>>
 
- Event Handlers: 2
+ Event Handlers: 3
   unregister; 1
    <listener[*.unregister] (A._on_unregister)>
   foo; 1
    <listener[*.foo] (A.foo)>
+  prepare_unregister_complete; 1
+   <listener[*.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
 """
 
 def test_kill():
@@ -113,6 +115,8 @@ def test_kill():
     assert not f.components
 
     assert kill(d) == None
+    while a:
+        a.flush()
 
     assert a.parent == a
     assert b.parent == a
