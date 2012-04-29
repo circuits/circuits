@@ -1,6 +1,7 @@
 # Module:   test_component_setup
 # Date:     23rd February 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+from circuits.core.handlers import handler
 
 """Component Setup Tests
 
@@ -19,7 +20,13 @@ class A(Component):
     pass
 
 class B(Component):
-    pass
+    
+    informed = False
+    
+    @handler("prepare_unregister", channel="*")
+    def _on_prepare_unregister(self, event, c):
+        if event.in_subtree(self):
+            self.informed = True
 
 class Base(Component):
 
@@ -63,6 +70,7 @@ def test_complex():
     while m:
         m.flush()
 
+    assert b.informed
     assert a not in m
     assert a.root == a
     assert a.parent == a

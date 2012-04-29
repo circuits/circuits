@@ -67,9 +67,9 @@ class PrepareUnregister(Event):
         while True:
             if component == self.args[0]:
                 return True
-            if component == component._root:
+            if component == component.root:
                 return False
-            component = component._parent
+            component = component.parent
 
 
 class BaseComponent(Manager):
@@ -158,7 +158,7 @@ class BaseComponent(Manager):
     def unregister(self):
         evt = PrepareUnregister(self)
         evt.complete_channels = (self,)
-        self.fire(evt, self)
+        self.fire(evt)
         return self
 
     @handler("prepare_unregister_complete")
