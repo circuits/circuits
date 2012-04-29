@@ -306,6 +306,11 @@ class Client(Component):
         if isinstance(value, str):
             self.fire(Write(value))
 
+    @handler("prepare_unregister", channel="*")
+    def _on_prepare_unregister(self, event, c):
+        if event.in_subtree(self):
+            self._close()
+
     def _close(self):
         if not self._connected:
             return
