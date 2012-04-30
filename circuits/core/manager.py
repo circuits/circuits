@@ -542,6 +542,9 @@ class Manager(object):
     def getTicks(self):
         ticks = set()
 
+        if getattr(self, "_unregister_pending", False):
+            return ticks
+        
         p = lambda f: callable(f) and getattr(f, 'tick', False) is True
         for k, v in getmembers(self, p):
             ticks.add(v)

@@ -156,6 +156,11 @@ class BaseComponent(Manager):
         return self.unregister()
 
     def unregister(self):
+        # tick shouldn't be called anymore, although component is still in tree
+        self._unregister_pending = True
+        self.root._cache.clear()
+        self.root._ticks = self.root.getTicks()
+        # Give components a chance to prepare for unregister
         evt = PrepareUnregister(self)
         evt.complete_channels = (self,)
         self.fire(evt)
@@ -163,6 +168,8 @@ class BaseComponent(Manager):
 
     @handler("prepare_unregister_complete")
     def _on_prepare_unregister_complete(self, e, value):
+        # Remove component from tree now
+        delattr(self, "_unregister_pending")
         self.fire(Unregistered(self, self.parent))
 
         if self.parent is not self:
