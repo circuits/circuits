@@ -54,7 +54,7 @@ generators, that are updated when the event queue has been flushed.
 """
 
 import atexit
-from time import sleep
+from time import sleep, time
 from itertools import chain
 from collections import deque
 from traceback import format_tb
@@ -69,7 +69,7 @@ from .values import Value
 from .handlers import handler
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal
-
+from .utils import findcmp
 
 TIMEOUT = 0.01  # 10ms timeout when no tick functions to process
 
@@ -95,7 +95,7 @@ class Manager(object):
     """
     The event currently being handled.
     """
-
+    
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
@@ -106,7 +106,10 @@ class Manager(object):
         self._globals = set()
         self._handlers = dict()
 
+        self.__poller = None
+        self.__schedule = None
         self._task = None
+        self._executing_thread = None
         self._running = False
 
         self.root = self.parent = self
@@ -302,15 +305,29 @@ class Manager(object):
     def unregisterChild(self, component):
         self.components.remove(component)
         self.root._cache.clear()
+        if self.__poller is not None:
+            # maybe we lost our poller, check
+            from .pollers import BasePoller
+            subtree_poller = findcmp(component, BasePoller)
+            if self.__poller == subtree_poller:
+                if self.__poller.polling:
+                    self.__poller.interrupt_poll()
+            self.__poller = None
+        # set schedule to None, will be search in "new" tree during tick
+        self.__schedule = None
+        # update tick providers
         self.root._ticks = self.root.getTicks()
 
     def _fire(self, event, channel):
         if self._currently_handling \
-            and getattr(self._currently_handling, "cause", None):
+            and getattr(self._currently_handling, "cause", None) \
+            and current_thread() == self._executing_thread:
             event.cause = self._currently_handling
             event.effects = 1
             self._currently_handling.effects += 1
         self._queue.append((event, channel))
+        if self.__poller is not None and self.__poller.polling:
+            self.__poller.interrupt_poll()
 
     def fireEvent(self, event, *channels):
         """Fire an event into the system.
@@ -395,11 +412,21 @@ class Manager(object):
     call = callEvent
 
     def _flush(self):
+        # if _flush is not call from tick, set executing thread
+        set_executing = (self._executing_thread == None)
+        if set_executing:
+            self._executing_thread = current_thread()
+
+        # get current event queue and handle all events on it
         q = self._queue
         self._queue = deque()
 
         for event, channels in q:
             self._dispatcher(event, channels)
+            
+        # restore executing thread if necessary
+        if set_executing:
+            self._executing_thread = None
 
     def flushEvents(self):
         """
@@ -616,6 +643,21 @@ class Manager(object):
             self.fire(Error(etype, evalue, traceback, handler))
 
     def tick(self):
+        """
+        Execute all possible actions once. Check for any registered tick
+        handler and run them, process all registered tasks, and flush
+        the event queue.
+        """
+        self._executing_thread = current_thread()
+
+        from .pollers import BasePoller
+        from .timers import TimerSchedule
+        if self.__poller is None:
+            self.__poller = findcmp(self.root, BasePoller)
+        if self.__schedule is None:
+            self.__schedule = findcmp(self.root, TimerSchedule)
+
+        # ticks can be event sources
         for f in self._ticks.copy():
             try:
                 f()
@@ -625,27 +667,48 @@ class Manager(object):
                 etype, evalue, etraceback = _exc_info()
                 self.fire(Error(etype, evalue, format_tb(etraceback)))
 
+        # expired timers can be event sources
+        max_wait = None
+        if self.__schedule is not None:
+            self.__schedule.check_timers()
+            next_expiry = self.__schedule.next_expiry()
+            if next_expiry:
+                max_wait = max(next_expiry - time(), 0)
+        
+        if self.__poller is not None:
+            # I/O can be an event source. If there are no ticks
+            # no tasks and no events, I/O is the ONLY event source
+            # and we can wait for it to occur. If we have to tick,
+            # we wait for TIMEOUT.
+            timeout = BasePoller.BLOCK
+            if max_wait is not None:
+                timeout = max_wait
+            if len(self._ticks) > 0:
+                timeout = TIMEOUT
+            if len(self._tasks) > 0 or self or not self._running:
+                timeout = 0
+            self.__poller.poll(timeout)
+        else:
+            sleep(TIMEOUT)
+
         for task in self._tasks.copy():
             self.processTask(*task)
 
         if self:
             self.flush()
-        else:
-            sleep(TIMEOUT)
+
+        self._executing_thread = None
 
     def run(self):
         """
-        Run this manager. The method continuously checks for events
-        on the event queue of the component hierarchy, and invoke
-        associated handlers. It also invokes the component's
-        "tick"-handlers at regular intervals.
+        Run this manager. The method continuously calls :meth:`~.tick`.
 
-        The method returns when the manager's ``stop()`` method is invoked.
+        The method returns when the manager's :meth:`~.stop` method is invoked.
 
         If invoked by a programs main thread, a signal handler for
         the ``INT`` and ``TERM`` signals is installed. This handler
         fires the corresponding :class:`circuits.core.events.Signal`
-        events and then calls ``stop()`` for the manager.
+        events and then calls :meth:`~.stop` for the manager.
         """
         atexit.register(self.stop)
 

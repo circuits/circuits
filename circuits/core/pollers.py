@@ -15,7 +15,9 @@ import select
 from time import time
 from errno import EBADF, EINTR
 from select import error as SelectError
-from socket import error as SocketError
+from socket import error as SocketError, create_connection, \
+    socket as create_socket, AF_INET, SOCK_STREAM
+from threading import Thread
 
 from .events import Event
 from .components import BaseComponent
@@ -49,8 +51,10 @@ class Disconnect(Event):
 
 class BasePoller(BaseComponent):
 
-    channel = None
+    BLOCK = "block"
 
+    channel = None
+    
     def __init__(self, timeout=TIMEOUT, channel=channel):
         super(BasePoller, self).__init__(channel=channel)
 
@@ -59,6 +63,27 @@ class BasePoller(BaseComponent):
         self._read = []
         self._write = []
         self._targets = {}
+        self._polling = False
+        
+        self._ctrl_in, self._ctrl_out = self._create_control_con()
+
+    def _create_control_con(self):
+        server = create_socket(AF_INET, SOCK_STREAM)
+        server.bind(("localhost", 0))
+        server.listen(1)
+        res_list = []
+        def accept():
+            sock, _ = server.accept()
+            sock.setblocking(False)
+            res_list.append(sock)
+        at = Thread(target=accept)
+        at.start()
+        clnt_sock = create_connection(server.getsockname())
+        at.join()
+        return (clnt_sock, res_list[0])
+
+    def interrupt_poll(self):
+        self._ctrl_in.send(b"\0")
 
     def addReader(self, source, fd):
         channel = getattr(source, "channel", "*")
@@ -99,6 +124,10 @@ class BasePoller(BaseComponent):
     def getTarget(self, fd):
         return self._targets.get(fd, self.parent)
 
+    @property
+    def polling(self):
+        return getattr(self, "_polling", False)
+
 
 class Select(BasePoller):
     """Select(...) -> new Select Poller Component
@@ -116,6 +145,7 @@ class Select(BasePoller):
 
         self._ts = time()
         self._load = 0.0
+        self._read.append(self._ctrl_out)
 
     def _preenDescriptors(self):
         for socks in (self._read[:], self._write[:]):
@@ -125,11 +155,16 @@ class Select(BasePoller):
                 except Exception:
                     self.discard(sock)
 
-    def __tick__(self):
+    def poll(self, timeout=None):
         try:
             if not any([self._read, self._write]):
                 return
-            r, w, _ = select.select(self._read, self._write, [], self.timeout)
+            self._polling = True
+            if timeout == self.BLOCK:
+                r, w, _ = select.select(self._read, self._write, [])
+            else:
+                r, w, _ = select.select(self._read, self._write, [], 
+                                  self.timeout if timeout is None else timeout)
         except ValueError as e:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
@@ -152,12 +187,20 @@ class Select(BasePoller):
             else:
                 # OK, I really don't know what's going on.  Blow up.
                 raise
+        finally:
+            self._polling = False
 
         for sock in w:
             if self.isWriting(sock):
                 self.fire(Write(sock), self.getTarget(sock))
 
         for sock in r:
+            if sock == self._ctrl_out:
+                try:
+                    sock.recv(1)
+                except:
+                    pass
+                continue
             if self.isReading(sock):
                 self.fire(Read(sock), self.getTarget(sock))
 
@@ -181,6 +224,9 @@ class Poll(BasePoller):
                 | select.POLLERR
                 | select.POLLNVAL
         )
+        
+        self._read.append(self._ctrl_out)
+        self._updateRegistration(self._ctrl_out)
 
     def _updateRegistration(self, fd):
         fileno = fd.fileno()
@@ -224,14 +270,22 @@ class Poll(BasePoller):
         super(Poll, self).discard(fd)
         self._updateRegistration(fd)
 
-    def __tick__(self):
+    def poll(self, timeout=None):
         try:
-            l = self._poller.poll(self.timeout)
+            self._polling = True
+            if timeout == self.BLOCK:
+                l = self._poller.poll()
+            else:
+                l = self._poller.poll(1000*(self.timeout if timeout is None 
+                                            else timeout))
         except SelectError as e:
             if e.args[0] == EINTR:
                 return
             else:
                 raise
+        finally:
+            self._polling = False
+
 
         for fileno, event in l:
             self._process(fileno, event)
@@ -278,6 +332,9 @@ class EPoll(BasePoller):
 
         self._disconnected_flag = (select.EPOLLHUP | select.EPOLLERR)
 
+        self._read.append(self._ctrl_out)
+        self._updateRegistration(self._ctrl_out)
+
     def _updateRegistration(self, fd):
         try:
             fileno = fd.fileno()
@@ -321,9 +378,14 @@ class EPoll(BasePoller):
         super(EPoll, self).discard(fd)
         self._updateRegistration(fd)
 
-    def __tick__(self):
+    def poll(self, timeout=None):
         try:
-            l = self._poller.poll(self.timeout)
+            self._polling = True
+            if timeout == self.BLOCK:
+                l = self._poller.poll()
+            else:
+                l = self._poller.poll(self.timeout if timeout is None
+                                      else timeout)
         except IOError as e:
             if e.args[0] == EINTR:
                 return
@@ -332,6 +394,9 @@ class EPoll(BasePoller):
                 return
             else:
                 raise
+        finally:
+            self._polling = False
+            
 
         for fileno, event in l:
             self._process(fileno, event)
@@ -375,6 +440,11 @@ class KQueue(BasePoller):
         self._map = {}
         self._poller = select.kqueue()
 
+        self._read.append(self._ctrl_out)
+        self._map[self._ctrl_out.fileno()] = self._ctrl_out
+        self._poller.control([select.kevent(self._ctrl_out,
+            select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0)
+
     def addReader(self, source, sock):
         super(KQueue, self).addReader(source, sock)
         self._map[sock.fileno()] = sock
@@ -404,14 +474,21 @@ class KQueue(BasePoller):
             select.KQ_FILTER_WRITE | select.KQ_FILTER_READ,
             select.KQ_EV_DELETE)], 0)
 
-    def __tick__(self):
+    def poll(self, timeout=None):
         try:
-            l = self._poller.control(None, 1000, self.timeout)
+            self._polling = True
+            if timeout == self.BLOCK:
+                l = self._poller.control(None, 1000)
+            else:
+                l = self._poller.control(None, 1000, self.timeout if timeout
+                                         is None else timeout)
         except SelectError as e:
             if e[0] == EINTR:
                 return
             else:
                 raise
+        finally:
+            self._polling = False
 
         for event in l:
             self._process(event)

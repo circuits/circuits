@@ -40,7 +40,7 @@ def test():
     pytest.wait_for(m, "_running", True)
 
     s = repr(m)
-    assert s == "<Manager %s (queued=0) [R]>" % id
+    assert s == "<Manager %s (queued=2) [R]>" % id
 
     m.stop()
 
