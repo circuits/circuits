@@ -34,7 +34,7 @@ class JSONRPC(BaseComponent):
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("request", filter=True, priority=0.1)
+    @handler("request", filter=True, priority=0.2)
     def _on_request(self, request, response):
         if self.path is not None and self.path != request.path.rstrip("/"):
             return
