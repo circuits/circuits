@@ -23,6 +23,9 @@ class Root(Controller):
     def test_notfound(self):
         return self.notfound()
 
+    def test_failure(self):
+        raise Exception()
+
 def test_root(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
@@ -63,9 +66,17 @@ def test_forbidden(webapp):
 
 def test_notfound(webapp):
     try:
-         urlopen("%s/test_notfound" % webapp.server.base)
+        urlopen("%s/test_notfound" % webapp.server.base)
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
+    else:
+        assert False
+
+def test_failure(webapp):
+    try:
+        urlopen("%s/test_failure" % webapp.server.base)
+    except HTTPError as e:
+        assert e.code == 500
     else:
         assert False

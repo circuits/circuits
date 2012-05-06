@@ -36,7 +36,7 @@ class Dispatcher(BaseComponent):
         
         left_over = []
         while parts and rebuild_path(parts) not in self.paths:
-            left_over.append(parts.pop())
+            left_over.insert(0, parts.pop())
 
         return rebuild_path(parts), left_over
 

@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
-from circuits import Component
-
 from .helpers import urlopen, HTTPError
+from circuits.core.handlers import handler
+from circuits.core.components import BaseComponent
 
 
-class Root(Component):
+class Root(BaseComponent):
 
     channel = "web"
 
+    @handler("request", filter=True, priority=0.2)
     def request(self, request, response):
         raise Exception()
 
 def test(webapp):
     try:
+        Root().register(webapp)
         f = urlopen(webapp.server.base)
     except HTTPError as e:
         assert e.code == 500
