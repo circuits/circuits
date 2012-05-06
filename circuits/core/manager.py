@@ -107,6 +107,7 @@ class Manager(object):
         self._handlers = dict()
 
         self._task = None
+        self._executing_thread = None
         self._running = False
 
         self.root = self.parent = self
@@ -306,7 +307,8 @@ class Manager(object):
 
     def _fire(self, event, channel):
         if self._currently_handling \
-            and getattr(self._currently_handling, "cause", None):
+            and getattr(self._currently_handling, "cause", None) \
+            and current_thread() == self._executing_thread:
             event.cause = self._currently_handling
             event.effects = 1
             self._currently_handling.effects += 1
@@ -395,11 +397,21 @@ class Manager(object):
     call = callEvent
 
     def _flush(self):
+        # if _flush is not called from tick, set executing thread
+        set_executing = (self._executing_thread == None)
+        if set_executing:
+            self._executing_thread = current_thread()
+
+        # get current event queue and handle all events on it
         q = self._queue
         self._queue = deque()
 
         for event, channels in q:
             self._dispatcher(event, channels)
+            
+        # restore executing thread if necessary
+        if set_executing:
+            self._executing_thread = None
 
     def flushEvents(self):
         """
@@ -616,6 +628,13 @@ class Manager(object):
             self.fire(Error(etype, evalue, traceback, handler))
 
     def tick(self):
+        """
+        Execute all possible actions once. Check for any registered tick
+        handler and run them, process all registered tasks, and flush
+        the event queue.
+        """
+        self._executing_thread = current_thread()
+
         for f in self._ticks.copy():
             try:
                 f()
@@ -632,6 +651,8 @@ class Manager(object):
             self.flush()
         else:
             sleep(TIMEOUT)
+
+        self._executing_thread = None
 
     def run(self):
         """
