@@ -1,6 +1,7 @@
 # Module:   conftest
 # Date:     6th December 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+import os
 
 """py.test config"""
 
@@ -10,6 +11,10 @@ import collections
 
 from circuits import Component, handler
 from circuits.core.manager import TIMEOUT
+
+import stacktracer
+stacktracer.trace_start(os.path.join(os.path.dirname(__file__), "trace.html"),
+                        interval=5, auto=True)
 
 
 class Flag(object):

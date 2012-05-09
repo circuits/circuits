@@ -21,6 +21,7 @@ def pytest_funcarg__config(request):
 
     config = Config(str(path))
     config.start()
+    request.addfinalizer(lambda: config.stop())
 
     waiter = pytest.WaitEvent(config, "load_success")
     config.fire(Load())

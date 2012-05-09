@@ -7,8 +7,9 @@
 This module define the basic Event object and common events.
 """
 
-
 from .utils import uncamel
+from inspect import ismethod
+from threading import RLock
 
 
 class EventMetaClass(type):
@@ -329,3 +330,63 @@ class Unregistered(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Unregistered, self).__init__(component, manager)
+
+class GenerateEvents(Event):
+    """Generate events event
+    
+    This event is sent by the circuits core. All components that generate
+    timed events or events from external sources (e.g. data becoming
+    available) should fire any pending events in their "generate_events"
+    handler.
+    
+    :param max_wait: maximum time available for generating events. 
+    :type  time_left: float
+    
+    Components that actually consume time waiting for events to be generated,
+    thus suspending normal execution, must provide a method ``resume`` 
+    that interrupts waiting for events.
+    """
+
+    def __init__(self, lock, max_wait):
+        super(GenerateEvents, self).__init__()
+        self._time_left = max_wait
+        self._lock = lock
+
+    @property
+    def time_left(self):
+        """
+        The time left for generating events. A value less than 0 
+        indicates unlimited time. You should have only 
+        one component in your system (usually a poller component) that 
+        spends up to "time left" until it generates an event.
+        """
+        return self._time_left
+    
+    def reduce_time_left(self, time_left):
+        """
+        Update the time left for generating events. This is typically
+        used by event generators that currently don't want to generate
+        an event but know that they will within a certain time. By
+        reducing the time left, they make sure that they are reinvoked
+        when the time for generating the event has come (at the latest). 
+        
+        This method can only be used to reduce the time left. If the
+        parameter is larger than the current value of time left, it is
+        ignored.
+        
+        If the time left is reduced to 0 and the event is currently
+        being handled, the handler's *resume* method is invoked.
+        """
+        with self._lock:
+            if time_left >= 0 and (self._time_left < 0 
+                                   or self._time_left > time_left):
+                self._time_left = time_left
+                if self._time_left == 0 and self.handler is not None:
+                    m = getattr(self.handler.im_self, "resume", None)
+                    if m is not None and ismethod(m):
+                        m()
+
+    @property
+    def lock(self):
+        return self._lock
+    
