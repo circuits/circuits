@@ -1,6 +1,8 @@
 # Module:   pollers
 # Date:     15th September 2008
 # Author:   James Mills <prologic@shortcircuit.net.au>
+import platform
+import os
 
 """Poller Components for asynchronous file and socket I/O.
 
@@ -16,7 +18,7 @@ from time import time
 from errno import EBADF, EINTR
 from select import error as SelectError
 from socket import error as SocketError, create_connection, \
-    socket as create_socket, AF_INET, SOCK_STREAM
+    socket as create_socket, AF_INET, SOCK_STREAM, socket
 from threading import Thread
 from circuits.core.handlers import handler
 
@@ -63,9 +65,11 @@ class BasePoller(BaseComponent):
         self._write = []
         self._targets = {}
         
-        self._ctrl_in, self._ctrl_out = self._create_control_con()
+        self._ctrl_recv, self._ctrl_send = self._create_control_con()
 
     def _create_control_con(self):
+        if platform.system() == "Linux":
+            return os.pipe()
         server = create_socket(AF_INET, SOCK_STREAM)
         server.bind(("localhost", 0))
         server.listen(1)
@@ -78,7 +82,7 @@ class BasePoller(BaseComponent):
         at.start()
         clnt_sock = create_connection(server.getsockname())
         at.join()
-        return (clnt_sock, res_list[0])
+        return (res_list[0], clnt_sock)
 
     @handler("generate_events", priority=-9, filter=True)
     def _on_generate_events(self, event):
@@ -93,7 +97,19 @@ class BasePoller(BaseComponent):
         return True
 
     def resume(self):
-        self._ctrl_in.send(b"\0")
+        if isinstance(self._ctrl_send, socket):
+            self._ctrl_send.send(b"\0")
+        else:
+            os.write(self._ctrl_send, b"\0")
+
+    def _read_ctrl(self):
+        try:
+            if isinstance(self._ctrl_recv, socket):
+                return socket.recv(1)
+            else:
+                return os.read(self._ctrl_recv, 1)
+        except:
+            return b"\0"
 
     def addReader(self, source, fd):
         channel = getattr(source, "channel", "*")
@@ -151,7 +167,7 @@ class Select(BasePoller):
 
         self._ts = time()
         self._load = 0.0
-        self._read.append(self._ctrl_out)
+        self._read.append(self._ctrl_recv)
 
     def _preenDescriptors(self):
         for socks in (self._read[:], self._write[:]):
@@ -198,11 +214,8 @@ class Select(BasePoller):
                 self.fire(Write(sock), self.getTarget(sock))
 
         for sock in r:
-            if sock == self._ctrl_out:
-                try:
-                    sock.recv(1)
-                except:
-                    pass
+            if sock == self._ctrl_recv:
+                self._read_ctrl()
                 continue
             if self.isReading(sock):
                 self.fire(Read(sock), self.getTarget(sock))
@@ -228,8 +241,8 @@ class Poll(BasePoller):
                 | select.POLLNVAL
         )
         
-        self._read.append(self._ctrl_out)
-        self._updateRegistration(self._ctrl_out)
+        self._read.append(self._ctrl_recv)
+        self._updateRegistration(self._ctrl_recv)
 
     def _updateRegistration(self, fd):
         fileno = fd.fileno()
@@ -294,6 +307,9 @@ class Poll(BasePoller):
             return
 
         fd = self._map[fileno]
+        if fd == self._ctrl_recv:
+            self._read_ctrl()
+            return
 
         if event & self._disconnected_flag and not (event & select.POLLIN):
             self.fire(Disconnect(fd), self.getTarget(fd))
@@ -331,8 +347,8 @@ class EPoll(BasePoller):
 
         self._disconnected_flag = (select.EPOLLHUP | select.EPOLLERR)
 
-        self._read.append(self._ctrl_out)
-        self._updateRegistration(self._ctrl_out)
+        self._read.append(self._ctrl_recv)
+        self._updateRegistration(self._ctrl_recv)
 
     def _updateRegistration(self, fd):
         try:
@@ -401,6 +417,9 @@ class EPoll(BasePoller):
             return
 
         fd = self._map[fileno]
+        if fd == self._ctrl_recv:
+            self._read_ctrl()
+            return
 
         if event & self._disconnected_flag and not (event & select.POLLIN):
             self.fire(Disconnect(fd), self.getTarget(fd))
@@ -435,9 +454,9 @@ class KQueue(BasePoller):
         self._map = {}
         self._poller = select.kqueue()
 
-        self._read.append(self._ctrl_out)
-        self._map[self._ctrl_out.fileno()] = self._ctrl_out
-        self._poller.control([select.kevent(self._ctrl_out,
+        self._read.append(self._ctrl_recv)
+        self._map[self._ctrl_recv.fileno()] = self._ctrl_recv
+        self._poller.control([select.kevent(self._ctrl_recv,
             select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0)
 
     def addReader(self, source, sock):
@@ -495,6 +514,9 @@ class KQueue(BasePoller):
             return
 
         sock = self._map[event.ident]
+        if sock == self._ctrl_recv:
+            self._read_ctrl()
+            return
 
         if event.flags & select.KQ_EV_ERROR:
             self.fire(Error(sock, "error"), self.getTarget(sock))
