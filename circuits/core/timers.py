@@ -38,6 +38,8 @@ class Timer(BaseComponent):
     def _on_generate_events(self, event):
         now = time()
         if now >= self._eTime:
+            if self.unregister_pending:
+                return
             self.fire(self.event, *self.channels)
 
             if self.persist:
