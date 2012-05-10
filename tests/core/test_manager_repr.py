@@ -38,6 +38,7 @@ def test():
     m.start()
 
     pytest.wait_for(m, "_running", True)
+    sleep(0.1)
 
     s = repr(m)
     assert s == "<Manager %s (queued=0) [R]>" % id

@@ -166,6 +166,10 @@ class BaseComponent(Manager):
         self.fire(evt)
         return self
 
+    @property
+    def unregister_pending(self):
+        return getattr(self, "_unregister_pending", False)
+
     @handler("prepare_unregister_complete")
     def _on_prepare_unregister_complete(self, e, value):
         # Remove component from tree now

@@ -1,6 +1,7 @@
 # Module:   timers
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
+from circuits.core.handlers import handler
 
 """Timers
 
@@ -33,14 +34,21 @@ class Timer(BaseComponent):
 
         self.reset()
 
-    def __tick__(self):
-        if time() > self._eTime:
+    @handler("generate_events")
+    def _on_generate_events(self, event):
+        now = time()
+        if now >= self._eTime:
+            if self.unregister_pending:
+                return
             self.fire(self.event, *self.channels)
 
             if self.persist:
                 self.reset()
             else:
                 self.unregister()
+            event.reduce_time_left(0)
+        else:
+            event.reduce_time_left(self._eTime - now)
 
     def reset(self):
         """T.reset() -> None
@@ -49,3 +57,7 @@ class Timer(BaseComponent):
         """
 
         self._eTime = time() + self.interval
+
+    @property
+    def expiry(self):
+        return getattr(self, "_eTime", None)

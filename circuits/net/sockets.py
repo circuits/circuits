@@ -198,8 +198,8 @@ class Ready(Event):
     This Event is used to notify the rest of the system that the underlying
     Client or Server Component is ready to begin processing connections or
     incoming/outgoing data. (This is triggered as a direct result of having
-    the capability to support multiple client/server components with a snigle
-    poller component instnace in a system).
+    the capability to support multiple client/server components with a single
+    poller component instance in a system).
 
     @note: This event is used for both Client and Server Components.
 
@@ -281,6 +281,8 @@ class Client(Component):
                 self._poller = component
                 self.fire(Ready(self))
             else:
+                if component is not self:
+                    return
                 component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component
@@ -562,14 +564,14 @@ class Server(Component):
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
-        if component is not self:
-            return
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
                 self._poller.addReader(self, self._sock)
                 self.fire(Ready(self))
             else:
+                if component is not self:
+                    return
                 component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component

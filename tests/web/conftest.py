@@ -45,9 +45,9 @@ def setupwebapp(request):
     from circuits.web import Static
 
     Static("/static", DOCROOT, dirlisting=True).register(webapp)
+    waiter = pytest.WaitEvent(webapp, "ready")
     webapp.start()
 
-    waiter = pytest.WaitEvent(webapp, "ready")
     assert waiter.wait()
 
     return webapp

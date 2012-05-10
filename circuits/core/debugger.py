@@ -10,8 +10,6 @@ each event to sys.stderr or to a Logger Component instance.
 import os
 import sys
 
-from io import BytesIO
-
 from .handlers import handler
 from .components import BaseComponent
 from circuits.tools import reprhandler
@@ -30,7 +28,7 @@ class Debugger(BaseComponent):
     :param log: Logger Component instance or None (*default*)
     """
 
-    IgnoreEvents = []
+    IgnoreEvents = ["generate_events"]
     IgnoreChannels = []
 
     def __init__(self, errors=True, events=True, file=None, logger=None,
