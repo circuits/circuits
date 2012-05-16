@@ -2,7 +2,7 @@
 
 import pytest
 
-from circuits.web import Server, Controller
+from circuits.web import Controller
 from circuits.web.client import Client, Connect, Request
 
 
@@ -13,7 +13,7 @@ class Root(Controller):
 
     def index(self):
         return "Hello World!"
-    
+
     def name(self):
         return "Earth"
 
@@ -38,7 +38,8 @@ def request(webapp, path):
     assert waiter.wait()
 
     client.fire(Request("GET", path))
-    while client.response is None: pass
+    while client.response is None:
+        pass
 
     client.stop()
 
@@ -49,27 +50,27 @@ def request(webapp, path):
 
 def test_root(webapp):
     status, content = request(webapp, "/")
-    
+
     assert status == 200
     assert content == b"Hello World!"
 
 
 def test_root_name(webapp):
     status, content = request(webapp, "/name")
-    
+
     assert status == 200
     assert content == b"Earth"
 
 
 def test_leaf(webapp):
     status, content = request(webapp, "/world/country/region")
-    
+
     assert status == 200
     assert content == b"Hello cities!"
 
 
 def test_city(webapp):
     status, content = request(webapp, "/world/country/region/city")
-    
+
     assert status == 200
     assert content == b"Hello City!"

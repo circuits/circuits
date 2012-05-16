@@ -30,39 +30,48 @@ class Dispatcher(BaseComponent):
         self.paths = dict()
 
     def resolve_path(self, paths, parts):
-        
+
         def rebuild_path(url_parts):
             return '/%s' % '/'.join(url_parts)
-        
+
         left_over = []
-        while parts and rebuild_path(parts) not in self.paths:
+
+        while parts:
+            if rebuild_path(parts) in self.paths:
+                yield rebuild_path(parts), left_over
             left_over.insert(0, parts.pop())
 
-        return rebuild_path(parts), left_over
+        if '/' in self.paths:
+            yield '/', left_over
 
-    def resolve_method(self, parts):
-        if not parts:
-            return 'index', ''
-        method = parts.pop(0)
-        vpath = parts
-        return method, vpath
+    def resolve_methods(self, parts):
+        if parts:
+            method = parts[0]
+            vpath = parts[1:]
+            yield method, vpath
+
+        yield 'index', parts
 
     def find_handler(self, request):
-        path = request.path
-        method = request.method.upper()
-        request.index = request.path.endswith("/")
+        def get_handlers(path, method):
+            component = self.paths[path]
+            return component._handlers.get(method, None)
+
+        def accepts_vpath(handlers, vpath):
+            args_no = len(vpath)
+            return all(len(h.args) == args_no or h.varargs for h in handlers)
 
         # Split /hello/world to ['hello', 'world']
-        parts = [x for x in path.strip("/").split("/") if x]
+        starting_parts = [x for x in request.path.strip("/").split("/") if x]
 
-        path, parts = self.resolve_path(self.paths, parts)
-        method, vpath = self.resolve_method(parts)
+        for path, parts in self.resolve_path(self.paths, starting_parts):
+            for method, vpath in self.resolve_methods(parts):
+                handlers = get_handlers(path, method)
+                if handlers and (not vpath or accepts_vpath(handlers, vpath)):
+                    request.index = (method == 'index')
+                    return method, path, vpath
 
-        if not path:
-            path = '/'
-        if not method:
-            method = 'index'
-        return method, path, vpath
+        return None, None, None
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
