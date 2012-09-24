@@ -207,8 +207,8 @@ class HTTP(BaseComponent):
             request.body.write(data[(end_of_headers + 4):])
 
             if headers.get("Expect", "") == "100-continue":
-                return self.fire(Response(wrappers.Response(request, 100),
-                    encoding=self._encoding))
+                return self.fire(Response(wrappers.Response(request, code=100,
+                    encoding=self._encoding)))
 
             contentLength = int(headers.get("Content-Length", "0"))
             if request.body.tell() < contentLength:
