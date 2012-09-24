@@ -156,6 +156,8 @@ class BaseComponent(Manager):
         return self.unregister()
 
     def unregister(self):
+        if self.unregister_pending or self.parent == self:
+            return self
         # tick shouldn't be called anymore, although component is still in tree
         self._unregister_pending = True
         self.root._cache.clear()
