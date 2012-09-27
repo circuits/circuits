@@ -91,6 +91,18 @@ class BaseComponent(Manager):
 
     Apart from the ``fireEvent()`` method, the Manager nature is important
     for root components that are started or run.
+    
+    :ivar channel: a component can be associated with a specific channel
+        by setting this attribute. This should either be done by
+        specifying a class attribute *channel* in the derived class or by
+        passing a keyword parameter *channel="..."* to *__init__*. If 
+        specified, the component's handlers receive events on the
+        specified channel only, and events fired by the component will
+        be sent on the specified channel (this behavior may be overridden,
+        see :class:`~circuits.core.events.Event`, :meth:`~.fireEvent` and
+        :func:`~circuits.core.handlers.handler`). By default, the channel
+        attribute is set to "*", meaning that events are fired on all
+        channels and received from all channels.
     """
 
     channel = "*"

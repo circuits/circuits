@@ -13,9 +13,9 @@ Contents
 
    start/index
    tutorial/index
-   howtos/index
    man/index
    web/index
+   howtos/index
    api/index
    dev/index
    roadmap

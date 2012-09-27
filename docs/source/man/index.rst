@@ -6,8 +6,8 @@ The circuits Framework
    :maxdepth: 2
 
    components
-   handlers
    events
+   handlers
    values
    debugging
    tools

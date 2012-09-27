@@ -51,7 +51,7 @@ class BaseEvent(object):
         the event with the handlers. By default, the name is the uncameled
         class name of the event.
 
-        :cvar channels: An optional attribute that may be set before firing
+        :cvar channels: an optional attribute that may be set before firing
             the event. If defined (usually as a class variable), the attribute
             specifies the channels that the event should be delivered
             to as a tuple. This overrides the default behavior
@@ -62,19 +62,30 @@ class BaseEvent(object):
             the event is actually sent to. This information may be used
             e.g. when the event is passed as a parameter to a handler.
 
-        :ivar value: This is a :class:`circuits.core.values.Value`
+        :ivar value: this is a :class:`circuits.core.values.Value`
             object that holds the results returned by the handlers invoked
             for the event.
 
-        If the optional attribute ":attr:`success`" of an event is set to
-        ``True``, an associated event ``EventSuccess`` (original name
-        with "Success" appended) will automatically be fired when all
-        handlers for the event have been invoked successfully.
+        :var success: if this optional attribute is set to
+            ``True``, an associated event ``EventSuccess`` (original name
+            with "Success" appended) will automatically be fired when all
+            handlers for the event have been invoked successfully.
 
-        The success event is, by default, delivered to same channels
-        as the successfully dispatched event itself. This may be
-        overridden by specifying an alternative list of destinations
-        in the optional attribute ":attr:`success_channels`"
+        :var success_channels: the success event is, by default, delivered 
+            to same channels as the successfully dispatched event itself. 
+            This may be overridden by specifying an alternative list of 
+            destinations using this attribute.
+        
+        :var complete: if this optional attribute is set to
+            ``True``, an associated event ``EventComplete`` (original name
+            with "Complete" appended) will automatically be fired when all
+            handlers for the event and all events fired by these handlers
+            (recursively) have been invoked successfully.
+
+        :var success_channels: the complete event is, by default, delivered 
+            to same channels as the initially dispatched event itself. 
+            This may be overridden by specifying an alternative list of 
+            destinations using this attribute.
         """
 
         self.args = list(args)
