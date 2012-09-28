@@ -1,12 +1,11 @@
 # Package:  components
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-from circuits.core.events import Event
-
-"""Components
-
-This module defines the BaseComponent and the subclass Component
 """
+This module defines the BaseComponent and its subclass Component.
+"""
+
+from circuits.core.events import Event
 
 from types import MethodType
 from collections import Callable
@@ -36,15 +35,12 @@ def check_singleton(x, y):
 
 
 class SingletonError(Exception):
-    """Singleton Error
-
-    Raised if a Component with the `singleton` class attribute is True.
+    """Raised if a Component with the `singleton` class attribute is True.
     """
 
 class PrepareUnregister(Event):
-    """PrepareUnregister Event
-    
-    This event is sent when a component is about to be unregistered
+    """
+    This event is fired when a component is about to be unregistered
     from the component tree. Unregistering a component actually
     detaches the complete subtree that the unregistered component 
     is the root of. Components that need to know if they
@@ -58,6 +54,9 @@ class PrepareUnregister(Event):
     """
     
     complete = True
+
+    def __init__(self, *args, **kwargs):
+        super(PrepareUnregister, self).__init__(*args, **kwargs)
     
     def in_subtree(self, component):
         """
@@ -73,8 +72,7 @@ class PrepareUnregister(Event):
 
 
 class BaseComponent(Manager):
-    """Base Component
-
+    """
     This is the base class for all components in a circuits based application.
     Components can (and should, except for root components) be registered
     with a parent component.
@@ -147,6 +145,16 @@ class BaseComponent(Manager):
             self.init(*args, **kwargs)
 
     def register(self, parent):
+        """
+        Inserts this component in the component tree as a child
+        of the given *parent* node.
+        
+        :param parent: the parent component after registration has completed.
+        :type parent: :class:`~.manager.Manager`
+        
+        This method fires a :class:`~.events.Registered` event to inform
+        other components in the tree about the new member.
+        """
         if check_singleton(self, parent):
             raise SingletonError(self)
 
@@ -168,6 +176,20 @@ class BaseComponent(Manager):
         return self.unregister()
 
     def unregister(self):
+        """
+        Removes this component from the component tree.
+
+        Removing a component from the component tree is a two stage process.
+        First, the component is marked as to be removed, which prevents it
+        from receiving further events, and a 
+        :class:`~.components.PrepareUnregister` event is fired. This
+        allows other components to e.g. release references to the component 
+        to be removed before it is actually removed from the component tree.
+
+        After the processing of the ``PrepareUnregister`` event has completed,
+        the component is removed from the tree and an 
+        :class:`~.events.Unregistered` event is fired.
+        """
         if self.unregister_pending or self.parent == self:
             return self
         # tick shouldn't be called anymore, although component is still in tree

@@ -4,14 +4,20 @@
 .. automodule :: circuits.core.futures
 
 
-Events
-------
+Classes
+-------
 
 **none**
 
 
 Components
 ----------
+
+**none**
+
+
+Events
+------
 
 **none**
 

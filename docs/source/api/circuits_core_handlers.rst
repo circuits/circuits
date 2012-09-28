@@ -4,12 +4,6 @@
 .. automodule :: circuits.core.handlers
 
 
-Events
-------
-
-**none**
-
-
 Classes
 -------
 
@@ -19,6 +13,12 @@ Classes
 
 Components
 ----------
+
+**none**
+
+
+Events
+------
 
 **none**
 

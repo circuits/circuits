@@ -2,8 +2,7 @@
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Handlers
-
+"""
 This module define the @handler decorator/function and the HandlesType type.
 """
 

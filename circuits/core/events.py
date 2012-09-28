@@ -2,14 +2,12 @@
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Events
-
-This module define the basic Event object and common events.
+"""
+This module defines the basic Event class and common events.
 """
 
 from .utils import uncamel
 from inspect import ismethod
-from threading import RLock
 
 
 class EventMetaClass(type):
@@ -36,9 +34,7 @@ class BaseEvent(object):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
-        """Base Event
-
-        An Event is a message send to one or more channels. It is eventually
+        """An Event is a message send to one or more channels. It is eventually
         dispatched to all components that have handlers for one
         of the channels and the event type.
 
@@ -201,8 +197,6 @@ class Error(Event):
     """
 
     def __init__(self, type, value, traceback, handler=None):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super(Error, self).__init__(type, value, traceback, handler)
 
 
@@ -213,6 +207,8 @@ class Done(DerivedEvent):
     primitives to know when to stop waiting. Don't use this for application
     development, use :class:`Success` instead.
     """
+    def __init__(self, *args, **kwargs):
+        super(Done, self).__init__(*args, **kwargs)
 
 
 class Success(DerivedEvent):
@@ -224,6 +220,8 @@ class Success(DerivedEvent):
     :param event: The event that has completed.
     :type  event: Event
     """
+    def __init__(self, *args, **kwargs):
+        super(Success, self).__init__(*args, **kwargs)
 
 
 class Complete(DerivedEvent):
@@ -236,6 +234,8 @@ class Complete(DerivedEvent):
     :param event: The event that has completed.
     :type  event: Event
     """
+    def __init__(self, *args, **kwargs):
+        super(Complete, self).__init__(*args, **kwargs)
 
 
 class Failure(DerivedEvent):
@@ -247,6 +247,8 @@ class Failure(DerivedEvent):
     :param event: The event that failed
     :type  event: Event
     """
+    def __init__(self, *args, **kwargs):
+        super(DerivedEvent, self).__init__(*args, **kwargs)    
 
 
 class Started(Event):
@@ -259,8 +261,6 @@ class Started(Event):
     """
 
     def __init__(self, component):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super(Started, self).__init__(component)
 
 
@@ -274,8 +274,6 @@ class Stopped(Event):
     """
 
     def __init__(self, component):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super(Stopped, self).__init__(component)
 
 
@@ -292,8 +290,6 @@ class Signal(Event):
     """
 
     def __init__(self, signal, stack):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super(Signal, self).__init__(signal, stack)
 
 
@@ -312,8 +308,6 @@ class Registered(Event):
     """
 
     def __init__(self, component, manager):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super(Registered, self).__init__(component, manager)
 
 
@@ -325,8 +319,6 @@ class Unregister(Event):
     """
 
     def __init__(self, component=None):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super(Unregister, self).__init__(component)
 
 
@@ -338,8 +330,6 @@ class Unregistered(Event):
     """
 
     def __init__(self, component, manager):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super(Unregistered, self).__init__(component, manager)
 
 class GenerateEvents(Event):

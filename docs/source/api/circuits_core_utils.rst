@@ -4,14 +4,20 @@
 .. automodule :: circuits.core.utils
 
 
-Events
-------
+Classes
+-------
 
 **none**
 
 
 Components
 ----------
+
+**none**
+
+
+Events
+------
 
 **none**
 
@@ -24,4 +30,4 @@ Functions
 .. autofunction :: findroot
 .. autofunction :: findtype
 .. autofunction :: flatten
-.. autofunction ::  safeimport
+.. autofunction :: safeimport

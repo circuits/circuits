@@ -4,8 +4,8 @@
 .. automodule :: circuits.core.pollers
 
 
-Events
-------
+Classes
+-------
 
 **none**
 
@@ -24,6 +24,13 @@ Components
 
 .. autoclass :: EPoll
    :members:
+
+
+Events
+------
+
+**none**
+
 
 Functions
 ---------

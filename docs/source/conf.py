@@ -63,6 +63,7 @@ if devel:
 
 extensions.append('sphinx.ext.autodoc')
 
+autodoc_default_flags = ['show-inheritance']
 autoclass_content = 'both'
 autodoc_member_order = 'bysource'
 

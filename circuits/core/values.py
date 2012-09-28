@@ -2,8 +2,7 @@
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-"""Values
-
+"""
 This defines the Value object used by components and events.
 """
 

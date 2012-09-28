@@ -11,8 +11,14 @@ Classes
    :members:
       
 
-Common Events
--------------
+Components
+----------
+
+**none**
+
+
+Events
+------
 
 .. autoclass :: Error
 .. autoclass :: Failure
@@ -25,13 +31,8 @@ Common Events
 .. autoclass :: Unregistered
 
 
-Components
-----------
-
-**none**
-
-
 Functions
 ---------
 
 **none**
+
