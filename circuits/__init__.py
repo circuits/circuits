@@ -20,6 +20,7 @@ __version__ = "1.7dev"
 
 from circuits.core import future, Pool, Task, Worker
 from circuits.core import Debugger, Loader, Manager, Timer
-from circuits.core import handler, tick, BaseComponent, Component, Event
+from circuits.core import handler, tick, BaseComponent, Component
+from circuits.core import BaseEvent, DerivedEvent, Event, LiteralEvent
 
 # hghooks: no-pyflakes

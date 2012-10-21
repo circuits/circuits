@@ -9,10 +9,10 @@ This package contains the essential core parts of the circuits framework.
 
 from .handlers import handler, tick
 
-from .events import Event
 from .loader import Loader
 from .manager import Manager
 from .components import BaseComponent, Component
+from .events import BaseEvent, DerivedEvent, Event, LiteralEvent
 
 from .values import Value
 from .futures import future
