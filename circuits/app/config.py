@@ -84,5 +84,8 @@ class Config(BaseComponent):
     def has_section(self, section):
         return self._config.has_section(section)
 
+    def has_option(self, section, option):
+        return self._config.has_option(section, option)
+
     def set(self, section, option, value):
         return self._config.set(section, option, value)
