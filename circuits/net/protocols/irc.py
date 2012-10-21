@@ -78,7 +78,13 @@ def sourceSplit(source):
 
 
 class Command(Event):
-    """Command (Event)"""
+    """Command Event"""
+
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+
+        self.name = "command_{0}".format(self.__class__.__name__.lower())
+
 
 
 class RAW(Command):
@@ -225,66 +231,66 @@ class IRC(Component):
     ### IRC Command Event Handlers
     ###
 
-    def raw(self, data):
+    def command_raw(self, data):
         self.fire(Write("%s\r\n" % data))
 
-    @handler("pass")
-    def _on_pass(self, password):
+    @handler("command_pass")
+    def _on_command_pass(self, password):
         self.fire(RAW("PASS %s" % password))
 
-    def user(self, ident, host, server, name):
+    def command_user(self, ident, host, server, name):
         self.fire(RAW("USER %s \"%s\" \"%s\" :%s" % (
             ident, host, server, name)))
 
-    def nick(self, nick):
+    def command_nick(self, nick):
         self.fire(RAW("NICK %s" % nick))
 
-    def ping(self, server):
+    def command_ping(self, server):
         self.fire(RAW("PING :%s" % server))
 
-    def pong(self, server):
+    def command_pong(self, server):
         self.fire(RAW("PONG :%s" % server))
 
-    def quit(self, message="Leaving"):
+    def command_quit(self, message="Leaving"):
         self.fire(RAW("QUIT :%s" % message))
 
-    def join(self, channel, key=None):
+    def command_join(self, channel, key=None):
         if key is None:
             self.fire(RAW("JOIN %s" % channel))
         else:
             self.fire(RAW("JOIN %s %s" % (channel, key)))
 
-    def part(self, channel, message="Leaving"):
+    def command_part(self, channel, message="Leaving"):
         self.fire(RAW("PART %s :%s" % (channel, message)))
 
-    def privmsg(self, target, message):
+    def command_privmsg(self, target, message):
         self.fire(RAW("PRIVMSG %s :%s" % (target, message)))
 
-    def notice(self, target, message):
+    def command_notice(self, target, message):
         self.fire(RAW("NOTICE %s :%s" % (target, message)))
 
-    def ctcp(self, target, type, message):
+    def command_ctcp(self, target, type, message):
         self.fire(PRIVMSG(target, "%s %s" % (type, message)))
 
-    def ctcpreply(self, target, type, message):
+    def command_ctcpreply(self, target, type, message):
         self.fire(NOTICE(target, "%s %s" % (type, message)))
 
-    def kick(self, channel, target, message=""):
+    def command_kick(self, channel, target, message=""):
         self.fire(RAW("KICK %s %s :%s" % (channel, target, message)))
 
-    def topic(self, channel, topic):
+    def command_topic(self, channel, topic):
         self.fire(RAW("TOPIC %s :%s" % (channel, topic)))
 
-    def mode(self, modes, channel=None):
+    def command_mode(self, modes, channel=None):
         if channel is None:
             self.fire(RAW("MODE :%s" % modes))
         else:
             self.fire(RAW("MODE %s :%s" % (channel, modes)))
 
-    def invite(self, target, channel):
+    def command_invite(self, target, channel):
         self.fire(RAW("INVITE %s %s" % (target, channel)))
 
-    def names(self, channel=None):
+    def command_names(self, channel=None):
         if channel:
             self.fire(RAW("NAMES %s" % channel))
         else:
