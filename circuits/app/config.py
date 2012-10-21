@@ -57,6 +57,9 @@ class Config(BaseComponent):
     def add_section(self, section):
         return self._config.add_section(section)
 
+    def items(self, section, raw=False, vars=None):
+        return self._config.items(section, raw=False, vars=None)
+
     def get(self, section, option, default=None, raw=False, vars=None):
         if self._config.has_option(section, option):
             return self._config.get(section, option, raw=raw, vars=vars)
