@@ -60,6 +60,10 @@ class EnvironmentEvent(Event):
     channels = ("env",)
 
 
+class Ready(EnvironmentEvent):
+    """Ready Environment Event"""
+
+
 class Create(EnvironmentEvent):
     """Create Environment Event"""
 
@@ -146,6 +150,7 @@ class Environment(BaseComponent):
         if not isabs(logfile):
             logfile = joinpath(self.path, logfile)
         self.log = Logger(logfile, logname, logtype, loglevel).register(self)
+        self.fire(Ready())
 
     def _create(self):
         # Create the directory structure
@@ -180,5 +185,5 @@ class Environment(BaseComponent):
         # Create Config Component
         configfile = joinpath(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile).register(self)
-        self.fire(config.Load(), self.config)
+        self.fire(config.Load())
         return True
