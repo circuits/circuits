@@ -64,7 +64,7 @@ class Debugger(BaseComponent):
         if handler is None:
             handler = ""
         else:
-            handler = reprhandler(self.root, handler)
+            handler = reprhandler(handler)
 
         msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
         s.append(msg)
