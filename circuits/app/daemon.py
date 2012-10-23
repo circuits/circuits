@@ -132,5 +132,5 @@ class Daemon(BaseComponent):
 
     @handler("registered")
     def _on_registered(self, component, manager):
-        if component == self and manager == self and manager.root.running:
+        if component == self and manager.root.running:
             self.fire(Daemonize())
