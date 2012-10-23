@@ -236,8 +236,11 @@ class Manager(object):
             else:
                 handler_channel = None
 
-            if channel == "*" or handler_channel in ("*", channel,) \
-                    or channel_is_instance:
+            if isinstance(handler_channel, str):
+                handler_channel = [handler_channel]
+
+            if channel == "*" or channel_is_instance or \
+                    any(c in ("*", channel,) for c in handler_channel):
                 handlers.add(h)
 
         handlers.update(self._globals)
@@ -371,7 +374,6 @@ class Manager(object):
             'event': None,
         }
         _event = event
-
         @handler(event, channel=channel)
         def _on_event(self, event, *args, **kwargs):
             if not state['run']:
@@ -406,7 +408,7 @@ class Manager(object):
         been dispatched (see :func:`circuits.core.handlers.handler`).
         """
         value = self.fire(event, *channels)
-        for r in self.waitEvent(event.name):
+        for r in self.waitEvent(event.name, channels):
             yield r
         yield CallValue(value)
 
