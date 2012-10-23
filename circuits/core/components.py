@@ -42,22 +42,22 @@ class PrepareUnregister(Event):
     """
     This event is fired when a component is about to be unregistered
     from the component tree. Unregistering a component actually
-    detaches the complete subtree that the unregistered component 
+    detaches the complete subtree that the unregistered component
     is the root of. Components that need to know if they
     are removed from the main tree (e.g. because they maintain
     relationships to other components in the tree) handle this
     event, check if the component being unregistered is one
     of their ancestors and act accordingly.
-    
+
     :param component: the component that will be unregistered
     :type  type: :class:`~.BaseComponent`
     """
-    
+
     complete = True
 
     def __init__(self, *args, **kwargs):
         super(PrepareUnregister, self).__init__(*args, **kwargs)
-    
+
     def in_subtree(self, component):
         """
         Convenience method that checks if the given *component*
@@ -89,11 +89,11 @@ class BaseComponent(Manager):
 
     Apart from the ``fireEvent()`` method, the Manager nature is important
     for root components that are started or run.
-    
+
     :ivar channel: a component can be associated with a specific channel
         by setting this attribute. This should either be done by
         specifying a class attribute *channel* in the derived class or by
-        passing a keyword parameter *channel="..."* to *__init__*. If 
+        passing a keyword parameter *channel="..."* to *__init__*. If
         specified, the component's handlers receive events on the
         specified channel only, and events fired by the component will
         be sent on the specified channel (this behavior may be overridden,
@@ -105,6 +105,7 @@ class BaseComponent(Manager):
 
     channel = "*"
     singleton = False
+    traverseHandlers = True
 
     def __new__(cls, *args, **kwargs):
         self = super(BaseComponent, cls).__new__(cls)
@@ -148,10 +149,10 @@ class BaseComponent(Manager):
         """
         Inserts this component in the component tree as a child
         of the given *parent* node.
-        
+
         :param parent: the parent component after registration has completed.
         :type parent: :class:`~.manager.Manager`
-        
+
         This method fires a :class:`~.events.Registered` event to inform
         other components in the tree about the new member.
         """
@@ -181,13 +182,13 @@ class BaseComponent(Manager):
 
         Removing a component from the component tree is a two stage process.
         First, the component is marked as to be removed, which prevents it
-        from receiving further events, and a 
+        from receiving further events, and a
         :class:`~.components.PrepareUnregister` event is fired. This
-        allows other components to e.g. release references to the component 
+        allows other components to e.g. release references to the component
         to be removed before it is actually removed from the component tree.
 
         After the processing of the ``PrepareUnregister`` event has completed,
-        the component is removed from the tree and an 
+        the component is removed from the tree and an
         :class:`~.events.Unregistered` event is fired.
         """
         if self.unregister_pending or self.parent == self:
