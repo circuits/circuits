@@ -362,7 +362,7 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
-    def waitEvent(self, event, channel=None):
+    def waitEvent(self, event, *channels):
         state = {
             'run': False,
             'flag': False,
@@ -370,7 +370,6 @@ class Manager(object):
         }
         _event = event
 
-        @handler(event, channel=channel)
         def _on_event(self, event, *args, **kwargs):
             if not state['run']:
                 self.removeHandler(_on_event, _event)
@@ -378,13 +377,13 @@ class Manager(object):
                 state['run'] = True
                 state['event'] = event
 
-        @handler("%s_done" % event, channel=channel)
         def _on_done(self, event, source, *args, **kwargs):
             if state['event'] == source:
                 state['flag'] = True
 
-        self.addHandler(_on_event)
-        self.addHandler(_on_done)
+        for channel in channels:
+            self.addHandler(handler(event, channel=channel)(_on_event))
+            self.addHandler(handler("%s_done" % event, channel=channel)(_on_done))
 
         while not state['flag']:
             yield None
@@ -404,7 +403,7 @@ class Manager(object):
         been dispatched (see :func:`circuits.core.handlers.handler`).
         """
         value = self.fire(event, *channels)
-        for r in self.waitEvent(event.name):
+        for r in self.waitEvent(event.name, *channels):
             yield r
         yield CallValue(value)
 
