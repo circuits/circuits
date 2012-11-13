@@ -383,7 +383,7 @@ class GenerateEvents(Event):
                                    or self._time_left > time_left):
                 self._time_left = time_left
                 if self._time_left == 0 and self.handler is not None:
-                    m = getattr( getattr( self.handler, "im_self", getattr( self.handler, "__self__", Unknown() ) , "resume", None)
+                    m = getattr( getattr( self.handler, "im_self", getattr( self.handler, "__self__", Unknown() ) ), "resume", None )
                     if m is not None and ismethod(m):
                         m()
 
