@@ -18,6 +18,6 @@ class Grep(Component):
 
     def line(self, line):
         if self.pattern in line:
-            print line
+            print( line )
 
 (Tail(sys.argv[1]) + Grep(sys.argv[2])).run()

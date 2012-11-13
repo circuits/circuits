@@ -8,7 +8,7 @@ This module defines the basic Event class and common events.
 
 from .utils import uncamel
 from inspect import ismethod
-
+from circuits.tools import Unknown
 
 class EventMetaClass(type):
 
@@ -67,20 +67,20 @@ class BaseEvent(object):
             with "Success" appended) will automatically be fired when all
             handlers for the event have been invoked successfully.
 
-        :var success_channels: the success event is, by default, delivered 
-            to same channels as the successfully dispatched event itself. 
-            This may be overridden by specifying an alternative list of 
+        :var success_channels: the success event is, by default, delivered
+            to same channels as the successfully dispatched event itself.
+            This may be overridden by specifying an alternative list of
             destinations using this attribute.
-        
+
         :var complete: if this optional attribute is set to
             ``True``, an associated event ``EventComplete`` (original name
             with "Complete" appended) will automatically be fired when all
             handlers for the event and all events fired by these handlers
             (recursively) have been invoked successfully.
 
-        :var success_channels: the complete event is, by default, delivered 
-            to same channels as the initially dispatched event itself. 
-            This may be overridden by specifying an alternative list of 
+        :var success_channels: the complete event is, by default, delivered
+            to same channels as the initially dispatched event itself.
+            This may be overridden by specifying an alternative list of
             destinations using this attribute.
         """
 
@@ -165,17 +165,17 @@ class LiteralEvent(Event):
 
 
 class DerivedEvent(Event):
-    
+
     @classmethod
     def create(cls, topic, event, *args, **kwargs):
         if isinstance(event, LiteralEvent):
             name = "%s%s" % (event.__class__.__name__, uncamel("_%s" % topic))
-            return type(cls)(name, (cls,), 
+            return type(cls)(name, (cls,),
                              {"name": name})(event, *args, **kwargs)
         else:
             name = "%s_%s" % (event.__class__.__name__, topic)
             return type(cls)(name, (cls,), {})(event, *args, **kwargs)
-    
+
 
 class Error(Event):
     """Error Event
@@ -248,7 +248,7 @@ class Failure(DerivedEvent):
     :type  event: Event
     """
     def __init__(self, *args, **kwargs):
-        super(DerivedEvent, self).__init__(*args, **kwargs)    
+        super(DerivedEvent, self).__init__(*args, **kwargs)
 
 
 class Started(Event):
@@ -334,17 +334,17 @@ class Unregistered(Event):
 
 class GenerateEvents(Event):
     """Generate events event
-    
+
     This event is sent by the circuits core. All components that generate
     timed events or events from external sources (e.g. data becoming
     available) should fire any pending events in their "generate_events"
     handler.
-    
-    :param max_wait: maximum time available for generating events. 
+
+    :param max_wait: maximum time available for generating events.
     :type  time_left: float
-    
+
     Components that actually consume time waiting for events to be generated,
-    thus suspending normal execution, must provide a method ``resume`` 
+    thus suspending normal execution, must provide a method ``resume``
     that interrupts waiting for events.
     """
 
@@ -356,38 +356,37 @@ class GenerateEvents(Event):
     @property
     def time_left(self):
         """
-        The time left for generating events. A value less than 0 
-        indicates unlimited time. You should have only 
-        one component in your system (usually a poller component) that 
+        The time left for generating events. A value less than 0
+        indicates unlimited time. You should have only
+        one component in your system (usually a poller component) that
         spends up to "time left" until it generates an event.
         """
         return self._time_left
-    
+
     def reduce_time_left(self, time_left):
         """
         Update the time left for generating events. This is typically
         used by event generators that currently don't want to generate
         an event but know that they will within a certain time. By
         reducing the time left, they make sure that they are reinvoked
-        when the time for generating the event has come (at the latest). 
-        
+        when the time for generating the event has come (at the latest).
+
         This method can only be used to reduce the time left. If the
         parameter is larger than the current value of time left, it is
         ignored.
-        
+
         If the time left is reduced to 0 and the event is currently
         being handled, the handler's *resume* method is invoked.
         """
         with self._lock:
-            if time_left >= 0 and (self._time_left < 0 
+            if time_left >= 0 and (self._time_left < 0
                                    or self._time_left > time_left):
                 self._time_left = time_left
                 if self._time_left == 0 and self.handler is not None:
-                    m = getattr(self.handler.im_self, "resume", None)
+                    m = getattr( getattr( self.handler, "im_self", getattr( self.handler, "__self__", Unknown() ) , "resume", None)
                     if m is not None and ismethod(m):
                         m()
 
     @property
     def lock(self):
         return self._lock
-    
