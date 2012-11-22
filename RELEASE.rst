@@ -56,3 +56,5 @@ Release Notes - circuits-2.0.0 (cheetah)
 
 
    EchoServer(8000).run()
+
+For a full list of chnages for this release see the `Change Log <http://packages.python.org/circuits/changes.html>`_.
