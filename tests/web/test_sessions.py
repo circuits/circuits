@@ -8,8 +8,9 @@ from .helpers import CookieJar
 
 class Root(Controller):
 
-    def index(self, name=None):
-        if name:
+    def index(self, vpath=None):
+        if vpath:
+            name = vpath
             self.session["name"] = name
         else:
             name = self.session.get("name", "World!")
@@ -23,7 +24,7 @@ def test(webapp):
     opener = build_opener(HTTPCookieProcessor(cj))
 
     f = opener.open(webapp.server.base)
-    s = f.read() 
+    s = f.read()
     assert s == b"Hello World!"
 
     f = opener.open(webapp.server.base + "/test")

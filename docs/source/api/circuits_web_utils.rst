@@ -21,5 +21,6 @@ Functions
 .. autofunction :: compress
 .. autofunction :: dictform
 .. autofunction :: get_ranges
-.. autofunction :: parseQueryString
+.. autofunction :: parse_body
+.. autofunction :: parse_qs
 .. autofunction :: url

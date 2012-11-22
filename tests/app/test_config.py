@@ -21,10 +21,12 @@ def pytest_funcarg__config(request):
 
     config = Config(str(path))
     config.start()
+    request.addfinalizer(lambda: config.stop())
 
+    waiter = pytest.WaitEvent(config, "load_success")
     config.fire(Load())
 
-    assert pytest.wait_event(config, "load_success")
+    assert waiter.wait()
 
     return config
 
@@ -79,9 +81,10 @@ def test_load(tmpdir):
     config = Config(str(path))
     config.start()
 
+    waiter = pytest.WaitEvent(config, "load_success")
     config.fire(Load())
 
-    assert pytest.wait_event(config, "load_success")
+    assert waiter.wait()
 
     s = config.get("test", "foo")
     assert s == "bar"
@@ -100,9 +103,10 @@ def test_save(tmpdir):
     config.add_section("test")
     config.set("test", "foo", "bar")
 
+    waiter = pytest.WaitEvent(config, "save_success")
     config.fire(Save())
 
-    assert pytest.wait_event(config, "save_success")
+    assert waiter.wait()
 
     s = config.get("test", "foo")
     assert s == "bar"

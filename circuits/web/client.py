@@ -64,7 +64,7 @@ class Request(Event):
 
 class Client(BaseComponent):
 
-    channel = "web"
+    channel = "client"
 
     def __init__(self, url, channel=channel):
         super(Client, self).__init__(channel=channel)
@@ -72,35 +72,39 @@ class Client(BaseComponent):
 
         self._response = None
 
-        self._transport = TCPClient().register(self)
+        self._transport = TCPClient(channel=channel).register(self)
 
-        HTTP().register(self._transport)
+        HTTP(channel=channel).register(self._transport)
 
     @handler("write")
     def write(self, data):
         if self._transport.connected:
-            self.fire(Write(data), target=self._transport)
+            self.fire(Write(data), self._transport)
 
     @handler("close")
     def close(self):
         if self._transport.connected:
-            self.fire(Close(), target=self._transport)
+            self.fire(Close(), self._transport)
 
     @handler("connect")
     def connect(self):
         if not self._transport.connected:
             self.fire(Connect(self._host, self._port, self._secure),
-                    target=self._transport)
+                    self._transport)
 
     @handler("request")
     def request(self, method, path, body=None, headers={}):
         if self._transport.connected:
             headers = Headers([(k, v) for k, v in headers.items()])
+            # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
+            if not headers.has_key("Host"):
+                headers["Host"] = self._host \
+                    + (":" + str(self._port)) if self._port else ""
             command = "%s %s HTTP/1.1" % (method, path)
             message = "%s\r\n%s" % (command, headers)
-            self.fire(Write(message.encode('utf-8')), target=self._transport)
+            self.fire(Write(message.encode('utf-8')), self._transport)
             if body:
-                self.fire(Write(body), target=self._transport)
+                self.fire(Write(body), self._transport)
         else:
             raise NotConnected()
 
@@ -108,7 +112,7 @@ class Client(BaseComponent):
     def _on_response(self, response):
         self._response = response
         if response.headers.get("Connection") == "Close":
-            self.fire(Close(), target=self._transport)
+            self.fire(Close(), self._transport)
 
     @property
     def connected(self):

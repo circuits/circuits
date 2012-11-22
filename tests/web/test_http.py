@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import pytest
 
 from circuits.web import Server, Controller
@@ -5,7 +7,6 @@ from circuits.web.client import parse_url
 from circuits.net.sockets import TCPServer, TCPClient
 from circuits.net.sockets import Close, Connect, Write
 from circuits import Component
-from circuits import Debugger
 
 class Client(Component):
     def __init__(self, *args, **kwargs):

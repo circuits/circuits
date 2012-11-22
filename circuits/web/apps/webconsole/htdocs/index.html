@@ -103,6 +103,8 @@ form {
 
 <script type='text/javascript'>
 
+var base_url = window.location;
+
 function http() {
     var h;
     if (typeof(XMLHttpRequest) != "undefined") {
@@ -380,7 +382,7 @@ function push() {
             input.focus();
         }
     }
-    h.open("POST", "push", true);
+    h.open("POST", base_url + "/push", true);
     h.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     h.send("line=" + escape(data));
 }

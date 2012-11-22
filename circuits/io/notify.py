@@ -22,13 +22,16 @@ from circuits.core import Event, Component
 
 MASK = ALL_EVENTS
 
+
 class AddPath(Event):
     """Add path to watch"""
     channel = 'add_path'
 
+
 class RemovePath(Event):
     """Remove path from watch"""
     channel = 'remove_path'
+
 
 class Moved(Event):
     """Moved Event"""
@@ -114,9 +117,7 @@ class Notify(Component):
 
         for k, v in EVENT_MAP.items():
             if mask & k:
-                e = v(name, path, pathname, dir)
-                c = e.name.lower()
-                self.fire(e, c)
+                self.fire(v(name, path, pathname, dir))
 
     def add_path(self, path, mask=None, recursive=False):
         mask = mask or MASK

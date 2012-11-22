@@ -11,12 +11,7 @@ environments.
 
 from os import mkdir
 from os import makedirs
-try:
-    from signal import SIGHUP
-except ImportError:
-    # Windows doesn't share the signals concept
-    pass
-
+from signal import SIGHUP
 from os.path import abspath, isabs, join as joinpath
 
 from circuits import handler, BaseComponent, Event
@@ -62,35 +57,39 @@ class EnvironmentError(Exception):
 class EnvironmentEvent(Event):
     """Environment Event"""
 
-    _target = "env"
+    channels = ("env",)
+
+
+class Ready(EnvironmentEvent):
+    """Ready Environment Event"""
 
 
 class Create(EnvironmentEvent):
     """Create Environment Event"""
 
-    success = "create_success", EnvironmentEvent._target
-    failure = "create_failure", EnvironmentEvent._target
+    success = True
+    failure = True
 
 
 class Load(EnvironmentEvent):
     """Load Environment Event"""
 
-    success = "load_success", EnvironmentEvent._target
-    failure = "load_failure", EnvironmentEvent._target
+    success = True
+    failure = True
 
 
 class Verify(EnvironmentEvent):
     """Verify Environment Event"""
 
-    success = "verify_success", EnvironmentEvent._target
-    failure = "verify_failure", EnvironmentEvent._target
+    success = True
+    failure = True
 
 
 class Upgrade(EnvironmentEvent):
     """Upgrade Environment Event"""
 
-    success = "upgrade_success", EnvironmentEvent._target
-    failure = "upgrade_failure", EnvironmentEvent._target
+    success = True
+    failure = True
 
 
 class Environment(BaseComponent):
@@ -137,11 +136,11 @@ class Environment(BaseComponent):
                 raise EnvironmentError(*ERRORS[1])
 
     @handler("verify_success", filter=True)
-    def _on_verify_success(self, evt, handler, retval):
+    def _on_verify_success(self, evt, retval):
         return self._load()
 
-    @handler("load_success", target="config")
-    def _on_config_load_success(self, evt, handler, retval):
+    @handler("load_success", channel="config")
+    def _on_config_load_success(self, evt, retval):
         # Create Logger Component
         logname = self.envname
         logtype = self.config.get("logging", "type", "file")
@@ -151,6 +150,7 @@ class Environment(BaseComponent):
         if not isabs(logfile):
             logfile = joinpath(self.path, logfile)
         self.log = Logger(logfile, logname, logtype, loglevel).register(self)
+        self.fire(Ready())
 
     def _create(self):
         # Create the directory structure
@@ -179,11 +179,11 @@ class Environment(BaseComponent):
                         "path": self.path,
                     }
                 self.config.set(section, option, value)
-        return self.fire(config.Save(), target=self.config)
+        return self.fire(config.Save(), self.config)
 
     def _load(self):
         # Create Config Component
         configfile = joinpath(self.path, "conf", "%s.ini" % self.envname)
         self.config = Config(configfile).register(self)
-        self.fire(config.Load(), target=self.config)
+        self.fire(config.Load())
         return True

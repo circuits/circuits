@@ -4,8 +4,8 @@
 .. automodule :: circuits.core.utils
 
 
-Events
-------
+Classes
+-------
 
 **none**
 
@@ -16,9 +16,18 @@ Components
 **none**
 
 
+Events
+------
+
+**none**
+
+
 Functions
 ---------
 
+.. autofunction :: findchannel
 .. autofunction :: findcmp
 .. autofunction :: findroot
-.. autofunction :: itercmp
+.. autofunction :: findtype
+.. autofunction :: flatten
+.. autofunction :: safeimport

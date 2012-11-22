@@ -14,11 +14,13 @@ from email._parseaddr import _monthnames
 
 from circuits.core import handler, BaseComponent
 
+
 def formattime():
     now = datetime.datetime.now()
     month = _monthnames[now.month - 1].capitalize()
     return ("[%02d/%s/%04d:%02d:%02d:%02d]" %
             (now.day, month, now.year, now.hour, now.minute, now.second))
+
 
 class Logger(BaseComponent):
 
@@ -38,7 +40,7 @@ class Logger(BaseComponent):
 
         self.logger = logger
 
-    @handler("response")
+    @handler("response", priority=-0.1)
     def response(self, response):
         self.log(response)
 
@@ -49,7 +51,7 @@ class Logger(BaseComponent):
         inheaders = request.headers
 
         protocol = "HTTP/%d.%d" % request.protocol
-        
+
         if "X-Forwarded-For" in inheaders:
             host = inheaders["X-Forwarded-For"]
         else:
@@ -82,4 +84,3 @@ class Logger(BaseComponent):
             self.file.write(self.format % atoms)
             self.file.write("\n")
             self.file.flush()
-

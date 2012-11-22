@@ -15,6 +15,7 @@ import re
 tspecials = re.compile(r'[ \(\)<>@,;:\\"/\[\]\?=]')
 q_separator = re.compile(r'; *q *=')
 
+
 def _formatparam(param, value=None, quote=1):
     """Convenience function to format and return a key=value pair.
 
@@ -29,13 +30,14 @@ def _formatparam(param, value=None, quote=1):
     else:
         return param
 
+
 def header_elements(fieldname, fieldvalue):
     """Return a HeaderElement list from a comma-separated header str."""
-    
+
     if not fieldvalue:
         return None
     headername = fieldname.lower()
-    
+
     result = []
     for element in fieldvalue.split(","):
         if headername.startswith("accept") or headername == 'te':
@@ -43,26 +45,27 @@ def header_elements(fieldname, fieldvalue):
         else:
             hv = HeaderElement.from_str(element)
         result.append(hv)
-    
+
     result.sort()
     return result
 
+
 class HeaderElement(object):
     """An element (with parameters) from an HTTP header's element list."""
-    
+
     def __init__(self, value, params=None):
         self.value = value
         if params is None:
             params = {}
         self.params = params
-    
+
     def __unicode__(self):
         p = [";%s=%s" % (k, v) for k, v in self.params.items()]
         return "%s%s" % (self.value, "".join(p))
-    
+
     def __str__(self):
         return str(self.__unicode__())
-    
+
     def parse(elementstr):
         """Transform 'token;key=val' to ('token', {'key': 'val'})."""
         # Split the element into a value and parameters. The 'value' may
@@ -80,23 +83,24 @@ class HeaderElement(object):
             params[key] = val
         return initial_value, params
     parse = staticmethod(parse)
-    
+
     def from_str(cls, elementstr):
         """Construct an instance from a string of the form 'token;key=val'."""
         ival, params = cls.parse(elementstr)
         return cls(ival, params)
     from_str = classmethod(from_str)
 
+
 class AcceptElement(HeaderElement):
     """An element (with parameters) from an Accept* header's element list.
-    
+
     AcceptElement objects are comparable; the more-preferred object will be
     "less than" the less-preferred object. They are also therefore sortable;
     if you sort a list of AcceptElement objects, they will be listed in
     priority order; the most preferred value will be first. Yes, it should
     have been the other way around, but it's too late to fix now.
     """
-    
+
     def from_str(cls, elementstr):
         qvalue = None
         # The first "q" parameter (if any) separates the initial
@@ -107,25 +111,26 @@ class AcceptElement(HeaderElement):
             # The qvalue for an Accept header can have extensions. The other
             # headers cannot, but it's easier to parse them as if they did.
             qvalue = HeaderElement.from_str(atoms[0].strip())
-        
+
         media_type, params = cls.parse(media_range)
         if qvalue is not None:
             params["q"] = qvalue
         return cls(media_type, params)
     from_str = classmethod(from_str)
-    
+
     def qvalue(self):
         val = self.params.get("q", "1")
         if isinstance(val, HeaderElement):
             val = val.value
         return float(val)
     qvalue = property(qvalue, doc="The qvalue, or priority, of this value.")
-    
+
     def __cmp__(self, other):
         diff = cmp(other.qvalue, self.qvalue)
         if diff == 0:
             diff = cmp(str(other), str(self))
         return diff
+
 
 class Headers(dict):
     """Manage a collection of HTTP response headers"""
@@ -150,7 +155,7 @@ class Headers(dict):
         Does *not* raise an exception if the header is missing.
         """
         name = name.lower()
-        self._headers[:] = [kv for kv in self._headers if kv[0].lower()!=name]
+        self._headers[:] = [kv for kv in self._headers if kv[0].lower() != name]
 
     def __getitem__(self,name):
         """Get the first header value for 'name'
@@ -183,13 +188,13 @@ class Headers(dict):
         If no fields exist with the given name, returns an empty list.
         """
         name = name.lower()
-        return [kv[1] for kv in self._headers if kv[0].lower()==name]
+        return [kv[1] for kv in self._headers if kv[0].lower() == name]
 
     def get(self,name,default=None):
         """Get the first header value for 'name', or return 'default'"""
         name = name.lower()
         for k,v in self._headers:
-            if k.lower()==name:
+            if k.lower() == name:
                 return v
         return default
 
@@ -229,7 +234,7 @@ class Headers(dict):
     def __str__(self):
         """str() returns the formatted headers, complete with end line,
         suitable for direct HTTP transmission."""
-        return '\r\n'.join(["%s: %s" % kv for kv in self._headers]+['',''])
+        return '\r\n'.join(["%s: %s" % kv for kv in self._headers] + ['',''])
 
     def setdefault(self,name,value):
         """Return first matching header value for 'name', or 'value'
@@ -242,7 +247,6 @@ class Headers(dict):
             return value
         else:
             return result
-
 
     def add_header(self, _name, _value, **_params):
         """Extended header setting.
@@ -278,9 +282,10 @@ class Headers(dict):
             return []
         return header_elements(key, h)
 
+
 def parse_headers(data):
     headers = Headers([])
-        
+
     for line in data.split("\r\n"):
         if line[0] in " \t":
             # It's a continuation line.
@@ -290,5 +295,5 @@ def parse_headers(data):
             k, v = k.strip(), v.strip()
 
         headers.add_header(k, v)
-        
+
     return headers

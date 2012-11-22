@@ -7,6 +7,8 @@
 This module implements a set of standard HTTP Errors.
 """
 
+from cgi import escape
+
 try:
     from urllib.parse import urljoin as _urljoin
 except ImportError:
@@ -15,19 +17,20 @@ except ImportError:
 from circuits import Event
 
 from . import utils
-from .utils import escape
 from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
-class HTTPError(Event):
 
-    channel = "httperror"
+class HTTPError(Event):
 
     code = 500
     description = ""
 
     def __init__(self, request, response, code=None, **kwargs):
         super(HTTPError, self).__init__(request, response, code, **kwargs)
+
+        # Override HTTPError subclasses
+        self.name = "httperror"
 
         self.request = request
         self.response = response
@@ -71,24 +74,25 @@ class HTTPError(Event):
         return "<%s %d %s>" % (self.__class__.__name__, self.code,
                 HTTP_STATUS_CODES.get(self.code, "???"))
 
-class Forbidden(HTTPError):
 
+class Forbidden(HTTPError):
     code = 403
 
-class Unauthorized(HTTPError):
 
+class Unauthorized(HTTPError):
     code = 401
 
-class NotFound(HTTPError):
 
+class NotFound(HTTPError):
     code = 404
+
 
 class Redirect(HTTPError):
 
     def __init__(self, request, response, urls, code=None):
         if isinstance(urls, basestring):
             urls = [urls]
-        
+
         abs_urls = []
         for url in urls:
             # Note that urljoin will "do the right thing" whether url is:
@@ -99,7 +103,7 @@ class Redirect(HTTPError):
             url = _urljoin(utils.url(request), url)
             abs_urls.append(url)
         self.urls = urls = abs_urls
-        
+
         # RFC 2616 indicates a 301 response code fits our goal; however,
         # browser support for 301 is quite messy. Do 302/303 instead. See
         # http://ppewww.ph.gla.ac.uk/~flavell/www/post-redirect.html
@@ -113,13 +117,13 @@ class Redirect(HTTPError):
                 raise ValueError("status code must be between 300 and 399.")
 
         super(Redirect, self).__init__(request, response, code)
-        
+
         if code in (300, 301, 302, 303, 307):
             response.headers["Content-Type"] = "text/html"
             # "The ... URI SHOULD be given by the Location field
             # in the response."
             response.headers["Location"] = urls[0]
-            
+
             # "Unless the request method was HEAD, the entity of the response
             # SHOULD contain a short hypertext note with a hyperlink to the
             # new URI(s)."
@@ -142,7 +146,7 @@ class Redirect(HTTPError):
             # "The response MUST include the following header fields:
             # Date, unless its omission is required by section 14.18.1"
             # The "Date" header should have been set in Response.__init__
-            
+
             # "...the response SHOULD NOT include other entity-headers."
             for key in ("Allow", "Content-Encoding", "Content-Language",
                         "Content-Length", "Content-Location", "Content-MD5",
@@ -150,7 +154,7 @@ class Redirect(HTTPError):
                         "Last-Modified"):
                 if key in response.headers:
                     del response.headers[key]
-            
+
             # "The 304 response MUST NOT contain a message-body."
             response.body = None
             # Previous code may have set C-L, so we have to reset it.
@@ -166,5 +170,11 @@ class Redirect(HTTPError):
             raise ValueError("The %s status code is unknown." % code)
 
     def __repr__(self):
-        return "<%s %d %s %s>" % (self.__class__.__name__, self.code, self.name,
-                " ".join(self.urls))
+        if len(self.channels) > 1:
+            channels = repr(self.channels)
+        elif len(self.channels) == 1:
+            channels = str(self.channels[0])
+        else:
+            channels = ""
+        return "<%s %d[%s.%s] %s>" % (self.__class__.__name__,
+                self.code, channels, self.name, " ".join(self.urls))

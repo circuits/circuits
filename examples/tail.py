@@ -13,6 +13,6 @@ class Tail(Component):
         File(filename, "r", autoclose=False).register(self).seek(0, 2)
 
     def read(self, data):
-        self.fire(Write(data), target=self.stdout)
+        self.fire(Write(data), self.stdout)
 
 (Tail(sys.argv[1]) + Debugger()).run()

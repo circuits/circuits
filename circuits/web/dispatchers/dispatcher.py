@@ -8,19 +8,17 @@ This module implements a basic URL to Channel dispatcher.
 This is the default dispatcher used by circuits.web
 """
 
-from cgi import FieldStorage
+try:
+    unicodestr = unicode
+except NameError:
+    unicodestr = str
 
 from circuits import handler, BaseComponent
 
-from circuits.web.errors import HTTPError
+from circuits.web.events import Request
 from circuits.web.controllers import BaseController
-from circuits.web.utils import parseQueryString, dictform
+from circuits.web.utils import parse_body, parse_qs
 
-from circuits.web.events import Response
-from circuits.web.errors import HTTPError
-from circuits.web.controllers import BaseController
-from circuits.web.tools import expires, serve_file
-from circuits.web.utils import parseQueryString, dictform
 
 class Dispatcher(BaseComponent):
 
@@ -29,144 +27,80 @@ class Dispatcher(BaseComponent):
     def __init__(self, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
 
-        self.paths = set(["/"])
+        self.paths = dict()
 
-    def _parseBody(self, request, response, params):
-        body = request.body
-        headers = request.headers
+    def resolve_path(self, paths, parts):
 
-        if "Content-Type" not in headers:
-            headers["Content-Type"] = ""
+        def rebuild_path(url_parts):
+            return '/%s' % '/'.join(url_parts)
 
-        try:
-            form = FieldStorage(fp=body,
-                headers=headers,
-                environ={"REQUEST_METHOD": "POST"},
-                keep_blank_values=True)
-        except Exception as e:
-            if e.__class__.__name__ == 'MaxSizeExceeded':
-                # Post data is too big
-                return HTTPError(request, response, 413)
-            else:
-                raise
+        left_over = []
 
-        if form.file:
-            request.body = form.file
-        else:
-            params.update(dictform(form))
+        while parts:
+            if rebuild_path(parts) in self.paths:
+                yield rebuild_path(parts), left_over
+            left_over.insert(0, parts.pop())
 
-        return True
+        if '/' in self.paths:
+            yield '/', left_over
 
-    def _getChannel(self, request):
-        """_getChannel(request) -> channel
+    def resolve_methods(self, parts):
+        if parts:
+            method = parts[0]
+            vpath = parts[1:]
+            yield method, vpath
 
-        Find and return an appropriate channel for the given request.
+        yield 'index', parts
 
-        The channel is found by traversing the system's event channels,
-        and matching path components to successive channels in the system.
+    def find_handler(self, request):
+        def get_handlers(path, method):
+            component = self.paths[path]
+            return component._handlers.get(method, None)
 
-        If a channel cannot be found for a given path, but there is
-        a default channel, then this will be used.
-        """
+        def accepts_vpath(handlers, vpath):
+            args_no = len(vpath)
+            return all(len(h.args) == args_no or h.varargs for h in handlers)
 
-        path = request.path
+        # Split /hello/world to ['hello', 'world']
+        starting_parts = [x for x in request.path.strip("/").split("/") if x]
 
-        method = request.method.upper()
-        request.index = request.path.endswith("/")
+        for path, parts in self.resolve_path(self.paths, starting_parts):
+            for method, vpath in self.resolve_methods(parts):
+                handlers = get_handlers(path, method)
+                if handlers and (not vpath or accepts_vpath(handlers, vpath)):
+                    request.index = (method == 'index')
+                    return method, path, vpath
 
-        names = [x for x in path.strip("/").split("/") if x]
+        return None, None, None
 
-        if not names:
-            for default in ("index", method, "default"):
-                k = ("/", default)
-                if k in self.channels:
-                    return default, "/", []
-            return None, None, []
+    @handler("registered", channel="*")
+    def _on_registered(self, component, manager):
+        if (isinstance(component, BaseController) and component.channel not
+                in self.paths):
+            self.paths[component.channel] = component
 
-        i = 0
-        matches = [""]
-        candidates = []
-        while i <= len(names):
-            x = "/".join(matches) or "/"
-            if x in self.paths:
-                candidates.append([i, x])
-                if i < len(names):
-                    matches.append(names[i])
-            else:
-                break
-            i += 1
-
-        if not candidates:
-            return None, None, []
-
-        vpath = []
-        channel = None
-        for i, candidate in reversed(candidates):
-            if i < len(names):
-                channels = [names[i], "index", method, "default"]
-            else:
-                channels = ["index", method, "default"]
-
-            found = False
-            for channel in channels:
-                if (candidate, channel) in self.channels:
-                    if i < len(names) and channel == names[i]:
-                        i += 1
-                    found = True
-                    break
-
-            if found:
-                if channel == "index" and not request.index:
-                    continue
-                else:
-                    break
-
-        if channel is not None:
-            if i < len(names):
-                vpath = [x.replace("%2F", "/") for x in names[i:]]
-            else:
-                vpath = []
-
-        if not (candidate, channel) in self.channels:
-            return None, None, []
-        else:
-            handler = self.channels[(candidate, channel)][0]
-            if vpath and not (handler.args
-                    or handler.varargs
-                    or handler.varkw):
-                return None, None, []
-            else:
-                return channel, candidate, vpath
-
-    @handler("registered", target="*")
-    def _on_registered(self, c, m):
-        if isinstance(c, BaseController) and c not in self.components:
-            self.paths.add(c.channel)
-            c.unregister()
-            self += c
-
-    @handler("unregistered", target="*")
-    def _on_unregistered(self, c, m):
-        if (isinstance(c, BaseController)
-                and c in self.components
-                and m == self):
-            self.paths.remove(c.channel)
+    @handler("unregistered", channel="*")
+    def _on_unregistered(self, component, manager):
+        if (isinstance(component, BaseController) and component.channel in
+                self.paths):
+            del self.paths[component.channel]
 
     @handler("request", filter=True, priority=0.1)
     def _on_request(self, event, request, response, peer_cert=None):
-        req = event
         if peer_cert:
-            req.peer_cert = peer_cert
+            event.peer_cert = peer_cert
 
-        channel, target, vpath = self._getChannel(request)
+        name, channel, vpath = self.find_handler(request)
 
-        if channel and target:
-            req.kwargs = parseQueryString(request.qs)
-            v = self._parseBody(request, response, req.kwargs)
-            if not v:
-                return v  # MaxSizeExceeded (return the HTTPError)
+        if name is not None and channel is not None:
+            event.kwargs = parse_qs(request.qs)
+            parse_body(request, response, event.kwargs)
 
             if vpath:
-                req.args += tuple(vpath)
+                event.args += tuple(vpath)
 
-            return self.fire(req, channel, target)
+            if isinstance(name, unicodestr):
+                name = str(name)
+
+            return self.fire(Request.create(name,
+                *event.args, **event.kwargs), channel)

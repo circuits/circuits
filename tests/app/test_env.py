@@ -34,8 +34,9 @@ def teardown_env(env):
 def test_create(env, path):
     from circuits.app.env import Create
 
+    waiter = pytest.WaitEvent(env, "create_success")
     env.fire(Create())
-    assert pytest.wait_event(env, "create_success")
+    assert waiter.wait()
 
     files = ("conf/test.ini", "README", "VERSION")
 
@@ -46,44 +47,49 @@ def test_create(env, path):
 def test_load(env, path):
     from circuits.app.env import Create, Load
 
+    waiter = pytest.WaitEvent(env, "create_success")
     env.fire(Create())
 
-    assert pytest.wait_event(env, "create_success")
+    assert waiter.wait()
 
     files = ("conf/test.ini", "README", "VERSION")
 
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
 
+    waiter = pytest.WaitEvent(env, "load_success")
     env.fire(Load())
 
-    assert pytest.wait_event(env, "load_success")
+    assert waiter.wait()
 
 
 def test_load_verify(env, path):
     from circuits.app.env import Create, Load
 
+    waiter = pytest.WaitEvent(env, "create_success")
     env.fire(Create())
 
-    assert pytest.wait_event(env, "create_success")
+    assert waiter.wait()
 
     files = ("conf/test.ini", "README", "VERSION")
 
     for filename in files:
         assert path.join(filename).check(exists=True, file=True)
 
+    waiter = pytest.WaitEvent(env, "load_success")
     env.fire(Load(verify=True))
 
-    assert pytest.wait_event(env, "load_success")
+    assert waiter.wait()
 
 
 def test_load_verify_fail(env, path):
     from circuits.app.env import Create, Load
     from circuits.app.env import EnvironmentError, ERRORS
 
+    waiter = pytest.WaitEvent(env, "create_success")
     env.fire(Create())
 
-    assert pytest.wait_event(env, "create_success")
+    assert waiter.wait()
 
     files = ("conf/test.ini", "README", "VERSION")
 
@@ -92,9 +98,10 @@ def test_load_verify_fail(env, path):
 
     path.join("VERSION").write("")
 
+    waiter = pytest.WaitEvent(env, "verify_failure")
     v = env.fire(Load(verify=True))
 
-    assert pytest.wait_event(env, "verify_failure")
+    assert waiter.wait()
 
     assert isinstance(v[1], EnvironmentError)
     assert v[1].args == ERRORS[0]
@@ -104,9 +111,10 @@ def test_load_verify_upgrade(env, path):
     from circuits.app.env import Create, Load
     from circuits.app.env import EnvironmentError, ERRORS
 
+    waiter = pytest.WaitEvent(env, "create_success")
     env.fire(Create())
 
-    assert pytest.wait_event(env, "create_success")
+    assert waiter.wait()
 
     files = ("conf/test.ini", "README", "VERSION")
 
@@ -115,9 +123,10 @@ def test_load_verify_upgrade(env, path):
 
     env.version = 100
 
+    waiter = pytest.WaitEvent(env, "verify_failure")
     v = env.fire(Load(verify=True))
 
-    assert pytest.wait_event(env, "verify_failure")
+    assert waiter.wait()
 
     assert isinstance(v[1], EnvironmentError)
     assert v[1].args == ERRORS[1]

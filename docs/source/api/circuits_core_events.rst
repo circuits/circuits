@@ -4,28 +4,12 @@
 .. automodule :: circuits.core.events
 
 
-Events
-------
-
-.. autoclass :: End
-.. autoclass :: Error
-.. autoclass :: Failure
-.. autoclass :: Filter
-.. autoclass :: Registered
-.. autoclass :: Signal
-.. autoclass :: Start
-.. autoclass :: Started
-.. autoclass :: Stopped
-.. autoclass :: Success
-.. autoclass :: Unregistered
-
-
 Classes
 -------
 
 .. autoclass :: Event
    :members:
-
+      
 
 Components
 ----------
@@ -33,7 +17,22 @@ Components
 **none**
 
 
+Events
+------
+
+.. autoclass :: Error
+.. autoclass :: Failure
+.. autoclass :: Registered
+.. autoclass :: Signal
+.. autoclass :: Started
+.. autoclass :: Stopped
+.. autoclass :: Success
+.. autoclass :: Unregister
+.. autoclass :: Unregistered
+
+
 Functions
 ---------
 
 **none**
+

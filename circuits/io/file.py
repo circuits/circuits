@@ -57,7 +57,7 @@ class File(Component):
         if any([m for m in "r+" if m in self._fd.mode]):
             self._read.append(self._fd)
 
-        self.fire(Opened(self.filename), "opened")
+        self.fire(Opened(self.filename))
 
     @property
     def closed(self):
@@ -69,7 +69,7 @@ class File(Component):
                 r, w, e = select.select(self._read, self._write, [], wait)
             except select.error as error:
                 if not error[0] == errno.EINTR:
-                    self.fire(Error(error), "error")
+                    self.fire(Error(error))
                 return
 
             if w and self._buffer:
@@ -83,7 +83,7 @@ class File(Component):
                     elif not self._buffer:
                         self._write.remove(self._fd)
                 except OSError as error:
-                    self.fire(Error(error), "error")
+                    self.fire(Error(error))
 
             if r:
                 try:
@@ -93,7 +93,7 @@ class File(Component):
                         data = None
 
                 if data:
-                    self.fire(Read(data), "read")
+                    self.fire(Read(data))
                 elif self.autoclose:
                     self.fire(EOF())
                     self.close()
@@ -107,7 +107,7 @@ class File(Component):
         self._fd.close()
         self._read = []
         self._write = []
-        self.fire(Closed(self.filename), "closed")
+        self.fire(Closed(self.filename))
 
     def seek(self, offset, whence=0):
         self._fd.seek(offset, whence)

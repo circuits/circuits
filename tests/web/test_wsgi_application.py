@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import pytest
+
 try:
     from urllib.parse import urlencode
     from urllib.request import urlopen

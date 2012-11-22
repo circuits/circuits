@@ -21,21 +21,18 @@ from circuits import handler, BaseComponent, Event
 class ConfigEvent(Event):
     """Config Event"""
 
-    _target =  "config"
+    channels = ("config",)
+
+    success = True
+    failure = True
 
 
 class Load(ConfigEvent):
     """Load Config Event"""
 
-    success = "load_success", ConfigEvent._target
-    failure = "load_failure", ConfigEvent._target
-
 
 class Save(ConfigEvent):
     """Save Config Event"""
-
-    success = "save_success", ConfigEvent._target
-    failure = "save_failure", ConfigEvent._target
 
 
 class Config(BaseComponent):
@@ -59,6 +56,9 @@ class Config(BaseComponent):
 
     def add_section(self, section):
         return self._config.add_section(section)
+
+    def items(self, section, raw=False, vars=None):
+        return self._config.items(section, raw=False, vars=None)
 
     def get(self, section, option, default=None, raw=False, vars=None):
         if self._config.has_option(section, option):
@@ -86,6 +86,9 @@ class Config(BaseComponent):
 
     def has_section(self, section):
         return self._config.has_section(section)
+
+    def has_option(self, section, option):
+        return self._config.has_option(section, option)
 
     def set(self, section, option, value):
         return self._config.set(section, option, value)

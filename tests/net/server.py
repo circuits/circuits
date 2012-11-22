@@ -35,3 +35,4 @@ class Server(Component):
 
     def read(self, sock, data):
         self.data = data
+        return data

@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 from time import time
-from random import seed, randint
-
+from socket import socket, AF_INET, SOCK_STREAM
 import pytest
 
 from circuits import Manager
@@ -12,6 +11,12 @@ from circuits.net.sockets import Close, Connect, Write
 
 from .client import Client
 from .server import Server
+
+
+def wait_host(server):
+    def checker(obj, attr):
+        return all((getattr(obj, a) for a in attr))
+    assert pytest.wait_for(server, ("host", "port"), checker)
 
 
 def pytest_generate_tests(metafunc):
@@ -53,6 +58,7 @@ def test_tcp_basic(Poller):
     try:
         assert pytest.wait_for(client, "ready")
         assert pytest.wait_for(server, "ready")
+        wait_host(server)
 
         client.fire(Connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
@@ -61,6 +67,7 @@ def test_tcp_basic(Poller):
 
         client.fire(Write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
+        assert pytest.wait_for(client, "data", b"foo")
 
         client.fire(Close())
         assert pytest.wait_for(client, "disconnected")
@@ -85,6 +92,7 @@ def test_tcp_reconnect(Poller):
     try:
         assert pytest.wait_for(client, "ready")
         assert pytest.wait_for(server, "ready")
+        wait_host(server)
 
         # 1st connect
         client.fire(Connect(server.host, server.port))
@@ -132,6 +140,7 @@ def test_tcp_connect_closed_port(Poller):
     try:
         assert pytest.wait_for(client, "ready")
         assert pytest.wait_for(server, "ready")
+        wait_host(server)
 
         host, port = server.host, server.port
         tcp_server._sock.close()
@@ -153,8 +162,10 @@ def test_tcp_connect_closed_port(Poller):
 def test_tcp_bind(Poller):
     m = Manager() + Poller()
 
-    seed(time())
-    bind_port = randint(1000, 65535)
+    sock = socket(AF_INET, SOCK_STREAM)
+    sock.listen(0)
+    _, bind_port = sock.getsockname()
+    sock.close()
 
     server = Server() + TCPServer(0)
     client = Client() + TCPClient(bind_port)
@@ -167,6 +178,7 @@ def test_tcp_bind(Poller):
     try:
         assert pytest.wait_for(client, "ready")
         assert pytest.wait_for(server, "ready")
+        wait_host(server)
 
         client.fire(Connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")

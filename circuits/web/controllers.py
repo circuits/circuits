@@ -124,9 +124,6 @@ class BaseController(BaseComponent):
         tools.expires(self.request, self.response, secs, force)
 
 
-class Controller(BaseController):
-    pass
-
 Controller = ExposeMetaClass("Controller", (BaseController,), {})
 
 
@@ -178,8 +175,5 @@ class ExposeJSONMetaClass(type):
                     and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, exposeJSON(k)(v))
 
-
-class JSONController(BaseController):
-    pass
 
 JSONController = ExposeJSONMetaClass("JSONController", (BaseController,), {})

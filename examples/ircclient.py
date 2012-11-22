@@ -15,7 +15,7 @@ from circuits.io import stdin
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
 from circuits.net.sockets import TCPClient, Connect
-from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN, Nick
+from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
@@ -73,7 +73,7 @@ class Client(Component):
         self.ircchannel = opts.channel
 
         self += (TCPClient(channel=self.channel) + IRC(channel=self.channel))
-        self.fire(Connect(self.host, self.port), "connect")
+        self.fire(Connect(self.host, self.port))
 
     def connected(self, host, port):
         print("Connected to %s:%d" % (host, port))
@@ -86,14 +86,14 @@ class Client(Component):
         self.fire(NICK(nick))
 
     def disconnected(self):
-        self.fire(Connect(self.opts.host, self.opts.port), "connect")
+        self.fire(Connect(self.opts.host, self.opts.port))
 
     def numeric(self, source, target, numeric, args, message):
         if numeric == 1:
             self.fire(JOIN(self.ircchannel))
         elif numeric == 433:
             self.nick = newnick = "%s_" % self.nick
-            self.fire(Nick(newnick), "NICK")
+            self.fire(NICK(newnick))
 
     def join(self, source, channel):
         if source[0].lower() == self.nick.lower():
@@ -110,7 +110,7 @@ class Client(Component):
         else:
             print("-%s- %s" % (source, message))
 
-    @handler("read", target="stdin")
+    @handler("read", channel="stdin")
     def stdin_read(self, data):
         self.fire(PRIVMSG(self.ircchannel, data.strip()))
 

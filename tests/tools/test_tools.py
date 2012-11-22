@@ -69,16 +69,18 @@ class F(Component):
         print("F!")
 
 INSPECT = """\
- Registered Components: 0
+ Components: 0
 
  Tick Functions: 1
-  <bound method A.__tick__ of <A/* %s (queued=0, channels=2, handlers=2) [S]>>
+  <bound method A.__tick__ of <A/* %s (queued=0) [S]>>
 
- Channels and Event Handlers: 2
-  *:unregister; 1
-   <listener on ('unregister',) {target='*', priority=0.0}>
-  *:foo; 1
-   <listener on ('foo',) {target='*', priority=0.0}>
+ Event Handlers: 3
+  unregister; 1
+   <listener[*.unregister] (A._on_unregister)>
+  foo; 1
+   <listener[*.foo] (A.foo)>
+  prepare_unregister_complete; 1
+   <listener[*.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
 """
 
 def test_kill():
@@ -96,27 +98,29 @@ def test_kill():
     d += e
     a += d
 
-    assert a.manager == a
-    assert b.manager == a
-    assert c.manager == b
+    assert a.parent == a
+    assert b.parent == a
+    assert c.parent == b
     assert not c.components
 
     assert b in a.components
     assert d in a.components
 
-    assert d.manager == a
-    assert e.manager == d
-    assert f.manager == e
+    assert d.parent == a
+    assert e.parent == d
+    assert f.parent == e
 
     assert f in e.components
     assert e in d.components
     assert not f.components
 
     assert kill(d) == None
+    while a:
+        a.flush()
 
-    assert a.manager == a
-    assert b.manager == a
-    assert c.manager == b
+    assert a.parent == a
+    assert b.parent == a
+    assert c.parent == b
     assert not c.components
 
     assert b in a.components
@@ -124,9 +128,9 @@ def test_kill():
     assert not e in d.components
     assert not f in e.components
 
-    assert d.manager == d
-    assert e.manager == e
-    assert f.manager == f
+    assert d.parent == d
+    assert e.parent == e
+    assert f.parent == f
 
     assert not d.components
     assert not e.components
@@ -135,7 +139,6 @@ def test_kill():
 def test_inspect():
     a = A()
     s = inspect(a)
-
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
     assert s == INSPECT % id
@@ -159,8 +162,8 @@ def test_findroot():
 
 def test_reprhandler():
     a = A()
-    s = reprhandler(a, a.foo)
-    assert s == "<listener on ('foo',) {target='*', priority=0.0}>"
+    s = reprhandler(a.foo)
+    assert s == "<listener[*.foo] (A.foo)>"
 
     f = lambda: None
-    py.test.raises(KeyError, reprhandler, a, f)
+    py.test.raises(AttributeError, reprhandler, f)

@@ -23,8 +23,9 @@ class Gzip(Component):
 
     channel = "web"
 
-    def response_started(self, event, response_event):
-        event[0] = gzip(response_event[0])
+    @handler("response", filter=True)
+    def _on_response(self, event, *args, **kwargs):
+        event[0] = gzip(event[0])
 
 class Root(Controller):
 

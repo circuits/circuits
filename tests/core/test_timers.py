@@ -34,7 +34,7 @@ class App(Component):
     def reset(self):
         self.flag = False
 
-    def timer(self):
+    def test(self):
         self.flag = True
 
 def test_timer(app):

@@ -15,6 +15,12 @@ from .client import Client
 from .server import Server
 
 
+def wait_host(server):
+    def checker(obj, attr):
+        return all((getattr(obj, a) for a in attr))
+    assert pytest.wait_for(server, ("host", "port"), checker)
+
+
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"Poller": Select})
 
@@ -54,6 +60,7 @@ def test_udp(Poller):
     try:
         assert pytest.wait_for(server, "ready")
         assert pytest.wait_for(client, "ready")
+        wait_host(server)
 
         client.fire(Write((server.host, server.port), b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
@@ -74,6 +81,7 @@ def test_udp_close(Poller):
 
     try:
         assert pytest.wait_for(server, "ready")
+        wait_host(server)
 
         host, port = server.host, server.port
 
@@ -81,10 +89,13 @@ def test_udp_close(Poller):
         assert pytest.wait_for(server, "disconnected")
 
         server.fire(Unregister(server))
+        def test(obj, attr):
+            return attr not in obj.components
+        assert pytest.wait_for(m, server, value=test)
 
         server = Server() + UDPServer((host, port))
         server.register(m)
 
-        assert pytest.wait_for(server, "ready")
+        assert pytest.wait_for(server, "ready", timeout=30.0)
     finally:
         m.stop()

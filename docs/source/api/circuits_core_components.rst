@@ -4,11 +4,33 @@
 .. automodule :: circuits.core.components
 
 
-Components
-----------
+Classes
+-------
 
 .. autoclass :: BaseComponent
    :members:
 
 .. autoclass :: Component
    :members:
+
+
+Components
+----------
+
+**none**
+
+
+Events
+------
+
+.. autoclass :: PrepareUnregister
+   :members:
+
+.. autoclass :: SingletonError
+   :members:
+
+Functions
+---------
+
+**none**
+   

@@ -16,7 +16,7 @@ import sys, os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.append(os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- General configuration -----------------------------------------------------
 
@@ -40,7 +40,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'circuits'
-copyright = u'2004-2011, James Mills'
+copyright = u'2004-2012, James Mills'
 url = "http://bitbucket.org/prologic/circuits/"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -48,13 +48,13 @@ url = "http://bitbucket.org/prologic/circuits/"
 # built documents.
 #
 # The short X.Y version.
-version = '1.6'
+version = '1.7'
 # The full version, including alpha/beta/rc tags.
-release = '1.6'
+release = '1.7'
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = False
+devel = True
 
 if devel:
     release += "dev"
@@ -63,6 +63,7 @@ if devel:
 
 extensions.append('sphinx.ext.autodoc')
 
+autodoc_default_flags = ['show-inheritance']
 autoclass_content = 'both'
 autodoc_member_order = 'bysource'
 
@@ -95,7 +96,7 @@ extensions.append('sphinxcontrib.bitbucket')
 # non-false value, then it is used:
 #today = ''
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%B %d, %Y'
+today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
 #unused_docs = []

@@ -15,8 +15,7 @@ from circuits.core import handler, Event, BaseComponent
 class Log(Event):
     """Log Event"""
 
-    channel = "log"
-    target = "logger"
+    channels = ("logger",)
 
 
 class Logger(BaseComponent):
@@ -62,7 +61,7 @@ class Logger(BaseComponent):
         else:
             self.logger.setLevel(logging.WARNING)
 
-        formatter = logging.Formatter(format,dateFormat)
+        formatter = logging.Formatter(format, dateFormat)
         hdlr.setFormatter(formatter)
         self.logger.addHandler(hdlr)
 

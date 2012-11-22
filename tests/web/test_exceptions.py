@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from circuits.web import Controller
 from circuits.web.exceptions import *
 

@@ -46,18 +46,18 @@ BACKLOG = 5000  # 5K Concurrent Connections
 
 class Connect(Event):
     """Connect Event
-    
+
     This Event is sent when a new client connection has arrived on a server.
     This event is also used for client's to initiate a new connection to
     a remote host.
-    
+
     .. note ::
-       
+
        This event is used for both Client and Server Components.
-    
+
     :param args:  Client: (host, port) Server: (sock, host, port)
     :type  args: tuple
-    
+
     :param kwargs: Client: (ssl)
     :type  kwargs: dict
     """
@@ -198,8 +198,8 @@ class Ready(Event):
     This Event is used to notify the rest of the system that the underlying
     Client or Server Component is ready to begin processing connections or
     incoming/outgoing data. (This is triggered as a direct result of having
-    the capability to support multiple client/server components with a snigle
-    poller component instnace in a system).
+    the capability to support multiple client/server components with a single
+    poller component instance in a system).
 
     @note: This event is used for both Client and Server Components.
 
@@ -274,31 +274,44 @@ class Client(Component):
     def connected(self):
         return getattr(self, "_connected", None)
 
-    @handler("registered", target="*")
+    @handler("registered", channel="*")
     def _on_registered(self, component, manager):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
-                self.fire(Ready(self), "ready", self.channel)
+                self.fire(Ready(self))
             else:
-                component = findcmp(self.root, BasePoller, subclass=False)
+                if component is not self:
+                    return
+                component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component
-                    self.fire(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self))
                 else:
                     self._poller = Poller().register(self)
-                    self.fire(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self))
 
-    @handler("started", filter=True, target="*")
-    def _on_started(self, component, mode):
+    @handler("started", filter=True, channel="*")
+    def _on_started(self, component):
         if self._poller is None:
             self._poller = Poller().register(self)
-            self.fire(Ready(self), "ready", self.channel)
+            self.fire(Ready(self))
+
             return True
 
-    @handler("stopped", target="*")
+    @handler("stopped", channel="*")
     def _on_stopped(self, component):
-        self.fire(Close(), "close", self.channel)
+        self.fire(Close())
+
+    @handler("read_value_changed")
+    def _on_read_value_changed(self, value):
+        if isinstance(value, str):
+            self.fire(Write(value))
+
+    @handler("prepare_unregister", channel="*")
+    def _on_prepare_unregister(self, event, c):
+        if event.in_subtree(self):
+            self._close()
 
     def _close(self):
         if not self._connected:
@@ -316,7 +329,7 @@ class Client(Component):
         except SocketError:
             pass
 
-        self.fire(Disconnected(), "disconnected", self.channel)
+        self.fire(Disconnected())
 
     def close(self):
         if not self._buffer:
@@ -332,14 +345,14 @@ class Client(Component):
                 data = self._sock.recv(self._bufsize)
 
             if data:
-                self.fire(Read(data), "read", self.channel)
+                self.fire(Read(data)).notify = True
             else:
                 self.close()
         except SocketError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.fire(Error(e), "error", self.channel)
+                self.fire(Error(e))
                 self._close()
 
     def _write(self, data):
@@ -355,7 +368,7 @@ class Client(Component):
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
-                self.fire(Error(e), "error", self.channel)
+                self.fire(Error(e))
 
     def write(self, data):
         if not self._poller.isWriting(self._sock):
@@ -417,7 +430,7 @@ class TCPClient(Client):
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.fire(Error(r), "error", self.channel)
+                self.fire(Error(r))
                 return
 
         self._connected = True
@@ -427,7 +440,7 @@ class TCPClient(Client):
         if self.secure:
             self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
-        self.fire(Connected(host, port), "connected", self.channel)
+        self.fire(Connected(host, port))
 
 
 class UNIXClient(Client):
@@ -443,7 +456,7 @@ class UNIXClient(Client):
 
         return sock
 
-    @handler("registered", target="*")
+    @handler("registered", channel="*")
     def _on_registered(self, component, manager):
         pass
 
@@ -468,7 +481,7 @@ class UNIXClient(Client):
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.fire(Error(r), "error", self.channel)
+                self.fire(Error(r))
                 return
 
         self._connected = True
@@ -478,7 +491,7 @@ class UNIXClient(Client):
         if self.secure:
             self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
-        self.fire(Connected(gethostname(), path), "connected", self.channel)
+        self.fire(Connected(gethostname(), path))
 
 
 class Server(Component):
@@ -530,48 +543,62 @@ class Server(Component):
     @property
     def host(self):
         if hasattr(self, "_sock"):
-            sockname = self._sock.getsockname()
-            if isinstance(sockname, tuple):
-                return sockname[0]
-            else:
-                return sockname
+            try:
+                sockname = self._sock.getsockname()
+                if isinstance(sockname, tuple):
+                    return sockname[0]
+                else:
+                    return sockname
+            except SocketError:
+                return None
 
     @property
     def port(self):
         if hasattr(self, "_sock"):
-            sockname = self._sock.getsockname()
-            if isinstance(sockname, tuple):
-                return sockname[1]
+            try:
+                sockname = self._sock.getsockname()
+                if isinstance(sockname, tuple):
+                    return sockname[1]
+            except SocketError:
+                return None
 
-    @handler("registered", target="*")
+    @handler("registered", channel="*")
     def _on_registered(self, component, manager):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
                 self._poller.addReader(self, self._sock)
-                self.fire(Ready(self), "ready", self.channel)
+                self.fire(Ready(self))
             else:
-                component = findcmp(self.root, BasePoller, subclass=False)
+                if component is not self:
+                    return
+                component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component
                     self._poller.addReader(self, self._sock)
-                    self.fire(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self))
                 else:
                     self._poller = Poller().register(self)
                     self._poller.addReader(self, self._sock)
-                    self.fire(Ready(self), "ready", self.channel)
+                    self.fire(Ready(self))
 
-    @handler("started", filter=True, target="*")
-    def _on_started(self, component, mode):
+    @handler("started", filter=True, channel="*")
+    def _on_started(self, component):
         if self._poller is None:
             self._poller = Poller().register(self)
             self._poller.addReader(self, self._sock)
-            self.fire(Ready(self), "ready", self.channel)
+            self.fire(Ready(self))
             return True
 
-    @handler("stopped", target="*")
+    @handler("stopped", channel="*")
     def _on_stopped(self, component):
-        self.fire(Close(), "close", self.channel)
+        self.fire(Close())
+
+    @handler("read_value_changed")
+    def _on_read_value_changed(self, value):
+        if isinstance(value.value, str):
+            sock = value.event.args[0]
+            self.fire(Write(sock, value.value))
 
     def _close(self, sock):
         if sock is None:
@@ -595,7 +622,7 @@ class Server(Component):
         except SocketError:
             pass
 
-        self.fire(Disconnect(sock), "disconnect", self.channel)
+        self.fire(Disconnect(sock))
 
     def close(self, sock=None):
         closed = sock is None
@@ -613,7 +640,7 @@ class Server(Component):
                 self._closeq.append(sock)
 
         if closed:
-            self.fire(Closed(), "closed", self.channel)
+            self.fire(Closed())
 
     def _read(self, sock):
         if sock not in self._clients:
@@ -622,14 +649,14 @@ class Server(Component):
         try:
             data = sock.recv(self._bufsize)
             if data:
-                self.fire(Read(sock, data), "read", self.channel)
+                self.fire(Read(sock, data)).notify = True
             else:
                 self.close(sock)
         except SocketError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.fire(Error(sock, e), "error", self.channel)
+                self.fire(Error(sock, e))
                 self._close(sock)
 
     def _write(self, sock, data):
@@ -642,7 +669,7 @@ class Server(Component):
                 self._buffers[sock].appendleft(data[nbytes:])
         except SocketError as e:
             if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
-                self.fire(Error(sock, e), "error", self.channel)
+                self.fire(Error(sock, e))
                 self._close(sock)
             else:
                 self._buffers[sock].appendleft(data)
@@ -700,7 +727,7 @@ class Server(Component):
         newsock.setblocking(False)
         self._poller.addReader(self, newsock)
         self._clients.append(newsock)
-        self.fire(Connect(newsock, *host), "connect", self.channel)
+        self.fire(Connect(newsock, *host))
 
     @handler("_disconnect", filter=True)
     def _on_disconnect(self, sock):
@@ -788,11 +815,11 @@ class UDPServer(Server):
         except SocketError:
             pass
 
-        self.fire(Disconnect(sock), "disconnect", self.channel)
+        self.fire(Disconnect(sock))
 
     @handler("close", override=True)
     def close(self):
-        self.fire(Closed(), "closed", self.channel)
+        self.fire(Closed())
 
         if self._buffers[self._sock] and self._sock not in self._closeq:
             self._closeq.append(self._sock)
@@ -803,11 +830,11 @@ class UDPServer(Server):
         try:
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
-                self.fire(Read(address, data), "read", self.channel)
+                self.fire(Read(address, data)).notify = True
         except SocketError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
-            self.fire(Error(self._sock, e), "error", self.channel)
+            self.fire(Error(self._sock, e))
             self._close(self._sock)
 
     def _write(self, address, data):
@@ -819,7 +846,7 @@ class UDPServer(Server):
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:
-                self.fire(Error(self._sock, e), "error", self.channel)
+                self.fire(Error(self._sock, e))
 
     @handler("write", override=True)
     def write(self, address, data):

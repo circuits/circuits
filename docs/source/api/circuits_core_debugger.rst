@@ -4,8 +4,8 @@
 .. automodule :: circuits.core.debugger
 
 
-Events
-------
+Classes
+-------
 
 **none**
 
@@ -15,6 +15,12 @@ Components
 
 .. autoclass :: Debugger
    :members:
+
+
+Events
+------
+
+**none**
 
 
 Functions

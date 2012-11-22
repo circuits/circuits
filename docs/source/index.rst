@@ -13,14 +13,15 @@ Contents
 
    start/index
    tutorial/index
-   guides/index
+   man/index
    web/index
+   howtos/index
    api/index
    dev/index
    roadmap
    changes
-   contributors
    users
+   contributors
    faq
 
 .. toctree::

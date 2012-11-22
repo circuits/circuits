@@ -3,18 +3,23 @@
 
 .. automodule :: circuits.core.workers
 
+Classes
+-------
 
-Events
-------
-
-.. autoclass :: Task
-   :members:
+**none**
 
 
 Components
 ----------
 
 .. autoclass :: Worker
+   :members:
+
+
+Events
+------
+
+.. autoclass :: Task
    :members:
 
 

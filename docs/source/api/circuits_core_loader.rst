@@ -4,8 +4,8 @@
 .. automodule :: circuits.core.loader
 
 
-Events
-------
+Classes
+-------
 
 **none**
 
@@ -15,6 +15,12 @@ Components
 
 .. autoclass :: Loader
    :members:
+
+Events
+------
+
+**none**
+
 
 Functions
 ---------

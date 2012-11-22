@@ -2,11 +2,15 @@ syntax: glob
 
 *.pyc
 *.pyo
-build
+tmp
 dist
+build
 hgtools*
 .coverage*
 coverage
 docs/build
 circuits.egg-info
 __version__.py
+
+syntax: regexp
+^tests/trace\.html$

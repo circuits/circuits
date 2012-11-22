@@ -3,12 +3,12 @@ try:
     from urllib.error import HTTPError, URLError
     from urllib.request import HTTPBasicAuthHandler, HTTPCookieProcessor
     from urllib.request import urlopen, build_opener, install_opener
-    from urllib.request import HTTPDigestAuthHandler
+    from urllib.request import HTTPDigestAuthHandler, Request
 except ImportError:
     from urllib import urlencode
     from urllib2 import HTTPError, URLError, HTTPDigestAuthHandler
     from urllib2 import HTTPBasicAuthHandler, HTTPCookieProcessor
-    from urllib2 import urlopen, build_opener, install_opener
+    from urllib2 import urlopen, build_opener, install_opener, Request
 
 try:
     from http.cookiejar import CookieJar

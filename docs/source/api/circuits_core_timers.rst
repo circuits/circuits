@@ -4,8 +4,8 @@
 .. automodule :: circuits.core.timers
 
 
-Events
-------
+Classes
+-------
 
 **none**
 
@@ -15,6 +15,12 @@ Components
 
 .. autoclass :: Timer
    :members:
+
+
+Events
+------
+
+**none**
 
 
 Functions

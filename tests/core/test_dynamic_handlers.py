@@ -1,40 +1,54 @@
 #!/usr/bin/env python
 
-from circuits import Event, Component
+import pytest
 
-class Test(Event):
-    """Test Event"""
+from circuits import handler, Component, Event, Manager
 
-class App(Component):
+class Foo(Event):
+    """Foo Event"""
 
-    def __init__(self, *args, **kwargs):
-        super(App, self).__init__(*args, **kwargs)
+@handler("foo")
+def on_foo(self):
+    return "Hello World!"
 
-        self.addHandler(self._test, "test")
-        self.addHandler(self._test_target, "test", target="foo")
+def test_addHandler():
+    m = Manager()
+    m.start()
 
-        self._event = None
+    m.addHandler(on_foo)
 
-    def _test(self, event, *args, **kwargs):
-        self._event = event
+    waiter = pytest.WaitEvent(m, "foo")
+    x = m.fire(Foo())
+    waiter.wait()
 
-    def _test_target(self, event, *args, **kwargs):
-        self._event = event
+    s = x.value
+    assert s == "Hello World!"
 
-def test():
-    app = App()
+    m.stop()
 
-    e = Test()
-    app.fire(e)
-    app.flush()
 
-    assert app._event == e
+def test_removeHandler():
+    m = Manager()
+    m.start()
 
-def test_target():
-    app = App()
+    m.addHandler(on_foo)
 
-    e = Test()
-    app.fire(e, target="foo")
-    app.flush()
+    waiter = pytest.WaitEvent(m, "foo")
+    x = m.fire(Foo())
+    waiter.wait()
 
-    assert app._event == e
+    s = x.value
+    assert s == "Hello World!"
+
+    m.removeHandler(on_foo)
+
+    waiter = pytest.WaitEvent(m, "foo")
+    x = m.fire(Foo())
+    waiter.wait()
+
+    assert x.value is None
+
+    assert on_foo not in dir(m)
+    assert "foo" not in m._handlers
+
+    m.stop()

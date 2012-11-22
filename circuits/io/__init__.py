@@ -12,11 +12,15 @@ and StdErr are also created by importing this package.
 import sys
 
 from .file import File
-from .serial import Serial
 from .events import Close, Seek, Write
 
 try:
     from .notify import Notify
+except:
+    pass
+
+try:
+    from .serial import Serial
 except:
     pass
 
