@@ -45,7 +45,7 @@ Features
 
 - event driven
 - concurrency support
-- compnoent archiecture
+- component archiecture
 - asynchronous I/O components
 - no required external dependencies
 - full featured web framework (circuits.web)
@@ -91,8 +91,8 @@ circuits is licensed under the `MIT License`_.
 Feedback
 --------
 
-I welcome any questions or feedback about bugs and suggestions on how to 
-improve circuits. Let me know what you think about circuits. I am on twitter 
+I welcome any questions or feedback about bugs and suggestions on how to
+improve circuits. Let me know what you think about circuits. I am on twitter
 `@therealprologic <http://twitter.com/therealprologic>`_.
 
 Do you have suggestions for improvement? Then please `Create an Issue`_

@@ -45,7 +45,7 @@ Release Notes - circuits-2.0.0 (cheetah)
 
    """A Simple Echo Server"""
 
-   
+
    from circuits.net.sockets import TCPServer
 
 
@@ -57,4 +57,4 @@ Release Notes - circuits-2.0.0 (cheetah)
 
    EchoServer(8000).run()
 
-For a full list of chnages for this release see the `Change Log <http://packages.python.org/circuits/changes.html>`_.
+For a full list of changes for this release see the `Change Log <http://packages.python.org/circuits/changes.html>`_.
