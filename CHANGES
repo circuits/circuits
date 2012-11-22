@@ -1,84 +1,6 @@
-circuits-2.0.0 20121122
------------------------
+circuits-2.0.0 20121122 (cheetah)
+---------------------------------
 
-- Implemented ``Component.init()`` support whereby one can define an
-  alternative ``init()`` without needing to remember to call ``super(...)``
-  ``init()`` takes the same arguments as the normal ``__init__(...)``
-  constructor.
-  Example:
-
-.. code-block:: python
-   :linenos:
-
-   #!/usr/bin/env python
-
-   from circuits import Component
-
-   class App(Component):
-
-      def init(self, ...):
-         ...
-
-- Removed start and end feedback channels.
-- Added Singleton support. It is now possible to specify that a component
-  only be registered once. For example:
-
-.. code-block:: python
-   :linenos:
-
-   #!/usr/bin/env python
-
-   from circuits import Component
-
-
-   class App(Component):
-
-      singleton = True
-
-- Added ``findtype()``, ``findchannel()`` to ``circuits.core.utils`` in favor
-  of ``itercmp()``.
-- Removed ``itercmp()`` function from ``circuits.core.utils``.
-- When firing an event using ``.fire(event, *channels)``, channels is optional
-  and the following order is obeyed:
-
- - Use the channels specified in the ``*channels`` argument.
- - Otherwise if no channels are specified use ``event.channels``
- - Otherwise if the event's channels are empty use ``self.channel``
- - Finally defaulting to ``*``
-
-- Fixed Issue #26
-- Removed deprecated ``circuits.sniff`` tool.
-- Added man pages for ``circuits.bench`` and ``circuits.web`` CLI tools.
-- Added Eclipse support
-- Fixed Issue #29
-- Added support for ``value_changed`` event notifications on the ``read``
-  channels for sockets. This enables you to specify much simpler event
-  handlers that handle requests. For example:
-
-.. code-block:: python
-   :linenos:
-
-   #!/usr/bin/env python
-
-   """A Simple Echo Server"""
-
-   
-   from circuits.net.sockets import TCPServer
-
-
-   class EchoServer(TCPServer):
-
-      def read(self, sock, data):
-         return data
-
-
-   EchoServer(8000).run()
-
-- Removed ``.state`` property from components.
-- Removed ``.push(...)`` -- Deprecated in 1.6
-- Removed ``circuits.net.pollers`` module. -- Deprecated in 1.6
-
-- Fixed missing import of sys in ``circuits.io``
 - Fixed circuits.web entry point
 - Fixed `tools.reprhandler()` for compatibility with Python-3.3
 - Added *channels support to waitEvent
@@ -100,42 +22,42 @@ circuits-2.0.0 20121122
 - Updated reference of guide to howtos
 - Updated man headers so that they weren't all "Components"
 - Fixed all web dispatcher tests
-- Fix XMLRPC dispatcher. Must have a higher priority than the "default" dispatcher in order to coexist with it.
-- Fixed unit test for failure response from web *component* (component's handler must have higher priority than default dispatcher if default dispatcher exists). Added failure test for web *controller*.
-- Fix JSON dispatcher. Must have a higher priority than the "default" dispatcher in order to coexist with it.
-- vpath created in reverse ("test_args/1/2/3" became "3/2/1/test_args"). Fixed.
-- Fix evaluation of the Complete event: exclude events fired by other threads during event processing from the set of events to be tracked.
+- Fixed XMLRPC dispatcher. Must have a higher priority than the "default" dispatcher in order to coexist with it.
+- Fixed unit test for failure response from web *component* (component's handler must have higher priority than default dispatcher if default dispatcher exists). 
+- Added failure test for web *controller*.
+- Fixed JSON dispatcher. Must have a higher priority than the "default" dispatcher in order to coexist with it.
+- Fixed vpath traversal. vpath created in reverse ("test_args/1/2/3" became "3/2/1/test_args").
+- Fixed evaluation of the Complete event: exclude events fired by other threads during event processing from the set of events to be tracked.
 - Don't call tick on components that are waiting to be unregistered.
 - Using new PrepareUnregister event to reliably remove sockets from poller.
 - Fixes for PrepareUnregister and added test case.
-- Add event that informs components about going to be removed from the tree.
+- Added event that informs components about going to be removed from the tree.
 - Fixed client request generation (MUST include Host header).
 - Fixed channel naming in web.Client to allow several clients (i.e. connections to web sites) to coexist in an application.
-- Prevent uncameling of event names that represent web requests. Handlers can now use the last path segment unmodified as handled event's name.
+- Prevented uncameling of event names that represent web requests. Handlers can now use the last path segment unmodified as handled event's name.
 - Fixed the new dispatcher with new tests
 - Fixed bug in complete event generation.
 - Added optional event signaling the completion of an event and everything that has been caused by it.
-- Add the possibility to redirect the success events to other channels.
+- Added the possibility to redirect the success events to other channels.
 - Updated documentation to reflect the new "handler suspend" feature.
-- replaces web dispatcher with simpler version
-- handles x = yield self.callEvent(...)
+- Replaced web dispatcher with simpler version
+- Added support for x = yield self.callEvent(...)
 - Made test_main more reliable
 - Removed old BaseManager from playing with GreenletManager. Fixed test_manager_repr
 - Fixed the exceptions being thrown for test_eval, but the test still fails
 - Added a new failing test - evaluation of promised values
 - Removed superfluous .value in test_longwait
-- Allow future handlers to have a "special" event parameter just like ordinary handlers.
-- fixes test_success
-- fixes test_removeHandler
-- fires Done() and Success() after all done executing
-- fixes callEvent
-- adds 2 failing tests for yield
-
-- Implements promises which we detect for in circuits.web in cases where an event handler yields. Also only fire _success events after an event is well and truly finished (in the case of yielding event handlers)
+- Added support for alllowing future handlers to have a "special" event parameter just like ordinary handlers.
+- Fixed test_success
+- Fixed test_removeHandler
+- Added support for firing Done() and Success() after all done executing.
+- Fixed callEvent
+- Added 2 failing tests for yield
+- Implemented promises which we detect for in circuits.web in cases where an event handler yields. Also only fire _success events after an event is well and truly finished (in the case of yielding event handlers)
 - Fixed a bug with value not being set
-- Fixes Issue #26
+- Fixed Issue #26
 - Added capability of waiting for a specific event name on a specific channel.
-- Guard against tasks already removed.
+- Fixed bug guarding  against tasks already removed.
 - Implemented Component.init() support whereby one can define an alternative init() without needing to remember to call super(...)
 - Fixed Python 3 compatibility with Unicode strings
 - Added 99bottles as an example of concurrency. See: http://wiki.python.org/moin/Concurrency/99Bottles
@@ -143,77 +65,55 @@ circuits-2.0.0 20121122
 - Fixed and tested UDP forwarding
 - Simplified udpclient example
 - Implemented new version of port forwarded. TCP tested.
-- Set .notify to True for Read events for UDPServer instances
+- Fixed Read events for UDPServer by setting .notify to True.
 - Restructured the only How To Guide - Building a Simple Server
 - Renamed _get_request_handler to just find_handler
-- Test case for two web servers with different channels.
-- Remove channels attribute from WebEvents (fix for issue #29).
+- Removed channels attribute from WebEvents (fix for issue #29).
 - Added Eclipse configuration files.
-- Added test for channel selection. See Issue 28
 - Fixed uses of deprecated syntax in app.config
-- Set channels to event.channels, otherwise self.channel defaulting to *
+- Modified the defaults for channels. Set channels to event.channels, otherwise self.channel defaulting to *
 - Fixed uses of deprecated syntax in env
 - Fixed a bug with the Redirect event/error in circuits.web where it didn't handle Unicode strings
-- fixes the web dispatcher
+- fixed the web dispatcher
 - Fixed test_poller_reuse test by using the now findtype() utility function
-- fixes and adds tests for the web dispatcher
+- fixed and adds tests for the web dispatcher
 - Moved parseBody out into circuits.web.utils. Other code cleanup
 - Added a test for a bug with the dispatcher mehere found.
 - Removed itercmp() function. Added findtype() findchannel() and used better variable names. findcmp is an alias of findtype.
 - Implemented optional singleton support for components
 - Removed the circuits.web `routes` dispatcher as there are no tests for this and Routes dispatcher is broken - re implement at a later stage
 - Removal of End feedback event
-- fixes web/test_value.py
-- fixes web futures test
-- Minor performance tweaks
+- Fixed web/test_value.py
+- Fixed web futures test
 - Simplified and fixed a lot of issues the circuits.bench
 - Fixed circuits.web's exceptions tests and handling of exceptions.
-- Fixed a potential bug which crept up while trying to fix the exceptions test
-in circuits.web In the circuits.web.wsgi.Application Component's __call__
-method we need to wait until we're both finished and have no more events
-to process that are lingering around or things get really strange with
-WSGI :)
-- in manager.py only assign a handler return value if it is not none
-- Fixed tests.web.test_request_failure by passing an additional argument
-to the Failure *_failure event so that you can determine what the cause
-of the failure was and do something with it.
-- Make *_success and *_failure events fire on *event.channels so they go
-to the right place as expected. This fixes Issue #21
-- Fixed and simplified the WSGI Gateway test. However the Gateway Component
-needs to be redesigned to accommodate for more than one WSGI Application
-being mounted on a single Gateway. Having more than one Gateway doesn't
-make much sense as there's no sensible way of handling the the paths
-without comparing the request.path to a list of application paths.
-- Remove event equality test and related tests. Seems rather useless and inconsistently used
+- Fixed a potential bug with ``circuits.web.wsgi.Application``.
+- Modified Manager to only assign a handler return value if it is not None.
+- Fixed *_success and *_failure events fire on *event.channels so they go to the right place as expected. Fixed Issue #21
+- Removed event equality test and related tests. Seems rather useless and inconsistently used
 - Fixed test_gzip circuits.web test. We no longer have a Started event feedback so have to use a filter
-- Fix a corner case where one might be trying to compare an event object with a non-event object
-- Fixed the event handling for circuits.web WebSockets Component by separating
-out the WebSockets handling from the HTTP handling (WebSocketsMediator).
+- Fixed a corner case where one might be trying to compare an event object with a non-event object
+- Fixed the event handling for circuits.web WebSockets Component by separating out the WebSockets handling from the HTTP handling (WebSocketsMediator).
 - Fixed use of Value notification in circuits.web for requests.
-- Fixed a bunch of examples and tests using deprecated features. Fixed the notify
-io driver and removed Debugger() from test_notify.
+- Fixed a bunch of examples and tests using deprecated features.
+- Fixed the notify io driver and removed Debugger() from test_notify.
 - Added man pages for circuits.bench, circuits.sniff and circuits.web
-- - wrapped UNIX-specific calls in try/except
+- Wrapped UNIX-specific calls in try/except
 - Tidied up examples and removed unused imports
 - removed use of coverage module in daemon test
 - removed use of coverage module in signals test
 - updated .push calls to .fire calls
-- fixes some deprecations warnings
-- support for multiple webserver with different channels + tests for it
-- silently ignore errors when writing to stderr from debugger
+- Fixed some deprecations warnings
+- Added support for multiple webserver with different channels + tests for it
+- Added support for silently ignoring  errors when writing to stderr from debugger
 - Added requirements.txt file containing requirements for building docs on readthedocs.org
 - Added link to Read the Docs for circuits
 - Updated doc message for success event
-- Allow ^C to be used to quit sample keyecho app
+- Fixed interrupt handler to allow ^C to be used to quit sample keyecho app
 - Removed deprecated modules and functions that were deprecated 1.6
-- fixes web/test_core.py test_simple, rename request_success in generate_response and it is now fire from the Controller once request_success is fired, this commit also binds on each controller the success/failure handlers for generating a response properly once the requested handler has been executed instead of loosing the event because it was fired as <channel>.<handler>_success instead of web.<handler>_success
-- delete old style event success/failure notifiers
-- handle components being added/removed when looking for ticks
-- test for verifying that we are throwing Disconnected() only once when TCPServer is disconnected, sadly we have to wait for a set amount of time to make sure it's not triggered
-- net.Server.host/port return None on socket.error
-- make pytest.wait_for use ticks too
-- __tick__ becomes a regular handler with .tick set to True, therefore we can now have multiple tick functions in a signle component, ticks can be added via addHandler, there is a convenient decorator for them @tick but you can you also that property via the regular @handler(name, tick=True)
-- set handler priority inheritance to make sure we get the results in the right harder
-- make coverage optional
-- change wait_event to a 2 phase process to prevent randomly loosing the event in tests
+- Deleted old style event success/failure notifiers
+- Fixed handling of components being added/removed when looking for ticks
+- Fixed bug with ``net.Server`` .host and .port attributes.
+- Deprecated ``__tick__``. Event handlers can now be specified as **tick** functions.
+- Fixed handler priority inheritance to make sure we get the results in the right harder
 - Fixed missing import of sys in circuits.io
