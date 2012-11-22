@@ -49,6 +49,7 @@ Features
 - asynchronous I/O components
 - no required external dependencies
 - full featured web framework (circuits.web)
+- coroutine based synchronization primitives
 
 
 Requirements

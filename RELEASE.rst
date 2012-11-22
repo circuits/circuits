@@ -1,3 +1,4 @@
-Release Notes - circuits-1.7 (cheetah)
---------------------------------------
+Release Notes - circuits-2.0.0 (cheetah)
+----------------------------------------
+
 

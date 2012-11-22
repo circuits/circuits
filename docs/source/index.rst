@@ -18,7 +18,6 @@ Contents
    howtos/index
    api/index
    dev/index
-   roadmap
    changes
    users
    contributors
