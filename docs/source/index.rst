@@ -34,6 +34,7 @@ Contents
    .. toctree::
       :hidden:
 
+      pypitest
       todo
 
 
@@ -47,5 +48,5 @@ Indices and tables
 
 .. ifconfig:: devel
 
+   * :doc:`pypitest`
    * :doc:`todo`
-

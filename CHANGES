@@ -3,7 +3,7 @@ circuits-2.0.0 20121122 (cheetah)
 
 - Fixed circuits.web entry point
 - Fixed `tools.reprhandler()` for compatibility with Python-3.3
-- Added *channels support to waitEvent
+- Added ``*channels`` support to waitEvent
 - Added example of using .call
 - Fixed logic around firing the Daemonize event when registering this component during run-time and after start-up
 - Fixed use of reprhandler
@@ -89,7 +89,7 @@ circuits-2.0.0 20121122 (cheetah)
 - Fixed circuits.web's exceptions tests and handling of exceptions.
 - Fixed a potential bug with ``circuits.web.wsgi.Application``.
 - Modified Manager to only assign a handler return value if it is not None.
-- Fixed *_success and *_failure events fire on *event.channels so they go to the right place as expected. Fixed Issue #21
+- Fixed ``*_success`` and ``*_failure`` events fire on ``*event.channels`` so they go to the right place as expected. Fixed Issue #21
 - Removed event equality test and related tests. Seems rather useless and inconsistently used
 - Fixed test_gzip circuits.web test. We no longer have a Started event feedback so have to use a filter
 - Fixed a corner case where one might be trying to compare an event object with a non-event object
