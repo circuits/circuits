@@ -57,11 +57,6 @@ Requirements
 
 circuits has no dependencies beyond the `Python Standard Library`_.
 
-Some dependencies should be optionally installed if deployed on a Python-2.5
-environment such as `processing <http://pypi.python.org/pypi/processing/>`_
-for multiprocessing concurrency support and for JSON support the
-`simplejson <http://pypi.python.org/pypi/simplejson/>`_ package.
-
 
 Installation
 ------------
