@@ -57,4 +57,33 @@ Release Notes - circuits-2.0.0 (cheetah)
 
    EchoServer(8000).run()
 
+- Changed how ticks are defined
+
+.. code-block:: python
+   :linenos:
+
+   from circuits import tick
+
+   class MyComponent(Component):
+      @tick
+      def my_tick(self):
+         print 'time is passing'
+
+- Added the ability to return values from callEvent
+
+.. code-block:: python
+   :linenos:
+
+   class ProcessData(Event):
+      pass
+
+   class MyComponent(Component):
+      def process_data(self, data):
+          return data
+
+      def on_read(self, data):
+         processed_data = self.callEvent(ProcessData(data))
+         print process_data
+
+
 For a full list of changes for this release see the `Change Log <http://packages.python.org/circuits/changes.html>`_.
