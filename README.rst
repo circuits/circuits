@@ -31,13 +31,9 @@ attracting feature. New features are built into the framework with
 this in mind and circuits "eats its own dog food" by having a
 feature-rich library of components built atop the core components.
 
-**Documentation**: http://packages.python.org/circuits
-
-Also available on `circuits Read the Docs`_.
-
-**Project website**: https://bitbucket.org/prologic/circuits/
-
-**PyPI page**: http://pypi.python.org/pypi/circuits
+- **Documentation**: http://packages.python.org/circuits or `circuits Read the Docs`_.
+- **Project website**: https://bitbucket.org/prologic/circuits/
+- **PyPI page**: http://pypi.python.org/pypi/circuits
 
 
 Features
@@ -55,7 +51,8 @@ Features
 Requirements
 ------------
 
-circuits has no dependencies beyond the `Python Standard Library`_.
+- circuits has no dependencies beyond the `Python Standard Library`_.
+- Python: >= 2.6
 
 
 Installation

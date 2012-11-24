@@ -3,8 +3,8 @@
 Requirements and Dependencies
 =============================
 
-circuits has no **required** dependencies beyond the `Python Standard Library`_.
-(*with the exception of Python 2.5 installations*).
+- circuits has no **required** dependencies beyond the `Python Standard Library`_.
+- Python: >= 2.6
 
 
 Other Optional Dependencies
