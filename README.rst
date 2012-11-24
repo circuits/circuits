@@ -85,9 +85,8 @@ circuits is licensed under the `MIT License`_.
 Feedback
 --------
 
-I welcome any questions or feedback about bugs and suggestions on how to
-improve circuits. Let me know what you think about circuits. I am on twitter
-`@therealprologic <http://twitter.com/therealprologic>`_.
+We welcome any questions or feedback about bugs and suggestions on how to
+improve circuits. Let us know what you think about circuits. `@pythoncircuits <http://twitter.com/pythoncircuits>`_.
 
 Do you have suggestions for improvement? Then please `Create an Issue`_
 with details of what you would like to see. I'll take a look at it and
