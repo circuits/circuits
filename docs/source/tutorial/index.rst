@@ -8,8 +8,8 @@ Tutorial
 Overview
 --------
 
-Welcome to the circuits tutorial. This 5-minute tutorial is going to walk you
-through the basic concepts of circuits. The goal will be to introduce
+Welcome to the circuits tutorial. This 5-minute tutorial will guide you
+through the basic concepts of circuits. The goal is to introduce
 new concepts incrementally with walk-through examples that you can try out!
 By the time you've finished, you should have a good basic understanding
 of circuits, how it feels and where to go from there.
@@ -74,7 +74,7 @@ Registering Components
 
 So now that we've learned how to use a Component, create a custom Component
 and create simple Event Handlers, let's try something a bit more complex
-and create two components that each do something fairly simple.
+by creating a complex component made up of two simpler ones.
 
 Let's create two components:
 
