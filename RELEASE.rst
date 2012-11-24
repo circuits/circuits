@@ -27,7 +27,7 @@ Example:
 Component Singleton Support
 ...........................
 
-No. This isn't anything ctazy bout restricting what you can do with components.
+No. This isn't anything crazy bout restricting what you can do with components.
 This new feature allows you as a developer to restrict how many instances of
 any given component can be running in any given system.
 
@@ -98,7 +98,7 @@ Example:
          print 'time is passing'
 
 
-callEvent/waitEvent Enhcnacements
+callEvent/waitEvent Enhancements
 .................................
 
 In circuits-1.6 we introduced two new primitives.
@@ -106,14 +106,14 @@ In circuits-1.6 we introduced two new primitives.
  - ``.callEvent(...)``
  - ``.waitEvent(...)``
 
-These two primitives introduced synchrous features to the circutis framework
+These two primitives introduced synchronous features to the circuits framework
 allowing you to pause the execution of an event handler and write almost
-synchrnous-style code whilst remaining asynchrnoous in the background.
+synchronous-style code whilst remaining asynchronous in the background.
 
 Here are the list of improvements and an example to go with.
 
 - The ``.call(...)`` and ``.wait(...)`` synchronous primitives in this release
-  are now implemented as coroutines using standard Python generators.
+  are now implemented as co-routines using standard Python generators.
   (*Previously they were implemented using greenlets*).
 - The API are identical to that of ``fire(...)``
 - Added the ability to return values from ``callEvent``
