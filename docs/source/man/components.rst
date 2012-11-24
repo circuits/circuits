@@ -26,7 +26,7 @@ based application belong to some component tree (there may be several),
 with Complex Components being a subtree within that structure.
 
 A Component is attached to the tree by registering with the parent and
-detached by unregistering itself (methods
+detached by un-registering itself (methods
 :meth:`~circuits.core.components.BaseComponent.register` and
 :meth:`~circuits.core.components.BaseComponent.unregister` of 
 ``BaseComponent``).

@@ -18,7 +18,8 @@ circuits is a **Lightweight** **Event** driven and **Asynchronous**
 with a strong **Component** Architecture.
 
 circuits also includes a lightweight, high performance and scalable
-HTTP/WSGI web server as well as various I/O and Networking components.
+HTTP/WSGI compliant web server as well as various I/O and Networking
+components.
 
 To take full advantage of circuits and its architecture, circuits
 requires that your application be designed in terms of components
@@ -26,10 +27,10 @@ and their interactions (*events*) with each other. An application
 written using the circuits application framework is maintainable,
 scalable and easy to develop.
 
-The circuits framework has a certain elegance making it a rather
-attracting feature. New features are built into the framework with
-this in mind and circuits "eats its own dog food" by having a
-feature-rich library of components built atop the core components.
+circuits' **Loosely Coupled** **Component Architecture** allows for a
+high level of **Reuse** and **Scalability**. Components are **Componsable**
+and much of the component library that circuits ships with are implemented
+as composed components.
 
 - **Documentation**: http://packages.python.org/circuits or `circuits Read the Docs`_.
 - **Project website**: https://bitbucket.org/prologic/circuits/

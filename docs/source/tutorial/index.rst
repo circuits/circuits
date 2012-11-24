@@ -38,7 +38,7 @@ Let's try to create our own custom Component called ``MyComponent``.
 
 :download:`Download 002.py <002.py>`
 
-Okay, so this still isn't very sueful! But at least we can create
+Okay, so this still isn't very useful! But at least we can create
 components with the behavior we want.
 
 Let's move on to something more interesting...
@@ -66,7 +66,7 @@ Running this we get::
 
 Alright! We have something slightly more useful! Whoohoo it says hello!
 
-.. note:: Press ^C (*Ctrl + C*) to exit.
+.. note:: Press ^C (*CTRL + C*) to exit.
 
 
 Registering Components
@@ -196,7 +196,7 @@ Event Objects
 -------------
 
 So far in our tutorial we have been defining an Event Handler for a builtin
-Event called ``Started`` (*which incidently gets fired on a channel called
+Event called ``Started`` (*which incidentally gets fired on a channel called
 "started"*). What if we wanted to define our own Event Handlers and our own
 Events ? You've already seen how easy it is to create a new Event Handler
 by simply defining a normal Python method on a Component.
@@ -209,7 +209,7 @@ Example::
    class MyEvent(Event):
       """MyEvent"""
 
-So here's our example where we'll define a new Event claled ``Bark``
+So here's our example where we'll define a new Event called ``Bark``
 and make our ``Dog`` fire a ``Bark`` event when our application starts up.
 
 .. literalinclude:: 008.py
@@ -229,7 +229,7 @@ The Debugger
 
 Lastly...
 
-Asynchronous programming has many advntages but can be a little harder to
+Asynchronous programming has many advantages but can be a little harder to
 write and follow. A silently caught exception in an Event Handler, or an Event
 that never gets fired, or any number of other weird things can cause your
 application to fail and leave you scratching your head.
@@ -262,7 +262,7 @@ dealt with in a way that lets your application "keep on going". Crashing is
 unwanted behavior in a system so we expect to be able to recover from
 horrible situations.
 
-SO what do we do ? Welll that's easy. circuits come with a ``Debugger``
+SO what do we do ? Well that's easy. circuits come with a ``Debugger``
 that lets you log all events as well as all errors so you can quickly and
 easily discover which Event is causing a problem and which Event Handler to
 look at.
@@ -330,7 +330,7 @@ The correct code for the ``bark`` Event Handler should be::
    def bark(self):
        print("Woof! I'm %s!" % self.name)
 
-Running again with our coorection results in the expected output::
+Running again with our correction results in the expected output::
    
    Woof! I'm Bob!
    Woof! I'm Fred!

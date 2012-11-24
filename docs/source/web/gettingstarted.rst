@@ -35,7 +35,7 @@ for our Request Handler.
 This completes our simple web application which will respond with
 "Hello World!" when anyone accesses it.
 
-*Admitedly this is a stupidly simple web application! But circuits.web is
+*Admittedly this is a stupidly simple web application! But circuits.web is
 very powerful and plays nice with other tools.*
 
 Now we need to run the application:

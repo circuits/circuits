@@ -92,7 +92,7 @@ Let's walk through this in details:
 4. Register a ``TCPServer`` Component and configure it.
 5. Create Event Handlers for:
 
-   - Dealiig with new connecting clients.
+   - Dealing with new connecting clients.
    - Dealing with clients whom have disconnected.
    - Dealing with messages from connected clients.
 

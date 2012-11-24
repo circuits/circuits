@@ -53,14 +53,14 @@ circuits-1.6 (oceans) - 20110626
 - Fixes Server socket being discarded twice on close + disconnect
 - Socket.write now expects bytes (bytes for python3 and str for python2)
 - Better handling of encoding in HTTP Component (allow non utf-8 encoding)
-- Always encode http headers in utf-8
+- Always encode HTTP headers in utf-8
 - Fixes error after getting socket.ERRCONNREFUSED
 - Allows TCPClient to bind to a specific port
 - Improved docs
-- Handles closing of udpserver socket when no client is connected
-- Adds an unregister handler for components
+- Handles closing of UDPServer socket when no client is connected
+- Adds an un-register handler for components
 - Allows utils.kill to work from a different thread
 - Fixes bug when handling "*" in channels and targets
-- Fixes a bug that could occur when unregistering components
+- Fixes a bug that could occur when un-registering components
 - Fixes for CPU usage problems when using circuits with no I/O pollers
   and using a Timer for timed events
