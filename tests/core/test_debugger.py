@@ -314,4 +314,4 @@ def test_Logger_error():
     app.fire(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("<Error[*.error] (<type 'exceptions.Exception'>")
+    assert logger.msg.startswith("ERROR <listener[*.test] (App.test)> (<type \'exceptions.Exception\'>):")
