@@ -1,11 +1,15 @@
 Release Notes - circuits-2.0.0 (cheetah)
 ----------------------------------------
 
-- Implemented ``Component.init()`` support whereby one can define an
-  alternative ``init()`` without needing to remember to call ``super(...)``
-  ``init()`` takes the same arguments as the normal ``__init__(...)``
-  constructor.
-  Example:
+
+Component Initialization
+........................
+
+Implemented ``Component.init()`` support whereby one can define an
+alternative ``init()`` without needing to remember to call ``super(...)``
+``init()`` takes the same arguments as the normal ``__init__(...)`` constructor.
+
+Example:
 
 .. code-block:: python
    :linenos:
@@ -19,8 +23,16 @@ Release Notes - circuits-2.0.0 (cheetah)
       def init(self, ...):
          ...
 
-- Added Singleton support. It is now possible to specify that a component
-  only be registered once. For example:
+
+Component Singleton Support
+...........................
+
+No. This isn't anything ctazy bout restricting what you can do with components.
+This new feature allows you as a developer to restrict how many instances of
+any given component can be running in any given system.
+
+Say you defined a ``Logger`` Component but you only wanted and designed
+for only one instance ever running in a single system. This is how you do it:
 
 .. code-block:: python
    :linenos:
@@ -34,9 +46,15 @@ Release Notes - circuits-2.0.0 (cheetah)
 
       singleton = True
 
-- Added support for ``value_changed`` event notifications on the ``read``
-  channels for sockets. This enables you to specify much simpler event
-  handlers that handle requests. For example:
+
+More Convenience for I/O Components
+...................................
+
+
+All I/O Components now implement the ``value_changed`` Event Notification API
+allowing you to define ``read`` Event Handlers that simply return responses.
+
+Example:
 
 .. code-block:: python
    :linenos:
@@ -57,7 +75,17 @@ Release Notes - circuits-2.0.0 (cheetah)
 
    EchoServer(8000).run()
 
-- Changed how ticks are defined
+
+Tick Functions are now decorators!
+..................................
+
+
+In previous releases of circuits, a ``Component`` could only have a single
+``__tick__`` (*Tick Function*). This restriction is now gone and we've made it
+much simpler to define new *Tick Functions* by simply using the new ``@tick``
+decorator.
+
+Example:
 
 .. code-block:: python
    :linenos:
@@ -69,21 +97,59 @@ Release Notes - circuits-2.0.0 (cheetah)
       def my_tick(self):
          print 'time is passing'
 
-- Added the ability to return values from callEvent
+
+callEvent/waitEvent Enhcnacements
+.................................
+
+In circuits-1.6 we introduced two new primitives.
+
+ - ``.callEvent(...)``
+ - ``.waitEvent(...)``
+
+These two primitives introduced synchrous features to the circutis framework
+allowing you to pause the execution of an event handler and write almost
+synchrnous-style code whilst remaining asynchrnoous in the background.
+
+Here are the list of improvements and an example to go with.
+
+- The ``.call(...)`` and ``.wait(...)`` synchronous primitives in this release
+  are now implemented as coroutines using standard Python generators.
+  (*Previously they were implemented using greenlets*).
+- The API are identical to that of ``fire(...)``
+- Added the ability to return values from ``callEvent``
+- Added the ability to yield from an event handler.
 
 .. code-block:: python
    :linenos:
+      
+   class A(Component):
+   
+       channel = "a"
 
-   class ProcessData(Event):
-      pass
-
-   class MyComponent(Component):
-      def process_data(self, data):
-          return data
-
-      def on_read(self, data):
-         processed_data = self.callEvent(ProcessData(data))
-         print process_data
+       def foo(self):
+           return "Hello"
+   
+   
+   class B(Component):
+   
+       channel = "b"
+   
+       def foo(self):
+           return "World!"
+   
+   
+   class App(Component):
+   
+       def hello(self):
+           a = yield self.call(Event.create("foo"), "a")
+           b = yield self.call(Event.create("foo"), "b")
+           yield "{0} {1}".format(a, b)
+   
+   m = Manager() + Debugger()
+   A().register(m)
+   B().register(m)
+   App().register(m)
+   m.start()
 
 
 For a full list of changes for this release see the `Change Log <http://packages.python.org/circuits/changes.html>`_.
