@@ -3,15 +3,12 @@
 import pytest
 
 from time import sleep
-from threading import Thread
-from errno import ECONNREFUSED
 from subprocess import Popen
+from errno import ECONNREFUSED
 
 from circuits.net.sockets import UDPServer, Close
 
 from .helpers import urlopen, URLError, HTTPError
-
-SERVER_CMD = ["python", "-m", "circuits.web.main"]
 
 
 def find_free_port():
@@ -32,28 +29,10 @@ def find_free_port():
     return port
 
 
-class Server(Thread):
-
-    def __init__(self, *args):
-        super(Server, self).__init__()
-
-        self.args = list(args)
-
-        self.setDaemon(True)
-
-    def run(self):
-        self.process = Popen(SERVER_CMD + self.args)
-
-    def stop(self):
-        self.process.terminate()
-        self.process.wait()
-
-
 def test():
     port = find_free_port()
 
-    server = Server("-b", "0.0.0.0:%d" % port)
-    server.start()
+    p = Popen(["python", "-m", "circuits.web.main", "-b", "0.0.0.0:%d" % port])
 
     sleep(1)
 
@@ -76,4 +55,5 @@ def test():
     s = f.read()
     assert s == b"Hello World!"
 
-    server.stop()
+    p.terminate()
+    p.wait()
