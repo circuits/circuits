@@ -1,13 +1,14 @@
 .. _Python Programming Language: http://www.python.org/
-.. _circuits IRC Channel: irc://irc.freenode.net/#circuits
+.. _#circuits IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
+.. _FreeNode IRC Network: http://freenode.net
 .. _Python Standard Library: http://docs.python.org/library/
-.. _circuits Website: https://bitbucket.org/prologic/circuits/
-.. _circuits Page on PyPI: http://pypi.python.org/pypi/circuits
-.. _circuits Read the Docs: http://readthedocs.org/docs/circuits/en/latest/
+.. _Website: https://bitbucket.org/prologic/circuits/
+.. _PyPi Page: http://pypi.python.org/pypi/circuits
+.. _Read the Docs: http://readthedocs.org/docs/circuits/en/latest/
 .. _MIT License: http://www.opensource.org/licenses/mit-license.php
 .. _Create an Issue: https://bitbucket.org/prologic/circuits/issue/new
-.. _circuits Mailing List: http://groups.google.com/group/circuits-users
-.. _circuits Downloads page: https://bitbucket.org/prologic/circuits/downloads
+.. _Mailing List: http://groups.google.com/group/circuits-users
+.. _Downloads page: https://bitbucket.org/prologic/circuits/downloads
 
 
 Overview
@@ -32,7 +33,7 @@ high level of **Reuse** and **Scalability**. Components are **Componsable**
 and much of the component library that circuits ships with are implemented
 as composed components.
 
-- **Documentation**: http://packages.python.org/circuits or `circuits Read the Docs`_.
+- **Documentation**: http://packages.python.org/circuits or `Read the Docs`_.
 - **Project website**: https://bitbucket.org/prologic/circuits/
 - **PyPI page**: http://pypi.python.org/pypi/circuits
 
@@ -69,8 +70,8 @@ If you do not have pip, you may use easy_install::
     > easy_install circuits
 
 Alternatively, you may download the source package from the
-`circuits Page on PyPI`_ or the `circuits Downloads page`_ on the
-`circuits Website`_; extract it and install using::
+`PyPi Page`_ or the `Downloads page`_ on the
+`Website`_; extract it and install using::
 
     > python setup.py install
 
@@ -97,4 +98,5 @@ Community
 ---------
 
 There is also a small community of circuits enthusiasts that you may
-find on the `circuits IRC Channel`_ and the `circuits Mailing List`_.
+find on the `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
+and the `Mailing List`_.
