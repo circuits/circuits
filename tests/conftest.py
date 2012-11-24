@@ -12,10 +12,6 @@ import collections
 from circuits import Component, handler
 from circuits.core.manager import TIMEOUT
 
-import stacktracer
-stacktracer.trace_start(os.path.join(os.path.dirname(__file__), "trace.html"),
-                        interval=5, auto=True)
-
 
 class Flag(object):
     status = False
