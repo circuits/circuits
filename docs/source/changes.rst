@@ -6,7 +6,7 @@ ChangeLog
 =========
 
 
-.. include:: ../../CHANGES
+.. include:: ../../CHANGES.rst
 
 
 circuits-2.0.0 20121122 (cheetah)
