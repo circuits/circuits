@@ -9,8 +9,14 @@ THis tool does some simple benchmaking of the circuits library.
 
 import sys
 import math
-import time
 import optparse
+
+from time import sleep
+
+if sys.platform == "win32":
+    from time import clock as time
+else:
+    from time import time
 
 try:
     import hotshot
@@ -124,12 +130,12 @@ class LatencyTest(Base):
     t = None
 
     def received(self, message=""):
-        print("Latency: %0.3f us" % ((time.time() - self.t) * 1e6))
-        time.sleep(1)
+        print("Latency: %0.9f us" % ((time() - self.t) * 1e6))
+        sleep(1)
         self.fire(Hello("hello"))
 
     def hello(self, message=""):
-        self.t = time.time()
+        self.t = time()
         self.fire(Received(message))
 
 class State(Base):
@@ -180,18 +186,18 @@ def main():
         if opts.verbose:
             print("Setting up Speed Test...")
         manager += SpeedTest(opts)
-        monitor.sTime = time.time()
+        monitor.sTime = time()
     elif opts.mode.lower() == "latency":
         if opts.verbose:
             print("Setting up Latency Test...")
         manager += LatencyTest(opts)
-        monitor.sTime = time.time()
+        monitor.sTime = time()
 
     if opts.verbose:
         print("Setting up Sender...")
         print("Setting up Receiver...")
 
-    monitor.sTime = time.time()
+    monitor.sTime = time()
 
     if opts.profile:
         if hotshot:
@@ -206,7 +212,7 @@ def main():
 
             if opts.events > 0 and monitor.events > opts.events:
                 manager.fire(Stop())
-            if opts.time > 0 and (time.time() - monitor.sTime) > opts.time:
+            if opts.time > 0 and (time() - monitor.sTime) > opts.time:
                 manager.fire(Stop())
         except KeyboardInterrupt:
             manager.fire(Stop())
@@ -214,7 +220,7 @@ def main():
     if opts.verbose:
         print()
 
-    eTime = time.time()
+    eTime = time()
 
     tTime = eTime - monitor.sTime
 
