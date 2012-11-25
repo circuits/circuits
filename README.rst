@@ -4,7 +4,7 @@
 .. _Python Standard Library: http://docs.python.org/library/
 .. _Website: https://bitbucket.org/prologic/circuits/
 .. _PyPi Page: http://pypi.python.org/pypi/circuits
-.. _Read the Docs: http://readthedocs.org/docs/circuits/en/latest/
+.. _Read the Docs: http://circuits.readthedocs.org/
 .. _MIT License: http://www.opensource.org/licenses/mit-license.php
 .. _Create an Issue: https://bitbucket.org/prologic/circuits/issue/new
 .. _Mailing List: http://groups.google.com/group/circuits-users
