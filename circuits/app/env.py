@@ -11,7 +11,6 @@ environments.
 
 from os import mkdir
 from os import makedirs
-from signal import SIGHUP
 from os.path import abspath, isabs, join as joinpath
 
 from circuits import handler, BaseComponent, Event
