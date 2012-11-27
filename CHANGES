@@ -1,5 +1,7 @@
-circuits-2.0.1 20121124
+circuits-2.0.2 yyyymmdd
 -----------------------
 
-- Fixed ``tests/web/test_main.py`` which was badly written.
-- Fixed a regression test testing the Debugger component
+- Updated the Getting Started / Downloading documentation
+  to say something about the Tags tab for downloading archives.
+- Updated the URL for ReadTheDocs
+- Fixed letency timing for circuits.bench on win32
