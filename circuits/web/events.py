@@ -12,7 +12,11 @@ from circuits import Event
 
 
 class WebEvent(Event):
-
+    """
+    WebEvents have both their ``success`` and ``failure`` attributes set to
+    True. So event processing generates the derived events
+    ``...Success`` or ``...Failure`` events.
+    """
     success = True
     failure = True
 

@@ -1,3 +1,5 @@
+.. _circuits_web_events:
+
 :mod:`circuits.web.events` -- Events
 ====================================
 

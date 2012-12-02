@@ -4,8 +4,17 @@
 .. automodule :: circuits.web.errors
 
 
+Components
+----------
+
+**none**
+
+
 Events
 ------
+
+.. autoclass :: HTTPError
+   :members:
 
 .. autoclass :: Forbidden
    :members:
@@ -18,12 +27,6 @@ Events
 
 .. autoclass :: Unauthorized
    :members:
-
-
-Components
-----------
-
-**none**
 
 
 Functions

@@ -4,12 +4,11 @@
 
 """Hyper Text Transfer Protocol
 
-This module implements the Hyper Text Transfer Protocol
+This module implements the server side Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
 
 
-from io import BytesIO
 try:
     from urllib.parse import unquote
     from urllib.parse import urlparse
@@ -41,7 +40,18 @@ class HTTP(BaseComponent):
     """HTTP Protocol Component
 
     Implements the HTTP server protocol and parses and processes incoming
-    HTTP messages creating and sending an appropriate response.
+    HTTP messages, creating and sending an appropriate response.
+    
+    The component handles :class:`~circuits.net.sockets.Read` events
+    on its channel and collects the associated data until a complete 
+    HTTP request has been received. It parses the request's content
+    and puts it in a :class:`~circuits.web.wrappers.Request` object and
+    creates a corresponding :class:`~circuits.web.wrappers.Response`
+    object. Then it emits a :class:`~circuits.web.events.Request`
+    event with these objects as arguments.
+    
+    The component defines several handlers that send a response back to 
+    the client.   
     """
 
     channel = "web"
@@ -79,6 +89,16 @@ class HTTP(BaseComponent):
 
     @handler("response")
     def _on_response(self, response):
+        """``Response`` Event Handler
+        
+        :param response: the ``Response`` object created when the
+            HTTP request was initially received.
+        :type response: :class:`~circuits.web.wrappers.Response`
+        
+        This handler builds an HTTP response data stream from 
+        the information contained in the *response* object and
+        sends it to the client (firing ``Write`` events).
+        """
         self.fire(
                 Write(response.request.sock,
                     str(response).encode(HTTP_ENCODING)))
@@ -241,11 +261,11 @@ class HTTP(BaseComponent):
     def _on_httperror(self, event, request, response, code, **kwargs):
         """Default HTTP Error Handler
 
-        Default Error Handler that by default just responds with the response
-        in the error object passed. The response is normally modified by a
-        HTTPError instance or a subclass thereof.
+        Default Error Handler that by default just fires a ``Response``
+        event with the *response* as argument. The *response* is normally 
+        modified by a :class:`~circuits.web.errors.HTTPError` instance 
+        or a subclass thereof.
         """
-
         response.body = str(event)
         self.fire(Response(response))
 
@@ -263,6 +283,25 @@ class HTTP(BaseComponent):
 
     @handler("request_success")
     def _on_request_success(self, e, value):
+        """
+        Handler for the ``RequestSuccess`` event that is automatically
+        generated after all handlers for a 
+        :class:`~circuits.web.events.Request` event have been invoked
+        successfully.
+        
+        :param e: the successfully handled ``Request`` event (having
+            as attributes the associated 
+            :class:`~circuits.web.wrappers.Request` and 
+            :class:`~circuits.web.wrappers.Response` objects).
+        :param value: the value(s) returned by the invoked handler(s).
+        
+        This handler converts the value(s) returned by the
+        (successfully invoked) handlers for the initial ``Request``
+        event to a body and assigns it to the ``Response`` object's
+        ``body`` attribute. It then fires a
+        :class:`~circuits.web.events.Response` event with the
+        ``Response`` object as argument.
+        """
         # We only want the non-recursive value at this point.
         # If the value is an instance of Value we will set
         # the .notify flag and be notified of changes to the value.

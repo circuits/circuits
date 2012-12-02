@@ -22,11 +22,17 @@ from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 
 class HTTPError(Event):
+    """An event for signaling an HTTP error
+    """
 
     code = 500
     description = ""
 
     def __init__(self, request, response, code=None, **kwargs):
+        """
+        The constructor creates a new instance and modifies the *response* 
+        argument to reflect the error.
+        """
         super(HTTPError, self).__init__(request, response, code, **kwargs)
 
         # Override HTTPError subclasses
@@ -76,20 +82,33 @@ class HTTPError(Event):
 
 
 class Forbidden(HTTPError):
+    """An event for signaling the HTTP Forbidden error 
+    """
     code = 403
 
 
 class Unauthorized(HTTPError):
+    """An event for signaling the HTTP Unauthorized error 
+    """
     code = 401
 
 
 class NotFound(HTTPError):
+    """An event for signaling the HTTP Not Fouond error 
+    """
     code = 404
 
 
 class Redirect(HTTPError):
+    """An event for signaling the HTTP Redirect response 
+    """
 
     def __init__(self, request, response, urls, code=None):
+        """
+        The constructor creates a new instance and modifies the
+        *response* argument to reflect a redirect response to the
+        given *url*.
+        """
         if isinstance(urls, basestring):
             urls = [urls]
 

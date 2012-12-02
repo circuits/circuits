@@ -1,3 +1,5 @@
+.. _web_getting_started:
+
 Getting Started
 ===============
 

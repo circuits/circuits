@@ -9,7 +9,3 @@ The circuits.web Framework
    gettingstarted
    basics
    howtos
-   deployment
-   controllers
-   dispatchers
-   tools
