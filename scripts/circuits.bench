@@ -35,9 +35,6 @@ from circuits import handler, Event, Component, Manager, Debugger
 USAGE = "%prog [options]"
 VERSION = "%prog v" + systemVersion
 
-###
-### Functions
-###
 
 def duration(seconds):
     days = int(seconds / 60 / 60 / 24)
@@ -47,6 +44,7 @@ def duration(seconds):
     mins = int((seconds / 60))
     seconds = int((seconds) % (60))
     return (days, hours, mins, seconds)
+
 
 def parse_options():
     """parse_options() -> opts, args
@@ -90,25 +88,22 @@ def parse_options():
 
     return opts, args
 
-###
-### Events
-###
 
 class Stop(Event):
     """Stop Event"""
 
+
 class Term(Event):
     """Term Event"""
+
 
 class Hello(Event):
     """Hello Event"""
 
+
 class Received(Event):
     """Received Event"""
 
-###
-### Components
-###
 
 class Base(Component):
 
@@ -117,6 +112,7 @@ class Base(Component):
 
         self.opts = opts
 
+
 class SpeedTest(Base):
 
     def received(self, message=""):
@@ -124,6 +120,7 @@ class SpeedTest(Base):
 
     def hello(self, message):
         self.fire(Received(message))
+
 
 class LatencyTest(Base):
 
@@ -138,6 +135,7 @@ class LatencyTest(Base):
         self.t = time()
         self.fire(Received(message))
 
+
 class State(Base):
 
     done = False
@@ -147,7 +145,8 @@ class State(Base):
 
     def term(self):
         self.done = True
-    
+
+
 class Monitor(Base):
 
     sTime = sys.maxsize
@@ -161,9 +160,6 @@ class Monitor(Base):
         if self.events > self.opts.events:
             self.stop()
 
-###
-### Main
-###
 
 def main():
     opts, args = parse_options()
