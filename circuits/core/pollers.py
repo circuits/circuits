@@ -166,8 +166,6 @@ class Select(BasePoller):
     def __init__(self, timeout=TIMEOUT, channel=channel):
         super(Select, self).__init__(timeout, channel=channel)
 
-        self._ts = time()
-        self._load = 0.0
         self._read.append(self._ctrl_recv)
 
     def _preenDescriptors(self):
