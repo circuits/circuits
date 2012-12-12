@@ -1,8 +1,6 @@
 # Module:   pollers
 # Date:     15th September 2008
 # Author:   James Mills <prologic@shortcircuit.net.au>
-import platform
-import os
 
 """Poller Components for asynchronous file and socket I/O.
 
@@ -13,7 +11,9 @@ descriptors for read/write events. Pollers:
 - EPoll
 """
 
+import os
 import select
+import platform
 from time import time
 from errno import EBADF, EINTR
 from select import error as SelectError
@@ -64,7 +64,7 @@ class BasePoller(BaseComponent):
         self._read = []
         self._write = []
         self._targets = {}
-        
+
         self._ctrl_recv, self._ctrl_send = self._create_control_con()
 
     def _create_control_con(self):
@@ -74,6 +74,7 @@ class BasePoller(BaseComponent):
         server.bind(("localhost", 0))
         server.listen(1)
         res_list = []
+
         def accept():
             sock, _ = server.accept()
             sock.setblocking(False)
@@ -89,7 +90,7 @@ class BasePoller(BaseComponent):
         """
         Pollers have slightly higher priority than the default handler
         from Manager to ensure that they are invoked before the
-        default handler. They act as filters to avoid the additional 
+        default handler. They act as filters to avoid the additional
         invocation of the default handler which would be unnecessary
         overhead.
         """
@@ -240,7 +241,7 @@ class Poll(BasePoller):
                 | select.POLLERR
                 | select.POLLNVAL
         )
-        
+
         self._read.append(self._ctrl_recv)
         self._updateRegistration(self._ctrl_recv)
 
@@ -292,7 +293,7 @@ class Poll(BasePoller):
             if timeout < 0:
                 l = self._poller.poll()
             else:
-                l = self._poller.poll(1000*timeout)
+                l = self._poller.poll(1000 * timeout)
         except SelectError as e:
             if e.args[0] == EINTR:
                 return
