@@ -403,7 +403,7 @@ class Manager(object):
         been dispatched (see :func:`circuits.core.handlers.handler`).
         """
         value = self.fire(event, *channels)
-        for r in self.waitEvent(event.name, *channels):
+        for r in self.waitEvent(event.name, event.channels):
             yield r
         yield CallValue(value)
 
@@ -596,10 +596,10 @@ class Manager(object):
         try:
             value = task.next()
             if isinstance(value, CallValue):
-                # We are in a callEvent
-                value = parent.send(value.value)
                 # Done here, next() will StopIteration anyway
                 self.unregisterTask((event, task, parent))
+                # We are in a callEvent
+                value = parent.send(value.value)
                 if isinstance(value, GeneratorType):
                     # We loose a yield but we gain one, we don't need to change
                     # event.waitingHandlers
