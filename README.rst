@@ -54,7 +54,17 @@ Requirements
 ------------
 
 - circuits has no dependencies beyond the `Python Standard Library`_.
-- Python: >= 2.6
+
+
+Supported Platforms
+-------------------
+
+- Linux, FreeBSD, Mac OS X
+- Python 2.6, 2.7, 3.0
+
+**Windows**: We acknowledge that Windows exists and make reasonable efforts
+             to maintain compatibility. Unfortunately we cannot guarantee
+             support at this time.
 
 
 Installation
