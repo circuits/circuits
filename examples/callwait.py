@@ -1,33 +1,25 @@
-#!/usr/bin/python -i
+#!/usr/bin/python
 
-from circuits import Event, Component, Debugger, Manager
-
-
-class A(Component):
-
-    channel = "a"
-
-    def foo(self):
-        return "Hello"
-
-
-class B(Component):
-
-    channel = "b"
-
-    def foo(self):
-        return "World!"
+from circuits import Event, Component
 
 
 class App(Component):
 
-    def hello(self):
-        a = yield self.call(Event.create("foo"), "a")
-        b = yield self.call(Event.create("foo"), "b")
-        yield "{0} {1}".format(a, b)
+    def foo(self):
+        return 1
 
-m = Manager() + Debugger()
-A().register(m)
-B().register(m)
-App().register(m)
-m.start()
+    def bar(self):
+        return 2
+
+    def hello(self):
+        a = yield self.call(Event.create("foo"))
+        b = yield self.call(Event.create("foo"))
+        yield a.value + b.value
+
+    def started(self, component):
+        x = yield self.call(Event.create("hello"))
+        print(x)
+        self.stop()
+
+
+App().run()
