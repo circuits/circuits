@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-from time import time
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
 import pytest
 
 from circuits import Manager
 from circuits.core.pollers import Select
-from circuits.net.sockets import TCPServer, TCPClient
+from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
 from circuits.net.sockets import Close, Connect, Write
 
 from .client import Client
@@ -19,36 +18,49 @@ def wait_host(server):
     assert pytest.wait_for(server, ("host", "port"), checker)
 
 
-def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"Poller": Select})
+def _pytest_generate_tests(metafunc, ipv6):
+    metafunc.addcall(funcargs={"Poller": Select, "ipv6": ipv6})
 
     try:
         from circuits.core.pollers import Poll
         Poll()
-        metafunc.addcall(funcargs={"Poller": Poll})
+        metafunc.addcall(funcargs={"Poller": Poll, "ipv6": ipv6})
     except AttributeError:
         pass
 
     try:
         from circuits.core.pollers import EPoll
         EPoll()
-        metafunc.addcall(funcargs={"Poller": EPoll})
+        metafunc.addcall(funcargs={"Poller": EPoll, "ipv6": ipv6})
     except AttributeError:
         pass
 
     try:
         from circuits.core.pollers import KQueue
         KQueue()
-        metafunc.addcall(funcargs={"Poller": KQueue})
+        metafunc.addcall(funcargs={"Poller": KQueue, "ipv6": ipv6})
     except AttributeError:
         pass
 
 
-def test_tcp_basic(Poller):
-    m = Manager() + Poller()
+def pytest_generate_tests(metafunc):
+    _pytest_generate_tests(metafunc, ipv6=False)
+    if has_ipv6:
+        _pytest_generate_tests(metafunc, ipv6=True)
 
-    server = Server() + TCPServer(0)
-    client = Client() + TCPClient()
+
+def test_tcp_basic(Poller, ipv6):
+    from circuits import Debugger
+    m = Manager() + Poller() + Debugger()
+
+    if ipv6:
+        tcp_server = TCP6Server(0)
+        tcp_client = TCP6Client()
+    else:
+        tcp_server = TCPServer(0)
+        tcp_client = TCPClient()
+    server = Server() + tcp_server
+    client = Client() + tcp_client
 
     server.register(m)
     client.register(m)
@@ -79,10 +91,17 @@ def test_tcp_basic(Poller):
         m.stop()
 
 
-def test_tcp_reconnect(Poller):
+def test_tcp_reconnect(Poller, ipv6):
     m = Manager() + Poller()
-    server = Server() + TCPServer(0)
-    client = Client() + TCPClient()
+
+    if ipv6:
+        tcp_server = TCP6Server(0)
+        tcp_client = TCP6Client()
+    else:
+        tcp_server = TCPServer(0)
+        tcp_client = TCPClient()
+    server = Server() + tcp_server
+    client = Client() + tcp_client
 
     server.register(m)
     client.register(m)
@@ -126,11 +145,16 @@ def test_tcp_reconnect(Poller):
         m.stop()
 
 
-def test_tcp_connect_closed_port(Poller):
+def test_tcp_connect_closed_port(Poller, ipv6):
     m = Manager() + Poller()
-    tcp_server = TCPServer(0)
+    if ipv6:
+        tcp_server = TCP6Server(0)
+        tcp_client = TCP6Client()
+    else:
+        tcp_server = TCPServer(0)
+        tcp_client = TCPClient()
     server = Server() + tcp_server
-    client = Client() + TCPClient()
+    client = Client() + tcp_client
 
     server.register(m)
     client.register(m)
@@ -159,16 +183,23 @@ def test_tcp_connect_closed_port(Poller):
         m.stop()
 
 
-def test_tcp_bind(Poller):
+def test_tcp_bind(Poller, ipv6):
     m = Manager() + Poller()
 
-    sock = socket(AF_INET, SOCK_STREAM)
-    sock.listen(0)
-    _, bind_port = sock.getsockname()
-    sock.close()
-
-    server = Server() + TCPServer(0)
-    client = Client() + TCPClient(bind_port)
+    if ipv6:
+        sock = socket(AF_INET6, SOCK_STREAM)
+        sock.listen(0)
+        _, bind_port, _, _ = sock.getsockname()
+        sock.close()
+        server = Server() + TCP6Server(0)
+        client = Client() + TCP6Client(bind_port)
+    else:
+        sock = socket(AF_INET, SOCK_STREAM)
+        sock.listen(0)
+        _, bind_port = sock.getsockname()
+        sock.close()
+        server = Server() + TCPServer(0)
+        client = Client() + TCPClient(bind_port)
 
     server.register(m)
     client.register(m)
