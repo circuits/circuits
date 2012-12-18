@@ -17,9 +17,9 @@ from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 from _socket import socket as SocketType
 
 from socket import gaierror, error as SocketError
-from socket import gethostname, gethostbyname, socket
+from socket import getfqdn, gethostbyname, socket, getaddrinfo, gethostname
 
-from socket import AF_INET, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
+from socket import AF_INET, AF_INET6, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
 from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
 
 try:
@@ -239,20 +239,11 @@ class Client(Component):
             channel=channel):
         super(Client, self).__init__(channel=channel)
 
-        if isinstance(bind, int):
-            try:
-                self._bind = (gethostbyname(gethostname()), bind)
-            except gaierror:
-                self._bind = ("0.0.0.0", bind)
-        elif isinstance(bind, str) and ":" in bind:
-            host, port = bind.split(":")
-            port = int(port)
-            self._bind = (host, port)
-        else:
-            self._bind = None
         if isinstance(bind, SocketType):
+            self._bind = bind.getsockname()
             self._sock = bind
         else:
+            self._bind = self.parse_bind_parameter(bind)
             self._sock = self._create_socket()
 
         self._bufsize = bufsize
@@ -263,7 +254,7 @@ class Client(Component):
         self._closeflag = False
         self._connected = False
 
-        self.host = "0.0.0.0"
+        self.host = None
         self.port = 0
         self.secure = False
 
@@ -397,9 +388,10 @@ class Client(Component):
 
 
 class TCPClient(Client):
+    socket_family = AF_INET
 
     def _create_socket(self):
-        sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
+        sock = socket(self.socket_family, SOCK_STREAM, IPPROTO_TCP)
         if self._bind is not None:
             sock.bind(self._bind)
 
@@ -407,6 +399,9 @@ class TCPClient(Client):
         sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
 
         return sock
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
 
     def connect(self, host, port, secure=False, **kwargs):
         self.host = host
@@ -418,6 +413,9 @@ class TCPClient(Client):
             self.keyfile = kwargs.get("keyfile", None)
 
         try:
+            print 'host', host
+            print 'port', port
+            print 's', self._sock.getsockname()
             r = self._sock.connect((host, port))
         except SocketError as e:
             if e.args[0] in (EBADF, EINVAL,):
@@ -426,12 +424,10 @@ class TCPClient(Client):
             else:
                 r = e.args[0]
 
-        if r:
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.fire(Error(r))
-                return
+                raise
 
         self._connected = True
 
@@ -441,6 +437,13 @@ class TCPClient(Client):
             self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
 
         self.fire(Connected(host, port))
+
+
+class TCP6Client(TCPClient):
+    socket_family = AF_INET6
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv6_parameter(bind_parameter)
 
 
 class UNIXClient(Client):
@@ -502,17 +505,7 @@ class Server(Component):
             bufsize=BUFSIZE, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
-        if type(bind) is int:
-            try:
-                self._bind = (gethostbyname(gethostname()), bind)
-            except gaierror:
-                self._bind = ("0.0.0.0", bind)
-        elif type(bind) is str and ":" in bind:
-            host, port = bind.split(":")
-            port = int(port)
-            self._bind = (host, port)
-        else:
-            self._bind = bind
+        self._bind = self.parse_bind_parameter(bind)
 
         self._backlog = backlog
         self._bufsize = bufsize
@@ -698,7 +691,7 @@ class Server(Component):
         except SSLError as e:
             raise
 
-        except SocketError as  e:
+        except SocketError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
             elif e.args[0] == EPERM:
@@ -755,9 +748,10 @@ class Server(Component):
 
 
 class TCPServer(Server):
+    socket_family = AF_INET
 
     def _create_socket(self):
-        sock = socket(AF_INET, SOCK_STREAM)
+        sock = socket(self.socket_family, SOCK_STREAM)
 
         sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
@@ -766,6 +760,45 @@ class TCPServer(Server):
         sock.listen(self._backlog)
 
         return sock
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
+
+
+def parse_ipv4_parameter(bind_parameter):
+    if type(bind_parameter) is int:
+        try:
+            bind = (gethostbyname(gethostname()), bind_parameter)
+        except gaierror:
+            bind = ("0.0.0.0", bind_parameter)
+    elif type(bind_parameter) is str and ":" in bind:
+        host, port = bind.split(":")
+        port = int(port)
+        bind = (host, port)
+    else:
+        bind = bind_parameter
+
+    return bind
+
+
+def parse_ipv6_parameter(bind_parameter):
+    if type(bind_parameter) is int:
+        try:
+            _, _, _, _, sockaddr = getaddrinfo(getfqdn(), 0, AF_INET6)[0]
+            bind = (sockaddr, bind_parameter)
+        except (gaierror, IndexError):
+            bind = ("::", bind_parameter)
+    else:
+        bind = bind_parameter
+
+    return bind
+
+
+class TCP6Server(TCPServer):
+    socket_family = AF_INET6
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv6_parameter(bind_parameter)
 
 
 class UNIXServer(Server):

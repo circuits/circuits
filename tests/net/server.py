@@ -19,7 +19,7 @@ class Server(Component):
 
     def ready(self, component):
         self.ready = True
-        self.host, self.port = component._sock.getsockname()
+        self.host, self.port = component._sock.getsockname()[:2]
 
     def closed(self):
         self.closed = True
