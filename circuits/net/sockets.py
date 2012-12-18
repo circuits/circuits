@@ -820,9 +820,10 @@ class UNIXServer(Server):
 
 
 class UDPServer(Server):
+    socket_family = AF_INET
 
     def _create_socket(self):
-        sock = socket(AF_INET, SOCK_DGRAM)
+        sock = socket(self.socket_family, SOCK_DGRAM)
 
         sock.bind(self._bind)
 
@@ -912,7 +913,21 @@ class UDPServer(Server):
             elif self._poller.isWriting(self._sock):
                 self._poller.removeWriter(self._sock)
 
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
+
+
 UDPClient = UDPServer
+
+
+class UDP6Server(UDPServer):
+    socket_family = AF_INET6
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv6_parameter(bind_parameter)
+
+
+UDP6Client = UDP6Server
 
 
 def Pipe(*channels, **kwargs):

@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
-from time import sleep
-
 import pytest
+import socket
 
 from circuits import Manager
-from circuits.tools import kill
 from circuits.core.pollers import Select
 from circuits.core.events import Unregister
 from circuits.net.sockets import Close, Write
-from circuits.net.sockets import UDPServer, UDPClient
+from circuits.net.sockets import UDPServer, UDPClient, UDP6Server, UDP6Client
 
 from .client import Client
 from .server import Server
@@ -21,36 +19,48 @@ def wait_host(server):
     assert pytest.wait_for(server, ("host", "port"), checker)
 
 
-def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"Poller": Select})
+def _pytest_generate_tests(metafunc, ipv6):
+    metafunc.addcall(funcargs={"Poller": Select, "ipv6": ipv6})
 
     try:
         from circuits.core.pollers import Poll
         Poll()
-        metafunc.addcall(funcargs={"Poller": Poll})
+        metafunc.addcall(funcargs={"Poller": Poll, "ipv6": ipv6})
     except AttributeError:
         pass
 
     try:
         from circuits.core.pollers import EPoll
         EPoll()
-        metafunc.addcall(funcargs={"Poller": EPoll})
+        metafunc.addcall(funcargs={"Poller": EPoll, "ipv6": ipv6})
     except AttributeError:
         pass
 
     try:
         from circuits.core.pollers import KQueue
         KQueue()
-        metafunc.addcall(funcargs={"Poller": KQueue})
+        metafunc.addcall(funcargs={"Poller": KQueue, "ipv6": ipv6})
     except AttributeError:
         pass
 
 
-def test_udp(Poller):
+def pytest_generate_tests(metafunc):
+    _pytest_generate_tests(metafunc, ipv6=False)
+    if socket.has_ipv6:
+        _pytest_generate_tests(metafunc, ipv6=True)
+
+
+def test_udp_basic(Poller, ipv6):
     m = Manager() + Poller()
 
-    server = Server() + UDPServer(0)
-    client = Client() + UDPClient(0, channel="client")
+    if ipv6:
+        udp_server = UDP6Server(0)
+        udp_client = UDP6Client(0, channel="client")
+    else:
+        udp_server = UDPServer(0)
+        udp_client = UDPClient(0, channel="client")
+    server = Server() + udp_server
+    client = Client() + udp_client
 
     server.register(m)
     client.register(m)
@@ -73,7 +83,8 @@ def test_udp(Poller):
     finally:
         m.stop()
 
-def test_udp_close(Poller):
+
+def test_udp_close(Poller, ipv6):
     m = Manager() + Poller()
     server = Server() + UDPServer(0)
     server.register(m)
@@ -89,6 +100,7 @@ def test_udp_close(Poller):
         assert pytest.wait_for(server, "disconnected")
 
         server.fire(Unregister(server))
+
         def test(obj, attr):
             return attr not in obj.components
         assert pytest.wait_for(m, server, value=test)
