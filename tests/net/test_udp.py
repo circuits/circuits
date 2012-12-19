@@ -54,7 +54,7 @@ def test_udp_basic(Poller, ipv6):
     m = Manager() + Poller()
 
     if ipv6:
-        udp_server = UDP6Server(0)
+        udp_server = UDP6Server(("::1", 0))
         udp_client = UDP6Client(0, channel="client")
     else:
         udp_server = UDPServer(0)
