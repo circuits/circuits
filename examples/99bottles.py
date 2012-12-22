@@ -40,7 +40,7 @@ class Grep(Component):
         """Line Event Handler"""
 
         if self.pattern in line:
-            print( line )
+            print(line)
 
 # Configure and "run" the System.
 (Tail(sys.argv[1]) + Grep(sys.argv[2])).run()
