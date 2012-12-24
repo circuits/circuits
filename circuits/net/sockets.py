@@ -413,9 +413,6 @@ class TCPClient(Client):
             self.keyfile = kwargs.get("keyfile", None)
 
         try:
-            print 'host', host
-            print 'port', port
-            print 's', self._sock.getsockname()
             r = self._sock.connect((host, port))
         except SocketError as e:
             if e.args[0] in (EBADF, EINVAL,):
