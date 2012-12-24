@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# vim: set sw=3 sts=3 ts=3
 
-"""(Example) Telnet Client
+"""Telnet Example
 
 A basic telnet-like clone that connects to remote hosts
 via tcp and allows the user to send data to the remote
@@ -21,7 +20,7 @@ This example makes use of:
 """
 
 import os
-import optparse
+from optparse import OptionParser
 
 from circuits.io import stdin
 from circuits import handler, Component
@@ -33,11 +32,13 @@ VERSION = "%prog v" + systemVersion
 
 
 def parse_options():
-    parser = optparse.OptionParser(usage=USAGE, version=VERSION)
+    parser = OptionParser(usage=USAGE, version=VERSION)
 
-    parser.add_option("-s", "--ssl",
-            action="store_true", default=False, dest="ssl",
-            help="Enable Secure Socket Layer (SSL)")
+    parser.add_option(
+        "-s", "--ssl",
+        action="store_true", default=False, dest="ssl",
+        help="Enable Secure Socket Layer (SSL)"
+    )
 
     opts, args = parser.parse_args()
 
