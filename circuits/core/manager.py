@@ -645,7 +645,7 @@ class Manager(object):
                 self.fire(Failure.create("Failure", event, error),
                     *event.channels)
 
-            self.fire(Error(etype, evalue, traceback, handler))
+            self.fire(Error(etype, evalue, traceback, event.handler))
 
     def tick(self, timeout=-1):
         """
