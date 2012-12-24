@@ -72,4 +72,6 @@ class Bot(Component):
 
 # Configure and run the system
 bot = Bot("irc.freenode.net") + Debugger()
+# To register a 2nd ``Bot`` instance. Simply use a separate channel.
+Bot("irc.freenode.net", channel="foo").register(bot)
 bot.run()
