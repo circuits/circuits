@@ -26,6 +26,7 @@ class Bot(Component):
         self.host = host
         self.port = port
 
+        # Add TCPClient and IRC to the system.
         self += TCPClient(channel=self.channel) + IRC(channel=self.channel)
 
     def ready(self, component):
