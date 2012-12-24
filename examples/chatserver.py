@@ -36,6 +36,13 @@ def parse_options():
 class ChatServer(Component):
 
     def init(self, args, opts):
+        """Initialize our ``ChatServer`` Component.
+
+        This uses the convenience ``init`` method which is called after the
+        component is proeprly constructed and initialized and passed the
+        same args and kwargs that were passed during construction.
+        """
+
         self.args = args
         self.opts = opts
 
@@ -61,6 +68,8 @@ class ChatServer(Component):
             self.fire(Write(target, data))
 
     def connect(self, sock, host, port):
+        """Connect Event -- Triggered for new connecting clients"""
+
         self.clients[sock] = {
             "host": sock,
             "port": port,
@@ -74,19 +83,26 @@ class ChatServer(Component):
         self.fire(Write(sock, "Please enter a desired nickname: "))
 
     def disconnect(self, sock):
+        """Disconnect Event -- Triggered for disconnecting clients"""
+
         nickname = self.clients[sock]["state"]["nickname"]
-        self.broadcast("!!! {0:s} has left !!!\n".format(nickname), exclude=[sock])
+        self.broadcast("!!! {0:s} has left !!!\n".format(nickname),
+                       exclude=[sock])
         del self.clients[sock]
 
     def read(self, sock, data):
+        """Read Event -- Triggered for when client conenctions have data"""
+
         if not self.clients[sock]["state"]["registered"]:
             nickname = data.strip()
             self.clients[sock]["state"]["registered"] = True
             self.clients[sock]["state"]["nickname"] = nickname
-            self.broadcast("!!! {0:s} has joined !!!\n".format(nickname), exclude=[sock])
+            self.broadcast("!!! {0:s} has joined !!!\n".format(nickname),
+                           exclude=[sock])
         else:
             nickname = self.clients[sock]["state"]["nickname"]
-            self.broadcast("<{0:s}> {1:s}\n".format(nickname, data.strip()), exclude=[sock])
+            self.broadcast("<{0:s}> {1:s}\n".format(nickname, data.strip()),
+                           exclude=[sock])
 
 
 def main():
