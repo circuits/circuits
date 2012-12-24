@@ -235,8 +235,7 @@ class Client(Component):
 
     channel = "client"
 
-    def __init__(self, bind=None, bufsize=BUFSIZE,
-            channel=channel):
+    def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel):
         super(Client, self).__init__(channel=channel)
 
         if isinstance(bind, SocketType):
@@ -260,6 +259,9 @@ class Client(Component):
 
         self.server = {}
         self.issuer = {}
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
 
     @property
     def connected(self):
@@ -400,9 +402,6 @@ class TCPClient(Client):
 
         return sock
 
-    def parse_bind_parameter(self, bind_parameter):
-        return parse_ipv4_parameter(bind_parameter)
-
     def connect(self, host, port, secure=False, **kwargs):
         self.host = host
         self.port = port
@@ -499,7 +498,7 @@ class Server(Component):
     channel = "server"
 
     def __init__(self, bind, secure=False, backlog=BACKLOG,
-            bufsize=BUFSIZE, channel=channel, **kwargs):
+                 bufsize=BUFSIZE, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
         self._bind = self.parse_bind_parameter(bind)
@@ -525,6 +524,9 @@ class Server(Component):
             self.cert_reqs = kwargs.get("cert_reqs", CERT_NONE)
             self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)
             self.ca_certs = kwargs.get("ca_certs", None)
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
 
     @property
     def connected(self):
@@ -678,12 +680,12 @@ class Server(Component):
             newsock, host = self._sock.accept()
             if self.secure and HAS_SSL:
                 newsock = ssl_socket(newsock,
-                    server_side=True,
-                    certfile=self.certfile,
-                    keyfile=self.keyfile,
-                    cert_reqs=self.cert_reqs,
-                    ssl_version=self.ssl_version,
-                    ca_certs=self.ca_certs)
+                                     server_side=True,
+                                     certfile=self.certfile,
+                                     keyfile=self.keyfile,
+                                     cert_reqs=self.cert_reqs,
+                                     ssl_version=self.ssl_version,
+                                     ca_certs=self.ca_certs)
 
         except SSLError as e:
             raise
@@ -909,9 +911,6 @@ class UDPServer(Server):
                 self._close(self._sock)
             elif self._poller.isWriting(self._sock):
                 self._poller.removeWriter(self._sock)
-
-    def parse_bind_parameter(self, bind_parameter):
-        return parse_ipv4_parameter(bind_parameter)
 
 
 UDPClient = UDPServer
