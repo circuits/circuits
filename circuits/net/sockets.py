@@ -771,8 +771,8 @@ def parse_ipv4_parameter(bind_parameter):
             bind = (gethostbyname(gethostname()), bind_parameter)
         except gaierror:
             bind = ("0.0.0.0", bind_parameter)
-    elif type(bind_parameter) is str and ":" in bind:
-        host, port = bind.split(":")
+    elif type(bind_parameter) is str and ":" in bind_parameter:
+        host, port = bind_parameter.split(":")
         port = int(port)
         bind = (host, port)
     else:
