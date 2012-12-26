@@ -228,7 +228,7 @@ class Manager(object):
 
         for _handler in chain(*handlers_chain):
             if _handler.channel:
-                _handler = _handler.channel
+                handler_channel = _handler.channel
             elif hasattr(_handler, "__self__"):
                 handler_channel = getattr(_handler.__self__, "channel", None)
             else:
