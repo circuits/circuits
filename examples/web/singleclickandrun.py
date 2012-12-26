@@ -15,7 +15,9 @@ HTML = """\
  <hr>
  <a href="/exit">Quit</a>
 </body>
-</html>"""
+</html>
+"""
+
 
 class Root(Controller):
 

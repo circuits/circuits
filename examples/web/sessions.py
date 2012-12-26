@@ -2,6 +2,7 @@
 
 from circuits.web import Server, Controller, Sessions
 
+
 class Root(Controller):
 
     def index(self, name="World"):

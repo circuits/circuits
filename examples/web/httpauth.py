@@ -3,6 +3,7 @@
 from circuits.web import Server, Controller
 from circuits.web.tools import check_auth, basic_auth
 
+
 class Root(Controller):
 
     def index(self):

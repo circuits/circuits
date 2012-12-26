@@ -4,19 +4,28 @@
 """An example of a Circuits Component that requires users authenticate
 against /etc/passwd and /etc/shadow before letting them into the web site."""
 
-import os, re
+import os
+import re
+
 from circuits import handler, Component
 from circuits.web import _httpauth, Server, Controller
 from circuits.web.errors import HTTPError, Unauthorized
 
 __author__ = 'Dan McDougall <YouKnowWho@YouKnowWhat.com>'
 
+
 def check_credentials(user, password):
-    """Checks a given user and password against /etc/shadow (or /etc/passwd if
-    /etc/shadow doesn't exist).  Returns True on success and False on failure."""
+    """
+    Checks a given user and password against /etc/shadow (or /etc/passwd if
+    /etc/shadow doesn't exist).  Returns True on success and False on failure.
+    """
+
     from crypt import crypt
     shadow_hash = ''
-    salt_regex = re.compile(r'\$.*\$.*\$') # Matches salts, e.g. "$1$72p6zzHp$"
+
+    # Matches salts, e.g. "$1$72p6zzHp$"
+    salt_regex = re.compile(r'\$.*\$.*\$')
+
     if os.path.exists('/etc/shadow'):
         password_file = '/etc/shadow'
     else:
@@ -26,12 +35,13 @@ def check_credentials(user, password):
         cols = line.split(':')
         if cols[0] == user:
             shadow_hash = cols[1]
-    if salt_regex.match(shadow_hash): # If there's a hashed password...
-        salt = salt_regex.match(shadow_hash).group() # Grab it
-        hashed_pass = crypt(password, salt) # Now hash the plaintext password
-        if hashed_pass == shadow_hash: # If they match...
+    if salt_regex.match(shadow_hash):  # If there's a hashed password...
+        salt = salt_regex.match(shadow_hash).group()  # Grab it
+        hashed_pass = crypt(password, salt)  # Now hash the plaintext password
+        if hashed_pass == shadow_hash:  # If they match...
             return True
     return False
+
 
 class PasswdAuth(Component):
     """A Circuits Component that authenticates the user using the credentials
@@ -54,14 +64,15 @@ class PasswdAuth(Component):
                 return HTTPError(request, response, 400)
             username = ah["username"]
             password = ah["password"]
-            
+
             auth_result = check_credentials(username, password)
-            if auth_result: # User authenticated successfully
+            if auth_result:  # User authenticated successfully
                 request.login = ah["username"]
                 return
         response.headers["WWW-Authenticate"] = _httpauth.basicAuth('System')
         request.login = False
         return Unauthorized(request, response)
+
 
 class Root(Controller):
     """Our web site"""

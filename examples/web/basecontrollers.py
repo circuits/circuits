@@ -3,6 +3,7 @@
 from circuits.web import expose, Server
 from circuits.web.controllers import BaseController
 
+
 class Root(BaseController):
 
     @expose("index")
