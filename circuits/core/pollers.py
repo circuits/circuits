@@ -14,7 +14,6 @@ descriptors for read/write events. Pollers:
 import os
 import select
 import platform
-from time import time
 from errno import EBADF, EINTR
 from select import error as SelectError
 from socket import error as SocketError, create_connection, \
@@ -235,9 +234,10 @@ class Poll(BasePoller):
         self._map = {}
         self._poller = select.poll()
 
-        self._disconnected_flag = (select.POLLHUP
-                | select.POLLERR
-                | select.POLLNVAL
+        self._disconnected_flag = (
+            select.POLLHUP
+            | select.POLLERR
+            | select.POLLNVAL
         )
 
         self._read.append(self._ctrl_recv)
@@ -455,37 +455,57 @@ class KQueue(BasePoller):
 
         self._read.append(self._ctrl_recv)
         self._map[self._ctrl_recv.fileno()] = self._ctrl_recv
-        self._poller.control([select.kevent(self._ctrl_recv,
-            select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0)
+        self._poller.control(
+            [
+                select.kevent(
+                    self._ctrl_recv, select.KQ_FILTER_READ, select.KQ_EV_ADD
+                )
+            ], 0
+        )
 
     def addReader(self, source, sock):
         super(KQueue, self).addReader(source, sock)
         self._map[sock.fileno()] = sock
-        self._poller.control([select.kevent(sock,
-            select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0)
+        self._poller.control(
+            [select.kevent(sock, select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0
+        )
 
     def addWriter(self, source, sock):
         super(KQueue, self).addWriter(source, sock)
         self._map[sock.fileno()] = sock
-        self._poller.control([select.kevent(sock,
-            select.KQ_FILTER_WRITE, select.KQ_EV_ADD)], 0)
+        self._poller.control(
+            [select.kevent(sock, select.KQ_FILTER_WRITE, select.KQ_EV_ADD)], 0
+        )
 
     def removeReader(self, sock):
         super(KQueue, self).removeReader(sock)
-        self._poller.control([select.kevent(sock,
-            select.KQ_FILTER_READ, select.KQ_EV_DELETE)], 0)
+        self._poller.control(
+            [
+                select.kevent(sock, select.KQ_FILTER_READ, select.KQ_EV_DELETE)
+            ],
+            0
+        )
 
     def removeWriter(self, sock):
         super(KQueue, self).removeWriter(sock)
-        self._poller.control([select.kevent(sock,
-            select.KQ_FILTER_WRITE, select.KQ_EV_DELETE)], 0)
+        self._poller.control(
+            [select.kevent(sock, select.KQ_FILTER_WRITE, select.KQ_EV_DELETE)],
+            0
+        )
 
     def discard(self, sock):
         super(KQueue, self).discard(sock)
         del self._map[sock.fileno()]
-        self._poller.control([select.kevent(sock,
-            select.KQ_FILTER_WRITE | select.KQ_FILTER_READ,
-            select.KQ_EV_DELETE)], 0)
+        self._poller.control(
+            [
+                select.kevent(
+                    sock,
+                    select.KQ_FILTER_WRITE | select.KQ_FILTER_READ,
+                    select.KQ_EV_DELETE
+                )
+            ],
+            0
+        )
 
     def _generate_events(self, event):
         try:
@@ -508,8 +528,14 @@ class KQueue(BasePoller):
             # shouldn't happen ?
             # we unregister the socket since we don't care about it anymore
             self._poller.control(
-                [select.kevent(event.ident, event.filter,
-                    select.KQ_EV_DELETE)], 0)
+                [
+                    select.kevent(
+                        event.ident, event.filter, select.KQ_EV_DELETE
+                    )
+                ],
+                0
+            )
+
             return
 
         sock = self._map[event.ident]

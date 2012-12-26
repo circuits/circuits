@@ -29,4 +29,4 @@ __all__ = ("handler", "BaseComponent", "Component", "Event",
         "Manager",
 )
 
-# hghooks: no-pyflakes
+# flake8: noqa

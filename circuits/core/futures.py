@@ -19,7 +19,6 @@ an optional `pool` keyword argument and supplying an instance to a
 from uuid import uuid4 as uuid
 from functools import update_wrapper
 
-from .values import Value
 from .utils import findcmp
 from .workers import Worker
 from .pools import Pool, Task
@@ -44,18 +43,19 @@ def future(pool=None):
             if wrapper.wrapped_event:
                 task = Task(f, self, event, *args, **kwargs)
             else:
-                task = Task(f, self, *args, **kwargs)    
+                task = Task(f, self, *args, **kwargs)
             if p is not None:
                 setattr(self, "_pool", p)
                 return self.fire(task, p)
             else:
                 return Worker(channel=str(uuid())).fire(task)
-                
+
         args = getargspec(f)[0]
         if args and args[0] == "self":
             del args[0]
-        wrapper.wrapped_event = getattr(f, "event", 
-                                        bool(args and args[0] == "event"))
+        wrapper.wrapped_event = getattr(
+            f, "event", bool(args and args[0] == "event")
+        )
         wrapper.event = True
         return update_wrapper(wrapper, f)
     return decorate

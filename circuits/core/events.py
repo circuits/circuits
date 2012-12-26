@@ -10,6 +10,7 @@ from .utils import uncamel
 from inspect import ismethod
 from circuits.tools import Unknown
 
+
 class EventMetaClass(type):
 
     def __init__(cls, name, bases, ns):
@@ -105,10 +106,8 @@ class BaseEvent(object):
             channels = ""
 
         data = "%s %s" % (
-                ", ".join(repr(arg) for arg in self.args),
-                ", ".join("%s=%s" % (k, repr(v)) for k, v in
-                    self.kwargs.items()
-                )
+            ", ".join(repr(arg) for arg in self.args),
+            ", ".join("%s=%s" % (k, repr(v)) for k, v in self.kwargs.items())
         )
 
         return "<%s[%s.%s] (%s)>" % (type, channels, name, data)
@@ -148,6 +147,7 @@ class BaseEvent(object):
             raise TypeError("Expected int or str, got %r" % type(i))
 
 Event = EventMetaClass("Event", (BaseEvent,), {})
+
 
 class LiteralEvent(Event):
     """
@@ -332,6 +332,7 @@ class Unregistered(Event):
     def __init__(self, component, manager):
         super(Unregistered, self).__init__(component, manager)
 
+
 class GenerateEvents(Event):
     """Generate events event
 
@@ -383,7 +384,14 @@ class GenerateEvents(Event):
                                    or self._time_left > time_left):
                 self._time_left = time_left
                 if self._time_left == 0 and self.handler is not None:
-                    m = getattr( getattr( self.handler, "im_self", getattr( self.handler, "__self__", Unknown() ) ), "resume", None )
+                    m = getattr(
+                        getattr(
+                            self.handler, "im_self", getattr(
+                                self.handler, "__self__", Unknown()
+                            )
+                        ),
+                        "resume", None
+                    )
                     if m is not None and ismethod(m):
                         m()
 

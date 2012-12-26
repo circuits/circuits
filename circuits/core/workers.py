@@ -13,8 +13,6 @@ main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
 from .events import Event
-from .utils import findroot
-from .manager import Manager
 from .handlers import handler
 from .components import BaseComponent
 

@@ -74,7 +74,7 @@ class Value(object):
 
     def __iter__(self):
         return iter(map(lambda v: v.value if isinstance(v, Value) else v,
-                self.value))
+                    self.value))
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
@@ -96,8 +96,12 @@ class Value(object):
             return
 
         if self.manager is not None and self.notify:
-            self.manager.fire(Event.create("%sValueChanged" %
-                self.event.__class__.__name__, self))
+            self.manager.fire(
+                Event.create(
+                    "%sValueChanged" % self.event.__class__.__name__,
+                    self
+                )
+            )
 
     def getValue(self, recursive=True):
         value = self._value

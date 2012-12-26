@@ -26,7 +26,7 @@ class Loader(BaseComponent):
     channel = "loader"
 
     def __init__(self, auto_register=True, init_args=None,
-            init_kwargs=None, paths=None, channel=channel):
+                 init_kwargs=None, paths=None, channel=channel):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Loader, self).__init__(channel=channel)
@@ -45,8 +45,8 @@ class Loader(BaseComponent):
         if module is not None:
 
             test = lambda x: isclass(x) \
-                    and issubclass(x, BaseComponent) \
-                    and getmodule(x) is module
+                and issubclass(x, BaseComponent) \
+                and getmodule(x) is module
             components = [x[1] for x in getmembers(module, test)]
 
             if components:

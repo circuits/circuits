@@ -32,7 +32,7 @@ class Debugger(BaseComponent):
     IgnoreChannels = []
 
     def __init__(self, errors=True, events=True, file=None, logger=None,
-            prefix=None, trim=None, **kwargs):
+                 prefix=None, trim=None, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Debugger, self).__init__()
