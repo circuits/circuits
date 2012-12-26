@@ -44,7 +44,7 @@ class Startup(BaseComponent):
     channel = "startup"
 
     def __init__(self, path, opts, command, env=Environment,
-            channel=channel):
+                 channel=channel):
         super(Startup, self).__init__(channel=channel)
 
         self.path = path
@@ -76,7 +76,7 @@ class Startup(BaseComponent):
             if not os.path.exists(self.env.path):
                 raise Error("Environment does not exist!")
             else:
-                self.fire(LoadEnvironment(), self.env)
+                self.fire(Load(), self.env)
         else:
             if os.path.exists(self.env.path):
                 raise Error("Environment already exists!")
@@ -114,8 +114,8 @@ class Startup(BaseComponent):
 
     @handler("init")
     def _on_init(self):
-        self.fire(CreateEnvironment(), self.env)
+        self.fire(Create(), self.env)
 
     @handler("upgrade")
     def _on_upgrade(self):
-        self.fire(UpgradeEnvironment(), self.env)
+        self.fire(Upgrade(), self.env)

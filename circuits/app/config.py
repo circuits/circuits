@@ -13,7 +13,7 @@ the configuration to a file.
 try:
     from configparser import ConfigParser
 except ImportError:
-    from ConfigParser import ConfigParser
+    from ConfigParser import ConfigParser  # NOQA
 
 from circuits import handler, BaseComponent, Event
 

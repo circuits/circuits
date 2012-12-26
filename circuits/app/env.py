@@ -160,8 +160,8 @@ class Environment(BaseComponent):
         # Create a few files
         createFile(joinpath(self.path, "VERSION"), "%d" % self.version)
         createFile(
-                joinpath(self.path, "README"),
-                "This directory contains a %s Environment." % self.envname
+            joinpath(self.path, "README"),
+            "This directory contains a %s Environment." % self.envname
         )
 
         # Setup the default configuration
