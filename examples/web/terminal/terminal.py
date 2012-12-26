@@ -7,16 +7,23 @@ from StringIO import StringIO
 from subprocess import Popen, PIPE
 
 from circuits.io import File
-from circuits.tools import kill
 from circuits.web.events import Stream
+from circuits.net.sockets import Write
+from circuits.tools import kill, inspect
 from circuits import handler, Event, Component
 from circuits.web import Server, Controller, Logger, Static, Sessions
 
 BUFFERING = 1
 STREAMING = 2
 
-class Kill(Event): pass
-class Input(Event): pass
+
+class Kill(Event):
+    pass
+
+
+class Input(Event):
+    pass
+
 
 class Command(Component):
 
@@ -32,8 +39,10 @@ class Command(Component):
         self._state = BUFFERING
         self._buffer = None
 
-        self._p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
-                close_fds=True, preexec_fn=os.setsid)
+        self._p = Popen(
+            command, shell=True, stdout=PIPE, stderr=PIPE,
+            close_fds=True, preexec_fn=os.setsid
+        )
 
         self._stdin = None
         if self._p.stdin is not None:
@@ -41,10 +50,13 @@ class Command(Component):
             self._stdin.register(self)
 
         self._stdout = File(self._p.stdout, channel="%s.stdout" % channel)
-        self.addHandler(self._on_stdout_eof, "eof",
-                channel="%s.stdout" % channel)
-        self.addHandler(self._on_stdout_read, "read",
-                channel="%s.stdout" % channel)
+        self.addHandler(
+            handler(self._on_stdout_eof)("eof", channel="%s.stdout" % channel)
+        )
+        self.addHandler(
+            handler(self._on_stdout_read)("read",
+                                          channel="%s.stdout" % channel)
+        )
         self._stdout.register(self)
 
     @handler("disconnect", channel="server")
@@ -88,10 +100,11 @@ class Command(Component):
             else:
                 self.fire(Stream(self._response, data), "http")
 
+
 class Root(Controller):
 
     def GET(self, *args, **kwargs):
-        self.expires(60*60*24*30)
+        self.expires(60 * 60 * 24 * 30)
         return self.serve_file(os.path.abspath("static/index.html"))
 
     def POST(self, input=None):
@@ -110,12 +123,12 @@ class Root(Controller):
 
         return self.response
 
-from circuits import Debugger
 
-(Server(("0.0.0.0", 8000)) + Debugger(events=False)
-        + Static("/js", docroot="static/js")
-        + Static("/css", docroot="static/css")
-        + Sessions()
-        + Logger()
-        + Root()
-        ).run()
+(
+    Server(("0.0.0.0", 8000))
+    + Static("/js", docroot="static/js")
+    + Static("/css", docroot="static/css")
+    + Sessions()
+    + Logger()
+    + Root()
+).run()
