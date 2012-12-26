@@ -226,17 +226,17 @@ class Manager(object):
         if name in self._handlers:
             handlers_chain.append(self._handlers[name])
 
-        for handler in chain(*handlers_chain):
-            if handler.channel:
-                handler_channel = handler.channel
-            elif hasattr(handler, "__self__"):
-                handler_channel = getattr(handler.__self__, "channel", None)
+        for _handler in chain(*handlers_chain):
+            if _handler.channel:
+                _handler = _handler.channel
+            elif hasattr(_handler, "__self__"):
+                handler_channel = getattr(_handler.__self__, "channel", None)
             else:
                 handler_channel = None
 
             if channel == "*" or handler_channel in ("*", channel,) \
                     or channel_is_instance:
-                handlers.add(handler)
+                handlers.add(_handler)
 
         handlers.update(self._globals)
 
