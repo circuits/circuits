@@ -108,8 +108,12 @@ def reprhandler(handler):
     names = ".".join(handler.names)
     type = "filter" if handler.filter else "listener"
 
-    instance = getattr(handler, "im_self",
-            getattr(handler, "__self__", Unknown())).__class__.__name__
+    instance = getattr(
+        handler, "im_self", getattr(
+            handler, "__self__", Unknown()
+        )
+    ).__class__.__name__
+
     method = handler.__name__
 
     return format % (type, channel, names, instance, method)
