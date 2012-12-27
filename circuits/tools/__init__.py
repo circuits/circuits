@@ -137,12 +137,6 @@ def inspect(x):
         write("  %s\n" % component)
     write("\n")
 
-    ticks = x.getTicks()
-    write(" Tick Functions: %d\n" % len(ticks))
-    for tick in ticks:
-        write("  %s\n" % tick)
-    write("\n")
-
     write(" Event Handlers: %d\n" % len(x._handlers.values()))
     for event, handlers in x._handlers.items():
         write("  %s; %d\n" % (event, len(x._handlers[event])))
