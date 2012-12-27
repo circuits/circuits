@@ -66,19 +66,19 @@ class Unmounted(Event):
 
 
 EVENT_MAP = {
-        IN_MOVED_TO:        Moved,
-        IN_MOVE_SELF:       Moved,
-        IN_MOVED_FROM:      Moved,
-        IN_CLOSE_WRITE:     Closed,
-        IN_CLOSE_NOWRITE:   Closed,
-        IN_OPEN:            Opened,
-        IN_DELETE_SELF:     Deleted,
-        IN_DELETE:          Deleted,
-        IN_CREATE:          Created,
-        IN_ACCESS:          Accessed,
-        IN_MODIFY:          Modified,
-        IN_ATTRIB:          Modified,
-        IN_UNMOUNT:         Unmounted,
+    IN_MOVED_TO:        Moved,
+    IN_MOVE_SELF:       Moved,
+    IN_MOVED_FROM:      Moved,
+    IN_CLOSE_WRITE:     Closed,
+    IN_CLOSE_NOWRITE:   Closed,
+    IN_OPEN:            Opened,
+    IN_DELETE_SELF:     Deleted,
+    IN_DELETE:          Deleted,
+    IN_CREATE:          Created,
+    IN_ACCESS:          Accessed,
+    IN_MODIFY:          Modified,
+    IN_ATTRIB:          Modified,
+    IN_UNMOUNT:         Unmounted,
 }
 
 

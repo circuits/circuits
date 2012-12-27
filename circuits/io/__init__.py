@@ -30,3 +30,5 @@ try:
     stderr = File(fd=sys.stderr, mode="w", channel="stderr")
 except:
     pass
+
+# flake8: noqa

@@ -28,7 +28,7 @@ class File(Component):
     channel = "file"
 
     def __init__(self, filename=None, mode="r", fd=None, autoclose=True,
-            bufsize=BUFSIZE, encoding="utf-8", channel=channel):
+                 bufsize=BUFSIZE, encoding="utf-8", channel=channel):
         super(File, self).__init__(channel=channel)
 
         self.bufsize = bufsize
