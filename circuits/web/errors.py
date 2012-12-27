@@ -12,7 +12,7 @@ from cgi import escape
 try:
     from urllib.parse import urljoin as _urljoin
 except ImportError:
-    from urlparse import urljoin as _urljoin
+    from urlparse import urljoin as _urljoin  # NOQA
 
 from circuits import Event
 
@@ -30,7 +30,7 @@ class HTTPError(Event):
 
     def __init__(self, request, response, code=None, **kwargs):
         """
-        The constructor creates a new instance and modifies the *response* 
+        The constructor creates a new instance and modifies the *response*
         argument to reflect the error.
         """
         super(HTTPError, self).__init__(request, response, code, **kwargs)
@@ -46,12 +46,14 @@ class HTTPError(Event):
 
         self.error = kwargs.get("error", None)
 
-        self.description = kwargs.get("description",
-                getattr(self.__class__, "description", ""))
+        self.description = kwargs.get(
+            "description", getattr(self.__class__, "description", "")
+        )
 
         if self.error is not None:
             self.traceback = "ERROR: (%s) %s\n%s" % (
-                    self.error[0], self.error[1], "".join(self.error[2]))
+                self.error[0], self.error[1], "".join(self.error[2])
+            )
         else:
             self.traceback = ""
 
@@ -77,30 +79,33 @@ class HTTPError(Event):
         return DEFAULT_ERROR_MESSAGE % self.data
 
     def __repr__(self):
-        return "<%s %d %s>" % (self.__class__.__name__, self.code,
-                HTTP_STATUS_CODES.get(self.code, "???"))
+        return "<%s %d %s>" % (
+            self.__class__.__name__, self.code, HTTP_STATUS_CODES.get(
+                self.code, "???"
+            )
+        )
 
 
 class Forbidden(HTTPError):
-    """An event for signaling the HTTP Forbidden error 
+    """An event for signaling the HTTP Forbidden error
     """
     code = 403
 
 
 class Unauthorized(HTTPError):
-    """An event for signaling the HTTP Unauthorized error 
+    """An event for signaling the HTTP Unauthorized error
     """
     code = 401
 
 
 class NotFound(HTTPError):
-    """An event for signaling the HTTP Not Fouond error 
+    """An event for signaling the HTTP Not Fouond error
     """
     code = 404
 
 
 class Redirect(HTTPError):
-    """An event for signaling the HTTP Redirect response 
+    """An event for signaling the HTTP Redirect response
     """
 
     def __init__(self, request, response, urls, code=None):
@@ -148,13 +153,13 @@ class Redirect(HTTPError):
             # new URI(s)."
             msg = {300: "This resource can be found at <a href='%s'>%s</a>.",
                    301: ("This resource has permanently moved to "
-                       "<a href='%s'>%s</a>."),
+                         "<a href='%s'>%s</a>."),
                    302: ("This resource resides temporarily at "
-                        "<a href='%s'>%s</a>."),
+                         "<a href='%s'>%s</a>."),
                    303: ("This resource can be found at "
-                        "<a href='%s'>%s</a>."),
+                         "<a href='%s'>%s</a>."),
                    307: ("This resource has moved temporarily to "
-                        "<a href='%s'>%s</a>."),
+                         "<a href='%s'>%s</a>."),
                    }[code]
             response.body = "<br />\n".join([msg % (u, u) for u in urls])
             # Previous code may have set C-L, so we have to reset it
@@ -195,5 +200,7 @@ class Redirect(HTTPError):
             channels = str(self.channels[0])
         else:
             channels = ""
-        return "<%s %d[%s.%s] %s>" % (self.__class__.__name__,
-                self.code, channels, self.name, " ".join(self.urls))
+        return "<%s %d[%s.%s] %s>" % (
+            self.__class__.__name__, self.code, channels, self.name,
+            " ".join(self.urls)
+        )

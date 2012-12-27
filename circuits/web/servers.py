@@ -72,8 +72,9 @@ class BaseServer(BaseComponent):
 
         Request.server = self
         if isinstance(self.server._bind, tuple):
-            Request.local = Host(self.server._bind[0],
-                    self.server._bind[1])
+            Request.local = Host(
+                self.server._bind[0], self.server._bind[1]
+            )
         else:
             Request.local = Host(self.server._bind, None)
         Request.host = self.host
@@ -151,9 +152,10 @@ class StdinServer(BaseComponent):
 
         WebEvent.channels = (channel,)
 
-        self.server = (io.stdin
-                + io.stdout
-                + HTTP(encoding=encoding, channel=channel)
+        self.server = (
+            io.stdin
+            + io.stdout
+            + HTTP(encoding=encoding, channel=channel)
         )
 
         self += self.server

@@ -102,5 +102,6 @@ class Dispatcher(BaseComponent):
             if isinstance(name, unicodestr):
                 name = str(name)
 
-            return self.fire(Request.create(name,
-                *event.args, **event.kwargs), channel)
+            return self.fire(
+                Request.create(name, *event.args, **event.kwargs), channel
+            )

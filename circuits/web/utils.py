@@ -11,18 +11,17 @@ import re
 import zlib
 import time
 import struct
-import urllib
 from cgi import FieldStorage
 
 try:
     from urllib.parse import urljoin as _urljoin
 except ImportError:
-    from urlparse import urljoin as _urljoin
+    from urlparse import urljoin as _urljoin  # NOQA
 
 try:
     from urllib.parse import parse_qs as _parse_qs
 except ImportError:
-    from cgi import parse_qs as _parse_qs
+    from cgi import parse_qs as _parse_qs  # NOQA
 
 from .exceptions import InternalServerError, RequestEntityTooLarge
 
@@ -38,10 +37,12 @@ def parse_body(request, response, params):
         headers["Content-Type"] = ""
 
     try:
-        form = FieldStorage(fp=body,
+        form = FieldStorage(
+            fp=body,
             headers=headers,
             environ={"REQUEST_METHOD": "POST"},
-            keep_blank_values=True)
+            keep_blank_values=True
+        )
     except Exception as e:
         if e.__class__.__name__ == 'MaxSizeExceeded':
             # Post data is too big
@@ -98,8 +99,8 @@ def compress(body, compress_level):
 
     # Header
     yield b"\037\213\010\0" \
-            + struct.pack("<L", int(time.time())) \
-            + b"\002\377"
+        + struct.pack("<L", int(time.time())) \
+        + b"\002\377"
 
     size = 0
     crc = zlib.crc32(b"")
@@ -121,8 +122,8 @@ def compress(body, compress_level):
         yield zobj.compress(chunk)
 
     yield zobj.flush() \
-            + struct.pack("<l", crc) \
-            + struct.pack("<L", size & 0xFFFFFFFF)
+        + struct.pack("<l", crc) \
+        + struct.pack("<L", size & 0xFFFFFFFF)
 
 
 def url(request, path="", qs="", script_name=None, base=None, relative=None):

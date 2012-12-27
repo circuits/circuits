@@ -44,7 +44,7 @@ def expose(*channels, **config):
                     del self.session
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
-                getargspec(f)
+            getargspec(f)
         if wrapper.args and wrapper.args[0] == "self":
             del wrapper.args[0]
         wrapper.event = True
@@ -113,12 +113,14 @@ class BaseController(BaseComponent):
         return Redirect(self.request, self.response, urls, code=code)
 
     def serve_file(self, path, type=None, disposition=None, name=None):
-        return tools.serve_file(self.request, self.response, path,
-                type, disposition, name)
+        return tools.serve_file(
+            self.request, self.response, path, type, disposition, name
+        )
 
     def serve_download(self, path, name=None):
-        return tools.serve_download(self.request, self.response, path,
-                name)
+        return tools.serve_download(
+            self.request, self.response, path, name
+        )
 
     def expires(self, secs=0, force=False):
         tools.expires(self.request, self.response, secs, force)
@@ -144,7 +146,7 @@ def exposeJSON(*channels, **config):
                     return result
                 else:
                     self.response.headers["Content-Type"] = (
-                            "application/json"
+                        "application/json"
                     )
                     return json.dumps(result)
             finally:
@@ -156,7 +158,7 @@ def exposeJSON(*channels, **config):
                     del self.session
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
-                getargspec(f)
+            getargspec(f)
         if wrapper.args and wrapper.args[0] == "self":
             del wrapper.args[0]
 

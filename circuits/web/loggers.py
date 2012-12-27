@@ -26,7 +26,8 @@ class Logger(BaseComponent):
 
     channel = "web"
 
-    format = "%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
+    format = "%(h)s %(l)s %(u)s %(t)s " \
+             "\"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
 
     def __init__(self, file=None, logger=None, **kwargs):
         super(Logger, self).__init__(**kwargs)

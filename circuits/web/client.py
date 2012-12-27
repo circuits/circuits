@@ -2,7 +2,7 @@
 try:
     from urllib.parse import urlparse
 except ImportError:
-    from urlparse import urlparse
+    from urlparse import urlparse  # NOQA
 
 from circuits.web.headers import Headers
 from circuits.core import handler, BaseComponent, Event
@@ -89,15 +89,17 @@ class Client(BaseComponent):
     @handler("connect")
     def connect(self):
         if not self._transport.connected:
-            self.fire(Connect(self._host, self._port, self._secure),
-                    self._transport)
+            self.fire(
+                Connect(self._host, self._port, self._secure),
+                self._transport
+            )
 
     @handler("request")
     def request(self, method, path, body=None, headers={}):
         if self._transport.connected:
             headers = Headers([(k, v) for k, v in headers.items()])
             # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-            if not headers.has_key("Host"):
+            if "Host" not in headers:
                 headers["Host"] = self._host \
                     + (":" + str(self._port)) if self._port else ""
             command = "%s %s HTTP/1.1" % (method, path)

@@ -10,7 +10,8 @@ This module implements WSGI Components.
 try:
     from urllib.parse import unquote
 except ImportError:
-    from urllib import unquote
+    from urllib import unquote  # NOQA
+
 from io import StringIO
 from traceback import format_tb
 from sys import exc_info as _exc_info
@@ -30,12 +31,12 @@ class Application(BaseComponent):
     channel = "web"
 
     headerNames = {
-            "HTTP_CGI_AUTHORIZATION": "Authorization",
-            "CONTENT_LENGTH": "Content-Length",
-            "CONTENT_TYPE": "Content-Type",
-            "REMOTE_HOST": "Remote-Host",
-            "REMOTE_ADDR": "Remote-Addr",
-            }
+        "HTTP_CGI_AUTHORIZATION": "Authorization",
+        "CONTENT_LENGTH": "Content-Length",
+        "CONTENT_TYPE": "Content-Type",
+        "REMOTE_HOST": "Remote-Host",
+        "REMOTE_ADDR": "Remote-Addr",
+    }
 
     def __init__(self):
         super(Application, self).__init__()
@@ -61,12 +62,14 @@ class Application(BaseComponent):
         headers = Headers(list(self.translateHeaders(environ)))
 
         protocol = tuple(map(int, env("SERVER_PROTOCOL")[5:].split(".")))
-        request = wrappers.Request(None,
-                env("REQUEST_METHOD"),
-                env("wsgi.url_scheme"),
-                env("PATH_INFO", ""),
-                protocol,
-                env("QUERY_STRING", ""))
+        request = wrappers.Request(
+            None,
+            env("REQUEST_METHOD"),
+            env("wsgi.url_scheme"),
+            env("PATH_INFO", ""),
+            protocol,
+            env("QUERY_STRING", "")
+        )
         request.server = None
 
         request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))

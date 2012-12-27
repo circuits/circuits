@@ -11,7 +11,7 @@ RPC calls over XML into RPC events.
 try:
     from xmlrpc.client import dumps, loads, Fault
 except ImportError:
-    from xmlrpclib import dumps, loads, Fault
+    from xmlrpclib import dumps, loads, Fault  # NOQA
 
 from circuits.web.events import Response
 from circuits import handler, Event, BaseComponent
@@ -70,8 +70,7 @@ class XMLRPC(BaseComponent):
             return True
 
     def _response(self, result):
-        return dumps((result,), encoding=self.encoding,
-            allow_none=True)
+        return dumps((result,), encoding=self.encoding, allow_none=True)
 
     def _error(self, code, message):
         fault = Fault(code, message)

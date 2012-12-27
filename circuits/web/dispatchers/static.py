@@ -43,7 +43,7 @@ class Static(BaseComponent):
     channel = "web"
 
     def __init__(self, path=None, docroot=None,
-            defaults=("index.html", "index.xhtml",), dirlisting=False):
+                 defaults=("index.html", "index.xhtml",), dirlisting=False):
         super(Static, self).__init__()
 
         self.path = path
@@ -83,7 +83,8 @@ class Static(BaseComponent):
             # Try to serve one of default files first..
             for default in self.defaults:
                 location = os.path.abspath(
-                        os.path.join(self.docroot, path, default))
+                    os.path.join(self.docroot, path, default)
+                )
                 if os.path.exists(location):
                     # Don't set cookies for static content
                     response.cookie.clear()
@@ -109,7 +110,8 @@ class Static(BaseComponent):
                     if not item.startswith("."):
                         url = os.path.join("/", path, cur_dir, item)
                         location = os.path.abspath(
-                                os.path.join(self.docroot, path, item))
+                            os.path.join(self.docroot, path, item)
+                        )
                         if os.path.isdir(location):
                             li = '<li><a href="%s/">%s/</a></li>' % (url, item)
                         else:

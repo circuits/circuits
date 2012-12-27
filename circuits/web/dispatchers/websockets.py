@@ -14,7 +14,7 @@ from hashlib import md5
 try:
     from urllib.parse import urlunsplit
 except ImportError:
-    from urlparse import urlunsplit
+    from urlparse import urlunsplit  # NOQA
 from collections import defaultdict
 
 from circuits.net.sockets import Write
@@ -76,8 +76,9 @@ class WebSockets(BaseComponent):
                 buf = buf[(end_idx + 1):]
             elif frame_type == 255:
                 # Closing handshake.
-                assert ord(buf[1]) == 0, \
-                        "Unexpected closing handshake: %r" % buf
+                assert ord(buf[1]) == (
+                    0, "Unexpected closing handshake: %r" % buf
+                )
                 self.closed = True
                 break
             else:

@@ -149,21 +149,24 @@ class Headers(dict):
         del self[name]
         self._headers.append((name, val))
 
-    def __delitem__(self,name):
+    def __delitem__(self, name):
         """Delete all occurrences of a header, if present.
 
         Does *not* raise an exception if the header is missing.
         """
         name = name.lower()
-        self._headers[:] = [kv for kv in self._headers if kv[0].lower() != name]
+        self._headers[:] = [
+            kv for kv in self._headers
+            if kv[0].lower() != name
+        ]
 
-    def __getitem__(self,name):
+    def __getitem__(self, name):
         """Get the first header value for 'name'
 
         Return None if the header is missing instead of raising an exception.
 
-        Note that if the header appeared multiple times, the first exactly which
-        occurrance gets returned is undefined. Use getall() to get all
+        Note that if the header appeared multiple times, the first exactly
+        which occurrance gets returned is undefined. Use getall() to get all
         the values matching a header field name.
         """
         return self.get(name)
@@ -190,10 +193,11 @@ class Headers(dict):
         name = name.lower()
         return [kv[1] for kv in self._headers if kv[0].lower() == name]
 
-    def get(self,name,default=None):
+    def get(self, name, default=None):
         """Get the first header value for 'name', or return 'default'"""
+
         name = name.lower()
-        for k,v in self._headers:
+        for k, v in self._headers:
             if k.lower() == name:
                 return v
         return default
@@ -234,16 +238,16 @@ class Headers(dict):
     def __str__(self):
         """str() returns the formatted headers, complete with end line,
         suitable for direct HTTP transmission."""
-        return '\r\n'.join(["%s: %s" % kv for kv in self._headers] + ['',''])
+        return '\r\n'.join(["%s: %s" % kv for kv in self._headers] + ["", ""])
 
-    def setdefault(self,name,value):
+    def setdefault(self, name, value):
         """Return first matching header value for 'name', or 'value'
 
         If there is no header named 'name', add a new header with name 'name'
         and value 'value'."""
         result = self.get(name)
         if result is None:
-            self._headers.append((name,value))
+            self._headers.append((name, value))
             return value
         else:
             return result

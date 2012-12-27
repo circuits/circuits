@@ -20,4 +20,4 @@ try:
 except ImportError:
     pass
 
-# hghooks: no-pyflakes
+# flake8: noqa

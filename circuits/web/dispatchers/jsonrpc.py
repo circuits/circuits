@@ -82,21 +82,21 @@ class JSONRPC(BaseComponent):
 
     def _response(self, id, result):
         data = {
-                "id": id,
-                "version": "1.1",
-                "result": result,
-                "error": None
-                }
+            "id": id,
+            "version": "1.1",
+            "result": result,
+            "error": None
+        }
         return json.dumps(data).encode(self.encoding)
 
     def _error(self, id, code, message):
         data = {
-                "id": id,
-                "version": "1.1",
-                "error": {
-                    "name": "JSONRPCError",
-                    "code": code,
-                    "message": message
-                    }
-                }
+            "id": id,
+            "version": "1.1",
+            "error": {
+                "name": "JSONRPCError",
+                "code": code,
+                "message": message
+            }
+        }
         return json.dumps(data).encode(self.encoding)

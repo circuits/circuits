@@ -33,7 +33,7 @@ __license__ = """
 Copyright (c) 2005, Tiago Cogumbreiro <cogumbreiro@users.sf.net>
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
+Redistribution and use in source and binary forms, with or without modification
 are permitted provided that the following conditions are met:
 
     * Redistributions of source code must retain the above copyright notice,
@@ -41,7 +41,7 @@ are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright notice,
       this list of conditions and the following disclaimer in the documentation
       and/or other materials provided with the distribution.
-    * Neither the name of Sylvain Hellegouarch nor the names of his contributors
+    * Neither the name of Sylvain Hellegouarch nor the names of his contributor
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
 
@@ -61,16 +61,18 @@ __all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse",
            "parseAuthorization", "SUPPORTED_ALGORITHM", "md5SessionKey",
            "calculateNonce", "SUPPORTED_QOP")
 
-################################################################################
+###############################################################################
 import time
+
 try:
     from base64 import decodebytes as base64_decodebytes
 except ImportError:
-    from base64 import b64decode as base64_decodebytes
+    from base64 import b64decode as base64_decodebytes  # NOQA
+
 try:
     from urllib.request import parse_http_list, parse_keqv_list
 except ImportError:
-    from urllib2 import parse_http_list, parse_keqv_list
+    from urllib2 import parse_http_list, parse_keqv_list  # NOQA
 
 from hashlib import md5
 
@@ -82,7 +84,7 @@ AUTH_INT = "auth-int"
 SUPPORTED_ALGORITHM = (MD5, MD5_SESS)
 SUPPORTED_QOP = (AUTH, AUTH_INT)
 
-################################################################################
+###############################################################################
 # doAuth
 #
 DIGEST_AUTH_ENCODERS = {
@@ -102,8 +104,10 @@ def calculateNonce(realm, algorithm=MD5):
     try:
         encoder = DIGEST_AUTH_ENCODERS[algorithm]
     except KeyError:
-        raise NotImplementedError("The chosen algorithm (%s) does not have "\
-                                   "an implementation yet" % algorithm)
+        raise NotImplementedError(
+            "The chosen algorithm (%s) does not have "
+            "an implementation yet" % algorithm
+        )
 
     s = "%d:%s" % (time.time(), realm)
     return encoder(s.encode("utf-8"))
@@ -140,7 +144,7 @@ def doAuth(realm):
     return digestAuth(realm) + " " + basicAuth(realm)
 
 
-################################################################################
+###############################################################################
 # Parse authorization parameters
 #
 def _parseDigestAuthorization(auth_params):
@@ -157,13 +161,11 @@ def _parseDigestAuthorization(auth_params):
             return None
 
     # If qop is sent then cnonce and nc MUST be present
-    if "qop" in params and not ("cnonce" in params \
-                                      and "nc" in params):
+    if "qop" in params and not ("cnonce" in params and "nc" in params):
         return None
 
     # If qop is not sent, neither cnonce nor nc can be present
-    if ("cnonce" in params or "nc" in params) and \
-       "qop" not in params:
+    if ("cnonce" in params or "nc" in params) and "qop" not in params:
         return None
 
     return params
@@ -203,7 +205,7 @@ def parseAuthorization(credentials):
     return params
 
 
-################################################################################
+###############################################################################
 # Check provided response for a valid password
 #
 def md5SessionKey(params, password):
@@ -277,7 +279,8 @@ def _A2(params, method, kwargs):
         raise NotImplementedError("The 'qop' method is unknown: %s" % qop)
 
 
-def _computeDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
+def _computeDigestResponse(auth_map, password, method="GET", A1=None,
+                           **kwargs):
     """
     Generates a response respecting the algorithm defined in RFC 2617
     """
@@ -349,7 +352,8 @@ def _checkDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
     return response == auth_map["response"]
 
 
-def _checkBasicResponse(auth_map, password, method='GET', encrypt=None, **kwargs):
+def _checkBasicResponse(auth_map, password, method='GET', encrypt=None,
+                        **kwargs):
     # Note that the Basic response doesn't provide the realm value so we cannot
     # test it
     try:
@@ -382,4 +386,6 @@ def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
     """
     global AUTH_RESPONSES
     checker = AUTH_RESPONSES[auth_map["auth_scheme"]]
-    return checker(auth_map, password, method=method, encrypt=encrypt, **kwargs)
+    return checker(
+        auth_map, password, method=method, encrypt=encrypt, **kwargs
+    )

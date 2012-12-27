@@ -13,8 +13,8 @@ try:
     from urllib.parse import unquote
     from urllib.parse import urlparse
 except ImportError:
-    from urllib import unquote
-    from urlparse import urlparse
+    from urllib import unquote  # NOQA
+    from urlparse import urlparse  # NOQA
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
@@ -41,17 +41,17 @@ class HTTP(BaseComponent):
 
     Implements the HTTP server protocol and parses and processes incoming
     HTTP messages, creating and sending an appropriate response.
-    
+
     The component handles :class:`~circuits.net.sockets.Read` events
-    on its channel and collects the associated data until a complete 
+    on its channel and collects the associated data until a complete
     HTTP request has been received. It parses the request's content
     and puts it in a :class:`~circuits.web.wrappers.Request` object and
     creates a corresponding :class:`~circuits.web.wrappers.Response`
     object. Then it emits a :class:`~circuits.web.events.Request`
     event with these objects as arguments.
-    
-    The component defines several handlers that send a response back to 
-    the client.   
+
+    The component defines several handlers that send a response back to
+    the client.
     """
 
     channel = "web"
@@ -90,18 +90,18 @@ class HTTP(BaseComponent):
     @handler("response")
     def _on_response(self, response):
         """``Response`` Event Handler
-        
+
         :param response: the ``Response`` object created when the
             HTTP request was initially received.
         :type response: :class:`~circuits.web.wrappers.Response`
-        
-        This handler builds an HTTP response data stream from 
+
+        This handler builds an HTTP response data stream from
         the information contained in the *response* object and
         sends it to the client (firing ``Write`` events).
         """
         self.fire(
-                Write(response.request.sock,
-                    str(response).encode(HTTP_ENCODING)))
+            Write(response.request.sock, str(response).encode(HTTP_ENCODING))
+        )
 
         if response.stream and response.body:
             try:
@@ -115,8 +115,11 @@ class HTTP(BaseComponent):
             elif isinstance(response.body, unicode):
                 body = response.body.encode(self._encoding)
             else:
-                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) \
-                    for s in response.body if s is not None)
+                parts = (
+                    s
+                    if isinstance(s, bytes) else s.encode(self._encoding)
+                    for s in response.body if s is not None
+                )
                 body = b"".join(parts)
 
             if body:
@@ -173,13 +176,15 @@ class HTTP(BaseComponent):
 
             requestline, data = data.split(b"\r\n", 1)
             requestline = requestline.strip().decode(
-                    HTTP_ENCODING, "replace")
+                HTTP_ENCODING, "replace"
+            )
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
             protocol = tuple(map(int, protocol[5:].split(".")))
-            request = wrappers.Request(sock, method, scheme, path,
-                    protocol, qs)
+            request = wrappers.Request(
+                sock, method, scheme, path, protocol, qs
+            )
             response = wrappers.Response(request, encoding=self._encoding)
             self._clients[sock] = request, response
 
@@ -219,7 +224,8 @@ class HTTP(BaseComponent):
             end_of_headers = data.find(b"\r\n\r\n")
             if end_of_headers > -1:
                 header_data = data[:end_of_headers].decode(
-                        HTTP_ENCODING, "replace")
+                    HTTP_ENCODING, "replace"
+                )
                 headers = request.headers = parse_headers(header_data)
             else:
                 headers = request.headers = Headers([])
@@ -227,8 +233,13 @@ class HTTP(BaseComponent):
             request.body.write(data[(end_of_headers + 4):])
 
             if headers.get("Expect", "") == "100-continue":
-                return self.fire(Response(wrappers.Response(request, code=100,
-                    encoding=self._encoding)))
+                return self.fire(
+                    Response(
+                        wrappers.Response(
+                            request, code=100, encoding=self._encoding
+                        )
+                    )
+                )
 
             contentLength = int(headers.get("Content-Length", "0"))
             if request.body.tell() < contentLength:
@@ -262,8 +273,8 @@ class HTTP(BaseComponent):
         """Default HTTP Error Handler
 
         Default Error Handler that by default just fires a ``Response``
-        event with the *response* as argument. The *response* is normally 
-        modified by a :class:`~circuits.web.errors.HTTPError` instance 
+        event with the *response* as argument. The *response* is normally
+        modified by a :class:`~circuits.web.errors.HTTPError` instance
         or a subclass thereof.
         """
         response.body = str(event)
@@ -285,16 +296,16 @@ class HTTP(BaseComponent):
     def _on_request_success(self, e, value):
         """
         Handler for the ``RequestSuccess`` event that is automatically
-        generated after all handlers for a 
+        generated after all handlers for a
         :class:`~circuits.web.events.Request` event have been invoked
         successfully.
-        
+
         :param e: the successfully handled ``Request`` event (having
-            as attributes the associated 
-            :class:`~circuits.web.wrappers.Request` and 
+            as attributes the associated
+            :class:`~circuits.web.wrappers.Request` and
             :class:`~circuits.web.wrappers.Response` objects).
         :param value: the value(s) returned by the invoked handler(s).
-        
+
         This handler converts the value(s) returned by the
         (successfully invoked) handlers for the initial ``Request``
         event to a body and assigns it to the ``Response`` object's
@@ -327,15 +338,25 @@ class HTTP(BaseComponent):
                 error = value.value
                 etype, evalue, traceback = error
                 if isinstance(evalue, RedirectException):
-                    self.fire(Redirect(request, response,
-                        evalue.urls, evalue.status))
+                    self.fire(
+                        Redirect(request, response, evalue.urls, evalue.status)
+                    )
                 elif isinstance(evalue, HTTPException):
                     if evalue.traceback:
-                        self.fire(HTTPError(request, response, evalue.code,
-                            description=evalue.description, error=error))
+                        self.fire(
+                            HTTPError(
+                                request, response, evalue.code,
+                                description=evalue.description,
+                                error=error
+                            )
+                        )
                     else:
-                        self.fire(HTTPError(request, response, evalue.code,
-                            description=evalue.description))
+                        self.fire(
+                            HTTPError(
+                                request, response, evalue.code,
+                                description=evalue.description
+                            )
+                        )
                 else:
                     self.fire(HTTPError(request, response, error=error))
             else:
@@ -347,15 +368,25 @@ class HTTP(BaseComponent):
             etype, evalue, traceback = error = value
 
             if isinstance(evalue, RedirectException):
-                self.fire(Redirect(request, response,
-                    evalue.urls, evalue.status))
+                self.fire(
+                    Redirect(request, response, evalue.urls, evalue.status)
+                )
             elif isinstance(evalue, HTTPException):
                 if evalue.traceback:
-                    self.fire(HTTPError(request, response, evalue.code,
-                        description=evalue.description, error=error))
+                    self.fire(
+                        HTTPError(
+                            request, response, evalue.code,
+                            description=evalue.description,
+                            error=error
+                        )
+                    )
                 else:
-                    self.fire(HTTPError(request, response, evalue.code,
-                        description=evalue.description))
+                    self.fire(
+                        HTTPError(
+                            request, response, evalue.code,
+                            description=evalue.description
+                        )
+                    )
             else:
                 self.fire(HTTPError(request, response, error=error))
         elif type(value) is not bool:
@@ -381,14 +412,24 @@ class HTTP(BaseComponent):
         etype, evalue, traceback = err
 
         if isinstance(evalue, RedirectException):
-            self.fire(Redirect(request, response,
-                evalue.urls, evalue.status))
+            self.fire(
+                Redirect(request, response, evalue.urls, evalue.status)
+            )
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
-                self.fire(HTTPError(request, response, evalue.code,
-                    description=evalue.description, error=err))
+                self.fire(
+                    HTTPError(
+                        request, response, evalue.code,
+                        description=evalue.description,
+                        error=err
+                    )
+                )
             else:
-                self.fire(HTTPError(request, response, evalue.code,
-                    description=evalue.description))
+                self.fire(
+                    HTTPError(
+                        request, response, evalue.code,
+                        description=evalue.description
+                    )
+                )
         else:
             self.fire(HTTPError(request, response, error=err))
