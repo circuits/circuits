@@ -9,3 +9,5 @@ This package contains components that implement various networking protocols.
 
 from .line import LP
 from .irc import IRC
+
+# flake8: noqa

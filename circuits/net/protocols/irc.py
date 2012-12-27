@@ -63,8 +63,9 @@ def sourceSplit(source):
     """
 
     m = re.match(
-            "(?P<nick>[^!].*)!(?P<ident>.*)@(?P<host>.*)",
-            source)
+        "(?P<nick>[^!].*)!(?P<ident>.*)@(?P<host>.*)",
+        source
+    )
 
     if m is not None:
         d = m.groupdict()
@@ -84,7 +85,6 @@ class Command(Event):
         super(Command, self).__init__(*args, **kwargs)
 
         self.name = "command_{0}".format(self.__class__.__name__.lower())
-
 
 
 class RAW(Command):

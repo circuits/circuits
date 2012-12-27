@@ -54,8 +54,7 @@ class HTTP(BaseComponent):
                 self._response = None
         else:
             statusline, data = data.split(b"\r\n", 1)
-            statusline = statusline.strip().decode(
-                    self._encoding, "replace")
+            statusline = statusline.strip().decode(self._encoding, "replace")
             protocol, status, message = statusline.split(" ", 2)
 
             status = int(status)
@@ -65,7 +64,8 @@ class HTTP(BaseComponent):
 
             end_of_headers = data.find(b"\r\n\r\n")
             header_data = data[:end_of_headers].decode(
-                    self._encoding, "replace")
+                self._encoding, "replace"
+            )
             headers = response._headers = parse_headers(header_data)
 
             response._body.write(data[(end_of_headers + 4):])
