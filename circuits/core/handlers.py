@@ -106,6 +106,28 @@ def tick(f):
     return handler(f.__name__, tick=True)(f)
 
 
+class Unknown(object):
+    """Unknown Dummy Component"""
+
+
+def reprhandler(handler):
+    format = "<%s[%s.%s] (%s.%s)>"
+
+    channel = handler.channel or "*"
+    names = ".".join(handler.names)
+    type = "filter" if handler.filter else "listener"
+
+    instance = getattr(
+        handler, "im_self", getattr(
+            handler, "__self__", Unknown()
+        )
+    ).__class__.__name__
+
+    method = handler.__name__
+
+    return format % (type, channel, names, instance, method)
+
+
 class HandlerMetaClass(type):
 
     def __init__(cls, name, bases, ns):

@@ -11,9 +11,7 @@ tools are installed as executables with a prefix of "circuits."
 from hashlib import md5
 from warnings import warn
 
-
-class Unknown(object):
-    """Unknown Dummy Component"""
+from circuits import reprhandler
 
 
 def tryimport(modules, message=None):
@@ -101,24 +99,6 @@ def graph(x, name=None):
     return "\n".join(walk(x, printer))
 
 
-def reprhandler(handler):
-    format = "<%s[%s.%s] (%s.%s)>"
-
-    channel = handler.channel or "*"
-    names = ".".join(handler.names)
-    type = "filter" if handler.filter else "listener"
-
-    instance = getattr(
-        handler, "im_self", getattr(
-            handler, "__self__", Unknown()
-        )
-    ).__class__.__name__
-
-    method = handler.__name__
-
-    return format % (type, channel, names, instance, method)
-
-
 def inspect(x):
     """Display an inspection report of the Component or Manager x
 
@@ -135,12 +115,6 @@ def inspect(x):
     write(" Components: %d\n" % len(x.components))
     for component in x.components:
         write("  %s\n" % component)
-    write("\n")
-
-    ticks = x.getTicks()
-    write(" Tick Functions: %d\n" % len(ticks))
-    for tick in ticks:
-        write("  %s\n" % tick)
     write("\n")
 
     write(" Event Handlers: %d\n" % len(x._handlers.values()))
