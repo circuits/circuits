@@ -8,7 +8,8 @@ This module defines the basic Event class and common events.
 
 from .utils import uncamel
 from inspect import ismethod
-from circuits.tools import Unknown
+
+from .handlers import Unknown
 
 
 class EventMetaClass(type):

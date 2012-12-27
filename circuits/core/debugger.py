@@ -10,9 +10,8 @@ each event to sys.stderr or to a Logger Component instance.
 import os
 import sys
 
-from .handlers import handler
 from .components import BaseComponent
-from circuits.tools import reprhandler
+from .handlers import handler, reprhandler
 
 
 class Debugger(BaseComponent):

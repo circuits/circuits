@@ -18,7 +18,7 @@ from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
 
 from .values import Value
-from .handlers import handler
+from .handlers import handler, reprhandler
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
@@ -212,6 +212,20 @@ class Manager(object):
         """Return the running state of this Component/Manager"""
 
         return self._running
+
+    @property
+    def handlers(self):
+        """Return a list of all event handlers attached to this Component"""
+
+        return [
+            reprhandler(x) for x in
+            chain(
+                (x for x in self._globals if x in self.__dict__.values()),
+                (x for c in self._handlers.values()
+                    for x in c
+                    if x in self.__dict__.values())
+            )
+        ]
 
     def getHandlers(self, event, channel):
         channel_is_instance = isinstance(channel, Manager)
