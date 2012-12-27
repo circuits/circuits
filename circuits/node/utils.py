@@ -10,7 +10,7 @@
 
 import json
 
-from circuits.core import Event, Value
+from circuits.core import Event
 
 
 def load_event(s):
@@ -50,15 +50,16 @@ def load_event(s):
 
 def dump_event(e, id):
     data = {
-            "id": id,
-            "name": e.name,
-            "args": e.args,
-            "kwargs": e.kwargs,
-            "success": e.success,
-            "failure": e.failure,
-            "channels": e.channels,
-            "notify": e.notify
+        "id": id,
+        "name": e.name,
+        "args": e.args,
+        "kwargs": e.kwargs,
+        "success": e.success,
+        "failure": e.failure,
+        "channels": e.channels,
+        "notify": e.notify
     }
+
     return json.dumps(data)
 
 
