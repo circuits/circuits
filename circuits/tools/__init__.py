@@ -108,8 +108,12 @@ def reprhandler(handler):
     names = ".".join(handler.names)
     type = "filter" if handler.filter else "listener"
 
-    instance = getattr(handler, "im_self",
-            getattr(handler, "__self__", Unknown())).__class__.__name__
+    instance = getattr(
+        handler, "im_self", getattr(
+            handler, "__self__", Unknown()
+        )
+    ).__class__.__name__
+
     method = handler.__name__
 
     return format % (type, channel, names, instance, method)
@@ -131,12 +135,6 @@ def inspect(x):
     write(" Components: %d\n" % len(x.components))
     for component in x.components:
         write("  %s\n" % component)
-    write("\n")
-
-    ticks = x.getTicks()
-    write(" Tick Functions: %d\n" % len(ticks))
-    for tick in ticks:
-        write("  %s\n" % tick)
     write("\n")
 
     write(" Event Handlers: %d\n" % len(x._handlers.values()))
