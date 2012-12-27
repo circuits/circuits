@@ -72,5 +72,3 @@ def safeimport(name):
         for name in sys.modules.copy():
             if not name in modules:
                 del sys.modules[name]
-
-
