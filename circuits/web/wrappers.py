@@ -132,7 +132,7 @@ class Request(object):
 
         if "Cookie" in self.headers:
             rawcookies = self.headers["Cookie"]
-            if not isinstance(rawcookies, basestring):
+            if not isinstance(rawcookies, str):
                 rawcookies = rawcookies.encode('utf-8')
             self.cookie.load(rawcookies)
 
