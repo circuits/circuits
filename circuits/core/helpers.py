@@ -18,12 +18,7 @@ class FallBackGenerator(BaseComponent):
         """
         Fall back handler for the :class:`~.events.GenerateEvents` event.
         """
-        with event.lock:
-            if event.time_left == 0:
-                return True
-            self._continue.clear()
-
-        while event.time_left < 0 and not self._continue.is_set():
+        while event.time_left < 0:
             # If we get here, there was no work left to do when creating
             # the GenerateEvents event and there is no other handler that is
             # prepared to supply new events within a limited time. The
@@ -31,12 +26,21 @@ class FallBackGenerator(BaseComponent):
             # an event.
             #
             # Python ignores signals when waiting without timeout.
-            self._continue.wait(10000)
-        while event.time_left > 0 and not self._continue.is_set():
+            self.root.needs_resume = self.resume
+            if self._continue.wait(10000):
+                self._continue.clear()
+                break
+
+        while event.time_left > 0:
             start_time = time()
-            self._continue.wait(event.time_left)
+            self.root.needs_resume = self.resume
+            if self._continue.wait(event.time_left):
+                self._continue.clear()
+                self.root.needs_resume = None
+                break
             time_spent = time() - start_time
             event.reduce_time_left(max(event.time_left - time_spent, 0))
+
         return True
 
     def resume(self):
