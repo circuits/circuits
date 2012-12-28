@@ -7,18 +7,16 @@
 Test all functionality of the tools package.
 """
 
-import os
-
 try:
     from threading import current_thread
 except ImportError:
-    from threading import currentThread as current_thread
+    from threading import currentThread as current_thread  # NOQA
 
-import py
+import pytest
 
-import circuits.tools
-from circuits import Component
-from circuits.tools import kill, inspect, findroot, reprhandler
+from circuits import Component, reprhandler
+from circuits.tools import kill, inspect, findroot
+
 
 class A(Component):
 
@@ -28,6 +26,7 @@ class A(Component):
     def foo(self):
         print("A!")
 
+
 class B(Component):
 
     def __tick__(self):
@@ -35,6 +34,7 @@ class B(Component):
 
     def foo(self):
         print("B!")
+
 
 class C(Component):
 
@@ -44,6 +44,7 @@ class C(Component):
     def foo(self):
         print("C!")
 
+
 class D(Component):
 
     def __tick__(self):
@@ -52,6 +53,7 @@ class D(Component):
     def foo(self):
         print("D!")
 
+
 class E(Component):
 
     def __tick__(self):
@@ -59,6 +61,7 @@ class E(Component):
 
     def foo(self):
         print("E!")
+
 
 class F(Component):
 
@@ -71,9 +74,6 @@ class F(Component):
 INSPECT = """\
  Components: 0
 
- Tick Functions: 1
-  <bound method A.__tick__ of <A/* %s (queued=0) [S]>>
-
  Event Handlers: 3
   unregister; 1
    <listener[*.unregister] (A._on_unregister)>
@@ -82,6 +82,7 @@ INSPECT = """\
   prepare_unregister_complete; 1
    <listener[*.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
 """
+
 
 def test_kill():
     a = A()
@@ -114,7 +115,7 @@ def test_kill():
     assert e in d.components
     assert not f.components
 
-    assert kill(d) == None
+    assert kill(d) is None
     while a:
         a.flush()
 
@@ -136,12 +137,13 @@ def test_kill():
     assert not e.components
     assert not f.components
 
+
 def test_inspect():
     a = A()
     s = inspect(a)
-    id = "%s:%s" % (os.getpid(), current_thread().getName())
 
-    assert s == INSPECT % id
+    assert s == INSPECT
+
 
 def test_findroot():
     a = A()
@@ -160,10 +162,14 @@ def test_findroot():
     root = findroot(c)
     assert root == a
 
+
 def test_reprhandler():
     a = A()
     s = reprhandler(a.foo)
     assert s == "<listener[*.foo] (A.foo)>"
 
     f = lambda: None
-    py.test.raises(AttributeError, reprhandler, f)
+    pytest.raises(AttributeError, reprhandler, f)
+
+
+# flake8: noqa
