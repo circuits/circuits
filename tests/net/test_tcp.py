@@ -50,8 +50,7 @@ def pytest_generate_tests(metafunc):
 
 
 def test_tcp_basic(Poller, ipv6):
-    from circuits import Debugger
-    m = Manager() + Poller() + Debugger()
+    m = Manager() + Poller()
 
     if ipv6:
         tcp_server = TCP6Server(0)

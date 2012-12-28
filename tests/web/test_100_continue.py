@@ -8,15 +8,12 @@ from .helpers import urlencode, urlopen, Request
 class Root(Controller):
 
     def index(self, *args, **kwargs):
-        args = tuple((x.encode("utf-8") if type(x) != str else x \
-                for x in args))
+        args = tuple((x.encode("utf-8") if type(x) != str else x
+                      for x in args))
         return "{0}\n{1}".format(repr(args), repr(kwargs))
 
 
 def test(webapp):
-    from circuits import Debugger
-    Debugger().register(webapp)
-
     args = ("1", "2", "3")
     kwargs = {"data": "\x00" * 4096}
     headers = {"Expect": "100-continue"}

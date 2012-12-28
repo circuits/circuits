@@ -7,7 +7,7 @@
 try:
     from StringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from io import StringIO  # NOQA
 
 from circuits import Debugger
 from circuits.core import Event, Component
@@ -15,6 +15,7 @@ from circuits.core import Event, Component
 
 class Test(Event):
     """Test Event"""
+
 
 class App(Component):
 
@@ -28,6 +29,7 @@ class App(Component):
         if raiseException:
             raise Exception()
 
+
 class Logger(object):
 
     msg = None
@@ -36,6 +38,7 @@ class Logger(object):
         self.msg = msg
 
     error = debug
+
 
 def test():
     app = App()
@@ -69,6 +72,7 @@ def test():
     assert s == ""
     stderr.seek(0)
     stderr.truncate()
+
 
 def test_file(tmpdir):
     logfile = str(tmpdir.ensure("debug.log"))
@@ -106,6 +110,7 @@ def test_file(tmpdir):
     stderr.seek(0)
     stderr.truncate()
 
+
 def test_filename(tmpdir):
     logfile = str(tmpdir.ensure("debug.log"))
     stderr = open(logfile, "r+")
@@ -141,6 +146,7 @@ def test_filename(tmpdir):
     assert s == ""
     stderr.seek(0)
     stderr.truncate()
+
 
 def test_exceptions():
     app = App()
@@ -193,6 +199,7 @@ def test_exceptions():
     s = stderr.read().strip()
     assert s == ""
 
+
 def test_tick_exceptions():
     app = App()
     stderr = StringIO()
@@ -220,6 +227,7 @@ def test_tick_exceptions():
     stderr.seek(0)
     s = stderr.read().strip()
     assert s == ""
+
 
 def test_IgnoreEvents():
     app = App()
@@ -255,6 +263,7 @@ def test_IgnoreEvents():
     stderr.seek(0)
     stderr.truncate()
 
+
 def test_IgnoreChannels():
     app = App()
     stderr = StringIO()
@@ -288,6 +297,7 @@ def test_IgnoreChannels():
     stderr.seek(0)
     stderr.truncate()
 
+
 def test_Logger_debug():
     app = App()
     logger = Logger()
@@ -302,6 +312,7 @@ def test_Logger_debug():
 
     assert logger.msg == repr(e)
 
+
 def test_Logger_error():
     app = App()
     logger = Logger()
@@ -314,4 +325,7 @@ def test_Logger_error():
     app.fire(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("ERROR <listener[*.test] (App.test)> (<type \'exceptions.Exception\'>):")
+    assert logger.msg.startswith(
+        "ERROR <listener[*.test] (App.test)> "
+        "(<type \'exceptions.Exception\'>):"
+    )
