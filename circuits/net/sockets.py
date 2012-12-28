@@ -534,7 +534,7 @@ class Server(Component):
 
     @property
     def host(self):
-        if hasattr(self, "_sock"):
+        if getattr(self, "_sock", None) is not None:
             try:
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
@@ -546,7 +546,7 @@ class Server(Component):
 
     @property
     def port(self):
-        if hasattr(self, "_sock"):
+        if getattr(self, "_sock", None) is not None:
             try:
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
