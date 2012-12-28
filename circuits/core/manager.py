@@ -275,12 +275,9 @@ class Manager(object):
 
         self.root._cache.clear()
 
-    def removeHandler(self, f, event=None):
-        if isfunction(f):
-            method = MethodType(f, self, self.__class__)
-        else:
-            method = f
+        return method
 
+    def removeHandler(self, method, event=None):
         if event is None:
             names = method.names
         else:
