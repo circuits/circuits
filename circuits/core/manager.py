@@ -261,10 +261,7 @@ class Manager(object):
         return handlers
 
     def addHandler(self, f):
-        if isfunction(f):
-            method = MethodType(f, self, self.__class__)
-        else:
-            method = f
+        method = MethodType(f, self, self.__class__) if isfunction(f) else f
 
         setattr(self, method.__name__, method)
 
