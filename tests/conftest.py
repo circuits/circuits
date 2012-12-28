@@ -1,15 +1,13 @@
 # Module:   conftest
 # Date:     6th December 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-import os
 
 """py.test config"""
 
+import collections
 from time import sleep
 
-import collections
-
-from circuits import Component, handler
+from circuits import handler
 from circuits.core.manager import TIMEOUT
 
 
@@ -46,9 +44,8 @@ class WaitEvent(object):
         def on_event(self, *args, **kwargs):
             flag.status = True
 
-        self.manager.addHandler(on_event)
+        self.handler = self.manager.addHandler(on_event)
         self.flag = flag
-        self.handler = on_event
 
     def wait(self):
         try:
