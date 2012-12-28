@@ -29,6 +29,7 @@ class FallBackGenerator(BaseComponent):
             self.root.needs_resume = self.resume
             if self._continue.wait(10000):
                 self._continue.clear()
+                self.root.needs_resume = None
                 break
 
         while event.time_left > 0:
