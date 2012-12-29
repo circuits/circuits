@@ -225,7 +225,7 @@ class Manager(object):
             )
         ]
 
-    def getHandlers(self, event, channel):
+    def getHandlers(self, event, channel, **kwargs):
         channel_is_instance = isinstance(channel, Manager)
         if channel_is_instance and channel != self:
             return channel.getHandlers(event, channel)
@@ -250,11 +250,12 @@ class Manager(object):
                     or channel_is_instance:
                 handlers.add(_handler)
 
-        handlers.update(self._globals)
+        if not kwargs.get("exclude_globals", False):
+            handlers.update(self._globals)
 
         if not channel_is_instance:
             for c in self.components.copy():
-                handlers.update(c.getHandlers(event, channel))
+                handlers.update(c.getHandlers(event, channel, **kwargs))
 
         return handlers
 
@@ -657,11 +658,15 @@ class Manager(object):
             self.processTask(*task)
 
         if self._running:
-            generate_event = GenerateEvents(timeout)
+            e = GenerateEvents(timeout)
+            if len(self.getHandlers(e, "*", exclude_globals=True)):
+                # If we have no other event sources
+                # don't generator longer than timeout.
+                e.reduce_time_left(TIMEOUT)
             if len(self._tasks) > 0 or self:
                 # if work remains to be done, generate as fast as possible
-                generate_event.reduce_time_left(0)
-            self.fire(generate_event, "*")
+                e.reduce_time_left(0)
+            self.fire(e, "*")
 
         if self:
             self.flush()
