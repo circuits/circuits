@@ -53,7 +53,12 @@ class File(Component):
 
     @handler("ready")
     def _on_ready(self, component):
-        self._fd = open(self.filename, self.mode)
+        if type(self._filename) is file:
+            self._fd = self._filename
+            self._filename = self._fd.name
+            self._mode = self._fd.mode
+        else:
+            self._fd = open(self.filename, self.mode)
 
         if fcntl is not None:
             # Set non-blocking file descriptor (non-portable)
@@ -154,7 +159,7 @@ class File(Component):
                 self.fire(Error(e))
 
     def write(self, data):
-        if not self._poller.isWriting(self._fd):
+        if self._poller is not None and not self._poller.isWriting(self._fd):
             self._poller.addWriter(self, self._fd)
         self._buffer.append(data)
 
