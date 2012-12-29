@@ -5,7 +5,6 @@
 """Timers Tests"""
 
 import pytest
-pytest.skip("XXX: Broken")
 
 from datetime import datetime, timedelta
 
