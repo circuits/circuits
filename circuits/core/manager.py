@@ -18,6 +18,7 @@ from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
 from .values import Value
+from .helpers import FallBackGenerator
 from .handlers import handler, reprhandler
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
@@ -733,10 +734,7 @@ class Manager(object):
         self._executing_thread = current_thread()
         self._running = True
 
-        # make sure that the manager is registered as fall back
-        if getattr(self, "_fallback_generator", None) is None:
-            from .helpers import FallBackGenerator
-            self._fallback_generator = FallBackGenerator().register(self)
+        self._fallback_generator = FallBackGenerator().register(self)
 
         self.fire(Started(self))
 
