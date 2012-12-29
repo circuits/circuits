@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 
-from time import sleep
+import pytest
 
 from circuits import Component
-from circuits.io import File, Write
+from circuits.io import File, Write, Close
+
 
 class App(Component):
 
     def __init__(self, *args, **kwargs):
         super(App, self).__init__()
 
-        self._file = File(*args, **kwargs)
-        self._file.register(self)
+        self.file = File(*args, **kwargs)
+        self.file.register(self)
 
         self.data = None
         self.eof = False
@@ -22,19 +23,29 @@ class App(Component):
     def eof(self):
         self.eof = True
 
+
 def test_write(tmpdir):
     sockpath = tmpdir.ensure("helloworld.txt")
     filename = str(sockpath)
 
     app = App(filename, "w")
     app.start()
-    app.fire(Write(b"Hello World!"))
-    sleep(1)
+
+    waiter = pytest.WaitEvent(app, "opened")
+    assert waiter.wait()
+
+    app.fire(Write(b"Hello World!"), app.file)
+    app.fire(Close(), app.file)
+
+    waiter = pytest.WaitEvent(app, "closed")
+    assert waiter.wait()
+
     app.stop()
 
     f = open(filename, "r")
     s = f.read()
     assert s == "Hello World!"
+
 
 def test_read(tmpdir):
     sockpath = tmpdir.ensure("helloworld.txt")
@@ -47,23 +58,8 @@ def test_read(tmpdir):
     app = App(filename, "r")
     app.start()
 
-    while not app.eof:
-        pass
-
-    app.stop()
-
-    assert app.data == b"Hello World!"
-
-def test_fd(tmpdir):
-    sockpath = tmpdir.ensure("helloworld.txt")
-    filename = str(sockpath)
-
-    f = open(filename, "w")
-    f.write("Hello World!")
-    f.close()
-
-    app = App(fd=open(filename, "r"))
-    app.start()
+    waiter = pytest.WaitEvent(app, "opened")
+    assert waiter.wait()
 
     while not app.eof:
         pass

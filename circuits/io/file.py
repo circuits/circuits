@@ -8,8 +8,8 @@ This module implements a wrapper for basic File I/O.
 """
 
 from collections import deque
+from os import write, O_NONBLOCK
 from socket import error as SocketError
-from os import lseek, read, write, O_NONBLOCK
 from errno import ENOTCONN, EPIPE, EWOULDBLOCK
 
 from circuits.tools import tryimport
@@ -61,6 +61,9 @@ class File(Component):
             flag = flag | O_NONBLOCK
             fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
 
+        if "r" in self.mode or "+" in self.mode:
+            self._poller.addReader(self, self._fd)
+
         self.fire(Opened(self.filename, self.mode))
 
     @handler("registered", channel="*")
@@ -92,9 +95,6 @@ class File(Component):
     def _on_stopped(self, component):
         self.fire(Close())
 
-    def seek(self, offset, whence=0):
-        return lseek(self._fd.fileno(), offset, whence)
-
     @handler("prepare_unregister", channel="*")
     def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
@@ -125,7 +125,7 @@ class File(Component):
 
     def _read(self):
         try:
-            data = read(self._fd.fileno(), self._bufsize)
+            data = self._fd.read(self._bufsize)
             if data:
                 self.fire(Read(data)).notify = True
             else:
@@ -137,6 +137,9 @@ class File(Component):
             else:
                 self.fire(Error(e))
                 self._close()
+
+    def seek(self, offset, whence=0):
+        self._fd.seek(offset, whence)
 
     def _write(self, data):
         try:
