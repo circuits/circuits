@@ -14,7 +14,7 @@ from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from inspect import getmembers, isfunction
 from types import MethodType, GeneratorType
-from threading import current_thread, Thread, RLock
+from threading import current_thread, Thread
 from multiprocessing import current_process, Process
 
 from .values import Value
@@ -103,7 +103,6 @@ class Manager(object):
         self._task = None
         self._executing_thread = None
         self._running = False
-        self._lock = RLock()
 
         self.root = self.parent = self
         self.components = set()
@@ -687,7 +686,7 @@ class Manager(object):
             self.processTask(*task)
 
         if self._running:
-            generate_event = GenerateEvents(self._lock, timeout)
+            generate_event = GenerateEvents(timeout)
             if len(self._ticks) > 0:
                 # if we have ticks to do, don't generate longer than
                 # timeout
