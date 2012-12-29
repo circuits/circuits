@@ -21,6 +21,6 @@ __version__ = "2.0.2dev"
 from circuits.core import future, Pool, Task, Worker
 from circuits.core import Debugger, Loader, Manager, Timer
 from circuits.core import BaseEvent, DerivedEvent, Event, LiteralEvent
-from circuits.core import handler, reprhandler, tick, BaseComponent, Component
+from circuits.core import handler, reprhandler, BaseComponent, Component
 
 # flake8: noqa

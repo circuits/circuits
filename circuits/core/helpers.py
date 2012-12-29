@@ -1,9 +1,11 @@
 """
 .. codeauthor: mnl
 """
-from circuits.core.components import BaseComponent
-from circuits.core.handlers import handler
+
 from threading import Event
+
+from .handlers import handler
+from .components import BaseComponent
 
 
 class FallBackGenerator(BaseComponent):

@@ -200,7 +200,6 @@ class BaseComponent(Manager):
         # tick shouldn't be called anymore, although component is still in tree
         self._unregister_pending = True
         self.root._cache.clear()
-        self.root._ticks = self.root.getTicks()
 
         # Give components a chance to prepare for unregister
         evt = PrepareUnregister(self)

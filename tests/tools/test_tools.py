@@ -20,17 +20,11 @@ from circuits.tools import kill, inspect, findroot
 
 class A(Component):
 
-    def __tick__(self):
-        pass
-
     def foo(self):
         print("A!")
 
 
 class B(Component):
-
-    def __tick__(self):
-        pass
 
     def foo(self):
         print("B!")
@@ -38,17 +32,11 @@ class B(Component):
 
 class C(Component):
 
-    def __tick__(self):
-        pass
-
     def foo(self):
         print("C!")
 
 
 class D(Component):
-
-    def __tick__(self):
-        pass
 
     def foo(self):
         print("D!")
@@ -56,17 +44,11 @@ class D(Component):
 
 class E(Component):
 
-    def __tick__(self):
-        pass
-
     def foo(self):
         print("E!")
 
 
 class F(Component):
-
-    def __tick__(self):
-        pass
 
     def foo(self):
         print("F!")

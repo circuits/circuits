@@ -102,10 +102,6 @@ def handler(*names, **kwargs):
     return wrapper
 
 
-def tick(f):
-    return handler(f.__name__, tick=True)(f)
-
-
 class Unknown(object):
     """Unknown Dummy Component"""
 

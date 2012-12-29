@@ -21,10 +21,6 @@ class App(Component):
 
     raiseException = False
 
-    def __tick__(self):
-        if self.raiseException:
-            raise Exception()
-
     def test(self, raiseException=False):
         if raiseException:
             raise Exception()
@@ -191,35 +187,6 @@ def test_exceptions():
     stderr.seek(0)
     s = stderr.read().strip()
     assert s == ""
-    stderr.seek(0)
-    stderr.truncate()
-
-    app.flush()
-    stderr.seek(0)
-    s = stderr.read().strip()
-    assert s == ""
-
-
-def test_tick_exceptions():
-    app = App()
-    stderr = StringIO()
-    debugger = Debugger(file=stderr)
-    debugger.register(app)
-    while app:
-        app.tick()
-    stderr.seek(0)
-    stderr.truncate()
-
-    assert debugger.events
-    assert debugger.errors
-
-    app.raiseException = True
-    app.tick()
-
-    stderr.seek(0)
-    s = stderr.read().strip()
-    assert s.startswith("<Error[*.error] (<type 'exceptions.Exception'>")
-
     stderr.seek(0)
     stderr.truncate()
 

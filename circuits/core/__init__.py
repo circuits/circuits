@@ -7,10 +7,10 @@
 This package contains the essential core parts of the circuits framework.
 """
 
-from .handlers import handler, tick, reprhandler
 
 from .loader import Loader
 from .manager import Manager
+from .handlers import handler, reprhandler
 from .components import BaseComponent, Component
 from .events import BaseEvent, DerivedEvent, Event, LiteralEvent
 
