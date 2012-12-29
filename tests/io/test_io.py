@@ -67,3 +67,18 @@ def test_read(tmpdir):
     app.stop()
 
     assert app.data == b"Hello World!"
+
+
+def test_fd(tmpdir):
+    sockpath = tmpdir.ensure("helloworld.txt")
+    filename = str(sockpath)
+
+    f = open(filename, "w")
+    f.write("Hello World!")
+    f.close()
+
+    app = App(open(filename, "r"))
+    app.start()
+
+    waiter = pytest.WaitEvent(app, "opened")
+    assert waiter.wait()
