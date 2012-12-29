@@ -46,11 +46,13 @@ class Config(BaseComponent):
         self._filename = filename
 
     @handler("load")
-    def load(self):
-        self._config.read(self._filename)
+    def load(self, filename=None):
+        self._filename = filename or self._filename
+        self._config.read([self._filename])
 
     @handler("save")
-    def save(self):
+    def save(self, filename=None):
+        self._filename = filename or self._filename
         with open(self._filename, "w") as f:
             self._config.write(f)
 

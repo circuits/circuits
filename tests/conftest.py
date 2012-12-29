@@ -4,74 +4,59 @@
 
 """py.test config"""
 
-import collections
+import pytest
+
 from time import sleep
+from collections import deque
 
-from circuits import handler
 from circuits.core.manager import TIMEOUT
+from circuits import handler, BaseComponent, Debugger, Manager
 
 
-class Flag(object):
-    status = False
+class Watcher(BaseComponent):
+
+    def init(self):
+        self.events = deque([], 10)
+
+    @handler(channel="*", priority=999.9)
+    def _on_event(self, event, *args, **kwargs):
+        self.events.append(event)
+
+    def wait(self, name, channel=None, timeout=3.0):
+        for i in range(int(timeout / TIMEOUT)):
+            if channel is None:
+                for event in self.events:
+                    if event.name == name:
+                        return True
+            else:
+                for event in self.events:
+                    if event.name == name and channel in event.channels:
+                        return True
+            sleep(TIMEOUT)
 
 
-def call_event_from_name(manager, event, event_name, *channels):
-    fired = False
-    value = None
-    for r in manager.waitEvent(event_name):
-        if not fired:
-            fired = True
-            value = manager.fire(event, *channels)
-        sleep(0.1)
-    return value
+@pytest.fixture(scope="session")
+def manager(request):
+    manager = Manager()
+
+    def finalizer():
+        manager.stop()
+
+    request.addfinalizer(finalizer)
+
+    if request.config.option.verbose:
+        Debugger().register(manager)
+
+    manager.start()
+
+    return manager
 
 
-def call_event(manager, event, *channels):
-    return call_event_from_name(manager, event, event.name, *channels)
+@pytest.fixture(scope="session")
+def watcher(request, manager):
+    watcher = Watcher().register(manager)
 
+    def finalizer():
+        watcher.unregister()
 
-class WaitEvent(object):
-    def __init__(self, manager, name, channel=None, timeout=3.0):
-        if channel is None:
-            channel = getattr(manager, "channel", None)
-
-        self.timeout = timeout
-        self.manager = manager
-
-        flag = Flag()
-
-        @handler(name, channel=channel)
-        def on_event(self, *args, **kwargs):
-            flag.status = True
-
-        self.handler = self.manager.addHandler(on_event)
-        self.flag = flag
-
-    def wait(self):
-        try:
-            for i in range(int(self.timeout / TIMEOUT)):
-                if self.flag.status:
-                    return True
-                sleep(TIMEOUT)
-        finally:
-            self.manager.removeHandler(self.handler)
-
-
-def wait_for(obj, attr, value=True, timeout=3.0):
-    from circuits.core.manager import TIMEOUT
-    for i in range(int(timeout / TIMEOUT)):
-        if isinstance(value, collections.Callable):
-            if value(obj, attr):
-                return True
-        elif getattr(obj, attr) == value:
-            return True
-        sleep(TIMEOUT)
-
-
-def pytest_namespace():
-    return dict((
-        ("WaitEvent", WaitEvent),
-        ("wait_for", wait_for),
-        ("call_event", call_event),
-        ("call_event_from_name", call_event_from_name),
-    ))
+    return watcher

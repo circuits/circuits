@@ -2,6 +2,8 @@
 
 import pytest
 
+from circuits.app.config import Config, Load
+
 
 CONFIG = """\
 [test]
@@ -12,21 +14,24 @@ bool = 1
 """
 
 
-def pytest_funcarg__config(request):
-    from circuits.app.config import Config, Load
+@pytest.fixture(scope="function")
+def config_file(tmpdir):
+    f = tmpdir.ensure("test.ini")
+    f.write(CONFIG)
+    return str(f)
 
-    tmpdir = request.getfuncargvalue("tmpdir")
-    path = tmpdir.ensure("test.ini")
-    path.write(CONFIG)
 
-    config = Config(str(path))
-    config.start()
-    request.addfinalizer(lambda: config.stop())
+@pytest.fixture(scope="function")
+def config(request, manager, watcher, config_file):
+    config = Config(config_file).register(manager)
 
-    waiter = pytest.WaitEvent(config, "load_success")
-    config.fire(Load())
+    def finalizer():
+        config.unregister()
 
-    assert waiter.wait()
+    request.addfinalizer(finalizer)
+
+    manager.fire(Load(), config)
+    assert watcher.wait("load_success")
 
     return config
 
@@ -70,45 +75,3 @@ def test_get_bool(config):
 
     b = config.getboolean("test", "asdf", False)
     assert not b
-
-
-def test_load(tmpdir):
-    from circuits.app.config import Config, Load
-
-    path = tmpdir.ensure("test.ini")
-    path.write(CONFIG)
-
-    config = Config(str(path))
-    config.start()
-
-    waiter = pytest.WaitEvent(config, "load_success")
-    config.fire(Load())
-
-    assert waiter.wait()
-
-    s = config.get("test", "foo")
-    assert s == "bar"
-
-    config.stop()
-
-
-def test_save(tmpdir):
-    from circuits.app.config import Config, Save
-
-    path = tmpdir.ensure("test.ini")
-
-    config = Config(str(path))
-    config.start()
-
-    config.add_section("test")
-    config.set("test", "foo", "bar")
-
-    waiter = pytest.WaitEvent(config, "save_success")
-    config.fire(Save())
-
-    assert waiter.wait()
-
-    s = config.get("test", "foo")
-    assert s == "bar"
-
-    config.stop()
