@@ -40,3 +40,7 @@ class Opened(Event):
 
 class Closed(Event):
     """Closed Event"""
+
+
+class Ready(Event):
+    """Ready Event"""
