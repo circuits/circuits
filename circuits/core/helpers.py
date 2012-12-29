@@ -16,6 +16,13 @@ class FallBackGenerator(BaseComponent):
     def _on_generate_events(self, event):
         """
         Fall back handler for the :class:`~.events.GenerateEvents` event.
+
+        When the queue is empty a GenerateEvents event is fired, here
+        we sleep for as long as possible to avoid using extra cpu cycles.
+
+        A poller would overwrite with with a higher priority filter, e.g.
+        @handler("generate_events", priority=0, filter=True)
+        and provide a different way to idle when the queue is empty.
         """
         while event.time_left < 0:
             # If we get here, there was no work left to do when creating
@@ -23,9 +30,8 @@ class FallBackGenerator(BaseComponent):
             # prepared to supply new events within a limited time. The
             # application will continue only if some other Thread fires
             # an event.
-            #
-            # Python ignores signals when waiting without timeout.
             self.root.needs_resume = self.resume
+            # Python ignores signals when waiting without timeout.
             self._continue.wait(10000)
             if self._continue.is_set():
                 self._continue.clear()

@@ -322,6 +322,12 @@ class Manager(object):
 
         self._queue.append((event, channel))
 
+        # needs_resume means that the main thread is sleeping
+        # (this happens when the queue is empty)
+        # If needs_resume is set, it also means with are firing
+        # this event from another thread
+        # Thus, we need to wake up the thread to process
+        # the event we just added
         if self.needs_resume:
             self.needs_resume()
 
