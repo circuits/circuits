@@ -30,7 +30,7 @@ class FallBackGenerator(BaseComponent):
             self._continue.clear()
             self.root.needs_resume = None
         else:
-            while True:
+            while event.time_left < 0:
                 # If we get here, there was no work left to do when creating
                 # the GenerateEvents event and there is no other handler that
                 # is prepared to supply new events within a limited time. The
@@ -41,8 +41,8 @@ class FallBackGenerator(BaseComponent):
                 self._continue.wait(10000)
                 if self._continue.is_set():
                     self._continue.clear()
-                    self.root.needs_resume = None
                     break
+            self.root.needs_resume = None
 
         return True
 
