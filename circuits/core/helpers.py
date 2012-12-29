@@ -4,7 +4,6 @@
 from circuits.core.components import BaseComponent
 from circuits.core.handlers import handler
 from threading import Event
-from time import time
 
 
 class FallBackGenerator(BaseComponent):
@@ -27,20 +26,19 @@ class FallBackGenerator(BaseComponent):
             #
             # Python ignores signals when waiting without timeout.
             self.root.needs_resume = self.resume
-            if self._continue.wait(10000):
+            self._continue.wait(10000)
+            if self._continue.is_set():
                 self._continue.clear()
                 self.root.needs_resume = None
                 break
 
         while event.time_left > 0:
-            start_time = time()
             self.root.needs_resume = self.resume
-            if self._continue.wait(event.time_left):
+            self._continue.wait(event.time_left)
+            if self._continue.is_set():
                 self._continue.clear()
                 self.root.needs_resume = None
                 break
-            time_spent = time() - start_time
-            event.reduce_time_left(max(event.time_left - time_spent, 0))
 
         return True
 
