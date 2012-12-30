@@ -46,9 +46,13 @@ def future(pool=None):
                 task = Task(f, self, *args, **kwargs)
             if p is not None:
                 setattr(self, "_pool", p)
-                return self.fire(task, p)
+                e = self.fire(task, p)
+                for r in self.waitEvent(e):
+                    yield r
             else:
-                return Worker(channel=str(uuid())).fire(task)
+                w = Worker(channel=str(uuid()))
+                for r in w.callEvent(task):
+                    yield r
 
         args = getargspec(f)[0]
         if args and args[0] == "self":
