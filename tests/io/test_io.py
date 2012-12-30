@@ -29,15 +29,14 @@ def test_write(tmpdir):
     filename = str(sockpath)
 
     app = App(filename, "w")
-    app.start()
-
     waiter = pytest.WaitEvent(app, "opened")
+    app.start()
     assert waiter.wait()
 
     app.fire(Write(b"Hello World!"), app.file)
-    app.fire(Close(), app.file)
 
     waiter = pytest.WaitEvent(app, "closed")
+    app.fire(Close(), app.file)
     assert waiter.wait()
 
     app.stop()
@@ -56,9 +55,8 @@ def test_read(tmpdir):
     f.close()
 
     app = App(filename, "r")
-    app.start()
-
     waiter = pytest.WaitEvent(app, "opened")
+    app.start()
     assert waiter.wait()
 
     while not app.eof:
@@ -80,5 +78,4 @@ def test_fd(tmpdir):
     app = App(open(filename, "r"))
     waiter = pytest.WaitEvent(app, "opened")
     app.start()
-
     assert waiter.wait()
