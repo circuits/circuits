@@ -371,7 +371,7 @@ class Manager(object):
 
         def _on_event(self, event, *args, **kwargs):
             if not state['run']:
-                self.removeHandler(_on_event, _event)
+                self.removeHandler(_on_event_handler, _event)
                 event.alert_done = True
                 state['run'] = True
                 state['event'] = event
@@ -381,15 +381,15 @@ class Manager(object):
                 state['flag'] = True
 
         for channel in channels:
-            self.addHandler(handler(event, channel=channel)(_on_event))
-            self.addHandler(
-                handler("%s_done" % event, channel=channel)(_on_done)
-            )
+            _on_event_handler = self.addHandler(
+                handler(event, channel=channel)(_on_event))
+            _on_done_handler = self.addHandler(
+                handler("%s_done" % event, channel=channel)(_on_done))
 
         while not state['flag']:
             yield None
 
-        self.removeHandler(_on_done, "%s_done" % event)
+        self.removeHandler(_on_done_handler, "%s_done" % event)
 
     wait = waitEvent
 
