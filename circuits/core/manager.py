@@ -659,7 +659,7 @@ class Manager(object):
 
         if self._running:
             e = GenerateEvents(timeout)
-            if len(self.getHandlers(e, "*", exclude_globals=True)):
+            if len(self.getHandlers(e, "*", exclude_globals=True)) == 1:
                 # If we have no other event sources
                 # don't generator longer than timeout.
                 e.reduce_time_left(TIMEOUT)
