@@ -284,14 +284,6 @@ class Client(Component):
                     self._poller = Poller().register(self)
                     self.fire(Ready(self))
 
-    @handler("started", filter=True, channel="*")
-    def _on_started(self, component):
-        if self._poller is None:
-            self._poller = Poller().register(self)
-            self.fire(Ready(self))
-
-            return True
-
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
         self.fire(Close())
@@ -573,14 +565,6 @@ class Server(Component):
                     self._poller = Poller().register(self)
                     self._poller.addReader(self, self._sock)
                     self.fire(Ready(self))
-
-    @handler("started", filter=True, channel="*")
-    def _on_started(self, component):
-        if self._poller is None:
-            self._poller = Poller().register(self)
-            self._poller.addReader(self, self._sock)
-            self.fire(Ready(self))
-            return True
 
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
