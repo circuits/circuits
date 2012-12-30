@@ -22,7 +22,7 @@ from .handlers import handler, reprhandler
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
-TIMEOUT = 0.01  # 10ms timeout when idle
+TIMEOUT = 0.1  # 100ms timeout when idle
 
 
 def _sortkey(handler):
@@ -659,13 +659,14 @@ class Manager(object):
 
         if self._running:
             e = GenerateEvents(timeout)
-            if len(self.getHandlers(e, "*", exclude_globals=True)) == 1:
-                # If we have no other event sources
-                # don't generator longer than timeout.
-                e.reduce_time_left(TIMEOUT)
+
             if len(self._tasks) > 0 or self:
                 # if work remains to be done, generate as fast as possible
                 e.reduce_time_left(0)
+            else:
+                # Don't generate longer than timeout.
+                e.reduce_time_left(TIMEOUT)
+
             self.fire(e, "*")
 
         if self:
