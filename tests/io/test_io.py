@@ -78,7 +78,7 @@ def test_fd(tmpdir):
     f.close()
 
     app = App(open(filename, "r"))
+    waiter = pytest.WaitEvent(app, "opened")
     app.start()
 
-    waiter = pytest.WaitEvent(app, "opened")
     assert waiter.wait()
