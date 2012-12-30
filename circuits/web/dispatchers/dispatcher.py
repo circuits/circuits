@@ -65,6 +65,9 @@ class Dispatcher(BaseComponent):
         starting_parts = [x for x in request.path.strip("/").split("/") if x]
 
         for path, parts in self.resolve_path(self.paths, starting_parts):
+            if get_handlers(path, request.method):
+                return request.method, path, parts
+
             for method, vpath in self.resolve_methods(parts):
                 handlers = get_handlers(path, method)
                 if handlers and (not vpath or accepts_vpath(handlers, vpath)):
