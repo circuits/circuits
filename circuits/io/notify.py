@@ -7,8 +7,6 @@
 A Component wrapping the inotify API using the pyinotify library.
 """
 
-from time import sleep, time
-
 try:
     from pyinotify import IN_UNMOUNT
     from pyinotify import WatchManager, Notifier, ALL_EVENTS
@@ -18,7 +16,7 @@ try:
 except ImportError:
     raise Exception("No pyinotify support available. Is pyinotify installed?")
 
-from circuits.core import Event, Component
+from circuits.core import handler, Component, Event
 
 MASK = ALL_EVENTS
 
@@ -86,26 +84,16 @@ class Notify(Component):
 
     channel = "notify"
 
-    def __init__(self, freq=1, timeout=1, channel=channel):
+    def __init__(self, timeout=0.01, channel=channel):
         super(Notify, self).__init__(channel=channel)
 
-        self._freq = freq
         self._wm = WatchManager()
         self._notifier = Notifier(self._wm, self._process, timeout=timeout)
 
-    def _sleep(self, rtime):
-        # Only consider sleeping if _freq is > 0
-        if self._freq > 0:
-            ctime = time()
-            s = self._freq - (ctime - rtime)
-            if s > 0:
-                sleep(s)
-
-    def __tick__(self):
+    @handler("generate_events", priority=-9, filter=True)
+    def _on_generate_events(self, event):
         self._notifier.process_events()
-        rtime = time()
         if self._notifier.check_events():
-            self._sleep(rtime)
             self._notifier.read_events()
 
     def _process(self, event):
