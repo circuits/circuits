@@ -17,7 +17,7 @@ from circuits import handler, BaseComponent, Debugger, Manager
 class Watcher(BaseComponent):
 
     def init(self):
-        self.events = deque([], 10)
+        self.events = deque([], 50)
 
     @handler(channel="*", priority=999.9)
     def _on_event(self, event, *args, **kwargs):
