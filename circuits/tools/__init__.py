@@ -14,15 +14,17 @@ from warnings import warn
 from circuits import reprhandler
 
 
-def tryimport(modules, message=None):
-    if isinstance(modules, str):
-        modules = (modules,)
+def tryimport(modules, obj=None, message=None):
+    modules = (modules,) if isinstance(modules, str) else modules
+
     for module in modules:
         try:
-            return __import__(module, globals(), locals())
+            m = __import__(module, globals(), locals())
+            return getattr(m, obj) if obj is not None else m
         except ImportError:
             pass
-    if message:
+
+    if message is not None:
         warn(message)
 
 

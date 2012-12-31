@@ -15,7 +15,7 @@ except ImportError:
 import pytest
 
 from circuits import Component, reprhandler
-from circuits.tools import kill, inspect, findroot
+from circuits.tools import kill, inspect, findroot, tryimport
 
 
 class A(Component):
@@ -152,6 +152,23 @@ def test_reprhandler():
 
     f = lambda: None
     pytest.raises(AttributeError, reprhandler, f)
+
+
+def test_tryimport():
+    import os
+    m = tryimport("os")
+    assert m is os
+
+
+def test_tryimport_obj():
+    from os import path
+    m = tryimport("os", "path")
+    assert m is path
+
+
+def test_tryimport_fail():
+    m = tryimport("asdf")
+    assert m is None
 
 
 # flake8: noqa
