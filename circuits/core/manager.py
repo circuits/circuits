@@ -377,6 +377,9 @@ class Manager(object):
             if state['event'] == source:
                 state['flag'] = True
 
+        if not channels:
+            channels = (None, )
+
         for channel in channels:
             _on_event_handler = self.addHandler(
                 handler(event, channel=channel)(_on_event))
