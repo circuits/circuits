@@ -36,33 +36,6 @@ class Watcher(BaseComponent):
             sleep(TIMEOUT)
 
 
-@pytest.fixture(scope="session")
-def manager(request):
-    manager = Manager()
-
-    def finalizer():
-        manager.stop()
-
-    request.addfinalizer(finalizer)
-
-    if request.config.option.verbose:
-        Debugger().register(manager)
-
-    manager.start()
-
-    return manager
-
-
-@pytest.fixture(scope="session")
-def watcher(request, manager):
-    watcher = Watcher().register(manager)
-
-    def finalizer():
-        watcher.unregister()
-
-    return watcher
-
-
 class Flag(object):
     status = False
 
@@ -83,6 +56,7 @@ def call_event(manager, event, *channels):
 
 
 class WaitEvent(object):
+
     def __init__(self, manager, name, channel=None, timeout=3.0):
         if channel is None:
             channel = getattr(manager, "channel", None)
@@ -118,6 +92,35 @@ def wait_for(obj, attr, value=True, timeout=3.0):
         elif getattr(obj, attr) == value:
             return True
         sleep(TIMEOUT)
+
+
+@pytest.fixture(scope="session")
+def manager(request):
+    manager = Manager()
+
+    def finalizer():
+        manager.stop()
+
+    request.addfinalizer(finalizer)
+
+    waiter = WaitEvent(manager, "started")
+    manager.start()
+    assert waiter.wait()
+
+    if request.config.option.verbose:
+        Debugger().register(manager)
+
+    return manager
+
+
+@pytest.fixture(scope="session")
+def watcher(request, manager):
+    watcher = Watcher().register(manager)
+
+    def finalizer():
+        watcher.unregister()
+
+    return watcher
 
 
 def pytest_namespace():
