@@ -1,5 +1,14 @@
 [run]
-omit = circuits/web/main.py
+omit = circuits/__init__.py
+       circuits/app/__init__.py
+       circuits/io/__init__.py
+       circuits/core/__init__.py
+       circuits/net/__init__.py
+       circuits/net/protocols/__init__.py
+       circuits/node/__init__.py
+       circuits/web/__init__.py
+       circuits/web/main.py
+       circuits/web/dispatchers/__init__.py
        circuits/web/apps/*
        tests/*
 
