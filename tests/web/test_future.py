@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("XXX: This test also hangs :/")
-
 from circuits.web import Controller
 from circuits import future, Event, Component
 
