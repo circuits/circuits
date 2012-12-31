@@ -1,7 +1,6 @@
 #!/usr/bin/python -i
 
 import pytest
-pytest.skip("XXX: Still hangs :/")
 
 from circuits import future, handler, BaseComponent, Component, Event
 
@@ -53,66 +52,59 @@ def reraise(e):
     raise e
 
 
-def test():
+def test_simple():
     app = App()
-    while app:
-        app.flush()
+    app.start()
 
     e = Test()
     assert not e.future
 
     x = app.fire(e)
-    while not x.result:
-        app.flush()
-    assert e.future
+    pytest.wait_for(x, "result")
     assert x.value == "Hello World!"
+    assert e.future
 
 
 def test_error():
     app = App()
-
-    while app:
-        app.flush()
+    app.start()
 
     e = Error()
     assert not e.future
+
     x = app.fire(e)
-    while not x.errors:
-        app.flush()
+    pytest.wait_for(x, "errors")
     assert e.future
     assert x.errors
+
     etype, evalue, etraceback = x.value
     assert etype is Exception
     pytest.raises(Exception, lambda e: reraise(e), evalue)
     assert isinstance(etraceback, list)
 
 
-def test_base():
+def test_base_simple():
     app = BaseApp()
-
-    while app:
-        app.flush()
+    app.start()
 
     e = Test()
     assert not e.future
+
     x = app.fire(e)
-    while not x.result:
-        app.flush()
+    pytest.wait_for(x, "result")
     assert e.future
     assert x.value == "Hello World!"
 
 
 def test_base_error():
     app = BaseApp()
-
-    while app:
-        app.flush()
+    app.start()
 
     e = Error()
     assert not e.future
     x = app.fire(e)
-    while not x.errors:
-        app.flush()
+    pytest.wait_for(x, "errors")
+
     assert e.future
     assert x.errors
     etype, evalue, etraceback = x.value
