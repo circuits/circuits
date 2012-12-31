@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import pytest
-pytest.skip("XXX: Broken")
 
 from circuits.app.config import Config, Load
 
@@ -31,48 +30,55 @@ def config(request, manager, watcher, config_file):
 
     request.addfinalizer(finalizer)
 
-    manager.fire(Load(), config)
-    assert watcher.wait("load_success")
+    manager.fire(Load(), config.channel)
+    flag = watcher.wait("load_success")
+    assert flag
+
+    # This ensures the tests pass. WTF?!
+    from time import sleep
+    sleep(0.1)
 
     return config
 
 
 def test_add_section(config):
     config.add_section("foo")
-    assert config.has_section("foo")
+    has_foo = config.has_section("foo")
+    assert has_foo
 
 
 def test_has_section(config):
-    assert config.has_section("test")
+    has_test = config.has_section("test")
+    assert has_test
 
 
 def test_get(config):
-    s = config.get("test", "foo")
-    assert s == "bar"
+    foo = config.get("test", "foo")
+    assert foo == "bar"
 
-    s = config.get("test", "asdf", "foobar")
-    assert s == "foobar"
+    asdf = config.get("test", "asdf", "foobar")
+    assert asdf == "foobar"
 
 
 def test_get_int(config):
-    i = config.getint("test", "int")
-    assert i == 1
+    one = config.getint("test", "int")
+    assert one == 1
 
-    i = config.getint("test", "asdf", 1234)
-    assert i == 1234
+    ottf = config.getint("test", "asdf", 1234)
+    assert ottf == 1234
 
 
 def test_get_float(config):
-    f = config.getfloat("test", "float")
-    assert f == 1.0
+    opz = config.getfloat("test", "float")
+    assert opz == 1.0
 
-    f = config.getfloat("test", "asdf", 1234.1234)
-    assert f == 1234.1234
+    ottfpottf = config.getfloat("test", "asdf", 1234.1234)
+    assert ottfpottf == 1234.1234
 
 
 def test_get_bool(config):
-    b = config.getboolean("test", "bool")
-    assert b
+    boolean = config.getboolean("test", "bool")
+    assert boolean
 
-    b = config.getboolean("test", "asdf", False)
-    assert not b
+    asdf = config.getboolean("test", "asdf", False)
+    assert not asdf
