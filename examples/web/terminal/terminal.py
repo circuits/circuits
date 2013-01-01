@@ -51,20 +51,21 @@ class Command(Component):
 
         self._stdout = File(self._p.stdout, channel="%s.stdout" % channel)
         self.addHandler(
-            handler(self._on_stdout_eof)("eof", channel="%s.stdout" % channel)
+            handler("eof", channel="%s.stdout" % channel)(self._on_stdout_eof)
         )
         self.addHandler(
-            handler(self._on_stdout_read)("read",
-                                          channel="%s.stdout" % channel)
+            handler("read", channel="%s.stdout" % channel)(
+                self._on_stdout_read
+            )
         )
         self._stdout.register(self)
 
-    @handler("disconnect", channel="server")
+    @handler("disconnect", channel="web")
     def disconnect(self, sock):
         if sock == self._request.sock:
             self.fire(Kill(), self)
 
-    @handler("response", channel="http", priority=-1)
+    @handler("response", channel="web", priority=-1)
     def response(self, response):
         if response == self._response:
             self._state = STREAMING
@@ -77,14 +78,16 @@ class Command(Component):
         if self._stdin is not None:
             self.fire(Write(data), self._stdin)
 
+    @staticmethod
     def _on_stdout_eof(self):
         if self._buffer is not None:
             self._buffer.flush()
             data = self._buffer.getvalue()
-            self.fire(Stream(self._response, data), "http")
-        self.fire(Stream(self._response, None), "http")
+            self.fire(Stream(self._response, data), "web")
+        self.fire(Stream(self._response, None), "web")
         self.fire(Kill())
 
+    @staticmethod
     def _on_stdout_read(self, data):
         if self._state == BUFFERING:
             if self._buffer is None:
@@ -96,9 +99,9 @@ class Command(Component):
                 self._buffer.flush()
                 data = self._buffer.getvalue()
                 self._buffer = None
-                self.fire(Stream(self._response, data), "http")
+                self.fire(Stream(self._response, data), "web")
             else:
-                self.fire(Stream(self._response, data), "http")
+                self.fire(Stream(self._response, data), "web")
 
 
 class Root(Controller):
@@ -124,8 +127,11 @@ class Root(Controller):
         return self.response
 
 
+from circuits import Debugger
+
 (
     Server(("0.0.0.0", 8000))
+    + Debugger()
     + Static("/js", docroot="static/js")
     + Static("/css", docroot="static/css")
     + Sessions()
