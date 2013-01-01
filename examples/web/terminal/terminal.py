@@ -108,7 +108,7 @@ class Root(Controller):
 
     def GET(self, *args, **kwargs):
         self.expires(60 * 60 * 24 * 30)
-        return self.serve_file(os.path.abspath("static/index.html"))
+        return self.serve_file(os.path.abspath("static/index.xhtml"))
 
     def POST(self, input=None):
         if not input:
