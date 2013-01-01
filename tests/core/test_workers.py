@@ -8,6 +8,27 @@ import pytest
 
 from circuits import Task, Worker
 
+
+@pytest.fixture(scope="module")
+def worker(request):
+    worker = Worker()
+
+    def finalizer():
+        worker.stop()
+
+    request.addfinalizer(finalizer)
+
+    if request.config.option.verbose:
+        from circuits import Debugger
+        Debugger().register(worker)
+
+    waiter = pytest.WaitEvent(worker, "started")
+    worker.start()
+    assert waiter.wait()
+
+    return worker
+
+
 def f():
     x = 0
     i = 0
@@ -16,14 +37,11 @@ def f():
         i += 1
     return x
 
-def test():
-    w = Worker()
 
-    x = w.fire(Task(f))
+def test(worker):
+    x = worker.fire(Task(f))
 
     assert pytest.wait_for(x, "result")
 
     assert x.result
     assert x.value == 1000000
-
-    w.stop()
