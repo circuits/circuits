@@ -90,7 +90,6 @@ class BaseEvent(object):
         self.kwargs = kwargs
 
         self.value = None
-        self.future = False
         self.handler = None
         self.notify = False
 

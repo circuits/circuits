@@ -36,7 +36,6 @@ def future(pool=None):
 
     def decorate(f):
         def wrapper(self, event, *args, **kwargs):
-            event.future = True
             p = getattr(self, "_pool", pool)
             if p is None:
                 p = findcmp(self.root, Pool)

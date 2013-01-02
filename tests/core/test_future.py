@@ -57,12 +57,10 @@ def test_simple():
     app.start()
 
     e = Test()
-    assert not e.future
 
     x = app.fire(e)
     pytest.wait_for(x, "result")
     assert x.value == "Hello World!"
-    assert e.future
 
 
 def test_error():
@@ -70,11 +68,9 @@ def test_error():
     app.start()
 
     e = Error()
-    assert not e.future
 
     x = app.fire(e)
     pytest.wait_for(x, "errors")
-    assert e.future
     assert x.errors
 
     etype, evalue, etraceback = x.value
@@ -88,11 +84,9 @@ def test_base_simple():
     app.start()
 
     e = Test()
-    assert not e.future
 
     x = app.fire(e)
     pytest.wait_for(x, "result")
-    assert e.future
     assert x.value == "Hello World!"
 
 
@@ -101,11 +95,9 @@ def test_base_error():
     app.start()
 
     e = Error()
-    assert not e.future
     x = app.fire(e)
     pytest.wait_for(x, "errors")
 
-    assert e.future
     assert x.errors
     etype, evalue, etraceback = x.value
     assert etype is Exception
