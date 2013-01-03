@@ -9,6 +9,7 @@ resources and an optional apache-style directory listing.
 """
 
 import os
+from urllib import unquote
 from string import Template
 
 from circuits import handler, BaseComponent
@@ -60,7 +61,8 @@ class Static(BaseComponent):
 
         if self.path is not None:
             path = path[len(self.path):]
-        path = path.strip("/")
+
+        path = unquote(path.strip("/"))
 
         if path:
             location = os.path.abspath(os.path.join(self.docroot, path))

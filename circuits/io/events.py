@@ -34,6 +34,10 @@ class Error(Event):
     """Error Event"""
 
 
+class Open(Event):
+    """Open Event"""
+
+
 class Opened(Event):
     """Opened Event"""
 

@@ -17,7 +17,7 @@ from circuits.core.utils import findcmp
 from circuits.core import handler, Component
 from circuits.core.pollers import BasePoller, Poller
 
-from .events import Close, Closed, EOF, Error, Opened, Read, Ready
+from .events import Close, Closed, EOF, Error, Open, Opened, Read, Ready
 
 fcntl = tryimport("fcntl")
 
@@ -29,7 +29,7 @@ class File(Component):
 
     channel = "file"
 
-    def init(self, filename=None, mode="r", bufsize=BUFSIZE, channel=channel):
+    def init(self, filename, mode="r", bufsize=BUFSIZE, channel=channel):
         self._mode = mode
         self._bufsize = bufsize
         self._filename = filename
@@ -53,6 +53,14 @@ class File(Component):
 
     @handler("ready")
     def _on_ready(self, component):
+        self.fire(Open(), self.channel)
+
+    @handler("open")
+    def _on_open(self, filename=None, mode=None, bufsize=None):
+        self._filename = filename or self._filename
+        self._bufsize = bufsize or self._bufsize
+        self._mode = mode or self._mode
+
         if type(self._filename) is file:
             self._fd = self._filename
             self._filename = self._fd.name
