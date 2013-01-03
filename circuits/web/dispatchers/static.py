@@ -9,8 +9,8 @@ resources and an optional apache-style directory listing.
 """
 
 import os
-from urllib import unquote
 from string import Template
+from urllib import unquote, quote
 
 from circuits import handler, BaseComponent
 
@@ -115,9 +115,9 @@ class Static(BaseComponent):
                             os.path.join(self.docroot, path, item)
                         )
                         if os.path.isdir(location):
-                            li = '<li><a href="%s/">%s/</a></li>' % (url, item)
+                            li = '<li><a href="%s/">%s/</a></li>' % (quote(url), item)
                         else:
-                            li = '<li><a href="%s">%s</a></li>' % (url, item)
+                            li = '<li><a href="%s">%s</a></li>' % (quote(url), item)
                         listing.append(li)
 
                 ctx = {}
