@@ -12,7 +12,7 @@ and StdErr are also created by importing this package.
 import sys
 
 from .file import File
-from .events import Close, Seek, Write
+from .events import Close, Open, Seek, Write
 
 try:
     from .notify import Notify
