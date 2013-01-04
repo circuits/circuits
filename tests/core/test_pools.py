@@ -18,8 +18,22 @@ def f():
     return x
 
 
-def test():
+def test_thread_pool():
     p = Pool()
+    p.start()
+    try:
+        x = p.fire(Task(f))
+
+        assert pytest.wait_for(x, "result")
+        assert x.result
+        assert x.value == 1000000
+
+    finally:
+        p.stop()
+
+
+def test_process_pool():
+    p = Pool(process=True)
     p.start()
     try:
         x = p.fire(Task(f))

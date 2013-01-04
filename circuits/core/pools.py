@@ -20,20 +20,22 @@ class Pool(BaseComponent):
 
     channel = "pool"
 
-    def __init__(self, min=5, max=10, processes=False, channel=channel):
+    def __init__(self, min=5, max=10, process=False, channel=channel):
         super(Pool, self).__init__(channel=channel)
 
         self._min = min
         self._max = max
-        self._processes = processes
+        self._process = process
 
         self._workers = []
 
     @handler("started", channel="*")
     def _on_started(self, *args):
         for i in range(self._min):
-            worker = Worker(process=self._processes,
-                            channel=self.channel + str(i + 1))
+            worker = Worker(
+                process=self._process,
+                channel="{0:s}.{0:d}".format(self.channel, i + 1)
+            )
             self._workers.append(worker)
 
     @handler("stopped", channel="*")
@@ -46,7 +48,7 @@ class Pool(BaseComponent):
     def _on_task(self, f, *args, **kwargs):
         workers = len(self._workers)
         if not workers:
-            worker = Worker(process=self._processes)
+            worker = Worker(process=self._process)
             self._workers.append(worker)
             return worker.fire(Task(f, *args, **kwargs), worker)
 
