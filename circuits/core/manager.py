@@ -15,7 +15,7 @@ from sys import exc_info as _exc_info
 from signal import signal, SIGINT, SIGTERM
 from types import MethodType, GeneratorType
 from threading import current_thread, Thread
-from multiprocessing import current_process, Process
+from multiprocessing import current_process, Pipe, Process
 
 from .values import Value
 from .handlers import handler
@@ -98,9 +98,11 @@ class Manager(object):
         self._globals = set()
         self._handlers = dict()
 
-        self._task = None
-        self._executing_thread = None
+        self._pipe = None
+        self._thread = None
+        self._process = None
         self._running = False
+        self._executing_thread = None
 
         self.root = self.parent = self
         self.components = set()
@@ -333,6 +335,12 @@ class Manager(object):
         event.value = Value(event, self, getattr(event, 'notify', False))
         self.root._fire(event, channels)
 
+        if self._pipe is not None:
+            try:
+                self._pipe.send((event, channels))
+            except:
+                pass
+
         return event.value
 
     fire = fireEvent
@@ -534,12 +542,34 @@ class Manager(object):
         ``run()`` method. The invocation of this method returns
         immediately after the task or process has been started.
         """
-        Task = Process if process else Thread
 
-        self._task = Task(target=self.run, name=self.name)
+        if process:
+            # Parent<->Child Communications Pipe
+            parent, child = Pipe()
 
-        self._task.daemon = True
-        self._task.start()
+            # Parent Process - Manager
+            self._thread = Thread(
+                target=self.run,
+                args=(parent,),
+                name=self.name
+            )
+
+            self._thread.daemon = True
+            self._thread.start()
+
+            # Child Process - Manager
+            self._process = Process(
+                target=self.run,
+                args=(child,),
+                name=self.name
+            )
+
+            self._process.daemon = True
+            self._process.start()
+        else:
+            self._thread = Thread(target=self.run, name=self.name)
+            self._thread.daemon = True
+            self._thread.start()
 
     def stop(self):
         """
@@ -563,7 +593,8 @@ class Manager(object):
         for _ in range(3):
             self.tick()
 
-        self._task = None
+        self._thread = None
+        self._process = None
 
     def processTask(self, event, task, parent=None):
         value = None
@@ -660,7 +691,7 @@ class Manager(object):
 
         self._executing_thread = None
 
-    def run(self):
+    def run(self, pipe=None):
         """
         Run this manager. The method fires the
         :class:`~.events.Started` event and then continuously
@@ -683,8 +714,30 @@ class Manager(object):
                 # Ignore if we can't install signal handlers
                 pass
 
-        self._executing_thread = current_thread()
+        self._pipe = pipe
         self._running = True
+        self._executing_thread = current_thread()
+
+        # Setup Communications Thread between Parent and Child
+
+        comms_thread = None
+
+        def process_pipe():
+            try:
+                while self or self.running:
+                    event, channels = self._pipe.recv()
+                    self.root._fire(event, channels)
+            except EOFError:
+                # The other side closed the connection
+                self._pipe = None
+            except:
+                # Something else happened. Maybe we've termianted?
+                pass
+
+        if self._pipe is not None:
+            comms_thread = Thread(target=process_pipe)
+            comms_thread.daemon = True
+            comms_thread.start()
 
         from .helpers import FallBackGenerator
         self._fallback_generator = FallBackGenerator().register(self)
