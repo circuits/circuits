@@ -135,7 +135,7 @@ class Process(Component):
     def _on_stdout_read(self, data):
         self.stdout.write(data)
 
-    @handler("generate_events", priority=-9, filter=True)
+    @handler("generate_events")
     def _on_generate_events(self, event):
         if self.p is not None:
             status = self.p.poll()
