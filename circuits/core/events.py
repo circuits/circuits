@@ -89,6 +89,7 @@ class BaseEvent(object):
         self.args = list(args)
         self.kwargs = kwargs
 
+        self.uid = None
         self.value = None
         self.handler = None
         self.notify = False

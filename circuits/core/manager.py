@@ -12,6 +12,7 @@ from collections import deque
 from inspect import isfunction
 from traceback import format_tb
 from sys import exc_info as _exc_info
+from weakref import WeakValueDictionary
 from signal import signal, SIGINT, SIGTERM
 from types import MethodType, GeneratorType
 from threading import current_thread, Thread
@@ -19,7 +20,7 @@ from multiprocessing import current_process, Pipe, Process
 
 from .values import Value
 from .handlers import handler
-from .events import Done, Success, Failure, Complete
+from .events import Event, Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
 TIMEOUT = 0.1  # 100ms timeout when idle
@@ -97,6 +98,7 @@ class Manager(object):
         self._queue = deque()
         self._globals = set()
         self._handlers = dict()
+        self._values = WeakValueDictionary()
 
         self._pipe = None
         self._thread = None
@@ -335,11 +337,16 @@ class Manager(object):
         event.value = Value(event, self, getattr(event, 'notify', False))
         self.root._fire(event, channels)
 
-        if self._pipe is not None:
+        if self._pipe is not None and not isinstance(event, GenerateEvents):
             try:
-                self._pipe.send((event, channels))
+                event.uid = uid = hash(event)
+                self._values[uid] = event.value
+                self._pipe.send(event)
+                print("Sent:")
+                print(event)
             except:
-                pass
+                print("Cannot send:")
+                print(event)
 
         return event.value
 
@@ -487,6 +494,15 @@ class Manager(object):
             if value and handler.filter:
                 break
 
+        if self._pipe is not None:
+            try:
+                self._pipe.send(event.value)
+                print("Sent:")
+                print(event.value)
+            except:
+                print("Cannot send:")
+                print(event.value)
+
         self._currently_handling = None
         self._eventDone(event, error)
 
@@ -551,7 +567,7 @@ class Manager(object):
             # Parent Process - Manager
             self._thread = Thread(
                 target=self.run,
-                args=(parent,) if kwargs.get("link", False) else (),
+                kwargs={"pipe": parent} if kwargs.get("link", False) else {},
                 name=self.name
             )
 
@@ -561,7 +577,7 @@ class Manager(object):
             # Child Process - Manager
             self.__process = Process(
                 target=self.run,
-                args=(child,) if kwargs.get("link", False) else (),
+                kwargs={"pipe": child} if kwargs.get("link", False) else {},
                 name=self.name
             )
 
@@ -705,6 +721,7 @@ class Manager(object):
         fires the corresponding :class:`~.events.Signal`
         events and then calls :meth:`~.stop` for the manager.
         """
+
         atexit.register(self.stop)
 
         if current_thread().getName() == "MainThread":
@@ -724,8 +741,18 @@ class Manager(object):
         def process_pipe():
             try:
                 while self or self.running:
-                    event, channels = self._pipe.recv()
-                    self.root._fire(event, channels)
+                    obj = self._pipe.recv()
+                    print("Received:")
+                    print(obj)
+
+                    if isinstance(obj, Event):
+                        self.root.fire(obj, *obj.channels)
+                    else:
+                        obj.manager = self.root
+                        if obj.event.uid in self._values:
+                            value = self._values[obj.event.uid]
+                            value.value = obj
+                            value.errors = obj.errors
             except EOFError:
                 # The other side closed the connection
                 self._pipe = None
@@ -734,6 +761,7 @@ class Manager(object):
                 pass
 
         if self._pipe is not None:
+            print("Setting up Communications Thread...")
             t = Thread(target=process_pipe)
             t.daemon = True
             t.start()
