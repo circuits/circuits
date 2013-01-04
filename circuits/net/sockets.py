@@ -767,8 +767,8 @@ def parse_ipv4_parameter(bind_parameter):
 def parse_ipv6_parameter(bind_parameter):
     if type(bind_parameter) is int:
         try:
-            _, _, _, _, sockaddr = getaddrinfo(getfqdn(), 0, AF_INET6)[0]
-            bind = (sockaddr, bind_parameter)
+            _, _, _, _, bind \
+                = getaddrinfo(getfqdn(), bind_parameter, AF_INET6)[0]
         except (gaierror, IndexError):
             bind = ("::", bind_parameter)
     else:
