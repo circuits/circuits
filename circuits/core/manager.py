@@ -459,7 +459,7 @@ class Manager(object):
                 else:
                     value = handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
-                raise
+                self.stop()
             except:
                 etype, evalue, etraceback = _exc_info()
                 traceback = format_tb(etraceback)

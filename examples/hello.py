@@ -14,6 +14,6 @@ class App(Component):
 
     def started(self, component):
         self.fire(Hello())
-        self.stop()
+        raise SystemExit(0)
 
 App().run()
