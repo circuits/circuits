@@ -100,7 +100,7 @@ class Manager(object):
 
         self._pipe = None
         self._thread = None
-        self._process = None
+        self.__process = None
         self._running = False
         self._executing_thread = None
 
@@ -559,14 +559,14 @@ class Manager(object):
             self._thread.start()
 
             # Child Process - Manager
-            self._process = Process(
+            self.__process = Process(
                 target=self.run,
                 args=(child,) if kwargs.get("link", False) else (),
                 name=self.name
             )
 
-            self._process.daemon = True
-            self._process.start()
+            self.__process.daemon = True
+            self.__process.start()
         else:
             self._thread = Thread(target=self.run, name=self.name)
             self._thread.daemon = True
@@ -595,7 +595,7 @@ class Manager(object):
             self.tick()
 
         self._thread = None
-        self._process = None
+        self.__process = None
 
     def processTask(self, event, task, parent=None):
         value = None
