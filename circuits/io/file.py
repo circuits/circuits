@@ -41,7 +41,8 @@ class File(Component):
 
     @property
     def closed(self):
-        return self._fd.closed if hasattr(self, "_fd") else None
+        return getattr(self._fd, "closed", True) \
+            if hasattr(self, "_fd") else True
 
     @property
     def filename(self):
@@ -135,7 +136,10 @@ class File(Component):
                 self.fire(Read(data)).notify = True
             else:
                 self.fire(EOF())
-                self.close()
+                if not any(m in self.mode for m in ("a", "+")):
+                    self.close()
+                else:
+                    self._poller.discard(self._fd)
         except SocketError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
