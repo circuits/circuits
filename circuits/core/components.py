@@ -230,6 +230,18 @@ class BaseComponent(Manager):
         for c in self.components:
             c._updateRoot(root)
 
+    @classmethod
+    def handles(cls, *names):
+        """Returns True if all names are valid event handlers"""
+
+        handlers = dict(
+            [(k, v) for k, v in cls.__dict__.items()
+                if getattr(v, "handler", False)]
+        )
+
+        return all(name in handlers for name in names)
+
+
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
 """
 If you use Component instead of BaseComponent as base class for your own
