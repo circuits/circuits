@@ -53,7 +53,10 @@ class Worker(BaseComponent):
     channel = "worker"
 
     def init(self, process=False, channel=channel):
-        self.start(process=process)
+        if process:
+            self.start(process=process, link=True)
+        else:
+            self.start()
 
     @handler("task")
     def _on_task(self, f, *args, **kwargs):

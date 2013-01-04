@@ -536,7 +536,7 @@ class Manager(object):
         if signal in [SIGINT, SIGTERM]:
             self.stop()
 
-    def start(self, process=False):
+    def start(self, process=False, **kwargs):
         """
         Start a new thread or process that invokes this manager's
         ``run()`` method. The invocation of this method returns
@@ -545,12 +545,13 @@ class Manager(object):
 
         if process:
             # Parent<->Child Communications Pipe
-            parent, child = Pipe()
+            if kwargs.get("link", False):
+                parent, child = Pipe()
 
             # Parent Process - Manager
             self._thread = Thread(
                 target=self.run,
-                args=(parent,),
+                args=(parent,) if kwargs.get("link", False) else (),
                 name=self.name
             )
 
@@ -560,7 +561,7 @@ class Manager(object):
             # Child Process - Manager
             self._process = Process(
                 target=self.run,
-                args=(child,),
+                args=(child,) if kwargs.get("link", False) else (),
                 name=self.name
             )
 
@@ -720,8 +721,6 @@ class Manager(object):
 
         # Setup Communications Thread between Parent and Child
 
-        comms_thread = None
-
         def process_pipe():
             try:
                 while self or self.running:
@@ -735,9 +734,9 @@ class Manager(object):
                 pass
 
         if self._pipe is not None:
-            comms_thread = Thread(target=process_pipe)
-            comms_thread.daemon = True
-            comms_thread.start()
+            t = Thread(target=process_pipe)
+            t.daemon = True
+            t.start()
 
         from .helpers import FallBackGenerator
         self._fallback_generator = FallBackGenerator().register(self)
@@ -747,5 +746,10 @@ class Manager(object):
         try:
             while self or self.running:
                 self.tick()
+        except:
+            pass
         finally:
-            self.tick()
+            try:
+                self.tick()
+            except:
+                pass
