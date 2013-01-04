@@ -14,15 +14,53 @@ from errno import ENOTCONN, EPIPE, EWOULDBLOCK
 
 from circuits.tools import tryimport
 from circuits.core.utils import findcmp
-from circuits.core import handler, Component
+from circuits.core import handler, Component, Event
 from circuits.core.pollers import BasePoller, Poller
-
-from .events import Close, Closed, EOF, Error, Open, Opened, Read, Ready
 
 fcntl = tryimport("fcntl")
 
 TIMEOUT = 0.2
 BUFSIZE = 4096
+
+
+class EOF(Event):
+    """EOF Event"""
+
+
+class Seek(Event):
+    """Seek Event"""
+
+
+class Read(Event):
+    """Read Event"""
+
+
+class Close(Event):
+    """Close Event"""
+
+
+class Write(Event):
+    """Write Event"""
+
+
+class Error(Event):
+    """Error Event"""
+
+
+class Open(Event):
+    """Open Event"""
+
+
+class Opened(Event):
+    """Opened Event"""
+
+
+class Closed(Event):
+    """Closed Event"""
+
+
+class Ready(Event):
+    """Ready Event"""
 
 
 class File(Component):
