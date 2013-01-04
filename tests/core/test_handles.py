@@ -19,9 +19,17 @@ class App(Component):
         pass
 
 
-def test_pass():
+def test_pass_class():
     assert IO.handles("read", "write")
 
 
-def test_fail():
+def test_fail_class():
     assert not App.handles("read", "write")
+
+
+def test_pass_instance():
+    assert IO().handles("read", "write")
+
+
+def test_fail_instance():
+    assert not App().handles("read", "write")
