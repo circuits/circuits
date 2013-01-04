@@ -61,6 +61,14 @@ class Value(object):
 
         self._value = None
 
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict["manager"]
+        return odict
+
+    def __setstate__(self, dict):
+        self.__dict__.update(dict)
+
     def __contains__(self, y):
         value = self.value
         return y in value if isinstance(value, list) else y == value
@@ -95,13 +103,20 @@ class Value(object):
         if self.promise and not force:
             return
 
-        if self.manager is not None and self.notify:
-            self.manager.fire(
-                Event.create(
-                    "%sValueChanged" % self.event.__class__.__name__,
-                    self
+        if self.manager is not None:
+            if self.manager._pipe is not None and self.uid is not None:
+                try:
+                    self.manager._pipe.send(self)
+                except:
+                    pass
+
+            if self.notify:
+                self.manager.fire(
+                    Event.create(
+                        "%sValueChanged" % self.event.__class__.__name__,
+                        self
+                    )
                 )
-            )
 
     def getValue(self, recursive=True):
         value = self._value
