@@ -29,12 +29,10 @@ class Ready(Event):
 
 class AddPath(Event):
     """Add path to watch"""
-    channel = 'add_path'
 
 
 class RemovePath(Event):
     """Remove path from watch"""
-    channel = 'remove_path'
 
 
 class Moved(Event):
@@ -95,9 +93,9 @@ class Notify(Component):
 
         self._poller = None
         self._wm = WatchManager()
-        self._notifier = Notifier(self._wm, self._process)
+        self._notifier = Notifier(self._wm, self._on_process_events)
 
-    def _process(self, event):
+    def _on_process_events(self, event):
         dir = event.dir
         mask = event.mask
         path = event.path
