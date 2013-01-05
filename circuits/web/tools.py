@@ -109,7 +109,10 @@ def serve_file(request, response, path, type=None, disposition=None,
     response.headers['Last-Modified'] = formatdate(
         st.st_mtime, usegmt=True
     )
-    validate_since(request, response)
+
+    result = validate_since(request, response)
+    if result is not None:
+        return result
 
     if type is None:
         # Set content-type based on filename extension

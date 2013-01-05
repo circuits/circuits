@@ -14,7 +14,7 @@ from urllib import unquote, quote
 
 from circuits import handler, BaseComponent
 
-from circuits.web.tools import expires, serve_file
+from circuits.web.tools import serve_file
 
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -76,7 +76,6 @@ class Static(BaseComponent):
         if os.path.isfile(location):
             # Don't set cookies for static content
             response.cookie.clear()
-            expires(request, response, (3600 * 24 * 30), force=True)
             return serve_file(request, response, location)
 
         # Is it a directory?
@@ -90,7 +89,6 @@ class Static(BaseComponent):
                 if os.path.exists(location):
                     # Don't set cookies for static content
                     response.cookie.clear()
-                    expires(request, response, (3600 * 24 * 30), force=True)
                     return serve_file(request, response, location)
 
             # .. serve a directory listing if allowed to.
