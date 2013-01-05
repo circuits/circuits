@@ -19,8 +19,6 @@ uses the UDP protocol and as such events cannot be guaranteed of their
 order or delivery.
 """
 
-from os import getpid
-
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -59,15 +57,11 @@ class Bridge(BaseComponent):
 
     def _process_packet(self, eid, obj):
         if isinstance(obj, Event):
-            print("Received Event: ({0:d})".format(getpid()))
-            print(obj)
             obj.remote = True
             obj.notify = "ValueChanged"
             value = self.fire(obj)
             self._values[value] = eid
         elif isinstance(obj, Value):
-            print("Received Value: ({0:d})".format(getpid()))
-            print(obj)
             self._values[eid].value = obj.value
 
     @handler("value_changed", channel="*")
@@ -87,8 +81,6 @@ class Bridge(BaseComponent):
             eid = hash(event)
             self._values[eid] = event.value
             self._socket.write(dumps((eid, event)))
-            print("Sent Event: ({0:d})".format(getpid()))
-            print(event)
         except:
             pass
 
