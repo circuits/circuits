@@ -8,6 +8,7 @@ Thread and Process based "worker" pools.
 """
 
 from time import time
+from uuid import uuid4 as uuid
 from random import seed, choice
 
 from circuits.core.workers import Task, Worker
@@ -32,10 +33,7 @@ class Pool(BaseComponent):
     @handler("started", channel="*")
     def _on_started(self, *args):
         for i in range(self._min):
-            worker = Worker(
-                process=self._processes,
-                channel="{0:s}.{0:d}".format(self.channel, i + 1)
-            )
+            worker = Worker(process=self._processes, channel=uuid())
             self._workers.append(worker)
 
     @handler("stopped", channel="*")
@@ -48,7 +46,7 @@ class Pool(BaseComponent):
     def _on_task(self, f, *args, **kwargs):
         workers = len(self._workers)
         if not workers:
-            worker = Worker(process=self._processes)
+            worker = Worker(process=self._processes, channel=uuid())
             self._workers.append(worker)
             return worker.fire(Task(f, *args, **kwargs), worker)
 
