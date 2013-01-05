@@ -2,7 +2,6 @@
 
 
 import pytest
-pytest.skip("XXX: Missing Feature")
 
 from circuits import Component, Event
 
@@ -36,4 +35,4 @@ def app(request, manager, watcher):
 def test(manager, watcher, app):
     x = manager.fire(Event.create("Hello"), app)
     assert watcher.wait("hello")
-    assert x == "Hello World!"
+    assert x.value == "Hello World!"

@@ -86,6 +86,7 @@ class Manager(object):
 
     _currently_handling = None
     needs_resume = None
+    traverse_children_handlers = True
     """
     The event currently being handled.
     """
@@ -213,16 +214,15 @@ class Manager(object):
 
     def getHandlers(self, event, channel, **kwargs):
         channel_is_instance = isinstance(channel, Manager)
-        if channel_is_instance and channel != self:
-            return channel.getHandlers(event, channel)
 
         name = event.name
         handlers = set()
 
         handlers_chain = [self._handlers.get("*", set())]
 
-        if name in self._handlers:
-            handlers_chain.append(self._handlers[name])
+        if not channel_is_instance or channel == self:
+            if name in self._handlers:
+                handlers_chain.append(self._handlers[name])
 
         for _handler in chain(*handlers_chain):
             if _handler.channel:
@@ -239,7 +239,7 @@ class Manager(object):
         if not kwargs.get("exclude_globals", False):
             handlers.update(self._globals)
 
-        if not channel_is_instance:
+        if self.traverse_children_handlers:
             for c in self.components.copy():
                 handlers.update(c.getHandlers(event, channel, **kwargs))
 
