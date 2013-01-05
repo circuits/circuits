@@ -45,10 +45,12 @@ class WebSockets(BaseComponent):
         self._protocol_version = 13 
         headers = request.headers
         sec_key = headers.get("Sec-WebSocket-Key", None)
+        connection_tokens = [s.strip() for s in \
+                             headers.get("Connection", "").lower().split(",")]
         
         if not headers.has_key("Host") \
             or headers.get("Upgrade", "").lower() != "websocket" \
-            or headers.get("Connection", "").lower() != "upgrade" \
+            or not "upgrade" in connection_tokens \
             or sec_key is None \
             or len(base64.b64decode(sec_key)) != 16:
             return HTTPError(request, response, code=400)
