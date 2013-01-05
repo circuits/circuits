@@ -581,9 +581,6 @@ class Manager(object):
 
         self._running = False
 
-        if self._process is not None:
-            self._process.terminate()
-
         # clean queue from any pending GenerateEvents events
         q = self._queue
         self._queue = deque()
