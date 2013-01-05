@@ -5,7 +5,7 @@ from os import getpid
 import pytest
 pytest.importorskip("multiprocessing")
 
-from circuits import Event, Component
+from circuits import Component, Event
 
 
 class Hello(Event):
@@ -18,7 +18,7 @@ class App(Component):
         return "Hello from {0:d}".format(getpid())
 
 
-def test():
+def test_parent_child():
     app = App()
     waiter = pytest.WaitEvent(app, "ready")
     app.start(process=True, link=True)
@@ -41,5 +41,19 @@ def test():
     actual_set = set(x.value)
 
     assert actual_set == expected_set
+
+    app.stop()
+
+
+def test_child(manager, watcher):
+    app = App()
+    app.start(process=True, link=manager)
+    assert watcher.wait("ready")
+
+    x = manager.fire(Hello())
+
+    assert pytest.wait_for(x, "result")
+
+    assert x.value == "Hello from {0:d}".format(app._process.pid)
 
     app.stop()
