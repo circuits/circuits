@@ -19,7 +19,7 @@ __date__ = "22nd November 2012"
 __version__ = "2.0.2dev"
 
 from circuits.core import future, Pool, Task, Worker
-from circuits.core import Debugger, Loader, Manager, Timer
+from circuits.core import Debugger, Bridge, Loader, Manager, Timer
 from circuits.core import BaseEvent, DerivedEvent, Event, LiteralEvent
 from circuits.core import handler, reprhandler, BaseComponent, Component
 

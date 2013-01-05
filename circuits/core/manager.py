@@ -16,11 +16,11 @@ from weakref import WeakValueDictionary
 from signal import signal, SIGINT, SIGTERM
 from types import MethodType, GeneratorType
 from threading import current_thread, Thread
-from multiprocessing import current_process, Pipe, Process
+from multiprocessing import current_process, Process
 
 from .values import Value
 from .handlers import handler
-from .events import Event, Done, Success, Failure, Complete
+from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
 TIMEOUT = 0.1  # 100ms timeout when idle
@@ -100,9 +100,8 @@ class Manager(object):
         self._handlers = dict()
         self._values = WeakValueDictionary()
 
-        self._pipe = None
         self._thread = None
-        self.__process = None
+        self._process = None
         self._running = False
         self._executing_thread = None
 
@@ -334,19 +333,8 @@ class Manager(object):
 
         event.channels = channels
 
-        event.value = Value(event, self, getattr(event, 'notify', False))
+        event.value = Value(event, self)
         self.root._fire(event, channels)
-
-        if self._pipe is not None and not isinstance(event, GenerateEvents):
-            try:
-                event.uid = uid = hash(event)
-                self._values[uid] = event.value
-                self._pipe.send(event)
-                print("Sent:")
-                print(event)
-            except:
-                print("Cannot send:")
-                print(event)
 
         return event.value
 
@@ -494,15 +482,6 @@ class Manager(object):
             if value and handler.filter:
                 break
 
-        if self._pipe is not None:
-            try:
-                self._pipe.send(event.value)
-                print("Sent:")
-                print(event.value)
-            except:
-                print("Cannot send:")
-                print(event.value)
-
         self._currently_handling = None
         self._eventDone(event, error)
 
@@ -560,29 +539,32 @@ class Manager(object):
         """
 
         if process:
-            # Parent<->Child Communications Pipe
+            # Parent<->Child Bridge
             if kwargs.get("link", False):
+                from circuits.net.sockets import Pipe
+
                 parent, child = Pipe()
 
-            # Parent Process - Manager
-            self._thread = Thread(
-                target=self.run,
-                kwargs={"pipe": parent} if kwargs.get("link", False) else {},
-                name=self.name
-            )
+                self._process = Process(
+                    target=self.run,
+                    args=(child,),
+                    name=self.name
+                )
+
+                self._thread = Thread(
+                    target=self.run,
+                    args=(parent,),
+                    name=self.name
+                )
+            else:
+                self._process = Process(target=self.run, name=self.name)
+                self._thread = Thread(target=self.run, name=self.name)
+
+            self._process.daemon = True
+            self._process.start()
 
             self._thread.daemon = True
             self._thread.start()
-
-            # Child Process - Manager
-            self.__process = Process(
-                target=self.run,
-                kwargs={"pipe": child} if kwargs.get("link", False) else {},
-                name=self.name
-            )
-
-            self.__process.daemon = True
-            self.__process.start()
         else:
             self._thread = Thread(target=self.run, name=self.name)
             self._thread.daemon = True
@@ -599,6 +581,9 @@ class Manager(object):
 
         self._running = False
 
+        if self._process is not None:
+            self._process.terminate()
+
         # clean queue from any pending GenerateEvents events
         q = self._queue
         self._queue = deque()
@@ -611,7 +596,7 @@ class Manager(object):
             self.tick()
 
         self._thread = None
-        self.__process = None
+        self._process = None
 
     def processTask(self, event, task, parent=None):
         value = None
@@ -708,7 +693,7 @@ class Manager(object):
 
         self._executing_thread = None
 
-    def run(self, pipe=None):
+    def run(self, socket=None):
         """
         Run this manager. The method fires the
         :class:`~.events.Started` event and then continuously
@@ -732,39 +717,14 @@ class Manager(object):
                 # Ignore if we can't install signal handlers
                 pass
 
-        self._pipe = pipe
         self._running = True
         self._executing_thread = current_thread()
 
-        # Setup Communications Thread between Parent and Child
+        # Setup Communications Bridge
 
-        def process_pipe():
-            try:
-                while self or self.running:
-                    obj = self._pipe.recv()
-                    print("Received:")
-                    print(obj)
-
-                    if isinstance(obj, Event):
-                        self.root.fire(obj, *obj.channels)
-                    else:
-                        obj.manager = self.root
-                        if obj.event.uid in self._values:
-                            value = self._values[obj.event.uid]
-                            value.value = obj
-                            value.errors = obj.errors
-            except EOFError:
-                # The other side closed the connection
-                self._pipe = None
-            except:
-                # Something else happened. Maybe we've termianted?
-                pass
-
-        if self._pipe is not None:
-            print("Setting up Communications Thread...")
-            t = Thread(target=process_pipe)
-            t.daemon = True
-            t.start()
+        if socket is not None:
+            from circuits.core.bridge import Bridge
+            Bridge(socket).register(self)
 
         from .helpers import FallBackGenerator
         self._fallback_generator = FallBackGenerator().register(self)

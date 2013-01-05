@@ -36,22 +36,18 @@ class Value(object):
     :param manager: The Manager/Component used to trigger notifications.
     :type  manager: A Manager/Component instance.
 
-    :param notify: True to notify of changes to this value
-    :type  notify: bool
-
     :ivar result: True if this value has been changed.
     :ivar errors: True if while setting this value an exception occured.
+    :ivar notify: True or an event name  to notify of changes to this value
 
     This is a Future/Promise implementation.
     """
 
-    def __init__(self, event=None, manager=None, notify=False):
-        super(Value, self).__init__()
-
+    def __init__(self, event=None, manager=None):
         self.event = event
         self.manager = manager
-        self.notify = notify
 
+        self.notify = False
         self.promise = False
 
         self.result = False
@@ -65,9 +61,6 @@ class Value(object):
         odict = self.__dict__.copy()
         del odict["manager"]
         return odict
-
-    def __setstate__(self, dict):
-        self.__dict__.update(dict)
 
     def __contains__(self, y):
         value = self.value
@@ -103,20 +96,21 @@ class Value(object):
         if self.promise and not force:
             return
 
-        if self.manager is not None:
-            if self.manager._pipe is not None and self.uid is not None:
-                try:
-                    self.manager._pipe.send(self)
-                except:
-                    pass
+        notify = getattr(self.event, "notify", False) or self.notify
 
-            if self.notify:
-                self.manager.fire(
-                    Event.create(
-                        "%sValueChanged" % self.event.__class__.__name__,
-                        self
-                    )
+        if isinstance(notify, unicode):
+            notify = notify.encode("utf-8")
+
+        if self.manager is not None and notify:
+            if isinstance(notify, str):
+                e = Event.create(notify, self)
+            else:
+                e = ValueChanged.create(
+                    "{0:s}ValueChanged".format(self.event.__class__.__name__),
+                    self
                 )
+
+            self.manager.fire(e)
 
     def getValue(self, recursive=True):
         value = self._value

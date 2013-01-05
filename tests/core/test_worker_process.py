@@ -41,7 +41,9 @@ def f():
 def test(worker):
     x = worker.fire(Task(f))
 
-    assert pytest.wait_for(x, "result")
+    def test(obj, attr):
+        return isinstance(obj._value, list)
 
-    assert x.result
-    assert x.value == 1000000
+    assert pytest.wait_for(x, None, test)
+
+    assert x.value == [1000000, 1000000]

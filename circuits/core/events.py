@@ -25,6 +25,7 @@ class BaseEvent(object):
     channels = ()
     "The channels this message is send to."
 
+    notify = False
     success = False
     failure = False
     complete = False
@@ -92,7 +93,14 @@ class BaseEvent(object):
         self.uid = None
         self.value = None
         self.handler = None
-        self.notify = False
+
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict["handler"]
+        return odict
+
+    def __setstate__(self, dict):
+        self.__dict__.update(dict)
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
