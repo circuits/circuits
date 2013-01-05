@@ -531,7 +531,7 @@ class Manager(object):
         if signal in [SIGINT, SIGTERM]:
             self.stop()
 
-    def start(self, process=False, **kwargs):
+    def start(self, process=False, link=None):
         """
         Start a new thread or process that invokes this manager's
         ``run()`` method. The invocation of this method returns
@@ -540,7 +540,7 @@ class Manager(object):
 
         if process:
             # Parent<->Child Bridge
-            if kwargs.get("link", False):
+            if link is not None:
                 from circuits.net.sockets import Pipe
 
                 parent, child = Pipe()
@@ -551,11 +551,15 @@ class Manager(object):
                     name=self.name
                 )
 
-                self._thread = Thread(
-                    target=self.run,
-                    args=(parent,),
-                    name=self.name
-                )
+                if isinstance(link, Manager):
+                    from circuits.core.bridge import Bridge
+                    Bridge(parent).register(link)
+                else:
+                    self._thread = Thread(
+                        target=self.run,
+                        args=(parent,),
+                        name=self.name
+                    )
             else:
                 self._process = Process(target=self.run, name=self.name)
                 self._thread = Thread(target=self.run, name=self.name)
@@ -563,12 +567,20 @@ class Manager(object):
             self._process.daemon = True
             self._process.start()
 
-            self._thread.daemon = True
-            self._thread.start()
+            if self._thread is not None:
+                self._thread.daemon = True
+                self._thread.start()
         else:
             self._thread = Thread(target=self.run, name=self.name)
             self._thread.daemon = True
             self._thread.start()
+
+    def join(self):
+        if getattr(self, "_thread", None) is not None:
+            return self._thread.join()
+
+        if getattr(self, "_process", None) is not None:
+            return self._process.join()
 
     def stop(self):
         """
