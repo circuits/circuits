@@ -7,6 +7,7 @@
 import pytest
 
 import collections
+import threading
 from time import sleep
 from collections import deque
 
@@ -17,22 +18,26 @@ from circuits import handler, BaseComponent, Debugger, Manager
 class Watcher(BaseComponent):
 
     def init(self):
+        self._lock = threading.Lock()
         self.events = deque([], 50)
 
     @handler(channel="*", priority=999.9)
     def _on_event(self, event, *args, **kwargs):
-        self.events.append(event)
+        with self._lock:
+            self.events.append(event)
 
     def wait(self, name, channel=None, timeout=3.0):
         for i in range(int(timeout / TIMEOUT)):
             if channel is None:
-                for event in self.events:
-                    if event.name == name:
-                        return True
+                with self._lock:
+                    for event in self.events:
+                        if event.name == name:
+                            return True
             else:
-                for event in self.events:
-                    if event.name == name and channel in event.channels:
-                        return True
+                with self._lock:
+                    for event in self.events:
+                        if event.name == name and channel in event.channels:
+                            return True
             sleep(TIMEOUT)
 
 

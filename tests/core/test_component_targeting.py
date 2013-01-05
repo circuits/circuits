@@ -2,7 +2,7 @@
 
 
 import pytest
-pytest.skip("XXX: Missing Feature")
+#pytest.skip("XXX: Missing Feature")
 
 from circuits import Component, Event
 
