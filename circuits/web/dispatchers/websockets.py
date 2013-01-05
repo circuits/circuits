@@ -4,34 +4,46 @@
 from circuits.web.errors import HTTPError
 from circuits.net.protocols.websocket import WebSocketCodec
 
-"""WebSockets
-
-This module implements a WebSockets dispatcher that handles the
-WebSockets handshake, upgrades the connection and translates incoming
-messages into ``Message`` events.
-"""
-
 import hashlib
 import base64
-try:
-    from urllib.parse import urlunsplit
-except ImportError:
-    from urlparse import urlunsplit
+from circuits.core.handlers import handler
 
-from circuits.net.sockets import Write
-from circuits import handler, BaseComponent
-
-
-class MalformedWebSocket(ValueError):
-    """Malformed WebSocket Error"""
+from circuits import BaseComponent
 
 
 class WebSockets(BaseComponent):
+    """
+    This class implements an RFC 6455 compliant WebSockets dispatcher 
+    that handles the WebSockets handshake and upgrades the connection.
+    
+    The dispatcher listens on its channel for :class:`~.web.events.Request`
+    events and tries to match them with a given path. Upon a match,
+    the request is checked for the proper Opening Handshake information.
+    If successful, the dispatcher confirms the establishment of the
+    connection to the client. Any subsequent data from the client is
+    handled as a WebSocket data frame, decoded and fired as
+    a :class:`~.sockets.Read` event on the ``wschannel`` passed to
+    the constructor. The data from :class:`~.sockets.Write` events on 
+    that channel is encoded as data frames and forwarded to the client.
+    
+    Firing a :class:`~.sockets.Close` event on the ``wschannel`` closes the
+    connection in an orderly fashion (i.e. as specified by the
+    WebSocket protocol).
+    """
 
     channel = "web"
 
-    def __init__(self, path=None, wschannel="ws"):
-        super(WebSockets, self).__init__()
+    def __init__(self, path=None, wschannel="ws", *args, **kwargs):
+        """
+        :param path: the path to handle. Requests that start with this
+            path are considered to be WebSocket Opening Handshakes.
+            
+        :param wschannel: the channel on which :class:`~.sockets.Read`
+            events from the client will be delivered and where
+            :class:`~.sockets.Write` events to the client will be
+            sent to.
+        """
+        super(WebSockets, self).__init__(*args, **kwargs)
 
         self._path = path
         self._wschannel = wschannel
