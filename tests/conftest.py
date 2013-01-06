@@ -118,7 +118,7 @@ def manager(request):
     return manager
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def watcher(request, manager):
     watcher = Watcher().register(manager)
 
