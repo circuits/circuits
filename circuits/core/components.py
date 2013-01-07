@@ -5,15 +5,14 @@
 This module defines the BaseComponent and its subclass Component.
 """
 
-from circuits.core.events import Event
-
 from types import MethodType
+from operator import itemgetter
 from collections import Callable
 from inspect import getmembers, isclass
 
 from .manager import Manager
 from .utils import flatten, findroot
-from .events import Registered, Unregistered
+from .events import Event, Registered, Unregistered
 from .handlers import handler, HandlerMetaClass
 
 
@@ -231,15 +230,22 @@ class BaseComponent(Manager):
             c._updateRoot(root)
 
     @classmethod
-    def handles(cls, *names):
-        """Returns True if all names are valid event handlers"""
+    def handlers(cls):
+        """Returns a list of all event handlers for this Component"""
 
-        handlers = dict(
-            [(k, v) for k, v in cls.__dict__.items()
-                if getattr(v, "handler", False)]
+        return map(
+            itemgetter(0),
+            filter(
+                lambda (k, v): hasattr(v, "handler"),
+                cls.__dict__.items()
+            )
         )
 
-        return all(name in handlers for name in names)
+    @classmethod
+    def handles(cls, *names):
+        """Returns True if all names are event handlers of this Component"""
+
+        return all(name in cls.handlers() for name in names)
 
 
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
