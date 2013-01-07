@@ -26,14 +26,14 @@ class Pool(BaseComponent):
 
         self._min = min
         self._max = max
-        self._processes = process
+        self._process_mode = process
 
         self._workers = []
 
     @handler("started", channel="*")
     def _on_started(self, *args):
         for i in range(self._min):
-            worker = Worker(process=self._processes, channel=uuid())
+            worker = Worker(process=self._process_mode, channel=uuid())
             self._workers.append(worker)
 
     @handler("stopped", channel="*")
@@ -46,7 +46,7 @@ class Pool(BaseComponent):
     def _on_task(self, f, *args, **kwargs):
         workers = len(self._workers)
         if not workers:
-            worker = Worker(process=self._processes, channel=uuid())
+            worker = Worker(process=self._process_mode, channel=uuid())
             self._workers.append(worker)
             return worker.fire(Task(f, *args, **kwargs), worker)
 
