@@ -542,34 +542,18 @@ class Manager(object):
             # Parent<->Child Bridge
             if link is not None:
                 from circuits.net.sockets import Pipe
+                from circuits.core.bridge import Bridge
 
                 parent, child = Pipe()
+                Bridge(parent).register(link)
 
-                self._process = Process(
-                    target=self.run,
-                    args=(child,),
-                    name=self.name
-                )
-
-                if isinstance(link, Manager):
-                    from circuits.core.bridge import Bridge
-                    Bridge(parent).register(link)
-                else:
-                    self._thread = Thread(
-                        target=self.run,
-                        args=(parent,),
-                        name=self.name
-                    )
+                args = (child,)
             else:
-                self._process = Process(target=self.run, name=self.name)
-                self._thread = Thread(target=self.run, name=self.name)
+                args = ()
 
+            self._process = Process(target=self.run, args=args, name=self.name)
             self._process.daemon = True
             self._process.start()
-
-            if self._thread is not None:
-                self._thread.daemon = True
-                self._thread.start()
         else:
             self._thread = Thread(target=self.run, name=self.name)
             self._thread.daemon = True
