@@ -181,7 +181,9 @@ class Select(BasePoller):
                 return
             timeout = event.time_left
             if timeout < 0:
+                self.root.needs_resume = self.resume
                 r, w, _ = select.select(self._read, self._write, [])
+                self.root.needs_resume = None
             else:
                 r, w, _ = select.select(self._read, self._write, [], timeout)
         except ValueError as e:
@@ -289,7 +291,9 @@ class Poll(BasePoller):
         try:
             timeout = event.time_left
             if timeout < 0:
+                self.root.needs_resume = self.resume
                 l = self._poller.poll()
+                self.root.needs_resume = None
             else:
                 l = self._poller.poll(1000 * timeout)
         except SelectError as e:
@@ -396,7 +400,9 @@ class EPoll(BasePoller):
         try:
             timeout = event.time_left
             if timeout < 0:
+                self.root.needs_resume = self.resume
                 l = self._poller.poll()
+                self.root.needs_resume = None
             else:
                 l = self._poller.poll(timeout)
         except IOError as e:
@@ -511,7 +517,9 @@ class KQueue(BasePoller):
         try:
             timeout = event.time_left
             if timeout < 0:
+                self.root.needs_resume = self.resume
                 l = self._poller.control(None, 1000)
+                self.root.needs_resume = None
             else:
                 l = self._poller.control(None, 1000, timeout)
         except SelectError as e:

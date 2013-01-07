@@ -677,9 +677,9 @@ class Manager(object):
             if len(self._tasks) > 0 or self:
                 # if work remains to be done, generate as fast as possible
                 e.reduce_time_left(0)
-            else:
-                # Don't generate longer than timeout.
-                e.reduce_time_left(TIMEOUT)
+            #else:
+            #    # Don't generate longer than timeout.
+            #    e.reduce_time_left(TIMEOUT)
 
             self.fire(e, "*")
 
