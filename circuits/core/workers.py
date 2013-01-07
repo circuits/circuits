@@ -54,7 +54,7 @@ class Worker(BaseComponent):
 
     def init(self, process=False, channel=channel):
         if process:
-            self.start(process=process, link=True)
+            self.start(process=process, link=self)
         else:
             self.start()
 
