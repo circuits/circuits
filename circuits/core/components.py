@@ -5,8 +5,8 @@
 This module defines the BaseComponent and its subclass Component.
 """
 
+from itertools import chain
 from types import MethodType
-from operator import itemgetter
 from collections import Callable
 from inspect import getmembers, isclass
 
@@ -233,13 +233,12 @@ class BaseComponent(Manager):
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
 
-        return map(
-            itemgetter(0),
-            filter(
-                lambda (k, v): hasattr(v, "handler"),
-                cls.__dict__.items()
-            )
+        names = (
+            v.names for k, v in cls.__dict__.items()
+            if hasattr(v, "handler")
         )
+
+        return list(chain(*names))
 
     @classmethod
     def handles(cls, *names):
