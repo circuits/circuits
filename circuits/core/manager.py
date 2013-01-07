@@ -10,6 +10,7 @@ import atexit
 from itertools import chain
 from collections import deque
 from inspect import isfunction
+from uuid import uuid4 as uuid
 from traceback import format_tb
 from sys import exc_info as _exc_info
 from weakref import WeakValueDictionary
@@ -544,8 +545,9 @@ class Manager(object):
                 from circuits.net.sockets import Pipe
                 from circuits.core.bridge import Bridge
 
-                parent, child = Pipe()
-                Bridge(parent).register(link)
+                channels = (uuid(),) * 2
+                parent, child = Pipe(*channels)
+                Bridge(parent, channel=channels[0]).register(link)
 
                 args = (child,)
             else:
@@ -717,7 +719,7 @@ class Manager(object):
 
         if socket is not None:
             from circuits.core.bridge import Bridge
-            Bridge(socket).register(self)
+            Bridge(socket, channel=socket.channel).register(self)
 
         from .helpers import FallBackGenerator
         self._fallback_generator = FallBackGenerator().register(self)

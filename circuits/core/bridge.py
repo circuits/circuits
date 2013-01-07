@@ -37,13 +37,15 @@ from .components import BaseComponent
 
 class Bridge(BaseComponent):
 
+    channel = "bridge"
+
     ignore = [
         "registered", "unregistered", "started", "stopped", "error",
         "value_changed", "generate_events", "read", "write", "close",
         "connected", "connect", "disconnect", "disconnected"
     ]
 
-    def init(self, socket):
+    def init(self, socket, channel=channel):
         self._socket = socket
         self._values = dict()
 
