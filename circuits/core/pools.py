@@ -30,14 +30,14 @@ class Pool(BaseComponent):
 
         self._workers = []
 
-    @handler("started", channel="*")
-    def _on_started(self, *args):
+    @handler("started", "registered", channel="*")
+    def _on_started_or_registered(self, *args):
         for i in range(self._min):
             worker = Worker(process=self._process_mode, channel=uuid())
             self._workers.append(worker)
 
-    @handler("stopped", channel="*")
-    def _on_stopped(self, *args):
+    @handler("stopped", "unregistered", channel="*")
+    def _on_stopped_or_unregistered(self, *args):
         for worker in self._workers[:]:
             worker.stop()
         self._workers = []
