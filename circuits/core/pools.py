@@ -10,59 +10,48 @@ Thread and Process based "worker" pools.
 from time import time
 from uuid import uuid4 as uuid
 from random import seed, choice
+from multiprocessing import cpu_count, Queue
 
 from circuits.core.workers import Task, Worker
-from circuits.core import handler, BaseComponent
+from circuits.core import handler, BaseComponent, Event
 
 seed(time())
+
+
+class Map(Event):
+    """Map Event"""
 
 
 class Pool(BaseComponent):
 
     channel = "pool"
 
-    def __init__(self, min=5, max=10, process=False, channel=channel):
-        super(Pool, self).__init__(channel=channel)
+    def init(self, processes=None, channel=channel):
+        self.processes = processes or cpu_count()
 
-        self._min = min
-        self._max = max
-        self._process_mode = process
-
-        self._workers = []
+        self.workers = []
+        self.jobs = Queue(self.processes)
 
     @handler("started", "registered", channel="*")
     def _on_started_or_registered(self, event, *args):
-        if event.name == "registered" and args[0] is not self:
+        if self.workers or (event.name == "registered" and args[0] is not self):
             return
 
-        for i in range(self._min):
-            worker = Worker(process=self._process_mode, channel=uuid())
-            self._workers.append(worker)
+        for i in range(self.processes):
+            worker = Worker(self.jobs, channel=uuid()).register(self)
+            self.workers.append(worker)
 
     @handler("stopped", "unregistered", channel="*")
     def _on_stopped_or_unregistered(self, event, *args):
-        if event.name == "registered" and args[0] is not self:
+        if not self.workers or (event.name == "registered" and args[0] is not self):
             return
 
-        for worker in self._workers[:]:
-            worker.stop()
-        self._workers = []
+        for worker in self.workers[:]:
+            worker.unregister()
+
+        self.workers = []
 
     @handler("task")
     def _on_task(self, f, *args, **kwargs):
-        workers = len(self._workers)
-        if not workers:
-            worker = Worker(process=self._process_mode, channel=uuid())
-            self._workers.append(worker)
-            return worker.fire(Task(f, *args, **kwargs), worker)
-
-        tasks = [len(worker) for worker in self._workers]
-        total = sum(tasks)
-        avg = total / workers
-
-        for worker in self._workers:
-            if len(worker) < avg:
-                return worker.fire(Task(f, *args, **kwargs), worker)
-
-        worker = choice(self._workers)
-        return worker.fire(Task(f, *args, **kwargs), worker)
+        worker = choice(self.workers)
+        return self.fire(Task(f, *args, **kwargs), worker.channel)

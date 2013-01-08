@@ -20,12 +20,13 @@ from .futures import future
 
 from .timers import Timer
 
-from .pools import Pool
+from .pools import Map, Pool
 from .workers import Task, Worker
+
 from .debugger import Debugger
 
 __all__ = ("handler", "BaseComponent", "Component", "Event",
-        "future", "Pool", "Task", "Worker",
+        "future", "Map", "Pool", "Task", "Worker",
         "Bridge", "Debugger", "Timer",
         "Manager",
 )

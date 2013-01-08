@@ -22,15 +22,15 @@ from .components import BaseComponent
 
 class Processor(Process):
 
-    def __init__(self, jobs, results):
+    def __init__(self, queue, results):
         super(Processor, self).__init__()
 
-        self.jobs = jobs
+        self.queue = queue
         self.results = results
 
     def run(self):
         while True:
-            job = self.jobs.get()
+            job = self.queue.get()
 
             if job is None:
                 # Poison pill means we should exit
@@ -79,19 +79,23 @@ class Worker(BaseComponent):
 
     channel = "worker"
 
-    def init(self, jobs=None, results=None, channel=channel):
-        self.jobs = jobs or Queue(1)
-        self.results = results or Queue(1)
-        self.processor = Processor(self.jobs, self.results)
+    def init(self, queue=None, channel=channel):
+        self.queue = queue or Queue(1)
+        self.results = Queue(1)
+
+        self.processor = Processor(self.queue, self.results)
         self.processor.start()
 
-    @handler("stopped", channel="*")
-    def _on_stopped(self, component):
-        self.jobs.put(None)
+    @handler("stopped", "unregistered", channel="*")
+    def _on_stopped(self, event, *args):
+        if event.name == "unregistered" and args[0] is not self:
+            return
+
+        self.queue.put(None)
 
     @handler("task")
     def _on_task(self, event, f, *args, **kwargs):
-        self.jobs.put((f, args, kwargs))
+        self.queue.put((f, args, kwargs))
 
         while True:
             try:
