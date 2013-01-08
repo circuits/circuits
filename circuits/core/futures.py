@@ -48,11 +48,8 @@ def future(pool=None):
                 w = self
                 e = self.fire(task, p)
             else:
-                w = Worker(channel=str(uuid()))
-                e = w.fire(task)
-
-            for r in w.waitEvent("task"):
-                yield r
+                w = Worker(channel=str(uuid())).register(self)
+                e = self.fire(task, w.channel)
 
             yield e
 
