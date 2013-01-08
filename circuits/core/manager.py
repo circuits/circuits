@@ -639,7 +639,7 @@ class Manager(object):
             traceback = format_tb(etraceback)
             error = (etype, evalue, traceback)
 
-            event.value.value = value
+            event.value.value = error
             event.value.errors = True
             event.value.inform(True)
 

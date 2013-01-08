@@ -12,9 +12,36 @@ is used independently it should not be registered as it causes its
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
+from Queue import Empty
+from multiprocessing import Process, Queue
+
 from .events import Event
 from .handlers import handler
 from .components import BaseComponent
+
+
+class Processor(Process):
+
+    def __init__(self, jobs, results):
+        super(Processor, self).__init__()
+
+        self.jobs = jobs
+        self.results = results
+
+    def run(self):
+        while True:
+            job = self.jobs.get()
+
+            if job is None:
+                # Poison pill means we should exit
+                break
+
+            f, args, kwargs = job
+
+            try:
+                self.results.put(f(*args, **kwargs))
+            except Exception as e:
+                self.results.put(e)
 
 
 class Task(Event):
@@ -52,12 +79,28 @@ class Worker(BaseComponent):
 
     channel = "worker"
 
-    def init(self, process=False, channel=channel):
-        if process:
-            self.start(process=process, link=self)
-        else:
-            self.start()
+    def init(self, jobs=None, results=None, channel=channel):
+        self.jobs = jobs or Queue(1)
+        self.results = results or Queue(1)
+        self.processor = Processor(self.jobs, self.results)
+        self.processor.start()
+
+    @handler("stopped", channel="*")
+    def _on_stopped(self, component):
+        self.jobs.put(None)
 
     @handler("task")
-    def _on_task(self, f, *args, **kwargs):
-        return f(*args, **kwargs)
+    def _on_task(self, event, f, *args, **kwargs):
+        self.jobs.put((f, args, kwargs))
+
+        while True:
+            try:
+                value = self.results.get_nowait()
+                if isinstance(value, Exception):
+                    print("...")
+                    raise value
+                else:
+                    yield value
+                raise StopIteration()
+            except Empty:
+                yield

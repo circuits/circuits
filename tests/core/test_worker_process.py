@@ -6,30 +6,28 @@
 
 import pytest
 
+from os import getpid
+
 from circuits import Task, Worker
 
 
 @pytest.fixture(scope="module")
-def worker(request):
-    worker = Worker(process=True)
+def worker(request, manager):
+    worker = Worker().register(manager)
 
     def finalizer():
-        worker.stop()
+        worker.unregister()
 
     request.addfinalizer(finalizer)
-
-    if request.config.option.verbose:
-        from circuits import Debugger
-        Debugger().register(worker)
-
-    waiter = pytest.WaitEvent(worker, "started")
-    worker.start()
-    assert waiter.wait()
 
     return worker
 
 
-def f():
+def err():
+    return x * 2  # NOQA
+
+
+def foo():
     x = 0
     i = 0
     while i < 1000000:
@@ -38,12 +36,38 @@ def f():
     return x
 
 
-def test(worker):
-    x = worker.fire(Task(f))
+def pid():
+    return "Hello from {0:d}".format(getpid())
 
-    def test(obj, attr):
-        return isinstance(obj._value, list)
 
-    assert pytest.wait_for(x, None, test)
+def test_failure(manager, watcher, worker):
+    e = Task(err)
+    e.failure = True
 
-    assert x.value == [1000000, 1000000]
+    x = worker.fire(e)
+
+    assert watcher.wait("task_failure")
+
+    assert isinstance(x.value[1], Exception)
+
+
+def test_success(manager, watcher, worker):
+    e = Task(foo)
+    e.success = True
+
+    x = worker.fire(e)
+
+    assert watcher.wait("task_success")
+
+    assert x.value == 1000000
+
+
+def test_pid(manager, watcher, worker):
+    e = Task(pid)
+    e.success = True
+
+    x = worker.fire(e)
+
+    assert watcher.wait("task_success")
+
+    assert x.value == "Hello from {0:d}".format(worker.processor.pid)
