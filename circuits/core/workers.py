@@ -13,35 +13,30 @@ main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
 from Queue import Empty
-from multiprocessing import Process, Queue
+from threading import Thread
+from multiprocessing import Process
+from Queue import Queue as ThreadQueue
+from multiprocessing import Queue as ProcessQueue
 
 from .events import Event
 from .handlers import handler
 from .components import BaseComponent
 
 
-class Processor(Process):
+def processor(queue, results):
+    while True:
+        job = queue.get()
 
-    def __init__(self, queue, results):
-        super(Processor, self).__init__()
+        if job is None:
+            # Poison pill means we should exit
+            break
 
-        self.queue = queue
-        self.results = results
+        id, f, args, kwargs = job
 
-    def run(self):
-        while True:
-            job = self.queue.get()
-
-            if job is None:
-                # Poison pill means we should exit
-                break
-
-            f, args, kwargs = job
-
-            try:
-                self.results.put(f(*args, **kwargs))
-            except Exception as e:
-                self.results.put(e)
+        try:
+            results.put((id, f(*args, **kwargs)))
+        except Exception as e:
+            results.put((id, e))
 
 
 class Task(Event):
@@ -79,11 +74,19 @@ class Worker(BaseComponent):
 
     channel = "worker"
 
-    def init(self, queue=None, channel=channel):
-        self.queue = queue or Queue(1)
-        self.results = Queue(1)
+    def init(self, process=False, queue=None, channel=channel):
+        Queue = ProcessQueue if process else ThreadQueue
+        Processor = Process if process else Thread
 
-        self.processor = Processor(self.queue, self.results)
+        self.queue = queue or Queue()
+        self.results = Queue()
+        self.values = {}
+        self.id = 0
+
+        args = (self.queue, self.results)
+
+        self.processor = Processor(target=processor, args=args)
+        self.processor.daemon = True
         self.processor.start()
 
     @handler("stopped", "unregistered", channel="*")
@@ -92,19 +95,42 @@ class Worker(BaseComponent):
             return
 
         self.queue.put(None)
+        self.processor.join()
+
+    @handler("generate_events")
+    def _on_generate_events(self, event):
+        try:
+            timeout = event.time_left
+
+            if timeout > 0:
+                self.root.needs_resume = self.resume
+                id, value = self.results.get(True, timeout)
+                self.root.needs_resume = None
+            else:
+                id, value = self.results.get_nowait()
+
+            if id is not None:
+                self.values[id].errors = isinstance(value, Exception)
+                self.values[id].result = True
+                self.values[id].value = value
+        except Empty:
+            return
 
     @handler("task")
     def _on_task(self, event, f, *args, **kwargs):
-        self.queue.put((f, args, kwargs))
+        self.id += 1
+        value = event.value
+        self.values[self.id] = value
 
-        while True:
-            try:
-                value = self.results.get_nowait()
-                if isinstance(value, Exception):
-                    print("...")
-                    raise value
-                else:
-                    yield value
-                raise StopIteration()
-            except Empty:
-                yield
+        self.queue.put((self.id, f, args, kwargs))
+
+        while not value.result:
+            yield
+
+        if isinstance(value.value, Exception):
+            raise value.value
+        else:
+            yield value.value
+
+    def resume(self):
+        self.results.put((None, None))
