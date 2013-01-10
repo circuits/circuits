@@ -31,12 +31,12 @@ def processor(queue, results):
             # Poison pill means we should exit
             break
 
-        id, f, args, kwargs = job
+        f, args, kwargs = job
 
         try:
-            results.put((id, f(*args, **kwargs)))
+            results.put(f(*args, **kwargs))
         except Exception as e:
-            results.put((id, e))
+            results.put(e)
 
 
 class Task(Event):
@@ -80,8 +80,6 @@ class Worker(BaseComponent):
 
         self.queue = queue or Queue()
         self.results = Queue()
-        self.values = {}
-        self.id = 0
 
         args = (self.queue, self.results)
 
@@ -97,40 +95,20 @@ class Worker(BaseComponent):
         self.queue.put(None)
         self.processor.join()
 
-    @handler("generate_events")
-    def _on_generate_events(self, event):
-        try:
-            timeout = event.time_left
-
-            if timeout > 0:
-                self.root.needs_resume = self.resume
-                id, value = self.results.get(True, timeout)
-                self.root.needs_resume = None
-            else:
-                id, value = self.results.get_nowait()
-
-            if id is not None:
-                self.values[id].errors = isinstance(value, Exception)
-                self.values[id].result = True
-                self.values[id].value = value
-        except Empty:
-            return
-
     @handler("task")
     def _on_task(self, event, f, *args, **kwargs):
-        self.id += 1
-        value = event.value
-        self.values[self.id] = value
+        self.queue.put((f, args, kwargs))
 
-        self.queue.put((self.id, f, args, kwargs))
-
-        while not value.result:
-            yield
-
-        if isinstance(value.value, Exception):
-            raise value.value
-        else:
-            yield value.value
+        while True:
+            try:
+                value = self.results.get_nowait()
+                if isinstance(value, Exception):
+                    raise value
+                else:
+                    yield value
+                raise StopIteration()
+            except Empty:
+                yield
 
     def resume(self):
         self.results.put((None, None))
