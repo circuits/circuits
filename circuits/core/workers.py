@@ -12,10 +12,8 @@ is used independently it should not be registered as it causes its
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
-from Queue import Empty
-from threading import Thread
-from multiprocessing import Pool
-from Queue import Queue
+from multiprocessing import Pool as ProcessPool
+from multiprocessing.pool import ThreadPool
 
 from .events import Event
 from .handlers import handler
@@ -76,16 +74,9 @@ class Worker(BaseComponent):
     def init(self, process=False, queue=None, channel=channel):
         self.process = process
         if process:
-            self._pool = Pool(1)
+            self._pool = ProcessPool(1)
         else:
-            self.queue = Queue()
-            self.results = Queue()
-
-            args = (self.queue, self.results)
-
-            self.processor = Thread(target=processor, args=args)
-            self.processor.daemon = True
-            self.processor.start()
+            self._pool = ThreadPool(1)
 
     @handler("stopped", "unregistered", channel="*")
     def _on_stopped(self, event, *args):
@@ -97,24 +88,10 @@ class Worker(BaseComponent):
 
     @handler("task")
     def _on_task(self, event, f, *args, **kwargs):
-        if self.process:
-            result = self._pool.apply_async(f, args, kwargs)
-            while not result.ready():
-                yield
-            yield result.get()
-        else:
-            self.queue.put((f, args, kwargs))
-
-            while True:
-                try:
-                    value = self.results.get_nowait()
-                    if isinstance(value, Exception):
-                        raise value
-                    else:
-                        yield value
-                    raise StopIteration()
-                except Empty:
-                    yield
+        result = self._pool.apply_async(f, args, kwargs)
+        while not result.ready():
+            yield
+        yield result.get()
 
     def resume(self):
         self.results.put((None, None))
