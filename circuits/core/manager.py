@@ -328,12 +328,12 @@ class Manager(object):
             # If the component is running, we must make sure that
             # any pending generate event waits no longer, as there
             # is something to do now.
-            with self._lock:
-                if hasattr(self, "_generate_event"):
-                    self._queue.append((event, channel))
-                    self._generate_event.reduce_time_left(0)
-                else:
-                    self._queue.append((event, channel))
+            self._queue.append((event, channel))
+            # with self._lock:
+            #     if hasattr(self, "_generate_event"):
+            #         self._queue.append((event, channel))
+            #         self._generate_event.reduce_time_left(0)
+            #     else:
 
     def fireEvent(self, event, *channels):
         """Fire an event into the system.
@@ -681,16 +681,6 @@ class Manager(object):
         """
         self._executing_thread = current_thread()
 
-        # ticks can be event sources
-        for f in self._ticks.copy():
-            try:
-                f()
-            except (KeyboardInterrupt, SystemExit):
-                raise
-            except:
-                etype, evalue, etraceback = _exc_info()
-                self.fire(Error(etype, evalue, format_tb(etraceback)))
-
         # process tasks
         for task in self._tasks.copy():
             self.processTask(*task)
@@ -698,17 +688,9 @@ class Manager(object):
         if self._running:
             with self._lock:
                 self._generate_event = GenerateEvents(self._lock, timeout)
-                if len(self._ticks) > 0:
-                    # if we have ticks to do, don't generate longer than
-                    # timeout
-                    self._generate_event.reduce_time_left(TIMEOUT)
                 if len(self._tasks) > 0 or self:
                     # if work remains to be done, generate as fast as possible
                     self._generate_event.reduce_time_left(0)
-            # make sure that the manager is registered as fall back
-            if getattr(self, "_fallback_generator", None) is None:
-                from .helpers import FallBackGenerator
-                self._fallback_generator = FallBackGenerator().register(self)
             self.fire(self._generate_event, "*")
 
         if self:
@@ -741,6 +723,10 @@ class Manager(object):
 
         self._executing_thread = current_thread()
         self._running = True
+
+        # make sure that the manager is registered as fall back
+        from .helpers import FallBackGenerator
+        self._fallback_generator = FallBackGenerator().register(self)
 
         self.fire(Started(self))
 
