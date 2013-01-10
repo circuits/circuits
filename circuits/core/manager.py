@@ -674,9 +674,11 @@ class Manager(object):
         if self._running:
             e = GenerateEvents(timeout)
 
-            if len(self._tasks) > 0 or self:
-                # if work remains to be done, generate as fast as possible
+            if self:
                 e.reduce_time_left(0)
+            elif len(self._tasks):
+                # if work remains to be done, generate as fast as possible
+                e.reduce_time_left(TIMEOUT)
             #else:
             #    # Don't generate longer than timeout.
             #    e.reduce_time_left(TIMEOUT)
