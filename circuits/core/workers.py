@@ -92,6 +92,3 @@ class Worker(BaseComponent):
         while not result.ready():
             yield
         yield result.get()
-
-    def resume(self):
-        self.results.put((None, None))

@@ -24,7 +24,7 @@ from .workers import Worker
 from .pools import Pool, Task
 
 
-def future(pool=None):
+def future(process=False, pool=None):
     """Decorator to wrap an event handler in a future Task
 
     This decorator wraps an event handler into a background Task
@@ -39,17 +39,22 @@ def future(pool=None):
             p = getattr(self, "_pool", pool)
             if p is None:
                 p = findcmp(self.root, Pool)
+
             if wrapper.wrapped_event:
-                task = Task(f, self, event, *args, **kwargs)
+                task = Task(f, event, *args, **kwargs)
             else:
-                task = Task(f, self, *args, **kwargs)
+                task = Task(f, *args, **kwargs)
+
             if p is not None:
                 setattr(self, "_pool", p)
                 w = self
-                e = self.fire(task, p)
+                e = self.fire(task, p.channel)
             else:
-                w = Worker(channel=str(uuid())).register(self)
+                w = Worker(process=process, channel=str(uuid())).register(self)
                 e = self.fire(task, w.channel)
+
+            for r in w.waitEvent("task"):
+                yield r
 
             yield e
 
