@@ -12,28 +12,16 @@ is used independently it should not be registered as it causes its
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
-from multiprocessing import Pool as ProcessPool
+from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
+from multiprocessing import Pool as ProcessPool
 
 from .events import Event
 from .handlers import handler
 from .components import BaseComponent
 
 
-def processor(queue, results):
-    while True:
-        job = queue.get()
-
-        if job is None:
-            # Poison pill means we should exit
-            break
-
-        f, args, kwargs = job
-
-        try:
-            results.put(f(*args, **kwargs))
-        except Exception as e:
-            results.put(e)
+DEFAULT_WORKERS = 10
 
 
 class Task(Event):
@@ -71,24 +59,22 @@ class Worker(BaseComponent):
 
     channel = "worker"
 
-    def init(self, process=False, queue=None, channel=channel):
-        self.process = process
-        if process:
-            self._pool = ProcessPool(1)
-        else:
-            self._pool = ThreadPool(1)
+    def init(self, process=False, workers=DEFAULT_WORKERS, channel=channel):
+        self.workers = workers or (cpu_count() if process else DEFAULT_WORKERS)
+        Pool = ProcessPool if process else ThreadPool
+        self.pool = Pool(self.workers)
 
     @handler("stopped", "unregistered", channel="*")
     def _on_stopped(self, event, *args):
         if event.name == "unregistered" and args[0] is not self:
             return
 
-        self.queue.put(None)
-        self.processor.join()
+        self.pool.close()
+        self.pool.join()
 
     @handler("task")
-    def _on_task(self, event, f, *args, **kwargs):
-        result = self._pool.apply_async(f, args, kwargs)
+    def _on_task(self, f, *args, **kwargs):
+        result = self.pool.apply_async(f, args, kwargs)
         while not result.ready():
             yield
         yield result.get()
