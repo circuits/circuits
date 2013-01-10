@@ -4,6 +4,7 @@
 from os import getpid
 from time import sleep
 
+from circuits import future
 from circuits import Component, Debugger, Event, Manager, Task, Worker
 
 
@@ -22,15 +23,16 @@ Task.success = True
 Task.failure = True
 
 
-class Hello(Event):
-    """Hello Event"""
+class FooBar(Event):
+    """FooBar Event"""
 
 
 class App(Component):
 
-    def hello(self):
-        return "Hello World!"
+    @future(process=True)
+    def foo_bar(self):
+        return "FooBar! {0:d}".format(getpid())
 
 
-m = Manager() + App() + Worker(process=False) + Debugger()
+m = Manager() + App() + Worker(process=True) + Debugger()
 m.start()

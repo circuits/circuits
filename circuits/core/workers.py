@@ -97,6 +97,13 @@ class Worker(BaseComponent):
 
     @handler("task")
     def _on_task(self, event, f, *args, **kwargs):
+        print("...")
+        print(event)
+        print(f)
+        print(args)
+        print(kwargs)
+        print("...")
+
         self.queue.put((f, args, kwargs))
 
         while True:
