@@ -60,14 +60,3 @@ def test_success(manager, watcher, worker):
     assert watcher.wait("task_success")
 
     assert x.value == 1000000
-
-
-def test_pid(manager, watcher, worker):
-    e = Task(pid)
-    e.success = True
-
-    x = worker.fire(e)
-
-    assert watcher.wait("task_success")
-
-    assert x.value == "Hello from {0:d}".format(worker.processor.pid)

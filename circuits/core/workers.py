@@ -14,9 +14,8 @@ main event handler ``_on_task`` to execute in the other thread blocking it.
 
 from Queue import Empty
 from threading import Thread
-from multiprocessing import Process
-from Queue import Queue as ThreadQueue
-from multiprocessing import Queue as ProcessQueue
+from multiprocessing import Pool
+from Queue import Queue
 
 from .events import Event
 from .handlers import handler
@@ -75,17 +74,18 @@ class Worker(BaseComponent):
     channel = "worker"
 
     def init(self, process=False, queue=None, channel=channel):
-        Queue = ProcessQueue if process else ThreadQueue
-        Processor = Process if process else Thread
+        self.process = process
+        if process:
+            self._pool = Pool(1)
+        else:
+            self.queue = Queue()
+            self.results = Queue()
 
-        self.queue = queue or Queue()
-        self.results = Queue()
+            args = (self.queue, self.results)
 
-        args = (self.queue, self.results)
-
-        self.processor = Processor(target=processor, args=args)
-        self.processor.daemon = True
-        self.processor.start()
+            self.processor = Thread(target=processor, args=args)
+            self.processor.daemon = True
+            self.processor.start()
 
     @handler("stopped", "unregistered", channel="*")
     def _on_stopped(self, event, *args):
@@ -97,18 +97,24 @@ class Worker(BaseComponent):
 
     @handler("task")
     def _on_task(self, event, f, *args, **kwargs):
-        self.queue.put((f, args, kwargs))
-
-        while True:
-            try:
-                value = self.results.get_nowait()
-                if isinstance(value, Exception):
-                    raise value
-                else:
-                    yield value
-                raise StopIteration()
-            except Empty:
+        if self.process:
+            result = self._pool.apply_async(f, args, kwargs)
+            while not result.ready():
                 yield
+            yield result.get()
+        else:
+            self.queue.put((f, args, kwargs))
+
+            while True:
+                try:
+                    value = self.results.get_nowait()
+                    if isinstance(value, Exception):
+                        raise value
+                    else:
+                        yield value
+                    raise StopIteration()
+                except Empty:
+                    yield
 
     def resume(self):
         self.results.put((None, None))
