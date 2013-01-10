@@ -109,6 +109,3 @@ class Worker(BaseComponent):
                 raise StopIteration()
             except Empty:
                 yield
-
-    def resume(self):
-        self.results.put((None, None))
