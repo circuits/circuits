@@ -88,6 +88,7 @@ class Manager(object):
     _currently_handling = None
     needs_resume = None
     traverse_children_handlers = True
+    _lock = None
     """
     The event currently being handled.
     """
@@ -303,16 +304,20 @@ class Manager(object):
             event.effects = 1
             self._currently_handling.effects += 1
 
-        self._queue.append((event, channel))
+        if self._lock:
+            with self._lock:
+                self._queue.append((event, channel))
 
-        # needs_resume means that the main thread is sleeping
-        # (this happens when the queue is empty)
-        # If needs_resume is set, it also means with are firing
-        # this event from another thread
-        # Thus, we need to wake up the thread to process
-        # the event we just added
-        if self.needs_resume:
-            self.needs_resume()
+                # needs_resume means that the main thread is sleeping
+                # (this happens when the queue is empty)
+                # If needs_resume is set, it also means with are firing
+                # this event from another thread
+                # Thus, we need to wake up the thread to process
+                # the event we just added
+                if self.needs_resume:
+                    self.needs_resume()
+        else:
+            self._queue.append((event, channel))
 
     def fireEvent(self, event, *channels):
         """Fire an event into the system.

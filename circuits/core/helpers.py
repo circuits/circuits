@@ -2,7 +2,7 @@
 .. codeauthor: mnl
 """
 
-from threading import Event
+from threading import Event, Lock
 
 from .handlers import handler
 from .components import BaseComponent
@@ -13,6 +13,7 @@ class FallBackGenerator(BaseComponent):
     def __init__(self, *args, **kwargs):
         super(FallBackGenerator, self).__init__(*args, **kwargs)
         self._continue = Event()
+        self._lock = Lock()
 
     @handler("generate_events", priority=-100, filter=True)
     def _on_generate_events(self, event):
@@ -26,25 +27,27 @@ class FallBackGenerator(BaseComponent):
         @handler("generate_events", priority=0, filter=True)
         and provide a different way to idle when the queue is empty.
         """
-        if event.time_left > 0:
-            self.root.needs_resume = self.resume
-            self._continue.wait(event.time_left)
-            self._continue.clear()
-            self.root.needs_resume = None
-        else:
-            while event.time_left < 0:
-                # If we get here, there was no work left to do when creating
-                # the GenerateEvents event and there is no other handler that
-                # is prepared to supply new events within a limited time. The
-                # application will continue only if some other Thread fires
-                # an event.
+        self.root._lock = self._lock
+        with self._lock:
+            if event.time_left > 0:
                 self.root.needs_resume = self.resume
-                # Python ignores signals when waiting without timeout.
-                self._continue.wait(10000)
-                if self._continue.is_set():
-                    self._continue.clear()
-                    break
-            self.root.needs_resume = None
+                self._continue.wait(event.time_left)
+                self._continue.clear()
+                self.root.needs_resume = None
+            else:
+                while event.time_left < 0:
+                    # If we get here, there was no work left to do when creating
+                    # the GenerateEvents event and there is no other handler that
+                    # is prepared to supply new events within a limited time. The
+                    # application will continue only if some other Thread fires
+                    # an event.
+                    self.root.needs_resume = self.resume
+                    # Python ignores signals when waiting without timeout.
+                    self._continue.wait(10000)
+                    if self._continue.is_set():
+                        self._continue.clear()
+                        break
+                self.root.needs_resume = None
 
         return True
 
