@@ -12,6 +12,8 @@ is used independently it should not be registered as it causes its
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
+from threading import current_thread
+from weakref import WeakKeyDictionary
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Pool as ProcessPool
@@ -60,6 +62,9 @@ class Worker(BaseComponent):
     channel = "worker"
 
     def init(self, process=False, workers=DEFAULT_WORKERS, channel=channel):
+        if not hasattr(current_thread(), "_children"):
+            current_thread()._children = WeakKeyDictionary()
+
         self.workers = workers or (cpu_count() if process else DEFAULT_WORKERS)
         Pool = ProcessPool if process else ThreadPool
         self.pool = Pool(self.workers)

@@ -1,7 +1,6 @@
 # Module:   future
 # Date:     6th February 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-from inspect import getargspec
 
 """Futures
 
@@ -18,6 +17,7 @@ an optional `pool` keyword argument and supplying an instance to a
 
 from uuid import uuid4 as uuid
 from functools import update_wrapper
+from inspect import getargspec
 
 from .utils import findcmp
 from .workers import Worker
