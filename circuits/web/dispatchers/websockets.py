@@ -87,7 +87,7 @@ class WebSockets(BaseComponent):
         codec = WebSocketCodec(request.sock, channel=self._wschannel)
         self._codecs[request.sock] = codec
         codec.register(self)
-        return ""
+        return response
         
     @handler("disconnect")
     def _on_disconnect(self, sock):
