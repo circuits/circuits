@@ -9,6 +9,7 @@ import base64
 from circuits.core.handlers import handler
 
 from circuits import BaseComponent
+from circuits.net.sockets import Connect
 
 
 class WebSockets(BaseComponent):
@@ -87,6 +88,8 @@ class WebSockets(BaseComponent):
         codec = WebSocketCodec(request.sock, channel=self._wschannel)
         self._codecs[request.sock] = codec
         codec.register(self)
+        self.fire(Connect(request.sock, *request.sock.getpeername()),
+                  self._wschannel)
         return response
         
     @handler("disconnect")
