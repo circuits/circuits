@@ -21,7 +21,6 @@ from inspect import getargspec
 
 from .utils import findcmp
 from .workers import Worker
-from .pools import Pool, Task
 
 
 def future(process=False, pool=None):

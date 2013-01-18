@@ -358,9 +358,10 @@ class GenerateEvents(Event):
     that interrupts waiting for events.
     """
 
-    def __init__(self, max_wait):
+    def __init__(self, lock, max_wait):
         super(GenerateEvents, self).__init__()
         self._time_left = max_wait
+        self._lock = lock
 
     @property
     def time_left(self):
@@ -387,17 +388,16 @@ class GenerateEvents(Event):
         If the time left is reduced to 0 and the event is currently
         being handled, the handler's *resume* method is invoked.
         """
-        if time_left >= 0 and (self._time_left < 0
-                               or self._time_left > time_left):
-            self._time_left = time_left
-            if self._time_left == 0 and self.handler is not None:
-                m = getattr(
-                    getattr(
-                        self.handler, "im_self", getattr(
-                            self.handler, "__self__", Unknown()
-                        )
-                    ),
-                    "resume", None
-                )
-                if m is not None and ismethod(m):
-                    m()
+        with self._lock:
+            if time_left >= 0 and (self._time_left < 0 
+                                   or self._time_left > time_left):
+                self._time_left = time_left
+                if self._time_left == 0 and self.handler is not None:
+                    m = getattr(self.handler.im_self, "resume", None)
+                    if m is not None and ismethod(m):
+                        m()
+
+    @property
+    def lock(self):
+        return self._lock
+    

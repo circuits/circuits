@@ -20,7 +20,6 @@ from .futures import future
 
 from .timers import Timer
 
-from .pools import Map, Pool
 from .workers import Task, Worker
 
 from .debugger import Debugger
