@@ -17,13 +17,15 @@ from circuits import handler, BaseComponent, Debugger, Manager
 
 class Watcher(BaseComponent):
 
-    def init(self):
+    def init(self, max_events=50):
         self._lock = threading.Lock()
-        self.events = deque([], 50)
+        self._max_events = max_events
+        self.events = deque()
 
     @handler(channel="*", priority=999.9)
     def _on_event(self, event, *args, **kwargs):
         with self._lock:
+            assert len(self.events) < self._max_events
             self.events.append(event)
 
     def wait(self, name, channel=None, timeout=3.0):
