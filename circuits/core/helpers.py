@@ -3,6 +3,7 @@
 """
 
 from threading import Event
+from time import time
 
 from .handlers import handler
 from .components import BaseComponent
