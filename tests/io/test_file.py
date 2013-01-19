@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("XXX: Broken - Race Conditino")
-
 from StringIO import StringIO
 
 from circuits import Component
