@@ -4,8 +4,7 @@
 from os import getpid
 from time import sleep
 
-from circuits import future
-from circuits import Component, Debugger, Event, Manager, Task, Worker
+from circuits import Debugger, Event, Manager, Task, Worker
 
 
 def e():
@@ -27,12 +26,5 @@ class FooBar(Event):
     """FooBar Event"""
 
 
-class App(Component):
-
-    @future(process=True)
-    def foo_bar(self):
-        return "FooBar! {0:d}".format(getpid())
-
-
-m = Manager() + App() + Worker(process=True) + Debugger()
+m = Manager() + Worker(process=True) + Debugger()
 m.start()
