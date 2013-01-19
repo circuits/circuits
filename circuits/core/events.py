@@ -348,7 +348,9 @@ class GenerateEvents(Event):
     This event is sent by the circuits core. All components that generate
     timed events or events from external sources (e.g. data becoming
     available) should fire any pending events in their "generate_events"
-    handler.
+    handler. The handler must either be a filter (preventing other
+    handler from being called in the same iteration) or must invoke
+    :meth:`~.reduce_time_left` with parameter 0. 
 
     :param max_wait: maximum time available for generating events.
     :type  time_left: float

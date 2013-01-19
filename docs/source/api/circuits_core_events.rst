@@ -29,6 +29,8 @@ Events
 .. autoclass :: Success
 .. autoclass :: Unregister
 .. autoclass :: Unregistered
+.. autoclass :: GenerateEvents
+    :members:
 
 
 Functions

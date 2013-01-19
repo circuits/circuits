@@ -16,7 +16,7 @@ class App(Component):
         if component is self:
             self.fire(Event.create("Ready"))
 
-    def generate_events(self):
+    def generate_events(self, event):
         if not self._ready or self._done:
             return
 
@@ -24,6 +24,7 @@ class App(Component):
             self.fire(Event.create("Hello"))
         else:
             self.fire(Event.create("Done"))
+        event.reduce_time_left(0)
 
     def done(self):
         self._done = True
