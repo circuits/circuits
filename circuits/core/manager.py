@@ -313,9 +313,9 @@ class Manager(object):
             # any pending generate event waits no longer, as there
             # is something to do now.
             with self._lock:
-                if isinstance(self._currently_handling, GenerateEvents):
+                if hasattr(self, "_generate_event"):
                     self._queue.append((event, channel))
-                    self._currently_handling.reduce_time_left(0)
+                    self._generate_event.reduce_time_left(0)
                 else:
                     self._queue.append((event, channel))
 
@@ -411,15 +411,12 @@ class Manager(object):
         if set_executing:
             self._executing_thread = thread.get_ident()
 
-        # Handle events on queue, but not any newly generated.
-        # Note that _flush can be called while handling a Stop event.
-        for _ in range(len(self._queue)):
-            try:
-                event, channels = self._queue.popleft()
-                self._dispatcher(event, channels, len(self._queue))
-            except IndexError:
-                # Handling the Stop event probably has removed some events
-                break
+        # get current event queue and handle all events on it
+        q = self._queue
+        self._queue = deque()
+
+        for event, channels in q:
+            self._dispatcher(event, channels)
 
         # restore executing thread if necessary
         if set_executing:
@@ -436,7 +433,8 @@ class Manager(object):
 
     flush = flushEvents
 
-    def _dispatcher(self, event, channels, remaining):
+    def _dispatcher(self, event, channels):
+        self._currently_handling = event
         if event.complete:
             if not getattr(event, "cause", None):
                 event.cause = event
@@ -449,20 +447,7 @@ class Manager(object):
         else:
             h = (self.getHandlers(event, channel) for channel in channels)
             handlers = sorted(chain(*h), key=_sortkey, reverse=True)
-            if isinstance(event, GenerateEvents):
-                from .helpers import FallBackGenerator
-                handlers.append(FallBackGenerator()._on_generate_events)
             self._cache[(event.name, channels)] = handlers
-
-        if isinstance(event, GenerateEvents):
-            with self._lock:
-                self._currently_handling = event
-                if self or remaining > 0 or not self._running:
-                    event.reduce_time_left(0)
-                elif len(self._tasks) > 0:
-                    event.reduce_time_left(TIMEOUT) 
-        else:
-            self._currently_handling = event
 
         value = None
         error = None
@@ -504,7 +489,10 @@ class Manager(object):
                 break
 
         self._currently_handling = None
-        self._eventDone(event, error)
+        if event == getattr(self, "_generate_event", None):
+            delattr(self, "_generate_event")
+        else:
+            self._eventDone(event, error)
 
     def _eventDone(self, event, error=None):
         if event.waitingHandlers:
@@ -694,7 +682,18 @@ class Manager(object):
             self.processTask(*task)
 
         if self._running:
-            self.fire(GenerateEvents(self._lock, timeout), "*")
+            with self._lock:
+                if len(self._tasks) > 0 or self:
+                    # if work remains to be done, generate as fast as possible
+                    self._generate_event = GenerateEvents(self._lock, 0)
+                else:
+                    self._generate_event = GenerateEvents(self._lock, timeout)
+                    # make sure that the manager is registered as fall back
+                    if getattr(self, "_fallback_generator", None) is None:
+                        from .helpers import FallBackGenerator
+                        self._fallback_generator \
+                            = FallBackGenerator().register(self)
+            self.fire(self._generate_event, "*")
 
         if self:
             self.flush()
@@ -733,6 +732,9 @@ class Manager(object):
         if socket is not None:
             from circuits.core.bridge import Bridge
             Bridge(socket, channel=socket.channel).register(self)
+
+        from .helpers import FallBackGenerator
+        self._fallback_generator = FallBackGenerator().register(self)
 
         self.fire(Started(self))
 

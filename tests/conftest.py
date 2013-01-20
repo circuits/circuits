@@ -55,10 +55,6 @@ def call_event_from_name(manager, event, event_name, *channels):
             fired = True
             value = manager.fire(event, *channels)
         sleep(0.1)
-    # Although we have the done event, the result will eventually
-    # be set by subsequently running the task again in the event loop.
-    # We have to wait until this happens.
-    sleep(0.1)
     return value
 
 
