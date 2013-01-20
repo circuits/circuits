@@ -447,6 +447,9 @@ class Manager(object):
         else:
             h = (self.getHandlers(event, channel) for channel in channels)
             handlers = sorted(chain(*h), key=_sortkey, reverse=True)
+            if isinstance(event, GenerateEvents):
+                from .helpers import FallBackGenerator
+                handlers.append(FallBackGenerator()._on_generate_events)
             self._cache[(event.name, channels)] = handlers
 
         value = None
@@ -688,11 +691,6 @@ class Manager(object):
                     self._generate_event = GenerateEvents(self._lock, 0)
                 else:
                     self._generate_event = GenerateEvents(self._lock, timeout)
-                    # make sure that the manager is registered as fall back
-                    if getattr(self, "_fallback_generator", None) is None:
-                        from .helpers import FallBackGenerator
-                        self._fallback_generator \
-                            = FallBackGenerator().register(self)
             self.fire(self._generate_event, "*")
 
         if self:
@@ -732,9 +730,6 @@ class Manager(object):
         if socket is not None:
             from circuits.core.bridge import Bridge
             Bridge(socket, channel=socket.channel).register(self)
-
-        from .helpers import FallBackGenerator
-        self._fallback_generator = FallBackGenerator().register(self)
 
         self.fire(Started(self))
 
