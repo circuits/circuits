@@ -54,7 +54,8 @@ class BaseServer(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, bind, encoding="utf-8", channel=channel):
+    def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
+                 channel=channel):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(BaseServer, self).__init__(channel=channel)
@@ -67,7 +68,13 @@ class BaseServer(BaseComponent):
             else:
                 SocketType = UNIXServer
 
-        self.server = SocketType(bind, channel=channel).register(self)
+        self.server = SocketType(
+            bind,
+            secure=secure,
+            certfile=certfile,
+            channel=channel
+        ).register(self)
+
         HTTP(encoding=encoding, channel=channel).register(self)
 
         Request.server = self
