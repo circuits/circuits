@@ -163,11 +163,14 @@ class BaseComponent(Manager):
         self.parent = parent
         self.root = parent.root
 
+        # Make sure that structure is consistent before firing event
+        # because event may be handled in a concurrent thread.
         if parent is not self:
+            self._updateRoot(parent.root)
             parent.registerChild(self)
             self.fire(Registered(self, self.parent))
-
-        self._updateRoot(parent.root)
+        else:
+            self._updateRoot(parent.root)
 
         return self
 
@@ -198,7 +201,7 @@ class BaseComponent(Manager):
 
         # tick shouldn't be called anymore, although component is still in tree
         self._unregister_pending = True
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
         # Give components a chance to prepare for unregister
         evt = PrepareUnregister(self)

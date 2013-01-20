@@ -97,6 +97,7 @@ class Manager(object):
 
         self._tasks = set()
         self._cache = dict()
+        self._cache_needs_refresh = False
         self._queue = deque()
         self._flush_batch = 0
         self._globals = set()
@@ -261,7 +262,7 @@ class Manager(object):
             for name in method.names:
                 self._handlers.setdefault(name, set()).add(method)
 
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
         return method
 
@@ -281,17 +282,17 @@ class Manager(object):
                     # Handler was never part of self
                     pass
 
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
     def registerChild(self, component):
         self.components.add(component)
         self.root._queue.extend(list(component._queue))
         component._queue.clear()
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
     def unregisterChild(self, component):
         self.components.remove(component)
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
     def _fire(self, event, channel):
         # check if event is fired while handling an event
@@ -446,6 +447,10 @@ class Manager(object):
         eargs = event.args
         ekwargs = event.kwargs
 
+        if self._cache_needs_refresh:
+            # Don't call self._cache.clear() from other threads,
+            # this may interfere with cache rebuild.
+            self._cache.clear()
         if (event.name, channels) in self._cache:
             handlers = self._cache[(event.name, channels)]
         else:
