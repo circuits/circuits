@@ -418,8 +418,8 @@ class Manager(object):
         if self._flush_batch == 0:
             self._flush_batch = len(self._queue)
         while self._flush_batch > 0:
+            self._flush_batch -= 1 # Decrement first!
             event, channels = self._queue.popleft()
-            self._flush_batch -= 1
             self._dispatcher(event, channels)
 
         # restore executing thread if necessary
