@@ -98,6 +98,7 @@ class Manager(object):
         self._tasks = set()
         self._cache = dict()
         self._queue = deque()
+        self._flush_batch = 0
         self._globals = set()
         self._handlers = dict()
         self._values = WeakValueDictionary()
@@ -411,11 +412,14 @@ class Manager(object):
         if set_executing:
             self._executing_thread = thread.get_ident()
 
-        # get current event queue and handle all events on it
-        q = self._queue
-        self._queue = deque()
-
-        for event, channels in q:
+        # Handle events currently on queue, but none of the newly generated
+        # events. Note that _flush can be called recursively (e.g. when 
+        # handling a Stop event).
+        if self._flush_batch == 0:
+            self._flush_batch = len(self._queue)
+        while self._flush_batch > 0:
+            event, channels = self._queue.popleft()
+            self._flush_batch -= 1
             self._dispatcher(event, channels)
 
         # restore executing thread if necessary
@@ -596,6 +600,7 @@ class Manager(object):
         for evt in q:
             if not isinstance(evt, GenerateEvents):
                 self._queue.append(evt)
+        self._flush_batch = 0
 
         self.fire(Stopped(self))
         for _ in range(3):

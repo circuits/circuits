@@ -17,7 +17,7 @@ from circuits import handler, BaseComponent, Debugger, Manager
 
 class Watcher(BaseComponent):
 
-    def init(self, max_events=50):
+    def init(self, max_events=100000):
         self._lock = threading.Lock()
         self._max_events = max_events
         self.events = deque()
