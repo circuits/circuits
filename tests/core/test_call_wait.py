@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from time import sleep
 import pytest
 
 from circuits import Component, Event
@@ -87,6 +88,9 @@ def test_wait():
     test.start()
 
     x = pytest.call_event_from_name(test, TestWait(), "hello_success")
+    # After event is done, app needs some time to update value
+    # (happens when tasks are called again).
+    sleep(0.1)
     value = x.value
     assert value == "Hello World!"
 

@@ -315,9 +315,12 @@ class Manager(object):
             # any pending generate event waits no longer, as there
             # is something to do now.
             with self._lock:
-                if hasattr(self, "_generate_event"):
+                # We don't lock around self._currently_handling = None,
+                # so it made change after checking 
+                handling = self._currently_handling
+                if isinstance(handling, GenerateEvents):
                     self._queue.append((event, channel))
-                    self._generate_event.reduce_time_left(0)
+                    handling.reduce_time_left(0)
                 else:
                     self._queue.append((event, channel))
 
@@ -421,7 +424,7 @@ class Manager(object):
         while self._flush_batch > 0:
             self._flush_batch -= 1 # Decrement first!
             event, channels = self._queue.popleft()
-            self._dispatcher(event, channels)
+            self._dispatcher(event, channels, self._flush_batch)
 
         # restore executing thread if necessary
         if set_executing:
@@ -438,8 +441,7 @@ class Manager(object):
 
     flush = flushEvents
 
-    def _dispatcher(self, event, channels):
-        self._currently_handling = event
+    def _dispatcher(self, event, channels, remaining):
         if event.complete:
             if not getattr(event, "cause", None):
                 event.cause = event
@@ -460,6 +462,19 @@ class Manager(object):
                 from .helpers import FallBackGenerator
                 handlers.append(FallBackGenerator()._on_generate_events)
             self._cache[(event.name, channels)] = handlers
+
+        if isinstance(event, GenerateEvents):
+            with self._lock:
+                self._currently_handling = event
+                if self or remaining > 0 or not self._running:
+                    event.reduce_time_left(0)
+                elif len(self._tasks) > 0:
+                    event.reduce_time_left(TIMEOUT) 
+                # From now on, firing an event will reduce time left
+                # to 0, which prevents handlers from waiting (or wakes
+                # them up with resume if they should be waiting already)
+        else:
+            self._currently_handling = event
 
         value = None
         error = None
@@ -501,10 +516,7 @@ class Manager(object):
                 break
 
         self._currently_handling = None
-        if event == getattr(self, "_generate_event", None):
-            delattr(self, "_generate_event")
-        else:
-            self._eventDone(event, error)
+        self._eventDone(event, error)
 
     def _eventDone(self, event, error=None):
         if event.waitingHandlers:
@@ -599,14 +611,6 @@ class Manager(object):
 
         self._running = False
 
-        # clean queue from any pending GenerateEvents events
-        q = self._queue
-        self._queue = deque()
-        for evt in q:
-            if not isinstance(evt, GenerateEvents):
-                self._queue.append(evt)
-        self._flush_batch = 0
-
         self.fire(Stopped(self))
         for _ in range(3):
             self.tick()
@@ -695,13 +699,7 @@ class Manager(object):
             self.processTask(*task)
 
         if self._running:
-            with self._lock:
-                if len(self._tasks) > 0 or self:
-                    # if work remains to be done, generate as fast as possible
-                    self._generate_event = GenerateEvents(self._lock, 0)
-                else:
-                    self._generate_event = GenerateEvents(self._lock, timeout)
-            self.fire(self._generate_event, "*")
+            self.fire(GenerateEvents(self._lock, timeout), "*")
 
         if self:
             self.flush()
