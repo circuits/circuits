@@ -85,8 +85,9 @@ class WebSocketCodec(BaseComponent):
             payload_length = self._buffer[1] & 0x7f
             offset = 2
             if payload_length >= 126:
+                payload_bytes = 2 if payload_length == 126 else 8
                 payload_length = 0
-                for _ in range(2 if payload_length == 126 else 8):
+                for _ in range(payload_bytes):
                     payload_length = payload_length * 256 \
                         + self._buffer[offset]
                     offset += 1
