@@ -423,8 +423,15 @@ class Manager(object):
             self._flush_batch = len(self._queue)
         while self._flush_batch > 0:
             self._flush_batch -= 1 # Decrement first!
-            event, channels = self._queue.popleft()
-            self._dispatcher(event, channels, self._flush_batch)
+            try:
+                event, channels = self._queue.popleft()
+                self._dispatcher(event, channels, self._flush_batch)
+            except IndexError:
+                # If a concurrent thread calls stop() (which calls tick()
+                # and thus flush()) just before we pop, we may be left
+                # with an empty queue although we did check before.
+                # This is no problem, the event has been dispatched.
+                pass
 
         # restore executing thread if necessary
         if set_executing:
