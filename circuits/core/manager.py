@@ -460,9 +460,9 @@ class Manager(object):
             # this may interfere with cache rebuild.
             self._cache.clear()
             self._cache_needs_refresh = False
-        if (event.name, channels) in self._cache:
+        try: # try/except is fastest if successful in most cases
             handlers = self._cache[(event.name, channels)]
-        else:
+        except KeyError:
             h = (self.getHandlers(event, channel) for channel in channels)
             handlers = sorted(chain(*h), key=_sortkey, reverse=True)
             if isinstance(event, GenerateEvents):
@@ -473,9 +473,9 @@ class Manager(object):
         if isinstance(event, GenerateEvents):
             with self._lock:
                 self._currently_handling = event
-                if self or remaining > 0 or not self._running:
+                if remaining > 0 or len(self._queue) or not self._running:
                     event.reduce_time_left(0)
-                elif len(self._tasks) > 0:
+                elif len(self._tasks):
                     event.reduce_time_left(TIMEOUT) 
                 # From now on, firing an event will reduce time left
                 # to 0, which prevents handlers from waiting (or wakes
@@ -512,15 +512,16 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if isinstance(value, GeneratorType):
-                event.waitingHandlers += 1
-                event.value.promise = True
-                self.registerTask((event, value))
-            elif value is not None:
-                event.value.value = value
-
-            if value and handler.filter:
-                break
+            if value is not None:
+                if isinstance(value, GeneratorType):
+                    event.waitingHandlers += 1
+                    event.value.promise = True
+                    self.registerTask((event, value))
+                else:
+                    event.value.value = value
+                # None is false, but not None may still be True or False
+                if handler.filter and value:
+                    break
 
         self._currently_handling = None
         self._eventDone(event, error)
@@ -703,7 +704,7 @@ class Manager(object):
         if self._running:
             self.fire(GenerateEvents(self._lock, timeout), "*")
 
-        if self:
+        if len(self._queue):
             self.flush()
 
     def run(self, socket=None):
@@ -742,7 +743,7 @@ class Manager(object):
         self.fire(Started(self))
 
         try:
-            while self or self.running:
+            while self.running or len(self._queue):
                 self.tick()
             # Fading out, handle remaining work from stop event
             for _ in range(3):
