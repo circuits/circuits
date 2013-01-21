@@ -1,6 +1,7 @@
 #!/usr/bin/python -i
 
 from subprocess import Popen, PIPE
+from circuits.core.manager import TIMEOUT
 
 try:
     from cStringIO import StringIO
@@ -142,4 +143,7 @@ class Process(Component):
             if status is not self._status:
                 self._status = status
                 self.fire(Stopped(self))
+                event.reduce_time_left(0)
                 return True
+            else:
+                event.reduce_time_left(TIMEOUT)
