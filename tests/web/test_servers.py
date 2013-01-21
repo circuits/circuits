@@ -78,9 +78,6 @@ def test_secure_server():
     s = f.read()
     assert s == b"Hello World!"
 
-    while True:
-        pass
-
 
 def test_unixserver(tmpdir):
     sockpath = tmpdir.ensure("test.sock")
