@@ -166,8 +166,8 @@ class BaseComponent(Manager):
         # Make sure that structure is consistent before firing event
         # because event may be handled in a concurrent thread.
         if parent is not self:
-            self._updateRoot(parent.root)
             parent.registerChild(self)
+            self._updateRoot(parent.root)
             self.fire(Registered(self, self.parent))
         else:
             self._updateRoot(parent.root)

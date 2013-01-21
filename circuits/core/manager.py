@@ -27,6 +27,10 @@ from .events import Error, Started, Stopped, Signal, GenerateEvents
 
 TIMEOUT = 0.1  # 100ms timeout when idle
 
+class UnregistrableError(Exception):
+    """Raised if a component cannot be registered as child.
+    """
+
 
 def _sortkey(handler):
     return (handler.priority, handler.filter)
@@ -105,6 +109,7 @@ class Manager(object):
         self._values = WeakValueDictionary()
 
         self._executing_thread = None
+        self._flushing_thread = None
         self._running = False
         self._thread = None
         self._process = None
@@ -285,6 +290,11 @@ class Manager(object):
         self.root._cache_needs_refresh = True
 
     def registerChild(self, component):
+        if component._executing_thread is not None:
+            if self.root._executing_thread is not None:
+                raise UnregistrableError()
+            self.root._executing_thread = component._executing_thread
+            component._executing_thread = None
         self.components.add(component)
         self.root._queue.extend(list(component._queue))
         component._queue.clear()
@@ -296,8 +306,9 @@ class Manager(object):
 
     def _fire(self, event, channel):
         # check if event is fired while handling an event
-        if thread.get_ident() == self._executing_thread \
-                and not isinstance(event, Signal):
+        if thread.get_ident() \
+            == (self._executing_thread or self._flushing_thread) \
+            and not isinstance(event, Signal):
             if self._currently_handling is not None \
                     and getattr(self._currently_handling, "cause", None):
                 # if the currently handled event wants to track the
@@ -411,31 +422,19 @@ class Manager(object):
     call = callEvent
 
     def _flush(self):
-        # if _flush is not called from tick, set executing thread
-        set_executing = (self._executing_thread is None)
-        if set_executing:
-            self._executing_thread = thread.get_ident()
-
         # Handle events currently on queue, but none of the newly generated
-        # events. Note that _flush can be called recursively (e.g. when 
-        # handling a Stop event).
-        if self._flush_batch == 0:
-            self._flush_batch = len(self._queue)
-        while self._flush_batch > 0:
-            self._flush_batch -= 1 # Decrement first!
-            try:
+        # events. Note that _flush can be called recursively.
+        old_flushing = self._flushing_thread
+        try:
+            self._flushing_thread = thread.get_ident()
+            if self._flush_batch == 0:
+                self._flush_batch = len(self._queue)
+            while self._flush_batch > 0:
+                self._flush_batch -= 1 # Decrement first!
                 event, channels = self._queue.popleft()
                 self._dispatcher(event, channels, self._flush_batch)
-            except IndexError:
-                # If a concurrent thread calls stop() (which calls tick()
-                # and thus flush()) just before we pop, we may be left
-                # with an empty queue although we did check before.
-                # This is no problem, the event has been dispatched.
-                pass
-
-        # restore executing thread if necessary
-        if set_executing:
-            self._executing_thread = None
+        finally:
+            self._flushing_thread = old_flushing
 
     def flushEvents(self):
         """
@@ -460,6 +459,7 @@ class Manager(object):
             # Don't call self._cache.clear() from other threads,
             # this may interfere with cache rebuild.
             self._cache.clear()
+            self._cache_needs_refresh = False
         if (event.name, channels) in self._cache:
             handlers = self._cache[(event.name, channels)]
         else:
@@ -609,9 +609,8 @@ class Manager(object):
 
     def stop(self):
         """
-        Stop this manager. Invoking this method either causes
-        an invocation of ``run()`` to return or terminates the
-        thread or process associated with the manager.
+        Stop this manager. Invoking this method causes
+        an invocation of ``run()`` to return.
         """
         if not self.running:
             return
@@ -619,11 +618,9 @@ class Manager(object):
         self._running = False
 
         self.fire(Stopped(self))
-        for _ in range(3):
-            self.tick()
-
-        self._thread = None
-        self._process = None
+        if self.root._executing_thread is None:
+            for _ in range(3):
+                self.tick()
 
     def processTask(self, event, task, parent=None):
         value = None
@@ -699,8 +696,6 @@ class Manager(object):
             has been taken.
         :type timeout: float, measuring seconds
         """
-        self._executing_thread = thread.get_ident()
-
         # process tasks
         for task in self._tasks.copy():
             self.processTask(*task)
@@ -710,8 +705,6 @@ class Manager(object):
 
         if self:
             self.flush()
-
-        self._executing_thread = None
 
     def run(self, socket=None):
         """
@@ -738,7 +731,7 @@ class Manager(object):
                 pass
 
         self._running = True
-        self._executing_thread = current_thread()
+        self.root._executing_thread = current_thread()
 
         # Setup Communications Bridge
 
@@ -751,6 +744,9 @@ class Manager(object):
         try:
             while self or self.running:
                 self.tick()
+            # Fading out, handle remaining work from stop event
+            for _ in range(3):
+                self.tick()
         except:
             pass
         finally:
@@ -758,3 +754,7 @@ class Manager(object):
                 self.tick()
             except:
                 pass
+            
+        self.root._executing_thread = None
+        self._thread = None
+        self._process = None
