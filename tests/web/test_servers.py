@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import pytest
+
 from os import path
 from socket import gaierror
 
@@ -61,8 +63,9 @@ def test_server():
 
 
 def test_secure_server():
-    from circuits import Debugger
-    server = Server(0, secure=True, certfile=CERTFILE) + Debugger()
+    pytest.importorskip("ssl")
+
+    server = Server(0, secure=True, certfile=CERTFILE)
     Root().register(server)
     server.start()
 
