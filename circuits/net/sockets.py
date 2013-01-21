@@ -267,8 +267,8 @@ class Client(Component):
     def connected(self):
         return getattr(self, "_connected", None)
 
-    @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
+    @handler("registered", "started", channel="*")
+    def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -447,10 +447,6 @@ class UNIXClient(Client):
 
         return sock
 
-    @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
-        pass
-
     def ready(self, component):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
@@ -546,8 +542,8 @@ class Server(Component):
             except SocketError:
                 return None
 
-    @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
+    @handler("registered", "started", channel="*")
+    def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
