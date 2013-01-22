@@ -333,8 +333,13 @@ class Manager(object):
             # any pending generate event waits no longer, as there
             # is something to do now.
             with self._lock:
-                # We don't lock around self._currently_handling = None,
-                # so it made change after checking 
+                # Modifications of attribute self._currently_handling 
+                # (in _dispatch()), calling reduce_time_left(0). and adding an 
+                # event to the (empty) event queue must be atomic, so we have 
+                # to lock. We can save the locking around 
+                # self._currently_handling = None though, but then need to copy 
+                # it to a local variable here before performing a sequence of
+                # operations that assume its value to remain unchanged.
                 handling = self._currently_handling
                 if isinstance(handling, GenerateEvents):
                     self._queue.append((event, channel))
