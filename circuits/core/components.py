@@ -239,10 +239,12 @@ class BaseComponent(Manager):
         handlers = (
             getattr(cls, k).names for k in dir(cls)
             if getattr(getattr(cls, k), "handler", False)
-            and not k.startswith("_")
         )
 
-        return list(chain(*handlers))
+        return list(
+            name for name in chain(*handlers)
+            if not name.startswith("_")
+        )
 
     @classmethod
     def handles(cls, *names):
