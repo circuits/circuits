@@ -7,7 +7,7 @@ ChangeLog
 =========
 
 
-.. include:: ../../CHANGES
+.. include:: ../../CHANGES.rst
 
 
 circuits-2.0.1 20121124
