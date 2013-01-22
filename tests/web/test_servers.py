@@ -70,7 +70,6 @@ def test_secure_server():
     server.start()
 
     try:
-        print("URL: {0:s}".format(server.base))
         f = urlopen(server.base)
     except URLError as e:
         if type(e[0]) is gaierror:
