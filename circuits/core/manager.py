@@ -8,6 +8,7 @@ This module defines the Manager class.
 """
 
 import atexit
+from os import getpid
 from itertools import chain
 from collections import deque
 from inspect import isfunction
@@ -220,6 +221,12 @@ class Manager(object):
         """Return the running state of this Component/Manager"""
 
         return self._running
+
+    @property
+    def pid(self):
+        """Return the process id of this Component/Manager"""
+
+        return getpid() if self.__process is None else self.__process.pid
 
     def getHandlers(self, event, channel, **kwargs):
         channel_is_instance = isinstance(channel, Manager)
