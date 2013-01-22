@@ -33,8 +33,8 @@ except ImportError:
 
 
 from circuits.core.utils import findcmp
-from circuits.core import handler, Event, Component
 from circuits.core.pollers import BasePoller, Poller
+from circuits.core import handler, Event, BaseComponent
 
 BUFSIZE = 4096  # 4KB Buffer
 BACKLOG = 5000  # 5K Concurrent Connections
@@ -230,12 +230,8 @@ class Closed(Event):
 
         super(Closed, self).__init__()
 
-###
-### Components
-###
 
-
-class Client(Component):
+class Client(BaseComponent):
 
     channel = "client"
 
@@ -320,6 +316,7 @@ class Client(Component):
 
         self.fire(Disconnected())
 
+    @handler("close")
     def close(self):
         if not self._buffer:
             self._close()
@@ -359,6 +356,7 @@ class Client(Component):
             else:
                 self.fire(SocketError(e))
 
+    @handler("write")
     def write(self, data):
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
@@ -398,6 +396,7 @@ class TCPClient(Client):
 
         return sock
 
+    @handler("connect")
     def connect(self, host, port, secure=False, **kwargs):
         self.host = host
         self.port = port
@@ -451,10 +450,12 @@ class UNIXClient(Client):
 
         return sock
 
+    @handler("ready")
     def ready(self, component):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
+    @handler("connect")
     def connect(self, path, secure=False, **kwargs):
         self.path = path
         self.secure = secure
@@ -485,7 +486,7 @@ class UNIXClient(Client):
         self.fire(Connected(gethostname(), path))
 
 
-class Server(Component):
+class Server(BaseComponent):
 
     channel = "server"
 
@@ -600,6 +601,7 @@ class Server(Component):
 
         self.fire(Disconnect(sock))
 
+    @handler("close")
     def close(self, sock=None):
         closed = sock is None
 
@@ -650,14 +652,11 @@ class Server(Component):
             else:
                 self._buffers[sock].appendleft(data)
 
+    @handler("write")
     def write(self, sock, data):
         if not self._poller.isWriting(sock):
             self._poller.addWriter(self, sock)
         self._buffers[sock].append(data)
-
-    def broadcast(self, data):
-        for sock in self._clients:
-            self.write(sock, data)
 
     def _accept(self):
         try:
