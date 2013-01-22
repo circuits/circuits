@@ -47,7 +47,7 @@ def test():
 
     m.stop()
 
-    pytest.wait_for(m, "_thread", None)
+    pytest.wait_for(m, "_Manager__thread", None)
 
     s = repr(m)
     assert s == "<Manager/ %s (queued=0) [S]>" % id
