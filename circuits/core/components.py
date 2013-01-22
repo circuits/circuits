@@ -236,12 +236,13 @@ class BaseComponent(Manager):
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
 
-        names = (
-            v.names for k, v in cls.__dict__.items()
-            if hasattr(v, "handler")
+        handlers = (
+            getattr(cls, k).names for k in dir(cls)
+            if getattr(getattr(cls, k), "handler", False)
+            and not k.startswith("_")
         )
 
-        return list(chain(*names))
+        return list(chain(*handlers))
 
     @classmethod
     def handles(cls, *names):
