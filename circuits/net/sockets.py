@@ -16,7 +16,7 @@ from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 
 from _socket import socket as SocketType
 
-from socket import gaierror, error as SocketError
+from socket import gaierror, error
 from socket import getfqdn, gethostbyname, socket, getaddrinfo, gethostname
 
 from socket import AF_INET, AF_INET6, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
@@ -137,8 +137,8 @@ class Read(Event):
         super(Read, self).__init__(*args)
 
 
-class Error(Event):
-    """Error Event
+class SocketError(Event):
+    """SocketError Event
 
     This Event is sent when a client or server connection has an error.
 
@@ -151,7 +151,7 @@ class Error(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Error, self).__init__(*args)
+        super(SocketError, self).__init__(*args)
 
 
 class Write(Event):
@@ -205,12 +205,16 @@ class Ready(Event):
 
     :param component:  The Client/Server Component that is ready.
     :type  tuple: Component (Client/Server)
+
+    :param bind:  The (host, port) the server has bound to.
+    :type  tuple: (host, port)
     """
 
-    def __init__(self, component):
+    def __init__(self, component, bind=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Ready, self).__init__(component)
+        args = (component, bind) if bind is not None else (component,)
+        super(Ready, self).__init__(*args)
 
 
 class Closed(Event):
@@ -311,7 +315,7 @@ class Client(Component):
         try:
             self._sock.shutdown(2)
             self._sock.close()
-        except SocketError:
+        except error:
             pass
 
         self.fire(Disconnected())
@@ -333,11 +337,11 @@ class Client(Component):
                 self.fire(Read(data)).notify = True
             else:
                 self.close()
-        except SocketError as e:
+        except error as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.fire(Error(e))
+                self.fire(SocketError(e))
                 self._close()
 
     def _write(self, data):
@@ -349,11 +353,11 @@ class Client(Component):
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
-                self.fire(Error(e))
+                self.fire(SocketError(e))
 
     def write(self, data):
         if not self._poller.isWriting(self._sock):
@@ -405,7 +409,7 @@ class TCPClient(Client):
 
         try:
             r = self._sock.connect((host, port))
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
@@ -461,14 +465,14 @@ class UNIXClient(Client):
 
         try:
             r = self._sock.connect_ex(path)
-        except SocketError as e:
+        except error as e:
             r = e.args[0]
 
         if r:
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.fire(Error(r))
+                self.fire(SocketError(r))
                 return
 
         self._connected = True
@@ -529,7 +533,7 @@ class Server(Component):
                     return sockname[0]
                 else:
                     return sockname
-            except SocketError:
+            except error:
                 return None
 
     @property
@@ -539,7 +543,7 @@ class Server(Component):
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
                     return sockname[1]
-            except SocketError:
+            except error:
                 return None
 
     @handler("registered", "started", channel="*")
@@ -548,7 +552,7 @@ class Server(Component):
             if isinstance(component, BasePoller):
                 self._poller = component
                 self._poller.addReader(self, self._sock)
-                self.fire(Ready(self))
+                self.fire(Ready(self, (self.host, self.port)))
             else:
                 if component is not self:
                     return
@@ -556,11 +560,11 @@ class Server(Component):
                 if component is not None:
                     self._poller = component
                     self._poller.addReader(self, self._sock)
-                    self.fire(Ready(self))
+                    self.fire(Ready(self, (self.host, self.port)))
                 else:
                     self._poller = Poller().register(self)
                     self._poller.addReader(self, self._sock)
-                    self.fire(Ready(self))
+                    self.fire(Ready(self, (self.host, self.port)))
 
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
@@ -591,7 +595,7 @@ class Server(Component):
         try:
             sock.shutdown(2)
             sock.close()
-        except SocketError:
+        except error:
             pass
 
         self.fire(Disconnect(sock))
@@ -624,11 +628,11 @@ class Server(Component):
                 self.fire(Read(sock, data)).notify = True
             else:
                 self.close(sock)
-        except SocketError as e:
+        except error as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.fire(Error(sock, e))
+                self.fire(SocketError(sock, e))
                 self._close(sock)
 
     def _write(self, sock, data):
@@ -639,9 +643,9 @@ class Server(Component):
             nbytes = sock.send(data)
             if nbytes < len(data):
                 self._buffers[sock].appendleft(data[nbytes:])
-        except SocketError as e:
+        except error as e:
             if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
-                self.fire(Error(sock, e))
+                self.fire(SocketError(sock, e))
                 self._close(sock)
             else:
                 self._buffers[sock].appendleft(data)
@@ -670,7 +674,7 @@ class Server(Component):
         except SSLError as e:
             raise
 
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
             elif e.args[0] == EPERM:
@@ -821,11 +825,11 @@ class UDPServer(Server):
 
         try:
             sock.shutdown(2)
-        except SocketError:
+        except error:
             pass
         try:
             sock.close()
-        except SocketError:
+        except error:
             pass
 
         self.fire(Disconnect(sock))
@@ -844,10 +848,10 @@ class UDPServer(Server):
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.fire(Read(address, data)).notify = True
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
-            self.fire(Error(self._sock, e))
+            self.fire(SocketError(self._sock, e))
             self._close(self._sock)
 
     def _write(self, address, data):
@@ -855,11 +859,11 @@ class UDPServer(Server):
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:
-                self.fire(Error(self._sock, e))
+                self.fire(SocketError(self._sock, e))
 
     @handler("write", override=True)
     def write(self, address, data):

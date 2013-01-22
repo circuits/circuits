@@ -13,7 +13,7 @@ class Client(Component):
         self.connected = False
         self.disconnected = False
 
-    def ready(self, component):
+    def ready(self, *args):
         self.ready = True
 
     def connected(self, host, port):
@@ -25,5 +25,10 @@ class Client(Component):
     def closed(self):
         self.closed = True
 
-    def read(self, data):
+    def read(self, *args):
+        if len(args) == 2:
+            _, data = args
+        else:
+            data = args[0]
+
         self.data = data
