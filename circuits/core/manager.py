@@ -111,8 +111,8 @@ class Manager(object):
         self._executing_thread = None
         self._flushing_thread = None
         self._running = False
-        self._thread = None
-        self._process = None
+        self.__thread = None
+        self.__process = None
         self._lock = RLock()
 
         self.root = self.parent = self
@@ -593,20 +593,20 @@ class Manager(object):
             else:
                 args = ()
 
-            self._process = Process(target=self.run, args=args, name=self.name)
-            self._process.daemon = True
-            self._process.start()
+            self.__process = Process(target=self.run, args=args, name=self.name)
+            self.__process.daemon = True
+            self.__process.start()
         else:
-            self._thread = Thread(target=self.run, name=self.name)
-            self._thread.daemon = True
-            self._thread.start()
+            self.__thread = Thread(target=self.run, name=self.name)
+            self.__thread.daemon = True
+            self.__thread.start()
 
     def join(self):
         if getattr(self, "_thread", None) is not None:
-            return self._thread.join()
+            return self.__thread.join()
 
         if getattr(self, "_process", None) is not None:
-            return self._process.join()
+            return self.__process.join()
 
     def stop(self):
         """
@@ -757,5 +757,5 @@ class Manager(object):
                 pass
             
         self.root._executing_thread = None
-        self._thread = None
-        self._process = None
+        self.__thread = None
+        self.__process = None
