@@ -19,7 +19,7 @@ class App(Component):
     def foo(self):
         return "Hello World!"
 
-    def ready(self, component):
+    def ready(self, *args):
         self.ready = True
 
     def disconnect(self, component):
