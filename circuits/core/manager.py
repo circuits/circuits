@@ -743,13 +743,13 @@ class Manager(object):
 
         atexit.register(self.stop)
 
-        #if current_thread().getName() == "MainThread":
-        #    try:
-        #        signal(SIGINT, self._signalHandler)
-        #        signal(SIGTERM, self._signalHandler)
-        #    except ValueError:
-        #        # Ignore if we can't install signal handlers
-        #        pass
+        if current_thread().getName() == "MainThread":
+            try:
+                signal(SIGINT, self._signalHandler)
+                signal(SIGTERM, self._signalHandler)
+            except ValueError:
+                # Ignore if we can't install signal handlers
+                pass
 
         self._running = True
         self.root._executing_thread = current_thread()
