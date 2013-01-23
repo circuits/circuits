@@ -41,7 +41,7 @@ def webapp(request):
     if hasattr(request.module, "application"):
         from circuits.web.wsgi import Gateway
         application = getattr(request.module, "application")
-        Gateway(application).register(webapp)
+        Gateway({"/": application}).register(webapp)
     else:
         Root = getattr(request.module, "Root", None)
         if Root is not None:

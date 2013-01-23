@@ -13,6 +13,7 @@ except ImportError:
     from urllib import unquote  # NOQA
 
 from io import StringIO
+from operator import itemgetter
 from traceback import format_tb
 from sys import exc_info as _exc_info
 
@@ -24,6 +25,40 @@ from .events import Request
 from .headers import Headers
 from .errors import HTTPError
 from .dispatchers import Dispatcher
+
+
+def create_environ(errors, path, req):
+    environ = {}
+    env = environ.__setitem__
+
+    env("REQUEST_METHOD", req.method)
+    env("SERVER_NAME", req.host.split(":", 1)[0])
+    env("SERVER_PORT", "%i" % (req.server.port or 0))
+    env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server_protocol)
+    env("QUERY_STRING", req.qs)
+    env("SCRIPT_NAME", req.script_name)
+    env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
+    env("CONTENT_LENGTH", req.headers.get("Content-Length", ""))
+    env("REMOTE_ADDR", req.remote.ip)
+    env("REMOTE_PORT", "%i" % (req.remote.port or 0))
+    env("wsgi.version", (1, 0))
+    env("wsgi.input", req.body)
+    env("wsgi.errors", errors)
+    env("wsgi.multithread", False)
+    env("wsgi.multiprocess", False)
+    env("wsgi.run_once", False)
+    env("wsgi.url_scheme", req.scheme)
+
+    if req.path:
+        req.script_name = req.path[:len(path)]
+        req.path = req.path[len(path):]
+        env("SCRIPT_NAME", req.script_name)
+        env("PATH_INFO", req.path)
+
+    for k, v in list(req.headers.items()):
+        env("HTTP_%s" % k.upper().replace("-", "_"), v)
+
+    return environ
 
 
 class Application(BaseComponent):
@@ -126,66 +161,39 @@ class Gateway(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, app, path="/"):
-        super(Gateway, self).__init__()
+    def init(self, apps):
+        self.apps = apps
 
-        self.app = app
-        self.path = path
-
-        self._errors = StringIO()
-        self._request = self._response = None
-
-    def createEnviron(self):
-        environ = {}
-        req = self._request
-        env = environ.__setitem__
-
-        env("REQUEST_METHOD", req.method)
-        env("SERVER_NAME", req.host.split(":", 1)[0])
-        env("SERVER_PORT", "%i" % (req.server.port or 0))
-        env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server_protocol)
-        env("QUERY_STRING", req.qs)
-        env("SCRIPT_NAME", req.script_name)
-        env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
-        env("CONTENT_LENGTH", req.headers.get("Content-Length", ""))
-        env("REMOTE_ADDR", req.remote.ip)
-        env("REMOTE_PORT", "%i" % (req.remote.port or 0))
-        env("wsgi.version", (1, 0))
-        env("wsgi.input", req.body)
-        env("wsgi.errors", self._errors)
-        env("wsgi.multithread", False)
-        env("wsgi.multiprocess", False)
-        env("wsgi.run_once", False)
-        env("wsgi.url_scheme", req.scheme)
-
-        if req.path:
-            req.script_name = req.path[:len(self.path)]
-            req.path = req.path[len(self.path):]
-            env("SCRIPT_NAME", req.script_name)
-            env("PATH_INFO", req.path)
-
-        for k, v in list(req.headers.items()):
-            env("HTTP_%s" % k.upper().replace("-", "_"), v)
-
-        return environ
-
-    def start_response(self, status, headers, exc_info=None):
-        self._response.code = int(status.split(" ", 1)[0])
-        for header in headers:
-            self._response.headers.add_header(*header)
+        self.errors = dict((k, StringIO()) for k in self.apps.keys())
 
     @handler("request", filter=True, priority=0.2)
     def _on_request(self, event, request, response):
-        if self.path and not request.path.startswith(self.path):
+        if not self.apps:
             return
 
-        self._request = request
-        self._response = response
-        self._errors = StringIO()
+        parts = request.path.split("/")
 
-        environ = self.createEnviron()
+        candidates = sorted(list(
+            (k, v) for i, (k, v) in enumerate(self.apps.items())
+            if ("/".join(parts[:(i + 1)]) or "/") == k
+        ), key=itemgetter(0), reverse=True)
+
+        if not candidates:
+            return
+
+        path, app = candidates[0]
+
+        def start_response(status, headers, exc_info=None):
+            response.code = int(status.split(" ", 1)[0])
+            for header in headers:
+                response.headers.add_header(*header)
+
+        errors = self.errors[path]
+
+        environ = create_environ(errors, path, request)
+
         try:
-            body = self.app(environ, self.start_response)
+            body = app(environ, start_response)
             if not body:
                 return empty
             return body
