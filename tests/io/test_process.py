@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 
-
-import sys
-
 from circuits.io import Process, Start
-
-from tests.io import hello
 
 
 def test(manager, watcher):

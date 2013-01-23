@@ -52,6 +52,10 @@ class Process(Component):
         self.stdout = StringIO()
 
         self._status = None
+        self._terminated = False
+
+        self._stdout_closed = False
+        self._stderr_closed = False
 
         self._stdin = None
         self._stderr = None
@@ -60,6 +64,8 @@ class Process(Component):
         self._stdin_closed_handler = None
         self._stderr_read_handler = None
         self._stdout_read_handler = None
+        self._stderr_closed_handler = None
+        self._stdout_closed_handler = None
 
     def start(self):
         self.p = Popen(
@@ -103,7 +109,27 @@ class Process(Component):
             )
         )
 
+        self._stderr_closed_handler = self.addHandler(
+            handler("closed", channel="{0:d}.stderr".format(self.p.pid))(
+                self.__class__._on_stderr_closed
+            )
+        )
+
+        self._stdout_closed_handler = self.addHandler(
+            handler("closed", channel="{0:d}.stdout".format(self.p.pid))(
+                self.__class__._on_stdout_closed
+            )
+        )
+
         self.fire(Started(self))
+
+    @staticmethod
+    def _on_stdout_closed(self):
+        self._stdout_closed = True
+
+    @staticmethod
+    def _on_stderr_closed(self):
+        self._stderr_closed = True
 
     def stop(self):
         if self.p is not None:
@@ -136,12 +162,18 @@ class Process(Component):
 
     @handler("generate_events")
     def _on_generate_events(self, event):
-        if self.p is not None:
-            status = self.p.poll()
-            if status is not self._status:
-                self._status = status
-                self.fire(Stopped(self))
-                event.reduce_time_left(0)
-                return True
-            else:
-                event.reduce_time_left(TIMEOUT)
+        if self.p is not None and self._status is None:
+            self._status = self.p.poll()
+
+        if self._status is not None and self._stderr_closed == True \
+           and self._stdout_closed == True and not self._terminated:
+            self._terminated = True
+            self.removeHandler(self._stderr_read_handler)
+            self.removeHandler(self._stdout_read_handler)
+            self.removeHandler(self._stderr_closed_handler)
+            self.removeHandler(self._stdout_closed_handler)
+            self.fire(Stopped(self))
+            event.reduce_time_left(0)
+            return True
+        else:
+            event.reduce_time_left(TIMEOUT)
