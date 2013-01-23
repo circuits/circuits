@@ -9,7 +9,7 @@ from tests.io import hello
 
 
 def test(manager, watcher):
-    p = Process([sys.executable, hello.__file__]).register(manager)
+    p = Process(["echo", "Hello World!"]).register(manager)
     assert watcher.wait("registered")
 
     p.fire(Start())
