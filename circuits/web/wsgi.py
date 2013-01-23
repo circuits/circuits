@@ -12,12 +12,14 @@ try:
 except ImportError:
     from urllib import unquote  # NOQA
 
-from io import StringIO
 from operator import itemgetter
 from traceback import format_tb
 from sys import exc_info as _exc_info
 
+from circuits.tools import tryimport
 from circuits.core import handler, BaseComponent
+
+StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 from . import wrappers
 from .http import HTTP

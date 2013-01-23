@@ -1,7 +1,6 @@
 # Package:  manager
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-import thread
 
 """
 This module defines the Manager class.
@@ -22,11 +21,15 @@ from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
 
 from .values import Value
+from ..tools import tryimport
 from .handlers import handler
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
+thread = tryimport(("thread", "_thread"))
+
 TIMEOUT = 0.1  # 100ms timeout when idle
+
 
 class UnregistrableError(Exception):
     """Raised if a component cannot be registered as child.
@@ -315,7 +318,7 @@ class Manager(object):
         # check if event is fired while handling an event
         if thread.get_ident() \
             == (self._executing_thread or self._flushing_thread) \
-            and not isinstance(event, Signal):
+                and not isinstance(event, Signal):
             if self._currently_handling is not None \
                     and getattr(self._currently_handling, "cause", None):
                 # if the currently handled event wants to track the
@@ -333,11 +336,11 @@ class Manager(object):
             # any pending generate event waits no longer, as there
             # is something to do now.
             with self._lock:
-                # Modifications of attribute self._currently_handling 
-                # (in _dispatch()), calling reduce_time_left(0). and adding an 
-                # event to the (empty) event queue must be atomic, so we have 
-                # to lock. We can save the locking around 
-                # self._currently_handling = None though, but then need to copy 
+                # Modifications of attribute self._currently_handling
+                # (in _dispatch()), calling reduce_time_left(0). and adding an
+                # event to the (empty) event queue must be atomic, so we have
+                # to lock. We can save the locking around
+                # self._currently_handling = None though, but then need to copy
                 # it to a local variable here before performing a sequence of
                 # operations that assume its value to remain unchanged.
                 handling = self._currently_handling
@@ -442,7 +445,7 @@ class Manager(object):
             if self._flush_batch == 0:
                 self._flush_batch = len(self._queue)
             while self._flush_batch > 0:
-                self._flush_batch -= 1 # Decrement first!
+                self._flush_batch -= 1  # Decrement first!
                 event, channels = self._queue.popleft()
                 self._dispatcher(event, channels, self._flush_batch)
         finally:
@@ -472,7 +475,7 @@ class Manager(object):
             # this may interfere with cache rebuild.
             self._cache.clear()
             self._cache_needs_refresh = False
-        try: # try/except is fastest if successful in most cases
+        try:  # try/except is fastest if successful in most cases
             handlers = self._cache[(event.name, channels)]
         except KeyError:
             h = (self.getHandlers(event, channel) for channel in channels)
@@ -488,7 +491,7 @@ class Manager(object):
                 if remaining > 0 or len(self._queue) or not self._running:
                     event.reduce_time_left(0)
                 elif len(self._tasks):
-                    event.reduce_time_left(TIMEOUT) 
+                    event.reduce_time_left(TIMEOUT)
                 # From now on, firing an event will reduce time left
                 # to 0, which prevents handlers from waiting (or wakes
                 # them up with resume if they should be waiting already)
@@ -605,7 +608,9 @@ class Manager(object):
             else:
                 args = ()
 
-            self.__process = Process(target=self.run, args=args, name=self.name)
+            self.__process = Process(
+                target=self.run, args=args, name=self.name
+            )
             self.__process.daemon = True
             self.__process.start()
         else:
@@ -767,7 +772,7 @@ class Manager(object):
                 self.tick()
             except:
                 pass
-            
+
         self.root._executing_thread = None
         self.__thread = None
         self.__process = None

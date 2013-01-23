@@ -11,8 +11,6 @@ tools are installed as executables with a prefix of "circuits."
 from hashlib import md5
 from warnings import warn
 
-from circuits import reprhandler
-
 
 def tryimport(modules, obj=None, message=None):
     modules = (modules,) if isinstance(modules, str) else modules
@@ -118,6 +116,8 @@ def inspect(x):
     for component in x.components:
         write("  %s\n" % component)
     write("\n")
+
+    from circuits import reprhandler
 
     write(" Event Handlers: %d\n" % len(x._handlers.values()))
     for event, handlers in x._handlers.items():

@@ -3,13 +3,11 @@
 from subprocess import Popen, PIPE
 from circuits.core.manager import TIMEOUT
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO  # NOQA
-
 from circuits.io import File, Write
+from circuits.tools import tryimport
 from circuits import handler, Component, Event
+
+StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 
 class Started(Event):
