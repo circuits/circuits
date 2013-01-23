@@ -6,6 +6,8 @@ from threading import Event
 
 from .handlers import handler
 from .components import BaseComponent
+import sys
+from circuits.core.handlers import reprhandler
 
 
 class FallBackGenerator(BaseComponent):
@@ -61,3 +63,26 @@ class FallBackGenerator(BaseComponent):
         handle :class:`~.events.GenerateEvents`.
         """
         self._continue.set()
+
+
+class FallBackErrorHandler(BaseComponent):
+    """
+    If ther is no handler for error events in the component hierarchy, this
+    component's handler is added automatically. It simply prints
+    the error information on stderr. 
+    """
+    
+    @handler("error", channel="*")
+    def _on_error(self, error_type, value, traceback, handler=None):
+        s = []
+
+        if handler is None:
+            handler = ""
+        else:
+            handler = reprhandler(handler)
+
+        msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
+        s.append(msg)
+        s.extend(traceback)
+        s.append("\n")
+        sys.stderr.write("".join(s))

@@ -483,6 +483,9 @@ class Manager(object):
             if isinstance(event, GenerateEvents):
                 from .helpers import FallBackGenerator
                 handlers.append(FallBackGenerator()._on_generate_events)
+            elif isinstance(event, Error) and len(handlers) == 0:
+                from .helpers import FallBackErrorHandler
+                handlers.append(FallBackErrorHandler()._on_error)
             self._cache[(event.name, channels)] = handlers
 
         if isinstance(event, GenerateEvents):
