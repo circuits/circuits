@@ -19,7 +19,7 @@ def tryimport(modules, obj=None, message=None):
         try:
             m = __import__(module, globals(), locals())
             return getattr(m, obj) if obj is not None else m
-        except ImportError:
+        except:
             pass
 
     if message is not None:

@@ -12,10 +12,10 @@ from itertools import chain
 from collections import deque
 from inspect import isfunction
 from uuid import uuid4 as uuid
-from traceback import format_tb
 from sys import exc_info as _exc_info
 from weakref import WeakValueDictionary
 from signal import signal, SIGINT, SIGTERM
+from traceback import format_exc, format_tb
 from types import MethodType, GeneratorType
 from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
@@ -743,13 +743,13 @@ class Manager(object):
 
         atexit.register(self.stop)
 
-        if current_thread().getName() == "MainThread":
-            try:
-                signal(SIGINT, self._signalHandler)
-                signal(SIGTERM, self._signalHandler)
-            except ValueError:
-                # Ignore if we can't install signal handlers
-                pass
+        #if current_thread().getName() == "MainThread":
+        #    try:
+        #        signal(SIGINT, self._signalHandler)
+        #        signal(SIGTERM, self._signalHandler)
+        #    except ValueError:
+        #        # Ignore if we can't install signal handlers
+        #        pass
 
         self._running = True
         self.root._executing_thread = current_thread()
@@ -768,8 +768,9 @@ class Manager(object):
             # Fading out, handle remaining work from stop event
             for _ in range(3):
                 self.tick()
-        except:
-            pass
+        except Exception as e:
+            print("ERROR: {0:s}".format(e))
+            print(format_exc())
         finally:
             try:
                 self.tick()
