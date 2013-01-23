@@ -20,11 +20,6 @@ order or delivery.
 """
 
 try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO  # NOQA
-
-try:
     from cPickle import dumps, loads
 except ImportError:
     from pickle import dumps, loads  # NOQA
