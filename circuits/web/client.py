@@ -86,7 +86,7 @@ class Client(BaseComponent):
         if self._transport.connected:
             self.fire(Close(), self._transport)
 
-    @handler("connect")
+    @handler("connect", filter=True)
     def connect(self, host=None, port=None, secure=None):
         host = host or self._host
         port = port or self._port
@@ -94,6 +94,8 @@ class Client(BaseComponent):
 
         if not self._transport.connected:
             self.fire(Connect(host, port, secure), self._transport)
+
+        return True
 
     @handler("request")
     def request(self, method, path, body=None, headers={}):
