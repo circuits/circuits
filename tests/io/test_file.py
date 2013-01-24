@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 
-import pytest
-if pytest.PY3:
-    pytest.skip("Broken on Python 3")
-
+from io import BytesIO
 from circuits import Component
-from circuits.tools import tryimport
 from circuits.io import File, Write, Close
-
-StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 
 class FileApp(Component):
@@ -17,7 +11,7 @@ class FileApp(Component):
         self.file = File(*args, **kwargs).register(self)
 
         self.eof = False
-        self.buffer = StringIO()
+        self.buffer = BytesIO()
 
     def read(self, data):
         self.buffer.write(data)
@@ -53,5 +47,4 @@ def test_read_write(manager, watcher, tmpdir):
     assert watcher.wait("unregistered")
 
     s = app.buffer.getvalue()
-    #StringIO.getvalue returns a string, not bytes (Tested in 2.6, 2.7, and 3.2)
-    assert s == "Hello World!"
+    assert s == b"Hello World!"

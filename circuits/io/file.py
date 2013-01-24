@@ -16,13 +16,14 @@ except ImportError:
 
 from os import write
 from collections import deque
+from sys import getdefaultencoding
 from socket import error as SocketError
 from errno import ENOTCONN, EPIPE, EWOULDBLOCK
 
-from circuits.six import file_type
 from circuits.tools import tryimport
 from circuits.core.utils import findcmp
 from circuits.core import handler, Component, Event
+from circuits.six import binary_type, file_type, PY3
 from circuits.core.pollers import BasePoller, Poller
 
 fcntl = tryimport("fcntl")
@@ -75,10 +76,12 @@ class File(Component):
 
     channel = "file"
 
-    def init(self, filename, mode="r", bufsize=BUFSIZE, channel=channel):
+    def init(self, filename, mode="r", bufsize=BUFSIZE, encoding=None,
+             channel=channel):
         self._mode = mode
         self._bufsize = bufsize
         self._filename = filename
+        self._encoding = encoding or getdefaultencoding()
 
         self._fd = None
         self._poller = None
@@ -110,10 +113,12 @@ class File(Component):
 
         if isinstance(self._filename, file_type):
             self._fd = self._filename
-            self._filename = self._fd.name
             self._mode = self._fd.mode
+            self._filename = self._fd.name
+            self._encoding = self._fd.encoding
         else:
-            self._fd = open(self.filename, self.mode)
+            kwargs = {"encoding": self._encoding} if PY3 else {}
+            self._fd = open(self.filename, self.mode, **kwargs)
 
         if fcntl is not None:
             # Set non-blocking file descriptor (non-portable)
@@ -178,6 +183,9 @@ class File(Component):
     def _read(self):
         try:
             data = self._fd.read(self._bufsize)
+            if not isinstance(data, binary_type):
+                data = data.encode(self._encoding)
+
             if data:
                 self.fire(Read(data)).notify = True
             else:
@@ -198,6 +206,9 @@ class File(Component):
 
     def _write(self, data):
         try:
+            if not isinstance(data, binary_type):
+                data = data.encode(self._encoding)
+
             nbytes = write(self._fd.fileno(), data)
 
             if nbytes < len(data):
