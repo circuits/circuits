@@ -69,9 +69,9 @@ class FallBackErrorHandler(BaseComponent):
     """
     If ther is no handler for error events in the component hierarchy, this
     component's handler is added automatically. It simply prints
-    the error information on stderr. 
+    the error information on stderr.
     """
-    
+
     @handler("error", channel="*")
     def _on_error(self, error_type, value, traceback, handler=None):
         s = []
