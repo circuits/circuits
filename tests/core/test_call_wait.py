@@ -68,7 +68,7 @@ class Test(Component):
         yield x
 
     def foo(self):
-        for i in xrange(1, 10):
+        for i in range(1, 10):
             yield i
 
     def get_x(self):
@@ -109,7 +109,8 @@ def test_call():
 
 
 def test_long_call():
-    test = Test()
+    from circuits import Debugger
+    test = Test() + Debugger()
     test.start()
 
     x = pytest.call_event(test, TestLongCall())
