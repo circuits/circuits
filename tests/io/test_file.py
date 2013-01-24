@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-from StringIO import StringIO
-
 from circuits import Component
+from circuits.tools import tryimport
 from circuits.io import File, Write, Close
+
+StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 
 class FileApp(Component):
