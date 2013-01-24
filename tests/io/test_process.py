@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-if pytest.PY3:
-    pytest.skip("Broken on Python 3")
-
 from circuits.io import Process, Start
 
 
@@ -17,4 +13,4 @@ def test(manager, watcher):
     assert watcher.wait("stopped", p.channel)
 
     s = p.stdout.getvalue()
-    assert s == "Hello World!\n"
+    assert s == b"Hello World!\n"

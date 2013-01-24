@@ -1,13 +1,11 @@
 #!/usr/bin/python -i
 
+from io import BytesIO
 from subprocess import Popen, PIPE
 from circuits.core.manager import TIMEOUT
 
 from circuits.io import File, Write
-from circuits.tools import tryimport
 from circuits import handler, Component, Event
-
-StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 
 class Started(Event):
@@ -48,8 +46,8 @@ class Process(Component):
         self.shell = shell
 
         self.p = None
-        self.stderr = StringIO()
-        self.stdout = StringIO()
+        self.stderr = BytesIO()
+        self.stdout = BytesIO()
 
         self._status = None
         self._terminated = False
@@ -77,8 +75,8 @@ class Process(Component):
             stdout=PIPE
         )
 
-        self.stderr = StringIO()
-        self.stdout = StringIO()
+        self.stderr = BytesIO()
+        self.stdout = BytesIO()
 
         self._status = None
 
@@ -165,8 +163,8 @@ class Process(Component):
         if self.p is not None and self._status is None:
             self._status = self.p.poll()
 
-        if self._status is not None and self._stderr_closed == True \
-           and self._stdout_closed == True and not self._terminated:
+        if self._status is not None and self._stderr_closed \
+                and self._stdout_closed and not self._terminated:
             self._terminated = True
             self.removeHandler(self._stderr_read_handler)
             self.removeHandler(self._stdout_read_handler)

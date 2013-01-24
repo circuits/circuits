@@ -18,8 +18,6 @@ if PY3:
     text_type = str
     binary_type = bytes
 
-    file_type = type(sys.stdout)
-
     MAXSIZE = sys.maxsize
 else:
     string_types = basestring,
@@ -27,8 +25,6 @@ else:
     class_types = (type, types.ClassType)
     text_type = unicode
     binary_type = str
-
-    file_type = type(sys.stdout)
 
     if sys.platform == "java":
         # Jython always uses 32 bits.

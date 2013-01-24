@@ -22,9 +22,15 @@ from errno import ENOTCONN, EPIPE, EWOULDBLOCK
 
 from circuits.tools import tryimport
 from circuits.core.utils import findcmp
+from circuits.six import binary_type, PY3
 from circuits.core import handler, Component, Event
-from circuits.six import binary_type, file_type, PY3
 from circuits.core.pollers import BasePoller, Poller
+
+if PY3:
+    from io import FileIO
+    FileType = FileIO
+else:
+    FileType = file
 
 fcntl = tryimport("fcntl")
 
@@ -111,11 +117,16 @@ class File(Component):
         self._bufsize = bufsize or self._bufsize
         self._mode = mode or self._mode
 
-        if isinstance(self._filename, file_type):
+        print("...")
+        print(type(self._filename))
+        print(isinstance(self._filename, FileType))
+        print("...")
+
+        if isinstance(self._filename, FileType):
             self._fd = self._filename
             self._mode = self._fd.mode
             self._filename = self._fd.name
-            self._encoding = self._fd.encoding
+            self._encoding = getattr(self._fd, "encoding", self._encoding)
         else:
             kwargs = {"encoding": self._encoding} if PY3 else {}
             self._fd = open(self.filename, self.mode, **kwargs)
