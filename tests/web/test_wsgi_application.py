@@ -62,8 +62,8 @@ def test_args(webapp):
 
     f = urlopen(url, data)
     data = f.read().split(b"\n")
-    assert data[0] == repr(args).encode()
-    assert data[1] == repr(kwargs).encode()
+    assert eval(data[0]) == args
+    assert eval(data[1]) == kwargs
 
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)

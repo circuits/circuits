@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import pytest
-if pytest.PY3:
-    pytest.skip("Broken on Python 3")
+#if pytest.PY3:
+#    pytest.skip("Broken on Python 3")
 
 from circuits.web import Controller
 
@@ -27,6 +27,6 @@ def test(webapp):
     req = Request(url, data, headers)
     res = urlopen(req)
 
-    data = res.read().decode('utf-8').split("\n")
-    assert data[0] == repr(args)
-    assert data[1] == repr(kwargs)
+    data = res.read().split(b"\n")
+    assert eval(data[0]) == args
+    assert eval(data[1]) == kwargs

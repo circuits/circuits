@@ -11,6 +11,7 @@ import re
 import zlib
 import time
 import struct
+from io import TextIOWrapper
 from cgi import FieldStorage
 
 try:
@@ -30,23 +31,17 @@ image_map_pattern = re.compile("[0-9]+,[0-9]+")
 
 
 def parse_body(request, response, params):
-    body = request.body
-    headers = request.headers
-
-    if "Content-Type" not in headers:
-        headers["Content-Type"] = ""
+    if "Content-Type" not in request.headers:
+        request.headers["Content-Type"] = ""
 
     try:
         form = FieldStorage(
-            fp=body,
-            headers=headers,
             environ={"REQUEST_METHOD": "POST"},
+            fp=TextIOWrapper(request.body),
+            headers=request.headers,
             keep_blank_values=True
         )
     except Exception as e:
-        print("ERROR: {0:s}".format(e))
-        from traceback import format_exc
-        print(format_exc())
         if e.__class__.__name__ == 'MaxSizeExceeded':
             # Post data is too big
             raise RequestEntityTooLarge()
