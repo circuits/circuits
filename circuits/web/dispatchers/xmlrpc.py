@@ -13,6 +13,7 @@ try:
 except ImportError:
     from xmlrpclib import dumps, loads, Fault  # NOQA
 
+from circuits.six import binary_type
 from circuits.web.events import Response
 from circuits import handler, Event, BaseComponent
 
@@ -48,8 +49,7 @@ class XMLRPC(BaseComponent):
             else:
                 channel, name = self.rpc_channel, method
 
-            if not isinstance(name, bytes):
-                name = name.encode('utf-8')
+            name = str(name) if not isinstance(name, binary_type) else name
 
             @handler("%s_value_changed" % name, priority=0.1)
             def _on_value_changed(self, value):
