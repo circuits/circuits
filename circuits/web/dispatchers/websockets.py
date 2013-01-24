@@ -57,7 +57,7 @@ class WebSockets(BaseComponent):
 
         self._protocol_version = 13 
         headers = request.headers
-        sec_key = headers.get("Sec-WebSocket-Key", None)
+        sec_key = headers.get("Sec-WebSocket-Key", "").encode("utf-8")
         connection_tokens = [s.strip() for s in \
                              headers.get("Connection", "").lower().split(",")]
         
