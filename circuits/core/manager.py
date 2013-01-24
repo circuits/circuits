@@ -23,7 +23,7 @@ from multiprocessing import current_process, Process
 from .values import Value
 from ..tools import tryimport
 from .handlers import handler
-from ..six import create_bound_method
+from ..six import create_bound_method, next
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
@@ -647,7 +647,7 @@ class Manager(object):
     def processTask(self, event, task, parent=None):
         value = None
         try:
-            value = task.next()
+            value = next(task)
             if isinstance(value, CallValue):
                 # Done here, next() will StopIteration anyway
                 self.unregisterTask((event, task, parent))
