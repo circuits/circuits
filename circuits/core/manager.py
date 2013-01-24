@@ -1,32 +1,39 @@
 # Package:  manager
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-import thread
 
 """
 This module defines the Manager class.
 """
 
 import atexit
+from os import getpid
 from itertools import chain
 from collections import deque
 from inspect import isfunction
 from uuid import uuid4 as uuid
-from traceback import format_tb
 from sys import exc_info as _exc_info
-from sys import version_info
 from weakref import WeakValueDictionary
 from signal import signal, SIGINT, SIGTERM
+from traceback import format_exc, format_tb
 from types import MethodType, GeneratorType
 from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
 
 from .values import Value
+from ..tools import tryimport
 from .handlers import handler
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
+thread = tryimport(("thread", "_thread"))
+
 TIMEOUT = 0.1  # 100ms timeout when idle
+
+
+class UnregistrableError(Exception):
+    """Raised if a component cannot be registered as child.
+    """
 
 
 def _sortkey(handler):
@@ -98,6 +105,7 @@ class Manager(object):
 
         self._tasks = set()
         self._cache = dict()
+        self._cache_needs_refresh = False
         self._queue = deque()
         self._flush_batch = 0
         self._globals = set()
@@ -105,9 +113,10 @@ class Manager(object):
         self._values = WeakValueDictionary()
 
         self._executing_thread = None
+        self._flushing_thread = None
         self._running = False
-        self._thread = None
-        self._process = None
+        self.__thread = None
+        self.__process = None
         self._lock = RLock()
 
         self.root = self.parent = self
@@ -216,6 +225,12 @@ class Manager(object):
 
         return self._running
 
+    @property
+    def pid(self):
+        """Return the process id of this Component/Manager"""
+
+        return getpid() if self.__process is None else self.__process.pid
+
     def getHandlers(self, event, channel, **kwargs):
         channel_is_instance = isinstance(channel, Manager)
 
@@ -250,10 +265,7 @@ class Manager(object):
         return handlers
 
     def addHandler(self, f):
-        if version_info[0] == 2:
-            method = MethodType(f, self, self.__class__) if isfunction(f) else f
-        else:
-            method = MethodType(f, self) if isfunction(f) else f
+        method = MethodType(f, self, self.__class__) if isfunction(f) else f
 
         setattr(self, method.__name__, method)
 
@@ -265,7 +277,7 @@ class Manager(object):
             for name in method.names:
                 self._handlers.setdefault(name, set()).add(method)
 
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
         return method
 
@@ -285,21 +297,27 @@ class Manager(object):
                     # Handler was never part of self
                     pass
 
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
     def registerChild(self, component):
+        if component._executing_thread is not None:
+            if self.root._executing_thread is not None:
+                raise UnregistrableError()
+            self.root._executing_thread = component._executing_thread
+            component._executing_thread = None
         self.components.add(component)
         self.root._queue.extend(list(component._queue))
         component._queue.clear()
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
     def unregisterChild(self, component):
         self.components.remove(component)
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
     def _fire(self, event, channel):
         # check if event is fired while handling an event
-        if thread.get_ident() == self._executing_thread \
+        if thread.get_ident() \
+            == (self._executing_thread or self._flushing_thread) \
                 and not isinstance(event, Signal):
             if self._currently_handling is not None \
                     and getattr(self._currently_handling, "cause", None):
@@ -318,9 +336,17 @@ class Manager(object):
             # any pending generate event waits no longer, as there
             # is something to do now.
             with self._lock:
-                if hasattr(self, "_generate_event"):
+                # Modifications of attribute self._currently_handling
+                # (in _dispatch()), calling reduce_time_left(0). and adding an
+                # event to the (empty) event queue must be atomic, so we have
+                # to lock. We can save the locking around
+                # self._currently_handling = None though, but then need to copy
+                # it to a local variable here before performing a sequence of
+                # operations that assume its value to remain unchanged.
+                handling = self._currently_handling
+                if isinstance(handling, GenerateEvents):
                     self._queue.append((event, channel))
-                    self._generate_event.reduce_time_left(0)
+                    handling.reduce_time_left(0)
                 else:
                     self._queue.append((event, channel))
 
@@ -411,24 +437,19 @@ class Manager(object):
     call = callEvent
 
     def _flush(self):
-        # if _flush is not called from tick, set executing thread
-        set_executing = (self._executing_thread is None)
-        if set_executing:
-            self._executing_thread = thread.get_ident()
-
         # Handle events currently on queue, but none of the newly generated
-        # events. Note that _flush can be called recursively (e.g. when 
-        # handling a Stop event).
-        if self._flush_batch == 0:
-            self._flush_batch = len(self._queue)
-        while self._flush_batch > 0:
-            self._flush_batch -= 1 # Decrement first!
-            event, channels = self._queue.popleft()
-            self._dispatcher(event, channels)
-
-        # restore executing thread if necessary
-        if set_executing:
-            self._executing_thread = None
+        # events. Note that _flush can be called recursively.
+        old_flushing = self._flushing_thread
+        try:
+            self._flushing_thread = thread.get_ident()
+            if self._flush_batch == 0:
+                self._flush_batch = len(self._queue)
+            while self._flush_batch > 0:
+                self._flush_batch -= 1  # Decrement first!
+                event, channels = self._queue.popleft()
+                self._dispatcher(event, channels, self._flush_batch)
+        finally:
+            self._flushing_thread = old_flushing
 
     def flushEvents(self):
         """
@@ -441,8 +462,7 @@ class Manager(object):
 
     flush = flushEvents
 
-    def _dispatcher(self, event, channels):
-        self._currently_handling = event
+    def _dispatcher(self, event, channels, remaining):
         if event.complete:
             if not getattr(event, "cause", None):
                 event.cause = event
@@ -450,15 +470,36 @@ class Manager(object):
         eargs = event.args
         ekwargs = event.kwargs
 
-        if (event.name, channels) in self._cache:
+        if self._cache_needs_refresh:
+            # Don't call self._cache.clear() from other threads,
+            # this may interfere with cache rebuild.
+            self._cache.clear()
+            self._cache_needs_refresh = False
+        try:  # try/except is fastest if successful in most cases
             handlers = self._cache[(event.name, channels)]
-        else:
+        except KeyError:
             h = (self.getHandlers(event, channel) for channel in channels)
             handlers = sorted(chain(*h), key=_sortkey, reverse=True)
             if isinstance(event, GenerateEvents):
                 from .helpers import FallBackGenerator
                 handlers.append(FallBackGenerator()._on_generate_events)
+            elif isinstance(event, Error) and len(handlers) == 0:
+                from .helpers import FallBackErrorHandler
+                handlers.append(FallBackErrorHandler()._on_error)
             self._cache[(event.name, channels)] = handlers
+
+        if isinstance(event, GenerateEvents):
+            with self._lock:
+                self._currently_handling = event
+                if remaining > 0 or len(self._queue) or not self._running:
+                    event.reduce_time_left(0)
+                elif len(self._tasks):
+                    event.reduce_time_left(TIMEOUT)
+                # From now on, firing an event will reduce time left
+                # to 0, which prevents handlers from waiting (or wakes
+                # them up with resume if they should be waiting already)
+        else:
+            self._currently_handling = event
 
         value = None
         error = None
@@ -489,21 +530,19 @@ class Manager(object):
 
                 self.fire(Error(etype, evalue, traceback, handler))
 
-            if isinstance(value, GeneratorType):
-                event.waitingHandlers += 1
-                event.value.promise = True
-                self.registerTask((event, value))
-            elif value is not None:
-                event.value.value = value
-
-            if value and handler.filter:
-                break
+            if value is not None:
+                if isinstance(value, GeneratorType):
+                    event.waitingHandlers += 1
+                    event.value.promise = True
+                    self.registerTask((event, value))
+                else:
+                    event.value.value = value
+                # None is false, but not None may still be True or False
+                if handler.filter and value:
+                    break
 
         self._currently_handling = None
-        if event == getattr(self, "_generate_event", None):
-            delattr(self, "_generate_event")
-        else:
-            self._eventDone(event, error)
+        self._eventDone(event, error)
 
     def _eventDone(self, event, error=None):
         if event.waitingHandlers:
@@ -572,46 +611,37 @@ class Manager(object):
             else:
                 args = ()
 
-            self._process = Process(target=self.run, args=args, name=self.name)
-            self._process.daemon = True
-            self._process.start()
+            self.__process = Process(
+                target=self.run, args=args, name=self.name
+            )
+            self.__process.daemon = True
+            self.__process.start()
         else:
-            self._thread = Thread(target=self.run, name=self.name)
-            self._thread.daemon = True
-            self._thread.start()
+            self.__thread = Thread(target=self.run, name=self.name)
+            self.__thread.daemon = True
+            self.__thread.start()
 
     def join(self):
         if getattr(self, "_thread", None) is not None:
-            return self._thread.join()
+            return self.__thread.join()
 
         if getattr(self, "_process", None) is not None:
-            return self._process.join()
+            return self.__process.join()
 
     def stop(self):
         """
-        Stop this manager. Invoking this method either causes
-        an invocation of ``run()`` to return or terminates the
-        thread or process associated with the manager.
+        Stop this manager. Invoking this method causes
+        an invocation of ``run()`` to return.
         """
         if not self.running:
             return
 
         self._running = False
 
-        # clean queue from any pending GenerateEvents events
-        q = self._queue
-        self._queue = deque()
-        for evt in q:
-            if not isinstance(evt, GenerateEvents):
-                self._queue.append(evt)
-        self._flush_batch = 0
-
         self.fire(Stopped(self))
-        for _ in range(3):
-            self.tick()
-
-        self._thread = None
-        self._process = None
+        if self.root._executing_thread is None:
+            for _ in range(3):
+                self.tick()
 
     def processTask(self, event, task, parent=None):
         value = None
@@ -687,25 +717,15 @@ class Manager(object):
             has been taken.
         :type timeout: float, measuring seconds
         """
-        self._executing_thread = thread.get_ident()
-
         # process tasks
         for task in self._tasks.copy():
             self.processTask(*task)
 
         if self._running:
-            with self._lock:
-                if len(self._tasks) > 0 or self:
-                    # if work remains to be done, generate as fast as possible
-                    self._generate_event = GenerateEvents(self._lock, 0)
-                else:
-                    self._generate_event = GenerateEvents(self._lock, timeout)
-            self.fire(self._generate_event, "*")
+            self.fire(GenerateEvents(self._lock, timeout), "*")
 
-        if self:
+        if len(self._queue):
             self.flush()
-
-        self._executing_thread = None
 
     def run(self, socket=None):
         """
@@ -732,7 +752,7 @@ class Manager(object):
                 pass
 
         self._running = True
-        self._executing_thread = current_thread()
+        self.root._executing_thread = current_thread()
 
         # Setup Communications Bridge
 
@@ -743,12 +763,20 @@ class Manager(object):
         self.fire(Started(self))
 
         try:
-            while self or self.running:
+            while self.running or len(self._queue):
                 self.tick()
-        except:
-            pass
+            # Fading out, handle remaining work from stop event
+            for _ in range(3):
+                self.tick()
+        except Exception as e:
+            print("ERROR: {0:s}".format(e))
+            print(format_exc())
         finally:
             try:
                 self.tick()
             except:
                 pass
+
+        self.root._executing_thread = None
+        self.__thread = None
+        self.__process = None

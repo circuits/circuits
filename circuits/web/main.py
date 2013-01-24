@@ -20,7 +20,7 @@ except ImportError:
 
 try:
     import psyco
-except ImportError:
+except:
     psyco = None  # NOQA
 
 from circuits.core.pollers import Select
@@ -53,11 +53,12 @@ def parse_options():
         help="Bind to address:[port]"
     )
 
-    parser.add_option(
-        "-j", "--jit",
-        action="store_true", default=False, dest="jit",
-        help="Use python HIT (psyco)"
-    )
+    if psyco is not None:
+        parser.add_option(
+            "-j", "--jit",
+            action="store_true", default=False, dest="jit",
+            help="Use python HIT (psyco)"
+        )
 
     parser.add_option(
         "-m", "--multiprocessing",
@@ -117,7 +118,7 @@ class Root(Controller):
 def main():
     opts, args = parse_options()
 
-    if opts.jit and psyco:
+    if psyco and opts.jit:
         psyco.full()
 
     if ":" in opts.bind:

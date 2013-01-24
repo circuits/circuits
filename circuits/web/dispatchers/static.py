@@ -10,7 +10,11 @@ resources and an optional apache-style directory listing.
 
 import os
 from string import Template
-from urllib import unquote, quote
+
+try:
+    from urllib import quote, unquote
+except ImportError:
+    from urllib.parse import quote, unquote  # NOQA
 
 from circuits import handler, BaseComponent
 

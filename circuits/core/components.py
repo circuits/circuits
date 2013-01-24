@@ -163,11 +163,14 @@ class BaseComponent(Manager):
         self.parent = parent
         self.root = parent.root
 
+        # Make sure that structure is consistent before firing event
+        # because event may be handled in a concurrent thread.
         if parent is not self:
             parent.registerChild(self)
+            self._updateRoot(parent.root)
             self.fire(Registered(self, self.parent))
-
-        self._updateRoot(parent.root)
+        else:
+            self._updateRoot(parent.root)
 
         return self
 
@@ -198,7 +201,7 @@ class BaseComponent(Manager):
 
         # tick shouldn't be called anymore, although component is still in tree
         self._unregister_pending = True
-        self.root._cache.clear()
+        self.root._cache_needs_refresh = True
 
         # Give components a chance to prepare for unregister
         evt = PrepareUnregister(self)
@@ -233,12 +236,15 @@ class BaseComponent(Manager):
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
 
-        names = (
-            v.names for k, v in cls.__dict__.items()
-            if hasattr(v, "handler")
+        handlers = (
+            getattr(cls, k).names for k in dir(cls)
+            if getattr(getattr(cls, k), "handler", False)
         )
 
-        return list(chain(*names))
+        return list(
+            name for name in chain(*handlers)
+            if not name.startswith("_")
+        )
 
     @classmethod
     def handles(cls, *names):

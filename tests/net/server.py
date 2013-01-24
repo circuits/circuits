@@ -17,9 +17,9 @@ class Server(Component):
         self.connected = False
         self.disconnected = False
 
-    def ready(self, component):
+    def ready(self, server, bind):
         self.ready = True
-        self.host, self.port = component._sock.getsockname()[:2]
+        self.host, self.port = bind
 
     def closed(self):
         self.closed = True

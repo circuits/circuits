@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from circuits.web.wsgi import Gateway
-
 from .helpers import urlopen
 
 

@@ -3,10 +3,11 @@
 """
 
 from threading import Event
-from time import time
 
 from .handlers import handler
 from .components import BaseComponent
+import sys
+from circuits.core.handlers import reprhandler
 
 
 class FallBackGenerator(BaseComponent):
@@ -32,16 +33,19 @@ class FallBackGenerator(BaseComponent):
                 return True
             self._continue.clear()
 
-        while event.time_left > 0 and not self._continue.is_set():
+        if event.time_left > 0:
             # If we get here, there is no component with work to be
             # done and no new event. But some component has requested
             # to be checked again after a certain timeout.
-            start_time = time()
             self._continue.wait(event.time_left)
-            time_spent = time() - start_time
-            event.reduce_time_left(max(event.time_left - time_spent, 0))
+            # Either time is over or _continue has been set, which
+            # implies resume has been called, which means that
+            # reduce_time_left(0) has been called. So calling this
+            # here is OK in any case.
+            event.reduce_time_left(0)
+            return True
 
-        while event.time_left < 0 and not self._continue.is_set():
+        while event.time_left < 0:
             # If we get here, there was no work left to do when creating
             # the GenerateEvents event and there is no other handler that
             # is prepared to supply new events within a limited time. The
@@ -59,3 +63,26 @@ class FallBackGenerator(BaseComponent):
         handle :class:`~.events.GenerateEvents`.
         """
         self._continue.set()
+
+
+class FallBackErrorHandler(BaseComponent):
+    """
+    If ther is no handler for error events in the component hierarchy, this
+    component's handler is added automatically. It simply prints
+    the error information on stderr. 
+    """
+    
+    @handler("error", channel="*")
+    def _on_error(self, error_type, value, traceback, handler=None):
+        s = []
+
+        if handler is None:
+            handler = ""
+        else:
+            handler = reprhandler(handler)
+
+        msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
+        s.append(msg)
+        s.extend(traceback)
+        s.append("\n")
+        sys.stderr.write("".join(s))

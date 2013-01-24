@@ -27,6 +27,6 @@ def test(manager, watcher):
 
     assert pytest.wait_for(x, "result")
 
-    assert x.value == "Hello from {0:d}".format(app._process.pid)
+    assert x.value == "Hello from {0:d}".format(app.pid)
 
     app.stop()

@@ -50,12 +50,12 @@ def pytest_generate_tests(metafunc):
         _pytest_generate_tests(metafunc, ipv6=True)
 
 
-def test_udp_basic(Poller, ipv6):
+def test_basic(Poller, ipv6):
     m = Manager() + Poller()
 
     if ipv6:
         udp_server = UDP6Server(("::1", 0))
-        udp_client = UDP6Client(0, channel="client")
+        udp_client = UDP6Client(("::1", 0), channel="client")
     else:
         udp_server = UDPServer(0)
         udp_client = UDPClient(0, channel="client")
@@ -84,7 +84,7 @@ def test_udp_basic(Poller, ipv6):
         m.stop()
 
 
-def test_udp_close(Poller, ipv6):
+def test_close(Poller, ipv6):
     m = Manager() + Poller()
     server = Server() + UDPServer(0)
     server.register(m)
