@@ -37,7 +37,8 @@ class Bridge(BaseComponent):
     ignore = [
         "registered", "unregistered", "started", "stopped", "error",
         "value_changed", "generate_events", "read", "write", "close",
-        "connected", "connect", "disconnect", "disconnected"
+        "connected", "connect", "disconnect", "disconnected", "_read",
+        "_write"
     ]
 
     def init(self, socket, channel=channel):
