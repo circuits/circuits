@@ -9,11 +9,17 @@ This module implements Logger Components.
 
 import os
 import sys
+from sys import version_info
 import datetime
 from email._parseaddr import _monthnames
 
 from circuits.core import handler, BaseComponent
 
+if version_info[0] == 2:
+    file_type = file
+else:
+    import io
+    file_type = io.IOBase
 
 def formattime():
     now = datetime.datetime.now()
@@ -32,9 +38,9 @@ class Logger(BaseComponent):
     def __init__(self, file=None, logger=None, **kwargs):
         super(Logger, self).__init__(**kwargs)
 
-        if type(file) is str:
+        if isinstance(file, str):
             self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
-        elif type(file) is file or hasattr(file, "write"):
+        elif isinstance(file, file_type) or hasattr(file, "write"):
             self.file = file
         else:
             self.file = sys.stdout

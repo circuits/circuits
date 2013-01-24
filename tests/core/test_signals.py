@@ -10,7 +10,11 @@ def test(tmpdir):
 
     from time import sleep
     from subprocess import Popen
-    from signal import SIGHUP, SIGTERM
+    from signal import SIGTERM
+    try:
+        from signal import SIGHUP
+    except ImportError:
+        SIGHUP = SIGINT
 
     from tests.core import signalapp
 

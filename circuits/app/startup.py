@@ -18,7 +18,11 @@ five verbs that can be passed as command-line arguments:
 import os
 import errno
 from time import sleep
-from signal import SIGINT, SIGHUP, SIGTERM
+from signal import SIGINT, SIGTERM
+try:
+    from signal import SIGHUP
+except ImportError:
+    SIGHUP = SIGINT
 
 from circuits import handler, Event, BaseComponent
 

@@ -18,11 +18,8 @@ nodes are initially configured. The default Bridge implementation
 uses the UDP protocol and as such events cannot be guaranteed of their
 order or delivery.
 """
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO  # NOQA
+import six
+from six.moves import cStringIO as StringIO
 
 try:
     from cPickle import dumps, loads

@@ -14,6 +14,7 @@ from inspect import isfunction
 from uuid import uuid4 as uuid
 from traceback import format_tb
 from sys import exc_info as _exc_info
+from sys import version_info
 from weakref import WeakValueDictionary
 from signal import signal, SIGINT, SIGTERM
 from types import MethodType, GeneratorType
@@ -249,7 +250,10 @@ class Manager(object):
         return handlers
 
     def addHandler(self, f):
-        method = MethodType(f, self, self.__class__) if isfunction(f) else f
+        if version_info[0] == 2:
+            method = MethodType(f, self, self.__class__) if isfunction(f) else f
+        else:
+            method = MethodType(f, self) if isfunction(f) else f
 
         setattr(self, method.__name__, method)
 

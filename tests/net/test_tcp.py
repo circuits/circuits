@@ -187,6 +187,11 @@ def test_tcp_bind(Poller, ipv6):
 
     if ipv6:
         sock = socket(AF_INET6, SOCK_STREAM)
+        #I don't see why the test checks for this before
+        #actually calling bind. I don't dunerstand why the test
+        #tests biding without actually doing any binding. Surely I
+        #misunderstand something.
+        sock.bind(("", 0))
         sock.listen(0)
         _, bind_port, _, _ = sock.getsockname()
         sock.close()
@@ -194,6 +199,7 @@ def test_tcp_bind(Poller, ipv6):
         client = Client() + TCP6Client(bind_port)
     else:
         sock = socket(AF_INET, SOCK_STREAM)
+        sock.bind(("", 0))
         sock.listen(0)
         _, bind_port = sock.getsockname()
         sock.close()

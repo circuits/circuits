@@ -43,7 +43,9 @@ def test_file(webapp):
     format = logger.format
 
     try:
-        address = gethostbyname(gethostname())
+        #Due to the way urlopen works, 
+        #address = gethostbyname(gethostname())
+        address = gethostbyname("localhost")
     except gaierror:
         address = "127.0.0.1"
 
@@ -79,7 +81,7 @@ def test_logger(webapp):
     format = logger.format
 
     try:
-        address = gethostbyname(gethostname())
+        address = gethostbyname("localhost")
     except gaierror:
         address = "127.0.0.1"
 
@@ -117,7 +119,7 @@ def test_filename(webapp, tmpdir):
     format = logger.format
 
     try:
-        address = gethostbyname(gethostname())
+        address = gethostbyname("localhost")
     except gaierror:
         address = "127.0.0.1"
 

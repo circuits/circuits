@@ -54,7 +54,9 @@ class Static(BaseComponent):
 
     @handler("request", filter=True, priority=0.9)
     def _on_request(self, request, response):
+        print("Handling request, static.57")
         if self.path is not None and not request.path.startswith(self.path):
+            print("returning, static.59")
             return
 
         path = request.path
@@ -70,12 +72,14 @@ class Static(BaseComponent):
             location = os.path.abspath(os.path.join(self.docroot, "."))
 
         if not os.path.exists(location):
+            print("returning, static.75")
             return
 
         # Is it a file we can serve directly?
         if os.path.isfile(location):
             # Don't set cookies for static content
             response.cookie.clear()
+            print("returning, static.82")
             return serve_file(request, response, location)
 
         # Is it a directory?
@@ -89,6 +93,7 @@ class Static(BaseComponent):
                 if os.path.exists(location):
                     # Don't set cookies for static content
                     response.cookie.clear()
+                    print("returning, static.96")
                     return serve_file(request, response, location)
 
             # .. serve a directory listing if allowed to.
@@ -126,4 +131,5 @@ class Static(BaseComponent):
                 ctx["directory"] = cur_dir or os.path.join("/", cur_dir, path)
                 ctx["url_up"] = url_up
                 ctx["listing"] = "\n".join(listing)
+                print("returning, static.134")
                 return _dirlisting_template.safe_substitute(ctx)

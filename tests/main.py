@@ -14,8 +14,13 @@ def importable(module):
         return False
 
 
-def runtests():
+def runtests(version="2.7"):
     cmd = ["py.test", "-r", "fsxX", "--ignore=tmp"]
+    if version:
+        #Supports testing under different versions of python,
+        #assuming that version of python and pytest is installed.
+        #In the form "X.Y"
+        cmd[0] = cmd[0] + "-" + version
 
     if importable("pytest_cov"):
         cmd.append("--cov=circuits")

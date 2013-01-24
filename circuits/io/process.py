@@ -2,10 +2,8 @@
 
 from subprocess import Popen, PIPE
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO  # NOQA
+import six
+from six.moves import cStringIO as StringIO
 
 from circuits.io import File, Write
 from circuits import handler, Component, Event

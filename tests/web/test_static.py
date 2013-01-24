@@ -2,6 +2,8 @@ from circuits.web import Controller
 
 from .helpers import urlopen, HTTPError
 
+from time import sleep
+
 
 class Root(Controller):
 
@@ -24,6 +26,8 @@ def test_404(webapp):
 
 def test_file(webapp):
     url = "%s/static/helloworld.txt" % webapp.server.base
+    print("URL: ", url)
+    sleep(25)
     f = urlopen(url)
     s = f.read().strip()
     assert s == b"Hello World!"
