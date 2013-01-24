@@ -17,6 +17,7 @@ except ImportError:
 from circuits import Event
 
 from . import utils
+from ..six import string_types
 from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
@@ -114,7 +115,7 @@ class Redirect(HTTPError):
         *response* argument to reflect a redirect response to the
         given *url*.
         """
-        if isinstance(urls, basestring):
+        if isinstance(urls, string_types):
             urls = [urls]
 
         abs_urls = []

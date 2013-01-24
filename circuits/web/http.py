@@ -171,7 +171,7 @@ class HTTP(BaseComponent):
                 return
             if sock in self._buffers:
                 self._buffers[sock].append(data)
-                data = ''.join(self._buffers[sock])
+                data = b"".join(self._buffers[sock])
                 del self._buffers[sock]
 
             requestline, data = data.split(b"\r\n", 1)

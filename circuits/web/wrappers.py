@@ -18,6 +18,7 @@ except ImportError:
 
 from .utils import url
 from .headers import Headers
+from ..six import binary_type
 from .errors import HTTPError
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
@@ -167,7 +168,7 @@ class Body(object):
         if response == value:
             return
 
-        if isinstance(value, str):
+        if isinstance(value, binary_type):
             if value:
                 value = [value]
             else:

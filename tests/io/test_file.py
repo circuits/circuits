@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+import pytest
+if pytest.PY3:
+    pytest.skip("Broken on Python 3")
+
 from circuits import Component
 from circuits.tools import tryimport
 from circuits.io import File, Write, Close

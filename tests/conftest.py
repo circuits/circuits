@@ -6,8 +6,9 @@
 
 import pytest
 
-import collections
+import sys
 import threading
+import collections
 from time import sleep
 from collections import deque
 
@@ -133,5 +134,6 @@ def pytest_namespace():
         ("WaitEvent", WaitEvent),
         ("wait_for", wait_for),
         ("call_event", call_event),
+        ("PY3", sys.version_info[0] == 3),
         ("call_event_from_name", call_event_from_name),
     ))

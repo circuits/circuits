@@ -8,7 +8,7 @@ This defines the Value object used by components and events.
 
 
 from .events import Event
-from ..six import binary_type, text_type
+from ..six import string_types
 
 
 class ValueChanged(Event):
@@ -99,11 +99,8 @@ class Value(object):
 
         notify = getattr(self.event, "notify", False) or self.notify
 
-        if isinstance(notify, text_type):
-            notify = notify.encode("utf-8")
-
         if self.manager is not None and notify:
-            if isinstance(notify, binary_type):
+            if isinstance(notify, string_types):
                 e = Event.create(notify, self)
             else:
                 e = ValueChanged.create(

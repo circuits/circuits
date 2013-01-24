@@ -27,7 +27,7 @@ class Root(Controller):
 
 
 @pytest.mark.parametrize(("method"), ["GET", "PUT", "POST", "DELETE"])
-def test_get(webapp, method):
+def test(webapp, method):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
@@ -37,6 +37,6 @@ def test_get(webapp, method):
     assert response.reason == "OK"
 
     s = response.read()
-    assert s == b"{0:s}".format(method.encode("utf-8"))
+    assert s == "{0:s}".format(method).encode("utf-8")
 
     connection.close()

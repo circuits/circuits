@@ -44,6 +44,9 @@ def parse_body(request, response, params):
             keep_blank_values=True
         )
     except Exception as e:
+        print("ERROR: {0:s}".format(e))
+        from traceback import format_exc
+        print(format_exc())
         if e.__class__.__name__ == 'MaxSizeExceeded':
             # Post data is too big
             raise RequestEntityTooLarge()

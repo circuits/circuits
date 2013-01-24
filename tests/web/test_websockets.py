@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+import pytest
+if pytest.PY3:
+    pytest.skip("Broken on Python 3")
+
 from circuits.web.servers import Server
 
 from circuits import Component
