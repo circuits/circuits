@@ -109,8 +109,7 @@ def test_call():
 
 
 def test_long_call():
-    from circuits import Debugger
-    test = Test() + Debugger()
+    test = Test()
     test.start()
 
     x = pytest.call_event(test, TestLongCall())
