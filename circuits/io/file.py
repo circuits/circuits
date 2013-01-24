@@ -7,11 +7,19 @@
 This module implements a wrapper for basic File I/O.
 """
 
+try:
+    from os import O_NONBLOCK
+except ImportError:
+    #If it fails, that's fine. the fcntl import
+    #will fail anyway.
+    pass
+
+from os import write
 from collections import deque
-from os import write, O_NONBLOCK
 from socket import error as SocketError
 from errno import ENOTCONN, EPIPE, EWOULDBLOCK
 
+from circuits.six import file_type
 from circuits.tools import tryimport
 from circuits.core.utils import findcmp
 from circuits.core import handler, Component, Event
@@ -100,7 +108,7 @@ class File(Component):
         self._bufsize = bufsize or self._bufsize
         self._mode = mode or self._mode
 
-        if type(self._filename) is file:
+        if isinstance(self._filename, file_type):
             self._fd = self._filename
             self._filename = self._fd.name
             self._mode = self._fd.mode

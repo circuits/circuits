@@ -10,8 +10,10 @@ This module implements Logger Components.
 import os
 import sys
 import datetime
+from io import IOBase
 from email._parseaddr import _monthnames
 
+from circuits.six import string_types
 from circuits.core import handler, BaseComponent
 
 
@@ -32,9 +34,9 @@ class Logger(BaseComponent):
     def __init__(self, file=None, logger=None, **kwargs):
         super(Logger, self).__init__(**kwargs)
 
-        if type(file) is str:
+        if isinstance(file, string_types):
             self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
-        elif type(file) is file or hasattr(file, "write"):
+        elif isinstance(file, IOBase) or hasattr(file, "write"):
             self.file = file
         else:
             self.file = sys.stdout

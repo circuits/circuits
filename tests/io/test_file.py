@@ -53,4 +53,5 @@ def test_read_write(manager, watcher, tmpdir):
     assert watcher.wait("unregistered")
 
     s = app.buffer.getvalue()
-    assert s == b"Hello World!"
+    #StringIO.getvalue returns a string, not bytes (Tested in 2.6, 2.7, and 3.2)
+    assert s == "Hello World!"

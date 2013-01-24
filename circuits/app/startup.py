@@ -18,7 +18,11 @@ five verbs that can be passed as command-line arguments:
 import os
 import errno
 from time import sleep
-from signal import SIGINT, SIGHUP, SIGTERM
+from signal import SIGINT, SIGTERM
+try:
+    from signal import SIGHUP
+except ImportError:
+    SIGHUP = None
 
 from circuits import handler, Event, BaseComponent
 
@@ -106,11 +110,12 @@ class Startup(BaseComponent):
         sleep(1)
         self.fire(Command(), "start", self.channel)
 
-    @handler("rehash")
-    def _on_rehash(self):
-        pid = self._getpid()
+    if SIGHUP is not None:
+        @handler("rehash")
+        def _on_rehash(self):
+            pid = self._getpid()
 
-        os.kill(pid, SIGHUP)
+            os.kill(pid, SIGHUP)
 
     @handler("init")
     def _on_init(self):
