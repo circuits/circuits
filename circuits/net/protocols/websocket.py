@@ -1,11 +1,14 @@
 """
 .. codeauthor: mnl
 """
-from circuits.core.components import BaseComponent
-from circuits.core.handlers import handler
-from circuits.net.sockets import Write, Read, Close
+
 import os
 import random
+
+from circuits.six import string_types
+from circuits.core.handlers import handler
+from circuits.core.components import BaseComponent
+from circuits.net.sockets import Write, Read, Close
 
 class WebSocketCodec(BaseComponent):
     """WebSocket Protocol
@@ -148,7 +151,7 @@ class WebSocketCodec(BaseComponent):
             data = args[0]
         frame = bytearray()
         first = 0x80 # set FIN flag, we never fragment
-        if isinstance(data, basestring):
+        if isinstance(data, string_types):
             first += 1 # text
             data = bytearray(data, "utf-8")
         else:

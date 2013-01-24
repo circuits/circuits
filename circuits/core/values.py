@@ -7,8 +7,8 @@ This defines the Value object used by components and events.
 """
 
 
-from circuits import six
 from .events import Event
+from ..six import binary_type, text_type
 
 
 class ValueChanged(Event):
@@ -99,11 +99,11 @@ class Value(object):
 
         notify = getattr(self.event, "notify", False) or self.notify
 
-        if isinstance(notify, six.text_type):
+        if isinstance(notify, text_type):
             notify = notify.encode("utf-8")
 
         if self.manager is not None and notify:
-            if isinstance(notify, str):
+            if isinstance(notify, binary_type):
                 e = Event.create(notify, self)
             else:
                 e = ValueChanged.create(
