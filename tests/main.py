@@ -14,12 +14,15 @@ def importable(module):
         return False
 
 
-def runtests(version="2.7"):
+def runtests(version=""):
     cmd = ["py.test", "-r", "fsxX", "--ignore=tmp"]
     if version:
         #Supports testing under different versions of python,
         #assuming that version of python and pytest is installed.
         #In the form "X.Y"
+        #Not actually correctly implemented at the moment.
+        #The only way to change the version is by changing the version parameter
+        #at the function definition.
         cmd[0] = cmd[0] + "-" + version
 
     if importable("pytest_cov"):
