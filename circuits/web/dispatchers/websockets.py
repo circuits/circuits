@@ -61,7 +61,7 @@ class WebSockets(BaseComponent):
         connection_tokens = [s.strip() for s in \
                              headers.get("Connection", "").lower().split(",")]
         
-        if not headers.has_key("Host") \
+        if not "Host" in headers \
             or headers.get("Upgrade", "").lower() != "websocket" \
             or not "upgrade" in connection_tokens \
             or sec_key is None \
@@ -94,6 +94,6 @@ class WebSockets(BaseComponent):
         
     @handler("disconnect")
     def _on_disconnect(self, sock):
-        if self._codecs.has_key(sock):
+        if sock in self._codecs:
             del self._codecs[sock]
 

@@ -89,7 +89,7 @@ class WebSocketClient(BaseComponent):
     def _on_connected(self, host, port):
         headers = Headers([(k, v) for k, v in self._headers.items()])
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-        if not headers.has_key("Host"):
+        if not "Host" in headers:
             headers["Host"] = self._host \
                 + (":" + str(self._port)) if self._port else ""
         headers["Upgrade"] = "websocket"
