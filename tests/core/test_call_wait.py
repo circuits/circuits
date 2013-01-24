@@ -116,7 +116,7 @@ def test_long_call():
     x = pytest.call_event(test, TestLongCall())
 
     value = x.value
-    assert value == range(1, 10)
+    assert value == list(range(1, 10))
 
     test.stop()
 
@@ -128,7 +128,7 @@ def test_long_wait():
     x = pytest.call_event(test, TestLongWait())
 
     value = x.value
-    assert value == range(1, 10)
+    assert value == list(range(1, 10))
 
     test.stop()
 
