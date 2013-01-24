@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import pytest
-if pytest.PY3:
-    pytest.skip("Broken on Python3 ")
+#if pytest.PY3:
+#    pytest.skip("Broken on Python3 ")
 
 from io import StringIO
 

@@ -52,9 +52,6 @@ def test_404(webapp):
         assert False
 
 def test_args(webapp):
-    if pytest.PY3:
-        pytest.skip("Broken on Pyton 3")
-
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.base, "/".join(args))
