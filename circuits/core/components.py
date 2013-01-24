@@ -10,7 +10,6 @@ from types import MethodType
 from collections import Callable
 from inspect import getmembers, isclass
 
-from ..six import callable
 from .manager import Manager
 from .utils import flatten, findroot
 from .events import Event, Registered, Unregistered
@@ -20,7 +19,7 @@ from .handlers import handler, HandlerMetaClass
 def check_singleton(x, y):
     """Return True if x contains a singleton that is already a member of y"""
 
-    singletons = filter(lambda i: getattr(i, "singleton", False), flatten(x))
+    singletons = [i for i in flatten(x) if getattr(i, "singleton", False)]
 
     for component in singletons:
         singleton = getattr(component, "singleton", False)
@@ -111,7 +110,7 @@ class BaseComponent(Manager):
         self = super(BaseComponent, cls).__new__(cls)
 
         handlers = dict(
-            [(k, v) for k, v in cls.__dict__.items()
+            [(k, v) for k, v in list(cls.__dict__.items())
                 if getattr(v, "handler", False)]
         )
 
@@ -144,7 +143,7 @@ class BaseComponent(Manager):
                     and v not in ('parent', 'root'):
                 v.register(self)
 
-        if hasattr(self, "init") and callable(self.init):
+        if hasattr(self, "init") and isinstance(self.init, Callable):
             self.init(*args, **kwargs)
 
     def register(self, parent):
