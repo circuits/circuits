@@ -117,11 +117,6 @@ class File(Component):
         self._bufsize = bufsize or self._bufsize
         self._mode = mode or self._mode
 
-        print("...")
-        print(type(self._filename))
-        print(isinstance(self._filename, FileType))
-        print("...")
-
         if isinstance(self._filename, FileType):
             self._fd = self._filename
             self._mode = self._fd.mode
