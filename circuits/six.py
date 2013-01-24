@@ -214,6 +214,8 @@ next = advance_iterator
 
 
 if PY3:
+    create_bound_method = types.MethodType
+
     def get_unbound_function(unbound):
         return unbound
 
@@ -222,6 +224,9 @@ if PY3:
     def callable(obj):
         return any("__call__" in klass.__dict__ for klass in type(obj).__mro__)
 else:
+    def create_bound_method(function, instance):
+        return types.MethodType(function, instance, instance.__class__)
+
     def get_unbound_function(unbound):
         return unbound.im_func
 

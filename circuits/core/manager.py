@@ -12,17 +12,18 @@ from itertools import chain
 from collections import deque
 from inspect import isfunction
 from uuid import uuid4 as uuid
+from types import GeneratorType
 from sys import exc_info as _exc_info
 from weakref import WeakValueDictionary
 from signal import signal, SIGINT, SIGTERM
 from traceback import format_exc, format_tb
-from types import MethodType, GeneratorType
 from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
 
 from .values import Value
 from ..tools import tryimport
 from .handlers import handler
+from ..six import create_bound_method
 from .events import Done, Success, Failure, Complete
 from .events import Error, Started, Stopped, Signal, GenerateEvents
 
@@ -265,7 +266,7 @@ class Manager(object):
         return handlers
 
     def addHandler(self, f):
-        method = MethodType(f, self, self.__class__) if isfunction(f) else f
+        method = create_bound_method(f, self) if isfunction(f) else f
 
         setattr(self, method.__name__, method)
 

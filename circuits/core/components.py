@@ -10,6 +10,7 @@ from types import MethodType
 from collections import Callable
 from inspect import getmembers, isclass
 
+from ..six import callable
 from .manager import Manager
 from .utils import flatten, findroot
 from .events import Event, Registered, Unregistered
