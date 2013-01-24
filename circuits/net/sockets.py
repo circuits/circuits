@@ -32,6 +32,7 @@ except ImportError:
     HAS_SSL = 0
 
 
+from circuits.six import binary_type
 from circuits.core.utils import findcmp
 from circuits.core.pollers import BasePoller, Poller
 from circuits.core import handler, Event, BaseComponent
@@ -290,7 +291,7 @@ class Client(BaseComponent):
 
     @handler("read_value_changed")
     def _on_read_value_changed(self, value):
-        if isinstance(value, str):
+        if isinstance(value, binary_type):
             self.fire(Write(value))
 
     @handler("prepare_unregister", channel="*")
@@ -573,7 +574,7 @@ class Server(BaseComponent):
 
     @handler("read_value_changed")
     def _on_read_value_changed(self, value):
-        if isinstance(value.value, str):
+        if isinstance(value.value, binary_type):
             sock = value.event.args[0]
             self.fire(Write(sock, value.value))
 
