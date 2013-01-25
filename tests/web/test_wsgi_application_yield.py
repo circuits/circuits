@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
-
 from circuits.web import Controller
 from circuits.web.wsgi import Application
 
@@ -18,6 +13,7 @@ class Root(Controller):
         yield "World!"
 
 application = Application() + Root()
+
 
 def test(webapp):
     f = urlopen(webapp.server.base)
