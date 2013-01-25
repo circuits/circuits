@@ -2,8 +2,10 @@
 
 from circuits import handler, Event, Component, Manager
 
+
 class Test(Event):
     """Test Event"""
+
 
 class App(Component):
 
@@ -23,10 +25,13 @@ m = Manager()
 app = App()
 app.register(m)
 
-while m: m.flush()
+while m:
+    m.flush()
+
 
 def test():
     v = m.fire(Test())
-    while m: m.flush()
+    while m:
+        m.flush()
     x = list(v)
     assert x == [3, 2, 0]

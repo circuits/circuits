@@ -4,8 +4,10 @@ import py
 
 from circuits import Event, Component
 
+
 class Test(Event):
     """Test Event"""
+
 
 class App(Component):
 
@@ -18,7 +20,7 @@ class App(Component):
         self.handler = None
 
     def test(self):
-        return x
+        return x  # NOQA
 
     def error(self, etype, evalue, etraceback, handler=None):
         self.etype = etype
@@ -26,8 +28,10 @@ class App(Component):
         self.etraceback = etraceback
         self.handler = handler
 
+
 def reraise(e):
     raise e
+
 
 def test():
     app = App()

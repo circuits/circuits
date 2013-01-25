@@ -83,9 +83,8 @@ def test_findroot():
     while app:
         app.flush()
 
-
     root = findroot(b)
-    
+
     assert root == app
 
 

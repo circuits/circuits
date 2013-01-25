@@ -8,17 +8,21 @@ import py
 
 from circuits import Event, Component
 
+
 class Test(Event):
     """Test Event"""
+
 
 class App(Component):
 
     def test(self):
         return "Hello World!"
 
+
 def test_repr():
     app = App()
-    while app: app.flush()
+    while app:
+        app.flush()
 
     e = Test()
 
@@ -30,9 +34,11 @@ def test_repr():
     s = repr(e)
     assert s == "<Test[*.test] ( )>"
 
+
 def test_create():
     app = App()
-    while app: app.flush()
+    while app:
+        app.flush()
 
     e = Event.create("Test")
 
@@ -44,9 +50,11 @@ def test_create():
     s = repr(e)
     assert s == "<Test[*.test] ( )>"
 
+
 def test_getitem():
     app = App()
-    while app: app.flush()
+    while app:
+        app.flush()
 
     e = Test(1, 2, 3, foo="bar")
 
@@ -58,9 +66,11 @@ def test_getitem():
 
     py.test.raises(TypeError, f, e, None)
 
+
 def test_setitem():
     app = App()
-    while app: app.flush()
+    while app:
+        app.flush()
 
     e = Test(1, 2, 3, foo="bar")
 

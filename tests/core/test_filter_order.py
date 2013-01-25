@@ -10,6 +10,7 @@ such that Filters preceed non-filters.
 
 from circuits import handler, Component, Event
 
+
 class Test(Event):
     pass
 
@@ -26,6 +27,7 @@ class App(Component):
     def on_test(self, event, *args, **kwargs):
         self.events_executed.append('test_filter')
         return True
+
 
 def test():
     app = App()

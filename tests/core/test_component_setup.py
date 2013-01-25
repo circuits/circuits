@@ -11,30 +11,36 @@ automatically registered as event handlers.
 
 from circuits import Component, Manager
 
+
 class App(Component):
 
     def test(self, event, *args, **kwargs):
         pass
 
+
 class A(Component):
     pass
 
+
 class B(Component):
-    
+
     informed = False
-    
+
     @handler("prepare_unregister", channel="*")
     def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
             self.informed = True
 
+
 class Base(Component):
 
     channel = "base"
 
+
 class C(Base):
 
     channel = "c"
+
 
 def test_basic():
     m = Manager()
@@ -49,6 +55,7 @@ def test_basic():
         m.flush()
 
     assert not m._handlers
+
 
 def test_complex():
     m = Manager()
@@ -77,6 +84,7 @@ def test_complex():
     assert b in a
     assert b.root == a
     assert b.parent == a
+
 
 def test_subclassing_with_custom_channel():
     base = Base()

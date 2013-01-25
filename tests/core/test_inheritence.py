@@ -4,13 +4,16 @@ import pytest
 
 from circuits import handler, Event, Component
 
+
 class Test(Event):
     """Test Event"""
+
 
 class Base(Component):
 
     def test(self):
         return "Hello World!"
+
 
 class App1(Base):
 
@@ -18,11 +21,13 @@ class App1(Base):
     def test(self):
         return "Foobar"
 
+
 class App2(Base):
 
     @handler("test", override=True)
     def test(self):
         return "Foobar"
+
 
 def test_inheritence():
     app = App1()
@@ -34,6 +39,7 @@ def test_inheritence():
     assert v == ["Hello World!", "Foobar"]
 
     app.stop()
+
 
 def test_override():
     app = App2()
