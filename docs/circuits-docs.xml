@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="" skips="0" tests="2" time="2.389"><testcase classname="check_docs" name="test_linkcheck" time="1.17705798149"/><testcase classname="check_docs" name="test_build_docs" time="1.1587471962"/></testsuite>
