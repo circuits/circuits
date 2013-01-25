@@ -3,6 +3,7 @@ syntax: glob
 *.pyc
 *.pyo
 tmp
+.tox
 dist
 build
 hgtools*
