@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-#if pytest.PY3:
-#    pytest.skip("Broken on Python 3")
-
 from circuits.web import Controller
 
 from .helpers import urlencode, urlopen, Request
