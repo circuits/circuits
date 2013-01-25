@@ -426,7 +426,11 @@ class TCPClient(Client):
         self._poller.addReader(self, self._sock)
 
         if self.secure:
-            self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
+            self._ssock = ssl_socket(
+                self._sock, self.keyfile, self.certfile,
+                do_handshake_on_connect=False
+            )
+            self._ssock.do_handshake()
 
         self.fire(Connected(host, port))
 
@@ -482,7 +486,11 @@ class UNIXClient(Client):
         self._poller.addReader(self, self._sock)
 
         if self.secure:
-            self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
+            self._ssock = ssl_socket(
+                self._sock, self.keyfile, self.certfile,
+                do_handshake_on_connect=False
+            )
+            self._ssock.do_handshake()
 
         self.fire(Connected(gethostname(), path))
 
@@ -663,13 +671,17 @@ class Server(BaseComponent):
         try:
             newsock, host = self._sock.accept()
             if self.secure and HAS_SSL:
-                newsock = ssl_socket(newsock,
-                                     server_side=True,
-                                     certfile=self.certfile,
-                                     keyfile=self.keyfile,
-                                     cert_reqs=self.cert_reqs,
-                                     ssl_version=self.ssl_version,
-                                     ca_certs=self.ca_certs)
+                newsock = ssl_socket(
+                    newsock,
+                    server_side=True,
+                    keyfile=self.keyfile,
+                    ca_certs=self.ca_certs,
+                    certfile=self.certfile,
+                    cert_reqs=self.cert_reqs,
+                    ssl_version=self.ssl_version,
+                    do_handshake_on_connect=False
+                )
+                newsock.do_handshake()
 
         except SSLError as e:
             raise
