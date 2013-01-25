@@ -37,19 +37,21 @@ try:
     from http.client import HTTPConnection
     from http.client import HTTPSConnection
 except ImportError:
-    from httplib import HTTP as HTTPConnection
-    from httplib import HTTPS as HTTPSConnection
+    from httplib import HTTP as HTTPConnection  # NOQA
+    from httplib import HTTPS as HTTPSConnection  # NOQA
 
 try:
     from urllib.parse import unquote
-    from urllib.parse import splithost, splithost, splittype, splituser
+    from urllib.parse import splithost, splittype, splituser
 except ImportError:
-    from urllib import unquote
-    from urllib import  splithost, splithost, splittype, splituser
+    from urllib import unquote  # NOQA
+    from urllib import splithost, splittype, splituser  # NOQA
 
 __version__ = "0.0.1"
 
 ID = 1
+
+
 def _gen_id():
     global ID
     ID = ID + 1
@@ -77,8 +79,10 @@ class Error(Exception):
 # @param errmsg The HTTP error message.
 # @param headers The HTTP header dictionary.
 
+
 class ProtocolError(Error):
     """Indicates an HTTP protocol error."""
+
     def __init__(self, url, errcode, errmsg, headers, response):
         Error.__init__(self)
         self.url = url
@@ -86,20 +90,22 @@ class ProtocolError(Error):
         self.errmsg = errmsg
         self.headers = headers
         self.response = response
+
     def __repr__(self):
         return (
             "<ProtocolError for %s: %s %s>" %
             (self.url, self.errcode, self.errmsg)
-            )
+        )
 
 
 def getparser(encoding):
     un = Unmarshaller(encoding)
     par = Parser(un)
-    return par,un
+    return par, un
+
 
 def dumps(params, methodname=None, methodresponse=None, encoding=None,
-          allow_none=0):    
+          allow_none=0):
     if methodname:
         request = {}
         request["method"] = methodname
@@ -107,26 +113,30 @@ def dumps(params, methodname=None, methodresponse=None, encoding=None,
         request["id"] = _gen_id()
         return json.dumps(request)
 
+
 class Unmarshaller(object):
+
     def __init__(self, encoding):
         self.data = None
         self.encoding = encoding
-        
+
     def feed(self, data):
         if self.data is None:
             self.data = data
         else:
             self.data = self.data + data
-    
+
     def close(self):
         #try to convert string to json
         return json.loads(self.data.decode(self.encoding))
 
+
 class Parser(object):
+
     def __init__(self, unmarshaller):
         self._target = unmarshaller
         self.data = None
-        
+
     def feed(self, data):
         if self.data is None:
             self.data = data
@@ -135,15 +145,19 @@ class Parser(object):
 
     def close(self):
         self._target.feed(self.data)
-            
+
+
 class _Method(object):
     # some magic to bind an JSON-RPC method to an RPC server.
     # supports "nested" methods (e.g. examples.getStateName)
+
     def __init__(self, send, name):
         self.__send = send
         self.__name = name
+
     def __getattr__(self, name):
         return _Method(self.__send, "%s.%s" % (self.__name, name))
+
     def __call__(self, *args):
         return self.__send(self.__name, args)
 
@@ -152,6 +166,7 @@ class _Method(object):
 # <p>
 # You can create custom transports by subclassing this method, and
 # overriding selected methods.
+
 
 class Transport:
     """Handles an HTTP transaction to an JSON-RPC server."""
@@ -196,7 +211,7 @@ class Transport:
                 errcode, errmsg,
                 headers,
                 response
-                )
+            )
 
         self.verbose = verbose
 
@@ -236,10 +251,10 @@ class Transport:
 
         if auth:
             auth = base64.encodestring(unquote(auth))
-            auth = "".join(auth.split()) # get rid of whitespace
+            auth = "".join(auth.split())  # get rid of whitespace
             extra_headers = [
                 ("Authorization", "Basic " + auth)
-                ]
+            ]
         else:
             extra_headers = None
 
@@ -346,6 +361,7 @@ class Transport:
 ##
 # Standard transport class for JSON-RPC over HTTPS.
 
+
 class SafeTransport(Transport):
     """Handles an HTTPS transaction to an JSON-RPC server."""
 
@@ -360,7 +376,7 @@ class SafeTransport(Transport):
         except AttributeError:
             raise NotImplementedError(
                 "your version of httplib doesn't support HTTPS"
-                )
+            )
         else:
             return HTTPS(host, None, **(x509 or {}))
 
@@ -400,7 +416,7 @@ class ServerProxy(object):
             request.encode(self.__encoding),
             self.__encoding,
             verbose=self.__verbose
-            )
+        )
 
         if len(response) == 1:
             response = response[0]
@@ -423,7 +439,7 @@ class ServerProxy(object):
 
 
 if __name__ == "__main__":
-    s = ServerProxy("http://localhost:8080/foo/", verbose = 1)
+    s = ServerProxy("http://localhost:8080/foo/", verbose=1)
     c = s.echo("foo bar")
     print(c)
     d = s.bad("other")
