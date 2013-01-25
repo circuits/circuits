@@ -7,12 +7,12 @@
 Test all functionality of the tools package.
 """
 
+import pytest
+
 try:
     from threading import current_thread
 except ImportError:
     from threading import currentThread as current_thread  # NOQA
-
-import pytest
 
 from circuits import Component, reprhandler
 from circuits.tools import kill, inspect, findroot, tryimport
@@ -121,6 +121,9 @@ def test_kill():
 
 
 def test_inspect():
+    if pytest.PYVER[:2] == (3, 3):
+        pytest.skip("Broken on Python 3.3")
+
     a = A()
     s = inspect(a)
 

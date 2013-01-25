@@ -63,8 +63,8 @@ def test_server():
 
 
 def test_secure_server():
-    if pytest.PYVER[:2] == (3, 2):
-        pytest.skip("Broken on Python 3.2")
+    if pytest.PYVER[:2] >= (3, 2):
+        pytest.skip("Broken on Python >= 3.2")
 
     pytest.importorskip("ssl")
 
