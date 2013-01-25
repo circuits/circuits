@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-
 from circuits.web import Controller
 
 from .helpers import urlencode, urlopen, HTTPError
@@ -13,7 +11,9 @@ class Root(Controller):
         return "Hello World!"
 
     def test_args(self, *args, **kwargs):
-        args = tuple((x.encode('utf-8') if type(x) != str else x for x in args))
+        args = tuple(
+            (x.encode('utf-8') if type(x) != str else x for x in args)
+        )
         return "{0}\n{1}".format(repr(args), repr(kwargs))
 
     def test_redirect(self):
@@ -28,10 +28,12 @@ class Root(Controller):
     def test_failure(self):
         raise Exception()
 
+
 def test_root(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
+
 
 def test_404(webapp):
     try:
@@ -41,6 +43,7 @@ def test_404(webapp):
         assert e.msg == "Not Found"
     else:
         assert False
+
 
 def test_args(webapp):
     args = ("1", "2", "3")
@@ -52,10 +55,12 @@ def test_args(webapp):
     assert eval(data[0]) == args
     assert eval(data[1]) == kwargs
 
+
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
+
 
 def test_forbidden(webapp):
     try:
@@ -66,6 +71,7 @@ def test_forbidden(webapp):
     else:
         assert False
 
+
 def test_notfound(webapp):
     try:
         urlopen("%s/test_notfound" % webapp.server.base)
@@ -74,6 +80,7 @@ def test_notfound(webapp):
         assert e.msg == "Not Found"
     else:
         assert False
+
 
 def test_failure(webapp):
     try:
