@@ -17,6 +17,7 @@ class Root(Controller):
 
         return "Hello %s" % name
 
+
 def test(webapp):
     Sessions().register(webapp)
 
