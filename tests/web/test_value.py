@@ -9,15 +9,18 @@ from .helpers import urlopen
 class Hello(Event):
     """Hello Event"""
 
+
 class Test(Component):
 
     def hello(self):
         return "Hello World!"
 
+
 class Root(Controller):
 
     def index(self):
         return self.fire(Hello())
+
 
 def test(webapp):
     Test().register(webapp)
