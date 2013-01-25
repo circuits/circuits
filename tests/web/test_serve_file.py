@@ -24,7 +24,8 @@ class Root(Controller):
     def index(self):
         return self.serve_file(self.filename)
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s  == b"Hello World!"
+    assert s == b"Hello World!"

@@ -13,10 +13,11 @@ class Root(BaseComponent):
     def request(self, request, response):
         raise Exception()
 
+
 def test(webapp):
     try:
         Root().register(webapp)
-        f = urlopen(webapp.server.base)
+        urlopen(webapp.server.base)
     except HTTPError as e:
         assert e.code == 500
     else:

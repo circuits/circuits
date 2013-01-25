@@ -15,6 +15,7 @@ class Root(Controller):
             self.cookie["visited"] = True
             return "Hello World!"
 
+
 def test(webapp):
     cj = CookieJar()
     opener = build_opener(HTTPCookieProcessor(cj))

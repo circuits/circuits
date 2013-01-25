@@ -18,21 +18,23 @@ class Echo(Component):
     def read(self, sock, data):
         self.fireEvent(Write(sock, "Received: " + data))
 
+
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
 
+
 class WSClient(Component):
-    
+
     response = None
-    
+
     def read(self, data):
         self.response = data
 
 
 def test1(webapp):
-    server = Server(("localhost", 8123)) 
+    server = Server(("localhost", 8123))
     Echo().register(server)
     Root().register(server)
     WebSockets("/websocket").register(server)

@@ -10,6 +10,7 @@ def application(environ, start_response):
     yield "Hello "
     yield "World!"
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()

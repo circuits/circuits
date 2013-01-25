@@ -24,10 +24,11 @@ class Root(Controller):
     def index(self):
         return self.serve_download(self.filename)
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s  == b"Hello World!"
+    assert s == b"Hello World!"
     contentType = f.headers["Content-Type"]
     contentDisposition = f.headers["Content-Disposition"]
     assert contentType == "application/x-download"

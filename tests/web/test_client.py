@@ -2,15 +2,17 @@
 
 import pytest
 
-from circuits.web import Server, Controller
+from circuits.web import Controller
 
 from circuits.web.client import Client, Connect, Request
 from circuits.core.manager import Manager
+
 
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 def test(webapp):
     client = Client(webapp.server.base)
@@ -21,7 +23,8 @@ def test(webapp):
     assert waiter.wait()
 
     client.fire(Request("GET", "/"))
-    while client.response is None: pass
+    while client.response is None:
+        pass
 
     client.stop()
 
@@ -31,6 +34,7 @@ def test(webapp):
 
     s = response.read()
     assert s == b"Hello World!"
+
 
 def test_named(webapp):
     client = Client(webapp.server.base, channel="Client2")
@@ -41,7 +45,8 @@ def test_named(webapp):
     assert waiter.wait()
 
     client.fire(Request("GET", "/"))
-    while client.response is None: pass
+    while client.response is None:
+        pass
 
     client.stop()
 
@@ -51,6 +56,7 @@ def test_named(webapp):
 
     s = response.read()
     assert s == b"Hello World!"
+
 
 def test_auto_close(webapp):
     m = Manager()
@@ -62,7 +68,10 @@ def test_auto_close(webapp):
     assert waiter.wait()
     assert client.connected
 
-    waiter = pytest.WaitEvent(m, 'unregistered', channel=client.channel, timeout=10000)
+    waiter = pytest.WaitEvent(
+        m, 'unregistered',
+        channel=client.channel, timeout=10000
+    )
     client.unregister()
     assert waiter.wait()
     assert not client.connected

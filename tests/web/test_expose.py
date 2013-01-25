@@ -1,6 +1,6 @@
 from circuits.web import expose, Controller
 
-from .helpers import urlopen, HTTPError
+from .helpers import urlopen
 
 
 class Root(Controller):
@@ -15,6 +15,7 @@ class Root(Controller):
     @expose("foo+bar", "foo_bar")
     def foobar(self):
         return "foobar"
+
 
 def test(webapp):
     f = urlopen(webapp.server.base)

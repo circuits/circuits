@@ -11,6 +11,7 @@ class Root(Controller):
         yield "Hello "
         yield "World!"
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()

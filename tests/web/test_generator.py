@@ -13,6 +13,7 @@ class Root(Controller):
             yield "World!"
         return response()
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()

@@ -7,6 +7,7 @@ def application(environ, start_response):
     start_response(status, response_headers)
     raise Exception("Hello World!")
 
+
 def test(webapp):
     try:
         urlopen(webapp.server.base)

@@ -2,15 +2,10 @@
 
 from io import StringIO
 
-try:
-    from urllib.request import Request
-except ImportError:
-    from urllib2 import Request
-
 from circuits.web import Controller
 
 from .multipartform import MultiPartForm
-from .helpers import urlopen
+from .helpers import urlopen, Request
 
 
 class Root(Controller):
@@ -20,6 +15,7 @@ class Root(Controller):
         yield "Description: %s\n" % description
         yield "Content:\n"
         yield file.value
+
 
 def test(webapp):
     form = MultiPartForm()

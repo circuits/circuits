@@ -17,6 +17,7 @@ class Root(Controller):
 
         return basic_auth(self.request, self.response, realm, users, encrypt)
 
+
 def test(webapp):
     try:
         f = urlopen(webapp.server.base)

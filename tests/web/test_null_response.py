@@ -2,10 +2,12 @@ from circuits.web import Controller
 
 from .helpers import urlopen, HTTPError
 
+
 class Root(Controller):
 
     def index(self):
         pass
+
 
 def test(webapp):
     try:

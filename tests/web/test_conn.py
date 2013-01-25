@@ -3,12 +3,15 @@
 try:
     from httplib import HTTPConnection
 except ImportError:
-    from http.client import HTTPConnection
+    from http.client import HTTPConnection  # NOQA
+
 from circuits.web import Controller
+
 
 class Root(Controller):
     def index(self):
         return "Hello World!"
+
 
 def test(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
