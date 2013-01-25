@@ -31,14 +31,17 @@ from .helpers import urlparse
 
 logger = logging.getLogger()
 
+
 class WebSocketException(Exception):
     pass
+
 
 class ConnectionClosedException(WebSocketException):
     pass
 
 default_timeout = None
 traceEnabled = False
+
 
 def enableTrace(tracable):
     """
@@ -50,6 +53,7 @@ def enableTrace(tracable):
         if not logger.handlers:
             logger.addHandler(logging.StreamHandler())
         logger.setLevel(logging.DEBUG)
+
 
 def setdefaulttimeout(timeout):
     """
@@ -65,9 +69,10 @@ def getdefaulttimeout():
     """
     return default_timeout
 
+
 def _parse_url(url):
     """
-    parse url and the result is tuple of 
+    parse url and the result is tuple of
     (hostname, port, resource path and the flag of secure mode)
     """
     parsed = urlparse(url)
@@ -86,7 +91,7 @@ def _parse_url(url):
     elif parsed.scheme == "wss":
         is_secure = True
         if not port:
-            port  = 443
+            port = 443
     else:
         raise ValueError("scheme %s is invalid" % parsed.scheme)
 
@@ -104,20 +109,24 @@ def create_connection(url, timeout=None, **options):
 
     Connect to url and return the WebSocket object.
     Passing optional timeout parameter will set the timeout on the socket.
-    If no timeout is supplied, the global default timeout setting returned by getdefauttimeout() is used.
+    If no timeout is supplied, the global default timeout setting returned
+    by getdefauttimeout() is used.
     """
     websock = WebSocket()
-    websock.settimeout(timeout != None and timeout or default_timeout)
+    websock.settimeout(timeout is not None and timeout or default_timeout)
     websock.connect(url, **options)
     return websock
 
 _MAX_INTEGER = (1 << 32) - 1
-_AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)) + list(range(0x3a, 0x7e + 1))
-_MAX_CHAR_BYTE = (1<<8) - 1
-_MAX_ASCII_BYTE = (1<<7) - 1
+_AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)).extend(
+    list(range(0x3a, 0x7e + 1))
+)
+_MAX_CHAR_BYTE = (1 << 8) - 1
+_MAX_ASCII_BYTE = (1 << 7) - 1
 
 # ref. Websocket gets an update, and it breaks stuff.
 # http://axod.blogspot.com/2010/06/websocket-gets-update-and-it-breaks.html
+
 
 def _create_sec_websocket_key():
     spaces_n = random.randint(1, 12)
@@ -132,8 +141,9 @@ def _create_sec_websocket_key():
     for i in range(spaces_n):
         pos = random.randint(1, len(key_n)-1)
         key_n = key_n[0:pos] + " " + key_n[pos:]
-    
+
     return number_n, key_n
+
 
 def _create_key3():
     return "".join([chr(random.randint(0, _MAX_ASCII_BYTE)) for i in range(8)])
@@ -141,7 +151,7 @@ def _create_key3():
 HEADERS_TO_CHECK = {
     "upgrade": "websocket",
     "connection": "upgrade",
-    }
+}
 
 HEADERS_TO_EXIST_FOR_HYBI00 = [
     "sec-websocket-origin",
@@ -153,15 +163,18 @@ HEADERS_TO_EXIST_FOR_HIXIE75 = [
     "websocket-location",
 ]
 
+
 class _SSLSocketWrapper(object):
+
     def __init__(self, sock):
         self.ssl = socket.ssl(sock)
 
     def recv(self, bufsize):
         return self.ssl.read(bufsize)
-    
+
     def send(self, payload):
         return self.ssl.write(payload)
+
 
 class WebSocket(object):
     """
@@ -199,10 +212,11 @@ class WebSocket(object):
         Get the websocket timeout.
         """
         return self.sock.gettimeout()
-    
+
     def connect(self, url, **options):
         """
-        Connect to url. url is websocket url scheme. ie. ws://host:port/resource
+        Connect to url. url is websocket url scheme.
+        ie. ws://host:port/resource
         """
         hostname, port, resource, is_secure = _parse_url(url)
         # TODO: we need to support proxy
@@ -238,7 +252,7 @@ class WebSocket(object):
         header_str = "\r\n".join(headers)
         sock.send(header_str.encode('utf-8'))
         if traceEnabled:
-            logger.debug( "--- request header ---")
+            logger.debug("--- request header ---")
             logger.debug(header_str)
             logger.debug("-----------------------")
 
@@ -302,7 +316,6 @@ class WebSocket(object):
             return True, False
 
         return False, False
-
 
     def _read_headers(self):
         status = None
@@ -370,7 +383,7 @@ class WebSocket(object):
             bytes = self._recv_strict(length)
             return bytes
         elif frame_type == 0xff:
-            n = self._recv(1)
+            self._recv(1)
             self._closeInternal()
             return None
         else:
@@ -411,7 +424,7 @@ class WebSocket(object):
         self.connected = False
         self.sock.close()
         self.io_sock = self.sock
-        
+
     def _recv(self, bufsize):
         bytes = self.io_sock.recv(bufsize)
 
@@ -425,7 +438,7 @@ class WebSocket(object):
         while remaining:
             bytes += self._recv(remaining)
             remaining = bufsize - len(bytes)
-            
+
         return bytes
 
     def _recv_line(self):
@@ -437,20 +450,21 @@ class WebSocket(object):
                 break
         return b"".join(line)
 
+
 class WebSocketApp(object):
     """
     Higher level of APIs are provided.
     The interface is like JavaScript WebSocket object.
     """
     def __init__(self, url,
-                 on_open = None, on_message = None, on_error = None, 
-                 on_close = None):
+                 on_open=None, on_message=None, on_error=None,
+                 on_close=None):
         """
         url: websocket url.
         on_open: callable object which is called at opening websocket.
           this function has one argument. The arugment is this class object.
         on_message: callbale object which is called when recieved data.
-         on_message has 2 arguments. 
+         on_message has 2 arguments.
          The 1st arugment is this class object.
          The passing 2nd arugment is utf-8 string which we get from the server.
        on_error: callable object which is called when we get error.
@@ -519,11 +533,6 @@ if __name__ == "__main__":
     ws.send("Hello, World")
     print("Sent")
     print("Receiving...")
-    result =  ws.recv()
+    result = ws.recv()
     print("Received '%s'" % result)
     ws.close()
-
-
-
-
-
