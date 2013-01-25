@@ -1,16 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-
-try:
-    from urllib.parse import urlencode
-    from urllib.request import urlopen
-    from urllib.error import HTTPError
-except ImportError:
-    from urllib import urlencode
-    from urllib2 import urlopen
-    from urllib2 import HTTPError
-
 from circuits.web import Controller
 from circuits.web.wsgi import Application
 
@@ -37,10 +26,12 @@ class Root(Controller):
 
 application = Application() + Root()
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
+
 
 def test_404(webapp):
     try:
@@ -50,6 +41,7 @@ def test_404(webapp):
         assert e.msg == "Not Found"
     else:
         assert False
+
 
 def test_args(webapp):
     args = ("1", "2", "3")
@@ -62,10 +54,12 @@ def test_args(webapp):
     assert eval(data[0]) == args
     assert eval(data[1]) == kwargs
 
+
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
+
 
 def test_forbidden(webapp):
     try:
@@ -76,9 +70,10 @@ def test_forbidden(webapp):
     else:
         assert False
 
+
 def test_notfound(webapp):
     try:
-         urlopen("%s/test_notfound" % webapp.server.base)
+        urlopen("%s/test_notfound" % webapp.server.base)
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
