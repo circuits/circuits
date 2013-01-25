@@ -12,7 +12,7 @@ from circuits.net.sockets import TCPServer, Write
 
 from .utils import load_event, dump_value
 
-DELIMITER = "\r\n\r\n"
+DELIMITER = b"\r\n\r\n"
 
 
 class Server(BaseComponent):
@@ -49,16 +49,17 @@ class Server(BaseComponent):
 
     def send(self, v):
         data = dump_value(v)
-        self.fire(Write(v.node_sock, "%s%s" % (data, DELIMITER)))
+        packet = data.encode("utf-8") + DELIMITER
+        self.fire(Write(v.node_sock, packet))
 
     @handler("read")
     def _on_read(self, sock, data):
-        buffer = self._buffers.get(sock, "")
+        buffer = self._buffers.get(sock, b"")
 
         buffer += data
 
         delimiter = buffer.find(DELIMITER)
         if delimiter > 0:
-            packet = buffer[:delimiter]
+            packet = buffer[:delimiter].decode("utf-8")
             self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
             self.process(sock, packet)

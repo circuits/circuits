@@ -14,7 +14,7 @@ from circuits.net.sockets import Close, Connect, TCPClient, Write
 
 from .utils import dump_event, load_value
 
-DELIMITER = "\r\n\r\n"
+DELIMITER = b"\r\n\r\n"
 
 
 class Client(BaseComponent):
@@ -32,7 +32,7 @@ class Client(BaseComponent):
         self._port = port
 
         self._nid = 0
-        self._buffer = ""
+        self._buffer = b""
         self._values = WeakValueDictionary()
 
         TCPClient(channel=self.channel).register(self)
@@ -58,8 +58,9 @@ class Client(BaseComponent):
 
         self._values[id] = event.value
         data = dump_event(e, id)
+        packet = data.encode("utf-8") + DELIMITER
 
-        self.fire(Write("%s%s" % (data, DELIMITER)))
+        self.fire(Write(packet))
 
     @handler("read")
     def _on_read(self, data):
@@ -67,6 +68,6 @@ class Client(BaseComponent):
 
         delimiter = self._buffer.find(DELIMITER)
         if delimiter > 0:
-            packet = self._buffer[:delimiter]
+            packet = self._buffer[:delimiter].decode("utf-8")
             self._buffer = self._buffer[(delimiter + len(DELIMITER)):]
             self.process(packet)
