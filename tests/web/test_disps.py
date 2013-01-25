@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin  # NOQA
-
 from circuits.core.manager import Manager
 from circuits.core.handlers import handler
 from circuits.core.components import BaseComponent
@@ -12,7 +7,7 @@ from circuits.core.components import BaseComponent
 from circuits.web import BaseServer, Controller
 from circuits.web.dispatchers.dispatcher import Dispatcher
 
-from .helpers import urlopen
+from .helpers import urlopen, urljoin
 
 
 class PrefixingDispatcher(BaseComponent):
