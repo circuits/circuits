@@ -12,6 +12,7 @@ try:
 except ImportError:
     from urllib import unquote  # NOQA
 
+from io import BytesIO
 from operator import itemgetter
 from traceback import format_tb
 from sys import exc_info as _exc_info
@@ -187,10 +188,13 @@ class Gateway(BaseComponent):
 
         path, app = candidates[0]
 
+        buffer = BytesIO()
+
         def start_response(status, headers, exc_info=None):
             response.code = int(status.split(" ", 1)[0])
             for header in headers:
                 response.headers.add_header(*header)
+            return buffer.write
 
         errors = self.errors[path]
 
@@ -198,9 +202,17 @@ class Gateway(BaseComponent):
 
         try:
             body = app(environ, start_response)
+            if isinstance(body, list):
+                body = body[0]
+
             if not body:
-                return empty
-            return body
+                if not buffer.tell():
+                    return empty
+                else:
+                    buffer.seek(0)
+                    return buffer
+            else:
+                return body
         except Exception as error:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))
