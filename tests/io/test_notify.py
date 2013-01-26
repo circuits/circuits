@@ -4,8 +4,8 @@
 import pytest
 pytest.importorskip("pyinotify")
 
-from circuits.io.notify import Notify, AddPath, RemovePath
 from circuits import Component, handler
+from circuits.io.notify import Notify, AddPath
 
 
 class App(Component):
@@ -32,17 +32,9 @@ def test_notify(tmpdir):
     Notify().register(app)
     app.start()
 
-    try:
-        app.fire(AddPath(str(tmpdir)))
-        pytest.wait_for(app, 'add_path')
-        tmpdir.ensure("helloworld.txt")
-        assert pytest.wait_for(app, 'created')
-        app.created = False
-        app.fire(RemovePath(str(tmpdir)))
-        pytest.wait_for(app, 'remove_path')
-        tmpdir.ensure("helloworld2.txt")
-        assert not pytest.wait_for(app, 'created')
-    finally:
-        app.stop()
+    app.fire(AddPath(str(tmpdir)))
+    assert pytest.wait_for(app, 'add_path')
+    tmpdir.ensure("helloworld.txt")
+    assert pytest.wait_for(app, 'created')
 
-    assert True
+    app.stop()

@@ -89,13 +89,18 @@ class WaitEvent(object):
             self.manager.removeHandler(self.handler)
 
 
-def wait_for(obj, attr, value=True, timeout=3.0):
-    from circuits.core.manager import TIMEOUT
-    for i in range(int(timeout / TIMEOUT)):
-        if isinstance(value, collections.Callable):
-            if value(obj, attr):
-                return True
-        elif getattr(obj, attr) == value:
+def wait_for(obj, attr, value=True):
+    """XXX: Rewrite this. This is horrible.
+
+    Perhaps we need to (should) implement data descriptor for attributes
+    we wants to be notified about when they change. (Forget what this
+    is called exactly now).
+    """
+
+    while True:
+        if isinstance(value, collections.Callable) and value(obj, attr):
+            return True
+        if getattr(obj, attr) == value:
             return True
         sleep(TIMEOUT)
 
