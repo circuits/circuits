@@ -207,6 +207,7 @@ class Response(object):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
+        self.encoding = encoding
 
         if code is not None:
             self.code = code
@@ -218,9 +219,6 @@ class Response(object):
         self.time = time()
 
         self.headers = Headers([])
-        self.headers.add_header(
-            "Content-Type", "text/html; charset=%s" % encoding
-        )
         self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
 
         if self.request.server:
@@ -257,6 +255,9 @@ class Response(object):
     def prepare(self):
         # Set a default content-Type if we don't have one.
         self.headers.setdefault("Content-Type", "text/html")
+        self.headers.setdefault("Content-Type",
+            "text/html; charset={0:s}".format(self.encoding)
+        )
 
         if self.body:
             if isinstance(self.body, bytes):
