@@ -69,8 +69,9 @@ class HTTP(BaseComponent):
         if data is not None:
             if data:
                 if response.chunked:
-                    buf = [hex(len(data))[2:], b"\r\n", data, b"\r\n"]
-                    data = b"".join(buf)
+                    data = "{0:s}\r\n{1:s}\r\n".format(
+                        hex(len(data))[2:], data
+                    ).encode(self._encoding)
                 self.fire(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:

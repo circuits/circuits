@@ -12,7 +12,6 @@ try:
 except ImportError:
     from urllib import unquote  # NOQA
 
-from io import BytesIO
 from operator import itemgetter
 from traceback import format_tb
 from sys import exc_info as _exc_info
@@ -76,9 +75,7 @@ class Application(BaseComponent):
         "REMOTE_ADDR": "Remote-Addr",
     }
 
-    def __init__(self):
-        super(Application, self).__init__()
-
+    def init(self):
         self._finished = False
 
         HTTP().register(self)
@@ -188,7 +185,7 @@ class Gateway(BaseComponent):
 
         path, app = candidates[0]
 
-        buffer = BytesIO()
+        buffer = StringIO()
 
         def start_response(status, headers, exc_info=None):
             response.code = int(status.split(" ", 1)[0])
@@ -203,7 +200,7 @@ class Gateway(BaseComponent):
         try:
             body = app(environ, start_response)
             if isinstance(body, list):
-                body = body[0]
+                body = "".join(body)
 
             if not body:
                 if not buffer.tell():
