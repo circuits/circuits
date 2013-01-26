@@ -98,12 +98,10 @@ def wait_for(obj, attr, value=True):
     """
 
     while True:
-        if isinstance(value, collections.Callable):
-            if value(obj, attr):
-                return True
-        else:
-            if getattr(obj, attr) == value:
-                return True
+        if isinstance(value, collections.Callable) and value(obj, attr):
+            return True
+        if getattr(obj, attr) == value:
+            return True
         sleep(TIMEOUT)
 
 
