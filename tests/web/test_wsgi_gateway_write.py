@@ -7,8 +7,8 @@ def application(environ, start_response):
     status = "200 OK"
     response_headers = [("Content-type", "text/plain")]
     write = start_response(status, response_headers)
-    write("Hello World!")
-    return [""]
+    write(b"Hello World!")
+    return [b""]
 
 
 def test(webapp):
