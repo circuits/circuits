@@ -175,10 +175,12 @@ class Gateway(BaseComponent):
 
         parts = request.path.split("/")
 
-        candidates = sorted(list(
-            (k, v) for i, (k, v) in enumerate(self.apps.items())
-            if ("/".join(parts[:(i + 1)]) or "/") == k
-        ), key=itemgetter(0), reverse=True)
+        candidates = []
+        for i in range(len(parts)):
+            k = "/".join(parts[:(i + 1)]) or "/"
+            if k in self.apps:
+                candidates.append((k, self.apps[k]))
+        candidates = sorted(candidates, key=itemgetter(0), reverse=True)
 
         if not candidates:
             return
