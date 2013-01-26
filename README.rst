@@ -60,11 +60,13 @@ Supported Platforms
 -------------------
 
 - Linux, FreeBSD, Mac OS X
-- Python 2.6, 2.7, 3.0
+- Python 2.6, 2.7, 3.1, 3.2
 
 **Windows**: We acknowledge that Windows exists and make reasonable efforts
              to maintain compatibility. Unfortunately we cannot guarantee
              support at this time.
+
+**NB**: We are working toward getting Windows supported.
 
 
 Installation
