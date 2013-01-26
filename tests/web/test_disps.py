@@ -58,7 +58,7 @@ def test_disps():
     Dispatcher(channel="site1").register(server1)
     Root1().register(manager)
 
-    server2 = BaseServer(("localhost", 8001), channel="site2")
+    server2 = BaseServer(("localhost", 0), channel="site2")
     server2.register(manager)
     PrefixingDispatcher(channel="site2").register(server2)
     Dispatcher(channel="site2").register(server2)
