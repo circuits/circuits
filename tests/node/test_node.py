@@ -6,7 +6,6 @@ from circuits import Component, Event
 from circuits.net.sockets import Close
 from circuits.node import Node, Remote
 from circuits.net.sockets import UDPServer
-from circuits.core.events import Unregister
 
 
 class Foo(Event):
@@ -31,33 +30,41 @@ class App(Component):
         self.value = True
 
 
-def get_free_port(manager):
-    server = UDPServer(0)
-    server.register(manager)
-    assert pytest.wait_for(manager, "ready")
+@pytest.fixture()
+def bind(manager, watcher):
+    server = UDPServer(0).register(manager)
+    assert watcher.wait("ready")
+
     host, port = server.host, server.port
-    manager.fire(Close())
-    assert pytest.wait_for(manager, "disconnected")
-    manager.fire(Unregister(server))
+
+    server.fire(Close())
+    assert watcher.wait("closed")
+
+    server.unregister()
+
     return host, port
 
 
-def test_return_value():
-    a1 = App()
+def test_return_value(manager, watcher, bind):
+    a1 = App().register(manager)
     n1 = Node().register(a1)
-    a1.start()
 
-    host, port = get_free_port(a1)
-    (App() + Node((host, port))).start(process=True)
+    a2 = (App() + Node(bind))
+    a2.start(process=True)
 
-    n1.add('bar', host, port)
+    n1.add("a2", *bind)
 
-    e = Event.create('foo')
+    e = Event.create("foo")
     e.notify = True
-    r = Remote(e, 'bar')
-    r.notify = True
-    value = a1.fire(r)
 
-    assert pytest.wait_for(a1, "value")
+    r = Remote(e, "a2")
+    r.notify = True
+
+    value = a1.fire(r)
+    watcher.wait("remote_value_changed")
 
     assert value.value == "Hello World!"
+
+    a2.stop()
+    a1.unregister()
+    n1.unregister()
