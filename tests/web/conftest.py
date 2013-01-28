@@ -42,10 +42,10 @@ def webapp(request):
         from circuits.web.wsgi import Gateway
         application = getattr(request.module, "application")
         Gateway({"/": application}).register(webapp)
-    else:
-        Root = getattr(request.module, "Root", None)
-        if Root is not None:
-            Root().register(webapp)
+
+    Root = getattr(request.module, "Root", None)
+    if Root is not None:
+        Root().register(webapp)
 
     waiter = pytest.WaitEvent(webapp, "ready")
     webapp.start()

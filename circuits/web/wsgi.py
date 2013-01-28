@@ -153,6 +153,8 @@ class _Empty(str):
     def __bool__(self):
         return True
 
+    __nonzero__ = __bool__
+
 empty = _Empty()
 del _Empty
 
