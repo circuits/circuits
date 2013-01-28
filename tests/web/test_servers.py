@@ -82,6 +82,9 @@ def test_secure_server():
 
 
 def test_unixserver(tmpdir):
+    if pytest.PLATFORM == "win32":
+        pytest.skip("Unsupported Platform")
+
     sockpath = tmpdir.ensure("test.sock")
     socket = str(sockpath)
     server = Server(socket)
