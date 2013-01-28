@@ -134,7 +134,7 @@ def pytest_namespace():
         ("WaitEvent", WaitEvent),
         ("wait_for", wait_for),
         ("call_event", call_event),
+        ("PLATFORM", sys.platform),
         ("PYVER", sys.version_info[:3]),
-        ("PY3", sys.version_info[0] == 3),
         ("call_event_from_name", call_event_from_name),
     ))
