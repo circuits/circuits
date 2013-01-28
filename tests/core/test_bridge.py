@@ -1,9 +1,13 @@
 #!/usr/bin/python -i
 
-from os import getpid
 
 import pytest
+if pytest.PLATFORM == "win32":
+    pytest.skip("Unsupported Platform")
+
 pytest.importorskip("multiprocessing")
+
+from os import getpid
 
 from circuits import Component, Event
 
