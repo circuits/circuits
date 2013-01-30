@@ -49,5 +49,6 @@ General
    making distributing computing with circuits very trivial.
 
 Got more questions?
+
 * Send an email to our `Mailing List`_.
 * Talk to us online on the `#circuits IRC Channel`_
