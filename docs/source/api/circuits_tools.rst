@@ -8,4 +8,3 @@ your system. The `circuits.tools` package provides a set of development
 tools for debugging, inspection and analysis.
 
 .. autofunction :: graph
-.. autofunction :: reprhandler
