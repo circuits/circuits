@@ -166,7 +166,7 @@ Now let's try to run this and see what happens::
   Woof! I'm Bob!
   Woof! I'm Fred!
 
-So both dogs barked~ Hmmm
+So both dogs barked! Hmmm
 
 
 Component Channels
