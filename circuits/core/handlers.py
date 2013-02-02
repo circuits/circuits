@@ -44,10 +44,6 @@ def handler(*names, **kwargs):
     component, you must specify ``override=True``, else your method becomes
     an additional handler for the event.
 
-    Finally, a handler may be defined as a "tick"-handler by
-    specifying ``tick=True``.
-    Such a handler is invoked at regular intervals ("polling").
-
     **Return value**
 
     Normally, the results returned by the handlers for an event are simply
@@ -89,7 +85,6 @@ def handler(*names, **kwargs):
         f.filter = kwargs.get("filter", False)
         f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
-        f.tick = kwargs.get("tick", False)
 
         args = getargspec(f)[0]
 
