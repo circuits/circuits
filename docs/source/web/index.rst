@@ -8,4 +8,3 @@ The circuits.web Framework
    introduction
    gettingstarted
    basics
-   howtos
