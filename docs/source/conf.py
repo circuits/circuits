@@ -48,9 +48,9 @@ url = "http://bitbucket.org/prologic/circuits/"
 # built documents.
 #
 # The short X.Y version.
-version = '2.0.2'
+version = '2.1.0'
 # The full version, including alpha/beta/rc tags.
-release = '2.0.2'
+release = '2.1.0'
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
@@ -236,4 +236,4 @@ def setup(app):
     # ifconfig variables
     app.add_config_value('devel', '', True)
 
-# hghooks: no-pyflakes no-pep8
+# flake8: noqa
