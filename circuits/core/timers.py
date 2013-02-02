@@ -11,6 +11,39 @@ from time import time, mktime
 from datetime import datetime
 
 from .components import BaseComponent
+from circuits.core.utils import findcmp
+
+
+class TimerSchedule(BaseComponent):
+    
+    singleton = True
+    _timers = []
+    
+    def add_timer(self, timer):
+        i = 0;
+        while i < len(self._timers) and timer.expiry > self._timers[i].expiry:
+            i += 1
+        self._timers.insert(i, timer)
+    
+    def remove_timer(self, timer):
+        self._timers.remove(timer)
+
+    @handler("generate_events")
+    def _on_generate_events(self, event):
+        now = time()
+        expired = [timer for timer in self._timers if timer.expiry <= now]
+        if expired:
+            for timer in expired:
+                timer.trigger()
+            event.reduce_time_left(0)
+        next_at = self.next_expiry()
+        if next_at is not None:
+            event.reduce_time_left(next_at - now)
+
+    def next_expiry(self):
+        if len(self._timers) == 0:
+            return None
+        return self._timers[0].expiry
 
 
 class Timer(BaseComponent):
@@ -18,6 +51,8 @@ class Timer(BaseComponent):
     A timer is a component that fires an event once after a certain
     delay or periodically at a regular interval.
     """
+
+    _schedule = None
 
     def __init__(self, interval, event, *channels, **kwargs):
         """
@@ -46,31 +81,46 @@ class Timer(BaseComponent):
 
         self.persist = kwargs.get("persist", False)
 
-        self.reset()
+        self._eTime = time() + self.interval
 
-    @handler("generate_events")
-    def _on_generate_events(self, event):
-        now = time()
-        if now >= self._eTime:
-            if self.unregister_pending:
-                return
-            self.fire(self.event, *self.channels)
+    @handler("registered", channel="*")
+    def _on_registered(self, component, manager):
+        if self._schedule is None:
+            if isinstance(component, TimerSchedule):
+                self._schedule = component
+            elif component == self:
+                component = findcmp(self.root, TimerSchedule)
+                if component is not None:
+                    self._schedule = component
+                else:
+                    self._schedule = TimerSchedule().register(self)
+            if self._schedule is not None:
+                self._schedule.add_timer(self)
 
-            if self.persist:
-                self.reset()
-            else:
-                self.unregister()
-            event.reduce_time_left(0)
+    def unregister(self):
+        if self._schedule is not None:
+            self._schedule.remove_timer(self)
+            self._schedule = None
+        super(Timer, self).unregister()
+
+    def trigger(self):
+        self.fire(self.event, *self.channels)
+
+        if self.persist:
+            self.reset()
         else:
-            event.reduce_time_left(self._eTime - now)
+            self.unregister()
 
     def reset(self):
         """
         Reset the timer, i.e. clear the amount of time already waited
         for.
         """
-
+        if self._schedule is not None:
+            self._schedule.remove_timer(self)
         self._eTime = time() + self.interval
+        if self._schedule is not None:
+            self._schedule.add_timer(self)
 
     @property
     def expiry(self):
