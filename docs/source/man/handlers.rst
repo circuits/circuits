@@ -38,7 +38,7 @@ for events of type ``SomeEvent``.
 
 The optional keyword argument "``channel``" can be used to attach the
 handler to a different channel than the component's channel
-(*as specified by the component's ``channel`` attribute*).
+(*as specified by the component's channel attribute*).
 
 Handler methods must be declared with arguments and keyword arguments that
 match the arguments passed to the event upon its creation. Looking at the
