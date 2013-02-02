@@ -3,6 +3,7 @@ Release Notes - circuits-2.1.0
 
 
 This release adds the following new features to circuits:
+
 - Python 3 compatibility.
 - Windows support.
 - IPv6 support.
