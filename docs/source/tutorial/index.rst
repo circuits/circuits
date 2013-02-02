@@ -262,7 +262,7 @@ dealt with in a way that lets your application "keep on going". Crashing is
 unwanted behavior in a system so we expect to be able to recover from
 horrible situations.
 
-SO what do we do? Well that's easy. circuits come with a ``Debugger``
+SO what do we do? Well that's easy. circuits comes with a ``Debugger``
 that lets you log all events as well as all errors so you can quickly and
 easily discover which Event is causing a problem and which Event Handler to
 look at.
