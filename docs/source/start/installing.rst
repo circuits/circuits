@@ -41,6 +41,6 @@ repository by simply performing the following in the circuits working directory:
 
    $ hg pull -u
 
-**NB**: You do not need to reinstall if you have installed with setuptools via
-         the circuits repository and used setuptools to install in "develop"
-         mode.
+.. note::
+   You do not need to reinstall if you have installed with setuptools via
+   the circuits repository and used setuptools to install in "develop" mode.

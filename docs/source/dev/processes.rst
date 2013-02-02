@@ -43,7 +43,7 @@ Writing new Code
 
 
 - Write your code.
-- Use `flake8`_ to ensure code quality.
+- Use `flake8 <http://pypi.python.org/pypi/flake8>`_ to ensure code quality.
 - Run the tests::
 
   $ tox
