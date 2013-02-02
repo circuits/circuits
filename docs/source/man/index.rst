@@ -8,9 +8,11 @@ The circuits Framework
    components
    events
    handlers
+
+.. toctree::
+   :hidden:
+
    values
    debugging
    tools
-   ticks
-   futures
    manager
