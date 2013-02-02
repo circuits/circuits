@@ -2,14 +2,9 @@ Installing
 ==========
 
 
-If you have not installed circuits via the the
-`setuptools <http://pypi.python.org/pypi/setuptools>`_ easy_install tool,
-then the following installation instructions will apply to you. Either
-you've downloaded a source package or cloned the development repository.
-
-
 Installing from a Source Package
 --------------------------------
+*If you have downloaded a source archive, this applies to you.*
 
 
 .. code-block:: sh
@@ -25,6 +20,7 @@ For other installation options see:
 
 Installing from the Development Repository
 ------------------------------------------
+*If you have cloned the source code repository, this applies to you.*
 
 
 If you have cloned the development repository, it is recommended that you
