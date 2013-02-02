@@ -259,6 +259,7 @@ class Response(object):
             "text/html; charset={0:s}".format(self.encoding)
         )
 
+        cLength = None
         if self.body:
             if isinstance(self.body, bytes):
                 cLength = len(self.body)
@@ -273,11 +274,9 @@ class Response(object):
                         if s is not None
                     ]
                 )
-            else:
-                cLength = None
 
-            if cLength:
-                self.headers["Content-Length"] = str(cLength)
+        if cLength:
+            self.headers["Content-Length"] = str(cLength)
 
         for k, v in self.cookie.items():
             self.headers.add_header("Set-Cookie", v.OutputString())
