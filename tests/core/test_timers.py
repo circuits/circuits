@@ -52,7 +52,7 @@ def test_timer(app):
 
 
 def test_persistentTimer(app):
-    timer = Timer(0.1, Test(), "timer", persist=True)
+    timer = Timer(0.2, Test(), "timer", persist=True)
     timer.register(app)
 
     for i in range(2):
