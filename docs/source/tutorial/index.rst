@@ -103,8 +103,8 @@ message on the screen!
 Complex Components
 ------------------
 
-Now, what if we wanted to create a Complex Component ? Let's say we wanted
-to create a new Component made up of two other smaller components ?
+Now, what if we wanted to create a Complex Component? Let's say we wanted
+to create a new Component made up of two other smaller components?
 
 We can do this by simply registering components to a Complex Component
 during initialization.
@@ -172,8 +172,8 @@ So both dogs barked~ Hmmm
 Component Channels
 ------------------
 
-What if we only want one of our dogs to bark ? How do we do this without
-causing the other one to bark as well ?
+What if we only want one of our dogs to bark? How do we do this without
+causing the other one to bark as well?
 
 Easy! Use a separate ``channel`` like so:
 
@@ -198,7 +198,7 @@ Event Objects
 So far in our tutorial we have been defining an Event Handler for a builtin
 Event called ``Started`` (*which incidentally gets fired on a channel called
 "started"*). What if we wanted to define our own Event Handlers and our own
-Events ? You've already seen how easy it is to create a new Event Handler
+Events? You've already seen how easy it is to create a new Event Handler
 by simply defining a normal Python method on a Component.
 
 Defining your own Events helps with documentation and testing and makes
@@ -256,13 +256,13 @@ For reference here's the entire example...
 
 If you run this, you'll get:
 
-That's right! You get nothing! Why ? Well in circuits any error or
+That's right! You get nothing! Why? Well in circuits any error or
 exception that occurs in a running application is automatically caught and
 dealt with in a way that lets your application "keep on going". Crashing is
 unwanted behavior in a system so we expect to be able to recover from
 horrible situations.
 
-SO what do we do ? Well that's easy. circuits come with a ``Debugger``
+SO what do we do? Well that's easy. circuits come with a ``Debugger``
 that lets you log all events as well as all errors so you can quickly and
 easily discover which Event is causing a problem and which Event Handler to
 look at.
