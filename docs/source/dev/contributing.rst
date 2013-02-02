@@ -11,7 +11,7 @@ Share your story
 One of the best ways you can contribute to circuits is by using circuits.
 Share with us your story of how you've used circuits to solve a problem
 or create a new software solution using the circuits framework and library
-of components. See our :doc:`Users Page </users>`_.
+of components. See our :doc:`Users Page </users>`.
 
 
 Submitting Bug Reports
@@ -48,4 +48,4 @@ as valid use-cases. To start the discussions off, please either:
 
   or
 
-- `Submit a new Issue < http://bitbucket.org/prologic/circuits/issues>`_
+- `Submit a NEW Issue <http://bitbucket.org/prologic/circuits/issues>`_

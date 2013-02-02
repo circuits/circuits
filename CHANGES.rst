@@ -12,6 +12,8 @@ Features
 - Component Event Handlers Property [#41573841]
 - Component targeting performance [#41644031]
 - Multi-App WSGI Gateway [#40071339]
+- More efficient timer implementation [#43700669]
+
 
 Bugs
 ....
@@ -106,13 +108,16 @@ A list of other changes we forgot to track :)
   to managers.
 
   You can use traverse_children_handlers to increase performance when you have
-  a huge number of components like this:
-  - Put the components that are only meant to be used with component targeting
-    under a single component.
-    The hierarchy will be like this::
-       Root -> Umbrella Component -> Component 1, Component 2, Component 3, ...
+  a huge number of components. Put the components that are only meant to be
+  used with component targeting  under a single component. The hierarchy
+  looks like this:
+
+  .. code-block:: python
+
+     Root -> Umbrella Component -> Component 1, Component 2, Component 3, ...
           -> Debugger()
           -> etc
+
 - Set Umbrella Component traverse_children_handlers to false to prevent
   traversing the huge number of children components.
 - Fixed Connection header interpretation.
