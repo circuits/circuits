@@ -21,7 +21,7 @@ def test_default(webapp):
     assert s == b"Hello World!"
 
     content_type = f.headers["Content-Type"]
-    assert content_type == "text/html"
+    assert content_type == "text/html; charset=utf-8"
 
 
 def test_explicit(webapp):
