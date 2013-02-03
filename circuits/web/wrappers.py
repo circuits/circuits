@@ -259,8 +259,9 @@ class Response(object):
             "text/html; charset={0:s}".format(self.encoding)
         )
 
-        cLength = None
-        if self.body:
+        if self.body is None:
+            cLength = None
+        else:
             if isinstance(self.body, bytes):
                 cLength = len(self.body)
             elif isinstance(self.body, unicode):
@@ -274,8 +275,6 @@ class Response(object):
                         if s is not None
                     ]
                 )
-
-        if cLength:
             self.headers["Content-Length"] = str(cLength)
 
         for k, v in self.cookie.items():
