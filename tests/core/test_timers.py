@@ -65,7 +65,9 @@ def test_persistentTimer(app):
     timer = Timer(0.1, Test(), "timer", persist=True)
     timer.register(app)
 
-    assert pytest.wait_for(app, "count", 2)
+    wait_res = pytest.wait_for(app, "count", 2)
+    assert app.count >= 2
+    assert wait_res
     delta = app.timestamps[1] - app.timestamps[0]
     # Should be 0.1, but varies depending on timer precision and load
     assert delta >= 0.08 and delta < 0.5
