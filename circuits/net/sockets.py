@@ -1,6 +1,7 @@
 # Module:   sockets
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
+import select
 
 """Socket Components
 
@@ -24,7 +25,8 @@ from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
 
 try:
     from ssl import wrap_socket as ssl_socket
-    from ssl import CERT_NONE, PROTOCOL_SSLv23, SSLError
+    from ssl import CERT_NONE, PROTOCOL_SSLv23, SSLError, SSL_ERROR_WANT_READ, \
+        SSL_ERROR_WANT_WRITE
     HAS_SSL = 1
 except ImportError:
     import warnings
@@ -384,6 +386,24 @@ class Client(BaseComponent):
                 self._poller.removeWriter(self._sock)
 
 
+def _do_handshake_for_non_blocking(ssock):
+    """
+    This is how to do handshake for an ssl socket with underlying 
+    non-blocking socket (according to the Python doc).
+    """
+    while True:
+        try:
+            ssock.do_handshake()
+            break
+        except SSLError as err:
+            if err.args[0] == SSL_ERROR_WANT_READ:
+                select.select([ssock], [], [])
+            elif err.args[0] == SSL_ERROR_WANT_WRITE:
+                select.select([], [ssock], [])
+            else:
+                raise
+
+
 class TCPClient(Client):
     socket_family = AF_INET
 
@@ -430,7 +450,7 @@ class TCPClient(Client):
                 self._sock, self.keyfile, self.certfile,
                 do_handshake_on_connect=False
             )
-            self._ssock.do_handshake()
+            _do_handshake_for_non_blocking(self._ssock)
 
         self.fire(Connected(host, port))
 
@@ -490,7 +510,7 @@ class UNIXClient(Client):
                 self._sock, self.keyfile, self.certfile,
                 do_handshake_on_connect=False
             )
-            self._ssock.do_handshake()
+            _do_handshake_for_non_blocking(self._ssock)
 
         self.fire(Connected(gethostname(), path))
 
@@ -681,7 +701,7 @@ class Server(BaseComponent):
                     ssl_version=self.ssl_version,
                     do_handshake_on_connect=False
                 )
-                newsock.do_handshake()
+                _do_handshake_for_non_blocking(newsock)
 
         except SSLError as e:
             raise
