@@ -14,6 +14,9 @@ class Root(Controller):
         self.response.headers["Content-Type"] = "text/plain"
         return "Hello World!"
 
+    def empty(self):
+        return ""
+
 
 def test_default(webapp):
     f = urlopen(webapp.server.base)
@@ -40,3 +43,12 @@ def test_static(webapp):
 
     content_type = f.headers["Content-Type"]
     assert content_type == "text/css"
+
+
+def test_empty(webapp):
+    f = urlopen("{0:s}/empty".format(webapp.server.base))
+    s = f.read()
+    assert s == b""
+
+    content_length = f.headers["Content-Length"]
+    assert int(content_length) == 0

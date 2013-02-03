@@ -259,7 +259,7 @@ class Response(object):
         )
 
         cLength = None
-        if self.body:
+        if self.body is not None:
             if isinstance(self.body, bytes):
                 cLength = len(self.body)
             elif isinstance(self.body, unicode):
@@ -274,7 +274,7 @@ class Response(object):
                     ]
                 )
 
-        if cLength:
+        if cLength is not None:
             self.headers["Content-Length"] = str(cLength)
 
         for k, v in self.cookie.items():
