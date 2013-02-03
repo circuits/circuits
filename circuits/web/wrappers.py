@@ -254,7 +254,6 @@ class Response(object):
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
-        self.headers.setdefault("Content-Type", "text/html")
         self.headers.setdefault("Content-Type",
             "text/html; charset={0:s}".format(self.encoding)
         )
