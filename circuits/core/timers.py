@@ -12,6 +12,7 @@ from datetime import datetime
 
 from .components import BaseComponent
 from circuits.core.utils import findcmp
+from threading import RLock
 
 
 class TimerSchedule(BaseComponent):
@@ -70,6 +71,7 @@ class Timer(BaseComponent):
         event once and then unregisters itself.
         """
         super(Timer, self).__init__()
+        self._lock = RLock()
 
         if isinstance(interval, datetime):
             self.interval = mktime(interval.timetuple()) - time()
@@ -98,9 +100,10 @@ class Timer(BaseComponent):
                 self._schedule.add_timer(self)
 
     def unregister(self):
-        if self._schedule is not None:
-            self._schedule.remove_timer(self)
-            self._schedule = None
+        with self._lock: # Concurrent reset may interfere
+            if self._schedule is not None:
+                self._schedule.remove_timer(self)
+                self._schedule = None
         super(Timer, self).unregister()
 
     def trigger(self):
@@ -116,11 +119,12 @@ class Timer(BaseComponent):
         Reset the timer, i.e. clear the amount of time already waited
         for.
         """
-        if self._schedule is not None:
-            self._schedule.remove_timer(self)
-        self._eTime = time() + self.interval
-        if self._schedule is not None:
-            self._schedule.add_timer(self)
+        with self._lock: # Concurrent unregister may interfere
+            if self._schedule is not None:
+                self._schedule.remove_timer(self)
+            self._eTime = time() + self.interval
+            if self._schedule is not None:
+                self._schedule.add_timer(self)
 
     @property
     def expiry(self):
