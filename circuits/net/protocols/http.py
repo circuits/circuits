@@ -23,6 +23,13 @@ class ResponseObject(object):
         self._headers = None
         self._body = BytesIO()
 
+    def __repr__(self):
+        return "<ResponseObject %s %s (%d)>" % (
+            self.status,
+            self.headers["Content-Type"],
+            len(self._body.getvalue())
+        )
+
     @property
     def headers(self):
         return self._headers
