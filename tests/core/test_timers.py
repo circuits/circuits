@@ -62,7 +62,7 @@ def test_timer(app):
 
 def test_persistentTimer(app):
     app.timestamps.append(time.time())
-    timer = Timer(0.1, Test(), "timer", persist=True)
+    timer = Timer(0.2, Test(), "timer", persist=True)
     timer.register(app)
 
     wait_res = pytest.wait_for(app, "count", 2)
