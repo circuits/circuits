@@ -21,7 +21,7 @@ class EventMetaClass(type):
 class BaseEvent(object):
 
     channels = ()
-    "The channels this message is send to."
+    "The channels this message is sent to."
 
     notify = False
     success = False
