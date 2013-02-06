@@ -24,7 +24,7 @@ try:
 except ImportError:
     from cgi import parse_qs as _parse_qs  # NOQA
 
-from .exceptions import InternalServerError, RequestEntityTooLarge
+from .exceptions import RequestEntityTooLarge
 
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile("[0-9]+,[0-9]+")
@@ -45,7 +45,7 @@ def parse_body(request, response, params):
         if e.__class__.__name__ == 'MaxSizeExceeded':
             # Post data is too big
             raise RequestEntityTooLarge()
-        raise InternalServerError()
+        raise
 
     if form.file:
         request.body = form.file
