@@ -163,17 +163,25 @@ class HTTP(BaseComponent):
             if not request.body.tell() == contentLength:
                 return
         else:
-            if data.find(b'\r\n\r\n') == -1:
-                buf = self._buffers.setdefault(sock, [])
-                buf.append(data)
-                if len(buf) > MAX_HEADER_FRAGENTS:
-                    del self._buffers[sock]
-                    raise ValueError("Too many HTTP Headers Fragments.")
-                return
             if sock in self._buffers:
+                # header fragments have been received before
                 self._buffers[sock].append(data)
                 data = b"".join(self._buffers[sock])
+                if data.find(b'\r\n\r\n') == -1:
+                    # still not all headers received
+                    return
+                # all headers received, use combined data and remove buffer
                 del self._buffers[sock]
+            else:
+                # no pending header fragments for this socket
+                if data.find(b'\r\n\r\n') == -1:
+                    # this first chunk doesn't contain all headers yet, buffer
+                    buf = self._buffers.setdefault(sock, [])
+                    buf.append(data)
+                    if len(buf) > MAX_HEADER_FRAGENTS:
+                        del self._buffers[sock]
+                        raise ValueError("Too many HTTP Headers Fragments.")
+                    return
 
             requestline, data = data.split(b"\r\n", 1)
             requestline = requestline.strip().decode(
