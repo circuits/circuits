@@ -249,15 +249,15 @@ class Manager(object):
         handlers_chain.append(self._handlers.get(name, []))
 
         for _handler in chain(*handlers_chain):
-            handler_channel = (
-                isinstance(_handler.channel, Manager) or _handler.channel
-            ) or getattr(
-                getattr(
-                    _handler, "im_self", getattr(
-                        _handler, "__self__", _dummy
-                    )
-                ),
-                "channel", None
+            handler_channel = _handler.channel 
+            if handler_channel is None:
+                handler_channel = getattr(
+                    getattr(
+                        _handler, "im_self", getattr(
+                            _handler, "__self__", _dummy
+                        )
+                    ),
+                    "channel", None
             )
 
             if channel == "*" or handler_channel in ("*", channel,) \
