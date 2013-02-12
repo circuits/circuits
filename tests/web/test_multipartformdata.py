@@ -43,7 +43,7 @@ def test(webapp):
 
     # Build the request
     request = Request(webapp.server.base)
-    body = str(form)#.encode("utf-8")
+    body = str(form).encode("utf-8")
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
@@ -65,7 +65,7 @@ def test_unicode(webapp, sample_file):
 
     # Build the request
     request = Request("{0:s}/upload".format(webapp.server.base))
-    body = str(form)#.encode("utf-8")
+    body = str(form).encode("utf-8")
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
