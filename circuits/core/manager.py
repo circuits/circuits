@@ -46,6 +46,15 @@ class CallValue(object):
         self.value = value
 
 
+class Dummy(object):
+
+    channel = None
+
+
+_dummy = Dummy()
+del Dummy
+
+
 class Manager(object):
     """
     The manager class has two roles. As a base class for component
@@ -96,7 +105,6 @@ class Manager(object):
     """
 
     _currently_handling = None
-    traverse_children_handlers = True
     """
     The event currently being handled.
     """
@@ -233,35 +241,32 @@ class Manager(object):
         return getpid() if self.__process is None else self.__process.pid
 
     def getHandlers(self, event, channel, **kwargs):
-        channel_is_instance = isinstance(channel, Manager)
-
         name = event.name
         handlers = set()
 
-        handlers_chain = [self._handlers.get("*", set())]
+        handlers_chain = [self._handlers.get("*", [])]
 
-        if not channel_is_instance or channel == self:
-            if name in self._handlers:
-                handlers_chain.append(self._handlers[name])
+        handlers_chain.append(self._handlers.get(name, []))
 
         for _handler in chain(*handlers_chain):
-            if _handler.channel:
-                handler_channel = _handler.channel
-            elif hasattr(_handler, "__self__"):
-                handler_channel = getattr(_handler.__self__, "channel", None)
-            else:
-                handler_channel = None
+            handler_channel = _handler.channel or getattr(
+                getattr(
+                    _handler, "im_self", getattr(
+                        _handler, "__self__", _dummy
+                    )
+                ),
+                "channel", None
+            )
 
             if channel == "*" or handler_channel in ("*", channel,) \
-                    or channel_is_instance:
+                    or channel is self:
                 handlers.add(_handler)
 
         if not kwargs.get("exclude_globals", False):
             handlers.update(self._globals)
 
-        if self.traverse_children_handlers:
-            for c in self.components.copy():
-                handlers.update(c.getHandlers(event, channel, **kwargs))
+        for c in self.components.copy():
+            handlers.update(c.getHandlers(event, channel, **kwargs))
 
         return handlers
 
