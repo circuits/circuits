@@ -108,7 +108,7 @@ class Value(object):
                     self
                 )
 
-            self.manager.fire(e)
+            self.manager.fire(e, self.manager)
 
     def getValue(self, recursive=True):
         value = self._value
