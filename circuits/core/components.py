@@ -145,6 +145,11 @@ class BaseComponent(Manager):
 
         if hasattr(self, "init") and isinstance(self.init, Callable):
             self.init(*args, **kwargs)
+            
+        @handler("prepare_unregister_complete", channel=self)
+        def _on_prepare_unregister_complete(self, e, value):
+            self._do_prepare_unregister_complete(e, value)
+        self.addHandler(_on_prepare_unregister_complete)
 
     def register(self, parent):
         """
@@ -214,8 +219,7 @@ class BaseComponent(Manager):
     def unregister_pending(self):
         return getattr(self, "_unregister_pending", False)
 
-    @handler("prepare_unregister_complete")
-    def _on_prepare_unregister_complete(self, e, value):
+    def _do_prepare_unregister_complete(self, e, value):
         # Remove component from tree now
         delattr(self, "_unregister_pending")
         self.fire(Unregistered(self, self.parent))
