@@ -36,7 +36,7 @@ class Server(BaseComponent):
         name = "%s_value_changed" % e.name
         channel = e.channels[0] if e.channels else self
 
-        @handler(name, channel=channel)
+        @handler(name, channel=self)
         def on_value_changed(self, event, value):
             self.send(value)
 
