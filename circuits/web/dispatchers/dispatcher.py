@@ -1,6 +1,7 @@
 # Module:   dispatcher
 # Date:     13th September 2007
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+from circuits.web.errors import HTTPError
 
 """Dispatcher
 
@@ -15,7 +16,7 @@ except NameError:
 
 from circuits import handler, BaseComponent
 
-from circuits.web.events import Request
+from circuits.web.events import Request, Response
 from circuits.web.controllers import BaseController
 from circuits.web.utils import parse_body, parse_qs
 
@@ -108,3 +109,16 @@ class Dispatcher(BaseComponent):
             return self.fire(
                 Request.create(name, *event.args, **event.kwargs), channel
             )
+
+    @handler("request_value_changed")
+    def _on_request_value_changed(self, value):
+        if value.handled:
+            return
+        request, response = value.event.args[:2]
+        if value.result and not value.errors:
+            response.body = value.value
+            self.fire(Response(response))
+        else:
+            # This possibly never occurs.
+            self.fire(HTTPError(request, response, error=value.value))
+

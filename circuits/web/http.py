@@ -289,18 +289,6 @@ class HTTP(BaseComponent):
         response.body = str(event)
         self.fire(Response(response))
 
-    @handler("request_value_changed")
-    def _on_request_value_changed(self, value):
-        if value.handled:
-            return
-        request, response = value.event.args[:2]
-        if value.result and not value.errors:
-            response.body = value.value
-            self.fire(Response(response))
-        else:
-            # This possibly never occurs.
-            self.fire(HTTPError(request, response, error=value.value))
-
     @handler("request_success")
     def _on_request_success(self, e, value):
         """
