@@ -62,7 +62,7 @@ INSPECT = """\
   foo; 1
    <listener[*.foo] (A.foo)>
   prepare_unregister_complete; 1
-   <listener[*.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
+   <listener[<instance of A>.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
 """
 
 

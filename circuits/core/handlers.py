@@ -104,7 +104,10 @@ class Unknown(object):
 def reprhandler(handler):
     format = "<%s[%s.%s] (%s.%s)>"
 
-    channel = handler.channel or "*"
+    channel = handler.channel if handler.channel is not None else "*"
+    from circuits.core.manager import Manager
+    if isinstance(channel, Manager):
+        channel = "<instance of " + channel.__class__.__name__ + ">"
     names = ".".join(handler.names)
     type = "filter" if handler.filter else "listener"
 
