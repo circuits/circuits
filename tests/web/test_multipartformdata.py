@@ -38,12 +38,12 @@ def test(webapp):
     form = MultiPartForm()
     form["description"] = "Hello World!"
 
-    fd = StringIO(b"Hello World!".decode("utf-8"))
-    form.add_file("file", "helloworld.txt", fd)
+    fd = StringIO(u"Hello World!".encode("utf-8"))
+    form.add_file("file", "helloworld.txt", fd, "text/plain; charset=utf-8")
 
     # Build the request
     request = Request(webapp.server.base)
-    body = str(form).encode("utf-8")
+    body = str(form) # body is a byte sequence, encodings are defined in parts
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
@@ -61,11 +61,12 @@ def test(webapp):
 def test_unicode(webapp, sample_file):
     form = MultiPartForm()
     form["description"] = sample_file.name
-    form.add_file("file", "helloworld.txt", sample_file)
+    form.add_file("file", "helloworld.txt", sample_file, 
+                  "text/plain; charset=utf-8")
 
     # Build the request
     request = Request("{0:s}/upload".format(webapp.server.base))
-    body = str(form).encode("utf-8")
+    body = str(form) # body is a byte sequence, encodings defined in parts
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
@@ -73,5 +74,5 @@ def test_unicode(webapp, sample_file):
     f = urlopen(request)
     s = f.read()
     sample_file.seek(0)
-    expected_output = sample_file.read().encode("utf-8")
+    expected_output = sample_file.read() # use the byte stream
     assert s == expected_output
