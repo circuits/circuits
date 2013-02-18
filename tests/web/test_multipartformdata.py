@@ -18,7 +18,7 @@ def sample_file(request):
             path.dirname(__file__),
             "static", "unicode.txt"
         ),
-        "r"
+        "rb"
     )
 
 
@@ -38,12 +38,12 @@ def test(webapp):
     form = MultiPartForm()
     form["description"] = "Hello World!"
 
-    fd = StringIO(u"Hello World!".encode("utf-8"))
+    fd = StringIO("Hello World!")
     form.add_file("file", "helloworld.txt", fd, "text/plain; charset=utf-8")
 
     # Build the request
     request = Request(webapp.server.base)
-    body = str(form) # body is a byte sequence, encodings are defined in parts
+    body = form.bytes() # charsets are defined in parts
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
@@ -66,7 +66,7 @@ def test_unicode(webapp, sample_file):
 
     # Build the request
     request = Request("{0:s}/upload".format(webapp.server.base))
-    body = str(form) # body is a byte sequence, encodings defined in parts
+    body = form.bytes() # charsets are defined in parts
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
