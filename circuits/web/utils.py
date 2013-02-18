@@ -37,7 +37,7 @@ def parse_body(request, response, params):
     try:
         form = FieldStorage(
             environ={"REQUEST_METHOD": "POST"},
-            fp=TextIOWrapper(request.body),
+            fp=request.body,
             headers=request.headers,
             keep_blank_values=True
         )
