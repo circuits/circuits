@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import pytest
+if pytest.PLATFORM == "win32":
+    pytest.skip("Broken on Windows")
 
 from circuits import Component, Event
 from circuits.net.sockets import Close
