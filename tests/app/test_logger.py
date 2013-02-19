@@ -69,10 +69,9 @@ def test_direct(tmpdir):
             level = "warning"
         if level == "exception":
             assert s[:len(now)+31] == (
-                "%s test[log] ERROR: Hello World!\n" % now or
-                s[(len(now) + 1):(len(now) + 1)+31] == (
-                    "test[log] ERROR: Hello World!\n"
-                )
+                "{0:s} test[log] ERROR: Hello World!\n".format(now)
+            ) or s[(len(now) + 1):(len(now) + 1)+31] == (
+                "test[log] ERROR: Hello World!\n"
             )
         else:
             assert s == (
