@@ -10,9 +10,10 @@ def pytest_funcarg__path(request):
 
 def pytest_funcarg__env(request):
     return request.cached_setup(
-            setup=lambda: setup_env(request),
-            teardown=lambda env: teardown_env(env),
-            scope="function")
+        setup=lambda: setup_env(request),
+        teardown=lambda env: teardown_env(env),
+        scope="function"
+    )
 
 
 def setup_env(request):

@@ -26,16 +26,22 @@ class MultiPartForm(dict):
         # Add the form fields
         parts.extend([
             part_boundary,
-            bytearray("Content-Disposition: form-data; name=\"%s\"" % k, "ascii"),
+            bytearray(
+                "Content-Disposition: form-data; name=\"%s\"" % k,
+                "ascii"
+            ),
             bytes(),
-            v if isinstance(v, bytes) else bytearray(v, "ascii") 
+            v if isinstance(v, bytes) else bytearray(v, "ascii")
         ] for k, v in list(self.items()))
 
         # Add the files to upload
         parts.extend([
             part_boundary,
-            bytearray("Content-Disposition: file; name=\"%s\"; filename=\"%s\"" 
-                      % (fieldname, filename), "ascii"),
+            bytearray(
+                "Content-Disposition: file; name=\"%s\"; filename=\"%s\"" % (
+                    fieldname, filename),
+                "ascii"
+            ),
             bytearray("Content-Type: %s" % content_type, "ascii"),
             bytearray(),
             body if isinstance(body, bytes) else bytearray(body, "ascii"),

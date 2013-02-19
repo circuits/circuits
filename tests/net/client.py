@@ -1,5 +1,6 @@
 from circuits import Component
 
+
 class Client(Component):
 
     channel = "client"

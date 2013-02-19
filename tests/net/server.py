@@ -1,6 +1,7 @@
 from circuits import Component
 from circuits.net.sockets import Write
 
+
 class Server(Component):
 
     channel = "server"
