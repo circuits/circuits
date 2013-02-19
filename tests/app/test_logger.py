@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+import sys
+
+import pytest
+if "__pypy__" in sys.modules:
+    pytest.skip("Broken on pypy")
+
 from time import strftime
 
 from circuits import Event, Component
