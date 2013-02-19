@@ -3,7 +3,7 @@
 import pytest
 
 from os import path
-from io import StringIO
+from io import BytesIO
 
 from circuits.web import Controller
 
@@ -38,7 +38,7 @@ def test(webapp):
     form = MultiPartForm()
     form["description"] = "Hello World!"
 
-    fd = StringIO("Hello World!")
+    fd = BytesIO(b"Hello World!")
     form.add_file("file", "helloworld.txt", fd, "text/plain; charset=utf-8")
 
     # Build the request
