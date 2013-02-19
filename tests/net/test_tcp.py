@@ -196,6 +196,7 @@ def test_tcp_bind(Poller, ipv6):
         client = Client() + TCP6Client()
     else:
         sock = socket(AF_INET, SOCK_STREAM)
+        sock.bind(("", 0))
         sock.listen(5)
         _, bind_port = sock.getsockname()
         sock.close()
