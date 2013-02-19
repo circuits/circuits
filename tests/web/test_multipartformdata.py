@@ -43,7 +43,7 @@ def test(webapp):
 
     # Build the request
     request = Request(webapp.server.base)
-    body = form.bytes() # charsets are defined in parts
+    body = form.bytes()  # charsets are defined in parts
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
@@ -61,12 +61,14 @@ def test(webapp):
 def test_unicode(webapp, sample_file):
     form = MultiPartForm()
     form["description"] = sample_file.name
-    form.add_file("file", "helloworld.txt", sample_file, 
-                  "text/plain; charset=utf-8")
+    form.add_file(
+        "file", "helloworld.txt", sample_file,
+        "text/plain; charset=utf-8"
+    )
 
     # Build the request
     request = Request("{0:s}/upload".format(webapp.server.base))
-    body = form.bytes() # charsets are defined in parts
+    body = form.bytes()  # charsets are defined in parts
     request.add_header("Content-Type", form.get_content_type())
     request.add_header("Content-Length", len(body))
     request.add_data(body)
@@ -74,5 +76,5 @@ def test_unicode(webapp, sample_file):
     f = urlopen(request)
     s = f.read()
     sample_file.seek(0)
-    expected_output = sample_file.read() # use the byte stream
+    expected_output = sample_file.read()  # use the byte stream
     assert s == expected_output
