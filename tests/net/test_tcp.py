@@ -146,6 +146,15 @@ def test_tcp_reconnect(Poller, ipv6):
 
 
 def test_tcp_connect_closed_port(Poller, ipv6):
+    ### FIXME: This test is wrong.
+    ### We need to figure out the sequence of events on Windows
+    ### for this scenario. I think if you attempt to connect to
+    ### a shutdown listening socket (tcp server) you should get
+    ### an error event as response.
+
+    if pytest.PLATFORM == "win32":
+        pytest.skip("Broken on Windows")
+
     m = Manager() + Poller()
     if ipv6:
         tcp_server = TCP6Server(("::1", 0))
