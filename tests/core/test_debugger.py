@@ -4,6 +4,10 @@
 
 """Debugger Tests"""
 
+import sys
+
+import pytest
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -108,6 +112,9 @@ def test_file(tmpdir):
 
 
 def test_filename(tmpdir):
+    if "__pypy__" in sys.modules:
+        pytest.skip("Broken on pypy")
+
     logfile = str(tmpdir.ensure("debug.log"))
     stderr = open(logfile, "r+")
 
