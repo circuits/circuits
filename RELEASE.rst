@@ -1,5 +1,5 @@
-Release Notes - circuits-2.1.0
-------------------------------
+Release Notes - circuits-2.1.0 (<release>)
+------------------------------------------
 
 
 This release adds the following new features to circuits:
