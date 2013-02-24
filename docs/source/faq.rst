@@ -18,7 +18,7 @@ General
    circuits allows you to write maintainable and scalable systems easily
 
 ... Can I write networking applications with circuits?
-   Yes absolutely. circuits comes with socket I/O componetns for tcp, udp
+   Yes absolutely. circuits comes with socket I/O components for tcp, udp
    and unix sockets with asynchronous polling implementations for select,
    poll, epoll and kqueue.
 
@@ -26,8 +26,8 @@ General
    This is entirely possible. You will have to hook into the GUI's main loop.
 
 ... What are the core concepts in circuits?
-   Components and Events. Components are maintainable reuseable units of
-   behavior that communicate with other componetns via a powerful message
+   Components and Events. Components are maintainable reusable units of
+   behavior that communicate with other components via a powerful message
    passing system.
 
 ... How would you compare circuits to Twisted?
@@ -37,7 +37,7 @@ General
    maintainability.
 
 ... Can Components communicate with other processes?
-   Yes. circuits implements currently component briding and nodes
+   Yes. circuits implements currently component bridging and nodes
 
 ... What platforms does circuits support?
    circuits currently supports Linux, FreeBSD, OSX and Windows and is
