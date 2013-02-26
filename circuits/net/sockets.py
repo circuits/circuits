@@ -1,6 +1,7 @@
 # Module:   sockets
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
+import select
 
 """Socket Components
 
@@ -16,15 +17,16 @@ from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
 
 from _socket import socket as SocketType
 
-from socket import gaierror, error as SocketError
-from socket import gethostname, gethostbyname, socket
+from socket import gaierror, error
+from socket import getfqdn, gethostbyname, socket, getaddrinfo, gethostname
 
-from socket import AF_INET, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
+from socket import AF_INET, AF_INET6, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
 from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
 
 try:
     from ssl import wrap_socket as ssl_socket
-    from ssl import CERT_NONE, PROTOCOL_SSLv23, SSLError
+    from ssl import CERT_NONE, PROTOCOL_SSLv23, SSLError, SSL_ERROR_WANT_READ, \
+        SSL_ERROR_WANT_WRITE
     HAS_SSL = 1
 except ImportError:
     import warnings
@@ -32,9 +34,10 @@ except ImportError:
     HAS_SSL = 0
 
 
+from circuits.six import binary_type
 from circuits.core.utils import findcmp
-from circuits.core import handler, Event, Component
 from circuits.core.pollers import BasePoller, Poller
+from circuits.core import handler, Event, BaseComponent
 
 BUFSIZE = 4096  # 4KB Buffer
 BACKLOG = 5000  # 5K Concurrent Connections
@@ -137,8 +140,8 @@ class Read(Event):
         super(Read, self).__init__(*args)
 
 
-class Error(Event):
-    """Error Event
+class SocketError(Event):
+    """SocketError Event
 
     This Event is sent when a client or server connection has an error.
 
@@ -151,7 +154,7 @@ class Error(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Error, self).__init__(*args)
+        super(SocketError, self).__init__(*args)
 
 
 class Write(Event):
@@ -205,12 +208,16 @@ class Ready(Event):
 
     :param component:  The Client/Server Component that is ready.
     :type  tuple: Component (Client/Server)
+
+    :param bind:  The (host, port) the server has bound to.
+    :type  tuple: (host, port)
     """
 
-    def __init__(self, component):
+    def __init__(self, component, bind=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Ready, self).__init__(component)
+        args = (component, bind) if bind is not None else (component,)
+        super(Ready, self).__init__(*args)
 
 
 class Closed(Event):
@@ -226,33 +233,19 @@ class Closed(Event):
 
         super(Closed, self).__init__()
 
-###
-### Components
-###
 
-
-class Client(Component):
+class Client(BaseComponent):
 
     channel = "client"
 
-    def __init__(self, bind=None, bufsize=BUFSIZE,
-            channel=channel):
+    def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel):
         super(Client, self).__init__(channel=channel)
 
-        if isinstance(bind, int):
-            try:
-                self._bind = (gethostbyname(gethostname()), bind)
-            except gaierror:
-                self._bind = ("0.0.0.0", bind)
-        elif isinstance(bind, str) and ":" in bind:
-            host, port = bind.split(":")
-            port = int(port)
-            self._bind = (host, port)
-        else:
-            self._bind = None
         if isinstance(bind, SocketType):
+            self._bind = bind.getsockname()
             self._sock = bind
         else:
+            self._bind = self.parse_bind_parameter(bind)
             self._sock = self._create_socket()
 
         self._bufsize = bufsize
@@ -263,19 +256,22 @@ class Client(Component):
         self._closeflag = False
         self._connected = False
 
-        self.host = "0.0.0.0"
+        self.host = None
         self.port = 0
         self.secure = False
 
         self.server = {}
         self.issuer = {}
 
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
+
     @property
     def connected(self):
         return getattr(self, "_connected", None)
 
-    @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
+    @handler("registered", "started", channel="*")
+    def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -291,21 +287,13 @@ class Client(Component):
                     self._poller = Poller().register(self)
                     self.fire(Ready(self))
 
-    @handler("started", filter=True, channel="*")
-    def _on_started(self, component):
-        if self._poller is None:
-            self._poller = Poller().register(self)
-            self.fire(Ready(self))
-
-            return True
-
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
         self.fire(Close())
 
     @handler("read_value_changed")
     def _on_read_value_changed(self, value):
-        if isinstance(value, str):
+        if isinstance(value, binary_type):
             self.fire(Write(value))
 
     @handler("prepare_unregister", channel="*")
@@ -326,11 +314,12 @@ class Client(Component):
         try:
             self._sock.shutdown(2)
             self._sock.close()
-        except SocketError:
+        except error:
             pass
 
         self.fire(Disconnected())
 
+    @handler("close")
     def close(self):
         if not self._buffer:
             self._close()
@@ -348,11 +337,11 @@ class Client(Component):
                 self.fire(Read(data)).notify = True
             else:
                 self.close()
-        except SocketError as e:
+        except error as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.fire(Error(e))
+                self.fire(SocketError(e))
                 self._close()
 
     def _write(self, data):
@@ -364,12 +353,13 @@ class Client(Component):
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
-                self.fire(Error(e))
+                self.fire(SocketError(e))
 
+    @handler("write")
     def write(self, data):
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
@@ -396,10 +386,29 @@ class Client(Component):
                 self._poller.removeWriter(self._sock)
 
 
+def _do_handshake_for_non_blocking(ssock):
+    """
+    This is how to do handshake for an ssl socket with underlying 
+    non-blocking socket (according to the Python doc).
+    """
+    while True:
+        try:
+            ssock.do_handshake()
+            break
+        except SSLError as err:
+            if err.args[0] == SSL_ERROR_WANT_READ:
+                select.select([ssock], [], [])
+            elif err.args[0] == SSL_ERROR_WANT_WRITE:
+                select.select([], [ssock], [])
+            else:
+                raise
+
+
 class TCPClient(Client):
+    socket_family = AF_INET
 
     def _create_socket(self):
-        sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
+        sock = socket(self.socket_family, SOCK_STREAM, IPPROTO_TCP)
         if self._bind is not None:
             sock.bind(self._bind)
 
@@ -408,6 +417,7 @@ class TCPClient(Client):
 
         return sock
 
+    @handler("connect")
     def connect(self, host, port, secure=False, **kwargs):
         self.host = host
         self.port = port
@@ -419,28 +429,37 @@ class TCPClient(Client):
 
         try:
             r = self._sock.connect((host, port))
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
             else:
                 r = e.args[0]
 
-        if r:
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.fire(Error(r))
-                return
+                raise
 
         self._connected = True
 
         self._poller.addReader(self, self._sock)
 
         if self.secure:
-            self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
+            self._ssock = ssl_socket(
+                self._sock, self.keyfile, self.certfile,
+                do_handshake_on_connect=False
+            )
+            _do_handshake_for_non_blocking(self._ssock)
 
         self.fire(Connected(host, port))
+
+
+class TCP6Client(TCPClient):
+    socket_family = AF_INET6
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv6_parameter(bind_parameter)
 
 
 class UNIXClient(Client):
@@ -456,14 +475,12 @@ class UNIXClient(Client):
 
         return sock
 
-    @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
-        pass
-
+    @handler("ready")
     def ready(self, component):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
+    @handler("connect")
     def connect(self, path, secure=False, **kwargs):
         self.path = path
         self.secure = secure
@@ -474,14 +491,14 @@ class UNIXClient(Client):
 
         try:
             r = self._sock.connect_ex(path)
-        except SocketError as e:
+        except error as e:
             r = e.args[0]
 
         if r:
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                self.fire(Error(r))
+                self.fire(SocketError(r))
                 return
 
         self._connected = True
@@ -489,30 +506,24 @@ class UNIXClient(Client):
         self._poller.addReader(self, self._sock)
 
         if self.secure:
-            self._ssock = ssl_socket(self._sock, self.keyfile, self.certfile)
+            self._ssock = ssl_socket(
+                self._sock, self.keyfile, self.certfile,
+                do_handshake_on_connect=False
+            )
+            _do_handshake_for_non_blocking(self._ssock)
 
         self.fire(Connected(gethostname(), path))
 
 
-class Server(Component):
+class Server(BaseComponent):
 
     channel = "server"
 
     def __init__(self, bind, secure=False, backlog=BACKLOG,
-            bufsize=BUFSIZE, channel=channel, **kwargs):
+                 bufsize=BUFSIZE, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
-        if type(bind) is int:
-            try:
-                self._bind = (gethostbyname(gethostname()), bind)
-            except gaierror:
-                self._bind = ("0.0.0.0", bind)
-        elif type(bind) is str and ":" in bind:
-            host, port = bind.split(":")
-            port = int(port)
-            self._bind = (host, port)
-        else:
-            self._bind = bind
+        self._bind = self.parse_bind_parameter(bind)
 
         self._backlog = backlog
         self._bufsize = bufsize
@@ -536,39 +547,42 @@ class Server(Component):
             self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)
             self.ca_certs = kwargs.get("ca_certs", None)
 
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
+
     @property
     def connected(self):
         return True
 
     @property
     def host(self):
-        if hasattr(self, "_sock"):
+        if getattr(self, "_sock", None) is not None:
             try:
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
                     return sockname[0]
                 else:
                     return sockname
-            except SocketError:
+            except error:
                 return None
 
     @property
     def port(self):
-        if hasattr(self, "_sock"):
+        if getattr(self, "_sock", None) is not None:
             try:
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
                     return sockname[1]
-            except SocketError:
+            except error:
                 return None
 
-    @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
+    @handler("registered", "started", channel="*")
+    def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
                 self._poller.addReader(self, self._sock)
-                self.fire(Ready(self))
+                self.fire(Ready(self, (self.host, self.port)))
             else:
                 if component is not self:
                     return
@@ -576,19 +590,11 @@ class Server(Component):
                 if component is not None:
                     self._poller = component
                     self._poller.addReader(self, self._sock)
-                    self.fire(Ready(self))
+                    self.fire(Ready(self, (self.host, self.port)))
                 else:
                     self._poller = Poller().register(self)
                     self._poller.addReader(self, self._sock)
-                    self.fire(Ready(self))
-
-    @handler("started", filter=True, channel="*")
-    def _on_started(self, component):
-        if self._poller is None:
-            self._poller = Poller().register(self)
-            self._poller.addReader(self, self._sock)
-            self.fire(Ready(self))
-            return True
+                    self.fire(Ready(self, (self.host, self.port)))
 
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
@@ -596,7 +602,7 @@ class Server(Component):
 
     @handler("read_value_changed")
     def _on_read_value_changed(self, value):
-        if isinstance(value.value, str):
+        if isinstance(value.value, binary_type):
             sock = value.event.args[0]
             self.fire(Write(sock, value.value))
 
@@ -619,11 +625,12 @@ class Server(Component):
         try:
             sock.shutdown(2)
             sock.close()
-        except SocketError:
+        except error:
             pass
 
         self.fire(Disconnect(sock))
 
+    @handler("close")
     def close(self, sock=None):
         closed = sock is None
 
@@ -652,11 +659,11 @@ class Server(Component):
                 self.fire(Read(sock, data)).notify = True
             else:
                 self.close(sock)
-        except SocketError as e:
+        except error as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
-                self.fire(Error(sock, e))
+                self.fire(SocketError(sock, e))
                 self._close(sock)
 
     def _write(self, sock, data):
@@ -667,38 +674,39 @@ class Server(Component):
             nbytes = sock.send(data)
             if nbytes < len(data):
                 self._buffers[sock].appendleft(data[nbytes:])
-        except SocketError as e:
+        except error as e:
             if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
-                self.fire(Error(sock, e))
+                self.fire(SocketError(sock, e))
                 self._close(sock)
             else:
                 self._buffers[sock].appendleft(data)
 
+    @handler("write")
     def write(self, sock, data):
         if not self._poller.isWriting(sock):
             self._poller.addWriter(self, sock)
         self._buffers[sock].append(data)
 
-    def broadcast(self, data):
-        for sock in self._clients:
-            self.write(sock, data)
-
     def _accept(self):
         try:
             newsock, host = self._sock.accept()
             if self.secure and HAS_SSL:
-                newsock = ssl_socket(newsock,
+                newsock = ssl_socket(
+                    newsock,
                     server_side=True,
-                    certfile=self.certfile,
                     keyfile=self.keyfile,
+                    ca_certs=self.ca_certs,
+                    certfile=self.certfile,
                     cert_reqs=self.cert_reqs,
                     ssl_version=self.ssl_version,
-                    ca_certs=self.ca_certs)
+                    do_handshake_on_connect=False
+                )
+                _do_handshake_for_non_blocking(newsock)
 
         except SSLError as e:
             raise
 
-        except SocketError as  e:
+        except error as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
             elif e.args[0] == EPERM:
@@ -755,9 +763,10 @@ class Server(Component):
 
 
 class TCPServer(Server):
+    socket_family = AF_INET
 
     def _create_socket(self):
-        sock = socket(AF_INET, SOCK_STREAM)
+        sock = socket(self.socket_family, SOCK_STREAM)
 
         sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
@@ -766,6 +775,45 @@ class TCPServer(Server):
         sock.listen(self._backlog)
 
         return sock
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv4_parameter(bind_parameter)
+
+
+def parse_ipv4_parameter(bind_parameter):
+    if type(bind_parameter) is int:
+        try:
+            bind = (gethostbyname(gethostname()), bind_parameter)
+        except gaierror:
+            bind = ("0.0.0.0", bind_parameter)
+    elif type(bind_parameter) is str and ":" in bind_parameter:
+        host, port = bind_parameter.split(":")
+        port = int(port)
+        bind = (host, port)
+    else:
+        bind = bind_parameter
+
+    return bind
+
+
+def parse_ipv6_parameter(bind_parameter):
+    if type(bind_parameter) is int:
+        try:
+            _, _, _, _, bind \
+                = getaddrinfo(getfqdn(), bind_parameter, AF_INET6)[0]
+        except (gaierror, IndexError):
+            bind = ("::", bind_parameter)
+    else:
+        bind = bind_parameter
+
+    return bind
+
+
+class TCP6Server(TCPServer):
+    socket_family = AF_INET6
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv6_parameter(bind_parameter)
 
 
 class UNIXServer(Server):
@@ -787,9 +835,10 @@ class UNIXServer(Server):
 
 
 class UDPServer(Server):
+    socket_family = AF_INET
 
     def _create_socket(self):
-        sock = socket(AF_INET, SOCK_DGRAM)
+        sock = socket(self.socket_family, SOCK_DGRAM)
 
         sock.bind(self._bind)
 
@@ -808,11 +857,11 @@ class UDPServer(Server):
 
         try:
             sock.shutdown(2)
-        except SocketError:
+        except error:
             pass
         try:
             sock.close()
-        except SocketError:
+        except error:
             pass
 
         self.fire(Disconnect(sock))
@@ -831,10 +880,10 @@ class UDPServer(Server):
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.fire(Read(address, data)).notify = True
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
-            self.fire(Error(self._sock, e))
+            self.fire(SocketError(self._sock, e))
             self._close(self._sock)
 
     def _write(self, address, data):
@@ -842,11 +891,11 @@ class UDPServer(Server):
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
-        except SocketError as e:
+        except error as e:
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:
-                self.fire(Error(self._sock, e))
+                self.fire(SocketError(self._sock, e))
 
     @handler("write", override=True)
     def write(self, address, data):
@@ -879,7 +928,18 @@ class UDPServer(Server):
             elif self._poller.isWriting(self._sock):
                 self._poller.removeWriter(self._sock)
 
+
 UDPClient = UDPServer
+
+
+class UDP6Server(UDPServer):
+    socket_family = AF_INET6
+
+    def parse_bind_parameter(self, bind_parameter):
+        return parse_ipv6_parameter(bind_parameter)
+
+
+UDP6Client = UDP6Server
 
 
 def Pipe(*channels, **kwargs):

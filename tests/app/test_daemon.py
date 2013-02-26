@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
+import pytest
+if pytest.PLATFORM == "win32":
+    pytest.skip("Unsupported Platform")
+
 import os
-import errno
 import sys
+import errno
 from time import sleep
 from signal import SIGTERM
 from subprocess import Popen
@@ -15,7 +19,7 @@ def test(tmpdir):
     pid_path = tmpdir.join("app.pid")
 
     args = [sys.executable, app.__file__, str(pid_path)]
-    status = Popen(args, env={'PYTHONPATH': ':'.join(sys.path)}).wait()
+    Popen(args, env={'PYTHONPATH': ':'.join(sys.path)}).wait()
 
     sleep(1)
 

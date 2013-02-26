@@ -7,8 +7,6 @@
 A Component wrapping the inotify API using the pyinotify library.
 """
 
-from time import sleep, time
-
 try:
     from pyinotify import IN_UNMOUNT
     from pyinotify import WatchManager, Notifier, ALL_EVENTS
@@ -18,19 +16,23 @@ try:
 except ImportError:
     raise Exception("No pyinotify support available. Is pyinotify installed?")
 
-from circuits.core import Event, Component
+from circuits.core.utils import findcmp
+from circuits.core import handler, Component, Event
+from circuits.core.pollers import BasePoller, Poller
 
 MASK = ALL_EVENTS
 
 
+class Ready(Event):
+    """Ready Event"""
+
+
 class AddPath(Event):
     """Add path to watch"""
-    channel = 'add_path'
 
 
 class RemovePath(Event):
     """Remove path from watch"""
-    channel = 'remove_path'
 
 
 class Moved(Event):
@@ -66,19 +68,19 @@ class Unmounted(Event):
 
 
 EVENT_MAP = {
-        IN_MOVED_TO:        Moved,
-        IN_MOVE_SELF:       Moved,
-        IN_MOVED_FROM:      Moved,
-        IN_CLOSE_WRITE:     Closed,
-        IN_CLOSE_NOWRITE:   Closed,
-        IN_OPEN:            Opened,
-        IN_DELETE_SELF:     Deleted,
-        IN_DELETE:          Deleted,
-        IN_CREATE:          Created,
-        IN_ACCESS:          Accessed,
-        IN_MODIFY:          Modified,
-        IN_ATTRIB:          Modified,
-        IN_UNMOUNT:         Unmounted,
+    IN_MOVED_TO:        Moved,
+    IN_MOVE_SELF:       Moved,
+    IN_MOVED_FROM:      Moved,
+    IN_CLOSE_WRITE:     Closed,
+    IN_CLOSE_NOWRITE:   Closed,
+    IN_OPEN:            Opened,
+    IN_DELETE_SELF:     Deleted,
+    IN_DELETE:          Deleted,
+    IN_CREATE:          Created,
+    IN_ACCESS:          Accessed,
+    IN_MODIFY:          Modified,
+    IN_ATTRIB:          Modified,
+    IN_UNMOUNT:         Unmounted,
 }
 
 
@@ -86,29 +88,14 @@ class Notify(Component):
 
     channel = "notify"
 
-    def __init__(self, freq=1, timeout=1, channel=channel):
+    def __init__(self, channel=channel):
         super(Notify, self).__init__(channel=channel)
 
-        self._freq = freq
+        self._poller = None
         self._wm = WatchManager()
-        self._notifier = Notifier(self._wm, self._process, timeout=timeout)
+        self._notifier = Notifier(self._wm, self._on_process_events)
 
-    def _sleep(self, rtime):
-        # Only consider sleeping if _freq is > 0
-        if self._freq > 0:
-            ctime = time()
-            s = self._freq - (ctime - rtime)
-            if s > 0:
-                sleep(s)
-
-    def __tick__(self):
-        self._notifier.process_events()
-        rtime = time()
-        if self._notifier.check_events():
-            self._sleep(rtime)
-            self._notifier.read_events()
-
-    def _process(self, event):
+    def _on_process_events(self, event):
         dir = event.dir
         mask = event.mask
         path = event.path
@@ -127,3 +114,37 @@ class Notify(Component):
         wd = self._wm.get_wd(path)
         if wd:
             self._wm.rm_watch(wd, rec=recursive)
+
+    @handler("ready")
+    def _on_ready(self, component):
+        self._poller.addReader(self, self._notifier._fd)
+
+    @handler("registered", channel="*")
+    def _on_registered(self, component, manager):
+        if self._poller is None:
+            if isinstance(component, BasePoller):
+                self._poller = component
+                self.fire(Ready(self))
+            else:
+                if component is not self:
+                    return
+                component = findcmp(self.root, BasePoller)
+                if component is not None:
+                    self._poller = component
+                    self.fire(Ready(self))
+                else:
+                    self._poller = Poller().register(self)
+                    self.fire(Ready(self))
+
+    @handler("started", filter=True, channel="*")
+    def _on_started(self, component):
+        if self._poller is None:
+            self._poller = Poller().register(self)
+            self.fire(Ready(self))
+
+            return True
+
+    @handler("_read", filter=True)
+    def __on_read(self, fd):
+        self._notifier.read_events()
+        self._notifier.process_events()

@@ -27,3 +27,4 @@ Functions
 ---------
 
 .. autofunction :: handler
+.. autofunction :: reprhandler

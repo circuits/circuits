@@ -1,44 +1,55 @@
 #!/usr/bin/env python
 
-try:
-    from urllib.parse import urlunsplit
-except ImportError:
-    from urlparse import urlunsplit
+from circuits.web.servers import Server
 
 from circuits import Component
 from circuits.net.sockets import Write
 from circuits.web.dispatchers import WebSockets
-
-from .websocket import create_connection
-
-
-class Test1(Component):
-
-    channel = "ws"
-
-    def message(self, sock, data):
-        self.fire(Write(sock, data))
+from circuits.web.controllers import Controller
+from circuits.web.websocket import WebSocketClient
+from circuits.web.client import Connect
+import time
 
 
-class Test2(Component):
+class Echo(Component):
 
     channel = "ws"
 
-    def message(self, sock, data):
-        return data
+    def read(self, sock, data):
+        self.fireEvent(Write(sock, "Received: " + data))
+
+
+class Root(Controller):
+
+    def index(self):
+        return "Hello World!"
+
+
+class WSClient(Component):
+
+    response = None
+
+    def read(self, data):
+        self.response = data
 
 
 def test1(webapp):
-    Test1().register(webapp)
-    WebSockets("/websocket").register(webapp)
+    server = Server(("localhost", 8123))
+    Echo().register(server)
+    Root().register(server)
+    WebSockets("/websocket").register(server)
+    server.start()
 
-    host = webapp.server.host
-    if webapp.server.port is not 80:
-        host = "%s:%d" % (host, webapp.server.port)
+    client = WebSocketClient("ws://localhost:8123/websocket")
+    wsclient = WSClient().register(client)
+    client.start()
+    client.fire(Connect())
+    client.fire(Write("Hello!"), "ws")
+    for i in range(100):
+        if wsclient.response is not None:
+            break
+        time.sleep(0.010)
+    assert wsclient.response is not None
+    client.stop()
 
-    url = urlunsplit(("ws", host, "/websocket", "", ""))
-    ws = create_connection(url)
-    ws.send(b"Hello World!")
-    result = ws.recv()
-    assert result == b"Hello World!"
-    ws.close()
+    server.stop()

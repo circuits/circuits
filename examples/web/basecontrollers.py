@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from circuits.web import expose, Server
+from circuits.web import Server
 from circuits.web.controllers import BaseController
+
 
 class Root(BaseController):
 
-    @expose("index")
     def index(self):
         return "Hello World!"
 

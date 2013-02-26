@@ -8,17 +8,17 @@ This module implements the Request and Response objects.
 """
 
 
-import os
 from io import BytesIO, IOBase
 from time import strftime, time
 
 try:
     from Cookie import SimpleCookie
 except ImportError:
-    from http.cookies import SimpleCookie
+    from http.cookies import SimpleCookie  # NOQA
 
 from .utils import url
 from .headers import Headers
+from ..six import binary_type
 from .errors import HTTPError
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
@@ -133,7 +133,7 @@ class Request(object):
 
         if "Cookie" in self.headers:
             rawcookies = self.headers["Cookie"]
-            if not type(rawcookies) == type(''):
+            if not isinstance(rawcookies, str):
                 rawcookies = rawcookies.encode('utf-8')
             self.cookie.load(rawcookies)
 
@@ -142,8 +142,8 @@ class Request(object):
             host = self.local.name or self.local.ip
         self.base = "%s://%s" % (self.scheme, host)
 
-        self.xhr = self.headers.get("X-Requested-With", "").lower() == \
-                "xmlhttprequest"
+        self.xhr = self.headers.get(
+            "X-Requested-With", "").lower() == "xmlhttprequest"
 
     headers = property(_getHeaders, _setHeaders)
 
@@ -168,7 +168,7 @@ class Body(object):
         if response == value:
             return
 
-        if isinstance(value, str):
+        if isinstance(value, binary_type):
             if value:
                 value = [value]
             else:
@@ -207,6 +207,7 @@ class Response(object):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
+        self.encoding = encoding
 
         if code is not None:
             self.code = code
@@ -218,7 +219,6 @@ class Response(object):
         self.time = time()
 
         self.headers = Headers([])
-        self.headers.add_header("Content-Type", "text/html; charset=%s" % encoding)
         self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
 
         if self.request.server:
@@ -234,9 +234,10 @@ class Response(object):
 
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
-                self.status,
-                self.headers["Content-Type"],
-                (len(self.body) if type(self.body) == str else 0))
+            self.status,
+            self.headers["Content-Type"],
+            (len(self.body) if type(self.body) == str else 0)
+        )
 
     def __str__(self):
         self.prepare()
@@ -247,26 +248,34 @@ class Response(object):
 
     @property
     def status(self):
-        return "%d %s" % (self.code,
-                self.message or HTTP_STATUS_CODES[self.code])
+        return "%d %s" % (
+            self.code, self.message or HTTP_STATUS_CODES[self.code]
+        )
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
-        self.headers.setdefault("Content-Type", "text/html")
+        self.headers.setdefault("Content-Type",
+            "text/html; charset={0:s}".format(self.encoding)
+        )
 
-        if self.body:
+        cLength = None
+        if self.body is not None:
             if isinstance(self.body, bytes):
                 cLength = len(self.body)
             elif isinstance(self.body, unicode):
                 cLength = len(self.body.encode(self._encoding))
             elif isinstance(self.body, list):
-                cLength = sum([len(s.encode(self._encoding)) if not isinstance(s, bytes)
-                    else len(s) for s in self.body if s is not None])
-            else:
-                cLength = None
+                cLength = sum(
+                    [
+                        len(s.encode(self._encoding))
+                        if not isinstance(s, bytes)
+                        else len(s) for s in self.body
+                        if s is not None
+                    ]
+                )
 
-            if cLength:
-                self.headers["Content-Length"] = str(cLength)
+        if cLength is not None:
+            self.headers["Content-Length"] = str(cLength)
 
         for k, v in self.cookie.items():
             self.headers.add_header("Set-Cookie", v.OutputString())
@@ -281,7 +290,8 @@ class Response(object):
             else:
                 if self.protocol == "HTTP/1.1" \
                         and self.request.method != "HEAD" \
-                        and self.request.server is not None:
+                        and self.request.server is not None \
+                        and not cLength == 0:
                     self.chunked = True
                     self.headers.add_header("Transfer-Encoding", "chunked")
                 else:

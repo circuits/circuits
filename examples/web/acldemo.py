@@ -4,6 +4,7 @@ from circuits import handler, Component
 from circuits.web.errors import Forbidden
 from circuits.web import Server, Controller
 
+
 class ACL(Component):
 
     allowed = ["127.0.0.1"]
@@ -12,6 +13,7 @@ class ACL(Component):
     def on_request(self, request, response):
         if not request.remote.ip in self.allowed:
             return Forbidden(request, response)
+
 
 class Root(Controller):
 

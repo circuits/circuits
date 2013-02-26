@@ -109,5 +109,4 @@ class LP(BaseComponent):
             lines, buffer = self.splitter(data, self.getBuffer(sock))
             self.updateBuffer(sock, buffer)
             for line in lines:
-                self.fire(Line(sock,
-                    line.decode(self.encoding, "replace")))
+                self.fire(Line(sock, line.decode(self.encoding, "replace")))

@@ -26,10 +26,10 @@ class Timer(BaseComponent):
             datetime, the interval is recalculated as the time span from
             now to the given datetime.
         :type interval: datetime or float number
-        
+
         :param event: the event to fire.
         :type event: :class:`~.events.Event`
-        
+
         If the optional keyword argument *persist* is set to ``True``,
         the event will be fired repeatedly. Else the timer fires the
         event once and then unregisters itself.
@@ -67,7 +67,7 @@ class Timer(BaseComponent):
     def reset(self):
         """
         Reset the timer, i.e. clear the amount of time already waited
-        for. 
+        for.
         """
 
         self._eTime = time() + self.interval

@@ -2,6 +2,7 @@
 
 from circuits.web import Server, Controller
 
+
 class Root(Controller):
 
     html = """\
@@ -42,6 +43,7 @@ class Root(Controller):
 
     def submit(self, firstName, lastName):
         return "Hello %s %s<br /><a href=\"/\">Return</a>" % (
-                firstName, lastName)
+            firstName, lastName
+        )
 
 (Server(8000) + Root()).run()

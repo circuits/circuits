@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 import pytest
 pytest.importorskip("pyinotify")
 
@@ -23,10 +26,12 @@ class App(Component):
     def created(self, *args, **kwargs):
         self.created = True
 
+
 def test_notify(tmpdir):
     app = App()
     Notify().register(app)
     app.start()
+
     try:
         app.fire(AddPath(str(tmpdir)))
         pytest.wait_for(app, 'add_path')

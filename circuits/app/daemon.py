@@ -11,6 +11,7 @@ and changing the current working directory.
 
 import os
 import sys
+import errno
 
 from circuits.core import handler, BaseComponent, Event
 
@@ -57,7 +58,7 @@ class Daemon(BaseComponent):
     channel = "daemon"
 
     def __init__(self, pidfile, path="/", stdin=None, stdout=None,
-            stderr=None, channel=channel):
+                 stderr=None, channel=channel):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(Daemon, self).__init__(channel=channel)

@@ -1,6 +1,7 @@
 from circuits import Component
 from circuits.net.sockets import Write
 
+
 class Server(Component):
 
     channel = "server"
@@ -17,9 +18,9 @@ class Server(Component):
         self.connected = False
         self.disconnected = False
 
-    def ready(self, component):
+    def ready(self, server, bind):
         self.ready = True
-        self.host, self.port = component._sock.getsockname()
+        self.host, self.port = bind
 
     def closed(self):
         self.closed = True

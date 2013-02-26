@@ -10,12 +10,16 @@ This module implements WSGI Components.
 try:
     from urllib.parse import unquote
 except ImportError:
-    from urllib import unquote
-from io import StringIO
+    from urllib import unquote  # NOQA
+
+from operator import itemgetter
 from traceback import format_tb
 from sys import exc_info as _exc_info
 
+from circuits.tools import tryimport
 from circuits.core import handler, BaseComponent
+
+StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 from . import wrappers
 from .http import HTTP
@@ -25,21 +29,53 @@ from .errors import HTTPError
 from .dispatchers import Dispatcher
 
 
+def create_environ(errors, path, req):
+    environ = {}
+    env = environ.__setitem__
+
+    env("REQUEST_METHOD", req.method)
+    env("SERVER_NAME", req.host.split(":", 1)[0])
+    env("SERVER_PORT", "%i" % (req.server.port or 0))
+    env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server_protocol)
+    env("QUERY_STRING", req.qs)
+    env("SCRIPT_NAME", req.script_name)
+    env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
+    env("CONTENT_LENGTH", req.headers.get("Content-Length", ""))
+    env("REMOTE_ADDR", req.remote.ip)
+    env("REMOTE_PORT", "%i" % (req.remote.port or 0))
+    env("wsgi.version", (1, 0))
+    env("wsgi.input", req.body)
+    env("wsgi.errors", errors)
+    env("wsgi.multithread", False)
+    env("wsgi.multiprocess", False)
+    env("wsgi.run_once", False)
+    env("wsgi.url_scheme", req.scheme)
+
+    if req.path:
+        req.script_name = req.path[:len(path)]
+        req.path = req.path[len(path):]
+        env("SCRIPT_NAME", req.script_name)
+        env("PATH_INFO", req.path)
+
+    for k, v in list(req.headers.items()):
+        env("HTTP_%s" % k.upper().replace("-", "_"), v)
+
+    return environ
+
+
 class Application(BaseComponent):
 
     channel = "web"
 
     headerNames = {
-            "HTTP_CGI_AUTHORIZATION": "Authorization",
-            "CONTENT_LENGTH": "Content-Length",
-            "CONTENT_TYPE": "Content-Type",
-            "REMOTE_HOST": "Remote-Host",
-            "REMOTE_ADDR": "Remote-Addr",
-            }
+        "HTTP_CGI_AUTHORIZATION": "Authorization",
+        "CONTENT_LENGTH": "Content-Length",
+        "CONTENT_TYPE": "Content-Type",
+        "REMOTE_HOST": "Remote-Host",
+        "REMOTE_ADDR": "Remote-Addr",
+    }
 
-    def __init__(self):
-        super(Application, self).__init__()
-
+    def init(self):
         self._finished = False
 
         HTTP().register(self)
@@ -61,12 +97,14 @@ class Application(BaseComponent):
         headers = Headers(list(self.translateHeaders(environ)))
 
         protocol = tuple(map(int, env("SERVER_PROTOCOL")[5:].split(".")))
-        request = wrappers.Request(None,
-                env("REQUEST_METHOD"),
-                env("wsgi.url_scheme"),
-                env("PATH_INFO", ""),
-                protocol,
-                env("QUERY_STRING", ""))
+        request = wrappers.Request(
+            None,
+            env("REQUEST_METHOD"),
+            env("wsgi.url_scheme"),
+            env("PATH_INFO", ""),
+            protocol,
+            env("QUERY_STRING", "")
+        )
         request.server = None
 
         request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
@@ -115,6 +153,8 @@ class _Empty(str):
     def __bool__(self):
         return True
 
+    __nonzero__ = __bool__
+
 empty = _Empty()
 del _Empty
 
@@ -123,69 +163,55 @@ class Gateway(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, app, path="/"):
-        super(Gateway, self).__init__()
+    def init(self, apps):
+        self.apps = apps
 
-        self.app = app
-        self.path = path
-
-        self._errors = StringIO()
-        self._request = self._response = None
-
-    def createEnviron(self):
-        environ = {}
-        req = self._request
-        env = environ.__setitem__
-
-        env("REQUEST_METHOD", req.method)
-        env("SERVER_NAME", req.host.split(":", 1)[0])
-        env("SERVER_PORT", "%i" % (req.server.port or 0))
-        env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server_protocol)
-        env("QUERY_STRING", req.qs)
-        env("SCRIPT_NAME", req.script_name)
-        env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
-        env("CONTENT_LENGTH", req.headers.get("Content-Length", ""))
-        env("REMOTE_ADDR", req.remote.ip)
-        env("REMOTE_PORT", "%i" % (req.remote.port or 0))
-        env("wsgi.version", (1, 0))
-        env("wsgi.input", req.body)
-        env("wsgi.errors", self._errors)
-        env("wsgi.multithread", False)
-        env("wsgi.multiprocess", False)
-        env("wsgi.run_once", False)
-        env("wsgi.url_scheme", req.scheme)
-
-        if req.path:
-            req.script_name = req.path[:len(self.path)]
-            req.path = req.path[len(self.path):]
-            env("SCRIPT_NAME", req.script_name)
-            env("PATH_INFO", req.path)
-
-        for k, v in list(req.headers.items()):
-            env("HTTP_%s" % k.upper().replace("-", "_"), v)
-
-        return environ
-
-    def start_response(self, status, headers, exc_info=None):
-        self._response.code = int(status.split(" ", 1)[0])
-        for header in headers:
-            self._response.headers.add_header(*header)
+        self.errors = dict((k, StringIO()) for k in self.apps.keys())
 
     @handler("request", filter=True, priority=0.2)
     def _on_request(self, event, request, response):
-        if self.path and not request.path.startswith(self.path):
+        if not self.apps:
             return
 
-        self._request = request
-        self._response = response
-        self._errors = StringIO()
+        parts = request.path.split("/")
 
-        environ = self.createEnviron()
+        candidates = []
+        for i in range(len(parts)):
+            k = "/".join(parts[:(i + 1)]) or "/"
+            if k in self.apps:
+                candidates.append((k, self.apps[k]))
+        candidates = sorted(candidates, key=itemgetter(0), reverse=True)
+
+        if not candidates:
+            return
+
+        path, app = candidates[0]
+
+        buffer = StringIO()
+
+        def start_response(status, headers, exc_info=None):
+            response.code = int(status.split(" ", 1)[0])
+            for header in headers:
+                response.headers.add_header(*header)
+            return buffer.write
+
+        errors = self.errors[path]
+
+        environ = create_environ(errors, path, request)
+
         try:
-            body = self.app(environ, self.start_response)
+            body = app(environ, start_response)
+            if isinstance(body, list):
+                body = "".join(body)
+
             if not body:
-                return empty
-            return body
+                if not buffer.tell():
+                    return empty
+                else:
+                    buffer.seek(0)
+                    return buffer
+            else:
+                return body
         except Exception as error:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))

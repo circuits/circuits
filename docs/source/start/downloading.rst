@@ -7,7 +7,7 @@ Latest Stable Release
 
 The latest stable releases can be downloaded from the
 `Downloads <http://bitbucket.org/prologic/circuits/downloads/>`_ page
-(*Specifically the Tags Tab*).
+(*specifically the Tags tab*).
 
 
 Latest Development Source Code

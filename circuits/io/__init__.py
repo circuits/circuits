@@ -12,7 +12,10 @@ and StdErr are also created by importing this package.
 import sys
 
 from .file import File
-from .events import Close, Seek, Write
+from .file import Close, Open, Seek, Write
+
+from .process import Process
+from .process import Start, Stop, Signal, Kill, Wait
 
 try:
     from .notify import Notify
@@ -25,8 +28,10 @@ except:
     pass
 
 try:
-    stdin = File(fd=sys.stdin, mode="r", channel="stdin")
-    stdout = File(fd=sys.stdout, mode="w", channel="stdout")
-    stderr = File(fd=sys.stderr, mode="w", channel="stderr")
+    stdin = File(sys.stdin, channel="stdin")
+    stdout = File(sys.stdout, channel="stdout")
+    stderr = File(sys.stderr, channel="stderr")
 except:
     pass
+
+# flake8: noqa

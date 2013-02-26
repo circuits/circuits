@@ -10,7 +10,8 @@
 
 import json
 
-from circuits.core import Event, Value
+from circuits.core import Event
+from circuits.six import text_type
 
 
 def load_event(s):
@@ -20,23 +21,15 @@ def load_event(s):
 
     args = []
     for arg in data["args"]:
-        if isinstance(arg, unicode):
-            try:
-                args.append(str(arg))
-            except UnicodeDecodeError:
-                args.append(arg)
-        else:
-            args.append(arg)
+        if isinstance(arg, text_type):
+            arg = arg.encode("utf-8")
+        args.append(arg)
 
     kwargs = {}
     for k, v in data["kwargs"].items():
-        if isinstance(v, unicode):
-            try:
-                kwargs[str(k)] = str(v)
-            except UnicodeDecodeError:
-                kwargs[str(k)] = v
-        else:
-            kwargs[str(k)] = v
+        if isinstance(v, text_type):
+            v = v.encode("utf-8")
+        kwargs[str(k)] = v
 
     e = Event.create(name, *args, **kwargs)
 
@@ -50,15 +43,16 @@ def load_event(s):
 
 def dump_event(e, id):
     data = {
-            "id": id,
-            "name": e.name,
-            "args": e.args,
-            "kwargs": e.kwargs,
-            "success": e.success,
-            "failure": e.failure,
-            "channels": e.channels,
-            "notify": e.notify
+        "id": id,
+        "name": e.name,
+        "args": e.args,
+        "kwargs": e.kwargs,
+        "success": e.success,
+        "failure": e.failure,
+        "channels": e.channels,
+        "notify": e.notify
     }
+
     return json.dumps(data)
 
 

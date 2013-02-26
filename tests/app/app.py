@@ -12,12 +12,14 @@ except ImportError:
 from circuits import Component
 from circuits.app import Daemon
 
+
 class App(Component):
 
     def __init__(self, pidfile):
         super(App, self).__init__()
 
         Daemon(pidfile).register(self)
+
 
 def main():
     if HAS_COVERAGE:

@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 
-from circuits.web import Controller
-from circuits.web import BaseServer
-
+from circuits.core.manager import Manager
 from circuits.core.handlers import handler
 from circuits.core.components import BaseComponent
-from circuits.core.manager import Manager
-from .helpers import urlopen
+
+from circuits.web import BaseServer, Controller
 from circuits.web.dispatchers.dispatcher import Dispatcher
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin
+
+from .helpers import urlopen, urljoin
+
 
 class PrefixingDispatcher(BaseComponent):
     """Forward to another Dispatcher based on the channel."""
@@ -26,12 +23,14 @@ class PrefixingDispatcher(BaseComponent):
         path = urljoin("/%s/" % self.channel, path)
         request.path = path
 
+
 class DummyRoot(Controller):
-    
+
     channel = "/"
 
     def index(self):
         return "Not used"
+
 
 class Root1(Controller):
 
@@ -39,6 +38,7 @@ class Root1(Controller):
 
     def index(self):
         return "Hello from site 1!"
+
 
 class Root2(Controller):
 
@@ -51,15 +51,15 @@ class Root2(Controller):
 def test_disps():
 
     manager = Manager()
-    
-    server1 = BaseServer(("localhost", 8000), channel="site1") 
-    server1.register(manager);
+
+    server1 = BaseServer(0, channel="site1")
+    server1.register(manager)
     PrefixingDispatcher(channel="site1").register(server1)
     Dispatcher(channel="site1").register(server1)
     Root1().register(manager)
- 
-    server2 = BaseServer(("localhost", 8001), channel="site2") 
-    server2.register(manager);
+
+    server2 = BaseServer(("localhost", 0), channel="site2")
+    server2.register(manager)
     PrefixingDispatcher(channel="site2").register(server2)
     Dispatcher(channel="site2").register(server2)
     Root2().register(manager)

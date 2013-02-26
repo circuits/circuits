@@ -34,7 +34,9 @@ class Node(BaseComponent):
             Server(self._bind).register(self)
 
     def add(self, name, host, port):
-        channel = sha256("%s:%d" % (host, port)).hexdigest()
+        channel = sha256(
+            "{0:s}:{1:d}".format(host, port).encode("utf-8")
+        ).hexdigest()
         node = Client(host, port, channel=channel)
         node.register(self)
 

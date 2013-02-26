@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-import pytest
-
 from circuits import Manager
 from circuits.core.utils import findtype
 from circuits.core.pollers import BasePoller, Poller
 from circuits.net.sockets import TCPServer, TCPClient
+
 
 def test():
     m = Manager()

@@ -1,25 +1,23 @@
 #!/usr/bin/env python
 
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
-
 from circuits import Component
 from circuits.web import Controller, JSONRPC
 
 from .jsonrpclib import ServerProxy
 from .helpers import urlopen
 
+
 class Test(Component):
 
     def eval(self, s):
         return eval(s)
 
+
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 def test(webapp):
     rpc = JSONRPC("/rpc")

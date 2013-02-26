@@ -22,9 +22,11 @@ class Logger(BaseComponent):
 
     channel = "logger"
 
-    LEVELS = {"debug": DEBUG, "info": INFO, "warning": WARNING,
-            "warn": WARN, "error": ERROR, "exception": ERROR,
-            "critical": CRITICAL}
+    LEVELS = {
+        "debug": DEBUG, "info": INFO, "warning": WARNING,
+        "warn": WARN, "error": ERROR, "exception": ERROR,
+        "critical": CRITICAL
+    }
 
     def __init__(self, filename, name, type, level, channel=channel):
         super(Logger, self).__init__(channel=channel)

@@ -7,9 +7,6 @@
 Events
 ------
 
-.. autoclass :: Message
-   :members:
-
 
 Components
 ----------

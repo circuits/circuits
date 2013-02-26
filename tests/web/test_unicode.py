@@ -16,6 +16,7 @@ class Root(Controller):
         self.response.headers["Content-Type"] = "text/html; charset=utf-8"
         return "Hello World!"
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()

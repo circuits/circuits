@@ -10,8 +10,11 @@ from circuits.web import Server, Controller, Logger, Static
 
 import macros
 
-text2html = Parser(create_dialect(creole11_base, macro_func=macros.dispatcher),
-        method="xhtml")
+text2html = Parser(
+    create_dialect(creole11_base, macro_func=macros.dispatcher),
+    method="xhtml"
+)
+
 
 class Wiki(object):
 
@@ -33,17 +36,22 @@ class Wiki(object):
         self._cu.execute("SELECT COUNT() FROM pages WHERE name=?", (name,))
         row = self._cu.fetchone()
         if row[0]:
-            self._cu.execute("UPDATE pages SET text=? WHERE name=?",
-                    (text, name,))
+            self._cu.execute(
+                "UPDATE pages SET text=? WHERE name=?",
+                (text, name,)
+            )
         else:
-            self._cu.execute("INSERT INTO pages (name, text) VALUES (?, ?)",
-                    (name, text,))
+            self._cu.execute(
+                "INSERT INTO pages (name, text) VALUES (?, ?)",
+                (name, text,)
+            )
         self._cx.commit()
 
     def get(self, name, default=None):
         self._cu.execute("SELECT text FROM pages WHERE name=?", (name,))
         row = self._cu.fetchone()
         return row[0] if row else default
+
 
 class Root(Controller):
 
@@ -59,8 +67,7 @@ class Root(Controller):
         d = {}
         d["title"] = name
         d["version"] = circuits.__version__
-        d["menu"] = text2html(self.db.get("SiteMenu", ""),
-                environ=environ)
+        d["menu"] = text2html(self.db.get("SiteMenu", ""), environ=environ)
 
         text = self.db.get(name, "")
         s = open("tpl/%s.html" % action, "r").read()
@@ -76,4 +83,9 @@ class Root(Controller):
         self.db.save(name, form.get("text", ""))
         return self.redirect(name)
 
-(Server(("0.0.0.0", 8000)) + Static(docroot="static") + Root() + Logger()).run()
+(
+    Server(("0.0.0.0", 8000))
+    + Static(docroot="static")
+    + Root()
+    + Logger()
+).run()

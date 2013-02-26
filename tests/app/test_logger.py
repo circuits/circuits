@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+import sys
+
+import pytest
+if "__pypy__" in sys.modules:
+    pytest.skip("Broken on pypy")
+
 from time import strftime
 
 from circuits import Event, Component
@@ -7,13 +13,16 @@ from circuits.app.log import Log, Logger
 
 LEVELS = list(Logger.LEVELS.keys())
 
+
 class Test(Event):
     """Test Event"""
+
 
 class App(Component):
 
     def test(self, level="debug"):
         self.fire(Log(level, "Hello World!"))
+
 
 def test(tmpdir):
     filepath = tmpdir.ensure("test.log")
@@ -40,11 +49,14 @@ def test(tmpdir):
         elif level == "warn":
             level = "warning"
         assert s == "%s test[log] %s: Hello World!" % (now, level.upper()) or \
-            s[(len(now) + 1):] == "test[log] %s: Hello World!" % (level.upper())
+            s[(len(now) + 1):] == (
+                "test[log] %s: Hello World!" % (level.upper())
+            )
     for level in LEVELS:
         f.seek(0)
         f.truncate()
         test(f, level)
+
 
 def test_direct(tmpdir):
     filepath = tmpdir.ensure("test.log")
@@ -62,11 +74,18 @@ def test_direct(tmpdir):
         if level == "warn":
             level = "warning"
         if level == "exception":
-            assert s[:len(now)+31] == "%s test[log] ERROR: Hello World!\n" % now or \
-                s[(len(now) + 1):(len(now) + 1)+31] == "test[log] ERROR: Hello World!\n"
+            assert s[:len(now)+31] == (
+                "{0:s} test[log] ERROR: Hello World!\n".format(now)
+            ) or s[(len(now) + 1):(len(now) + 1)+31] == (
+                "test[log] ERROR: Hello World!\n"
+            )
         else:
-            assert s == "%s test[log] %s: Hello World!" % (now, level.upper()) or \
-                s[(len(now) + 1):] == "test[log] %s: Hello World!" % level.upper()
+            assert s == (
+                "%s test[log] %s: Hello World!" % (now, level.upper()) or
+                s[(len(now) + 1):] == (
+                    "test[log] %s: Hello World!" % level.upper()
+                )
+            )
 
     for level in LEVELS:
         f.seek(0)

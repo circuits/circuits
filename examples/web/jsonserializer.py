@@ -2,8 +2,9 @@
 
 import json
 
-from circuits import handler, Component, Debugger
+from circuits import handler, Component
 from circuits.web import Server, Controller, Logger
+
 
 class JSONSerializer(Component):
 
@@ -16,13 +17,14 @@ class JSONSerializer(Component):
         event[2] = json.dumps(retval.value)
         response.headers["Content-Type"] = "application/javascript"
 
+
 class Root(Controller):
 
     def index(self):
         return {"message": "Hello World!"}
 
-(Server(("0.0.0.0", 8000))
-        + JSONSerializer()
-        + Debugger()
-        + Root() + Logger()
+(
+    Server(("0.0.0.0", 8000))
+    + JSONSerializer()
+    + Root() + Logger()
 ).run()

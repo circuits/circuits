@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# vim: set sw=3 sts=3 ts=3
 
-"""(Example) IRC Client
+"""Example IRC Client
 
 A basic IRC client with a very basic console interface.
+
+For usage type:
+
+   ./ircclient.py --help
+
 """
 
 import os
-import optparse
 from socket import gethostname
+from optparse import OptionParser
 
 from circuits.io import stdin
 from circuits import handler, Component
@@ -20,30 +24,21 @@ from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
 
-###
-### Functions
-###
 
 def parse_options():
-    """parse_options() -> opts, args
+    parser = OptionParser(usage=USAGE, version=VERSION)
 
-    Parse any command-line options given returning both
-    the parsed options and arguments.
-    """
+    parser.add_option(
+        "-n", "--nick",
+        action="store", default=os.environ["USER"], dest="nick",
+        help="Nickname to use"
+    )
 
-    parser = optparse.OptionParser(usage=USAGE, version=VERSION)
-
-    parser.add_option("-s", "--ssl",
-            action="store_true", default=False, dest="ssl",
-            help="Enable Secure Socket Layer (SSL)")
-
-    parser.add_option("-n", "--nick",
-            action="store", default=os.environ["USER"], dest="nick",
-            help="Nickname to use")
-
-    parser.add_option("-c", "--channel",
-            action="store", default="#circuits", dest="channel",
-            help="Channel to join")
+    parser.add_option(
+        "-c", "--channel",
+        action="store", default="#circuits", dest="channel",
+        help="Channel to join"
+    )
 
     opts, args = parser.parse_args()
 
@@ -53,29 +48,40 @@ def parse_options():
 
     return opts, args
 
-###
-### Components
-###
 
 class Client(Component):
 
+    # Set a separate channel in case we want multiple ``Client`` instances.
     channel = "ircclient"
 
-    def __init__(self, opts, host, port=6667):
-        super(Client, self).__init__()
-
-        self.opts = opts
+    def init(self, host, port=6667, opts=None):
         self.host = host
         self.port = port
+        self.opts = opts
         self.hostname = gethostname()
 
         self.nick = opts.nick
         self.ircchannel = opts.channel
 
+        # Add TCPClient and IRC to the system.
         self += (TCPClient(channel=self.channel) + IRC(channel=self.channel))
+
+    def ready(self, component):
+        """Ready Event
+
+        This event is triggered by the underlying ``TCPClient`` Component
+        when it is ready to start making a new connection.
+        """
+
         self.fire(Connect(self.host, self.port))
 
     def connected(self, host, port):
+        """Connected Event
+
+        This event is triggered by the underlying ``TCPClient`` Component
+        when a successfully connection has been made.
+        """
+
         print("Connected to %s:%d" % (host, port))
 
         nick = self.nick
@@ -85,10 +91,13 @@ class Client(Component):
         self.fire(USER(nick, hostname, host, name))
         self.fire(NICK(nick))
 
-    def disconnected(self):
-        self.fire(Connect(self.opts.host, self.opts.port))
-
     def numeric(self, source, target, numeric, args, message):
+        """Numeric Event
+
+        This event is triggered by the ``IRC`` Protocol Component when we have
+        received an IRC Numberic Event from server we are connected to.
+        """
+
         if numeric == 1:
             self.fire(JOIN(self.ircchannel))
         elif numeric == 433:
@@ -96,15 +105,33 @@ class Client(Component):
             self.fire(NICK(newnick))
 
     def join(self, source, channel):
+        """Join Event
+
+        This event is triggered by the ``IRC`` Protocol Component when a
+        user has joined a channel.
+        """
+
         if source[0].lower() == self.nick.lower():
             print("Joined %s" % channel)
         else:
             print("--> %s (%s) has joined %s" % (source[0], source, channel))
 
     def notice(self, source, target, message):
+        """Notice Event
+
+        This event is triggered by the ``IRC`` Protocol Component for each
+        notice we receieve from the server.
+        """
+
         print("-%s- %s" % (source[0], message))
 
     def message(self, source, target, message):
+        """Message Event
+
+        This event is triggered by the ``IRC`` Protocol Component for each
+        message we receieve from the server.
+        """
+
         if target[0] == "#":
             print("<%s> %s" % (target, message))
         else:
@@ -112,11 +139,15 @@ class Client(Component):
 
     @handler("read", channel="stdin")
     def stdin_read(self, data):
+        """Read Event (on channel ``stdin``)
+
+        This is the event handler for ``read`` events specifically from the
+        ``stdin`` channel. This is triggered each time stdin has data that
+        it has read.
+        """
+
         self.fire(PRIVMSG(self.ircchannel, data.strip()))
 
-###
-### Main
-###
 
 def main():
     opts, args = parse_options()
@@ -127,11 +158,9 @@ def main():
     else:
         port = 6667
 
-    (Client(opts, host, port) + stdin).run()
+    # Configure and run the system.
+    (Client(host, port, opts=opts) + stdin).run()
 
-###
-### Entry Point
-###
 
 if __name__ == "__main__":
     main()

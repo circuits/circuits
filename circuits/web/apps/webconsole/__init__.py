@@ -5,13 +5,11 @@ import codeop
 import inspect
 import traceback
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 from circuits import handler
 from circuits.web import Controller
+from circuits.tools import tryimport
+
+StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 docroot = os.path.abspath(os.path.join(os.path.dirname(__file__), "htdocs"))
 
@@ -50,7 +48,10 @@ class HTTPREPL(object):
         return self.execute(code)
 
     def execute(self, code):
-        """Execute the given code in self.locals and return any stdout/sterr."""
+        """
+        Execute the given code in self.locals and return any stdout/sterr.
+        """
+
         out = StringIO()
         oldout = sys.stdout
         olderr = sys.stderr

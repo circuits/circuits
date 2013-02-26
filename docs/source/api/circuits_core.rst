@@ -12,9 +12,7 @@
    circuits_core_handlers
    circuits_core_manager
    circuits_core_values
-   circuits_core_futures
    circuits_core_pollers
-   circuits_core_pools
    circuits_core_timers
    circuits_core_loader
    circuits_core_utils

@@ -4,10 +4,12 @@ from json import dumps
 
 from circuits.web import Server, Controller
 
+
 def json(f):
     def wrapper(self, *args, **kwargs):
         return dumps(f(self, *args, **kwargs))
     return wrapper
+
 
 class Root(Controller):
 

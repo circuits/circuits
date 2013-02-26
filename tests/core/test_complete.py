@@ -6,6 +6,7 @@ from circuits import Event, Component
 class SimpleEvent(Event):
     complete = True
 
+
 class Test(Event):
     """Test Event"""
     success = True
@@ -68,14 +69,14 @@ class App(Component):
         """
         self._state_when_complete = self._state
 
-from circuits import Debugger
-app = App() + Debugger()
+app = App()
 Nested1().register(app)
 Nested2().register(app)
 Nested3().register(app)
 
 while app:
     app.flush()
+
 
 def test_complete_simple():
     """
@@ -85,7 +86,8 @@ def test_complete_simple():
     while app:
         app.flush()
 
-    assert app._simple_event_completed == True
+    assert app._simple_event_completed
+
 
 def test_complete_nested():
     app.fire(Test())

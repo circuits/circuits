@@ -3,7 +3,7 @@
 try:
     from xmlrpc.client import ServerProxy
 except ImportError:
-    from xmlrpclib import ServerProxy
+    from xmlrpclib import ServerProxy  # NOQA
 
 from circuits import Component
 from circuits.web import Controller, XMLRPC
@@ -16,10 +16,12 @@ class Test(Component):
     def eval(self, s):
         return eval(s)
 
+
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 def test(webapp):
     rpc = XMLRPC("/rpc")

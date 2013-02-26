@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 
+import pytest
+
 import os
 import sys
 
 
 def test(tmpdir):
     if not os.name == "posix":
-        py.test.skip("Cannot run test on a non-POSIX platform.")
+        pytest.skip("Cannot run test on a non-POSIX platform.")
 
     from time import sleep
     from subprocess import Popen
-    from signal import SIGHUP, SIGTERM
+    from signal import SIGTERM
 
     from tests.core import signalapp
 

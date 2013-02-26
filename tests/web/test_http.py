@@ -2,11 +2,12 @@
 
 import pytest
 
-from circuits.web import Server, Controller
-from circuits.web.client import parse_url
-from circuits.net.sockets import TCPServer, TCPClient
-from circuits.net.sockets import Close, Connect, Write
 from circuits import Component
+from circuits.web import Controller
+from circuits.web.client import parse_url
+from circuits.net.sockets import TCPClient
+from circuits.net.sockets import Connect, Write
+
 
 class Client(Component):
     def __init__(self, *args, **kwargs):
@@ -22,10 +23,12 @@ class Client(Component):
     def buffer(self):
         return b''.join(self._buffer)
 
+
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 def test(webapp):
     transport = TCPClient()

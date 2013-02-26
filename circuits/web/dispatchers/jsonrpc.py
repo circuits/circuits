@@ -12,6 +12,7 @@ from circuits.tools import tryimport
 
 json = tryimport(("json", "simplejson"))
 
+from circuits.six import binary_type
 from circuits.web.events import Response
 from circuits import handler, Event, BaseComponent
 
@@ -53,8 +54,7 @@ class JSONRPC(BaseComponent):
             else:
                 channel, name = self.rpc_channel, method
 
-            if not isinstance(name, bytes):
-                name = name.encode('utf-8')
+            name = str(name) if not isinstance(name, binary_type) else name
 
             @handler("%s_value_changed" % name, priority=0.1)
             def _on_value_changed(self, value):
@@ -82,21 +82,21 @@ class JSONRPC(BaseComponent):
 
     def _response(self, id, result):
         data = {
-                "id": id,
-                "version": "1.1",
-                "result": result,
-                "error": None
-                }
+            "id": id,
+            "version": "1.1",
+            "result": result,
+            "error": None
+        }
         return json.dumps(data).encode(self.encoding)
 
     def _error(self, id, code, message):
         data = {
-                "id": id,
-                "version": "1.1",
-                "error": {
-                    "name": "JSONRPCError",
-                    "code": code,
-                    "message": message
-                    }
-                }
+            "id": id,
+            "version": "1.1",
+            "error": {
+                "name": "JSONRPCError",
+                "code": code,
+                "message": message
+            }
+        }
         return json.dumps(data).encode(self.encoding)

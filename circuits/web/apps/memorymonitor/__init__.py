@@ -4,14 +4,16 @@ import cgi
 import sys
 import time
 import threading
-from StringIO import StringIO
 from types import FrameType, ModuleType
 
 import Image
 import ImageDraw
 
 from circuits import handler
-from circuits.web import Controller, Static
+from circuits.web import Controller
+from circuits.tools import tryimport
+
+StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 import reftree
 
@@ -27,11 +29,11 @@ class _(object):
 dictproxy = type(_.__dict__)
 
 method_types = [
-        type(tuple.__le__),                 # 'wrapper_descriptor'
-        type([1].__le__),                   # 'method-wrapper'
-        type(sys.getcheckinterval),         # 'builtin_function_or_method'
-        type(cgi.FieldStorage.getfirst),    # 'instancemethod'
-        ]
+    type(tuple.__le__),                 # 'wrapper_descriptor'
+    type([1].__le__),                   # 'method-wrapper'
+    type(sys.getcheckinterval),         # 'builtin_function_or_method'
+    type(cgi.FieldStorage.getfirst),    # 'instancemethod'
+]
 
 
 class MemoryMonitor(Controller):
@@ -142,9 +144,11 @@ class MemoryMonitor(Controller):
         else:
             rows = self.trace_one(typename, objid)
 
-        return self._render("trace.html", output="\n".join(rows),
-                        typename=cgi.escape(typename),
-                        objid=str(objid or ''))
+        return self._render(
+            "trace.html", output="\n".join(rows),
+            typename=cgi.escape(typename),
+            objid=str(objid or '')
+        )
 
     def trace_all(self, typename):
         rows = []
@@ -179,7 +183,9 @@ class MemoryMonitor(Controller):
                     rows.append('</div>')
 
                     # Referrers
-                    rows.append('<div class="refs"><h3>Referrers (Parents)</h3>')
+                    rows.append(
+                        '<div class="refs"><h3>Referrers (Parents)</h3>'
+                    )
                     rows.append('<p class="desc"><a href="%s">Show the '
                                 'entire tree</a> of reachable objects</p>'
                                 % self.url("/tree/%s/%s" % (typename, objid)))
@@ -191,9 +197,13 @@ class MemoryMonitor(Controller):
                     rows.append('</div>')
 
                     # Referents
-                    rows.append('<div class="refs"><h3>Referents (Children)</h3>')
+                    rows.append(
+                        '<div class="refs"><h3>Referents (Children)</h3>'
+                    )
                     for child in gc.get_referents(obj):
-                        rows.append("<p class='obj'>%s</p>" % tree.get_repr(child))
+                        rows.append(
+                            "<p class='obj'>%s</p>" % tree.get_repr(child)
+                        )
                     rows.append('</div>')
                 break
         if not rows:
@@ -217,7 +227,8 @@ class MemoryMonitor(Controller):
 
                     tree = ReferrerTree(obj)
                     tree.ignore(all_objs)
-                    for depth, parentid, parentrepr in tree.walk(maxresults=1000):
+                    for depth, parentid, parentrepr in tree.walk(
+                            maxresults=1000):
                         rows.append(parentrepr)
 
                     rows.append('</div>')
@@ -251,7 +262,7 @@ class ReferrerTree(reftree.Tree):
         for ref in refiter:
             # Exclude all frames that are from this module or reftree.
             if (isinstance(ref, FrameType)
-                and ref.f_code.co_filename in (thisfile, self.filename)):
+                    and ref.f_code.co_filename in (thisfile, self.filename)):
                 continue
 
             # Exclude all functions and classes from this module or reftree.
@@ -296,7 +307,10 @@ class ReferrerTree(reftree.Tree):
                 )
 
     def get_refkey(self, obj, referent):
-        """Return the dict key or attribute name of obj which refers to referent."""
+        """
+        Return the dict key or attribute name of obj which refers to referent.
+        """
+
         if isinstance(obj, dict):
             for k, v in obj.iteritems():
                 if v is referent:

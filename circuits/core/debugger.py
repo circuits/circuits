@@ -10,9 +10,8 @@ each event to sys.stderr or to a Logger Component instance.
 import os
 import sys
 
-from .handlers import handler
 from .components import BaseComponent
-from circuits.tools import reprhandler
+from .handlers import handler, reprhandler
 
 
 class Debugger(BaseComponent):
@@ -32,7 +31,7 @@ class Debugger(BaseComponent):
     IgnoreChannels = []
 
     def __init__(self, errors=True, events=True, file=None, logger=None,
-            prefix=None, trim=None, **kwargs):
+                 prefix=None, trim=None, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
         super(Debugger, self).__init__()

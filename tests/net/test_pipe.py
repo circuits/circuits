@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import pytest
+if pytest.PLATFORM == "win32":
+    pytest.skip("Unsupported Platform")
 
 from circuits import Manager
 from circuits.net.sockets import Pipe
@@ -9,8 +11,10 @@ from circuits.net.sockets import Close, Write
 
 from .client import Client
 
+
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"Poller": Select})
+
 
 def test_pipe(Poller):
     m = Manager() + Poller()

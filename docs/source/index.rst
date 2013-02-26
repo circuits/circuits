@@ -2,11 +2,17 @@
 circuits |version| Documentation
 ================================
 
+
 :Release: |release|
 :Date: |today|
 
+
+.. include:: ../../README.rst
+
+
 Contents
 ========
+
 
 .. toctree::
    :maxdepth: 1
@@ -40,6 +46,7 @@ Contents
 
 Indices and tables
 ==================
+
 
 * :ref:`Index <genindex>`
 * :ref:`modindex`

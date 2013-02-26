@@ -12,11 +12,18 @@ is used independently it should not be registered as it causes its
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
 
+from threading import current_thread
+from weakref import WeakKeyDictionary
+from multiprocessing import cpu_count
+from multiprocessing.pool import ThreadPool
+from multiprocessing import Pool as ProcessPool
+
 from .events import Event
-from .utils import findroot
-from .manager import Manager
 from .handlers import handler
 from .components import BaseComponent
+
+
+DEFAULT_WORKERS = 10
 
 
 class Task(Event):
@@ -54,15 +61,25 @@ class Worker(BaseComponent):
 
     channel = "worker"
 
-    def __init__(self, process=False, channel=channel):
-        super(Worker, self).__init__(channel=channel)
+    def init(self, process=False, workers=DEFAULT_WORKERS, channel=channel):
+        if not hasattr(current_thread(), "_children"):
+            current_thread()._children = WeakKeyDictionary()
 
-        if process:
-            self.start(link=self, process=True)
-            self.start()
-        else:
-            self.start()
+        self.workers = workers or (cpu_count() if process else DEFAULT_WORKERS)
+        Pool = ProcessPool if process else ThreadPool
+        self.pool = Pool(self.workers)
+
+    @handler("stopped", "unregistered", channel="*")
+    def _on_stopped(self, event, *args):
+        if event.name == "unregistered" and args[0] is not self:
+            return
+
+        self.pool.close()
+        self.pool.join()
 
     @handler("task")
     def _on_task(self, f, *args, **kwargs):
-        return f(*args, **kwargs)
+        result = self.pool.apply_async(f, args, kwargs)
+        while not result.ready():
+            yield
+        yield result.get()

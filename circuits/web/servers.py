@@ -54,7 +54,8 @@ class BaseServer(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, bind, encoding="utf-8", channel=channel):
+    def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
+                 channel=channel):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(BaseServer, self).__init__(channel=channel)
@@ -67,13 +68,20 @@ class BaseServer(BaseComponent):
             else:
                 SocketType = UNIXServer
 
-        self.server = SocketType(bind, channel=channel).register(self)
+        self.server = SocketType(
+            bind,
+            secure=secure,
+            certfile=certfile,
+            channel=channel
+        ).register(self)
+
         HTTP(encoding=encoding, channel=channel).register(self)
 
         Request.server = self
         if isinstance(self.server._bind, tuple):
-            Request.local = Host(self.server._bind[0],
-                    self.server._bind[1])
+            Request.local = Host(
+                self.server._bind[0], self.server._bind[1]
+            )
         else:
             Request.local = Host(self.server._bind, None)
         Request.host = self.host
@@ -151,9 +159,10 @@ class StdinServer(BaseComponent):
 
         WebEvent.channels = (channel,)
 
-        self.server = (io.stdin
-                + io.stdout
-                + HTTP(encoding=encoding, channel=channel)
+        self.server = (
+            io.stdin
+            + io.stdout
+            + HTTP(encoding=encoding, channel=channel)
         )
 
         self += self.server

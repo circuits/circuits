@@ -32,7 +32,7 @@ def flatten(root, visited=None):
 
 def findchannel(root, channel, all=False):
     components = [x for x in flatten(root)
-            if x.channel == channel]
+                  if x.channel == channel]
 
     if all:
         return components
@@ -43,7 +43,7 @@ def findchannel(root, channel, all=False):
 
 def findtype(root, component, all=False):
     components = [x for x in flatten(root)
-            if issubclass(type(x), component)]
+                  if issubclass(type(x), component)]
 
     if all:
         return components

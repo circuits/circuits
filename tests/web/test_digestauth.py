@@ -1,7 +1,13 @@
+#!/usr/bin/env python
+
+import pytest
+if pytest.PYVER[:2] == (3, 3):
+    pytest.skip("Broken on Python 3.3")
+
 from circuits.web import Controller
 from circuits.web.tools import check_auth, digest_auth
 
-from .helpers import HTTPError, HTTPError, HTTPDigestAuthHandler
+from .helpers import HTTPError, HTTPDigestAuthHandler
 from .helpers import urlopen, build_opener, install_opener
 
 
@@ -15,6 +21,7 @@ class Root(Controller):
             return "Hello World!"
 
         return digest_auth(self.request, self.response, realm, users)
+
 
 def test(webapp):
     try:

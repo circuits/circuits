@@ -12,6 +12,7 @@ except ImportError:
 from circuits import Component
 from circuits.app import Daemon
 
+
 class App(Component):
 
     def __init__(self, pidfile, signalfile):
@@ -26,6 +27,7 @@ class App(Component):
         f = open(self.signalfile, "w")
         f.write(str(signal))
         f.close()
+
 
 def main():
     if HAS_COVERAGE:

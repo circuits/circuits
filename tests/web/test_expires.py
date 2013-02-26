@@ -19,18 +19,20 @@ class Root(Controller):
         self.expires(0)
         return "Hello World!"
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
-    assert s  == b"Hello World!"
+    assert s == b"Hello World!"
     expires = f.headers["Expires"]
     diff = (mktime(parsedate(expires)) - mktime(datetime.utcnow().timetuple()))
-    assert 60 - (60 * 0.1) < diff < 60 + (60 * 0.1) # diff is about 60 +- 10%
+    assert 60 - (60 * 0.1) < diff < 60 + (60 * 0.1)  # diff is about 60 +- 10%
+
 
 def test_nocache(webapp):
     f = urlopen("%s/nocache" % webapp.server.base)
     s = f.read()
-    assert s  == b"Hello World!"
+    assert s == b"Hello World!"
 
     expires = f.headers["Expires"]
     pragma = f.headers["Pragma"]

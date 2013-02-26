@@ -2,6 +2,7 @@
 
 from circuits.web import Server, Controller, Logger
 
+
 class Root(Controller):
 
     def index(self):

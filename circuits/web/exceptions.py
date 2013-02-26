@@ -9,8 +9,6 @@ This module implements a set of standard HTTP Errors as Python Exceptions.
 Note: This code is mostly borrowed from werkzeug and adapted for circuits.web
 """
 
-import sys
-from cgi import escape
 from inspect import isclass
 
 from .constants import HTTP_STATUS_CODES
@@ -122,9 +120,9 @@ class MethodNotAllowed(HTTPException):
         HTTPException.__init__(self, description)
         if description is None:
             self.description = (
-                    '<p>The method %s is not allowed '
-                    'for the requested URL.</p>'
-                    ) % method
+                '<p>The method %s is not allowed '
+                'for the requested URL.</p>'
+            ) % method
 
 
 class NotAcceptable(HTTPException):
@@ -140,7 +138,7 @@ class NotAcceptable(HTTPException):
         'generating response entities which have content characteristics '
         'not acceptable according to the accept headers sent in the '
         'request.</p>'
-        )
+    )
 
 
 class RequestTimeout(HTTPException):
@@ -299,5 +297,7 @@ class Redirect(HTTPException):
 
         self.status = status
 
-__all__ = [x[0] for x in list(globals().items()) if isclass(x[1])
-        and issubclass(x[1], HTTPException)]
+__all__ = [
+    x[0] for x in list(globals().items())
+    if isclass(x[1]) and issubclass(x[1], HTTPException)
+]

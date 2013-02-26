@@ -1,156 +1,99 @@
 # Module:   websockets
 # Date:     26th February 2011
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+from circuits.web.errors import HTTPError
+from circuits.net.protocols.websocket import WebSocketCodec
 
-"""WebSockets
+import hashlib
+import base64
+from circuits.core.handlers import handler
 
-This module implements a WebSockets dispatcher that handles the
-WebSockets handshake, upgrades the connection and translates incoming
-messages into ``Message`` events.
-"""
-
-from struct import pack
-from hashlib import md5
-try:
-    from urllib.parse import urlunsplit
-except ImportError:
-    from urlparse import urlunsplit
-from collections import defaultdict
-
-from circuits.net.sockets import Write
-from circuits import handler, BaseComponent, Event
-
-
-class MalformedWebSocket(ValueError):
-    """Malformed WebSocket Error"""
-
-
-class Message(Event):
-    """Message Event"""
-
-
-class WebSocketsMediator(BaseComponent):
-
-    channel = "ws"
-
-    @handler("write")
-    def _on_write(self, sock, data):
-        payload = b'\x00' + data.encode("utf-8") + b'\xff'
-        self.fire(Write(sock, payload), self.parent.channel)
-
-    @handler("message_value_changed")
-    def _on_message_value_changed(self, value):
-        sock, message = value.event.args
-        result, data = value.result, value.value
-        if result and isinstance(data, basestring):
-                self.fire(Write(sock, data))
+from circuits import BaseComponent
+from circuits.net.sockets import Connect
 
 
 class WebSockets(BaseComponent):
+    """
+    This class implements an RFC 6455 compliant WebSockets dispatcher 
+    that handles the WebSockets handshake and upgrades the connection.
+    
+    The dispatcher listens on its channel for :class:`~.web.events.Request`
+    events and tries to match them with a given path. Upon a match,
+    the request is checked for the proper Opening Handshake information.
+    If successful, the dispatcher confirms the establishment of the
+    connection to the client. Any subsequent data from the client is
+    handled as a WebSocket data frame, decoded and fired as
+    a :class:`~.sockets.Read` event on the ``wschannel`` passed to
+    the constructor. The data from :class:`~.sockets.Write` events on 
+    that channel is encoded as data frames and forwarded to the client.
+    
+    Firing a :class:`~.sockets.Close` event on the ``wschannel`` closes the
+    connection in an orderly fashion (i.e. as specified by the
+    WebSocket protocol).
+    """
 
     channel = "web"
 
-    def __init__(self, path=None, wschannel="ws"):
-        super(WebSockets, self).__init__()
+    def __init__(self, path=None, wschannel="ws", *args, **kwargs):
+        """
+        :param path: the path to handle. Requests that start with this
+            path are considered to be WebSocket Opening Handshakes.
+            
+        :param wschannel: the channel on which :class:`~.sockets.Read`
+            events from the client will be delivered and where
+            :class:`~.sockets.Write` events to the client will be
+            sent to.
+        """
+        super(WebSockets, self).__init__(*args, **kwargs)
 
-        self.path = path
-        self.wschannel = wschannel
-
-        self._clients = []
-        self._buffers = defaultdict(bytes)
-
-        WebSocketsMediator(channel=wschannel).register(self)
-
-    def _parse_messages(self, sock):
-        msgs = []
-        end_idx = 0
-        buf = self._buffers[sock]
-        while buf:
-            frame_type = buf[0] if isinstance(buf[0], int) else ord(buf[0])
-            if frame_type == 0:
-                # Normal message.
-                end_idx = buf.find(b"\xFF")
-                if end_idx == -1:  # pragma NO COVER
-                    break
-                msgs.append(buf[1:end_idx].decode("utf-8", "replace"))
-                buf = buf[(end_idx + 1):]
-            elif frame_type == 255:
-                # Closing handshake.
-                assert ord(buf[1]) == 0, \
-                        "Unexpected closing handshake: %r" % buf
-                self.closed = True
-                break
-            else:
-                raise ValueError(
-                    "Don't understand how to parse "
-                    "this type of message: %r" % buf)
-        self._buffers[sock] = buf
-        return msgs
-
-    @handler("disconnect")
-    def _on_disconnect(self, sock):
-        if sock in self._clients:
-            self._clients.remove(sock)
-        if sock in self._buffers:
-            del self._buffers[sock]
-
-    @handler("read", filter=True)
-    def _on_read(self, sock, data):
-        if sock in self._clients:
-            self._buffers[sock] += data
-            messages = self._parse_messages(sock)
-            for message in messages:
-                value = self.fire(Message(sock, message), self.wschannel)
-                value.notify = True
-            return True
+        self._path = path
+        self._wschannel = wschannel
+        self._codecs = dict()
 
     @handler("request", filter=True, priority=0.2)
     def _on_request(self, request, response):
-        if self.path is not None and not request.path.startswith(self.path):
+        if self._path is not None and not request.path.startswith(self._path):
             return
 
+        self._protocol_version = 13 
         headers = request.headers
+        sec_key = headers.get("Sec-WebSocket-Key", "").encode("utf-8")
+        connection_tokens = [s.strip() for s in \
+                             headers.get("Connection", "").lower().split(",")]
+        
+        if not "Host" in headers \
+            or headers.get("Upgrade", "").lower() != "websocket" \
+            or not "upgrade" in connection_tokens \
+            or sec_key is None \
+            or len(base64.b64decode(sec_key)) != 16:
+            return HTTPError(request, response, code=400)
+        if headers.get("Sec-WebSocket-Version", "") != "13":
+            response.headers["Sec-WebSocket-Version"] = "13"
+            return HTTPError(request, response, code=400)
+        
+        # Generate accept header information
+        msg = sec_key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+        hasher = hashlib.sha1()
+        hasher.update(msg)
+        accept = base64.b64encode(hasher.digest())
 
-        origin = headers["Origin"]
-        location = urlunsplit(("ws", headers["Host"], self.path, "", ""))
-
-        key1 = headers["Sec-WebSocket-Key1"]
-        key2 = headers["Sec-WebSocket-Key2"]
-
-        # Count spaces
-        nums1 = key1.count(" ")
-        nums2 = key2.count(" ")
-
-        # Join digits in the key
-        num1 = ''.join([x for x in key1 if x.isdigit()])
-        num2 = ''.join([x for x in key2 if x.isdigit()])
-
-        # Divide the digits by the num of spaces
-        key1 = int(int(num1) / int(nums1))
-        key2 = int(int(num2) / int(nums2))
-
-        # Pack into Network byte ordered 32 bit ints
-        key1 = pack("!I", key1)
-        key2 = pack("!I", key2)
-
-        # Concat key1, key2, and the the body of the client handshake
-        # and take the md5 sum of it
-        key = key1 + key2 + request.body.read()
-        m = md5()
-        m.update(key)
-        d = m.digest()
-
-        del response.headers["Content-Type"]
-
+        # Successful completion
         response.code = 101
-        response.message = "WebSocket Protocol Handshake"
+        response.close = False
+        del response.headers["Content-Type"]
         response.headers["Upgrade"] = "WebSocket"
         response.headers["Connection"] = "Upgrade"
-        response.headers["Sec-WebSocket-Origin"] = origin
-        response.headers["Sec-WebSocket-Location"] = location
+        response.headers["Sec-WebSocket-Accept"] = accept 
+        response.message = "WebSocket Protocol Handshake"
+        codec = WebSocketCodec(request.sock, channel=self._wschannel)
+        self._codecs[request.sock] = codec
+        codec.register(self)
+        self.fire(Connect(request.sock, *request.sock.getpeername()),
+                  self._wschannel)
+        return response
+        
+    @handler("disconnect")
+    def _on_disconnect(self, sock):
+        if sock in self._codecs:
+            del self._codecs[sock]
 
-        self._clients.append(request.sock)
-
-        response.close = False
-
-        return d

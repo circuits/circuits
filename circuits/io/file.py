@@ -7,15 +7,30 @@
 This module implements a wrapper for basic File I/O.
 """
 
-import os
-import errno
-import select
+try:
+    from os import O_NONBLOCK
+except ImportError:
+    #If it fails, that's fine. the fcntl import
+    #will fail anyway.
+    pass
+
+from os import write
 from collections import deque
+from sys import getdefaultencoding
+from socket import error as SocketError
+from errno import ENOTCONN, EPIPE, EWOULDBLOCK
 
-from circuits.core import Component
 from circuits.tools import tryimport
+from circuits.core.utils import findcmp
+from circuits.six import binary_type, PY3
+from circuits.core import handler, Component, Event
+from circuits.core.pollers import BasePoller, Poller
 
-from .events import Closed, EOF, Error, Opened, Read
+if PY3:
+    from io import FileIO
+    FileType = FileIO
+else:
+    FileType = file
 
 fcntl = tryimport("fcntl")
 
@@ -23,91 +38,214 @@ TIMEOUT = 0.2
 BUFSIZE = 4096
 
 
+class EOF(Event):
+    """EOF Event"""
+
+
+class Seek(Event):
+    """Seek Event"""
+
+
+class Read(Event):
+    """Read Event"""
+
+
+class Close(Event):
+    """Close Event"""
+
+
+class Write(Event):
+    """Write Event"""
+
+
+class Error(Event):
+    """Error Event"""
+
+
+class Open(Event):
+    """Open Event"""
+
+
+class Opened(Event):
+    """Opened Event"""
+
+
+class Closed(Event):
+    """Closed Event"""
+
+
+class Ready(Event):
+    """Ready Event"""
+
+
 class File(Component):
 
     channel = "file"
 
-    def __init__(self, filename=None, mode="r", fd=None, autoclose=True,
-            bufsize=BUFSIZE, encoding="utf-8", channel=channel):
-        super(File, self).__init__(channel=channel)
+    def init(self, filename, mode="r", bufsize=BUFSIZE, encoding=None,
+             channel=channel):
+        self._mode = mode
+        self._bufsize = bufsize
+        self._filename = filename
+        self._encoding = encoding or getdefaultencoding()
 
-        self.bufsize = bufsize
-        self.encoding = encoding
-        self.autoclose = autoclose
+        self._fd = None
+        self._poller = None
+        self._buffer = deque()
+        self._closeflag = False
 
-        if filename is not None:
-            self.mode = mode
-            self.filename = filename
-            self._fd = open(filename, mode)
+    @property
+    def closed(self):
+        return getattr(self._fd, "closed", True) \
+            if hasattr(self, "_fd") else True
+
+    @property
+    def filename(self):
+        return getattr(self, "_filename", None)
+
+    @property
+    def mode(self):
+        return getattr(self, "_mode", None)
+
+    @handler("ready")
+    def _on_ready(self, component):
+        self.fire(Open(), self.channel)
+
+    @handler("open")
+    def _on_open(self, filename=None, mode=None, bufsize=None):
+        self._filename = filename or self._filename
+        self._bufsize = bufsize or self._bufsize
+        self._mode = mode or self._mode
+
+        if isinstance(self._filename, FileType):
+            self._fd = self._filename
+            self._mode = self._fd.mode
+            self._filename = self._fd.name
+            self._encoding = getattr(self._fd, "encoding", self._encoding)
         else:
-            self._fd = fd
-            self.mode = fd.mode
-            self.filename = fd.name
+            kwargs = {"encoding": self._encoding} if PY3 else {}
+            self._fd = open(self.filename, self.mode, **kwargs)
 
         if fcntl is not None:
             # Set non-blocking file descriptor (non-portable)
             flag = fcntl.fcntl(self._fd, fcntl.F_GETFL)
-            flag = flag | os.O_NONBLOCK
+            flag = flag | O_NONBLOCK
             fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
 
-        self._read = []
-        self._write = []
-        self._buffer = deque()
+        if "r" in self.mode or "+" in self.mode:
+            self._poller.addReader(self, self._fd)
 
-        if any([m for m in "r+" if m in self._fd.mode]):
-            self._read.append(self._fd)
+        self.fire(Opened(self.filename, self.mode))
 
-        self.fire(Opened(self.filename))
+    @handler("registered", channel="*")
+    def _on_registered(self, component, manager):
+        if self._poller is None:
+            if isinstance(component, BasePoller):
+                self._poller = component
+                self.fire(Ready(self))
+            else:
+                if component is not self:
+                    return
+                component = findcmp(self.root, BasePoller)
+                if component is not None:
+                    self._poller = component
+                    self.fire(Ready(self))
+                else:
+                    self._poller = Poller().register(self)
+                    self.fire(Ready(self))
 
-    @property
-    def closed(self):
-        return self._fd.closed if hasattr(self, "_fd") else None
+    @handler("stopped", channel="*")
+    def _on_stopped(self, component):
+        self.fire(Close())
 
-    def __tick__(self, wait=TIMEOUT):
-        if not self.closed:
-            try:
-                r, w, e = select.select(self._read, self._write, [], wait)
-            except select.error as error:
-                if not error[0] == errno.EINTR:
-                    self.fire(Error(error))
-                return
+    @handler("prepare_unregister", channel="*")
+    def _on_prepare_unregister(self, event, c):
+        if event.in_subtree(self):
+            self._close()
 
-            if w and self._buffer:
-                data = self._buffer.popleft()
-                try:
-                    if isinstance(data, str):
-                        data = data.encode(self.encoding)
-                    bytes = os.write(self._fd.fileno(), data)
-                    if bytes < len(data):
-                        self._buffer.append(data[bytes:])
-                    elif not self._buffer:
-                        self._write.remove(self._fd)
-                except OSError as error:
-                    self.fire(Error(error))
+    def _close(self):
+        if self.closed:
+            return
 
-            if r:
-                try:
-                    data = os.read(self._fd.fileno(), self.bufsize)
-                except IOError as e:
-                    if e[0] == errno.EBADF:
-                        data = None
+        self._poller.discard(self._fd)
 
-                if data:
-                    self.fire(Read(data))
-                elif self.autoclose:
-                    self.fire(EOF())
-                    self.close()
+        self._buffer.clear()
+        self._closeflag = False
+        self._connected = False
 
-    def write(self, data):
-        if self._fd not in self._write:
-            self._write.append(self._fd)
-        self._buffer.append(data)
+        try:
+            self._fd.cllse()
+        except:
+            pass
+
+        self.fire(Closed())
 
     def close(self):
-        self._fd.close()
-        self._read = []
-        self._write = []
-        self.fire(Closed(self.filename))
+        if not self._buffer:
+            self._close()
+        elif not self._closeflag:
+            self._closeflag = True
+
+    def _read(self):
+        try:
+            data = self._fd.read(self._bufsize)
+            if not isinstance(data, binary_type):
+                data = data.encode(self._encoding)
+
+            if data:
+                self.fire(Read(data)).notify = True
+            else:
+                self.fire(EOF())
+                if not any(m in self.mode for m in ("a", "+")):
+                    self.close()
+                else:
+                    self._poller.discard(self._fd)
+        except SocketError as e:
+            if e.args[0] == EWOULDBLOCK:
+                return
+            else:
+                self.fire(Error(e))
+                self._close()
 
     def seek(self, offset, whence=0):
         self._fd.seek(offset, whence)
+
+    def _write(self, data):
+        try:
+            if not isinstance(data, binary_type):
+                data = data.encode(self._encoding)
+
+            nbytes = write(self._fd.fileno(), data)
+
+            if nbytes < len(data):
+                self._buffer.appendleft(data[nbytes:])
+        except SocketError as e:
+            if e.args[0] in (EPIPE, ENOTCONN):
+                self._close()
+            else:
+                self.fire(Error(e))
+
+    def write(self, data):
+        if self._poller is not None and not self._poller.isWriting(self._fd):
+            self._poller.addWriter(self, self._fd)
+        self._buffer.append(data)
+
+    @handler("_disconnect", filter=True)
+    def __on_disconnect(self, sock):
+        self._close()
+
+    @handler("_read", filter=True)
+    def __on_read(self, sock):
+        self._read()
+
+    @handler("_write", filter=True)
+    def __on_write(self, sock):
+        if self._buffer:
+            data = self._buffer.popleft()
+            self._write(data)
+
+        if not self._buffer:
+            if self._closeflag:
+                self._close()
+            elif self._poller.isWriting(self._fd):
+                self._poller.removeWriter(self._fd)

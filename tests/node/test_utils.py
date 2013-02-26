@@ -48,4 +48,4 @@ def test_values():
 
     assert v.value == x
     assert id == 1
-    assert errors == False
+    assert not errors

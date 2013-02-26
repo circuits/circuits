@@ -2,8 +2,10 @@
 
 from circuits import handler, Event, BaseComponent
 
+
 class Test(Event):
     """Test Event"""
+
 
 class App(BaseComponent):
 
@@ -12,11 +14,13 @@ class App(BaseComponent):
         return "Hello World!"
 
     def _on_test2(self):
-        pass # Never reached
+        pass  # Never reached
+
 
 def test():
     app = App()
-    while app: app.flush()
+    while app:
+        app.flush()
     x = app.fire(Test())
     app.flush()
     assert x.value == "Hello World!"

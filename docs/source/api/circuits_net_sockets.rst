@@ -12,7 +12,7 @@ Events
 .. autoclass :: Closed
 .. autoclass :: Read
 .. autoclass :: Write
-.. autoclass :: Error
+.. autoclass :: SocketError
 .. autoclass :: Disconnect
 .. autoclass :: Disconnected
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# vim: set sw=3 sts=3 ts=3
+
 
 """Main
 
@@ -8,7 +8,7 @@ circutis.web Web Server and Testing Tool.
 """
 
 import os
-import optparse
+from optparse import OptionParser
 from wsgiref.validate import validator
 from wsgiref.simple_server import make_server
 
@@ -20,8 +20,8 @@ except ImportError:
 
 try:
     import psyco
-except ImportError:
-    psyco = None
+except:
+    psyco = None  # NOQA
 
 from circuits.core.pollers import Select
 from circuits.tools import inspect, graph
@@ -32,70 +32,73 @@ from circuits.web import BaseServer, Server, Controller, Static, wsgi
 try:
     from circuits.core.pollers import Poll
 except ImportError:
-    Poll = None
+    Poll = None  # NOQA
 
 try:
     from circuits.core.pollers import EPoll
 except ImportError:
-    EPoll = None
+    EPoll = None  # NOQA
 
 
 USAGE = "%prog [options] [docroot]"
 VERSION = "%prog v" + systemVersion
 
-###
-### Functions
-###
-
 
 def parse_options():
-    """parse_options() -> opts, args
+    parser = OptionParser(usage=USAGE, version=VERSION)
 
-    Parse the command-line options given returning both
-    the parsed options and arguments.
-    """
+    parser.add_option(
+        "-b", "--bind",
+        action="store", type="string", default="0.0.0.0:8000", dest="bind",
+        help="Bind to address:[port]"
+    )
 
-    parser = optparse.OptionParser(usage=USAGE, version=VERSION)
-
-    parser.add_option("-b", "--bind",
-            action="store", type="string", default="0.0.0.0:8000", dest="bind",
-            help="Bind to address:[port]")
-
-    parser.add_option("-j", "--jit",
+    if psyco is not None:
+        parser.add_option(
+            "-j", "--jit",
             action="store_true", default=False, dest="jit",
-            help="Use python HIT (psyco)")
+            help="Use python HIT (psyco)"
+        )
 
-    parser.add_option("-m", "--multiprocessing",
-            action="store", type="int", default=0, dest="mp",
-            help="Specify no. of processes to start (multiprocessing)")
+    parser.add_option(
+        "-m", "--multiprocessing",
+        action="store", type="int", default=0, dest="mp",
+        help="Specify no. of processes to start (multiprocessing)"
+    )
 
-    parser.add_option("-t", "--type",
-            action="store", type="string", default="select", dest="type",
-            help="Specify type of poller to use")
+    parser.add_option(
+        "-t", "--type",
+        action="store", type="string", default="select", dest="type",
+        help="Specify type of poller to use"
+    )
 
-    parser.add_option("-s", "--server",
-            action="store", type="string", default="server", dest="server",
-            help="Specify server to use")
+    parser.add_option(
+        "-s", "--server",
+        action="store", type="string", default="server", dest="server",
+        help="Specify server to use"
+    )
 
-    parser.add_option("-p", "--profile",
-            action="store_true", default=False, dest="profile",
-            help="Enable execution profiling support")
+    parser.add_option(
+        "-p", "--profile",
+        action="store_true", default=False, dest="profile",
+        help="Enable execution profiling support"
+    )
 
-    parser.add_option("-d", "--debug",
-            action="store_true", default=False, dest="debug",
-            help="Enable debug mode")
+    parser.add_option(
+        "-d", "--debug",
+        action="store_true", default=False, dest="debug",
+        help="Enable debug mode"
+    )
 
-    parser.add_option("-v", "--validate",
-            action="store_true", default=False, dest="validate",
-            help="Enable WSGI validation mode")
+    parser.add_option(
+        "-v", "--validate",
+        action="store_true", default=False, dest="validate",
+        help="Enable WSGI validation mode"
+    )
 
     opts, args = parser.parse_args()
 
     return opts, args
-
-###
-### Components
-###
 
 
 class HelloWorld(Component):
@@ -111,15 +114,11 @@ class Root(Controller):
     def hello(self):
         return "Hello World!"
 
-###
-### Main
-###
-
 
 def main():
     opts, args = parse_options()
 
-    if opts.jit and psyco:
+    if psyco and opts.jit:
         psyco.full()
 
     if ":" in opts.bind:
@@ -197,9 +196,6 @@ def main():
         stats.sort_stats("time", "calls")
         stats.print_stats(20)
 
-###
-### Entry Point
-###
 
 if __name__ == "__main__":
     main()

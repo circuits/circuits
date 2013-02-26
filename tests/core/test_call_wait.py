@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
+from time import sleep
 import pytest
-pytest.skip("XXX: This test hangs")
 
 from circuits import Component, Event
 
@@ -68,7 +68,7 @@ class Test(Component):
         yield x
 
     def foo(self):
-        for i in xrange(1, 10):
+        for i in range(1, 10):
             yield i
 
     def get_x(self):
@@ -88,6 +88,9 @@ def test_wait():
     test.start()
 
     x = pytest.call_event_from_name(test, TestWait(), "hello_success")
+    # After event is done, app needs some time to update value
+    # (happens when tasks are called again).
+    sleep(0.1)
     value = x.value
     assert value == "Hello World!"
 
@@ -112,7 +115,7 @@ def test_long_call():
     x = pytest.call_event(test, TestLongCall())
 
     value = x.value
-    assert value == range(1, 10)
+    assert value == list(range(1, 10))
 
     test.stop()
 
@@ -124,7 +127,7 @@ def test_long_wait():
     x = pytest.call_event(test, TestLongWait())
 
     value = x.value
-    assert value == range(1, 10)
+    assert value == list(range(1, 10))
 
     test.stop()
 

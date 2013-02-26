@@ -18,7 +18,11 @@ five verbs that can be passed as command-line arguments:
 import os
 import errno
 from time import sleep
-from signal import SIGINT, SIGHUP, SIGTERM
+from signal import SIGINT, SIGTERM
+try:
+    from signal import SIGHUP
+except ImportError:
+    SIGHUP = None
 
 from circuits import handler, Event, BaseComponent
 
@@ -44,7 +48,7 @@ class Startup(BaseComponent):
     channel = "startup"
 
     def __init__(self, path, opts, command, env=Environment,
-            channel=channel):
+                 channel=channel):
         super(Startup, self).__init__(channel=channel)
 
         self.path = path
@@ -76,7 +80,7 @@ class Startup(BaseComponent):
             if not os.path.exists(self.env.path):
                 raise Error("Environment does not exist!")
             else:
-                self.fire(LoadEnvironment(), self.env)
+                self.fire(Load(), self.env)
         else:
             if os.path.exists(self.env.path):
                 raise Error("Environment already exists!")
@@ -106,16 +110,17 @@ class Startup(BaseComponent):
         sleep(1)
         self.fire(Command(), "start", self.channel)
 
-    @handler("rehash")
-    def _on_rehash(self):
-        pid = self._getpid()
+    if SIGHUP is not None:
+        @handler("rehash")
+        def _on_rehash(self):
+            pid = self._getpid()
 
-        os.kill(pid, SIGHUP)
+            os.kill(pid, SIGHUP)
 
     @handler("init")
     def _on_init(self):
-        self.fire(CreateEnvironment(), self.env)
+        self.fire(Create(), self.env)
 
     @handler("upgrade")
     def _on_upgrade(self):
-        self.fire(UpgradeEnvironment(), self.env)
+        self.fire(Upgrade(), self.env)

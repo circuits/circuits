@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# vim: set sw=3 sts=3 ts=3
 
-"""(Example) Telnet Client
+"""Telnet Example
 
 A basic telnet-like clone that connects to remote hosts
 via tcp and allows the user to send data to the remote
@@ -17,12 +16,11 @@ This example demonstrates:
 This example makes use of:
     * Component
     * Event
-    * lib.sockets.TCPClient
+    * net.sockets.TCPClient
 """
 
 import os
-import optparse
-from socket import gethostname
+from optparse import OptionParser
 
 from circuits.io import stdin
 from circuits import handler, Component
@@ -32,37 +30,29 @@ from circuits.net.sockets import TCPClient, UNIXClient, Connect, Write
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
 
-###
-### Functions
-###
 
 def parse_options():
-    """parse_options() -> opts, args
+    parser = OptionParser(usage=USAGE, version=VERSION)
 
-    Parse any command-line options given returning both
-    the parsed options and arguments.
-    """
-
-    parser = optparse.OptionParser(usage=USAGE, version=VERSION)
-
-    parser.add_option("-s", "--ssl",
-            action="store_true", default=False, dest="ssl",
-            help="Enable Secure Socket Layer (SSL)")
+    parser.add_option(
+        "-s", "--ssl",
+        action="store_true", default=False, dest="ssl",
+        help="Enable Secure Socket Layer (SSL)"
+    )
 
     opts, args = parser.parse_args()
 
     if len(args) < 1:
         parser.print_help()
-        raise SystemExit, 1
+        raise SystemExit(1)
 
     return opts, args
 
-###
-### Components
-###
 
 class Telnet(Component):
 
+    # Define a separate channel for this component so we don't clash with
+    # the ``read`` event of the ``stdin`` component.
     channel = "telnet"
 
     def __init__(self, *args):
@@ -81,41 +71,56 @@ class Telnet(Component):
             port = int(port)
             dest = host, port
 
-        print "Trying %s ..." % host
+        print("Trying %s ..." % host)
         self.fire(Connect(*dest))
 
     def connected(self, host, port=None):
-        print "Connected to %s" % host
+        """Connected Event Handler
+
+        This event is fired by the TCPClient Componentt to indicate a
+        successful connection.
+        """
+
+        print("Connected to {0}".format(host))
 
     def error(self, *args):
-        if len(args) == 3:
-            type, value, traceback = args
-        else:
-            value = args[0]
-            type = type(value)
-            traceback = None
+        """Error Event Handler
 
-        print "ERROR: %s" % value
+        If any exception/error occurs in the system this event is triggered.
+        """
+
+        if len(args) == 3:
+            print("ERROR: {0}".format(args[1]))
+        else:
+            print("ERROR: {0}".format(args[0]))
 
     def read(self, data):
-        print data.strip()
+        """Read Event Handler
 
+        This event is fired by the underlying TCPClient Component when there
+        is data to be read from the connection.
+        """
+
+        print(data.strip())
+
+    # Setup an Event Handler for "read" events on the "stdin" channel.
     @handler("read", "stdin")
-    def stdin_read(self, data):
+    def _on_stdin_read(self, data):
+        """Read Event Handler for stdin
+
+        This event is triggered by the connected ``stdin`` component when
+        there is new data to be read in from standard input.
+        """
+
         self.fire(Write(data))
 
-###
-### Main
-###
 
 def main():
     opts, args = parse_options()
 
+    # Configure and "run" the System.
     (Telnet(*args) + stdin).run()
 
-###
-### Entry Point
-###
 
 if __name__ == "__main__":
     main()

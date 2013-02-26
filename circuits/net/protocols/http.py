@@ -23,6 +23,13 @@ class ResponseObject(object):
         self._headers = None
         self._body = BytesIO()
 
+    def __repr__(self):
+        return "<ResponseObject %s %s (%d)>" % (
+            self.status,
+            self.headers["Content-Type"],
+            len(self._body.getvalue())
+        )
+
     @property
     def headers(self):
         return self._headers
@@ -40,6 +47,7 @@ class HTTP(BaseComponent):
 
         self._encoding = encoding
 
+        self._header_head = None
         self._response = None
         self._buffer = BytesIO()
 
@@ -53,9 +61,15 @@ class HTTP(BaseComponent):
                 self.fire(Response(self._response))
                 self._response = None
         else:
+            if self._header_head is not None:
+                data = self._header_head + data
+                self._header_head = None
+            if data.find(b"\r\n\r\n") < 0:
+                # Header not received completely yet
+                self._header_head = data
+                return
             statusline, data = data.split(b"\r\n", 1)
-            statusline = statusline.strip().decode(
-                    self._encoding, "replace")
+            statusline = statusline.strip().decode(self._encoding, "replace")
             protocol, status, message = statusline.split(" ", 2)
 
             status = int(status)
@@ -65,7 +79,8 @@ class HTTP(BaseComponent):
 
             end_of_headers = data.find(b"\r\n\r\n")
             header_data = data[:end_of_headers].decode(
-                    self._encoding, "replace")
+                self._encoding, "replace"
+            )
             headers = response._headers = parse_headers(header_data)
 
             response._body.write(data[(end_of_headers + 4):])

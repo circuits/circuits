@@ -68,15 +68,17 @@ def expires(request, response, secs=0, force=False):
             # Set an explicit Expires date in the past.
             now = datetime.now()
             lastyear = now.replace(year=now.year - 1)
-            expiry = formatdate(mktime(lastyear.timetuple()),
-                    usegmt=True)
+            expiry = formatdate(
+                mktime(lastyear.timetuple()), usegmt=True
+            )
         else:
             expiry = formatdate(response.time + secs, usegmt=True)
         if force or "Expires" not in headers:
             headers["Expires"] = expiry
 
 
-def serve_file(request, response, path, type=None, disposition=None, name=None):
+def serve_file(request, response, path, type=None, disposition=None,
+               name=None):
     """Set status, headers, and body in order to serve the given file.
 
     The Content-Type header will be set to the type arg, if provided.
@@ -104,9 +106,13 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
 
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
-    response.headers['Last-Modified'] = formatdate(st.st_mtime,
-            usegmt=True)
-    validate_since(request, response)
+    response.headers['Last-Modified'] = formatdate(
+        st.st_mtime, usegmt=True
+    )
+
+    result = validate_since(request, response)
+    if result is not None:
+        return result
 
     if type is None:
         # Set content-type based on filename extension
@@ -141,8 +147,9 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                 start, stop = r[0]
                 r_len = stop - start
                 response.code = 206
-                response.headers['Content-Range'] = ("bytes %s-%s/%s" %
-                                                       (start, stop - 1, c_len))
+                response.headers['Content-Range'] = (
+                    "bytes %s-%s/%s" % (start, stop - 1, c_len)
+                )
                 response.headers['Content-Length'] = r_len
                 bodyfile.seek(start)
                 response.body = bodyfile.read(r_len)
@@ -234,9 +241,12 @@ def validate_etags(request, response, autotags=False):
         conditions = request.headers.elements('If-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions and not (conditions == ["*"] or etag in conditions):
-            return HTTPError(request, response, 412,
-                    description="If-Match failed: ETag %r did not match %r" % (
-                        etag, conditions))
+            return HTTPError(
+                request, response, 412,
+                description="If-Match failed: ETag %r did not match %r" % (
+                    etag, conditions
+                )
+            )
 
         conditions = request.headers.elements('If-None-Match') or []
         conditions = [str(x) for x in conditions]
@@ -244,10 +254,14 @@ def validate_etags(request, response, autotags=False):
             if request.method in ("GET", "HEAD"):
                 return Redirect(request, response, [], code=304)
             else:
-                return HTTPError(request, response, 412,
-                        description=(
-                            "If-None-Match failed: ETag %r matched %r" % (
-                                etag, conditions)))
+                return HTTPError(
+                    request, response, 412,
+                    description=(
+                        "If-None-Match failed: ETag %r matched %r" % (
+                            etag, conditions
+                        )
+                    )
+                )
 
 
 def validate_since(request, response):
@@ -324,7 +338,7 @@ def check_auth(request, response, realm, users, encrypt=None):
         # validate the authorization by re-computing it here
         # and compare it with what the user-agent provided
         if _httpauth.checkResponse(ah, password, method=request.method,
-                                  encrypt=encrypt, realm=realm):
+                                   encrypt=encrypt, realm=realm):
             request.login = ah["username"]
             return True
 
@@ -435,5 +449,6 @@ def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
             return response
-    return HTTPError(response.request, response, 406,
-            description="identity, gzip")
+    return HTTPError(
+        response.request, response, 406, description="identity, gzip"
+    )

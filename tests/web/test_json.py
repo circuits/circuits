@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-
 from json import loads
 
 from circuits.web import JSONController, Sessions
@@ -23,6 +21,7 @@ class Root(JSONController):
 
         return {"success": True, "message": "Hello %s" % name}
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     data = f.read()
@@ -30,6 +29,7 @@ def test(webapp):
     d = loads(data)
     assert d["success"]
     assert d["message"] == "Hello World!"
+
 
 def test_sessions(webapp):
     Sessions().register(webapp)

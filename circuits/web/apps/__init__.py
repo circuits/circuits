@@ -15,3 +15,5 @@ __all__ = (
         "WebConsole",
         "MemoryMonitor",
 )
+
+# flake8: noqa

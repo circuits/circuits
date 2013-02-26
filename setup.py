@@ -7,7 +7,7 @@ from distutils.util import convert_path
 try:
     from setuptools import setup
 except ImportError:
-    from distutils.core import setup
+    from distutils.core import setup  # NOQA
 
 
 def find_packages(where=".", exclude=()):
@@ -37,11 +37,9 @@ try:
 except IOError:
     README = RELEASE = ""
 
-import circuits
-
 setup(
     name="circuits",
-    version=circuits.__version__,
+    version="2.1.0",
     description="Asynchronous Component based Event Application Framework",
     long_description="%s\n\n%s" % (README, RELEASE),
     author="James Mills",
@@ -60,15 +58,19 @@ setup(
         "Intended Audience :: Science/Research",
         "Intended Audience :: System Administrators",
         "Intended Audience :: Telecommunications Industry",
-        "License :: OSI Approved",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
+        "Operating System :: POSIX :: BSD",
         "Operating System :: POSIX :: Linux",
         "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows :: Windows NT/2000",
+        "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.1",
         "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Adaptive Technologies",
         "Topic :: Communications :: Chat :: Internet Relay Chat",
         "Topic :: Communications :: Email :: Mail Transport Agents",

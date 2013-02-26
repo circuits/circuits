@@ -11,9 +11,14 @@ resources and an optional apache-style directory listing.
 import os
 from string import Template
 
+try:
+    from urllib import quote, unquote
+except ImportError:
+    from urllib.parse import quote, unquote  # NOQA
+
 from circuits import handler, BaseComponent
 
-from circuits.web.tools import expires, serve_file
+from circuits.web.tools import serve_file
 
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -43,7 +48,7 @@ class Static(BaseComponent):
     channel = "web"
 
     def __init__(self, path=None, docroot=None,
-            defaults=("index.html", "index.xhtml",), dirlisting=False):
+                 defaults=("index.html", "index.xhtml",), dirlisting=False):
         super(Static, self).__init__()
 
         self.path = path
@@ -60,7 +65,8 @@ class Static(BaseComponent):
 
         if self.path is not None:
             path = path[len(self.path):]
-        path = path.strip("/")
+
+        path = unquote(path.strip("/"))
 
         if path:
             location = os.path.abspath(os.path.join(self.docroot, path))
@@ -74,7 +80,6 @@ class Static(BaseComponent):
         if os.path.isfile(location):
             # Don't set cookies for static content
             response.cookie.clear()
-            expires(request, response, (3600 * 24 * 30), force=True)
             return serve_file(request, response, location)
 
         # Is it a directory?
@@ -83,11 +88,11 @@ class Static(BaseComponent):
             # Try to serve one of default files first..
             for default in self.defaults:
                 location = os.path.abspath(
-                        os.path.join(self.docroot, path, default))
+                    os.path.join(self.docroot, path, default)
+                )
                 if os.path.exists(location):
                     # Don't set cookies for static content
                     response.cookie.clear()
-                    expires(request, response, (3600 * 24 * 30), force=True)
                     return serve_file(request, response, location)
 
             # .. serve a directory listing if allowed to.
@@ -109,11 +114,16 @@ class Static(BaseComponent):
                     if not item.startswith("."):
                         url = os.path.join("/", path, cur_dir, item)
                         location = os.path.abspath(
-                                os.path.join(self.docroot, path, item))
+                            os.path.join(self.docroot, path, item)
+                        )
                         if os.path.isdir(location):
-                            li = '<li><a href="%s/">%s/</a></li>' % (url, item)
+                            li = '<li><a href="%s/">%s/</a></li>' % (
+                                quote(url), item
+                            )
                         else:
-                            li = '<li><a href="%s">%s</a></li>' % (url, item)
+                            li = '<li><a href="%s">%s</a></li>' % (
+                                quote(url), item
+                            )
                         listing.append(li)
 
                 ctx = {}

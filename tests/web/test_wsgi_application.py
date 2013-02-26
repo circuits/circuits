@@ -1,16 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-
-try:
-    from urllib.parse import urlencode
-    from urllib.request import urlopen
-    from urllib.error import HTTPError
-except ImportError:
-    from urllib import urlencode
-    from urllib2 import urlopen
-    from urllib2 import HTTPError
-
 from circuits.web import Controller
 from circuits.web.wsgi import Application
 
@@ -37,10 +26,12 @@ class Root(Controller):
 
 application = Application() + Root()
 
+
 def test(webapp):
     f = urlopen(webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
+
 
 def test_404(webapp):
     try:
@@ -51,6 +42,7 @@ def test_404(webapp):
     else:
         assert False
 
+
 def test_args(webapp):
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
@@ -59,13 +51,15 @@ def test_args(webapp):
 
     f = urlopen(url, data)
     data = f.read().split(b"\n")
-    assert data[0] == repr(args).encode()
-    assert data[1] == repr(kwargs).encode()
+    assert eval(data[0]) == args
+    assert eval(data[1]) == kwargs
+
 
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.base)
     s = f.read()
     assert s == b"Hello World!"
+
 
 def test_forbidden(webapp):
     try:
@@ -76,9 +70,10 @@ def test_forbidden(webapp):
     else:
         assert False
 
+
 def test_notfound(webapp):
     try:
-         urlopen("%s/test_notfound" % webapp.server.base)
+        urlopen("%s/test_notfound" % webapp.server.base)
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"

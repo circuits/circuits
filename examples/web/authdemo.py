@@ -4,6 +4,7 @@ from circuits import handler, Component
 from circuits.web import Server, Controller
 from circuits.web.tools import check_auth, basic_auth
 
+
 class Auth(Component):
 
     realm = "Test"
@@ -15,6 +16,7 @@ class Auth(Component):
         users = self.users
         if not check_auth(request, response, realm, users):
             return basic_auth(request, response, realm, users)
+
 
 class Root(Controller):
 

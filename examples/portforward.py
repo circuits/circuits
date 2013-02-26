@@ -1,55 +1,47 @@
 #!/usr/bin/env python
 
-import optparse
-from uuid import uuid4 as uuid
+"""A Port Forwarding Example
 
-from circuits.app import Daemon
-from circuits import handler, Component, Debugger
-from circuits.net.sockets import TCPClient, TCPServer
-from circuits.net.sockets import UDPClient, UDPServer
-from circuits.net.sockets import Close, Connect, Write
+This example demonstrates slightly more complex features and behaviors
+implementing a TCP/UDP Port Forwarder of network traffic. This can be used
+as a simple tool to forward traffic from one port to another.
 
-__version__ = "0.2"
+Example:
 
-USAGE = "%prog [options] <source> <target>"
-VERSION = "%prog v" + __version__
+    ./portforward.py 0.0.0.0:2222 127.0.0.1:22
 
-EPILOG = """
-Creates a listening socket on the given <source> and directs all traffic
-to the given <target>. Specify the protocol with the -p/--procotol
-option (default: tcp).
-
-The format of <source> and <target> are as follows:
-
-    <source>     -> <address>:<port>
-    <target -> <address>[:<port>]
-
-Where:
-    <address> Is an IPv4 address of the form a.b.c.d (eg: 127.0.0.1)
-              Use 0.0.0.0 to listen to all interfaces.
-    <port>    Is a valid port (integer) to listen for incoming connections.
+This example also has support for daemonizing the process into the background.
 """
 
 
+from uuid import uuid4 as uuid
+from optparse import OptionParser
+
+from circuits.app import Daemon
+from circuits import handler, Component, Debugger
+from circuits.net.sockets import Close, Connect, Write
+from circuits.net.sockets import TCPClient, TCPServer
+
+__version__ = "0.2"
+
+USAGE = "%prog [options] <srcaddr:srcport> <destaddr:destport>"
+VERSION = "%prog v" + __version__
+
+
 def parse_options():
-    parser = optparse.OptionParser(usage=USAGE, version=VERSION,
-            epilog=EPILOG)
+    parser = OptionParser(usage=USAGE, version=VERSION)
 
-    parser.add_option("-d", "--daemon",
-            action="store_true", default=False, dest="daemon",
-            help="Enable daemon mode (fork into the background)")
+    parser.add_option(
+        "-d", "--daemon",
+        action="store_true", default=False, dest="daemon",
+        help="Enable daemon mode (fork into the background)"
+    )
 
-    parser.add_option("", "--debug",
-            action="store_true", default=False, dest="debug",
-            help="Enable debug mode (verbose event output)")
-
-    parser.add_option("-s", "--ssl",
-            action="store_true", default=False, dest="ssl",
-            help="Enable SSL (Secure Socket Layer)")
-
-    parser.add_option("-p", "--protocol",
-            action="store", default="tcp", dest="protocol",
-            help="Specify IP Protocol (tcp od udp)")
+    parser.add_option(
+        "", "--debug",
+        action="store_true", default=False, dest="debug",
+        help="Enable debug mode (verbose event output)"
+    )
 
     opts, args = parser.parse_args()
 
@@ -61,44 +53,71 @@ def parse_options():
 
 
 def _on_target_disconnected(self, event):
+    """Disconnected Event Handler
+
+    This unbound function will be later added as an event handler to a
+    dynamically created and registered client instance and used to process
+    Disconnected events of a connected client.
+    """
+
     channel = event.channels[0]
     sock = self._sockets[channel]
 
-    if self._protocol == "tcp":
-        self.fire(Close(sock), "source")
+    self.fire(Close(sock), "source")
 
     del self._sockets[channel]
     del self._clients[sock]
 
 
 def _on_target_ready(self, component):
+    """Ready Event Handler
+
+    This unbound function will be later added as an event handler to a
+    dynamically created and registered client instance and used to process
+    Ready events of a registered client.
+    """
+
     self.fire(Connect(*self._target, secure=self._secure), component.channel)
 
 
 def _on_target_read(self, event, data):
+    """Read Event Handler
+
+    This unbound function will be later added as an event handler to a
+    dynamically created and registered client instance and used to process
+    Read events of a connected client.
+    """
+
     sock = self._sockets[event.channels[0]]
     self.fire(Write(sock, data), "source")
 
 
 class PortForwarder(Component):
 
-    def __init__(self, source, target, secure=False, protocol="tcp"):
-        super(PortForwarder, self).__init__()
-
+    def init(self, source, target, secure=False):
         self._source = source
         self._target = target
         self._secure = secure
-        self._protocol = protocol
 
         self._clients = dict()
         self._sockets = dict()
 
-        Server = TCPServer if self._protocol == "tcp" else UDPServer
-        server = Server(self._source, secure=self._secure, channel="source")
+        # Setup our components and register them.
+        server = TCPServer(self._source, secure=self._secure, channel="source")
         server.register(self)
 
     @handler("connect", channel="source")
     def _on_source_connect(self, sock, host, port):
+        """Explicitly defined Connect Event Handler
+
+        This evens is triggered by the underlying TCPServer Component when
+        a new client connection has been made.
+
+        Here we dynamically create a Client instance, registere it and add
+        custom event handlers to handle the events of the newly created
+        client. The client is registered with a unique channel per connection.
+        """
+
         bind = 0
         channel = uuid()
 
@@ -106,28 +125,34 @@ class PortForwarder(Component):
         client.register(self)
 
         self.addHandler(
-                handler("disconnected", channel=channel)
-                (_on_target_disconnected))
+            handler("disconnected", channel=channel)(_on_target_disconnected)
+        )
 
         self.addHandler(
-                handler("ready", channel=channel)
-                (_on_target_ready))
+            handler("ready", channel=channel)(_on_target_ready)
+        )
 
         self.addHandler(
-                handler("read", channel=channel)
-                (_on_target_read))
+            handler("read", channel=channel)(_on_target_read)
+        )
 
         self._clients[sock] = client
         self._sockets[client.channel] = sock
 
     @handler("read", channel="source")
     def _on_source_read(self, sock, data):
-        if self._protocol == "tcp":
-            client = self._clients[sock]
-            self.fire(Write(data), client.channel)
-        else:
-            host, port = sock
-            self.fire(Write(sock, data), "source")
+        """Explicitly defined Read Event Handler
+
+        This evens is triggered by the underlying TCPServer Component when
+        a connected client has some data ready to be processed.
+
+        Here we simply fire a cooresponding Write event to the cooresponding
+        matching client which we lookup using the socket object as the key
+        to determinte the unique id.
+        """
+
+        client = self._clients[sock]
+        self.fire(Write(data), client.channel)
 
 
 def sanitize(s):
@@ -144,10 +169,15 @@ def main():
     source = sanitize(args[0])
     target = sanitize(args[1])
 
-    if type(target) is not tuple:
-        target = target, source[1]
+    if type(source) is not tuple:
+        print("ERROR: source address must specify port (address:port)")
+        raise SystemExit(-1)
 
-    system = PortForwarder(source, target, protocol=opts.protocol)
+    if type(target) is not tuple:
+        print("ERROR: target address must specify port (address:port)")
+        raise SystemExit(-1)
+
+    system = PortForwarder(source, target)
 
     if opts.daemon:
         Daemon("portforward.pid").register(system)

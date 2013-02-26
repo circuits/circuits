@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
 import sys
+
 try:
     from StringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from io import StringIO  # NOQA
+
 from socket import gaierror, gethostbyname, gethostname
 
 from circuits.web import Controller, Logger
-from circuits.web.loggers import formattime
 
 from .helpers import urlopen
 
@@ -23,10 +24,12 @@ class DummyLogger(object):
     def info(self, message):
         self.message = message
 
+
 class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 def test_file(webapp):
     logfile = StringIO()
@@ -39,8 +42,6 @@ def test_file(webapp):
 
     logfile.seek(0)
     s = logfile.read().strip()
-
-    format = logger.format
 
     try:
         address = gethostbyname(gethostname())
@@ -65,6 +66,7 @@ def test_file(webapp):
     logfile.close()
     logger.unregister()
 
+
 def test_logger(webapp):
     logobj = DummyLogger()
     logger = Logger(logger=logobj)
@@ -75,8 +77,6 @@ def test_logger(webapp):
     assert s == b"Hello World!"
 
     s = logobj.message
-
-    format = logger.format
 
     try:
         address = gethostbyname(gethostname())
@@ -100,6 +100,7 @@ def test_logger(webapp):
 
     logger.unregister()
 
+
 def test_filename(webapp, tmpdir):
     logfile = str(tmpdir.ensure("logfile"))
     logger = Logger(file=logfile)
@@ -113,8 +114,6 @@ def test_filename(webapp, tmpdir):
 
     logfile.seek(0)
     s = logfile.read().strip()
-
-    format = logger.format
 
     try:
         address = gethostbyname(gethostname())

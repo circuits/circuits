@@ -2,7 +2,7 @@
 try:
     from urllib.parse import urlparse
 except ImportError:
-    from urlparse import urlparse
+    from urlparse import urlparse  # NOQA
 
 from circuits.web.headers import Headers
 from circuits.core import handler, BaseComponent, Event
@@ -86,24 +86,31 @@ class Client(BaseComponent):
         if self._transport.connected:
             self.fire(Close(), self._transport)
 
-    @handler("connect")
-    def connect(self):
+    @handler("connect", filter=True)
+    def connect(self, host=None, port=None, secure=None):
+        host = host or self._host
+        port = port or self._port
+        secure = secure or self._secure
+
         if not self._transport.connected:
-            self.fire(Connect(self._host, self._port, self._secure),
-                    self._transport)
+            self.fire(Connect(host, port, secure), self._transport)
+
+        return True
 
     @handler("request")
     def request(self, method, path, body=None, headers={}):
         if self._transport.connected:
             headers = Headers([(k, v) for k, v in headers.items()])
             # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-            if not headers.has_key("Host"):
+            if "Host" not in headers:
                 headers["Host"] = self._host \
                     + (":" + str(self._port)) if self._port else ""
+            if body is not None:
+                headers["Content-Length"] = len(body)
             command = "%s %s HTTP/1.1" % (method, path)
             message = "%s\r\n%s" % (command, headers)
             self.fire(Write(message.encode('utf-8')), self._transport)
-            if body:
+            if body is not None:
                 self.fire(Write(body), self._transport)
         else:
             raise NotConnected()

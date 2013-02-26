@@ -26,3 +26,5 @@ try:
     from .controllers import JSONController
 except ImportError:
     pass
+
+# flake8: noqa

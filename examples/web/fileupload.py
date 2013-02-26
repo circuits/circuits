@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from circuits import Debugger
 from circuits.web import Server, Controller
 
 UPLOAD_FORM = """
@@ -38,6 +37,7 @@ UPLOADED_FILE = """
 </html>
 """
 
+
 class Root(Controller):
 
     def index(self, file=None, desc=""):
@@ -46,4 +46,4 @@ class Root(Controller):
         else:
             return UPLOADED_FILE % (file.filename, desc, file.value)
 
-(Server(8000) + Debugger() + Root()).run()
+(Server(8000) + Root()).run()

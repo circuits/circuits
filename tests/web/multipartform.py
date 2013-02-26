@@ -3,6 +3,7 @@ import itertools
 from mimetypes import guess_type
 from email.generator import _make_boundary
 
+
 class MultiPartForm(dict):
 
     def __init__(self):
@@ -18,31 +19,40 @@ class MultiPartForm(dict):
             mimetype = guess_type(filename)[0] or "application/octet-stream"
         self.files.append((fieldname, filename, mimetype, body))
 
-    def __str__(self):
+    def bytes(self):
         parts = []
-        part_boundary = "--%s" % self.boundary
+        part_boundary = bytearray("--%s" % self.boundary, "ascii")
 
         # Add the form fields
         parts.extend([
             part_boundary,
-            "Content-Disposition: form-data; name=\"%s\"" % k,
-            "",
-            v
+            bytearray(
+                "Content-Disposition: form-data; name=\"%s\"" % k,
+                "ascii"
+            ),
+            bytes(),
+            v if isinstance(v, bytes) else bytearray(v, "ascii")
         ] for k, v in list(self.items()))
 
         # Add the files to upload
         parts.extend([
             part_boundary,
-            "Content-Disposition: file; name=\"%s\"; filename=\"%s\"" % (
-                fieldname, filename),
-            "Content-Type: %s" % content_type,
-            "",
-            body,
+            bytearray(
+                "Content-Disposition: file; name=\"%s\"; filename=\"%s\"" % (
+                    fieldname, filename),
+                "ascii"
+            ),
+            bytearray("Content-Type: %s" % content_type, "ascii"),
+            bytearray(),
+            body if isinstance(body, bytes) else bytearray(body, "ascii"),
         ] for fieldname, filename, content_type, body in self.files)
 
         # Flatten the list and add closing boundary marker,
         # then return CR+LF separated data
         flattened = list(itertools.chain(*parts))
-        flattened.append("--%s--" % self.boundary)
-        flattened.append("")
-        return "\r\n".join(flattened)
+        flattened.append(bytearray("--%s--" % self.boundary, "ascii"))
+        res = bytearray()
+        for item in flattened:
+            res += item
+            res += bytearray("\r\n", "ascii")
+        return res
