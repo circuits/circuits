@@ -114,3 +114,9 @@ Community
 There is also a small community of circuits enthusiasts that you may
 find on the `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
 and the `Mailing List`_.
+
+
+.. raw:: html
+   
+   <script type="text/javascript" src="http://www.ohloh.net/p/587962/widgets/project_thin_badge.js"></script>
+   
