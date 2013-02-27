@@ -22,11 +22,13 @@ docs:
 graph:
 	@sfood circuits -i -I tests -d -u 2> /dev/null | sfood-graph | dot -Tps | ps2pdf - > circuits.pdf
 
-packages:
-	@tools/mkpkgs -p python2.6
-	@tools/mkpkgs -p python2.7
-	@tools/mkpkgs -p python3.2
-	@tools/mkpkgs -p python3.3
+release:
+	@python2.6 setup.py clean bdist_egg upload
+	@python2.7 setup.py clean bdist_egg upload
+	@python3.2 setup.py clean bdist_egg upload
+	@python3.3 setup.py clean bdist_egg upload
+	@python setup.py clean build_sphinx upload_sphinx
+	@python setup.py clean sdist --formats=bztar,gztar,zip upload
 
 tests:
 	@python -m tests.main
