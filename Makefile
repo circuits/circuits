@@ -27,7 +27,6 @@ packages:
 	@tools/mkpkgs -p python2.7
 	@tools/mkpkgs -p python3.2
 	@tools/mkpkgs -p python3.3
-	@tools/mkpkgs -p pypy
 
 tests:
 	@python -m tests.main
