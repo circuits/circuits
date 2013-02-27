@@ -61,15 +61,9 @@ Requirements
 Supported Platforms
 -------------------
 
-- Linux, FreeBSD, Mac OS X
+- Linux, FreeBSD, Mac OS X, Windows
 - Python 2.6, 2.7, 3.2, 3.3
 - pypy 2.0
-
-**Windows**: We acknowledge that Windows exists and make reasonable efforts
-             to maintain compatibility. Unfortunately we cannot guarantee
-             support at this time.
-
-**NB**: We are working toward getting Windows supported.
 
 
 Installation
