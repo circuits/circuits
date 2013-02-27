@@ -23,8 +23,11 @@ graph:
 	@sfood circuits -i -I tests -d -u 2> /dev/null | sfood-graph | dot -Tps | ps2pdf - > circuits.pdf
 
 packages:
-	@tools/mkpkgs -p python2.5
 	@tools/mkpkgs -p python2.6
+	@tools/mkpkgs -p python2.7
+	@tools/mkpkgs -p python3.2
+	@tools/mkpkgs -p python3.3
+	@tools/mkpkgs -p pypy
 
 tests:
 	@python -m tests.main
