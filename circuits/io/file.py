@@ -174,7 +174,7 @@ class File(Component):
         self._connected = False
 
         try:
-            self._fd.cllse()
+            self._fd.close()
         except:
             pass
 
