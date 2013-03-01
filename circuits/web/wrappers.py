@@ -65,16 +65,16 @@ class Request(object):
     :param sock: The socket object of the request.
     :type  sock: socket.socket
 
-    :param method: The requsted method.
+    :param method: The requested method.
     :type  method: str
 
-    :param scheme: The requsted scheme.
+    :param scheme: The requested scheme.
     :type  scheme: str
 
-    :param path: The requsted path.
+    :param path: The requested path.
     :type  path: str
 
-    :param protocol: The requsted protocol.
+    :param protocol: The requested protocol.
     :type  protocol: str
 
     :param qs: The query string of the request.
