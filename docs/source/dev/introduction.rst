@@ -40,3 +40,5 @@ We use the following tools to develop circuits and share code:
   `Read the Docs <http://circuits.readthedocs.org>`_
 - **Package Hosting:**
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
+- **Continious Integration:**
+  `Shining Panda CI <https://jenkins.shiningpanda-ci.com/circuits/job/circuits/>`_
