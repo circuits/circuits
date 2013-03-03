@@ -1,8 +1,20 @@
+.. _circuits-dev Mailing List: http://groups.google.com/group/circuits-users
+.. _FreeNode IRC Network: http://freenode.net
+.. _#circuits-dev IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits-dev&uio=d4
+
+
 Development Introduction
 ========================
 
 
 Here's how we do things in circuits...
+
+
+Communication
+-------------
+
+- `#circuits-dev IRC Channel`_ on the `FreeNode IRC Network`_
+- `circuits-dev Mailing List`_
 
 
 Standards
