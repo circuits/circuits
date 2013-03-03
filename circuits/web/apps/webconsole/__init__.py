@@ -6,6 +6,7 @@ import inspect
 import traceback
 
 from circuits import handler
+from circuits.six import exec_
 from circuits.web import Controller
 from circuits.tools import tryimport
 
@@ -58,7 +59,7 @@ class HTTPREPL(object):
         sys.stdout = sys.stderr = out
         try:
             try:
-                exec code in self.locals
+                exec_(code, None, self.locals)
             except:
                 result = traceback.format_exc()
             else:
