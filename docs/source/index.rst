@@ -25,7 +25,6 @@ Contents
    api/index
    dev/index
    changes
-   users
    contributors
    faq
 
@@ -33,7 +32,6 @@ Contents
    :hidden:
 
    glossary
-   users
 
 .. ifconfig:: devel
 
