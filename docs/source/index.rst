@@ -21,7 +21,6 @@ Contents
    tutorial/index
    man/index
    web/index
-   howtos/index
    api/index
    dev/index
    changes
