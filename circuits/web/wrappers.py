@@ -276,13 +276,13 @@ class Response(object):
         headers = self.headers
         return "%s %s\r\n%s" % (protocol, status, headers)
 
-    @deprecated
     @property
+    @deprecated
     def code(self):
         return self.status.status
 
-    @deprecated
     @property
+    @deprecated
     def message(self):
         return self.status.reason
 
