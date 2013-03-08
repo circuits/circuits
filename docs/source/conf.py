@@ -19,6 +19,7 @@ import sys, os
 sys.path.insert(0, os.path.abspath('../..'))
 
 import circuits
+import sphinx_bootstrap_theme
 
 # -- General configuration -----------------------------------------------------
 
@@ -239,5 +240,8 @@ latex_documents = [
 def setup(app):
     # ifconfig variables
     app.add_config_value('devel', '', True)
+
+html_theme = 'bootstrap'
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # flake8: noqa

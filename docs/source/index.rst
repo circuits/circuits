@@ -7,7 +7,14 @@ circuits |version| Documentation
 :Date: |today|
 
 
-.. include:: ../../README.rst
+README
+======
+
+
+.. toctree::
+   :maxdepth: 1
+
+   readme
 
 
 Contents
