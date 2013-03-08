@@ -27,7 +27,9 @@ from circuits.core.pollers import Select
 from circuits.tools import inspect, graph
 from circuits import Component, Manager, Debugger
 from circuits import __version__ as systemVersion
-from circuits.web import BaseServer, Server, Controller, Static, wsgi
+
+from circuits.web.wsgi import Application
+from circuits.web import BaseServer, Controller, Logger, Server, Static
 
 try:
     from circuits.core.pollers import Poll
@@ -51,6 +53,12 @@ def parse_options():
         "-b", "--bind",
         action="store", type="string", default="0.0.0.0:8000", dest="bind",
         help="Bind to address:[port]"
+    )
+
+    parser.add_option(
+        "-l", "--logging",
+        action="store_true", default=False, dest="logging",
+        help="Enable access logs"
     )
 
     if psyco is not None:
@@ -130,7 +138,7 @@ def main():
     bind = (address, port)
 
     if opts.validate:
-        application = (wsgi.Application() + Root())
+        application = (Application() + Root())
         app = validator(application)
 
         httpd = make_server(address, port, app)
@@ -171,6 +179,9 @@ def main():
     docroot = os.getcwd() if not args else args[0]
 
     Static(docroot=docroot, dirlisting=True).register(manager)
+
+    if opts.logging:
+        Logger().register(manager)
 
     if opts.profile:
         if hotshot:
