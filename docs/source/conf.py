@@ -18,6 +18,8 @@ import sys, os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../..'))
 
+import circuits
+
 # -- General configuration -----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
@@ -40,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'circuits'
-copyright = u'2004-2012, James Mills'
+copyright = u'2004-2013, James Mills'
 url = "http://circuitsframework.com/"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -48,16 +50,13 @@ url = "http://circuitsframework.com/"
 # built documents.
 #
 # The short X.Y version.
-version = '2.1.0'
+version = circuits.__version__
 # The full version, including alpha/beta/rc tags.
-release = '2.1.0'
+release = circuits.__version__
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = False
-
-if devel:
-    release += "dev"
+devel = "dev" in version
 
 # -- Autodoc
 

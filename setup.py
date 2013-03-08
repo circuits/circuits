@@ -37,9 +37,11 @@ try:
 except IOError:
     README = RELEASE = ""
 
+import circuits
+
 setup(
     name="circuits",
-    version="2.1.0",
+    version=circuits.__version__,
     description="Asynchronous Component based Event Application Framework",
     long_description="%s\n\n%s" % (README, RELEASE),
     author="James Mills",
