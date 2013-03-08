@@ -71,10 +71,20 @@ class HTTPStatus(object):
     def __int__(self):
         return self._status
 
-    def __cmp__(self, other):
+    def __lt__(self, other):
         if isinstance(other, int):
-            return cmp(other, self._status)
-        return super(HTTPStatus, self).__cmp__(other)
+            return self._status < other
+        return super(HTTPStatus, self).__lt__(other)
+
+    def __gt__(self, other):
+        if isinstance(other, int):
+            return self._status > other
+        return super(HTTPStatus, self).__gt__(other)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self._status == other
+        return super(HTTPStatus, self).__eq__(other)
 
     def __str__(self):
         return "{0:d} {1:s}".format(self._status, self._reason)
