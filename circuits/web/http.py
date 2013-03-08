@@ -336,7 +336,7 @@ class HTTP(BaseComponent):
                 etype, evalue, traceback = error
                 if isinstance(evalue, RedirectException):
                     self.fire(
-                        Redirect(request, response, evalue.urls, evalue.status)
+                        Redirect(request, response, evalue.urls, evalue.code)
                     )
                 elif isinstance(evalue, HTTPException):
                     if evalue.traceback:
@@ -366,7 +366,7 @@ class HTTP(BaseComponent):
 
             if isinstance(evalue, RedirectException):
                 self.fire(
-                    Redirect(request, response, evalue.urls, evalue.status)
+                    Redirect(request, response, evalue.urls, evalue.code)
                 )
             elif isinstance(evalue, HTTPException):
                 if evalue.traceback:
@@ -410,7 +410,7 @@ class HTTP(BaseComponent):
 
         if isinstance(evalue, RedirectException):
             self.fire(
-                Redirect(request, response, evalue.urls, evalue.status)
+                Redirect(request, response, evalue.urls, evalue.code)
             )
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:
