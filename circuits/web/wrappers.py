@@ -60,7 +60,7 @@ class Host(object):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
 
 
-class Status(object):
+class HTTPStatus(object):
 
     __slots__ = ("_reason", "_status",)
 
@@ -218,6 +218,21 @@ class Body(object):
         response._body = value
 
 
+class Status(object):
+    """Response Status"""
+
+    def __get__(self, response, cls=None):
+        if response is None:
+            return self
+        else:
+            return response._status
+
+    def __set__(self, response, value):
+        value = HTTPStatus(value) if isinstance(value, int) else value
+
+        response._status = value
+
+
 class Response(object):
     """Response(sock, request) -> new Response object
 
@@ -230,6 +245,8 @@ class Response(object):
     message = None
 
     body = Body()
+    status = Status()
+
     done = False
     close = False
     stream = False
@@ -243,9 +260,9 @@ class Response(object):
         self.request = request
         self.encoding = encoding
 
-        self.status = status or Status()
-
         self._body = []
+        self._status = status or HTTPStatus()
+
         self.time = time()
 
         self.headers = Headers([])
@@ -314,7 +331,7 @@ class Response(object):
         for k, v in self.cookie.items():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
-        status = self.code
+        status = self.status
 
         if status == 413:
             self.close = True

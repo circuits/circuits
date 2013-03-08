@@ -59,7 +59,7 @@ class HTTPError(Event):
             self.traceback = ""
 
         self.response.close = True
-        self.response.code = self.code
+        self.response.status = self.code
 
         self.data = {
             "code": self.code,

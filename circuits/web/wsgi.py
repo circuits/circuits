@@ -190,7 +190,7 @@ class Gateway(BaseComponent):
         buffer = StringIO()
 
         def start_response(status, headers, exc_info=None):
-            response.code = int(status.split(" ", 1)[0])
+            response.status = int(status.split(" ", 1)[0])
             for header in headers:
                 response.headers.add_header(*header)
             return buffer.write

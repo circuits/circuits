@@ -78,7 +78,7 @@ class WebSockets(BaseComponent):
         accept = base64.b64encode(hasher.digest())
 
         # Successful completion
-        response.code = 101
+        response.status = 101
         response.close = False
         del response.headers["Content-Type"]
         response.headers["Upgrade"] = "WebSocket"
