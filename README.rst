@@ -2,13 +2,13 @@
 .. _#circuits IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
 .. _FreeNode IRC Network: http://freenode.net
 .. _Python Standard Library: http://docs.python.org/library/
-.. _Website: https://bitbucket.org/prologic/circuits/
+.. _Website: https://circuitsframework.com/
 .. _PyPi Page: http://pypi.python.org/pypi/circuits
 .. _Read the Docs: http://circuits.readthedocs.org/
 .. _MIT License: http://www.opensource.org/licenses/mit-license.php
-.. _Create an Issue: https://bitbucket.org/prologic/circuits/issue/new
+.. _Create an Issue: https://bitbucket.org/circuits/circuits/issue/new
 .. _Mailing List: http://groups.google.com/group/circuits-users
-.. _Downloads page: https://bitbucket.org/prologic/circuits/downloads
+.. _Downloads page: https://bitbucket.org/circuits/circuits/downloads
 
 
 Overview
@@ -36,7 +36,7 @@ functionality and abstraction. Much of the circuits component library is
 designed and built this way.
 
 - **Documentation**: http://packages.python.org/circuits or `Read the Docs`_.
-- **Project website**: https://bitbucket.org/prologic/circuits/
+- **Project website**: http://circuitsframework.com/
 - **PyPI page**: http://pypi.python.org/pypi/circuits
 
 

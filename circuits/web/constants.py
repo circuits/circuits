@@ -11,7 +11,7 @@ from circuits import __version__
 
 SERVER_PROTOCOL = (1, 1)
 SERVER_VERSION = "circuits/%s" % __version__
-SERVER_URL = "http://bitbucket.org/prologic/circuits/"
+SERVER_URL = "http://bitbucket.org/circuits/circuits/"
 
 DEFAULT_ERROR_MESSAGE = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"

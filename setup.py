@@ -44,8 +44,8 @@ setup(
     long_description="%s\n\n%s" % (README, RELEASE),
     author="James Mills",
     author_email="James Mills, prologic at shortcircuit dot net dot au",
-    url="http://bitbucket.org/prologic/circuits/",
-    download_url="http://bitbucket.org/prologic/circuits/downloads/",
+    url="http://circuitsframework.com/",
+    download_url="http://bitbucket.org/circuits/circuits/downloads/",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",

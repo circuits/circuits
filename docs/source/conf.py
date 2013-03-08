@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = []
 
-bitbucket_project_url = 'https://bitbucket.org/prologic/circuits'
+bitbucket_project_url = 'https://bitbucket.org/circuits/circuits'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -41,7 +41,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'circuits'
 copyright = u'2004-2012, James Mills'
-url = "http://bitbucket.org/prologic/circuits/"
+url = "http://circuitsframework.com/"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
