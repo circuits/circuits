@@ -139,7 +139,7 @@ class Application(BaseComponent):
         status = self.response.status
         headers = list(self.response.headers.items())
 
-        start_response(status, headers, exc_info)
+        start_response(str(status), headers, exc_info)
         return body
 
     @handler("response", filter=True, channel="web")
