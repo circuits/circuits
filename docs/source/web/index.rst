@@ -1,6 +1,6 @@
-==========================
-The circuits.web Framework
-==========================
+========================
+circuits.web User Manual
+========================
 
 .. toctree::
    :maxdepth: 1

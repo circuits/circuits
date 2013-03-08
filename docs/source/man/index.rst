@@ -1,6 +1,6 @@
-======================
-The circuits Framework
-======================
+=====================
+circuits  User Manual
+=====================
 
 .. toctree::
    :maxdepth: 2
