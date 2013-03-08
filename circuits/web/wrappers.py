@@ -20,6 +20,7 @@ from .utils import url
 from .headers import Headers
 from ..six import binary_type
 from .errors import HTTPError
+from circuits.tools import deprecated
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
 
@@ -275,10 +276,12 @@ class Response(object):
         headers = self.headers
         return "%s %s\r\n%s" % (protocol, status, headers)
 
+    @deprecated
     @property
     def code(self):
         return self.status.status
 
+    @deprecated
     @property
     def message(self):
         return self.status.reason
