@@ -59,6 +59,39 @@ class Host(object):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
 
 
+class Status(object):
+
+    __slots__ = ("_reason", "_status",)
+
+    def __init__(self, status=200, reason=None):
+        self._status = status
+        self._reason = reason or HTTP_STATUS_CODES[status]
+
+    def __int__(self):
+        return self._status
+
+    def __cmp__(self, other):
+        if isinstance(other, int):
+            return other == self._status
+        return super(Status, self).__cmp__(other)
+
+    def __str__(self):
+        return "{0:d} {1:s}".format(self._status, self._reason)
+
+    def __repr__(self):
+        return "<Status (status={0:d} reason={1:s}>".format(
+            self._status, self._reason
+        )
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def reason(self):
+        return self._reason
+
+
 class Request(object):
     """Creates a new Request object to hold information about a request.
 
@@ -203,17 +236,13 @@ class Response(object):
 
     protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
 
-    def __init__(self, request, encoding='utf-8', code=None, message=None):
+    def __init__(self, request, encoding='utf-8', status=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
         self.encoding = encoding
 
-        if code is not None:
-            self.code = code
-
-        if message is not None:
-            self.message = message
+        self.status = status or Status()
 
         self._body = []
         self.time = time()
@@ -247,15 +276,17 @@ class Response(object):
         return "%s %s\r\n%s" % (protocol, status, headers)
 
     @property
-    def status(self):
-        return "%d %s" % (
-            self.code, self.message or HTTP_STATUS_CODES[self.code]
-        )
+    def code(self):
+        return self.status.status
+
+    @property
+    def message(self):
+        return self.status.reason
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
-        self.headers.setdefault("Content-Type",
-            "text/html; charset={0:s}".format(self.encoding)
+        self.headers.setdefault(
+            "Content-Type", "text/html; charset={0:s}".format(self.encoding)
         )
 
         cLength = None
