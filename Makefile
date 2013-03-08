@@ -15,7 +15,7 @@ clean:
 	@find . -name '*.pyc' -delete
 	@find . -name '*.pyo' -delete
 	@find . -name '*~' -delete
-	@rm *.xml
+	@rm -f *.xml
 
 docs:
 	@make -C docs html
