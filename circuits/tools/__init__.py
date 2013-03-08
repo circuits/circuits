@@ -9,7 +9,8 @@ tools are installed as executables with a prefix of "circuits."
 """
 
 from hashlib import md5
-from warnings import warn
+from functools import wraps
+from warnings import warn, warn_explicit
 
 
 def tryimport(modules, obj=None, message=None):
@@ -126,3 +127,16 @@ def inspect(x):
             write("   %s\n" % reprhandler(handler))
 
     return "".join(s)
+
+
+def deprecated(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        warn_explicit(
+            "Call to deprecated function {0:s}".format(f.__name__),
+            category=DeprecationWarning,
+            filename=f.func_code.co_filename,
+            lineno=f.func_code.co_firstlineno + 1
+        )
+        return f(*args, **kwargs)
+    return wrapper
