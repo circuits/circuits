@@ -73,8 +73,8 @@ class HTTPStatus(object):
 
     def __cmp__(self, other):
         if isinstance(other, int):
-            return other == self._status
-        return super(Status, self).__cmp__(other)
+            return cmp(other, self._status)
+        return super(HTTPStatus, self).__cmp__(other)
 
     def __str__(self):
         return "{0:d} {1:s}".format(self._status, self._reason)
