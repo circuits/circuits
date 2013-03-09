@@ -44,7 +44,6 @@ Contents
    .. toctree::
       :hidden:
 
-      pypitest
       todo
 
 
