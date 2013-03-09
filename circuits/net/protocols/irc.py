@@ -206,6 +206,11 @@ class Nick(Response):
 class Mode(Response):
     """Mode response"""
 
+
+class Invite(Response):
+    """Invite response"""
+
+
 ###
 ### Protocol Component(s)
 ###
@@ -375,6 +380,11 @@ class IRC(Component):
             target = tokens[2]
             modes = strip(" ".join(tokens[3:]))
             self.fire(Mode(source, target, modes))
+        elif tokens[1] == "INVITE":
+            source = sourceSplit(strip(tokens[0]))
+            target = tokens[2]
+            channel = strip(tokens[3])
+            self.fire(Invite(source, target, channel))
 
     ###
     ### Default Events
