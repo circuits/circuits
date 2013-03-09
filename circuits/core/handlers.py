@@ -74,7 +74,7 @@ def handler(*names, **kwargs):
     """
 
     def wrapper(f):
-        if names and type(names[0]) is bool and not names[0]:
+        if names and isinstance(names[0], bool) and not names[0]:
             f.handler = False
             return f
 

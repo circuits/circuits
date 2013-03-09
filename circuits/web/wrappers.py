@@ -293,7 +293,7 @@ class Response(object):
         return "<Response %s %s (%d)>" % (
             self.status,
             self.headers["Content-Type"],
-            (len(self.body) if type(self.body) == str else 0)
+            (len(self.body) if isinstance(self.body, str) else 0)
         )
 
     def __str__(self):

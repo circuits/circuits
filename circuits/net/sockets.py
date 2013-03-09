@@ -781,12 +781,12 @@ class TCPServer(Server):
 
 
 def parse_ipv4_parameter(bind_parameter):
-    if type(bind_parameter) is int:
+    if isinstance(bind_parameter, int):
         try:
             bind = (gethostbyname(gethostname()), bind_parameter)
         except gaierror:
             bind = ("0.0.0.0", bind_parameter)
-    elif type(bind_parameter) is str and ":" in bind_parameter:
+    elif isinstance(bind_parameter, str) and ":" in bind_parameter:
         host, port = bind_parameter.split(":")
         port = int(port)
         bind = (host, port)
@@ -797,7 +797,7 @@ def parse_ipv4_parameter(bind_parameter):
 
 
 def parse_ipv6_parameter(bind_parameter):
-    if type(bind_parameter) is int:
+    if isinstance(bind_parameter, int):
         try:
             _, _, _, _, bind \
                 = getaddrinfo(getfqdn(), bind_parameter, AF_INET6)[0]

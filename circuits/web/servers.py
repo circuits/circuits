@@ -60,13 +60,10 @@ class BaseServer(BaseComponent):
 
         super(BaseServer, self).__init__(channel=channel)
 
-        if type(bind) in (int, list, tuple):
+        if any((isinstance(bind, o) for o in (int, list, tuple,))):
             SocketType = TCPServer
         else:
-            if ":" in bind:
-                SocketType = TCPServer
-            else:
-                SocketType = UNIXServer
+            SocketType = TCPServer if ":" in bind else UNIXServer
 
         self.server = SocketType(
             bind,

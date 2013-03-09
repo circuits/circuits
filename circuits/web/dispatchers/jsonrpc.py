@@ -46,7 +46,7 @@ class JSONRPC(BaseComponent):
             data = request.body.read().decode(self.encoding)
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o["params"]
-            if type(params) is dict:
+            if isinstance(params, dict):
                 params = dict([(str(k), v) for k, v in params.iteritems()])
 
             if "." in method:
@@ -66,7 +66,7 @@ class JSONRPC(BaseComponent):
 
             self.addHandler(_on_value_changed)
 
-            if type(params) is dict:
+            if isinstance(params, dict):
                 value = self.fire(RPC.create(name, **params), channel)
             else:
                 value = self.fire(RPC.create(name, *params), channel)

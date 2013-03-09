@@ -172,7 +172,7 @@ class Environment(BaseComponent):
             if not self.config.has_section(section):
                 self.config.add_section(section)
             for option, value in CONFIG[section].items():
-                if type(value) == str:
+                if isinstance(value, str):
                     value = value % {
                         "name": self.envname,
                         "path": self.path,

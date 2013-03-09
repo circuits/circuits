@@ -361,7 +361,7 @@ class HTTP(BaseComponent):
                 value = e.value.getValue(recursive=False)
                 value.event = e
                 value.notify = True
-        elif type(value) is tuple:
+        elif isinstance(value, tuple):
             etype, evalue, traceback = error = value
 
             if isinstance(evalue, RedirectException):
@@ -386,7 +386,7 @@ class HTTP(BaseComponent):
                     )
             else:
                 self.fire(HTTPError(request, response, error=error))
-        elif type(value) is not bool:
+        elif not isinstance(value, bool):
             response.body = value
             self.fire(Response(response))
 

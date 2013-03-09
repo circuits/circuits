@@ -39,9 +39,9 @@ class Debugger(BaseComponent):
         self.errors = errors
         self.events = events
 
-        if type(file) is str:
+        if isinstance(file, str):
             self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
-        elif type(file) is file or hasattr(file, "write"):
+        elif hasattr(file, "write"):
             self.file = file
         else:
             self.file = sys.stderr
