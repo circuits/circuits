@@ -145,7 +145,7 @@ class BaseComponent(Manager):
 
         if hasattr(self, "init") and isinstance(self.init, Callable):
             self.init(*args, **kwargs)
-            
+
         @handler("prepare_unregister_complete", channel=self)
         def _on_prepare_unregister_complete(self, e, value):
             self._do_prepare_unregister_complete(e, value)
@@ -240,6 +240,15 @@ class BaseComponent(Manager):
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
 
+        return list(
+            getattr(cls, k) for k in dir(cls)
+            if getattr(getattr(cls, k), "handler", False)
+        )
+
+    @classmethod
+    def events(cls):
+        """Returns a list of all events this Component listens to"""
+
         handlers = (
             getattr(cls, k).names for k in dir(cls)
             if getattr(getattr(cls, k), "handler", False)
@@ -254,7 +263,7 @@ class BaseComponent(Manager):
     def handles(cls, *names):
         """Returns True if all names are event handlers of this Component"""
 
-        return all(name in cls.handlers() for name in names)
+        return all(name in cls.events() for name in names)
 
 
 Component = HandlerMetaClass("Component", (BaseComponent,), {})
