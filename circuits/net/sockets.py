@@ -609,7 +609,7 @@ class Server(BaseComponent):
     def _close(self, sock):
         if sock is None:
             return
-        if not sock == self._sock and sock not in self._clients:
+        if sock != self._sock and sock not in self._clients:
             return
 
         self._poller.discard(sock)

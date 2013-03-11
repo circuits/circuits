@@ -160,7 +160,7 @@ class HTTP(BaseComponent):
             request, response = self._clients[sock]
             request.body.write(data)
             contentLength = int(request.headers.get("Content-Length", "0"))
-            if not request.body.tell() == contentLength:
+            if request.body.tell() != contentLength:
                 return
         else:
             if sock in self._buffers:
@@ -224,7 +224,7 @@ class HTTP(BaseComponent):
             # Notice that, in (b), the response will be "HTTP/1.1" even though
             # the client only understands 1.0. RFC 2616 10.5.6 says we should
             # only return 505 if the _major_ version is different.
-            if not request.protocol[0] == request.server_protocol[0]:
+            if request.protocol[0] != request.server_protocol[0]:
                 return self.fire(HTTPError(request, response, 505))
 
             rp = request.protocol
@@ -280,7 +280,7 @@ class HTTP(BaseComponent):
         path = request.path.replace("..", "")
         path = path.replace("//", "")
         path = path.replace("/./", "")
-        if not path == request.path:
+        if path != request.path:
             return self.fire(Redirect(request, response, [path], 301))
 
         self.fire(req)
