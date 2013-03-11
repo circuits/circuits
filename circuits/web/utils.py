@@ -183,7 +183,10 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
             if atom == '.':
                 pass
             elif atom == '..':
-                atoms.pop()
+                try:
+                    atoms.pop()
+                except IndexError:
+                    pass
             else:
                 atoms.append(atom)
         newurl = '/'.join(atoms)

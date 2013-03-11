@@ -11,10 +11,10 @@ or commonly known as HTTP.
 
 try:
     from urllib.parse import unquote
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, urlunparse
 except ImportError:
     from urllib import unquote  # NOQA
-    from urlparse import urlparse  # NOQA
+    from urlparse import urlparse, urlunparse  # NOQA
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
@@ -191,14 +191,6 @@ class HTTP(BaseComponent):
             scheme, location, path, params, qs, frag = urlparse(path)
 
             protocol = tuple(map(int, protocol[5:].split(".")))
-            request = wrappers.Request(
-                sock, method, scheme, path, protocol, qs
-            )
-            response = wrappers.Response(request, encoding=self._encoding)
-            self._clients[sock] = request, response
-
-            if frag:
-                return self.fire(HTTPError(request, response, 400))
 
             if params:
                 path = "%s;%s" % (path, params)
@@ -210,6 +202,15 @@ class HTTP(BaseComponent):
             # before the escaped characters within those components can be
             # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
             path = "%2F".join(map(unquote, quoted_slash.split(path)))
+
+            request = wrappers.Request(
+                sock, method, scheme, path, protocol, qs
+            )
+            response = wrappers.Response(request, encoding=self._encoding)
+            self._clients[sock] = request, response
+
+            if frag:
+                return self.fire(HTTPError(request, response, 400))
 
             # Compare request and server HTTP protocol versions, in case our
             # server does not support the requested protocol. Limit our output
@@ -274,6 +275,13 @@ class HTTP(BaseComponent):
                 req = Request(request, response)
         else:
             req = Request(request, response)
+
+        # Guard against unwanted request paths (SECURITY).
+        path = request.path.replace("..", "")
+        path = path.replace("//", "")
+        path = path.replace("/./", "")
+        if not path == request.path:
+            return self.fire(Redirect(request, response, [path], 301))
 
         self.fire(req)
 
