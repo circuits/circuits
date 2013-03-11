@@ -25,8 +25,7 @@ def check_auth(user, password):
         rows = (line.strip().split(":") for line in f)
         records = [row for row in rows if row[0] == user]
 
-    record = records and records[0]
-    hash = record and record[1]
+    hash = records and records[0][1]
     salt = salt_pattern.match(hash).group()
 
     return crypt(password, salt) == hash
@@ -46,14 +45,12 @@ class PasswdAuth(Component):
             if ah is None:
                 return HTTPError(request, response, 400)
 
-            username = ah["username"]
-            password = ah["password"]
+            username, password = ah["username"], ah["password"]
 
             if check_auth(username, password):
                 request.login = username
                 return
 
-        request.login = False
         response.headers["WWW-Authenticate"] = _httpauth.basicAuth(self.realm)
 
         return Unauthorized(request, response)
