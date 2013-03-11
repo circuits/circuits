@@ -119,12 +119,14 @@ def manager(request):
     return manager
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def watcher(request, manager):
     watcher = Watcher().register(manager)
 
     def finalizer():
         watcher.unregister()
+
+    request.addfinalizer(finalizer)
 
     return watcher
 

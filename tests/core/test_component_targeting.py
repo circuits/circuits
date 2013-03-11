@@ -24,6 +24,7 @@ def app(request, manager, watcher):
 
     def finalizer():
         app.unregister()
+        assert watcher.wait("unregistered")
 
     request.addfinalizer(finalizer)
 
