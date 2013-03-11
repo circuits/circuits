@@ -28,18 +28,24 @@ class Watcher(BaseComponent):
             self.events.append(event)
 
     def wait(self, name, channel=None, timeout=3.0):
-        for i in range(int(timeout / TIMEOUT)):
-            if channel is None:
-                with self._lock:
-                    for event in self.events:
-                        if event.name == name:
-                            return True
-            else:
-                with self._lock:
-                    for event in self.events:
-                        if event.name == name and channel in event.channels:
-                            return True
-            sleep(TIMEOUT)
+        try:
+            for i in range(int(timeout / TIMEOUT)):
+                if channel is None:
+                    with self._lock:
+                        for event in self.events:
+                            if event.name == name:
+                                return True
+                else:
+                    with self._lock:
+                        for event in self.events:
+                            if event.name == name and \
+                                    channel in event.channels:
+                                return True
+
+                sleep(TIMEOUT)
+        finally:
+            pass
+            #self.events.clear()
 
 
 class Flag(object):
@@ -119,7 +125,7 @@ def manager(request):
     return manager
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def watcher(request, manager):
     watcher = Watcher().register(manager)
 
