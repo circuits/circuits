@@ -9,6 +9,8 @@ or commonly known as HTTP.
 """
 
 
+from os.path import realpath
+
 try:
     from urllib.parse import unquote
     from urllib.parse import urlparse, urlunparse
@@ -277,9 +279,7 @@ class HTTP(BaseComponent):
             req = Request(request, response)
 
         # Guard against unwanted request paths (SECURITY).
-        path = request.path.replace("..", "")
-        path = path.replace("//", "")
-        path = path.replace("/./", "")
+        path = realpath(request.path)
         if path != request.path:
             return self.fire(Redirect(request, response, [path], 301))
 

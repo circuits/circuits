@@ -29,7 +29,7 @@ def test(webapp):
     s = f.read()
     assert s == b"Hello World!"
 
-    url = "%s/rpc/" % webapp.server.base
+    url = "%s/rpc" % webapp.server.base
     jsonrpc = ServerProxy(url, allow_none=True, encoding='utf-8')
 
     data = jsonrpc.eval("1 + 2")
