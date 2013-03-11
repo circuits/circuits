@@ -5,6 +5,7 @@ Utility macros
 
 from inspect import getdoc
 
+
 def macros(macro, environ, *args, **kwargs):
     """Return a list of available macros"""
 
