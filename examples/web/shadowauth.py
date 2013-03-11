@@ -1,82 +1,67 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""An example of a Circuits Component that requires users authenticate
-against /etc/passwd and /etc/shadow before letting them into the web site."""
+"""Shadow Auth Demo
 
-import os
-import re
+An example of a Circuits Component that requires users authenticate
+against /etc/passwd or /etc/shadow before letting them into the web site.
+"""
+
+from os import path
+from crypt import crypt
+from socket import gethostname
+from re import compile as compile_regex
 
 from circuits import handler, Component
 from circuits.web import _httpauth, Server, Controller
 from circuits.web.errors import HTTPError, Unauthorized
 
-__author__ = 'Dan McDougall <YouKnowWho@YouKnowWhat.com>'
 
+def check_auth(user, password):
+    salt_pattern = compile_regex(r"\$.*\$.*\$")
+    passwd = "/etc/shadow" if path.exists("/etc/shadow") else "/etc/passwd"
 
-def check_credentials(user, password):
-    """
-    Checks a given user and password against /etc/shadow (or /etc/passwd if
-    /etc/shadow doesn't exist).  Returns True on success and False on failure.
-    """
+    with open(passwd, "r") as f:
+        rows = (line.strip().split(":") for line in f)
+        records = [row for row in rows if row[0] == user]
 
-    from crypt import crypt
-    shadow_hash = ''
+    record = records and records[0]
+    hash = record and record[1]
+    salt = salt_pattern.match(hash).group()
 
-    # Matches salts, e.g. "$1$72p6zzHp$"
-    salt_regex = re.compile(r'\$.*\$.*\$')
-
-    if os.path.exists('/etc/shadow'):
-        password_file = '/etc/shadow'
-    else:
-        password_file = '/etc/passwd'
-    shadow = open(password_file, 'r').readlines()
-    for line in shadow:
-        cols = line.split(':')
-        if cols[0] == user:
-            shadow_hash = cols[1]
-    if salt_regex.match(shadow_hash):  # If there's a hashed password...
-        salt = salt_regex.match(shadow_hash).group()  # Grab it
-        hashed_pass = crypt(password, salt)  # Now hash the plaintext password
-        if hashed_pass == shadow_hash:  # If they match...
-            return True
-    return False
+    return crypt(password, salt) == hash
 
 
 class PasswdAuth(Component):
-    """A Circuits Component that authenticates the user using the credentials
-    stored in /etc/passwd and /etc/shadow (if present)."""
 
     channel = "web"
 
-    def __init__(self, name="circuits.passwdauth", *args, **kwargs):
-        super(PasswdAuth, self).__init__(*args, **kwargs)
-        self._name = name
+    def init(self, realm=None):
+        self.realm = realm or gethostname()
 
-    @handler("request", filter=True)
-    def authcheck(self, request, response):
-        """Obtains the authorization header (if any) and checks the supplied
-        username and password against the credentials stored in /etc/passwd
-        and /etc/shadow (if present)"""
-        if 'authorization' in request.headers:
-            ah = _httpauth.parseAuthorization(request.headers['authorization'])
+    @handler("request", filter=True, priority=1.0)
+    def _on_request(self, request, response):
+        if "authorization" in request.headers:
+            ah = _httpauth.parseAuthorization(request.headers["authorization"])
             if ah is None:
                 return HTTPError(request, response, 400)
+
             username = ah["username"]
             password = ah["password"]
 
-            auth_result = check_credentials(username, password)
-            if auth_result:  # User authenticated successfully
-                request.login = ah["username"]
+            if check_auth(username, password):
+                request.login = username
                 return
-        response.headers["WWW-Authenticate"] = _httpauth.basicAuth('System')
+
         request.login = False
+        response.headers["WWW-Authenticate"] = _httpauth.basicAuth(self.realm)
+
         return Unauthorized(request, response)
 
 
 class Root(Controller):
-    """Our web site"""
-    def index(self):
-        return "Hello, %s" % self.request.login
 
-(Server(8000) + PasswdAuth() + Root()).run()
+    def index(self):
+        return "Hello, {0:s}".format(self.request.login)
+
+(Server("0.0.0.0:8000") + PasswdAuth() + Root()).run()
