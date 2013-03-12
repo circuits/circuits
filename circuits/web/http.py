@@ -246,7 +246,7 @@ class HTTP(BaseComponent):
                 return self.fire(
                     Response(
                         wrappers.Response(
-                            request, code=100, encoding=self._encoding
+                            request, status=100, encoding=self._encoding
                         )
                     )
                 )
