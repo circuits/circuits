@@ -9,7 +9,7 @@ or commonly known as HTTP.
 """
 
 
-from os.path import realpath
+from posixpath import realpath
 
 try:
     from urllib.parse import unquote
