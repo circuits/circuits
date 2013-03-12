@@ -125,7 +125,7 @@ class Redirect(HTTPError):
             #  2. a URL relative to root (e.g. "/dummy")
             #  3. a URL relative to the current path
             # Note that any query string in request is discarded.
-            url = request.url.relative(url).utf8()
+            url = _urljoin(utils.url(request), url)
             abs_urls.append(url)
         self.urls = urls = abs_urls
 

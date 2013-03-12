@@ -69,6 +69,17 @@ class BaseController(BaseComponent):
 
     channel = "/"
 
+    def url(self, *args, **kwargs):
+        """Return the current URL or create a new URL
+
+        If no arguments or keywords arguments are passed, returns the
+        current URL for the current request.
+
+        .. seealso:: :py:func:`circuits.web.utils.url`
+        """
+
+        return self.request.url(*args, **kwargs)
+
     def forbidden(self, description=None):
         """Return a 403 (Forbidden) response
 

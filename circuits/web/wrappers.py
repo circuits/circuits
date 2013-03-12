@@ -16,10 +16,10 @@ try:
 except ImportError:
     from http.cookies import SimpleCookie  # NOQA
 
+from .utils import url
 from .headers import Headers
 from ..six import binary_type
 from .errors import HTTPError
-from .url import parse as parse_url
 from circuits.tools import deprecated
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
@@ -195,12 +195,8 @@ class Request(object):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
-    @property
-    def url(self):
-        url = parse_url(self.base)
-        url = url.relative(self.path)
-        url._query = self.qs
-        return url
+    def url(self, *args, **kwargs):
+        return url(self, *args, **kwargs)
 
 
 class Body(object):
