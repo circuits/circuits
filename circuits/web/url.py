@@ -25,13 +25,8 @@
 
 import re
 import codecs
-
-try:
-    import urllib
-    import urlparse
-except ImportError:
-    import urllib
-    from urllib import parse as urlparse
+import urllib
+import urlparse
 
 # Come codes that we'll need
 IDNA = codecs.lookup('idna')
