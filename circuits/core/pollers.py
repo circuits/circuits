@@ -24,8 +24,6 @@ from circuits.core.handlers import handler
 from .events import Event
 from .components import BaseComponent
 
-TIMEOUT = 0.01  # 10ms timeout
-
 
 class Read(Event):
     """Read Event"""
@@ -55,10 +53,8 @@ class BasePoller(BaseComponent):
 
     channel = None
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
+    def __init__(self, channel=channel):
         super(BasePoller, self).__init__(channel=channel)
-
-        self.timeout = timeout
 
         self._read = []
         self._write = []
@@ -162,8 +158,8 @@ class Select(BasePoller):
 
     channel = "select"
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
-        super(Select, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(Select, self).__init__(channel=channel)
 
         self._read.append(self._ctrl_recv)
 
@@ -228,8 +224,8 @@ class Poll(BasePoller):
 
     channel = "poll"
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
-        super(Poll, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(Poll, self).__init__(channel=channel)
 
         self._map = {}
         self._poller = select.poll()
@@ -338,8 +334,8 @@ class EPoll(BasePoller):
 
     channel = "epoll"
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
-        super(EPoll, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(EPoll, self).__init__(channel=channel)
 
         self._map = {}
         self._poller = select.epoll()
@@ -448,8 +444,8 @@ class KQueue(BasePoller):
 
     channel = "kqueue"
 
-    def __init__(self, timeout=0.00001, channel=channel):
-        super(KQueue, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(KQueue, self).__init__(channel=channel)
         self._map = {}
         self._poller = select.kqueue()
 
