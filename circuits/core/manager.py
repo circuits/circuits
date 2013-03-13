@@ -732,8 +732,7 @@ class Manager(object):
         if self._running:
             self.fire(GenerateEvents(self._lock, timeout), "*")
 
-        if len(self._queue):
-            self.flush()
+        self._queue and self.flush()
 
     def run(self, socket=None):
         """
