@@ -25,8 +25,9 @@ from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
 
 try:
     from ssl import wrap_socket as ssl_socket
-    from ssl import CERT_NONE, PROTOCOL_SSLv23, SSLError, SSL_ERROR_WANT_READ, \
-        SSL_ERROR_WANT_WRITE
+    from ssl import CERT_NONE, PROTOCOL_SSLv23
+    from ssl import SSLError, SSL_ERROR_WANT_WRITE, SSL_ERROR_WANT_READ
+
     HAS_SSL = 1
 except ImportError:
     import warnings
@@ -388,7 +389,7 @@ class Client(BaseComponent):
 
 def _do_handshake_for_non_blocking(ssock):
     """
-    This is how to do handshake for an ssl socket with underlying 
+    This is how to do handshake for an ssl socket with underlying
     non-blocking socket (according to the Python doc).
     """
     while True:
