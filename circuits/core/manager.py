@@ -249,7 +249,7 @@ class Manager(object):
         handlers_chain.append(self._handlers.get(name, []))
 
         for _handler in chain(*handlers_chain):
-            handler_channel = _handler.channel 
+            handler_channel = _handler.channel
             if handler_channel is None:
                 handler_channel = getattr(
                     getattr(
@@ -258,7 +258,7 @@ class Manager(object):
                         )
                     ),
                     "channel", None
-            )
+                )
 
             if channel == "*" or handler_channel in ("*", channel,) \
                     or channel is self:
