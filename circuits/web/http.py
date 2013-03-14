@@ -58,7 +58,7 @@ class HTTP(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, encoding=HTTP_ENCODING, channel=channel):
+    def __init__(self, encoding="utf-8", channel=channel):
         super(HTTP, self).__init__(channel=channel)
 
         self._encoding = encoding
@@ -102,9 +102,8 @@ class HTTP(BaseComponent):
         the information contained in the *response* object and
         sends it to the client (firing ``Write`` events).
         """
-
         self.fire(
-            Write(response.request.sock, str(response))
+            Write(response.request.sock, str(response).encode(HTTP_ENCODING))
         )
 
         if response.stream and response.body:
@@ -187,7 +186,9 @@ class HTTP(BaseComponent):
                     return
 
             requestline, data = data.split(b"\r\n", 1)
-            requestline = requestline.strip().decode(self._encoding, "replace")
+            requestline = requestline.strip().decode(
+                HTTP_ENCODING, "replace"
+            )
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
@@ -234,7 +235,9 @@ class HTTP(BaseComponent):
 
             end_of_headers = data.find(b"\r\n\r\n")
             if end_of_headers > -1:
-                header_data = data[:end_of_headers].decode(self._encoding)
+                header_data = data[:end_of_headers].decode(
+                    HTTP_ENCODING, "replace"
+                )
                 headers = request.headers = parse_headers(header_data)
             else:
                 headers = request.headers = Headers([])

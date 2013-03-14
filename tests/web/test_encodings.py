@@ -1,5 +1,3 @@
-import pytest
-
 from circuits.web import Controller
 
 from .helpers import urlopen
@@ -21,8 +19,6 @@ def test_utf_16_manual(webapp):
 
 
 def test_utf_16_server():
-    pytest.skip("XXX: Broken due to changes fixing Unicode Support for Headers")
-
     from circuits import Component
 
     class WebApp(Component):

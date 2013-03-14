@@ -251,6 +251,9 @@ class Response(object):
     is sent in the correct order.
     """
 
+    code = 200
+    message = None
+
     body = Body()
     status = Status()
 
@@ -295,10 +298,10 @@ class Response(object):
 
     def __str__(self):
         self.prepare()
-        protocol = self.protocol.encode(self._encoding)
-        status = "{0:s}".format(self.status).encode(self._encoding)
-        headers = unicode(self.headers).encode("utf-8")
-        return b"{0:s} {1:s}\r\n{2:s}".format(protocol, status, headers)
+        protocol = self.protocol
+        status = self.status
+        headers = self.headers
+        return "%s %s\r\n%s" % (protocol, status, headers)
 
     @property
     @deprecated
