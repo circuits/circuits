@@ -260,9 +260,9 @@ def iteritems(d):
 
 
 if PY3:
-    def b(s):
-        return s.encode("latin-1")
-    def u(s):
+    def b(s, encoding='utf-8'):
+        return s.encode(encoding)
+    def u(s, encoding='utf-8'):
         return s
     if sys.version_info[1] <= 1:
         def int2byte(i):
@@ -274,10 +274,10 @@ if PY3:
     StringIO = io.StringIO
     BytesIO = io.BytesIO
 else:
-    def b(s):
+    def b(s, encoding='utf-8'):
         return s
-    def u(s):
-        return unicode(s, "unicode_escape")
+    def u(s, encoding='utf-8'):
+        return unicode(s, encoding)
     int2byte = chr
     import StringIO
     StringIO = BytesIO = StringIO.StringIO

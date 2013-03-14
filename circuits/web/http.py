@@ -20,6 +20,7 @@ except ImportError:
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
+from circuits.six import b
 
 from . import wrappers
 from .utils import quoted_slash
@@ -58,7 +59,7 @@ class HTTP(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, encoding="utf-8", channel=channel):
+    def __init__(self, encoding=HTTP_ENCODING, channel=channel):
         super(HTTP, self).__init__(channel=channel)
 
         self._encoding = encoding
@@ -103,7 +104,7 @@ class HTTP(BaseComponent):
         sends it to the client (firing ``Write`` events).
         """
         self.fire(
-            Write(response.request.sock, str(response).encode(HTTP_ENCODING))
+            Write(response.request.sock, b(str(response), self._encoding))
         )
 
         if response.stream and response.body:
@@ -186,9 +187,7 @@ class HTTP(BaseComponent):
                     return
 
             requestline, data = data.split(b"\r\n", 1)
-            requestline = requestline.strip().decode(
-                HTTP_ENCODING, "replace"
-            )
+            requestline = requestline.strip().decode(self._encoding, "replace")
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
@@ -235,9 +234,7 @@ class HTTP(BaseComponent):
 
             end_of_headers = data.find(b"\r\n\r\n")
             if end_of_headers > -1:
-                header_data = data[:end_of_headers].decode(
-                    HTTP_ENCODING, "replace"
-                )
+                header_data = data[:end_of_headers].decode(self._encoding)
                 headers = request.headers = parse_headers(header_data)
             else:
                 headers = request.headers = Headers([])
