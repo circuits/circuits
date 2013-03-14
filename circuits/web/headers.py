@@ -235,10 +235,12 @@ class Headers(dict):
     def __repr__(self):
         return "Headers(%s)" % repr(self._headers)
 
-    def __str__(self):
+    def __unicode__(self):
         """str() returns the formatted headers, complete with end line,
         suitable for direct HTTP transmission."""
-        return '\r\n'.join(["%s: %s" % kv for kv in self._headers] + ["", ""])
+        return u"\r\n".join([u"%s: %s" % kv for kv in self._headers] + [u"", u""])
+
+    __str__ = __unicode__
 
     def setdefault(self, name, value):
         """Return first matching header value for 'name', or 'value'
