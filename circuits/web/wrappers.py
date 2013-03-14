@@ -268,7 +268,7 @@ class Response(object):
         self.encoding = encoding
 
         self._body = []
-        self._status = HTTPStatus(status) if status is not None else HTTPStatus()
+        self._status = HTTPStatus(status if status is not None else 200)
 
         self.time = time()
 
