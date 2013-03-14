@@ -18,7 +18,7 @@ except ImportError:
 
 from .utils import url
 from .headers import Headers
-from ..six import binary_type
+from ..six import binary_type, b
 from .errors import HTTPError
 from circuits.tools import deprecated
 from circuits.net.sockets import BUFSIZE
@@ -251,9 +251,6 @@ class Response(object):
     is sent in the correct order.
     """
 
-    code = 200
-    message = None
-
     body = Body()
     status = Status()
 
@@ -299,9 +296,9 @@ class Response(object):
     def __str__(self):
         self.prepare()
         protocol = self.protocol
-        status = self.status
-        headers = self.headers
-        return "%s %s\r\n%s" % (protocol, status, headers)
+        status = "{0:s}".format(self.status)
+        headers = str(self.headers)
+        return "{0:s} {1:s}\r\n{2:s}".format(protocol, status, headers)
 
     @property
     @deprecated

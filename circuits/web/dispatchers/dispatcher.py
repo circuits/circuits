@@ -98,7 +98,8 @@ class Dispatcher(BaseComponent):
 
         if name is not None and channel is not None:
             event.kwargs = parse_qs(request.qs)
-            parse_body(request, response, event.kwargs)
+            if request.method == 'POST':
+                parse_body(request, response, event.kwargs)
 
             if vpath:
                 event.args += tuple(vpath)
