@@ -54,7 +54,9 @@ class Debugger(BaseComponent):
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("error", channel="*", priority=100.0)
-    def _on_error(self, error_type, value, traceback, handler=None):
+    def _on_error(self, error_type, value, traceback,
+                  handler=None, fevent=None):
+
         if not self.errors:
             return
 
@@ -65,7 +67,7 @@ class Debugger(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
+        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, fevent, error_type, value)
         s.append(msg)
         s.extend(traceback)
         s.append("\n")

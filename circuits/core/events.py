@@ -199,12 +199,16 @@ class Error(Event):
     :param traceback: traceback of exception
     :type  traceback: traceback
 
-    :param kwargs: (Optional) Additional Information
-    :type  kwargs: dict
+    :param handler: handler that raised the exception
+    :type  handler: @handler(<method>)
+
+    :param fevent: event that failed
+    :type  fevent: Event
     """
 
-    def __init__(self, type, value, traceback, handler=None):
-        super(Error, self).__init__(type, value, traceback, handler)
+    def __init__(self, type, value, traceback, handler=None, fevent=None):
+        super(Error, self).__init__(type, value, traceback,
+                                    handler=handler, fevent=fevent)
 
 
 class Done(DerivedEvent):

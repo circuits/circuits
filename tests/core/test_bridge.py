@@ -24,7 +24,7 @@ class App(Component):
 
 def test(manager, watcher):
     app = App()
-    app.start(process=True, link=manager)
+    process, bridge = app.start(process=True, link=manager)
     assert watcher.wait("ready")
 
     x = manager.fire(Hello())
@@ -34,3 +34,7 @@ def test(manager, watcher):
     assert x.value == "Hello from {0:d}".format(app.pid)
 
     app.stop()
+    app.join()
+
+    bridge.unregister()
+    watcher.wait("unregistered")

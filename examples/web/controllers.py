@@ -15,4 +15,5 @@ class Root(Controller):
 
         return "Hello World!"
 
-(Server(("0.0.0.0", 9000)) + Root() + Logger()).run()
+from circuits import Debugger
+(Server(("0.0.0.0", 9000)) + Root() + Debugger()).run()

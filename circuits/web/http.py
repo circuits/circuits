@@ -395,6 +395,17 @@ class HTTP(BaseComponent):
             response.body = value
             self.fire(Response(response))
 
+    @handler("error")
+    def _on_error(self, etype, evalue, etraceback, handler=None, fevent=None):
+        sock, data = fevent.args
+        request = wrappers.Request(sock, "GET", "http", "/", "HTTP/1.1", "")
+        response = wrappers.Response(request, encoding=self._encoding)
+        self.fire(
+            HTTPError(
+                request, response, error=(etype, evalue, etraceback)
+            )
+        )
+
     @handler("request_failure", "response_failure")
     def _on_request_or_response_failure(self, evt, err):
         if len(evt.args) == 1:

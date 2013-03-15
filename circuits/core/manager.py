@@ -536,7 +536,12 @@ class Manager(object):
                         *event.channels
                     )
 
-                self.fire(Error(etype, evalue, traceback, handler))
+                self.fire(
+                    Error(
+                        etype, evalue, traceback,
+                        handler=handler, fevent=event
+                    )
+                )
 
             if value is not None:
                 if isinstance(value, GeneratorType):
@@ -613,21 +618,26 @@ class Manager(object):
 
                 channels = (uuid(),) * 2
                 parent, child = Pipe(*channels)
-                Bridge(parent, channel=channels[0]).register(link)
+                bridge = Bridge(parent, channel=channels[0]).register(link)
 
                 args = (child,)
             else:
                 args = ()
+                bridge = None
 
             self.__process = Process(
                 target=self.run, args=args, name=self.name
             )
             self.__process.daemon = True
             self.__process.start()
+
+            return self.__process, bridge
         else:
             self.__thread = Thread(target=self.run, name=self.name)
             self.__thread.daemon = True
             self.__thread.start()
+
+            return self.__thread, None
 
     def join(self):
         if getattr(self, "_thread", None) is not None:

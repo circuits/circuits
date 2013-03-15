@@ -131,6 +131,7 @@ def watcher(request, manager):
 
     def finalizer():
         watcher.unregister()
+        watcher.wait("unregistered")
 
     request.addfinalizer(finalizer)
 
