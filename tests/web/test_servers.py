@@ -94,3 +94,25 @@ def test_unixserver(tmpdir):
     assert path.basename(server.host) == "test.sock"
 
     server.stop()
+
+
+def test_multi_servers():
+    pytest.importorskip("ssl")
+
+    insecure_server = Server(0, channel="insecure")
+    secure_server = Server(
+        0,
+        channel="secure", secure=True, certfile=CERTFILE
+    )
+
+    server = (insecure_server + secure_server)
+    Root().register(server)
+    server.start()
+
+    f = urlopen(insecure_server.base)
+    s = f.read()
+    assert s == b"Hello World!"
+
+    f = urlopen(secure_server.base)
+    s = f.read()
+    assert s == b"Hello World!"
