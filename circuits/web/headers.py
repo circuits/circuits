@@ -296,7 +296,7 @@ def parse_headers(data):
             # It's a continuation line.
             v = line.strip()
         else:
-            k, v = line.split(":", 1)
+            k, v = line.split(":", 1)# if ":" in line else (line, "")
             k, v = k.strip(), v.strip()
 
         headers.add_header(k, v)
