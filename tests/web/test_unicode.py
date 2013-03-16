@@ -74,7 +74,7 @@ def test_request_headers(webapp):
     connection.connect()
 
     body = b("")
-    headers = {"A": b("ä")}
+    headers = {"A": "ä"}
     connection.request("GET", "/request_headers", body, headers)
     response = connection.getresponse()
     assert response.status == 200

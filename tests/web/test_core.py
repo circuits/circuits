@@ -11,9 +11,6 @@ class Root(Controller):
         return "Hello World!"
 
     def test_args(self, *args, **kwargs):
-        args = tuple(
-            (x.encode('utf-8') if type(x) != str else x for x in args)
-        )
         return "{0}\n{1}".format(repr(args), repr(kwargs))
 
     def test_redirect(self):
