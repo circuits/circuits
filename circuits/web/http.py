@@ -379,11 +379,11 @@ class HTTP(BaseComponent):
 
     @handler("error")
     def _on_error(self, etype, evalue, etraceback, handler=None, fevent=None):
-        try:
-            sock, data = fevent.args
-        except ValueError:
+        if isinstance(fevent, Response):
             response = fevent.args[0]
             sock = response.request.sock
+        else:
+            sock = fevent.args[0]
 
         request = wrappers.Request(sock, "", "", "", (1, 1), "")
         request.server = self._server

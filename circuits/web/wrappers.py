@@ -159,12 +159,15 @@ class Request(object):
         self._headers = None
 
         if sock:
-            name = sock.getpeername()
-            if name:
-                self.remote = Host(*name)
-            else:
-                name = sock.getsockname()
-                self.remote = Host(name, "", name)
+            try:
+                name = sock.getpeername()
+                if name:
+                    self.remote = Host(*name)
+                else:
+                    name = sock.getsockname()
+                    self.remote = Host(name, "", name)
+            except:
+                self.remote = Host("", "", "")
 
         self.body = BytesIO()
 
