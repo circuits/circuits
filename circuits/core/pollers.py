@@ -105,7 +105,7 @@ class BasePoller(BaseComponent):
     def _read_ctrl(self):
         try:
             if isinstance(self._ctrl_recv, socket):
-                return socket.recv(1)
+                return self._ctrl_recv.recv(1)
             else:
                 return os.read(self._ctrl_recv, 1)
         except:
