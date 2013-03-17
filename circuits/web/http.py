@@ -90,6 +90,7 @@ class HTTP(BaseComponent):
                 self.fire(Write(response.request.sock, b"0\r\n\r\n"))
             if response.close:
                 self.fire(Close(response.request.sock))
+            del self._clients[response.request.sock]
             response.done = True
 
     @handler("response")
@@ -139,6 +140,7 @@ class HTTP(BaseComponent):
             if not response.stream:
                 if response.close:
                     self.fire(Close(response.request.sock))
+                del self._clients[response.request.sock]
                 response.done = True
 
     @handler("disconnect")
@@ -167,6 +169,7 @@ class HTTP(BaseComponent):
                 request.server = self.parent
                 request.local = self.parent.local
                 response = wrappers.Response(request, encoding=self._encoding)
+                del self._buffers[sock]
                 return self.fire(HTTPError(request, response, 400))
             return
 
@@ -224,6 +227,8 @@ class HTTP(BaseComponent):
             return self.fire(Redirect(request, response, [path], 301))
         else:
             request.body = BytesIO(parser.recv_body())
+
+        del self._buffers[sock]
 
         self.fire(req)
 
