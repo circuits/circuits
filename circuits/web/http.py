@@ -385,7 +385,12 @@ class HTTP(BaseComponent):
         else:
             sock = fevent.args[0]
 
-        request = wrappers.Request(sock, "", "", "", (1, 1), "")
+        try:
+            request = wrappers.Request(sock, "", "", "", (1, 1), "")
+        except:
+            # If we can't work with the socket, do nothing.
+            return
+
         request.server = self._server
 
         response = wrappers.Response(request, encoding=self._encoding)
