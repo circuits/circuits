@@ -30,6 +30,7 @@ from .exceptions import HTTPException
 from .events import Request, Response, Stream
 from .errors import HTTPError, NotFound, Redirect
 from .exceptions import Redirect as RedirectException
+from .constants import SERVER_VERSION, SERVER_PROTOCOL
 
 MAX_HEADER_FRAGENTS = 20
 HTTP_ENCODING = 'utf-8'
@@ -60,13 +61,47 @@ class HTTP(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, encoding=HTTP_ENCODING, channel=channel):
+    def __init__(self, server, encoding=HTTP_ENCODING, channel=channel):
         super(HTTP, self).__init__(channel=channel)
 
+        self._server = server
         self._encoding = encoding
 
         self._clients = {}
         self._buffers = {}
+
+    @property
+    def version(self):
+        return SERVER_VERSION
+
+    @property
+    def protocol(self):
+        return SERVER_PROTOCOL
+
+    @property
+    def scheme(self):
+        if not hasattr(self, "_server"):
+            return
+        return "https" if self._server.secure else "http"
+
+    @property
+    def base(self):
+        if not hasattr(self, "_server"):
+            return
+
+        host = self._server.host or "0.0.0.0"
+        port = self._server.port or 80
+        scheme = self.scheme
+        secure = self._server.secure
+
+        tpl = "%s://%s%s"
+
+        if (port == 80 and not secure) or (port == 443 and secure):
+            port = ""
+        else:
+            port = ":%d" % port
+
+        return tpl % (scheme, host, port)
 
     @handler("stream")
     def _on_stream(self, response, data):
@@ -166,8 +201,7 @@ class HTTP(BaseComponent):
         if not parser.is_headers_complete():
             if parser.errno is not None:
                 request = wrappers.Request(sock, "", "", "", (1, 1), "")
-                request.server = self.parent
-                request.local = self.parent.local
+                request.server = self._server
                 response = wrappers.Response(request, encoding=self._encoding)
                 del self._buffers[sock]
                 return self.fire(HTTPError(request, response, 400))
@@ -181,14 +215,13 @@ class HTTP(BaseComponent):
             version = parser.get_version()
             query_string = parser.get_query_string()
 
-            _scheme = "https" if self.parent.secure else "http"
+            _scheme = "https" if self._server.secure else "http"
             scheme = parser.get_scheme() or _scheme
 
             request = wrappers.Request(
                 sock, method, scheme, path, version, query_string
             )
-            request.server = self.parent
-            request.local = self.parent.local
+            request.server = self._server
 
             response = wrappers.Response(request, encoding=self._encoding)
 
@@ -198,7 +231,7 @@ class HTTP(BaseComponent):
                 return self.fire(HTTPError(request, response, 400))
 
             rp = request.protocol
-            sp = request.server.protocol
+            sp = self.protocol
 
             if rp[0] != sp[0]:
                 return self.fire(HTTPError(request, response, 505))
@@ -354,8 +387,7 @@ class HTTP(BaseComponent):
             sock = response.request.sock
 
         request = wrappers.Request(sock, "", "", "", (1, 1), "")
-        request.server = self.parent
-        request.local = self.parent.local
+        request.server = self._server
 
         response = wrappers.Response(request, encoding=self._encoding)
 

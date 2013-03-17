@@ -16,9 +16,7 @@ from circuits.net.sockets import TCPServer, UNIXServer
 
 from .http import HTTP
 from .events import WebEvent
-from .wrappers import Request, Host
 from .dispatchers import Dispatcher
-from .constants import SERVER_VERSION, SERVER_PROTOCOL
 
 
 class BaseServer(BaseComponent):
@@ -72,15 +70,9 @@ class BaseServer(BaseComponent):
             channel=channel
         ).register(self)
 
-        HTTP(encoding=encoding, channel=channel).register(self)
-
-    @property
-    def version(self):
-        return SERVER_VERSION
-
-    @property
-    def protocol(self):
-        return SERVER_PROTOCOL
+        self.http = HTTP(
+            self, encoding=encoding, channel=channel
+        ).register(self)
 
     @property
     def host(self):
@@ -96,38 +88,6 @@ class BaseServer(BaseComponent):
     def secure(self):
         if hasattr(self, "server"):
             return self.server.secure
-
-    @property
-    def scheme(self):
-        return "https" if self.secure else "http"
-
-    @property
-    def base(self):
-        host = self.host or "0.0.0.0"
-        port = self.port or 80
-        scheme = self.scheme
-        secure = self.secure
-
-        tpl = "%s://%s%s"
-
-        if (port == 80 and not secure) or (port == 443 and secure):
-            port = ""
-        else:
-            port = ":%d" % port
-
-        return tpl % (scheme, host, port)
-
-    @property
-    def local(self):
-        if not hasattr(self, "server"):
-            return
-
-        if isinstance(self.server._bind, tuple):
-            return Host(
-                self.server._bind[0], self.server._bind[1]
-            )
-        else:
-            return Host(self.server._bind, None)
 
 
 class Server(BaseServer):
@@ -162,16 +122,24 @@ class StdinServer(BaseComponent):
 
         WebEvent.channels = (channel,)
 
-        self.server = (
-            io.stdin
-            + io.stdout
-            + HTTP(encoding=encoding, channel=channel)
-        )
+        self.server = (io.stdin + io.stdout).register(self)
+        self.http = HTTP(
+            self, encoding=encoding, channel=channel
+        ).register(self)
 
-        self += self.server
-
-        Request.server = self
         Dispatcher(channel=self.channel).register(self)
+
+    @property
+    def host(self):
+        return io.stdin.filename
+
+    @property
+    def port(self):
+        return 0
+
+    @property
+    def secure(self):
+        return False
 
     @handler("read", channel="stdin")
     def read(self, data):

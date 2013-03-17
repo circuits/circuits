@@ -62,7 +62,7 @@ def webapp(request):
 
 @pytest.fixture(scope="module")
 def webclient(request, webapp):
-    webclient = WebClient(webapp.server.base)
+    webclient = WebClient(webapp.server.http.base)
     waiter = pytest.WaitEvent(webclient, "ready", channel=webclient.channel)
     webclient.register(webapp)
     assert waiter.wait()

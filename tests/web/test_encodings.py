@@ -15,7 +15,7 @@ class Root(Controller):
 
 
 def test_utf_16_manual(webapp):
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == "Hello World!".encode('utf-16be')
 
@@ -37,7 +37,7 @@ def test_utf_16_server():
     webapp.start()
 
     try:
-        f = urlopen("%s/foo" % webapp.server.base)
+        f = urlopen("%s/foo" % webapp.server.http.base)
         s = f.read()
         assert s == "Hello World!".encode('utf-16be')
     finally:

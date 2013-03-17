@@ -21,7 +21,7 @@ class Root(Controller):
 
 
 def test(webapp):
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
     expires = f.headers["Expires"]
@@ -30,7 +30,7 @@ def test(webapp):
 
 
 def test_nocache(webapp):
-    f = urlopen("%s/nocache" % webapp.server.base)
+    f = urlopen("%s/nocache" % webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 

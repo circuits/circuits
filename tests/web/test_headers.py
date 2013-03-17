@@ -19,7 +19,7 @@ class Root(Controller):
 
 
 def test_default(webapp):
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
@@ -28,7 +28,7 @@ def test_default(webapp):
 
 
 def test_explicit(webapp):
-    f = urlopen("{0:s}/foo".format(webapp.server.base))
+    f = urlopen("{0:s}/foo".format(webapp.server.http.base))
     s = f.read()
     assert s == b"Hello World!"
 
@@ -37,7 +37,7 @@ def test_explicit(webapp):
 
 
 def test_static(webapp):
-    f = urlopen("{0:s}/static/test.css".format(webapp.server.base))
+    f = urlopen("{0:s}/static/test.css".format(webapp.server.http.base))
     s = f.read()
     assert s == b"body { }\n"
 
@@ -46,7 +46,7 @@ def test_static(webapp):
 
 
 def test_empty(webapp):
-    f = urlopen("{0:s}/empty".format(webapp.server.base))
+    f = urlopen("{0:s}/empty".format(webapp.server.http.base))
     s = f.read()
     assert s == b""
 

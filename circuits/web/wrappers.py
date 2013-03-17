@@ -197,6 +197,13 @@ class Request(object):
     def url(self, *args, **kwargs):
         return url(self, *args, **kwargs)
 
+    @property
+    def local(self):
+        if not hasattr(self, "server"):
+            return
+
+        return Host(self.server.host, self.server.port)
+
 
 class Body(object):
     """Response Body"""
@@ -273,7 +280,7 @@ class Response(object):
         self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
 
         if self.request.server is not None:
-            self.headers.add_header("Server", self.request.server.version)
+            self.headers.add_header("Server", self.request.server.http.version)
         else:
             self.headers.add_header("X-Powered-By", SERVER_VERSION)
 
