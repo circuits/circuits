@@ -36,7 +36,7 @@ def create_environ(errors, path, req):
     env("REQUEST_METHOD", req.method)
     env("SERVER_NAME", req.host.split(":", 1)[0])
     env("SERVER_PORT", "%i" % (req.server.port or 0))
-    env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server_protocol)
+    env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server.protocol)
     env("QUERY_STRING", req.qs)
     env("SCRIPT_NAME", req.script_name)
     env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
@@ -106,6 +106,7 @@ class Application(BaseComponent):
             env("QUERY_STRING", "")
         )
         request.server = None
+        request.local = None
 
         request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
 

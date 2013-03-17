@@ -163,7 +163,9 @@ class HTTP(BaseComponent):
         parser.execute(data, len(data))
         if not parser.is_headers_complete():
             if parser.errno is not None:
-                request = wrappers.Request(sock, "", "", "", "", "")
+                request = wrappers.Request(sock, "", "", "", (1, 1), "")
+                request.server = self.parent
+                request.local = self.parent.local
                 response = wrappers.Response(request, encoding=self._encoding)
                 return self.fire(HTTPError(request, response, 400))
             return
@@ -176,10 +178,15 @@ class HTTP(BaseComponent):
             version = parser.get_version()
             query_string = parser.get_query_string()
 
-            scheme = ""  # XXX: Fix this!
+            _scheme = "https" if self.parent.secure else "http"
+            scheme = parser.get_scheme() or _scheme
+
             request = wrappers.Request(
                 sock, method, scheme, path, version, query_string
             )
+            request.server = self.parent
+            request.local = self.parent.local
+
             response = wrappers.Response(request, encoding=self._encoding)
 
             self._clients[sock] = (request, response)
@@ -188,9 +195,9 @@ class HTTP(BaseComponent):
                 return self.fire(HTTPError(request, response, 400))
 
             rp = request.protocol
-            sp = request.server_protocol
+            sp = request.server.protocol
 
-            if rp[0] != sp[1]:
+            if rp[0] != sp[0]:
                 return self.fire(HTTPError(request, response, 505))
 
             request.headers = parser.get_headers()
@@ -341,8 +348,12 @@ class HTTP(BaseComponent):
             response = fevent.args[0]
             sock = response.request.sock
 
-        request = wrappers.Request(sock, "GET", "http", "/", "HTTP/1.1", "")
+        request = wrappers.Request(sock, "", "", "", (1, 1), "")
+        request.server = self.parent
+        request.local = self.parent.local
+
         response = wrappers.Response(request, encoding=self._encoding)
+
         self.fire(
             HTTPError(
                 request, response, error=(etype, evalue, etraceback)

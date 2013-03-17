@@ -17,8 +17,8 @@ from circuits.net.sockets import TCPServer, UNIXServer
 from .http import HTTP
 from .events import WebEvent
 from .wrappers import Request, Host
-from .constants import SERVER_VERSION
 from .dispatchers import Dispatcher
+from .constants import SERVER_VERSION, SERVER_PROTOCOL
 
 
 class BaseServer(BaseComponent):
@@ -74,19 +74,13 @@ class BaseServer(BaseComponent):
 
         HTTP(encoding=encoding, channel=channel).register(self)
 
-        Request.server = self
-        if isinstance(self.server._bind, tuple):
-            Request.local = Host(
-                self.server._bind[0], self.server._bind[1]
-            )
-        else:
-            Request.local = Host(self.server._bind, None)
-        Request.host = self.host
-        Request.scheme = "https" if self.server.secure else "http"
-
     @property
     def version(self):
         return SERVER_VERSION
+
+    @property
+    def protocol(self):
+        return SERVER_PROTOCOL
 
     @property
     def host(self):
@@ -122,6 +116,18 @@ class BaseServer(BaseComponent):
             port = ":%d" % port
 
         return tpl % (scheme, host, port)
+
+    @property
+    def local(self):
+        if not hasattr(self, "server"):
+            return
+
+        if isinstance(self.server._bind, tuple):
+            return Host(
+                self.server._bind[0], self.server._bind[1]
+            )
+        else:
+            return Host(self.server._bind, None)
 
 
 class Server(BaseServer):
