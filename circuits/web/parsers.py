@@ -90,6 +90,9 @@ class HttpParser(object):
     def get_url(self):
         return self._url
 
+    def get_scheme(self):
+        return self._scheme
+
     def get_path(self):
         return self._path
 
@@ -305,6 +308,7 @@ class HttpParser(object):
         # URI
         self._url = bits[1]
         parts = urlparse.urlsplit(bits[1])
+        self._scheme = parts.scheme or None
         self._path = parts.path or ""
         self._query_string = parts.query or ""
         self._fragment = parts.fragment or ""
