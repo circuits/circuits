@@ -186,7 +186,7 @@ class CaseInsensitiveDict(dict):
     def setdefault(self, key, x=None):
         key = str(key).title()
         try:
-            return self[key]
+            return dict.__getitem__(self, key)
         except KeyError:
             self[key] = x
             return x
@@ -241,7 +241,7 @@ class Headers(CaseInsensitiveDict):
         return [val.strip() for val in self.get(name, '').split(',')]
 
     def __repr__(self):
-        return "Headers(%s)" % repr(self._headers)
+        return "Headers(%s)" % repr(list(self.items()))
 
     def __str__(self):
         """str() returns the formatted headers, complete with end line,

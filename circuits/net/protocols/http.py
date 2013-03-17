@@ -2,6 +2,7 @@
 from io import BytesIO
 
 from circuits.core import handler, BaseComponent, Event
+from circuits.web.headers import Headers
 
 
 class Request(Event):
