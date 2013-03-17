@@ -175,7 +175,9 @@ class HTTP(BaseComponent):
             if not response.stream:
                 if response.close:
                     self.fire(Close(response.request.sock))
-                del self._clients[response.request.sock]
+                # Delete the request/response objects if present
+                if response.request.sock in self._clients:
+                    del self._clients[response.request.sock]
                 response.done = True
 
     @handler("disconnect")
