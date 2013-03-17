@@ -1,7 +1,6 @@
 
 from io import BytesIO
 
-from circuits.web.headers import parse_headers
 from circuits.core import handler, BaseComponent, Event
 
 
@@ -36,6 +35,22 @@ class ResponseObject(object):
 
     def read(self):
         return self._body.read()
+
+# TODO: replace by the web.parsers parser
+def parse_headers(data):
+    headers = Headers([])
+
+    for line in data.split("\r\n"):
+        if line[0] in " \t":
+            # It's a continuation line.
+            v = line.strip()
+        else:
+            k, v = line.split(":", 1) if ":" in line else (line, "")
+            k, v = k.strip(), v.strip()
+
+        headers.add_header(k, v)
+
+    return headers
 
 
 class HTTP(BaseComponent):
