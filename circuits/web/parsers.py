@@ -15,7 +15,7 @@ except ImportError:
     from urllib.parse import unquote  # NOQA
 
 from .headers import Headers
-from ..six import b, bytes_to_str, text_type, MAXSIZE
+from ..six import b, bytes_to_str, MAXSIZE
 
 METHOD_RE = re.compile("[A-Z0-9$-_.]{3,20}")
 VERSION_RE = re.compile("HTTP/(\d+).(\d+)")
