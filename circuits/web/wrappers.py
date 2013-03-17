@@ -168,10 +168,12 @@ class Request(object):
 
         self.body = BytesIO()
 
-    def _getHeaders(self):
+    @property
+    def headers(self):
         return self._headers
 
-    def _setHeaders(self, headers):
+    @headers.setter
+    def headers(self, headers):
         self._headers = headers
 
         if "Cookie" in self.headers:
@@ -187,8 +189,6 @@ class Request(object):
 
         self.xhr = self.headers.get(
             "X-Requested-With", "").lower() == "xmlhttprequest"
-
-    headers = property(_getHeaders, _setHeaders)
 
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol
