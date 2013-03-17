@@ -60,7 +60,6 @@ class HttpParser(object):
         self._url = None
         self._path = None
         self._query_string = None
-        self._fragment = None
         self._headers = Headers([])
         self._environ = dict()
         self._chunked = False
@@ -98,9 +97,6 @@ class HttpParser(object):
 
     def get_query_string(self):
         return self._query_string
-
-    def get_fragment(self):
-        return self._fragment
 
     def get_headers(self):
         return self._headers
@@ -311,7 +307,10 @@ class HttpParser(object):
         self._scheme = parts.scheme or None
         self._path = parts.path or ""
         self._query_string = parts.query or ""
-        self._fragment = parts.fragment or ""
+        if parts.fragment:
+            raise InvalidRequestLine(
+                "HTTP requests may not contain fragment(s)"
+            )
 
         # Version
         match = VERSION_RE.match(bits[2])

@@ -229,9 +229,6 @@ class HTTP(BaseComponent):
 
             self._clients[sock] = (request, response)
 
-            if parser.get_fragment():
-                return self.fire(HTTPError(request, response, 400))
-
             rp = request.protocol
             sp = self.protocol
 
