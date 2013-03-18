@@ -34,7 +34,7 @@ def test_baseserver():
     server.start()
 
     try:
-        f = urlopen(server.base)
+        f = urlopen(server.http.base)
     except URLError as e:
         if type(e[0]) is gaierror:
             f = urlopen("http://127.0.0.1:9000")
@@ -51,7 +51,7 @@ def test_server():
     server.start()
 
     try:
-        f = urlopen(server.base)
+        f = urlopen(server.http.base)
     except URLError as e:
         if type(e[0]) is gaierror:
             f = urlopen("http://127.0.0.1:9000")
@@ -70,7 +70,7 @@ def test_secure_server():
     server.start()
 
     try:
-        f = urlopen(server.base)
+        f = urlopen(server.http.base)
     except URLError as e:
         if type(e[0]) is gaierror:
             f = urlopen("http://127.0.0.1:9000")
@@ -109,10 +109,10 @@ def test_multi_servers():
     Root().register(server)
     server.start()
 
-    f = urlopen(insecure_server.base)
+    f = urlopen(insecure_server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
-    f = urlopen(secure_server.base)
+    f = urlopen(secure_server.http.base)
     s = f.read()
     assert s == b"Hello World!"

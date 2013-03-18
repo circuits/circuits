@@ -18,18 +18,18 @@ class Root(Controller):
 
 
 def test(webapp):
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
-    f = urlopen("%s/+test" % webapp.server.base)
+    f = urlopen("%s/+test" % webapp.server.http.base)
     s = f.read()
     assert s == b"test"
 
-    f = urlopen("%s/foo+bar" % webapp.server.base)
+    f = urlopen("%s/foo+bar" % webapp.server.http.base)
     s = f.read()
     assert s == b"foobar"
 
-    f = urlopen("%s/foo_bar" % webapp.server.base)
+    f = urlopen("%s/foo_bar" % webapp.server.http.base)
     s = f.read()
     assert s == b"foobar"

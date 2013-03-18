@@ -27,10 +27,10 @@ class Leaf(Controller):
 def test(webapp):
     Leaf().register(webapp)
 
-    f = urlopen(webapp.server.base + "/test.txt")
+    f = urlopen(webapp.server.http.base + "/test.txt")
     s = f.read()
     assert s == b"Hello world!"
 
-    f = urlopen(webapp.server.base + "/test/test.txt")
+    f = urlopen(webapp.server.http.base + "/test/test.txt")
     s = f.read()
     assert s == b"Hello world!"
