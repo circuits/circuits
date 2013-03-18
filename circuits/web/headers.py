@@ -152,6 +152,11 @@ class CaseInsensitiveDict(dict):
 
     Each key is changed on entry to str(key).title().
     """
+    def __init__(self, *args, **kwargs):
+        d = dict(*args, **kwargs)
+        for key, value in iteritems(d):
+            dict.__setitem__(self, str(key).title(), value)
+        dict.__init__(self)
 
     def __getitem__(self, key):
         return dict.__getitem__(self, str(key).title())
@@ -198,9 +203,7 @@ class CaseInsensitiveDict(dict):
 class Headers(CaseInsensitiveDict):
     def elements(self, key):
         """Return a sorted list of HeaderElements for the given header."""
-        key = str(key).title()
-        value = self.get(key)
-        return header_elements(key, value)
+        return header_elements(key, self.get(value))
 
     def values(self, key):
         """Return a sorted list of HeaderElement.value for the given header."""
@@ -213,7 +216,6 @@ class Headers(CaseInsensitiveDict):
 
         Does *not* raise an exception if the header is missing.
         """
-        name = name.title()
         if name in self:
             super(Headers, self).__delitem__(name)
 
