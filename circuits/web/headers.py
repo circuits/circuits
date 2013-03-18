@@ -203,7 +203,7 @@ class CaseInsensitiveDict(dict):
 class Headers(CaseInsensitiveDict):
     def elements(self, key):
         """Return a sorted list of HeaderElements for the given header."""
-        return header_elements(key, self.get(value))
+        return header_elements(key, self.get(key))
 
     def values(self, key):
         """Return a sorted list of HeaderElement.value for the given header."""
