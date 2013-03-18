@@ -22,7 +22,7 @@ First, let's check the installed version:
    
    >>> import circuits
    >>> print circuits.__version__
-   2.1.0
+   2.1.1dev
    
 Try some of the examples in the examples/ directory shipped with the
 distribution or check out some :doc:`Applications using circuits <../users>`

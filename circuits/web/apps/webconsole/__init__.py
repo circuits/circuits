@@ -140,14 +140,14 @@ class WebConsole(Controller):
         result = self.repl.push(line)
         if result is None:
             # More input lines needed.
-            self.response.code = 204
+            self.response.status = 204
         return result
 
     def dir(self, line):
         """Push 'line' and return result of eval on the final expr."""
         result = self.repl.dir(line)
         if not result:
-            self.response.code = 204
+            self.response.status = 204
             return
         return repr(result)
 
@@ -155,7 +155,7 @@ class WebConsole(Controller):
         """Push 'line' and return result of getargspec on the final expr."""
         result = self.repl.doc(line)
         if not result:
-            self.response.code = 204
+            self.response.status = 204
         return result
 
 __all__ = ("WebConsole",)

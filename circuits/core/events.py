@@ -129,9 +129,9 @@ class BaseEvent(object):
         Otherwise a TypeError is raised as nothing else is valid.
         """
 
-        if type(x) is int:
+        if isinstance(x, int):
             return self.args[x]
-        elif type(x) is str:
+        elif isinstance(x, str):
             return self.kwargs[x]
         else:
             raise TypeError("Expected int or str, got %r" % type(x))
@@ -146,9 +146,9 @@ class BaseEvent(object):
         Otherwise a TypeError is raised as nothing else is valid.
         """
 
-        if type(i) is int:
+        if isinstance(i, int):
             self.args[i] = y
-        elif type(i) is str:
+        elif isinstance(i, str):
             self.kwargs[i] = y
         else:
             raise TypeError("Expected int or str, got %r" % type(i))
@@ -199,12 +199,16 @@ class Error(Event):
     :param traceback: traceback of exception
     :type  traceback: traceback
 
-    :param kwargs: (Optional) Additional Information
-    :type  kwargs: dict
+    :param handler: handler that raised the exception
+    :type  handler: @handler(<method>)
+
+    :param fevent: event that failed
+    :type  fevent: Event
     """
 
-    def __init__(self, type, value, traceback, handler=None):
-        super(Error, self).__init__(type, value, traceback, handler)
+    def __init__(self, type, value, traceback, handler=None, fevent=None):
+        super(Error, self).__init__(type, value, traceback,
+                                    handler=handler, fevent=fevent)
 
 
 class Done(DerivedEvent):

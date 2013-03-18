@@ -6,7 +6,7 @@ Latest Stable Release
 ---------------------
 
 The latest stable releases can be downloaded from the
-`Downloads <http://bitbucket.org/prologic/circuits/downloads/>`_ page
+`Downloads <http://bitbucket.org/circuits/circuits/downloads/>`_ page
 (*specifically the Tags tab*).
 
 
@@ -20,7 +20,7 @@ The latest development branch can be cloned using the following command:
 
 .. code-block:: sh
    
-   $ hg clone https://bitbucket.org/prologic/circuits/
+   $ hg clone https://bitbucket.org/circuits/circuits/
    
 For further instructions on how to use Mercurial, please refer to the
 `Mercurial Book <http://mercurial.selenic.com/wiki/MercurialBook>`_.

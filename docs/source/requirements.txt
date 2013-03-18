@@ -1,2 +1,3 @@
+sphinx-bootstrap-theme
 sphinxcontrib-bitbucket
 sphinxcontrib-googleanalytics

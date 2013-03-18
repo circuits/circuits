@@ -146,7 +146,7 @@ def serve_file(request, response, path, type=None, disposition=None,
                 # Return a single-part response.
                 start, stop = r[0]
                 r_len = stop - start
-                response.code = 206
+                response.status = 206
                 response.headers['Content-Range'] = (
                     "bytes %s-%s/%s" % (start, stop - 1, c_len)
                 )
@@ -155,7 +155,7 @@ def serve_file(request, response, path, type=None, disposition=None,
                 response.body = bodyfile.read(r_len)
             else:
                 # Return a multipart/byteranges response.
-                response.code = 206
+                response.status = 206
                 boundary = _make_boundary()
                 ct = "multipart/byteranges; boundary=%s" % boundary
                 response.headers['Content-Type'] = ct
@@ -221,13 +221,13 @@ def validate_etags(request, response, autotags=False):
     if hasattr(response, "ETag"):
         return
 
-    code = response.code
+    status = response.status
 
     etag = response.headers.get('ETag')
 
     # Automatic ETag generation. See warning in docstring.
     if (not etag) and autotags:
-        if code == 200:
+        if status == 200:
             etag = response.collapse_body()
             etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
             response.headers['ETag'] = etag
@@ -237,7 +237,7 @@ def validate_etags(request, response, autotags=False):
     # "If the request would, without the If-Match header field, result in
     # anything other than a 2xx or 412 status, then the If-Match header
     # MUST be ignored."
-    if code >= 200 and code <= 299:
+    if status >= 200 and status <= 299:
         conditions = request.headers.elements('If-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions and not (conditions == ["*"] or etag in conditions):
@@ -273,16 +273,16 @@ def validate_since(request, response):
 
     lastmod = response.headers.get('Last-Modified')
     if lastmod:
-        code = response.code
+        status = response.status
 
         since = request.headers.get('If-Unmodified-Since')
         if since and since != lastmod:
-            if (code >= 200 and code <= 299) or code == 412:
+            if (status >= 200 and status <= 299) or status == 412:
                 return HTTPError(request, response, 412)
 
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod:
-            if (code >= 200 and code <= 299) or code == 304:
+            if (status >= 200 and status <= 299) or status == 304:
                 if request.method in ("GET", "HEAD"):
                     return Redirect(request, response, [], code=304)
                 else:

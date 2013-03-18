@@ -1,15 +1,7 @@
-Release Notes - circuits-2.1.0 (<release>)
-------------------------------------------
+Release Notes - circuits-2.1.1
+------------------------------
 
 
-This release adds the following new features to circuits:
+This release is a minor bugfix only release and includes the following fixes:
 
-- Python 3 support.
-- Windows support.
-- PyPy support.
-- IPv6 support.
-- Better WSGI support.
-- Fully documented examples.
-- Component Interface querying.
-
-And many bug fixes!
+- ...

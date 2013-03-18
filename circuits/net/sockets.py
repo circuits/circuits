@@ -25,8 +25,9 @@ from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
 
 try:
     from ssl import wrap_socket as ssl_socket
-    from ssl import CERT_NONE, PROTOCOL_SSLv23, SSLError, SSL_ERROR_WANT_READ, \
-        SSL_ERROR_WANT_WRITE
+    from ssl import CERT_NONE, PROTOCOL_SSLv23
+    from ssl import SSLError, SSL_ERROR_WANT_WRITE, SSL_ERROR_WANT_READ
+
     HAS_SSL = 1
 except ImportError:
     import warnings
@@ -388,7 +389,7 @@ class Client(BaseComponent):
 
 def _do_handshake_for_non_blocking(ssock):
     """
-    This is how to do handshake for an ssl socket with underlying 
+    This is how to do handshake for an ssl socket with underlying
     non-blocking socket (according to the Python doc).
     """
     while True:
@@ -609,7 +610,7 @@ class Server(BaseComponent):
     def _close(self, sock):
         if sock is None:
             return
-        if not sock == self._sock and sock not in self._clients:
+        if sock != self._sock and sock not in self._clients:
             return
 
         self._poller.discard(sock)
@@ -781,12 +782,12 @@ class TCPServer(Server):
 
 
 def parse_ipv4_parameter(bind_parameter):
-    if type(bind_parameter) is int:
+    if isinstance(bind_parameter, int):
         try:
             bind = (gethostbyname(gethostname()), bind_parameter)
         except gaierror:
             bind = ("0.0.0.0", bind_parameter)
-    elif type(bind_parameter) is str and ":" in bind_parameter:
+    elif isinstance(bind_parameter, str) and ":" in bind_parameter:
         host, port = bind_parameter.split(":")
         port = int(port)
         bind = (host, port)
@@ -797,7 +798,7 @@ def parse_ipv4_parameter(bind_parameter):
 
 
 def parse_ipv6_parameter(bind_parameter):
-    if type(bind_parameter) is int:
+    if isinstance(bind_parameter, int):
         try:
             _, _, _, _, bind \
                 = getaddrinfo(getfqdn(), bind_parameter, AF_INET6)[0]

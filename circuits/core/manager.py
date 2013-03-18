@@ -249,7 +249,7 @@ class Manager(object):
         handlers_chain.append(self._handlers.get(name, []))
 
         for _handler in chain(*handlers_chain):
-            handler_channel = _handler.channel 
+            handler_channel = _handler.channel
             if handler_channel is None:
                 handler_channel = getattr(
                     getattr(
@@ -258,7 +258,7 @@ class Manager(object):
                         )
                     ),
                     "channel", None
-            )
+                )
 
             if channel == "*" or handler_channel in ("*", channel,) \
                     or channel is self:
@@ -536,7 +536,12 @@ class Manager(object):
                         *event.channels
                     )
 
-                self.fire(Error(etype, evalue, traceback, handler))
+                self.fire(
+                    Error(
+                        etype, evalue, traceback,
+                        handler=handler, fevent=event
+                    )
+                )
 
             if value is not None:
                 if isinstance(value, GeneratorType):
@@ -613,21 +618,26 @@ class Manager(object):
 
                 channels = (uuid(),) * 2
                 parent, child = Pipe(*channels)
-                Bridge(parent, channel=channels[0]).register(link)
+                bridge = Bridge(parent, channel=channels[0]).register(link)
 
                 args = (child,)
             else:
                 args = ()
+                bridge = None
 
             self.__process = Process(
                 target=self.run, args=args, name=self.name
             )
             self.__process.daemon = True
             self.__process.start()
+
+            return self.__process, bridge
         else:
             self.__thread = Thread(target=self.run, name=self.name)
             self.__thread.daemon = True
             self.__thread.start()
+
+            return self.__thread, None
 
     def join(self):
         if getattr(self, "_thread", None) is not None:
@@ -732,8 +742,7 @@ class Manager(object):
         if self._running:
             self.fire(GenerateEvents(self._lock, timeout), "*")
 
-        if len(self._queue):
-            self.flush()
+        self._queue and self.flush()
 
     def run(self, socket=None):
         """

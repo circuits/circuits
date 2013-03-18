@@ -59,7 +59,7 @@ class HTTPError(Event):
             self.traceback = ""
 
         self.response.close = True
-        self.response.code = self.code
+        self.response.status = self.code
 
         self.data = {
             "code": self.code,
@@ -71,7 +71,7 @@ class HTTPError(Event):
         }
 
     def sanitize(self):
-        if self.code < 300 or self.code > 399:
+        if self.code != 201 and not (299 < self.code < 400):
             if "Location" in self.response.headers:
                 del self.response.headers["Location"]
 

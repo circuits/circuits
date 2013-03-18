@@ -7,7 +7,14 @@ circuits |version| Documentation
 :Date: |today|
 
 
-.. include:: ../../README.rst
+README
+======
+
+
+.. toctree::
+   :maxdepth: 1
+
+   readme
 
 
 Contents
@@ -21,7 +28,6 @@ Contents
    tutorial/index
    man/index
    web/index
-   howtos/index
    api/index
    dev/index
    changes
@@ -38,7 +44,6 @@ Contents
    .. toctree::
       :hidden:
 
-      pypitest
       todo
 
 
@@ -53,7 +58,6 @@ Indices and tables
 
 .. ifconfig:: devel
 
-   * :doc:`pypitest`
    * :doc:`todo`
 
 

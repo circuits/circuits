@@ -238,7 +238,8 @@ class Headers(dict):
     def __str__(self):
         """str() returns the formatted headers, complete with end line,
         suitable for direct HTTP transmission."""
-        return '\r\n'.join(["%s: %s" % kv for kv in self._headers] + ["", ""])
+        headers = ["%s: %s" % kv for kv in self._headers] + ["", ""]
+        return "\r\n".join(headers)
 
     def setdefault(self, name, value):
         """Return first matching header value for 'name', or 'value'
@@ -295,7 +296,7 @@ def parse_headers(data):
             # It's a continuation line.
             v = line.strip()
         else:
-            k, v = line.split(":", 1)
+            k, v = line.split(":", 1) if ":" in line else (line, "")
             k, v = k.strip(), v.strip()
 
         headers.add_header(k, v)

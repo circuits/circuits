@@ -121,4 +121,3 @@ class Dispatcher(BaseComponent):
         else:
             # This possibly never occurs.
             self.fire(HTTPError(request, response, error=value.value))
-

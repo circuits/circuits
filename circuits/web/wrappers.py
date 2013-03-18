@@ -18,8 +18,9 @@ except ImportError:
 
 from .utils import url
 from .headers import Headers
-from ..six import binary_type
+from ..six import binary_type, b
 from .errors import HTTPError
+from circuits.tools import deprecated
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
 
@@ -53,10 +54,53 @@ class Host(object):
         self.port = port
         if name is None:
             name = ip
-            self.name = name
+        self.name = name
 
     def __repr__(self):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
+
+
+class HTTPStatus(object):
+
+    __slots__ = ("_reason", "_status",)
+
+    def __init__(self, status=200, reason=None):
+        self._status = status
+        self._reason = reason or HTTP_STATUS_CODES[status]
+
+    def __int__(self):
+        return self._status
+
+    def __lt__(self, other):
+        if isinstance(other, int):
+            return self._status < other
+        return super(HTTPStatus, self).__lt__(other)
+
+    def __gt__(self, other):
+        if isinstance(other, int):
+            return self._status > other
+        return super(HTTPStatus, self).__gt__(other)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self._status == other
+        return super(HTTPStatus, self).__eq__(other)
+
+    def __str__(self):
+        return "{0:d} {1:s}".format(self._status, self._reason)
+
+    def __repr__(self):
+        return "<Status (status={0:d} reason={1:s}>".format(
+            self._status, self._reason
+        )
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def reason(self):
+        return self._reason
 
 
 class Request(object):
@@ -184,6 +228,21 @@ class Body(object):
         response._body = value
 
 
+class Status(object):
+    """Response Status"""
+
+    def __get__(self, response, cls=None):
+        if response is None:
+            return self
+        else:
+            return response._status
+
+    def __set__(self, response, value):
+        value = HTTPStatus(value) if isinstance(value, int) else value
+
+        response._status = value
+
+
 class Response(object):
     """Response(sock, request) -> new Response object
 
@@ -192,10 +251,9 @@ class Response(object):
     is sent in the correct order.
     """
 
-    code = 200
-    message = None
-
     body = Body()
+    status = Status()
+
     done = False
     close = False
     stream = False
@@ -203,19 +261,15 @@ class Response(object):
 
     protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
 
-    def __init__(self, request, encoding='utf-8', code=None, message=None):
+    def __init__(self, request, encoding='utf-8', status=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
         self.encoding = encoding
 
-        if code is not None:
-            self.code = code
-
-        if message is not None:
-            self.message = message
-
         self._body = []
+        self._status = HTTPStatus(status if status is not None else 200)
+
         self.time = time()
 
         self.headers = Headers([])
@@ -236,26 +290,30 @@ class Response(object):
         return "<Response %s %s (%d)>" % (
             self.status,
             self.headers["Content-Type"],
-            (len(self.body) if type(self.body) == str else 0)
+            (len(self.body) if isinstance(self.body, str) else 0)
         )
 
     def __str__(self):
         self.prepare()
         protocol = self.protocol
-        status = self.status
-        headers = self.headers
-        return "%s %s\r\n%s" % (protocol, status, headers)
+        status = "{0:s}".format(self.status)
+        headers = str(self.headers)
+        return "{0:s} {1:s}\r\n{2:s}".format(protocol, status, headers)
 
     @property
-    def status(self):
-        return "%d %s" % (
-            self.code, self.message or HTTP_STATUS_CODES[self.code]
-        )
+    @deprecated
+    def code(self):
+        return self.status.status
+
+    @property
+    @deprecated
+    def message(self):
+        return self.status.reason
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
-        self.headers.setdefault("Content-Type",
-            "text/html; charset={0:s}".format(self.encoding)
+        self.headers.setdefault(
+            "Content-Type", "text/html; charset={0:s}".format(self.encoding)
         )
 
         cLength = None
@@ -280,7 +338,7 @@ class Response(object):
         for k, v in self.cookie.items():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
-        status = self.code
+        status = self.status
 
         if status == 413:
             self.close = True

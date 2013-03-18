@@ -8,7 +8,7 @@ from circuits import Debugger, Event, Manager, Task, Worker
 
 
 def e():
-    return x * 2
+    return x * 2  # NOQA
 
 
 def f(*args, **kwargs):

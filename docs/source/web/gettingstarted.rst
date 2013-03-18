@@ -9,7 +9,7 @@ whereby functionality is encapsulated in components. circuits.web
 itself is designed and built in this fashion. For example a circuits.web
 Server's structure looks like this:
 
-.. image:: ../images/web.png
+.. image:: ../images/CircuitsWebServer.png
 
 To illustrate the basic steps, we will demonstrate developing
 your classical "Hello World!" applications in a web-based way

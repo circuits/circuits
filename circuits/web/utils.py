@@ -27,7 +27,7 @@ except ImportError:
 from .exceptions import RequestEntityTooLarge
 
 quoted_slash = re.compile("(?i)%2F")
-image_map_pattern = re.compile("[0-9]+,[0-9]+")
+image_map_pattern = re.compile("^[0-9]+,[0-9]+$")
 
 
 def parse_body(request, response, params):
@@ -183,7 +183,10 @@ def url(request, path="", qs="", script_name=None, base=None, relative=None):
             if atom == '.':
                 pass
             elif atom == '..':
-                atoms.pop()
+                try:
+                    atoms.pop()
+                except IndexError:
+                    pass
             else:
                 atoms.append(atom)
         newurl = '/'.join(atoms)

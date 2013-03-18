@@ -18,13 +18,16 @@ import sys, os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../..'))
 
+import circuits
+import sphinx_bootstrap_theme
+
 # -- General configuration -----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = []
 
-bitbucket_project_url = 'https://bitbucket.org/prologic/circuits'
+bitbucket_project_url = 'https://bitbucket.org/circuits/circuits'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,24 +43,21 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'circuits'
-copyright = u'2004-2012, James Mills'
-url = "http://bitbucket.org/prologic/circuits/"
+copyright = u'2004-2013, James Mills'
+url = "http://circuitsframework.com/"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '2.1.0'
+version = circuits.__version__
 # The full version, including alpha/beta/rc tags.
-release = '2.1.0'
+release = circuits.__version__
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = False
-
-if devel:
-    release += "dev"
+devel = "dev" in version
 
 # -- Autodoc
 
@@ -240,5 +240,8 @@ latex_documents = [
 def setup(app):
     # ifconfig variables
     app.add_config_value('devel', '', True)
+
+html_theme = 'bootstrap'
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # flake8: noqa

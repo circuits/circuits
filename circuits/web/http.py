@@ -9,15 +9,18 @@ or commonly known as HTTP.
 """
 
 
+from posixpath import realpath
+
 try:
     from urllib.parse import unquote
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, urlunparse
 except ImportError:
     from urllib import unquote  # NOQA
-    from urlparse import urlparse  # NOQA
+    from urlparse import urlparse, urlunparse  # NOQA
 
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
+from circuits.six import b
 
 from . import wrappers
 from .utils import quoted_slash
@@ -56,7 +59,7 @@ class HTTP(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, encoding="utf-8", channel=channel):
+    def __init__(self, encoding=HTTP_ENCODING, channel=channel):
         super(HTTP, self).__init__(channel=channel)
 
         self._encoding = encoding
@@ -101,7 +104,7 @@ class HTTP(BaseComponent):
         sends it to the client (firing ``Write`` events).
         """
         self.fire(
-            Write(response.request.sock, str(response).encode(HTTP_ENCODING))
+            Write(response.request.sock, b(str(response), self._encoding))
         )
 
         if response.stream and response.body:
@@ -160,7 +163,7 @@ class HTTP(BaseComponent):
             request, response = self._clients[sock]
             request.body.write(data)
             contentLength = int(request.headers.get("Content-Length", "0"))
-            if not request.body.tell() == contentLength:
+            if request.body.tell() != contentLength:
                 return
         else:
             if sock in self._buffers:
@@ -184,21 +187,11 @@ class HTTP(BaseComponent):
                     return
 
             requestline, data = data.split(b"\r\n", 1)
-            requestline = requestline.strip().decode(
-                HTTP_ENCODING, "replace"
-            )
+            requestline = requestline.strip().decode(self._encoding, "replace")
             method, path, protocol = requestline.split(" ", 2)
             scheme, location, path, params, qs, frag = urlparse(path)
 
             protocol = tuple(map(int, protocol[5:].split(".")))
-            request = wrappers.Request(
-                sock, method, scheme, path, protocol, qs
-            )
-            response = wrappers.Response(request, encoding=self._encoding)
-            self._clients[sock] = request, response
-
-            if frag:
-                return self.fire(HTTPError(request, response, 400))
 
             if params:
                 path = "%s;%s" % (path, params)
@@ -210,6 +203,15 @@ class HTTP(BaseComponent):
             # before the escaped characters within those components can be
             # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
             path = "%2F".join(map(unquote, quoted_slash.split(path)))
+
+            request = wrappers.Request(
+                sock, method, scheme, path, protocol, qs
+            )
+            response = wrappers.Response(request, encoding=self._encoding)
+            self._clients[sock] = request, response
+
+            if frag:
+                return self.fire(HTTPError(request, response, 400))
 
             # Compare request and server HTTP protocol versions, in case our
             # server does not support the requested protocol. Limit our output
@@ -223,7 +225,7 @@ class HTTP(BaseComponent):
             # Notice that, in (b), the response will be "HTTP/1.1" even though
             # the client only understands 1.0. RFC 2616 10.5.6 says we should
             # only return 505 if the _major_ version is different.
-            if not request.protocol[0] == request.server_protocol[0]:
+            if request.protocol[0] != request.server_protocol[0]:
                 return self.fire(HTTPError(request, response, 505))
 
             rp = request.protocol
@@ -232,9 +234,7 @@ class HTTP(BaseComponent):
 
             end_of_headers = data.find(b"\r\n\r\n")
             if end_of_headers > -1:
-                header_data = data[:end_of_headers].decode(
-                    HTTP_ENCODING, "replace"
-                )
+                header_data = data[:end_of_headers].decode(self._encoding)
                 headers = request.headers = parse_headers(header_data)
             else:
                 headers = request.headers = Headers([])
@@ -245,7 +245,7 @@ class HTTP(BaseComponent):
                 return self.fire(
                     Response(
                         wrappers.Response(
-                            request, code=100, encoding=self._encoding
+                            request, status=100, encoding=self._encoding
                         )
                     )
                 )
@@ -274,6 +274,11 @@ class HTTP(BaseComponent):
                 req = Request(request, response)
         else:
             req = Request(request, response)
+
+        # Guard against unwanted request paths (SECURITY).
+        path = realpath(request.path)
+        if path != request.path:
+            return self.fire(Redirect(request, response, [path], 301))
 
         self.fire(req)
 
@@ -336,7 +341,7 @@ class HTTP(BaseComponent):
                 etype, evalue, traceback = error
                 if isinstance(evalue, RedirectException):
                     self.fire(
-                        Redirect(request, response, evalue.urls, evalue.status)
+                        Redirect(request, response, evalue.urls, evalue.code)
                     )
                 elif isinstance(evalue, HTTPException):
                     if evalue.traceback:
@@ -361,12 +366,12 @@ class HTTP(BaseComponent):
                 value = e.value.getValue(recursive=False)
                 value.event = e
                 value.notify = True
-        elif type(value) is tuple:
+        elif isinstance(value, tuple):
             etype, evalue, traceback = error = value
 
             if isinstance(evalue, RedirectException):
                 self.fire(
-                    Redirect(request, response, evalue.urls, evalue.status)
+                    Redirect(request, response, evalue.urls, evalue.code)
                 )
             elif isinstance(evalue, HTTPException):
                 if evalue.traceback:
@@ -386,9 +391,20 @@ class HTTP(BaseComponent):
                     )
             else:
                 self.fire(HTTPError(request, response, error=error))
-        elif type(value) is not bool:
+        elif not isinstance(value, bool):
             response.body = value
             self.fire(Response(response))
+
+    @handler("error")
+    def _on_error(self, etype, evalue, etraceback, handler=None, fevent=None):
+        sock, data = fevent.args
+        request = wrappers.Request(sock, "GET", "http", "/", "HTTP/1.1", "")
+        response = wrappers.Response(request, encoding=self._encoding)
+        self.fire(
+            HTTPError(
+                request, response, error=(etype, evalue, etraceback)
+            )
+        )
 
     @handler("request_failure", "response_failure")
     def _on_request_or_response_failure(self, evt, err):
@@ -410,7 +426,7 @@ class HTTP(BaseComponent):
 
         if isinstance(evalue, RedirectException):
             self.fire(
-                Redirect(request, response, evalue.urls, evalue.status)
+                Redirect(request, response, evalue.urls, evalue.code)
             )
         elif isinstance(evalue, HTTPException):
             if evalue.traceback:

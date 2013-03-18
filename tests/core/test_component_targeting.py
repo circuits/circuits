@@ -6,6 +6,12 @@ import pytest
 from circuits import Component, Event
 
 
+class Hello(Event):
+    """Hello Event"""
+
+    success = True
+
+
 class App(Component):
 
     channel = "app"
@@ -13,26 +19,23 @@ class App(Component):
     def hello(self):
         return "Hello World!"
 
-    def registered(self, component, manager):
-        if component is self:
-            self.fire(Event.create("Ready"))
-
 
 @pytest.fixture(scope="module")
 def app(request, manager, watcher):
     app = App().register(manager)
+    assert watcher.wait("registered")
 
     def finalizer():
         app.unregister()
 
     request.addfinalizer(finalizer)
 
-    assert watcher.wait("ready")
-
     return app
 
 
 def test(manager, watcher, app):
-    x = manager.fire(Event.create("Hello"), app)
-    assert watcher.wait("hello")
-    assert x.value == "Hello World!"
+    x = manager.fire(Hello(), app)
+    assert watcher.wait("hello_success")
+
+    value = x.value
+    assert value == "Hello World!"

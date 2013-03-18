@@ -1,5 +1,0 @@
-#!/bin/bash
-
-make html
-
-rsync -e "ssh -p 22" -P -rvz --delete build/html/* root@bart.shortcircuit.net.au:/var/www/vhosts/circuitsframework.com/htdocs

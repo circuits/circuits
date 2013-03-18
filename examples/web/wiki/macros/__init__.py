@@ -8,6 +8,7 @@ from inspect import getmembers, getmodule, isfunction
 
 from creoleparser import parse_args
 
+
 class Macro(object):
 
     def __init__(self, name, arg_string, body, isblock):
@@ -17,6 +18,7 @@ class Macro(object):
         self.arg_string = arg_string
         self.body = body
         self.isblock = isblock
+
 
 def dispatcher(name, arg_string, body, isblock, environ):
     if name in environ["macros"]:
@@ -28,6 +30,7 @@ def dispatcher(name, arg_string, body, isblock, environ):
             return "ERROR: Error while executing macro %r (%s)" % (name, e)
     else:
         return "Macro not found!"
+
 
 def loadMacros():
     path = os.path.abspath(os.path.dirname(__file__))
