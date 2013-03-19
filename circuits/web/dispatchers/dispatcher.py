@@ -16,9 +16,10 @@ except NameError:
 
 from circuits import handler, BaseComponent
 
+from circuits.web.utils import parse_qs
+from circuits.web.processors import process
 from circuits.web.events import Request, Response
 from circuits.web.controllers import BaseController
-from circuits.web.utils import parse_body, parse_qs
 
 
 class Dispatcher(BaseComponent):
@@ -98,7 +99,7 @@ class Dispatcher(BaseComponent):
 
         if name is not None and channel is not None:
             event.kwargs = parse_qs(request.qs)
-            parse_body(request, response, event.kwargs)
+            process(request, event.kwargs)
 
             if vpath:
                 event.args += tuple(vpath)

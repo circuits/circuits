@@ -18,7 +18,7 @@ class Root(Controller):
 def test(webapp):
     args = ("1", "2", "3")
     kwargs = {"data": "\x00" * 4096}
-    url = "%s/%s" % (webapp.server.base, "/".join(args))
+    url = "%s/%s" % (webapp.server.http.base, "/".join(args))
     data = urlencode(kwargs).encode('utf-8')
     f = urlopen(url, data)
     data = f.read().split(b"\n")

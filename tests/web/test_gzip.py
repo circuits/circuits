@@ -33,7 +33,7 @@ def test(webapp):
     gzip = Gzip()
     gzip.register(webapp)
 
-    request = Request(webapp.server.base)
+    request = Request(webapp.server.http.base)
     request.add_header("Accept-Encoding", "gzip")
     opener = build_opener()
 

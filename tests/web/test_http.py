@@ -36,7 +36,7 @@ def test(webapp):
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.base)
+    host, port, resource, secure = parse_url(webapp.server.http.base)
     client.fire(Connect(host, port))
     assert pytest.wait_for(transport, "connected")
 

@@ -23,7 +23,7 @@ class Root(JSONController):
 
 
 def test(webapp):
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     data = f.read()
     data = data.decode("utf-8")
     d = loads(data)
@@ -37,21 +37,21 @@ def test_sessions(webapp):
     cj = CookieJar()
     opener = build_opener(HTTPCookieProcessor(cj))
 
-    f = opener.open("%s/test_sessions" % webapp.server.base)
+    f = opener.open("%s/test_sessions" % webapp.server.http.base)
     data = f.read()
     data = data.decode("utf-8")
     d = loads(data)
     assert d["success"]
     assert d["message"] == "Hello World!"
 
-    f = opener.open("%s/test_sessions/test" % webapp.server.base)
+    f = opener.open("%s/test_sessions/test" % webapp.server.http.base)
     data = f.read()
     data = data.decode("utf-8")
     d = loads(data)
     assert d["success"]
     assert d["message"] == "Hello test"
 
-    f = opener.open("%s/test_sessions" % webapp.server.base)
+    f = opener.open("%s/test_sessions" % webapp.server.http.base)
     data = f.read()
     data = data.decode("utf-8")
     d = loads(data)

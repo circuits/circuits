@@ -67,10 +67,10 @@ def test_disps():
     DummyRoot().register(manager)
     manager.start()
 
-    f = urlopen(server1.base, timeout=3)
+    f = urlopen(server1.http.base, timeout=3)
     s = f.read()
     assert s == b"Hello from site 1!"
 
-    f = urlopen(server2.base, timeout=3)
+    f = urlopen(server2.http.base, timeout=3)
     s = f.read()
     assert s == b"Hello from site 2!"

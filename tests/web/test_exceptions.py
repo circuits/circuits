@@ -22,14 +22,14 @@ class Root(Controller):
 
 
 def test_redirect(webapp):
-    f = urlopen("%s/test_redirect" % webapp.server.base)
+    f = urlopen("%s/test_redirect" % webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
 
 def test_forbidden(webapp):
     try:
-        urlopen("%s/test_forbidden" % webapp.server.base)
+        urlopen("%s/test_forbidden" % webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 403
         assert e.msg == "Forbidden"
@@ -39,7 +39,7 @@ def test_forbidden(webapp):
 
 def test_notfound(webapp):
     try:
-        urlopen("%s/test_notfound" % webapp.server.base)
+        urlopen("%s/test_notfound" % webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"

@@ -17,14 +17,14 @@ class Root(Controller):
 
 
 def test_root(webapp):
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
 
 def test_badpath_notfound(webapp):
     try:
-        url = "%s/../../../../../../etc/passwd" % webapp.server.base
+        url = "%s/../../../../../../etc/passwd" % webapp.server.http.base
         urlopen(url)
     except HTTPError as e:
         assert e.code == 404
