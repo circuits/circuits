@@ -20,10 +20,10 @@ def test(webapp):
     cj = CookieJar()
     opener = build_opener(HTTPCookieProcessor(cj))
 
-    f = opener.open(webapp.server.base)
+    f = opener.open(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
-    f = opener.open(webapp.server.base)
+    f = opener.open(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello again!"

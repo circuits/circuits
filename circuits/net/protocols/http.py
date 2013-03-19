@@ -70,12 +70,12 @@ class HTTP(BaseComponent):
                 return
             statusline, data = data.split(b"\r\n", 1)
             statusline = statusline.strip().decode(self._encoding, "replace")
-            protocol, status, message = statusline.split(" ", 2)
+            protocol, status, reason = statusline.split(" ", 2)
 
             status = int(status)
             protocol = tuple(map(int, protocol[5:].split(".")))
 
-            response = ResponseObject(status, message, protocol)
+            response = ResponseObject(status, reason, protocol)
 
             end_of_headers = data.find(b"\r\n\r\n")
             header_data = data[:end_of_headers].decode(

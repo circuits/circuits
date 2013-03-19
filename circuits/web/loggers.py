@@ -51,7 +51,7 @@ class Logger(BaseComponent):
         request = response.request
         remote = request.remote
         outheaders = response.headers
-        inheaders = request.headers
+        inheaders = request.headers or {}
 
         protocol = "HTTP/%d.%d" % request.protocol
 

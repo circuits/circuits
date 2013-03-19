@@ -25,11 +25,11 @@ def test(webapp):
     rpc.register(webapp)
     test.register(webapp)
 
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
-    url = "%s/rpc" % webapp.server.base
+    url = "%s/rpc" % webapp.server.http.base
     jsonrpc = ServerProxy(url, allow_none=True, encoding='utf-8')
 
     data = jsonrpc.eval("1 + 2")

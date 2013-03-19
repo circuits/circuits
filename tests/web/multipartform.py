@@ -38,7 +38,7 @@ class MultiPartForm(dict):
         parts.extend([
             part_boundary,
             bytearray(
-                "Content-Disposition: file; name=\"%s\"; filename=\"%s\"" % (
+                "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" % (
                     fieldname, filename),
                 "ascii"
             ),

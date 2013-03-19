@@ -40,11 +40,11 @@ def test(apps):
     server.start()
     waiter.wait()
 
-    f = urlopen(server.base)
+    f = urlopen(server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
-    f = urlopen("{0:s}/foobar/".format(server.base))
+    f = urlopen("{0:s}/foobar/".format(server.http.base))
     s = f.read()
     assert s == b"FooBar!"
 
