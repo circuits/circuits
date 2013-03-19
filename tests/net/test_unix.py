@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 
+import pytest
+
 import os
 import sys
-
-import pytest
+import select
 
 if sys.platform in ("win32", "cygwin"):
     pytest.skip("Test Not Applicable on Windows")
 
 from circuits import Manager
-from circuits.core.pollers import Select
 from circuits.net.sockets import Close, Connect, Write
 from circuits.net.sockets import UNIXServer, UNIXClient
+from circuits.core.pollers import Select, Poll, EPoll, KQueue
 
 from .client import Client
 from .server import Server
@@ -20,26 +21,14 @@ from .server import Server
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"Poller": Select})
 
-    try:
-        from circuits.core.pollers import Poll
-        Poll()
+    if hasattr(select, "poll"):
         metafunc.addcall(funcargs={"Poller": Poll})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import EPoll
-        EPoll()
+    if hasattr(select, "epoll"):
         metafunc.addcall(funcargs={"Poller": EPoll})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import KQueue
-        KQueue()
+    if hasattr(select, "kqueue"):
         metafunc.addcall(funcargs={"Poller": KQueue})
-    except AttributeError:
-        pass
 
 
 def test_unix(tmpdir, Poller):

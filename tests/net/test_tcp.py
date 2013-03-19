@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
 import pytest
 
+import select
+from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
+
 from circuits import Manager
-from circuits.core.pollers import Select
-from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
 from circuits.net.sockets import Close, Connect, Write
+from circuits.core.pollers import Select, Poll, EPoll, KQueue
+from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
 
 from .client import Client
 from .server import Server
@@ -21,26 +23,14 @@ def wait_host(server):
 def _pytest_generate_tests(metafunc, ipv6):
     metafunc.addcall(funcargs={"Poller": Select, "ipv6": ipv6})
 
-    try:
-        from circuits.core.pollers import Poll
-        Poll()
+    if hasattr(select, "poll"):
         metafunc.addcall(funcargs={"Poller": Poll, "ipv6": ipv6})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import EPoll
-        EPoll()
+    if hasattr(select, "epoll"):
         metafunc.addcall(funcargs={"Poller": EPoll, "ipv6": ipv6})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import KQueue
-        KQueue()
+    if hasattr(select, "kqueue"):
         metafunc.addcall(funcargs={"Poller": KQueue, "ipv6": ipv6})
-    except AttributeError:
-        pass
 
 
 def pytest_generate_tests(metafunc):
