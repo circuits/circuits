@@ -250,10 +250,10 @@ class Headers(CaseInsensitiveDict):
         return "".join(headers) + '\r\n'
 
     def append(self, key, value):
-        if not value in self.values():
+        if not key in self:
             self[key] = value
         else:
-            self[key] = ', '.join([self[key], value])
+            self[key] = ", ".join([self[key], value])
 
     def add_header(self, _name, _value, **_params):
         """Extended header setting.
