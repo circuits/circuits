@@ -99,11 +99,11 @@ class HeaderElement(object):
         return initial_value, params
     parse = staticmethod(parse)
 
+    @classmethod
     def from_str(cls, elementstr):
         """Construct an instance from a string of the form 'token;key=val'."""
         ival, params = cls.parse(elementstr)
         return cls(ival, params)
-    from_str = classmethod(from_str)
 
 
 class AcceptElement(HeaderElement):
@@ -116,6 +116,7 @@ class AcceptElement(HeaderElement):
     have been the other way around, but it's too late to fix now.
     """
 
+    @classmethod
     def from_str(cls, elementstr):
         qvalue = None
         # The first "q" parameter (if any) separates the initial
@@ -131,7 +132,6 @@ class AcceptElement(HeaderElement):
         if qvalue is not None:
             params["q"] = qvalue
         return cls(media_type, params)
-    from_str = classmethod(from_str)
 
     def qvalue(self):
         val = self.params.get("q", "1")
@@ -184,12 +184,12 @@ class CaseInsensitiveDict(dict):
         for k in E.keys():
             self[str(k).title()] = E[k]
 
+    @classmethod
     def fromkeys(cls, seq, value=None):
         newdict = cls()
         for k in seq:
-            newdict[str(k).title()] = value
+            newdict[k] = value
         return newdict
-    fromkeys = classmethod(fromkeys)
 
     def setdefault(self, key, x=None):
         key = str(key).title()
@@ -210,13 +210,7 @@ class Headers(CaseInsensitiveDict):
         return header_elements(key, self.get(key))
 
     def get_all(self, name):
-        """Return a list of all the values for the named field.
-
-        These will be sorted in the order they appeared in the original header
-        list or were added to this instance, and may contain duplicates. Any
-        fields deleted and re-inserted are always appended to the header list.
-        If no fields exist with the given name, returns an empty list.
-        """
+        """Return a list of all the values for the named field."""
         return [val.strip() for val in self.get(name, '').split(',')]
 
     def __repr__(self):
@@ -252,8 +246,9 @@ class Headers(CaseInsensitiveDict):
         if _value is not None:
             parts.append(_value)
         for k, v in list(_params.items()):
+            k = k.replace('_', '-')
             if v is None:
-                parts.append(k.replace('_', '-'))
+                parts.append(k)
             else:
-                parts.append(_formatparam(k.replace('_', '-'), v))
+                parts.append(_formatparam(k, v))
         self.append(_name, "; ".join(parts))
