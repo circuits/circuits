@@ -201,13 +201,10 @@ class CaseInsensitiveDict(dict):
 
 
 class Headers(CaseInsensitiveDict):
+
     def elements(self, key):
         """Return a sorted list of HeaderElements for the given header."""
         return header_elements(key, self.get(key))
-
-    def values(self, key):
-        """Return a sorted list of HeaderElement.value for the given header."""
-        return [e.value for e in self.elements(key)]
 
     # FIXME: if you want to not raise an exception use .pop(foo, None)
     # don't reinvent this :( # TODO: remove all code that relies on the current behavior
@@ -253,7 +250,7 @@ class Headers(CaseInsensitiveDict):
         return "".join(headers) + '\r\n'
 
     def append(self, key, value):
-        if not value in self:
+        if not value in self.values():
             self[key] = value
         else:
             self[key] = ', '.join([self[key], value])
