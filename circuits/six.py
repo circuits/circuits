@@ -264,6 +264,8 @@ if PY3:
         return s.encode(encoding)
     def u(s, encoding='utf-8'):
         return s
+    def bytes_to_str(b):
+        return str(b, 'latin1')
     if sys.version_info[1] <= 1:
         def int2byte(i):
             return bytes((i,))
@@ -278,6 +280,8 @@ else:
         return s
     def u(s, encoding='utf-8'):
         return unicode(s, encoding)
+    def bytes_to_str(s):
+        return s
     int2byte = chr
     import StringIO
     StringIO = BytesIO = StringIO.StringIO

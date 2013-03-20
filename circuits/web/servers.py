@@ -16,8 +16,6 @@ from circuits.net.sockets import TCPServer, UNIXServer
 
 from .http import HTTP
 from .events import WebEvent
-from .wrappers import Request, Host
-from .constants import SERVER_VERSION
 from .dispatchers import Dispatcher
 
 
@@ -72,21 +70,9 @@ class BaseServer(BaseComponent):
             channel=channel
         ).register(self)
 
-        HTTP(encoding=encoding, channel=channel).register(self)
-
-        Request.server = self
-        if isinstance(self.server._bind, tuple):
-            Request.local = Host(
-                self.server._bind[0], self.server._bind[1]
-            )
-        else:
-            Request.local = Host(self.server._bind, None)
-        Request.host = self.host
-        Request.scheme = "https" if self.server.secure else "http"
-
-    @property
-    def version(self):
-        return SERVER_VERSION
+        self.http = HTTP(
+            self, encoding=encoding, channel=channel
+        ).register(self)
 
     @property
     def host(self):
@@ -102,26 +88,6 @@ class BaseServer(BaseComponent):
     def secure(self):
         if hasattr(self, "server"):
             return self.server.secure
-
-    @property
-    def scheme(self):
-        return "https" if self.secure else "http"
-
-    @property
-    def base(self):
-        host = self.host or "0.0.0.0"
-        port = self.port or 80
-        scheme = self.scheme
-        secure = self.secure
-
-        tpl = "%s://%s%s"
-
-        if (port == 80 and not secure) or (port == 443 and secure):
-            port = ""
-        else:
-            port = ":%d" % port
-
-        return tpl % (scheme, host, port)
 
 
 class Server(BaseServer):
@@ -156,16 +122,24 @@ class StdinServer(BaseComponent):
 
         WebEvent.channels = (channel,)
 
-        self.server = (
-            io.stdin
-            + io.stdout
-            + HTTP(encoding=encoding, channel=channel)
-        )
+        self.server = (io.stdin + io.stdout).register(self)
+        self.http = HTTP(
+            self, encoding=encoding, channel=channel
+        ).register(self)
 
-        self += self.server
-
-        Request.server = self
         Dispatcher(channel=self.channel).register(self)
+
+    @property
+    def host(self):
+        return io.stdin.filename
+
+    @property
+    def port(self):
+        return 0
+
+    @property
+    def secure(self):
+        return False
 
     @handler("read", channel="stdin")
     def read(self, data):

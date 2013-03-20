@@ -18,11 +18,11 @@ except ImportError:
 
 from .utils import url
 from .headers import Headers
-from ..six import binary_type, b
+from ..six import binary_type
 from .errors import HTTPError
 from circuits.tools import deprecated
 from circuits.net.sockets import BUFSIZE
-from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
+from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 
 try:
     unicode
@@ -130,7 +130,6 @@ class Request(object):
 
     scheme = "http"
     protocol = (1, 1)
-    server_protocol = (1, 1)
     host = ""
     local = Host("127.0.0.1", 80)
     remote = Host("", 0)
@@ -169,10 +168,12 @@ class Request(object):
 
         self.body = BytesIO()
 
-    def _getHeaders(self):
+    @property
+    def headers(self):
         return self._headers
 
-    def _setHeaders(self, headers):
+    @headers.setter
+    def headers(self, headers):
         self._headers = headers
 
         if "Cookie" in self.headers:
@@ -189,14 +190,19 @@ class Request(object):
         self.xhr = self.headers.get(
             "X-Requested-With", "").lower() == "xmlhttprequest"
 
-    headers = property(_getHeaders, _setHeaders)
-
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
     def url(self, *args, **kwargs):
         return url(self, *args, **kwargs)
+
+    @property
+    def local(self):
+        if not hasattr(self, "server"):
+            return
+
+        return Host(self.server.host, self.server.port)
 
 
 class Body(object):
@@ -259,8 +265,6 @@ class Response(object):
     stream = False
     chunked = False
 
-    protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
-
     def __init__(self, request, encoding='utf-8', status=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
@@ -275,21 +279,21 @@ class Response(object):
         self.headers = Headers([])
         self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
 
-        if self.request.server:
-            self.headers.add_header("Server", self.request.server.version)
+        if self.request.server is not None:
+            self.headers.add_header("Server", self.request.server.http.version)
         else:
             self.headers.add_header("X-Powered-By", SERVER_VERSION)
 
         self.cookie = self.request.cookie
 
-        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
+        self.protocol = "HTTP/%d.%d" % self.request.protocol
 
         self._encoding = encoding
 
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
             self.status,
-            self.headers["Content-Type"],
+            self.headers.get("Content-Type"),
             (len(self.body) if isinstance(self.body, str) else 0)
         )
 

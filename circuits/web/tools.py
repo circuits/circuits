@@ -292,7 +292,7 @@ def validate_since(request, response):
 def check_auth(request, response, realm, users, encrypt=None):
     """Check Authentication
 
-    If an authorization header contains credentials, return True, else False.
+    If an Authorization header contains credentials, return True, else False.
 
     :param realm: The authentication realm.
     :type  realm: str
@@ -306,9 +306,9 @@ def check_auth(request, response, realm, users, encrypt=None):
     :type  encrypt: callable
     """
 
-    if 'authorization' in request.headers:
+    if "Authorization" in request.headers:
         # make sure the provided credentials are correctly set
-        ah = _httpauth.parseAuthorization(request.headers['authorization'])
+        ah = _httpauth.parseAuthorization(request.headers.get("Authorization"))
         if ah is None:
             return HTTPError(request, response, 400)
 
@@ -335,7 +335,7 @@ def check_auth(request, response, realm, users, encrypt=None):
             # fetch the user password
             password = users.get(ah["username"], None)
 
-        # validate the authorization by re-computing it here
+        # validate the Authorization by re-computing it here
         # and compare it with what the user-agent provided
         if _httpauth.checkResponse(ah, password, method=request.method,
                                    encrypt=encrypt, realm=realm):

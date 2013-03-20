@@ -73,7 +73,8 @@ class FallBackErrorHandler(BaseComponent):
     """
 
     @handler("error", channel="*")
-    def _on_error(self, error_type, value, traceback, handler=None):
+    def _on_error(self, error_type, value, traceback,
+                  handler=None, fevent=None):
         s = []
 
         if handler is None:
@@ -81,7 +82,7 @@ class FallBackErrorHandler(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
+        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, fevent, error_type, value)
         s.append(msg)
         s.extend(traceback)
         s.append("\n")
