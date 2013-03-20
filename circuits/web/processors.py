@@ -47,7 +47,7 @@ def process_urlencoded(request, params):
 
 
 def process(request, params):
-    ctype = request.headers["Content-Type"]
+    ctype = request.headers.get("Content-Type")
     if not ctype:
         return
 

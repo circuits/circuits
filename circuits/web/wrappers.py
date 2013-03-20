@@ -293,7 +293,7 @@ class Response(object):
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
             self.status,
-            self.headers["Content-Type"],
+            self.headers.get("Content-Type"),
             (len(self.body) if isinstance(self.body, str) else 0)
         )
 

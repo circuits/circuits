@@ -354,12 +354,7 @@ class HttpParser(object):
                 value.append(lines.pop(0))
             value = ''.join(value).rstrip()
 
-            # multiple headers
-            if name in self._headers:
-                value = "%s, %s" % (self._headers[name], value)
-
             # store new header value
-            #self._headers[name] = value
             self._headers.add_header(name, value)
 
             # update WSGI environ

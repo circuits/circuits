@@ -33,7 +33,12 @@ def _formatparam(param, value=None, quote=1):
 
 
 def header_elements(fieldname, fieldvalue):
-    """Return a sorted HeaderElement list from a comma-separated header string."""
+    """Return a sorted HeaderElement list.
+
+    Returns a sorted HeaderElement list
+    from a comma-separated header string.
+    """
+
     if not fieldvalue:
         return []
 
@@ -147,11 +152,13 @@ class AcceptElement(HeaderElement):
         else:
             return self.qvalue < other.qvalue
 
+
 class CaseInsensitiveDict(dict):
     """A case-insensitive dict subclass.
 
     Each key is changed on entry to str(key).title().
     """
+
     def __init__(self, *args, **kwargs):
         d = dict(*args, **kwargs)
         for key, value in iteritems(d):
@@ -172,10 +179,6 @@ class CaseInsensitiveDict(dict):
 
     def get(self, key, default=None):
         return dict.get(self, str(key).title(), default)
-
-    if hasattr({}, 'has_key'):
-        def has_key(self, key):
-            return dict.has_key(self, str(key).title())
 
     def update(self, E):
         for k in E.keys():
@@ -206,29 +209,6 @@ class Headers(CaseInsensitiveDict):
         """Return a sorted list of HeaderElements for the given header."""
         return header_elements(key, self.get(key))
 
-    # FIXME: if you want to not raise an exception use .pop(foo, None)
-    # don't reinvent this :( # TODO: remove all code that relies on the current behavior
-    def __delitem__(self, name):
-        """Delete all occurrences of a header, if present.
-
-        Does *not* raise an exception if the header is missing.
-        """
-        if name in self:
-            super(Headers, self).__delitem__(name)
-
-    # FIXME: if you want to get an default value for it use .get(key, None)
-    # don't reinvent this :( # TODO: remove all code that relies on the current behavior
-    def __getitem__(self, name):
-        """Get the first header value for 'name'
-
-        Return None if the header is missing instead of raising an exception.
-
-        Note that if the header appeared multiple times, the first exactly
-        which occurrance gets returned is undefined. Use getall() to get all
-        the values matching a header field name.
-        """
-        return self.get(name)
-
     def get_all(self, name):
         """Return a list of all the values for the named field.
 
@@ -243,9 +223,6 @@ class Headers(CaseInsensitiveDict):
         return "Headers(%s)" % repr(list(self.items()))
 
     def __str__(self):
-        """str() returns the formatted headers, complete with end line,
-        suitable for direct HTTP transmission."""
-        # TODO: make Date and Server the first entries
         headers = ["%s: %s\r\n" % (k, v) for k, v in self.items()]
         return "".join(headers) + '\r\n'
 
