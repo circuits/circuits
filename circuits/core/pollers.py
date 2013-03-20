@@ -240,7 +240,7 @@ class Poll(BasePoller):
         self._updateRegistration(self._ctrl_recv)
 
     def _updateRegistration(self, fd):
-        fileno = fd.fileno()
+        fileno = fd.fileno() if not isinstance(fd, int) else fd
 
         try:
             self._poller.unregister(fileno)
@@ -347,7 +347,7 @@ class EPoll(BasePoller):
 
     def _updateRegistration(self, fd):
         try:
-            fileno = fd.fileno()
+            fileno = fd.fileno() if not isinstance(fd, int) else fd
             self._poller.unregister(fileno)
         except (SocketError, IOError) as e:
             if e.args[0] == EBADF:
