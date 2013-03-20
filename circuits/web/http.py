@@ -26,6 +26,7 @@ from circuits.six import b
 
 from . import wrappers
 from .parsers import HttpParser
+from .utils import is_ssl_handshake
 from .exceptions import HTTPException
 from .events import Request, Response, Stream
 from .errors import HTTPError, NotFound, Redirect
@@ -198,6 +199,13 @@ class HTTP(BaseComponent):
             parser = self._buffers[sock]
         else:
             self._buffers[sock] = parser = HttpParser(0)
+
+        if is_ssl_handshake(data) and not self._server.secure:
+            if sock in self._buffers:
+                del self._buffers[sock]
+            if sock in self._clients:
+                del self._clients[sock]
+            return self.fire(Close(sock))
 
         parser.execute(data, len(data))
         if not parser.is_headers_complete():

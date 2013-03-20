@@ -430,3 +430,12 @@ class IOrderedDict(dict, MutableMapping):
 
     def __del__(self):
         self.clear()                # eliminate cyclical references
+
+
+def is_ssl_handshake(buf):
+    if len(buf) < 4:
+        return
+
+    v = buf[1:3]
+    if v in ["\x03\x00", "\x03\x01", "\x03\x02"]:
+        return True
