@@ -51,14 +51,11 @@ class Logger(BaseComponent):
         request = response.request
         remote = request.remote
         outheaders = response.headers
-        inheaders = request.headers
+        inheaders = request.headers or {}
 
         protocol = "HTTP/%d.%d" % request.protocol
 
-        if "X-Forwarded-For" in inheaders:
-            host = inheaders["X-Forwarded-For"]
-        else:
-            host = remote.name or remote.ip
+        host = inheaders.get("X-Forwarded-For", (remote.name or remote.ip))
 
         atoms = {"h": host,
                  "l": "-",

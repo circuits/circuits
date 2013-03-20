@@ -15,7 +15,7 @@ class Root(Controller):
 
 
 def test(webapp):
-    client = Client(webapp.server.base)
+    client = Client(webapp.server.http.base)
     client.start()
 
     waiter = pytest.WaitEvent(client, 'connected', channel=client.channel)
@@ -37,7 +37,7 @@ def test(webapp):
 
 
 def test_named(webapp):
-    client = Client(webapp.server.base, channel="Client2")
+    client = Client(webapp.server.http.base, channel="Client2")
     client.start()
 
     waiter = pytest.WaitEvent(client, 'connected', channel=client.channel)
@@ -60,7 +60,7 @@ def test_named(webapp):
 
 def test_auto_close(webapp):
     m = Manager()
-    client = Client(webapp.server.base).register(m)
+    client = Client(webapp.server.http.base).register(m)
     m.start()
 
     waiter = pytest.WaitEvent(client, 'connected', channel=client.channel)

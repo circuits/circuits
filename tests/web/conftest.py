@@ -8,9 +8,9 @@ import os
 
 import pytest
 
-from circuits import Component
 from circuits.net.sockets import Close
 from circuits.web import Server, Static
+from circuits import Component, Debugger
 from circuits.web.client import Client, Connect, Request
 
 
@@ -47,6 +47,9 @@ def webapp(request):
     if Root is not None:
         Root().register(webapp)
 
+    if request.config.option.verbose:
+        Debugger().register(webapp)
+
     waiter = pytest.WaitEvent(webapp, "ready")
     webapp.start()
     assert waiter.wait()
@@ -62,7 +65,7 @@ def webapp(request):
 
 @pytest.fixture(scope="module")
 def webclient(request, webapp):
-    webclient = WebClient(webapp.server.base)
+    webclient = WebClient(webapp.server.http.base)
     waiter = pytest.WaitEvent(webclient, "ready", channel=webclient.channel)
     webclient.register(webapp)
     assert waiter.wait()

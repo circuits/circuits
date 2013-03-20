@@ -25,7 +25,7 @@ class Root(Controller):
 
 def test(webapp):
     try:
-        f = urlopen(webapp.server.base)
+        f = urlopen(webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 401
         assert e.msg == "Unauthorized"
@@ -33,10 +33,10 @@ def test(webapp):
         assert False
 
     handler = HTTPDigestAuthHandler()
-    handler.add_password("Test", webapp.server.base, "admin", "admin")
+    handler.add_password("Test", webapp.server.http.base, "admin", "admin")
     opener = build_opener(handler)
     install_opener(opener)
 
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"

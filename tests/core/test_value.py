@@ -58,17 +58,11 @@ class App(Component):
 @pytest.fixture
 def app(request, manager, watcher):
     app = App().register(manager)
-    print
-    print("[1] Waiting for App to be registered")
     watcher.wait("registered")
-    print("[1] App registered")
 
     def finalizer():
         app.unregister()
-        print
-        print("[2] Waiting for App to be unregistered")
         watcher.wait("unregistered")
-        print("[2] App unregistered")
 
     request.addfinalizer(finalizer)
 

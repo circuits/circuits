@@ -30,7 +30,7 @@ class Leaf(Controller):
 
 
 def request(webapp, path):
-    client = Client(webapp.server.base)
+    client = Client(webapp.server.http.base)
     client.start()
 
     waiter = pytest.WaitEvent(client, 'connected', channel='client')

@@ -11,7 +11,7 @@ class Root(Controller):
 
 def test(webapp):
     try:
-        urlopen(webapp.server.base)
+        urlopen(webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
