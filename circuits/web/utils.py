@@ -443,5 +443,5 @@ def is_ssl_handshake(buf):
 
     # SSLv2
 
-    if (ord(buf[0]) & 0x80 == 0x80) and ((ord(buf[0]) & 0x7f) << 8 | ord(buf[1])) > 9:
+    if (ord(b[0]) & 0x80 == 0x80) and ((ord(b[0]) & 0x7f) << 8 | ord(b[1])) > 9:
         return True
