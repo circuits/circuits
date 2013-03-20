@@ -435,13 +435,8 @@ class IOrderedDict(dict, MutableMapping):
 def is_ssl_handshake(buf):
     """Detect an SSLv2 or SSLv3 handshake"""
 
-    # SSLv3
-
     v = buf[0:3]
     if v in ["\x16\x03\x00", "\x16\x03\x01", "\x16\x03\x02"]:
         return True
 
-    # SSLv2
-
-    if (ord(b[0]) & 0x80 == 0x80) and ((ord(b[0]) & 0x7f) << 8 | ord(b[1])) > 9:
-        return True
+    # XXX: Add SSLv2 detection ...
