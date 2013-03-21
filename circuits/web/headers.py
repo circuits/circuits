@@ -199,7 +199,7 @@ class CaseInsensitiveDict(dict):
             self[key] = x
             return x
 
-    def pop(self, key, default):
+    def pop(self, key, default=None):
         return dict.pop(self, str(key).title(), default)
 
 
