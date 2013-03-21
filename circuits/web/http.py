@@ -200,12 +200,16 @@ class HTTP(BaseComponent):
         else:
             self._buffers[sock] = parser = HttpParser(0)
 
-        if is_ssl_handshake(data) and not self._server.secure:
-            if sock in self._buffers:
-                del self._buffers[sock]
-            if sock in self._clients:
-                del self._clients[sock]
-            return self.fire(Close(sock))
+            # If we receive an SSL handshake at the start of a request
+            # and we're not a secure server, then immediately close the
+            # client connection since we can't respond to it anyway.
+
+            if is_ssl_handshake(data) and not self._server.secure:
+                if sock in self._buffers:
+                    del self._buffers[sock]
+                if sock in self._clients:
+                    del self._clients[sock]
+                return self.fire(Close(sock))
 
         parser.execute(data, len(data))
         if not parser.is_headers_complete():
