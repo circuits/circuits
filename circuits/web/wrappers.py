@@ -66,7 +66,7 @@ class HTTPStatus(object):
 
     def __init__(self, status=200, reason=None):
         self._status = status
-        self._reason = reason or HTTP_STATUS_CODES[status]
+        self._reason = reason or HTTP_STATUS_CODES.get(status, "")
 
     def __int__(self):
         return self._status
