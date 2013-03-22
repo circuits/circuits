@@ -199,7 +199,7 @@ class Request(object):
 
     @property
     def local(self):
-        if not hasattr(self, "server"):
+        if getattr(self, "server", None) is None:
             return
 
         return Host(self.server.host, self.server.port)
