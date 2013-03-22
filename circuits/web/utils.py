@@ -25,6 +25,8 @@ try:
 except ImportError:
     from cgi import parse_qs as _parse_qs  # NOQA
 
+from circuits.six import iterbytes
+
 from .exceptions import RequestEntityTooLarge
 
 quoted_slash = re.compile("(?i)%2F")
@@ -443,6 +445,6 @@ def is_ssl_handshake(buf):
 
     # SSLv2
 
-    v = [ord(x) for x in buf[:2]]
+    v = list(iterbytes(buf))[:2]
     if (v[0] & 0x80 == 0x80) and ((v[0] & 0x7f) << 8 | v[1]) > 9:
         return True
