@@ -692,7 +692,7 @@ class Server(BaseComponent):
         try:
             newsock, host = self._sock.accept()
             if self.secure and HAS_SSL:
-                newsock = ssl_socket(
+                sslsock = ssl_socket(
                     newsock,
                     server_side=True,
                     keyfile=self.keyfile,
@@ -702,11 +702,16 @@ class Server(BaseComponent):
                     ssl_version=self.ssl_version,
                     do_handshake_on_connect=False
                 )
-                _do_handshake_for_non_blocking(newsock)
-
-        except SSLError as e:
-            raise
-
+                try:
+                    _do_handshake_for_non_blocking(sslsock)
+                    newsock = sslsock
+                except SSLError as e:
+                    self.fire(SocketError(self._sock, e))
+                    newsock.shutdown(2)
+                    newsock.close()
+                    return
+                else:
+                    newsock = sslsock
         except error as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
