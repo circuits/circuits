@@ -223,7 +223,7 @@ class HTTP(BaseComponent):
                     request = wrappers.Request(sock, parser.get_method(),
                                                      parser.get_scheme() or _scheme,
                                                      parser.get_path(),
-                                                     parser.get_version()
+                                                     parser.get_version(),
                                                      parser.get_query_string())
                 request.server = self._server
                 response = wrappers.Response(request, encoding=self._encoding)
