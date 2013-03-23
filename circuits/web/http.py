@@ -25,7 +25,7 @@ from circuits.core import handler, BaseComponent, Value
 from circuits.six import b
 
 from . import wrappers
-from .parsers import HttpParser
+from .parsers import HttpParser, BAD_FIRST_LINE, INVALID_HEADER, INVALID_CHUNK
 from .utils import is_ssl_handshake
 from .exceptions import HTTPException
 from .events import Request, Response, Stream
@@ -141,10 +141,12 @@ class HTTP(BaseComponent):
         the information contained in the *response* object and
         sends it to the client (firing ``Write`` events).
         """
+        # send HTTP response status line and headers
         self.fire(
             Write(response.request.sock, b(str(response), self._encoding))
         )
 
+        # process body
         if response.stream and response.body:
             try:
                 data = next(response.body)
@@ -211,10 +213,18 @@ class HTTP(BaseComponent):
                     del self._clients[sock]
                 return self.fire(Close(sock))
 
+        _scheme = "https" if self._server.secure else "http"
         parser.execute(data, len(data))
         if not parser.is_headers_complete():
             if parser.errno is not None:
-                request = wrappers.Request(sock, "", "", "", (1, 1), "")
+                if parser.errno == BAD_FIRST_LINE:
+                    request = wrappers.Request(sock, "GET", _scheme, "/", (1, 1), "")
+                else:
+                    request = wrappers.Request(sock, parser.get_method(),
+                                                     parser.get_scheme() or _scheme,
+                                                     parser.get_path(),
+                                                     parser.get_version()
+                                                     parser.get_query_string())
                 request.server = self._server
                 response = wrappers.Response(request, encoding=self._encoding)
                 del self._buffers[sock]
@@ -224,13 +234,11 @@ class HTTP(BaseComponent):
         if sock in self._clients:
             request, response = self._clients[sock]
         else:
-            path = parser.get_path()
             method = parser.get_method()
+            scheme = parser.get_scheme() or _scheme
+            path = parser.get_path()
             version = parser.get_version()
             query_string = parser.get_query_string()
-
-            _scheme = "https" if self._server.secure else "http"
-            scheme = parser.get_scheme() or _scheme
 
             request = wrappers.Request(
                 sock, method, scheme, path, version, query_string
@@ -245,6 +253,7 @@ class HTTP(BaseComponent):
             sp = self.protocol
 
             if rp[0] != sp[0]:
+                # the mayor HTTP version differs
                 return self.fire(HTTPError(request, response, 505))
 
             request.headers = parser.get_headers()
