@@ -288,7 +288,10 @@ class Response(object):
 
         self.protocol = "HTTP/%d.%d" % self.request.protocol
 
-        self._encoding = encoding
+    @property
+    @deprecated
+    def _encoding(self):
+        return self.encoding
 
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
@@ -325,11 +328,11 @@ class Response(object):
             if isinstance(self.body, bytes):
                 cLength = len(self.body)
             elif isinstance(self.body, unicode):
-                cLength = len(self.body.encode(self._encoding))
+                cLength = len(self.body.encode(self.encoding))
             elif isinstance(self.body, list):
                 cLength = sum(
                     [
-                        len(s.encode(self._encoding))
+                        len(s.encode(self.encoding))
                         if not isinstance(s, bytes)
                         else len(s) for s in self.body
                         if s is not None
