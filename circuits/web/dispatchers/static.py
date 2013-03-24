@@ -52,7 +52,7 @@ class Static(BaseComponent):
         super(Static, self).__init__()
 
         self.path = path
-        self.docroot = docroot or os.getcwd()
+        self.docroot = os.path.abspath(docroot) or os.getcwd()
         self.defaults = defaults
         self.dirlisting = dirlisting
 
@@ -75,6 +75,9 @@ class Static(BaseComponent):
 
         if not os.path.exists(location):
             return
+
+        if not location.startswith(os.path.dirname(self.docroot)):
+            return # hacking attemp e.g. /foo/../../../../../etc/shadow
 
         # Is it a file we can serve directly?
         if os.path.isfile(location):
