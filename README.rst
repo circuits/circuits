@@ -85,6 +85,10 @@ Alternatively, you may download the source package from the
     > python setup.py install
 
 
+You can also install th
+`latest-development version <https://bitbucket.org/circuits/circuits-dev/get/tip.tar.gz#egg=circuits-dev>`_ using pip with ``pip install circuits==dev``.
+
+
 License
 -------
 
