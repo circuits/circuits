@@ -85,7 +85,7 @@ def test_tcp_reconnect(Poller, ipv6):
     ### XXX: UPDATE: Apparently Broken on Windows + Python 3.2
     ### TODO: Need to look into this. Find out why...
 
-    if pytest.PLATFORM == "win32" and pytest.PYVER[:2] == (3, 2):
+    if pytest.PLATFORM == "win32" and pytest.PYVER[:2] >= (3, 2):
         pytest.skip("Broken on Windows on Python 3.2")
 
     m = Manager() + Poller()
