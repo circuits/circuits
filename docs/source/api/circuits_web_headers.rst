@@ -33,4 +33,3 @@ Functions
 ---------
 
 .. autofunction :: header_elements
-.. autofunction :: parse_headers

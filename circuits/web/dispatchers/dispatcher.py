@@ -14,11 +14,11 @@ try:
 except NameError:
     unicodestr = str
 
-from circuits import handler, BaseComponent
+from circuits import handler, BaseComponent, Event, LiteralEvent
 
 from circuits.web.utils import parse_qs
+from circuits.web.events import Response
 from circuits.web.processors import process
-from circuits.web.events import Request, Response
 from circuits.web.controllers import BaseController
 
 
@@ -108,7 +108,7 @@ class Dispatcher(BaseComponent):
                 name = str(name)
 
             return self.fire(
-                Request.create(name, *event.args, **event.kwargs), channel
+                LiteralEvent.create(Event, name, *event.args, **event.kwargs), channel
             )
 
     @handler("request_value_changed")

@@ -160,6 +160,7 @@ class LiteralEvent(Event):
     """
     An event whose name is not uncameled when looking for a handler.
     """
+
     @staticmethod
     def create(cls, name, *args, **kwargs):
         """
@@ -167,8 +168,8 @@ class LiteralEvent(Event):
         a base event class (passed in as *cls*) and from
         LiteralEvent.
         """
-        return type(cls)(name, (cls, LiteralEvent),
-                         {"name": name})(*args, **kwargs)
+
+        return type(cls)(name, (cls,), {"name": name})(*args, **kwargs)
 
 
 class DerivedEvent(Event):

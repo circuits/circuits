@@ -59,9 +59,3 @@ Indices and tables
 .. ifconfig:: devel
 
    * :doc:`todo`
-
-
-.. raw:: html
-   
-   <script type="text/javascript" src="http://www.ohloh.net/p/587962/widgets/project_thin_badge.js"></script>
-   
