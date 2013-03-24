@@ -17,8 +17,10 @@ class WebEvent(Event):
     True. So event processing generates the derived events
     ``...Success`` or ``...Failure`` events.
     """
+
     success = True
     failure = True
+    complete = True
 
 
 class Request(WebEvent):
@@ -26,6 +28,7 @@ class Request(WebEvent):
 
     args: request, response
     """
+
     @classmethod
     def create(cls, name, *args, **kwargs):
         """
