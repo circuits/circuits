@@ -9,7 +9,7 @@ This module implements the Request and Response objects.
 
 
 from io import BytesIO, IOBase
-from time import strftime, time
+from time import time
 
 try:
     from Cookie import SimpleCookie
@@ -29,6 +29,13 @@ try:
 except NameError:
     unicode = str
 
+try:
+    # from cherrypy._cpcompat
+    from email.utils import formatdate
+    def HTTPDate(timeval=None):
+        return formatdate(timeval, usegmt=True)
+except ImportError:
+    from rfc822 import formatdate as HTTPDate
 
 def file_generator(input, chunkSize=BUFSIZE):
     chunk = input.read(chunkSize)
@@ -277,7 +284,7 @@ class Response(object):
         self.time = time()
 
         self.headers = Headers([])
-        self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
+        self.headers.add_header("Date", HTTPDate())
 
         if self.request.server is not None:
             self.headers.add_header("Server", self.request.server.http.version)
