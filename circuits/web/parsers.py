@@ -20,7 +20,7 @@ from ..six import b, bytes_to_str, MAXSIZE
 METHOD_RE = re.compile("^[A-Z0-9$-_.]{1,20}$")
 VERSION_RE = re.compile("^HTTP/(\d+).(\d+)$")
 STATUS_RE = re.compile("^(\d{3})(?:\s+(\w*))?$")
-HEADER_RE = re.compile("[\x00-\x1F\x7F()<>@,;:\[\]={} \t\\\\\"]")
+HEADER_RE = re.compile("[\x00-\x1F\x7F()<>@,;:/\[\]={} \t\\\\\"]")
 
 # errors
 BAD_FIRST_LINE = 0
