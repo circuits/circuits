@@ -218,13 +218,17 @@ class HTTP(BaseComponent):
         if not parser.is_headers_complete():
             if parser.errno is not None:
                 if parser.errno == BAD_FIRST_LINE:
-                    request = wrappers.Request(sock, "GET", _scheme, "/", (1, 1), "")
+                    request = wrappers.Request(
+                        sock, "GET", _scheme, "/", (1, 1), ""
+                    )
                 else:
-                    request = wrappers.Request(sock, parser.get_method(),
-                                                     parser.get_scheme() or _scheme,
-                                                     parser.get_path(),
-                                                     parser.get_version(),
-                                                     parser.get_query_string())
+                    request = wrappers.Request(
+                        sock, parser.get_method(),
+                        parser.get_scheme() or _scheme,
+                        parser.get_path(),
+                        parser.get_version(),
+                        parser.get_query_string()
+                    )
                 request.server = self._server
                 response = wrappers.Response(request, encoding=self._encoding)
                 del self._buffers[sock]
