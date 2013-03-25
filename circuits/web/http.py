@@ -25,10 +25,10 @@ from circuits.core import handler, BaseComponent, Value
 from circuits.six import b
 
 from . import wrappers
-from .parsers import HttpParser, BAD_FIRST_LINE, INVALID_HEADER, INVALID_CHUNK
 from .utils import is_ssl_handshake
 from .exceptions import HTTPException
 from .events import Request, Response, Stream
+from .parsers import HttpParser, BAD_FIRST_LINE
 from .errors import HTTPError, NotFound, Redirect
 from .exceptions import Redirect as RedirectException
 from .constants import SERVER_VERSION, SERVER_PROTOCOL

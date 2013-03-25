@@ -10,11 +10,6 @@ except ImportError:
 from circuits.six import iteritems, string_types
 
 
-def parse(data):
-    obj = QueryStringParser(data)
-    return obj.result
-
-
 class QueryStringToken(object):
 
     ARRAY = "ARRAY"

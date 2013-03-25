@@ -1,9 +1,8 @@
-
 import re
 
 from .headers import HeaderElement
-from .multipart import MultipartParser
-from .querystring import parse as parse_qs
+from .parsers import MultipartParser
+from .parsers import QueryStringParser
 
 
 def process_multipart(request, params):
@@ -43,7 +42,7 @@ def process_multipart(request, params):
 def process_urlencoded(request, params):
     qs = request.qs or request.body.read()
     qs = qs.decode("utf-8")
-    params.update(parse_qs(qs))
+    params.update(QueryStringParser(qs).result)
 
 
 def process(request, params):
