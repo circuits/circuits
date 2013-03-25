@@ -40,6 +40,11 @@ def handler(*names, **kwargs):
     invoked before normal handlers with the same priority (but after any
     handlers with higher priority).
 
+    .. deprecated:: 2.2
+       Use :meth:~.events.Event.stop` to stop event propagation to other event
+       handlers. Has the same behavior as ``filter=True`` but is more explicit
+       and does not rely on the return values of event handlers.
+
     If you want to override a handler defined in a base class of your
     component, you must specify ``override=True``, else your method becomes
     an additional handler for the event.

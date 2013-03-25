@@ -91,6 +91,7 @@ class BaseEvent(object):
         self.uid = None
         self.value = None
         self.handler = None
+        self._stopflag = False
 
     def __getstate__(self):
         odict = self.__dict__.copy()
@@ -152,6 +153,11 @@ class BaseEvent(object):
             self.kwargs[i] = y
         else:
             raise TypeError("Expected int or str, got %r" % type(i))
+
+    def stop(self):
+        """Stop further processing of this event"""
+
+        self._stopflag = True
 
 Event = EventMetaClass("Event", (BaseEvent,), {})
 

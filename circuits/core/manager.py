@@ -554,6 +554,9 @@ class Manager(object):
                 if handler.filter and value:
                     break
 
+            if event._stopflag:
+                break  # Stop further event processing
+
         self._currently_handling = None
         self._eventDone(event, error)
 
