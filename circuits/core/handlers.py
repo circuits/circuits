@@ -10,6 +10,8 @@ from inspect import getargspec
 from collections import Callable
 from warnings import warn_explicit
 
+from circuits.six import _func_code
+
 
 def handler(*names, **kwargs):
     """Creates an Event Handler
@@ -96,8 +98,8 @@ def handler(*names, **kwargs):
             warn_explicit(
                 "filter is deprecated. Use Event.stop()",
                 category=DeprecationWarning,
-                filename=f.func_code.co_filename,
-                lineno=f.func_code.co_firstlineno + 1
+                filename=getattr(f, _func_code).co_filename,
+                lineno=getattr(f, _func_code).co_firstlineno + 1
             )
 
         args = getargspec(f)[0]
