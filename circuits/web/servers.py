@@ -11,6 +11,7 @@ from circuits.core import handler, BaseComponent
 
 from circuits import io
 
+from circuits.tools import deprecated
 from circuits.net.sockets import Read, Write
 from circuits.net.sockets import TCPServer, UNIXServer
 
@@ -88,6 +89,45 @@ class BaseServer(BaseComponent):
     def secure(self):
         if hasattr(self, "server"):
             return self.server.secure
+
+    @property
+    @deprecated
+    def base(self):
+        """
+        .. deprecated:: 2.2
+           Use :attr:~.http.base`
+        """
+
+        return self.http.base
+
+    @property
+    @deprecated
+    def scheme(self):
+        """
+        .. deprecated:: 2.2
+           Use :attr:~.http.scheme`
+        """
+
+        return self.http.scheme
+
+    @property
+    @deprecated
+    def protocol(self):
+        """
+        .. deprecated:: 2.2
+           Use :attr:~.http.protocol`
+        """
+
+        return self.http.protocol
+
+    @deprecated
+    def version(self):
+        """
+        .. deprecated:: 2.2
+           Use :attr:~.http.version`
+        """
+
+        return self.http.version
 
 
 class Server(BaseServer):
