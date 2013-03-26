@@ -98,7 +98,8 @@ class BaseServer(BaseComponent):
            Use :attr:~.http.base`
         """
 
-        return self.http.base
+        if hasattr(self, "http"):
+            return self.http.base
 
     @property
     @deprecated
@@ -108,7 +109,8 @@ class BaseServer(BaseComponent):
            Use :attr:~.http.scheme`
         """
 
-        return self.http.scheme
+        if hasattr(self, "http"):
+            return self.http.scheme
 
     @property
     @deprecated
@@ -118,7 +120,8 @@ class BaseServer(BaseComponent):
            Use :attr:~.http.protocol`
         """
 
-        return self.http.protocol
+        if hasattr(self, "http"):
+            return self.http.protocol
 
     @deprecated
     def version(self):
@@ -127,7 +130,8 @@ class BaseServer(BaseComponent):
            Use :attr:~.http.version`
         """
 
-        return self.http.version
+        if hasattr(self, "http"):
+            return self.http.version
 
 
 class Server(BaseServer):
