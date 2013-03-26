@@ -8,6 +8,7 @@ This module define the @handler decorator/function and the HandlesType type.
 
 from inspect import getargspec
 from collections import Callable
+from warnings import warn_explicit
 
 
 def handler(*names, **kwargs):
@@ -90,6 +91,14 @@ def handler(*names, **kwargs):
         f.filter = kwargs.get("filter", False)
         f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
+
+        if f.filter:
+            warn_explicit(
+                "filter is deprecated. Use Event.stop()",
+                category=DeprecationWarning,
+                filename=f.func_code.co_filename,
+                lineno=f.func_code.co_firstlineno + 1
+            )
 
         args = getargspec(f)[0]
 
