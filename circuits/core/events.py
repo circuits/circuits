@@ -91,7 +91,7 @@ class BaseEvent(object):
         self.uid = None
         self.value = None
         self.handler = None
-        self._stopflag = False
+        self.stopped = False
 
     def __getstate__(self):
         odict = self.__dict__.copy()
@@ -157,7 +157,7 @@ class BaseEvent(object):
     def stop(self):
         """Stop further processing of this event"""
 
-        self._stopflag = True
+        self.stopped = True
 
 Event = EventMetaClass("Event", (BaseEvent,), {})
 
