@@ -12,7 +12,7 @@ clean:
 	@rm -rf build dist circuits.egg-info
 	@rm -rf .coverage coverage
 	@rm -rf docs/build
-	@find . -name '__pycache__' -delete
+	@find . -name '__pycache__' -exec rm -rf {} +
 	@find . -name '*.pyc' -delete
 	@find . -name '*.pyo' -delete
 	@find . -name '*~' -delete
