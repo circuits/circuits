@@ -80,7 +80,7 @@ class BasePoller(BaseComponent):
         at.join()
         return (res_list[0], clnt_sock)
 
-    @handler("generate_events", priority=-9, filter=True)
+    @handler("generate_events", priority=-9)
     def _on_generate_events(self, event):
         """
         Pollers have slightly higher priority than the default handler
@@ -89,8 +89,9 @@ class BasePoller(BaseComponent):
         invocation of the default handler which would be unnecessary
         overhead.
         """
+
+        event.stop()
         self._generate_events(event)
-        return True
 
     def resume(self):
         if isinstance(self._ctrl_send, socket):

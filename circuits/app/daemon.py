@@ -126,7 +126,7 @@ class Daemon(BaseComponent):
 
         self.fire(WritePID())
 
-    @handler("started", filter=True, priority=100.0, channel="*")
+    @handler("started", priority=100.0, channel="*")
     def _on_started(self, component):
         if component is not self:
             self.fire(Daemonize())
