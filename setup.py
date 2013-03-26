@@ -95,8 +95,7 @@ setup(
     circuits.web = circuits.web.main:main
     """,
     zip_safe=False,
-    test_suite="tests.main.main",
-    namespace_packages=["circuits"]
+    test_suite="tests.main.main"
 )
 
 # hghooks: no-pyflakes
