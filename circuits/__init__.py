@@ -23,4 +23,6 @@ from circuits.core import Debugger, Bridge, Loader, Manager, Timer
 from circuits.core import BaseEvent, DerivedEvent, Event, LiteralEvent
 from circuits.core import handler, reprhandler, BaseComponent, Component
 
+__import__("pkg_resources").declare_namespace(__name__)
+
 # flake8: noqa
