@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
-from circuits.web.servers import Server
+import time
 
 from circuits import Component
-from circuits.net.sockets import Write
-from circuits.web.dispatchers import WebSockets
+from circuits.web.servers import Server
+from circuits.net.sockets import Connect, Write
 from circuits.web.controllers import Controller
-from circuits.web.websocket import WebSocketClient
-from circuits.web.client import Connect
-import time
+from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
 
 
 class Echo(Component):
@@ -16,7 +14,7 @@ class Echo(Component):
     channel = "ws"
 
     def read(self, sock, data):
-        self.fireEvent(Write(sock, "Received: " + data))
+        self.fire(Write(sock, "Received: " + data))
 
 
 class Root(Controller):
@@ -37,7 +35,7 @@ def test1(webapp):
     server = Server(("localhost", 8123))
     Echo().register(server)
     Root().register(server)
-    WebSockets("/websocket").register(server)
+    WebSocketsDispatcher("/websocket").register(server)
     server.start()
 
     client = WebSocketClient("ws://localhost:8123/websocket")

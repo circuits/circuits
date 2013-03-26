@@ -1,18 +1,17 @@
-# Module:   websockets
+# Module:   dispatcher
 # Date:     26th February 2011
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-from circuits.web.errors import HTTPError
-from circuits.net.protocols.websocket import WebSocketCodec
 
 import hashlib
 import base64
-from circuits.core.handlers import handler
 
-from circuits import BaseComponent
 from circuits.net.sockets import Connect
+from circuits.web.errors import HTTPError
+from circuits import handler, BaseComponent
+from circuits.net.protocols.websocket import WebSocketCodec
 
 
-class WebSockets(BaseComponent):
+class WebSocketsDispatcher(BaseComponent):
     """
     This class implements an RFC 6455 compliant WebSockets dispatcher
     that handles the WebSockets handshake and upgrades the connection.
@@ -44,7 +43,8 @@ class WebSockets(BaseComponent):
             :class:`~.sockets.Write` events to the client will be
             sent to.
         """
-        super(WebSockets, self).__init__(*args, **kwargs)
+
+        super(WebSocketsDispatcher, self).__init__(*args, **kwargs)
 
         self._path = path
         self._wschannel = wschannel

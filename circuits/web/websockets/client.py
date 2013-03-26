@@ -1,47 +1,51 @@
-"""
-.. codeauthor: mnl
-"""
-from circuits.web.headers import Headers
-from circuits.core.handlers import handler
+# Module:   client
+# Date:     4th January 2013
+# Author:   mnl
+
 import os
 import random
 import base64
-from circuits.web import client
-from circuits.net.protocols.websocket import WebSocketCodec
+from errno import ECONNRESET
+from socket import error as SocketError
+
 try:
     from urllib.parse import urlparse
 except ImportError:
-    from urlparse import urlparse
+    from urlparse import urlparse  # NOQA
+
+from circuits.web import client
+from circuits.net.protocols.websocket import WebSocketCodec
+from circuits.web.headers import Headers
+from circuits.core.handlers import handler
 from circuits.core.components import BaseComponent
 from circuits.web.client import NotConnected
 from circuits.net.sockets import TCPClient, Connect, Write, Close
 from circuits.net.protocols.http import HTTP
-from socket import error as SocketError
-from errno import ECONNRESET
+
 
 class WebSocketClient(BaseComponent):
     """
-    An RFC 6455 compliant WebSocket client component. Upon receiving a 
-    :class:`circuits.web.client.Connect` event, the component tries to 
-    establish the connection to the server in a two stage process. First, a 
+    An RFC 6455 compliant WebSocket client component. Upon receiving a
+    :class:`circuits.web.client.Connect` event, the component tries to
+    establish the connection to the server in a two stage process. First, a
     :class:`circuits.net.sockets.Connect` event is sent to a child
     :class:`~.sockets.TCPClient`. When the TCP connection has been established,
     the HTTP request for opening the WebSocket is sent to the server.
     A failure in this setup process is signaled by a
     :class:`~.client.NotConnected` event.
-    
+
     When the server accepts the request, the WebSocket connection is
     established and can be used very much like an ordinary socket
-    by handling :class:`~.sockets.Read` events on and sending 
+    by handling :class:`~.sockets.Read` events on and sending
     :class:`~.sockets.Write` events to the channel
     specified as the ``wschannel`` parameter of the constructor. Firing
     a :class:`~.sockets.Close` event on that channel closes the
     connection in an orderly fashion (i.e. as specified by the
     WebSocket protocol).
     """
-    
+
     channel = "wsclient"
-    
+
     def __init__(self, url, channel=channel, wschannel="ws", headers={}):
         """
         :param url: the URL to connect to.
@@ -61,7 +65,7 @@ class WebSocketClient(BaseComponent):
 
         self._transport = TCPClient(channel=self.channel).register(self)
         HTTP(channel=self.channel).register(self._transport)
-        
+
     @handler("connect", priority=0.1, filter=True)
     def _on_connect(self, event, *args, **kwargs):
         if not isinstance(event, client.Connect):
@@ -97,7 +101,7 @@ class WebSocketClient(BaseComponent):
         try:
             sec_key = os.urandom(16)
         except NotImplementedError:
-            sec_key = "".join([chr(random.randint(0,255)) for i in range(16)])
+            sec_key = "".join([chr(random.randint(0, 255)) for i in range(16)])
         headers["Sec-WebSocket-Key"] = base64.b64encode(sec_key)
         headers["Sec-WebSocket-Version"] = "13"
         command = "GET %s HTTP/1.1" % self._resource
@@ -111,7 +115,7 @@ class WebSocketClient(BaseComponent):
         self._response = response
         self._pending -= 1
         if response.headers.get("Connection") == "Close" \
-            or response.status != 101:
+                or response.status != 101:
             self.fire(Close(), self._transport)
             self.fire(NotConnected())
         WebSocketCodec(channel=self._wschannel).register(self)
@@ -121,11 +125,11 @@ class WebSocketClient(BaseComponent):
         # For HTTP 1.1 we leave the connection open. If the peer closes
         # it after some time and we have no pending request, that's OK.
         if isinstance(error, SocketError) and error.args[0] == ECONNRESET \
-            and self._pending == 0:
+                and self._pending == 0:
             return True
 
     def close(self):
-        if self._transport != None:
+        if self._transport is not None:
             self._transport.close()
 
     @property
