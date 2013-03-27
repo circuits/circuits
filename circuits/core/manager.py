@@ -392,11 +392,13 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
-    def waitEvent(self, event, *channels):
+    def waitEvent(self, event, *channels, **kwargs):
+        timeout = kwargs.get("timeout", 30)
+
         state = {
             'run': False,
             'flag': False,
-            'event': None,
+            'event': None
         }
         _event = event
 
@@ -421,6 +423,9 @@ class Manager(object):
                 handler("%s_done" % event, channel=channel)(_on_done))
 
         while not state['flag']:
+            if timeout == 0:
+                break
+            timeout -= 1
             yield None
 
         self.removeHandler(_on_done_handler, "%s_done" % event)
