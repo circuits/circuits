@@ -11,27 +11,26 @@ import sys
 
 from circuits import Component
 from circuits.io import stdout, Write
-from circuits.web.client import Client, Connect, Request
+from circuits.web.client import Close, Client, Connect, Request
 
 
 class WebClient(Component):
 
-    channel = "client"
-
     stdout = stdout
 
-    def init(self, url, channel=channel):
+    def init(self, url):
         self.url = url
 
-        self.client = Client(url, channel=channel).register(self)
+        self.client = Client().register(self)
 
     def ready(self, client):
-        self.fire(Connect())
-        yield self.wait("connected")
-
         self.fire(Request("GET", self.url))
-        yield self.wait("response")
 
-        self.fire(Write(self.client.response.read()), stdout)
+    def response(self, response):
+        self.fire(Write(response.read()), stdout)
+        self.fire(Close())
+
+    def disconnected(self):
+        raise SystemExit(0)
 
 WebClient(sys.argv[1]).run()

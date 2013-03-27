@@ -6,7 +6,7 @@ except ImportError:
 
 from circuits.web.headers import Headers
 from circuits.core import handler, BaseComponent, Event
-from circuits.net.sockets import TCPClient, Connect, Write, Close
+from circuits.net.sockets import Close, Connect, TCPClient, Write
 
 from circuits.net.protocols.http import HTTP
 
@@ -28,12 +28,12 @@ def parse_url(url):
     else:
         raise ValueError("Invalid URL scheme")
 
-    resource = p.path or "/"
+    path = p.path or "/"
 
     if p.query:
-        resource += "?" + p.query
+        path += "?" + p.query
 
-    return (host, port, resource, secure)
+    return (host, port, path, secure)
 
 
 class HTTPException(Exception):
@@ -52,8 +52,8 @@ class Request(Event):
     :param method: HTTP Method (PUT, GET, POST, DELETE)
     :type  method: str
 
-    :param path: Path to resource
-    :type  path: str
+    :param url: Request URL
+    :type  url: str
     """
 
     def __init__(self, method, path, body=None, headers={}):
@@ -66,10 +66,8 @@ class Client(BaseComponent):
 
     channel = "client"
 
-    def __init__(self, url, channel=channel):
+    def __init__(self, channel=channel):
         super(Client, self).__init__(channel=channel)
-        self._host, self._port, self._resource, self._secure = parse_url(url)
-
         self._response = None
 
         self._transport = TCPClient(channel=channel).register(self)
@@ -88,32 +86,30 @@ class Client(BaseComponent):
 
     @handler("connect", filter=True)
     def connect(self, host=None, port=None, secure=None):
-        host = host or self._host
-        port = port or self._port
-        secure = secure or self._secure
-
         if not self._transport.connected:
             self.fire(Connect(host, port, secure), self._transport)
 
         return True
 
     @handler("request")
-    def request(self, method, path, body=None, headers={}):
-        if self._transport.connected:
-            headers = Headers([(k, v) for k, v in headers.items()])
-            # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-            if "Host" not in headers:
-                headers["Host"] = self._host \
-                    + (":" + str(self._port)) if self._port else ""
-            if body is not None:
-                headers["Content-Length"] = len(body)
-            command = "%s %s HTTP/1.1" % (method, path)
-            message = "%s\r\n%s" % (command, headers)
-            self.fire(Write(message.encode('utf-8')), self._transport)
-            if body is not None:
-                self.fire(Write(body), self._transport)
-        else:
-            raise NotConnected()
+    def request(self, method, url, body=None, headers={}):
+        host, port, path, secure = parse_url(url)
+
+        if not self._transport.connected:
+            self.fire(Connect(host, port, secure))
+            yield self.wait("connected", self._transport.channel)
+
+        headers = Headers([(k, v) for k, v in headers.items()])
+        # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
+        if "Host" not in headers:
+            headers["Host"] = "{0:s}:{1:s}".format(host, "" if port in (80, 443) else str(port))
+        if body is not None:
+            headers["Content-Length"] = len(body)
+        command = "%s %s HTTP/1.1" % (method, path)
+        message = "%s\r\n%s" % (command, headers)
+        self.fire(Write(message.encode('utf-8')), self._transport)
+        if body is not None:
+            self.fire(Write(body), self._transport)
 
     @handler("response")
     def _on_response(self, response):
