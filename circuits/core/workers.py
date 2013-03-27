@@ -42,6 +42,9 @@ class Task(Event):
     :type  kwargs: dict
     """
 
+    success = True
+    failure = True
+
     def __init__(self, f, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
