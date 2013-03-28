@@ -392,11 +392,13 @@ class Manager(object):
         if g in self._tasks:
             self._tasks.remove(g)
 
-    def waitEvent(self, event, *channels):
+    def waitEvent(self, event, *channels, **kwargs):
+        timeout = kwargs.get("timeout", 100)
+
         state = {
             'run': False,
             'flag': False,
-            'event': None,
+            'event': None
         }
         _event = event
 
@@ -421,13 +423,16 @@ class Manager(object):
                 handler("%s_done" % event, channel=channel)(_on_done))
 
         while not state['flag']:
+            if timeout == 0:
+                break
+            timeout -= 1
             yield None
 
         self.removeHandler(_on_done_handler, "%s_done" % event)
 
     wait = waitEvent
 
-    def callEvent(self, event, *channels):
+    def callEvent(self, event, *channels, **kwargs):
         """
         Fire the given event to the specified channels and suspend
         execution until it has been dispatched. This method may only
@@ -438,7 +443,7 @@ class Manager(object):
         been dispatched (see :func:`circuits.core.handlers.handler`).
         """
         value = self.fire(event, *channels)
-        for r in self.waitEvent(event.name, event.channels):
+        for r in self.waitEvent(event.name, event.channels, **kwargs):
             yield r
         yield CallValue(value)
 
