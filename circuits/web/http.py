@@ -280,7 +280,7 @@ class HTTP(BaseComponent):
 
         # Guard against unwanted request paths (SECURITY).
         path = realpath(request.path)
-        if path != request.path:
+        if path.rstrip("/") != request.path.rstrip("/"):
             return self.fire(Redirect(request, response, [path], 301))
         else:
             request.body = BytesIO(parser.recv_body())
