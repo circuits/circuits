@@ -11,9 +11,9 @@ and WSGI compliant.
 from .utils import url
 from .loggers import Logger
 from .sessions import Sessions
-from .controllers import expose, Controller
-from .events import Request, Response
 from .servers import BaseServer, Server
+from .controllers import expose, Controller
+from .events import Request, Response, Stream
 from .errors import HTTPError, Forbidden, NotFound, Redirect
 from .dispatchers import Static, Dispatcher, VirtualHosts, XMLRPC
 
