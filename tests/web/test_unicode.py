@@ -86,12 +86,9 @@ def test_request_headers(webapp):
 
 
 def test_response_headers(webapp):
-    client = Client('http://%s:%s' % (webapp.server.host, webapp.server.port))
+    client = Client()
     client.start()
-    waiter = pytest.WaitEvent(client, 'connected', channel=client.channel)
-    client.fire(Connect())
-    assert waiter.wait()
-    client.fire(Request("GET", "/response_headers"))
+    client.fire(Request("GET", "http://%s:%s/response_headers" % (webapp.server.host, webapp.server.port)))
     while client.response is None:
         pass
     assert client.response.status == 200
