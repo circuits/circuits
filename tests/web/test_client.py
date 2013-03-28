@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-import pytest
-
 from circuits.web import Controller
 
-from circuits.web.client import Client, Connect, Request
-from circuits.core.manager import Manager
+from circuits.web.client import Client, Request
 
 
 class Root(Controller):
@@ -26,7 +23,7 @@ def test(webapp):
 
     response = client.response
     assert response.status == 200
-    assert response.message == "OK"
+    assert response.reason == "OK"
 
     s = response.read()
     assert s == b"Hello World!"

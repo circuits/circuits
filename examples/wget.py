@@ -10,27 +10,21 @@ a remote web server requesting a given resource.
 import sys
 
 from circuits import Component
-from circuits.io import stdout, Write
-from circuits.web.client import Close, Client, Connect, Request
+from circuits.web.client import Client, Request
 
 
 class WebClient(Component):
 
-    stdout = stdout
-
     def init(self, url):
         self.url = url
 
-        self.client = Client().register(self)
+        Client().register(self)
 
-    def ready(self, client):
+    def ready(self, *args):
         self.fire(Request("GET", self.url))
 
     def response(self, response):
-        self.fire(Write(response.read()), stdout)
-        self.fire(Close())
-
-    def disconnected(self):
+        print(response.read())
         raise SystemExit(0)
 
 WebClient(sys.argv[1]).run()

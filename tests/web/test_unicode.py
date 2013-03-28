@@ -92,7 +92,7 @@ def test_response_headers(webapp):
     while client.response is None:
         pass
     assert client.response.status == 200
-    assert client.response.message == 'OK'
+    assert client.response.reason == 'OK'
     s = client.response.read()
     a = client.response.headers.get('A')
     assert a == u("ä")
