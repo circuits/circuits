@@ -43,9 +43,10 @@ class InvalidChunkSize(Exception):
 
 class HttpParser(object):
 
-    def __init__(self, kind=2, decompress=False):
+    def __init__(self, kind=2, decompress=False, encoding="utf-8"):
         self.kind = kind
         self.decompress = decompress
+        self.encoding = encoding
 
         # errors vars
         self.errno = None
@@ -356,7 +357,7 @@ class HttpParser(object):
             value = ''.join(value).rstrip()
 
             # store new header value
-            self._headers.add_header(name, value)
+            self._headers.add_header(name, value.decode(self.encoding))
 
             # update WSGI environ
             key = 'HTTP_%s' % name.upper().replace('-', '_')
