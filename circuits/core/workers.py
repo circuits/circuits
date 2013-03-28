@@ -64,7 +64,7 @@ class Worker(BaseComponent):
 
     channel = "worker"
 
-    def init(self, process=False, workers=DEFAULT_WORKERS, channel=channel):
+    def init(self, process=False, workers=None, channel=channel):
         if not hasattr(current_thread(), "_children"):
             current_thread()._children = WeakKeyDictionary()
 
