@@ -357,7 +357,7 @@ class HttpParser(object):
             value = ''.join(value).rstrip()
 
             # store new header value
-            self._headers.add_header(name, value.decode(self.encoding))
+            self._headers.add_header(name, value)
 
             # update WSGI environ
             key = 'HTTP_%s' % name.upper().replace('-', '_')

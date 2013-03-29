@@ -220,6 +220,9 @@ class Headers(CaseInsensitiveDict):
         headers = ["%s: %s\r\n" % (k, v) for k, v in self.items()]
         return "".join(headers) + '\r\n'
 
+    def __bytes__(self):
+        return str(self).encode("latin1")
+
     def append(self, key, value):
         if not key in self:
             self[key] = value

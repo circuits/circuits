@@ -142,9 +142,13 @@ class HTTP(BaseComponent):
         sends it to the client (firing ``Write`` events).
         """
         # send HTTP response status line and headers
-        self.fire(
-            Write(response.request.sock, b(str(response), self._encoding))
-        )
+
+        request = response.request
+        headers = response.headers
+        sock = request.sock
+
+        self.fire(Write(sock, bytes(response)))
+        self.fire(Write(sock, bytes(headers)))
 
         # process body
         if response.stream and response.body:

@@ -311,8 +311,10 @@ class Response(object):
         self.prepare()
         protocol = self.protocol
         status = "{0:s}".format(self.status)
-        headers = str(self.headers)
-        return "{0:s} {1:s}\r\n{2:s}".format(protocol, status, headers)
+        return "{0:s} {1:s}\r\n".format(protocol, status)
+
+    def __bytes__(self):
+        return str(self).encode(self.encoding)
 
     @property
     @deprecated

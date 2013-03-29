@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pytest
-
 try:
     from httplib import HTTPConnection
 except ImportError:
     from http.client import HTTPConnection  # NOQA
 
-from circuits.six import b, u
+from circuits.six import b
 from circuits.web import Controller
-from circuits.web.client import Client, Request, Connect
+from circuits.web.client import Client, Request
 
 from .helpers import urlopen
 
@@ -24,14 +22,14 @@ class Root(Controller):
         return self.request.body.read()
 
     def response_body(self):
-        return u("ä")
+        return "ä"
 
     def request_headers(self):
         return self.request.headers["A"]
 
     def response_headers(self):
         self.response.headers["A"] = "ä"
-        return u("ä")
+        return "ä"
 
 
 def test_index(webapp):
@@ -88,12 +86,20 @@ def test_request_headers(webapp):
 def test_response_headers(webapp):
     client = Client()
     client.start()
-    client.fire(Request("GET", "http://%s:%s/response_headers" % (webapp.server.host, webapp.server.port)))
+    client.fire(
+        Request(
+            "GET",
+            "http://%s:%s/response_headers" % (
+                webapp.server.host, webapp.server.port
+            )
+        )
+    )
+
     while client.response is None:
         pass
     assert client.response.status == 200
     assert client.response.reason == 'OK'
     s = client.response.read()
     a = client.response.headers.get('A')
-    assert a == u("ä")
+    assert a == "ä"
     assert s == b("ä")

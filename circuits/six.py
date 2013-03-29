@@ -272,7 +272,7 @@ if PY3:
     def u(s, encoding='utf-8'):
         return s
     def bytes_to_str(b):
-        return str(b, 'latin1')
+        return str(b, "unicode_escape")
     if sys.version_info[1] <= 1:
         def int2byte(i):
             return bytes((i,))
