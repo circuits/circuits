@@ -45,22 +45,21 @@ class HTTP(BaseComponent):
 
         self._encoding = encoding
 
-        self._response = None
         self._parser = HttpParser(1, True, self._encoding)
 
     @handler("read")
     def _on_client_read(self, data):
         self._parser.execute(data, len(data))
-        if self._parser.errno is not None:
-            print("ParserError:", self._parser.error)
-
-        if self._parser.is_message_complete():
+        if self._parser.is_message_complete() or \
+                (self._parser.is_headers_complete() and
+                 self._parser._clen == 0):
             status = self._parser.get_status_code()
             version = self._parser.get_version()
             headers = self._parser.get_headers()
 
-            self._response = ResponseObject(headers, status, version)
-            self._response.body.write(self._parser.recv_body())
-            self._response.body.seek(0)
+            response = ResponseObject(headers, status, version)
+            response.body.write(self._parser.recv_body())
+            response.body.seek(0)
+            self.fire(Response(response))
+
             self._parser = HttpParser(1, True, self._encoding)
-            self.fire(Response(self._response))
