@@ -20,9 +20,9 @@ except ImportError:
     from urlparse import urlparse, urlunparse  # NOQA
 
 
+from circuits.six import text_type
 from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
-from circuits.six import b
 
 from . import wrappers
 from .utils import is_ssl_handshake
@@ -160,7 +160,7 @@ class HTTP(BaseComponent):
         else:
             if isinstance(response.body, bytes):
                 body = response.body
-            elif isinstance(response.body, unicode):
+            elif isinstance(response.body, text_type):
                 body = response.body.encode(self._encoding)
             else:
                 parts = (
@@ -172,19 +172,25 @@ class HTTP(BaseComponent):
 
             if body:
                 if response.chunked:
-                    buf = [hex(len(body))[2:].encode(), b"\r\n", body, b"\r\n"]
+                    buf = [
+                        hex(len(body))[2:].encode(self._encoding),
+                        b"\r\n",
+                        body,
+                        b"\r\n"
+                    ]
                     body = b"".join(buf)
-                self.fire(Write(response.request.sock, body))
+
+                self.fire(Write(sock, body))
 
                 if response.chunked:
-                    self.fire(Write(response.request.sock, b"0\r\n\r\n"))
+                    self.fire(Write(sock, b"0\r\n\r\n"))
 
             if not response.stream:
                 if response.close:
-                    self.fire(Close(response.request.sock))
+                    self.fire(Close(sock))
                 # Delete the request/response objects if present
-                if response.request.sock in self._clients:
-                    del self._clients[response.request.sock]
+                if sock in self._clients:
+                    del self._clients[sock]
                 response.done = True
 
     @handler("disconnect")
@@ -261,7 +267,7 @@ class HTTP(BaseComponent):
             sp = self.protocol
 
             if rp[0] != sp[0]:
-                # the mayor HTTP version differs
+                # the major HTTP version differs
                 return self.fire(HTTPError(request, response, 505))
 
             request.headers = parser.get_headers()
