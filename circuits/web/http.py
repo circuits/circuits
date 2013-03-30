@@ -308,6 +308,7 @@ class HTTP(BaseComponent):
         modified by a :class:`~circuits.web.errors.HTTPError` instance
         or a subclass thereof.
         """
+
         response.body = str(event)
         self.fire(Response(response))
 
@@ -436,43 +437,41 @@ class HTTP(BaseComponent):
             )
         )
 
-    @handler("request_failure", "response_failure")
-    def _on_request_or_response_failure(self, evt, err):
-        if len(evt.args) == 1:
-            response = evt.args[0]
-            request = response.request
-        else:
-            request, response = evt.args[:2]
+    @handler("request_failure")
+    def _on_requeste(self, erequest, error):
+        request, response = erequest.args
 
         # Ignore filtered requests already handled (eg: HTTPException(s)).
-        # Ignore failed "response" handlers (eg: Loggers or Tools)
-        if request.handled or response.done:
+        if request.handled:
             return
 
-        if not request.handled:
-            request.handled = True
+        request.handled = True
 
-        etype, evalue, traceback = err
+        etype, evalue, traceback = error
 
         if isinstance(evalue, RedirectException):
             self.fire(
                 Redirect(request, response, evalue.urls, evalue.code)
             )
         elif isinstance(evalue, HTTPException):
-            if evalue.traceback:
-                self.fire(
-                    HTTPError(
-                        request, response, evalue.code,
-                        description=evalue.description,
-                        error=err
-                    )
+            self.fire(
+                HTTPError(
+                    request, response, evalue.code,
+                    description=evalue.description,
+                    error=error
                 )
-            else:
-                self.fire(
-                    HTTPError(
-                        request, response, evalue.code,
-                        description=evalue.description
-                    )
-                )
+            )
         else:
-            self.fire(HTTPError(request, response, error=err))
+            self.fire(HTTPError(request, response, error=error))
+
+    @handler("response_failure")
+    def _on_response_failure(self, eresponse, error):
+        response = eresponse.args[0]
+        request = response.request
+
+        # Ignore failed "response" handlers (eg: Loggers or Tools)
+        if response.done:
+            return
+
+        response = wrappers.Response(request, self._encoding, 500)
+        self.fire(HTTPError(request, response, error=error))
