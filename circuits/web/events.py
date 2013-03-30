@@ -1,7 +1,6 @@
 # Module:   events
 # Date:     3rd February 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-from circuits.core.events import LiteralEvent
 
 """Events
 
@@ -9,6 +8,7 @@ This module implements the necessary Events needed.
 """
 
 from circuits import Event
+from circuits.core.events import LiteralEvent
 
 
 class WebEvent(Event):
