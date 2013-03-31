@@ -3,7 +3,6 @@
 # This file is part of http-parser released under the MIT license.
 # See the NOTICE for more information.
 
-import os
 import re
 import zlib
 
@@ -102,37 +101,6 @@ class HttpParser(object):
 
     def get_headers(self):
         return self._headers
-
-    def get_wsgi_environ(self):
-        if not self.__on_headers_complete:
-            return None
-
-        environ = self._environ.copy()
-        # clean special keys
-        for key in ("CONTENT_LENGTH", "CONTENT_TYPE", "SCRIPT_NAME"):
-            hkey = "HTTP_%s" % key
-            if hkey in environ:
-                environ[key] = environ.pop(hkey)
-
-        script_name = environ.get(
-            'SCRIPT_NAME', os.environ.get("SCRIPT_NAME", "")
-        )
-        if script_name:
-            path_info = self._path.split(script_name, 1)[1]
-            environ.update({
-                "PATH_INFO": unquote(path_info),
-                "SCRIPT_NAME": script_name})
-        else:
-            environ['SCRIPT_NAME'] = ""
-
-        if environ.get('HTTP_X_FORWARDED_PROTOCOL', '').lower() == "ssl":
-            environ['wsgi.url_scheme'] = "https"
-        elif environ.get('HTTP_X_FORWARDED_SSL', '').lower() == "on":
-            environ['wsgi.url_scheme'] = "https"
-        else:
-            environ['wsgi.url_scheme'] = "http"
-
-        return environ
 
     def recv_body(self):
         """ return last chunk of the parsed body"""
