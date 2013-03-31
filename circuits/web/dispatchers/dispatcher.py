@@ -10,9 +10,11 @@ This is the default dispatcher used by circuits.web
 """
 
 try:
-    unicodestr = unicode
-except NameError:
-    unicodestr = str
+    from urllib import quote, unquote
+except ImportError:
+    from urllib.parse import quote, unquote  # NOQA
+
+from circuits.six import text_type
 
 from circuits import handler, BaseComponent, Event, LiteralEvent
 
@@ -104,11 +106,14 @@ class Dispatcher(BaseComponent):
             if vpath:
                 event.args += tuple(vpath)
 
-            if isinstance(name, unicodestr):
+            if isinstance(name, text_type):
                 name = str(name)
 
             return self.fire(
-                LiteralEvent.create(Event, name, *event.args, **event.kwargs), channel
+                LiteralEvent.create(
+                    Event, name, *event.args, **event.kwargs
+                ),
+                channel
             )
 
     @handler("request_value_changed")
