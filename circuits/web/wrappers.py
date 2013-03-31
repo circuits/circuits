@@ -8,15 +8,16 @@ This module implements the Request and Response objects.
 """
 
 
-from io import BytesIO, IOBase
 from time import time
+from functools import partial
+from io import BytesIO, IOBase
 
 try:
     from Cookie import SimpleCookie
 except ImportError:
     from http.cookies import SimpleCookie  # NOQA
 
-from .utils import url
+from .url import parse_url
 from .headers import Headers
 from ..six import binary_type
 from .errors import HTTPError
@@ -30,12 +31,11 @@ except NameError:
     unicode = str
 
 try:
-    # from cherrypy._cpcompat
     from email.utils import formatdate
-    def HTTPDate(timeval=None):
-        return formatdate(timeval, usegmt=True)
+    formatdate = partial(formatdate, usegmt=True)
 except ImportError:
-    from rfc822 import formatdate as HTTPDate
+    from rfc822 import formatdate as HTTPDate  # NOQA
+
 
 def file_generator(input, chunkSize=BUFSIZE):
     chunk = input.read(chunkSize)
@@ -133,7 +133,7 @@ class Request(object):
     """
 
     server = None
-    """@cvar: A reference to the underlying server"""
+    """:cvar: A reference to the underlying server"""
 
     scheme = "http"
     protocol = (1, 1)
@@ -141,18 +141,14 @@ class Request(object):
     local = Host("127.0.0.1", 80)
     remote = Host("", 0)
 
-    xhr = False
-
     index = None
     script_name = ""
 
     login = None
     handled = False
 
-    args = None
-    kwargs = None
-
-    def __init__(self, sock, method, scheme, path, protocol, qs):
+    def __init__(self, sock, method="GET", scheme="http", path="/",
+                 protocol=(1, 1), qs="", headers=None, server=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.sock = sock
@@ -161,55 +157,62 @@ class Request(object):
         self.path = path
         self.protocol = protocol
         self.qs = qs
+
+        self.headers = headers or Headers()
+        self.server = server
+
         self.cookie = SimpleCookie()
 
-        self._headers = None
-
-        if sock:
+        if sock is not None:
             name = sock.getpeername()
-            if name:
+            if name is not None:
                 self.remote = Host(*name)
             else:
                 name = sock.getsockname()
                 self.remote = Host(name, "", name)
 
+        cookie = self.headers.get("Cookie")
+        if cookie is not None:
+            self.cookie.load(cookie)
+
         self.body = BytesIO()
 
-    @property
-    def headers(self):
-        return self._headers
+        if self.server is not None:
+            self.local = Host(self.server.host, self.server.port)
 
-    @headers.setter
-    def headers(self, headers):
-        self._headers = headers
-
-        if "Cookie" in self.headers:
-            rawcookies = self.headers["Cookie"]
-            if not isinstance(rawcookies, str):
-                rawcookies = rawcookies.encode('utf-8')
-            self.cookie.load(rawcookies)
-
-        host = self.headers.get("Host", None)
-        if not host:
+        try:
+            host = self.headers["Host"]
+            if ":" in host:
+                parts = host.split(":", 1)
+                host = parts[0]
+                port = int(parts[1])
+            else:
+                port = self.server.port
+        except KeyError:
             host = self.local.name or self.local.ip
-        self.base = "%s://%s" % (self.scheme, host)
+            port = getattr(self.server, "port")
 
-        self.xhr = self.headers.get(
-            "X-Requested-With", "").lower() == "xmlhttprequest"
+        self.host = host
+        self.port = port
+
+        base = "{0:s}://{1:s}{2:s}/".format(
+            self.scheme,
+            self.host,
+            ":{0:d}".format(self.port) if self.port not in (80, 443) else ""
+        )
+        self.base = parse_url(base)
+
+        url = "{0:s}{1:s}{2:s}".format(
+            base,
+            self.path,
+            "?{0:s}".format(self.qs) if self.qs else ""
+        )
+        self.url = parse_url(url)
+        self.url.sanitize()
 
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
-
-    def url(self, *args, **kwargs):
-        return url(self, *args, **kwargs)
-
-    @property
-    def local(self):
-        if getattr(self, "server", None) is None:
-            return
-
-        return Host(self.server.host, self.server.port)
 
 
 class Body(object):
@@ -283,8 +286,8 @@ class Response(object):
 
         self.time = time()
 
-        self.headers = Headers([])
-        self.headers.add_header("Date", HTTPDate())
+        self.headers = Headers()
+        self.headers["Date"] = formatdate()
 
         if self.request.server is not None:
             self.headers.add_header("Server", self.request.server.http.version)

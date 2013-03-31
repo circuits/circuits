@@ -103,13 +103,11 @@ class Application(BaseComponent):
             env("wsgi.url_scheme"),
             env("PATH_INFO", ""),
             protocol,
-            env("QUERY_STRING", "")
+            env("QUERY_STRING", ""),
+            headers=headers
         )
-        request.server = None
 
         request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
-
-        request.headers = headers
         request.script_name = env("SCRIPT_NAME")
         request.wsgi_environ = environ
 

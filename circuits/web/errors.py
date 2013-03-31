@@ -16,7 +16,6 @@ except ImportError:
 
 from circuits import Event
 
-from . import utils
 from ..six import string_types
 from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
@@ -115,6 +114,7 @@ class Redirect(HTTPError):
         *response* argument to reflect a redirect response to the
         given *url*.
         """
+
         if isinstance(urls, string_types):
             urls = [urls]
 
@@ -125,7 +125,7 @@ class Redirect(HTTPError):
             #  2. a URL relative to root (e.g. "/dummy")
             #  3. a URL relative to the current path
             # Note that any query string in request is discarded.
-            url = _urljoin(utils.url(request), url)
+            url = request.url.relative(url).unicode()
             abs_urls.append(url)
         self.urls = urls = abs_urls
 

@@ -8,9 +8,9 @@ circuits.web contains the circuits full stack web server that is HTTP
 and WSGI compliant.
 """
 
-from .utils import url
 from .loggers import Logger
 from .sessions import Sessions
+from .url import parse_url, URL
 from .servers import BaseServer, Server
 from .controllers import expose, Controller
 from .events import Request, Response, Stream

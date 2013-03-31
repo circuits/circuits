@@ -10,13 +10,12 @@ or commonly known as HTTP.
 
 
 from io import BytesIO
-from posixpath import realpath
 
 try:
-    from urllib.parse import unquote
+    from urllib.parse import quote
     from urllib.parse import urlparse, urlunparse
 except ImportError:
-    from urllib import unquote  # NOQA
+    from urllib import quote  # NOQA
     from urlparse import urlparse, urlunparse  # NOQA
 
 
@@ -25,6 +24,7 @@ from circuits.net.sockets import Close, Write
 from circuits.core import handler, BaseComponent, Value
 
 from . import wrappers
+from .url import parse_url
 from .utils import is_ssl_handshake
 from .exceptions import HTTPException
 from .events import Request, Response, Stream
@@ -68,6 +68,15 @@ class HTTP(BaseComponent):
         self._server = server
         self._encoding = encoding
 
+        url = "{0:s}://{1:s}{2:s}".format(
+            (server.secure and "https") or "http",
+            server.host or "0.0.0.0",
+            ":{0:d}".format(server.port or 80)
+            if server.port not in (80, 443)
+            else ""
+        )
+        self.url = parse_url(url)
+
         self._clients = {}
         self._buffers = {}
 
@@ -87,22 +96,9 @@ class HTTP(BaseComponent):
 
     @property
     def base(self):
-        if not hasattr(self, "_server"):
+        if not hasattr(self, "url"):
             return
-
-        host = self._server.host or "0.0.0.0"
-        port = self._server.port or 80
-        scheme = self.scheme
-        secure = self._server.secure
-
-        tpl = "%s://%s%s"
-
-        if (port == 80 and not secure) or (port == 443 and secure):
-            port = ""
-        else:
-            port = ":%d" % port
-
-        return tpl % (scheme, host, port)
+        return self.url.utf8().rstrip(b"/").decode(self._encoding)
 
     @handler("stream")
     def _on_stream(self, response, data):
@@ -228,16 +224,16 @@ class HTTP(BaseComponent):
         if not parser.is_headers_complete():
             if parser.errno is not None:
                 if parser.errno == BAD_FIRST_LINE:
-                    request = wrappers.Request(
-                        sock, "GET", _scheme, "/", (1, 1), ""
-                    )
+                    request = wrappers.Request(sock, server=self._server)
                 else:
                     request = wrappers.Request(
-                        sock, parser.get_method(),
+                        sock,
+                        parser.get_method(),
                         parser.get_scheme() or _scheme,
                         parser.get_path(),
                         parser.get_version(),
-                        parser.get_query_string()
+                        parser.get_query_string(),
+                        server=self._server
                     )
                 request.server = self._server
                 response = wrappers.Response(request, encoding=self._encoding)
@@ -255,9 +251,9 @@ class HTTP(BaseComponent):
             query_string = parser.get_query_string()
 
             request = wrappers.Request(
-                sock, method, scheme, path, version, query_string
+                sock, method, scheme, path, version, query_string,
+                headers=parser.get_headers(), server=self._server
             )
-            request.server = self._server
 
             response = wrappers.Response(request, encoding=self._encoding)
 
@@ -269,8 +265,6 @@ class HTTP(BaseComponent):
             if rp[0] != sp[0]:
                 # the major HTTP version differs
                 return self.fire(HTTPError(request, response, 505))
-
-            request.headers = parser.get_headers()
 
             response.protocol = "HTTP/{0:d}.{1:d}".format(*min(rp, sp))
             response.close = not parser.should_keep_alive()
@@ -289,12 +283,15 @@ class HTTP(BaseComponent):
             req = Request(request, response)
 
         # Guard against unwanted request paths (SECURITY).
-        path = realpath(request.path)
-        if path.rstrip("/") != request.path.rstrip("/"):
-            return self.fire(Redirect(request, response, [path], 301))
-        else:
-            request.body = BytesIO(parser.recv_body())
+        path = request.path
+        _path = request.url._path
+        if (path.encode(self._encoding) != _path) and (
+                quote(path).encode(self._encoding) != _path):
+            return self.fire(
+                Redirect(request, response, [request.url.utf8()], 301)
+            )
 
+        request.body = BytesIO(parser.recv_body())
         del self._buffers[sock]
 
         self.fire(req)

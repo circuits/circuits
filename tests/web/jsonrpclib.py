@@ -30,8 +30,11 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
+import sys
 import json
 import base64
+
+PY3 = sys.version_info[0] == 3
 
 try:
     from http.client import HTTPConnection
@@ -191,7 +194,8 @@ class Transport:
             h.set_debuglevel(1)
 
         self.send_request(h, handler, request_body)
-        self.send_host(h, host)
+        if not PY3:
+            self.send_host(h, host)
         self.send_user_agent(h)
         self.send_content(h, request_body)
 
