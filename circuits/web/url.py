@@ -99,6 +99,9 @@ class URL(object):
         )
         self._fragment = fragment
 
+    def __call__(self, path, encoding="utf-8"):
+        return self.relative(path, encoding=encoding).unicode()
+
     def equiv(self, other):
         '''Return true if this url is equivalent to another'''
         if isinstance(other, string_types[0]):
