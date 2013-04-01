@@ -88,6 +88,9 @@ Alternatively, you may download the source package from the
 You can also install th
 `latest-development version <https://bitbucket.org/circuits/circuits-dev/get/tip.tar.gz#egg=circuits-dev>`_ using pip with ``pip install circuits==dev``.
 
+.. image:: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/badge/icon
+   :target: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/
+
 
 License
 -------
