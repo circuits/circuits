@@ -75,7 +75,7 @@ class HTTP(BaseComponent):
             if server.port not in (80, 443)
             else ""
         )
-        self.url = parse_url(url)
+        self.uri = parse_url(url)
 
         self._clients = {}
         self._buffers = {}
@@ -96,9 +96,9 @@ class HTTP(BaseComponent):
 
     @property
     def base(self):
-        if not hasattr(self, "url"):
+        if not hasattr(self, "uri"):
             return
-        return self.url.utf8().rstrip(b"/").decode(self._encoding)
+        return self.uri.utf8().rstrip(b"/").decode(self._encoding)
 
     @handler("stream")
     def _on_stream(self, response, data):
@@ -284,11 +284,11 @@ class HTTP(BaseComponent):
 
         # Guard against unwanted request paths (SECURITY).
         path = request.path
-        _path = request.url._path
+        _path = request.uri._path
         if (path.encode(self._encoding) != _path) and (
                 quote(path).encode(self._encoding) != _path):
             return self.fire(
-                Redirect(request, response, [request.url.utf8()], 301)
+                Redirect(request, response, [request.uri.utf8()], 301)
             )
 
         request.body = BytesIO(parser.recv_body())

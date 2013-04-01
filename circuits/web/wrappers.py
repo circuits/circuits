@@ -207,8 +207,8 @@ class Request(object):
             self.path,
             "?{0:s}".format(self.qs) if self.qs else ""
         )
-        self.url = parse_url(url)
-        self.url.sanitize()
+        self.uri = parse_url(url)
+        self.uri.sanitize()
 
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol

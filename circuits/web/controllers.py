@@ -12,6 +12,7 @@ from inspect import getargspec
 from collections import Callable
 from functools import update_wrapper
 
+from circuits.tools import deprecated
 from circuits.core import handler, BaseComponent
 
 from . import tools
@@ -69,13 +70,21 @@ class BaseController(BaseComponent):
 
     channel = "/"
 
+    @deprecated
     def url(self, *args, **kwargs):
-        """Return the current URL or create a new URL
+        """Return the current URI or create a new URI
+
+        .. deprecated:: 2.2
+           Use :meth:~`uri`
+        """
+
+    def uri(self, *args, **kwargs):
+        """Return the current URI or create a new URI
 
         If no arguments or keywords arguments are passed, returns the
-        current URL for the current request.
+        current URI for the current request.
 
-        .. seealso:: :py:func:`circuits.web.utils.url`
+        .. seealso:: :py:class:`circuits.web.url.URL`
         """
 
         return self.request.url(*args, **kwargs)
