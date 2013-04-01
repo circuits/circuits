@@ -430,6 +430,8 @@ class Manager(object):
 
         self.removeHandler(_on_done_handler, "%s_done" % event)
 
+        yield CallValue(state["event"].value)
+
     wait = waitEvent
 
     def callEvent(self, event, *channels, **kwargs):

@@ -27,6 +27,10 @@ class TestLongWait(BaseEvent):
     """TestLongCall Event"""
 
 
+class TestWaitReturn(BaseEvent):
+    """TestWaitReturn Event"""
+
+
 class Hello(BaseEvent):
     """Hello Event"""
 
@@ -65,6 +69,10 @@ class App(Component):
         x = self.fire(Foo())
         yield self.wait("foo")
         yield x.value
+
+    def test_wait_return(self):
+        self.fire(Foo())
+        yield (yield self.wait("foo"))
 
     def test_long_call(self):
         x = yield self.call(Foo())
@@ -126,6 +134,14 @@ def test_long_call(manager, watcher, app):
 def test_long_wait(manager, watcher, app):
     x = manager.fire(TestLongWait())
     assert watcher.wait("test_long_wait_success")
+
+    value = x.value
+    assert value == list(range(1, 10))
+
+
+def test_wait_return(manager, watcher, app):
+    x = manager.fire(TestWaitReturn())
+    assert watcher.wait("test_wait_return_success")
 
     value = x.value
     assert value == list(range(1, 10))
