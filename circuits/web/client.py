@@ -116,11 +116,14 @@ class Client(BaseComponent):
         if body is not None:
             self.fire(Write(body), self._transport)
 
+        yield (yield self.wait("response"))
+
     @handler("response")
     def _on_response(self, response):
         self._response = response
         if response.headers.get("Connection") == "close":
             self.fire(Close(), self._transport)
+        return response
 
     @property
     def connected(self):
