@@ -26,6 +26,7 @@ except ImportError:
     from cgi import parse_qs as _parse_qs  # NOQA
 
 from circuits.six import iterbytes
+from circuits.tools import deprecated
 
 from .exceptions import RequestEntityTooLarge
 
@@ -356,3 +357,14 @@ def is_ssl_handshake(buf):
     v = list(iterbytes(buf))[:2]
     if (v[0] & 0x80 == 0x80) and ((v[0] & 0x7f) << 8 | v[1]) > 9:
         return True
+
+
+@deprecated
+def url(*args, **kwargs):
+    """url construction
+
+    .. deprecated:: 2.2
+       Use :func:`circuits.web.url.URL.relative`
+
+    .. note:: No real backwards-compatible equivilent here.
+    """

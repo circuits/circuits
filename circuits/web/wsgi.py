@@ -21,11 +21,11 @@ from circuits.core import handler, BaseComponent
 
 StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
-from . import wrappers
 from .http import HTTP
 from .events import Request
 from .headers import Headers
 from .errors import HTTPError
+from circuits.web import wrappers
 from .dispatchers import Dispatcher
 
 

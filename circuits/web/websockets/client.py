@@ -14,13 +14,14 @@ except ImportError:
     from urlparse import urlparse  # NOQA
 
 from circuits.web import client
-from circuits.net.protocols.websocket import WebSocketCodec
+from circuits.tools import deprecated
 from circuits.web.headers import Headers
 from circuits.core.handlers import handler
-from circuits.core.components import BaseComponent
 from circuits.web.client import NotConnected
-from circuits.net.sockets import TCPClient, Connect, Write, Close
 from circuits.net.protocols.http import HTTP
+from circuits.core.components import BaseComponent
+from circuits.net.sockets import TCPClient, Connect, Write, Close
+from circuits.net.protocols.websocket import WebSocketCodec
 
 
 class WebSocketClient(BaseComponent):
@@ -136,3 +137,15 @@ class WebSocketClient(BaseComponent):
     def connected(self):
         return getattr(self._transport, "connected", False) \
             if hasattr(self, "_transport") else False
+
+
+class WebSocket(object):
+    """WebSocket Client
+
+    .. deprecated:: 2.2
+       Use :class:`WebSocketClient
+    """
+
+    @deprecated
+    def __new__(cls, *args, **kwargs):
+        return WebSocketClient(*args, **kwargs)

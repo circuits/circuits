@@ -5,6 +5,7 @@
 import hashlib
 import base64
 
+from circuits.tools import deprecated
 from circuits.net.sockets import Connect
 from circuits.web.errors import HTTPError
 from circuits import handler, BaseComponent
@@ -96,3 +97,15 @@ class WebSocketsDispatcher(BaseComponent):
     def _on_disconnect(self, sock):
         if sock in self._codecs:
             del self._codecs[sock]
+
+
+class WebSockets(object):
+    """WebSockets Dispatcher
+
+    .. deprecated:: 2.2
+       Use :class:`WebSocketsDispatcher`
+    """
+
+    @deprecated
+    def __new__(cls, *args, **kwargs):
+        return WebSocketsDispatcher(*args, **kwargs)
