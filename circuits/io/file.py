@@ -230,15 +230,15 @@ class File(Component):
             self._poller.addWriter(self, self._fd)
         self._buffer.append(data)
 
-    @handler("_disconnect", filter=True)
+    @handler("_disconnect")
     def __on_disconnect(self, sock):
         self._close()
 
-    @handler("_read", filter=True)
+    @handler("_read")
     def __on_read(self, sock):
         self._read()
 
-    @handler("_write", filter=True)
+    @handler("_write")
     def __on_write(self, sock):
         if self._buffer:
             data = self._buffer.popleft()
