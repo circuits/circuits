@@ -34,7 +34,6 @@ class Server(BaseComponent):
         e, id = load_event(packet)
 
         name = "%s_value_changed" % e.name
-        channel = e.channels[0] if e.channels else self
 
         @handler(name, channel=self)
         def on_value_changed(self, event, value):
