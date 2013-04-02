@@ -24,6 +24,13 @@ class WebClient(Component):
         self.fire(Request("GET", self.url))
 
     def response(self, response):
+        print("{0:d} {1:s}".format(response.status, response.reason))
+        print(
+            "\n".join(
+                "{0:s}: {1:s}".format(k, v)
+                for k, v in response.headers.items()
+            )
+        )
         print(response.read())
         raise SystemExit(0)
 
