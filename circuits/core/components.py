@@ -7,35 +7,12 @@ This module defines the BaseComponent and its subclass Component.
 
 from itertools import chain
 from types import MethodType
+from inspect import getmembers
 from collections import Callable
-from inspect import getmembers, isclass
 
 from .manager import Manager
-from .utils import flatten, findroot
 from .events import Event, Registered, Unregistered
 from .handlers import handler, HandlerMetaClass
-
-
-def check_singleton(x, y):
-    """Return True if x contains a singleton that is already a member of y"""
-
-    singletons = [i for i in flatten(x) if getattr(i, "singleton", False)]
-
-    for component in singletons:
-        singleton = getattr(component, "singleton", False)
-        if isclass(singleton) and issubclass(singleton, Manager):
-            if any([isinstance(c, singleton) for c in flatten(findroot(y))]):
-                return True
-        elif singleton:
-            if any([type(component) in c for c in flatten(findroot(y))]):
-                return True
-
-    return False
-
-
-class SingletonError(Exception):
-    """Raised if a Component with the `singleton` class attribute is True.
-    """
 
 
 class PrepareUnregister(Event):
@@ -104,7 +81,6 @@ class BaseComponent(Manager):
     """
 
     channel = "*"
-    singleton = False
 
     def __new__(cls, *args, **kwargs):
         self = super(BaseComponent, cls).__new__(cls)
@@ -162,8 +138,6 @@ class BaseComponent(Manager):
         This method fires a :class:`~.events.Registered` event to inform
         other components in the tree about the new member.
         """
-        if check_singleton(self, parent):
-            raise SingletonError(self)
 
         self.parent = parent
         self.root = parent.root
