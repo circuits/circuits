@@ -7,12 +7,11 @@
 This module implements the several Web Server components.
 """
 
-from circuits.core import handler, BaseComponent
 
 from circuits import io
-
 from circuits.tools import deprecated
 from circuits.net.sockets import Read, Write
+from circuits.core import handler, BaseComponent
 from circuits.net.sockets import TCPServer, UNIXServer
 
 from .http import HTTP
@@ -132,6 +131,14 @@ class BaseServer(BaseComponent):
 
         if hasattr(self, "http"):
             return self.http.version
+
+    @handler("ready")
+    def _on_ready(self, server, bind):
+        print(
+            "{0:s} ready! Listening on: {1:s}".format(
+                self.http.version, self.http.base
+            )
+        )
 
 
 class Server(BaseServer):
