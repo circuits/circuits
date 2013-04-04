@@ -96,7 +96,7 @@ setup(
     """,
     zip_safe=False,
     test_suite="tests.main.main",
-    namespaces_packages=["circuits"]
+    namespace_packages=["circuits"]
 )
 
 # hghooks: no-pyflakes
