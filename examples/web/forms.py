@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
+"""Forms
+
+A simple example showing how to deal with data forms.
+"""
+
 from circuits.web import Server, Controller
 
 
-class Root(Controller):
-
-    html = """\
+FORM = """
 <html>
  <head>
   <title>Basic Form Handling</title>
@@ -14,11 +17,11 @@ class Root(Controller):
   <h1>Basic Form Handling</h1>
   <p>
    Example of using
-   <a href="http://trac.softcircuit.com.au/circuits/">circuits</a> and its
+   <a href="http://circuitsframework.com/">circuits</a> and its
    <b>Web Components</b> to build a simple web application that handles
    some basic form data.
   </p>
-  <form action="submit" method="POST">
+  <form action="/save" method="POST">
    <table border="0" rules="none">
     <tr>
      <td>First Name:</td>
@@ -29,8 +32,8 @@ class Root(Controller):
      <td><input type="text" name="lastName"></td>
     </tr>
      <tr>
-      <td colspan=2" align="center">
-       <input type="submit" value="Submit">
+      <td colspan=2">
+       <input type="submit" value="Save">
      </td>
      </tr>
    </table>
@@ -38,12 +41,32 @@ class Root(Controller):
  </body>
 </html>"""
 
-    def index(self):
-        return self.html
 
-    def submit(self, firstName, lastName):
-        return "Hello %s %s<br /><a href=\"/\">Return</a>" % (
+class Root(Controller):
+
+    def index(self):
+        """Request Handler
+
+        Our index request handler which simply returns a response containing
+        the contents of our form to display.
+        """
+
+        return FORM
+
+    def save(self, firstName, lastName):
+        """Save Request Handler
+
+        Our /save request handler (which our form above points to).
+        This handler accepts the same arguments as the fields in the
+        form either as positional arguments or keyword arguments.
+
+        We will use the date to pretend we've saved the data and
+        tell the user what was saved.
+        """
+
+        return "Data Saved. firstName={0:s} lastName={1:s}".format(
             firstName, lastName
         )
 
-(Server(8000) + Root()).run()
+
+(Server(9000) + Root()).run()
