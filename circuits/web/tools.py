@@ -21,6 +21,7 @@ import collections
 mimetypes.init()
 mimetypes.add_type("image/x-dwg", ".dwg")
 mimetypes.add_type("image/x-icon", ".ico")
+mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
 from . import _httpauth
