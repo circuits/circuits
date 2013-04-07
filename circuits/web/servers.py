@@ -156,7 +156,7 @@ class Server(BaseServer):
 
         super(Server, self).__init__(bind, **kwargs)
 
-        Dispatcher(channel=self.channel).register(self)
+        Dispatcher(channel=self.channel).register(self.http)
 
 
 class FakeSock():
