@@ -14,6 +14,7 @@ except ImportError:
 
 from operator import itemgetter
 from traceback import format_tb
+from types import GeneratorType
 from sys import exc_info as _exc_info
 
 from circuits.tools import tryimport
@@ -213,6 +214,10 @@ class Gateway(BaseComponent):
             body = app(environ, start_response)
             if isinstance(body, list):
                 body = "".join(body)
+            elif isinstance(body, GeneratorType):
+                response.body = body
+                response.stream = True
+                return response
 
             if not body:
                 if not buffer.tell():

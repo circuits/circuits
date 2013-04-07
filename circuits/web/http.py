@@ -435,7 +435,7 @@ class HTTP(BaseComponent):
         )
 
     @handler("request_failure")
-    def _on_requeste(self, erequest, error):
+    def _on_request_failure(self, erequest, error):
         request, response = erequest.args
 
         # Ignore filtered requests already handled (eg: HTTPException(s)).
