@@ -25,12 +25,6 @@ def process_multipart(request, params):
     if not re.match("^[ -~]{0,200}[!-~]$", ib):
         raise ValueError("Invalid boundary in multipart form: %r" % (ib,))
 
-    #ib = ("--" + ib).encode("ascii")
-
-    #parser = MultipartParser(ib, request.body)
-
-    #params.update(parser.params)
-
     parser = MultipartParser(request.body, ib)
     for part in parser:
         if part.filename or not part.is_buffered():
@@ -40,9 +34,8 @@ def process_multipart(request, params):
 
 
 def process_urlencoded(request, params):
-    qs = request.qs or request.body.read()
-    qs = qs.decode("utf-8")
-    params.update(QueryStringParser(qs).result)
+    params.update(QueryStringParser(request.qs).result)
+    params.update(QueryStringParser(request.body.getvalue()).result)
 
 
 def process(request, params):
