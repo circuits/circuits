@@ -12,11 +12,11 @@ import os
 import stat
 import hashlib
 import mimetypes
+import collections
 from time import mktime
 from email.utils import formatdate
 from datetime import datetime, timedelta
 from email.generator import _make_boundary
-import collections
 
 mimetypes.init()
 mimetypes.add_type("image/x-dwg", ".dwg")
