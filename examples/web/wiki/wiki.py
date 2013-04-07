@@ -84,7 +84,7 @@ class Root(Controller):
         return self.redirect(name)
 
 (
-    Server(("0.0.0.0", 8000))
+    Server(("0.0.0.0", 9000))
     + Static(docroot="static")
     + Root()
     + Logger()
