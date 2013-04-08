@@ -393,7 +393,7 @@ class Manager(object):
             self._tasks.remove(g)
 
     def waitEvent(self, event, *channels, **kwargs):
-        timeout = kwargs.get("timeout", 100)
+        timeout = kwargs.get("timeout", -1)
 
         state = {
             'run': False,
