@@ -105,10 +105,16 @@ class HTTP(BaseComponent):
         if data is not None:
             if data:
                 if response.chunked:
-                    data = "{0:s}\r\n{1:s}\r\n".format(
-                        hex(len(data))[2:], data
-                    ).encode(self._encoding)
-                self.fire(Write(response.request.sock, data))
+                    buf = [
+                        hex(len(data))[2:].encode(self._encoding),
+                        b"\r\n",
+                        data,
+                        b"\r\n"
+                    ]
+                    data = b"".join(buf)
+                    self.fire(Write(response.request.sock, data))
+                else:
+                    self.fire(Write(response.request.sock, data))
             if response.body and not response.done:
                 try:
                     data = next(response.body)
