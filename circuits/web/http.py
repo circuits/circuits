@@ -149,17 +149,19 @@ class HTTP(BaseComponent):
         headers = response.headers
         sock = request.sock
 
-        self.fire(Write(sock, bytes(response)))
-        self.fire(Write(sock, bytes(headers)))
-
         # process body
         if response.stream and response.body:
             try:
                 data = next(response.body)
             except StopIteration:
                 data = None
+            self.fire(Write(sock, bytes(response)))
+            self.fire(Write(sock, bytes(headers)))
             self.fire(Stream(response, data))
         else:
+            self.fire(Write(sock, bytes(response)))
+            self.fire(Write(sock, bytes(headers)))
+
             if isinstance(response.body, bytes):
                 body = response.body
             elif isinstance(response.body, text_type):
