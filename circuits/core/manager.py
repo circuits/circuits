@@ -386,19 +386,18 @@ class Manager(object):
     fire = fireEvent
 
     def registerTask(self, g):
-        self._tasks.add(g)
+        self.root._tasks.add(g)
 
     def unregisterTask(self, g):
-        if g in self._tasks:
-            self._tasks.remove(g)
+        if g in self.root._tasks:
+            self.root._tasks.remove(g)
 
     def waitEvent(self, event, *channels, **kwargs):
-        timeout = kwargs.get("timeout", -1)
-
         state = {
             'run': False,
             'flag': False,
-            'event': None
+            'event': None,
+            'timeout': kwargs.get("timeout", -1)
         }
         _event = event
 
@@ -412,6 +411,16 @@ class Manager(object):
         def _on_done(self, event, source, *args, **kwargs):
             if state['event'] == source:
                 state['flag'] = True
+                self.registerTask((state['task_event'],
+                                   state['task'],
+                                   state['parent']))
+
+        def _on_tick(self):
+            if state['timeout'] == 0:
+                self.registerTask((state['task_event'],
+                                   state['task'],
+                                   state['parent']))
+            state['timeout'] -= 1
 
         if not channels:
             channels = (None, )
@@ -421,14 +430,15 @@ class Manager(object):
                 handler(event, channel=channel)(_on_event))
             _on_done_handler = self.addHandler(
                 handler("%s_done" % event, channel=channel)(_on_done))
+            if state['timeout'] >= 0:
+                _on_tick_handler = self.addHandler(
+                    handler("generate_event", channel=channel)(_on_tick))
 
-        while not state['flag']:
-            if timeout == 0:
-                break
-            timeout -= 1
-            yield None
+        yield state
 
         self.removeHandler(_on_done_handler, "%s_done" % event)
+        if state['timeout'] >= 0:
+            self.removeHandler(_on_tick_handler, "generate_event")
 
         if state["event"] is not None:
             yield CallValue(state["event"].value)
@@ -555,7 +565,7 @@ class Manager(object):
                 if isinstance(value, GeneratorType):
                     event.waitingHandlers += 1
                     event.value.promise = True
-                    self.registerTask((event, value))
+                    self.registerTask((event, value, None))
                 else:
                     event.value.value = value
                 # None is false, but not None may still be True or False
@@ -684,37 +694,43 @@ class Manager(object):
                 if isinstance(value, GeneratorType):
                     # We loose a yield but we gain one, we don't need to change
                     # event.waitingHandlers
-                    self.registerTask((event, value, parent))
-                    self.processTask(event, value, parent)
+                    # The below code is delegated to handlers
+                    # in the waitEvent generator
+                    # self.registerTask((event, value, parent))
+                    task_state = value.next()
+                    task_state['task_event'] = event
+                    task_state['task'] = value
+                    task_state['parent'] = parent
                 else:
                     event.waitingHandlers -= 1
                     if value is not None:
                         event.value.value = value
-                    self.registerTask((event, parent))
+                    self.registerTask((event, parent, None))
             elif isinstance(value, GeneratorType):
                 event.waitingHandlers += 1
-                self.registerTask((event, value, task))
-                self.unregisterTask((event, task))
-                # We want to process all the tasks because
-                # we bind handlers in there
-                self.processTask(event, value, task)
+                self.unregisterTask((event, task, None))
+                # First yielded value is always the task state
+                task_state = value.next()
+                task_state['task_event'] = event
+                task_state['task'] = value
+                task_state['parent'] = task
+                # The below code is delegated to handlers
+                # in the waitEvent generator
+                # self.registerTask((event, value, task))
             elif value is not None:
                 event.value.value = value
         except StopIteration:
             event.waitingHandlers -= 1
+            self.unregisterTask((event, task, parent))
             if parent:
-                self.unregisterTask((event, task, parent))
-            else:
-                self.unregisterTask((event, task))
-            if parent:
-                self.registerTask((event, parent))
+                self.registerTask((event, parent, None))
             elif event.waitingHandlers == 0:
                 event.value.inform(True)
                 self._eventDone(event)
         except (KeyboardInterrupt, SystemExit):
             self.stop()
         except:
-            self.unregisterTask((event, task))
+            self.unregisterTask((event, task, None))
 
             etype, evalue, etraceback = _exc_info()
             traceback = format_tb(etraceback)
@@ -747,8 +763,9 @@ class Manager(object):
         :type timeout: float, measuring seconds
         """
         # process tasks
-        for task in self._tasks.copy():
-            self.processTask(*task)
+        if self._tasks:
+            for task in self._tasks.copy():
+                self.processTask(*task)
 
         if self._running:
             self.fire(GenerateEvents(self._lock, timeout), "*")

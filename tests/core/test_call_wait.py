@@ -107,7 +107,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test_wait(manager, watcher, app):
+def test_wait_simple(manager, watcher, app):
     x = manager.fire(TestWait())
     assert watcher.wait("test_wait_success")
 
@@ -115,7 +115,7 @@ def test_wait(manager, watcher, app):
     assert value == "Hello World!"
 
 
-def test_call(manager, watcher, app):
+def test_call_simple(manager, watcher, app):
     x = manager.fire(TestCall())
     assert watcher.wait("test_call_success")
 

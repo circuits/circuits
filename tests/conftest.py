@@ -131,7 +131,10 @@ def watcher(request, manager):
 
     def finalizer():
         watcher.unregister()
-        watcher.wait("unregistered")
+        # The watcher is unregistered here
+        # It will not see the unregistered event
+        # So we need another way to do this
+        # watcher.wait("unregistered")
 
     request.addfinalizer(finalizer)
 
