@@ -33,9 +33,10 @@ def process_multipart(request, params):
             params[part.name] = part.value
 
 
-def process_urlencoded(request, params):
+def process_urlencoded(request, params, encoding="utf-8"):
     params.update(QueryStringParser(request.qs).result)
-    params.update(QueryStringParser(request.body.getvalue()).result)
+    body = request.body.getvalue().decode(encoding)
+    params.update(QueryStringParser(body).result)
 
 
 def process(request, params):

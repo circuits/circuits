@@ -697,7 +697,7 @@ class Manager(object):
                     # The below code is delegated to handlers
                     # in the waitEvent generator
                     # self.registerTask((event, value, parent))
-                    task_state = value.next()
+                    task_state = next(value)
                     task_state['task_event'] = event
                     task_state['task'] = value
                     task_state['parent'] = parent
@@ -710,7 +710,7 @@ class Manager(object):
                 event.waitingHandlers += 1
                 self.unregisterTask((event, task, None))
                 # First yielded value is always the task state
-                task_state = value.next()
+                task_state = next(value)
                 task_state['task_event'] = event
                 task_state['task'] = value
                 task_state['parent'] = task

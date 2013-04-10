@@ -103,18 +103,20 @@ class HTTP(BaseComponent):
     @handler("stream")
     def _on_stream(self, response, data):
         if data is not None:
-            if data:
-                if response.chunked:
-                    buf = [
-                        hex(len(data))[2:].encode(self._encoding),
-                        b"\r\n",
-                        data,
-                        b"\r\n"
-                    ]
-                    data = b"".join(buf)
-                    self.fire(Write(response.request.sock, data))
-                else:
-                    self.fire(Write(response.request.sock, data))
+            if isinstance(data, text_type):
+                data = data.encode(self._encoding)
+
+            if response.chunked:
+                buf = [
+                    hex(len(data))[2:].encode(self._encoding),
+                    b"\r\n",
+                    data,
+                    b"\r\n"
+                ]
+                data = b"".join(buf)
+
+            self.fire(Write(response.request.sock, data))
+
             if response.body and not response.done:
                 try:
                     data = next(response.body)
