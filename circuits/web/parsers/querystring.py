@@ -7,7 +7,7 @@ except ImportError:
     from urllib.parse import parse_qsl  # NOQA
 
 
-from circuits.six import iteritems, text_type
+from circuits.six import iteritems, string_types
 
 
 class QueryStringToken(object):
@@ -22,7 +22,7 @@ class QueryStringParser(object):
     def __init__(self, data):
         self.result = {}
 
-        if isinstance(data, text_type):
+        if isinstance(data, string_types[0]):
             sorted_pairs = self._sorted_from_string(data)
         else:
             sorted_pairs = self._sorted_from_obj(data)
