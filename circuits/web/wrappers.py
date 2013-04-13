@@ -214,6 +214,18 @@ class Request(object):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
+    @deprecated
+    def url(self, path):
+        """
+        .. deprecated:: 2.2
+           Use :attr:~.uri`
+        """
+
+        if not hasattr(self, "uri"):
+            return None
+
+        return self.uri.relative(path).utf8()
+
 
 class Body(object):
     """Response Body"""
