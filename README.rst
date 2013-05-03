@@ -39,6 +39,18 @@ designed and built this way.
 - **Project website**: http://circuitsframework.com/
 - **PyPI page**: http://pypi.python.org/pypi/circuits
 
+.. image:: https://pypip.in/v/circuits/badge.png
+   :target: https://crate.io/packages/circuits/
+   :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/circuits/badge.png
+   :target: https://crate.io/packages/circuits/
+   :alt: Number of PyPI downloads
+
+.. image:: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/badge/icon
+   :target: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/
+   :alt: Build Status
+
 
 Features
 --------
@@ -87,9 +99,6 @@ Alternatively, you may download the source package from the
 
 You can also install th
 `latest-development version <https://bitbucket.org/circuits/circuits-dev/get/tip.tar.gz#egg=circuits-dev>`_ using pip with ``pip install circuits==dev``.
-
-.. image:: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/badge/icon
-   :target: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/
 
 
 License
