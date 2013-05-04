@@ -27,7 +27,7 @@ class Watcher(BaseComponent):
         with self._lock:
             self.events.append(event)
 
-    def wait(self, name, channel=None, timeout=3.0):
+    def wait(self, name, channel=None, timeout=6.0):
         try:
             for i in range(int(timeout / TIMEOUT)):
                 if channel is None:
@@ -69,7 +69,7 @@ def call_event(manager, event, *channels):
 
 class WaitEvent(object):
 
-    def __init__(self, manager, name, channel=None, timeout=3.0):
+    def __init__(self, manager, name, channel=None, timeout=6.0):
         if channel is None:
             channel = getattr(manager, "channel", None)
 
