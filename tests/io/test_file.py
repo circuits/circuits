@@ -24,6 +24,29 @@ class FileApp(Component):
         self.eof = True
 
 
+def test_open_fileobj(manager, watcher, tmpdir):
+    filename = str(tmpdir.ensure("helloworld.txt"))
+    with open(filename, "w") as f:
+        f.write("Hello World!")
+
+    fileobj = open(filename, "r")
+    print(type(fileobj))
+
+    app = FileApp(fileobj).register(manager)
+    assert watcher.wait("opened", app.file.channel)
+
+    assert watcher.wait("eof", app.file.channel)
+
+    app.fire(Close(), app.file.channel)
+    assert watcher.wait("closed", app.file.channel)
+
+    app.unregister()
+    assert watcher.wait("unregistered")
+
+    s = app.buffer.getvalue()
+    assert s == b"Hello World!"
+
+
 def test_read_write(manager, watcher, tmpdir):
     filename = str(tmpdir.ensure("helloworld.txt"))
 
