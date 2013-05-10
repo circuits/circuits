@@ -101,6 +101,15 @@ class BaseEvent(object):
     def __setstate__(self, dict):
         self.__dict__.update(dict)
 
+    def __cmp__(self, other):
+        return 0
+
+    def __le__(self, other):
+        return False
+
+    def __gt__(self, other):
+        return False
+
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
