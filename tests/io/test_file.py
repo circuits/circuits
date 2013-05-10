@@ -30,7 +30,6 @@ def test_open_fileobj(manager, watcher, tmpdir):
         f.write("Hello World!")
 
     fileobj = open(filename, "r")
-    print(type(fileobj))
 
     app = FileApp(fileobj).register(manager)
     assert watcher.wait("opened", app.file.channel)
