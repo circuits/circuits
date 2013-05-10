@@ -129,7 +129,7 @@ class File(Component):
         if fcntl is not None:
             # Set non-blocking file descriptor (non-portable)
             flag = fcntl.fcntl(self._fd, fcntl.F_GETFL)
-            flag = flag | O_NONBLOCK
+            flag = flag | fcntl.FASYNC
             fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
 
         if "r" in self.mode or "+" in self.mode:
@@ -196,10 +196,10 @@ class File(Component):
                 self.fire(Read(data)).notify = True
             else:
                 self.fire(EOF())
-                if not any(m in self.mode for m in ("a", "+")):
-                    self.close()
-                else:
-                    self._poller.discard(self._fd)
+                #if not any(m in self.mode for m in ("a", "+")):
+                #    self.close()
+                #else:
+                #    self._poller.discard(self._fd)
         except SocketError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
