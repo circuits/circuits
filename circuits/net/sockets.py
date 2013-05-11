@@ -440,7 +440,9 @@ class TCPClient(Client):
             if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self._connected = True
             else:
-                raise
+                self.fire(SocketError(e))
+                self._close()
+                return
 
         self._connected = True
 
