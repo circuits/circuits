@@ -137,8 +137,8 @@ class File(Component):
 
         self.fire(Opened(self.filename, self.mode))
 
-    @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
+    @handler("registered", "started", channel="*")
+    def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
