@@ -9,8 +9,8 @@ This module implements the Request and Response objects.
 
 
 from time import time
+from io import BytesIO
 from functools import partial
-from io import BytesIO, IOBase
 
 try:
     from Cookie import SimpleCookie
@@ -245,7 +245,7 @@ class Body(object):
                 value = [value]
             else:
                 value = []
-        elif isinstance(value, IOBase):
+        elif hasattr(value, "read"):
             response.stream = True
             value = file_generator(value)
         elif isinstance(value, HTTPError):
