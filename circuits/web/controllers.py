@@ -78,18 +78,16 @@ class BaseController(BaseComponent):
            Use :meth:~`uri`
         """
 
-        return self.uri(*args, **kwargs)
+        return self.request.url(*args, **kwargs)
 
-    def uri(self, *args, **kwargs):
-        """Return the current URI or create a new URI
-
-        If no arguments or keywords arguments are passed, returns the
-        current URI for the current request.
+    @property
+    def uri(self):
+        """Return the current Request URI
 
         .. seealso:: :py:class:`circuits.web.url.URL`
         """
 
-        return self.request.url(*args, **kwargs)
+        return self.request.uri
 
     def forbidden(self, description=None):
         """Return a 403 (Forbidden) response
