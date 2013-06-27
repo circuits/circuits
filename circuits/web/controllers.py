@@ -78,6 +78,8 @@ class BaseController(BaseComponent):
            Use :meth:~`uri`
         """
 
+        return self.uri(*args, **kwargs)
+
     def uri(self, *args, **kwargs):
         """Return the current URI or create a new URI
 
