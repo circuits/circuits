@@ -20,6 +20,10 @@ class Root(Controller):
     def test_notfound(self):
         raise NotFound()
 
+    def test_contenttype(self):
+        self.response.headers["Content-Type"] = "application/json"
+        raise Exception()
+
 
 def test_redirect(webapp):
     f = urlopen("%s/test_redirect" % webapp.server.http.base)
@@ -43,5 +47,16 @@ def test_notfound(webapp):
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == "Not Found"
+    else:
+        assert False
+
+
+def test_contenttype(webapp):
+    try:
+        f = urlopen("%s/test_contenttype" % webapp.server.http.base)
+    except HTTPError as e:
+        assert e.code == 500
+        assert e.msg == "Internal Server Error"
+        assert e.headers.get("Content-Type") == "text/html"
     else:
         assert False
