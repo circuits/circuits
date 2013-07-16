@@ -27,6 +27,7 @@ class HTTPError(Event):
 
     code = 500
     description = ""
+    contenttype = "text/html"
 
     def __init__(self, request, response, code=None, **kwargs):
         """
@@ -60,6 +61,8 @@ class HTTPError(Event):
         self.response.close = True
         self.response.status = self.code
 
+        self.response.headers["Content-Type"] = self.contenttype
+
         self.data = {
             "code": self.code,
             "name": HTTP_STATUS_CODES.get(self.code, "???"),
@@ -87,26 +90,25 @@ class HTTPError(Event):
 
 
 class Forbidden(HTTPError):
-    """An event for signaling the HTTP Forbidden error
-    """
+    """An event for signaling the HTTP Forbidden error"""
+
     code = 403
 
 
 class Unauthorized(HTTPError):
-    """An event for signaling the HTTP Unauthorized error
-    """
+    """An event for signaling the HTTP Unauthorized error"""
+
     code = 401
 
 
 class NotFound(HTTPError):
-    """An event for signaling the HTTP Not Fouond error
-    """
+    """An event for signaling the HTTP Not Fouond error"""
+
     code = 404
 
 
 class Redirect(HTTPError):
-    """An event for signaling the HTTP Redirect response
-    """
+    """An event for signaling the HTTP Redirect response"""
 
     def __init__(self, request, response, urls, code=None):
         """
