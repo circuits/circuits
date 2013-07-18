@@ -159,6 +159,9 @@ class INVITE(Command):
 
 class NAMES(Command):
     """NAMES command"""
+    
+class WHOIS(Command):
+    """WHOIS command"""
 
 ###
 ### IRC Responses
@@ -308,6 +311,9 @@ class IRC(Component):
             self.fire(RAW("NAMES %s" % channel))
         else:
             self.fire(RAW("NAMES"))
+        
+    def command_whois(self, nick):
+        self.fire(RAW("WHOIS :%s" % nick))
 
     ###
     ### Event Processing
