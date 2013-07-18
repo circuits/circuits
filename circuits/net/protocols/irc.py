@@ -86,6 +86,8 @@ class Command(Event):
 
         self.name = "command_{0}".format(self.__class__.__name__.lower())
 
+class AWAY(Command):
+    """AWAY command"""
 
 class RAW(Command):
     """RAW command"""
@@ -169,6 +171,9 @@ class Response(Event):
 
 class Numeric(Response):
     """Numeric response"""
+    
+class Away(Response):
+    """Target user is away."""
 
 
 class Ping(Response):
@@ -242,6 +247,9 @@ class IRC(Component):
     @handler("command_pass")
     def _on_command_pass(self, password):
         self.fire(RAW("PASS %s" % password))
+    
+    def command_away(self, message=""):
+        self.fire(RAW("AWAY :%s" % message))
 
     def command_user(self, ident, host, server, name):
         self.fire(RAW("USER %s \"%s\" \"%s\" :%s" % (
@@ -333,6 +341,9 @@ class IRC(Component):
                 message = strip(" ".join(tokens[4:]))
 
             self.fire(Numeric(source, target, numeric, arg, message))
+            
+            if numeric == 301:
+                self.fire(Away(arg, message))
 
         elif tokens[1] == "PRIVMSG":
             source = sourceSplit(strip(tokens[0]))
