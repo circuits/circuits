@@ -6,7 +6,7 @@ from circuits.net.protocols.irc import strip, sourceJoin, sourceSplit, IRC
 from circuits.net.protocols.irc import (
         PASS, USER, NICK, PING, PONG, QUIT,
         JOIN, PART, PRIVMSG, NOTICE, CTCP, CTCPREPLY,
-        KICK, TOPIC, MODE, INVITE, NAMES)
+        KICK, TOPIC, MODE, INVITE, NAMES, WHOIS, AWAY)
 
 
 class Read(Event):
@@ -723,6 +723,50 @@ def test_NAMES(app):
     s = next(data)
     assert s == "NAMES #test\r\n"
 
+
+def test_AWAY(app):
+    app.reset()
+
+    app.fire(AWAY("I am away."))
+    while app:
+        app.flush()
+
+    events = iter(app.events)
+
+    e = next(events)
+    assert e.name == "command_away"
+    assert e.args[0] == "I am away."
+
+    e = next(events)
+    assert e.name == "command_raw"
+    assert e.args[0] == "AWAY :I am away."
+
+    e = next(events)
+    assert e.name == "write"
+    assert e.args[0] == "AWAY :I am away.\r\n"
+
+
+def test_WHOIS(app):
+    app.reset()
+
+    app.fire(WHOIS("somenick"))
+    while app:
+        app.flush()
+
+    events = iter(app.events)
+
+    e = next(events)
+    assert e.name == "command_whois"
+    assert e.args[0] == "somenick"
+
+    e = next(events)
+    assert e.name == "command_raw"
+    assert e.args[0] == "WHOIS :somenick"
+
+    e = next(events)
+    assert e.name == "write"
+    assert e.args[0] == "WHOIS :somenick\r\n"
+
 ###
 ### Test IRC Responses
 ###
@@ -1009,3 +1053,34 @@ def test_mode(app):
     assert e.args[0] == ("test", "foo", "localhost")
     assert e.args[1] == "#test"
     assert e.args[2] == "+o test"
+
+
+def test_away(app):
+    app.reset()
+
+    app.fire(Read(b":irc.example.com 301 circuits somenick :is away\r\n"))
+    while app:
+        app.flush()
+
+    events = iter(app.events)
+
+    e = next(events)
+    assert e.name == "read"
+    assert e.args[0] == b":irc.example.com 301 circuits somenick :is away\r\n"
+
+    e = next(events)
+    assert e.name == "line"
+    assert e.args[0] == ":irc.example.com 301 circuits somenick :is away"
+
+    e = next(events)
+    assert e.name == "numeric"
+    assert e.args[0] == "irc.example.com"
+    assert e.args[1] == "circuits"
+    assert e.args[2] == 301
+    assert e.args[3] == "somenick"
+    assert e.args[4] == "is away"
+
+    e = next(events)
+    assert e.name == "away"
+    assert e.args[0] == "somenick"
+    assert e.args[1] == "is away"
