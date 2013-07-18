@@ -86,8 +86,10 @@ class Command(Event):
 
         self.name = "command_{0}".format(self.__class__.__name__.lower())
 
+
 class AWAY(Command):
     """AWAY command"""
+
 
 class RAW(Command):
     """RAW command"""
@@ -159,7 +161,8 @@ class INVITE(Command):
 
 class NAMES(Command):
     """NAMES command"""
-    
+
+
 class WHOIS(Command):
     """WHOIS command"""
 
@@ -174,7 +177,8 @@ class Response(Event):
 
 class Numeric(Response):
     """Numeric response"""
-    
+
+
 class Away(Response):
     """Target user is away."""
 
@@ -250,7 +254,7 @@ class IRC(Component):
     @handler("command_pass")
     def _on_command_pass(self, password):
         self.fire(RAW("PASS %s" % password))
-    
+
     def command_away(self, message=""):
         self.fire(RAW("AWAY :%s" % message))
 
@@ -311,7 +315,7 @@ class IRC(Component):
             self.fire(RAW("NAMES %s" % channel))
         else:
             self.fire(RAW("NAMES"))
-        
+
     def command_whois(self, nick):
         self.fire(RAW("WHOIS :%s" % nick))
 
@@ -347,7 +351,7 @@ class IRC(Component):
                 message = strip(" ".join(tokens[4:]))
 
             self.fire(Numeric(source, target, numeric, arg, message))
-            
+
             if numeric == 301:
                 self.fire(Away(arg, message))
 
