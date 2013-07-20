@@ -49,7 +49,9 @@ def expose(*channels, **config):
         if wrapper.args and wrapper.args[0] == "self":
             del wrapper.args[0]
 
-        setattr(f, "event", wrapper.args and wrapper.args[0] == "event")
+        if wrapper.args and wrapper.args[0] == "event":
+            f.event = True
+            del wrapper.args[0]
         wrapper.event = True
 
         return update_wrapper(wrapper, f)
