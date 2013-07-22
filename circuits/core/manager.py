@@ -466,7 +466,7 @@ class Manager(object):
         been dispatched (see :func:`circuits.core.handlers.handler`).
         """
         value = self.fire(event, *channels)
-        for r in self.waitEvent(event.name, event.channels, **kwargs):
+        for r in self.waitEvent(event.name, *event.channels, **kwargs):
             yield r
         yield CallValue(value)
 
