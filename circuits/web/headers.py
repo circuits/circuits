@@ -62,8 +62,8 @@ class HeaderElement(object):
             params = {}
         self.params = params
 
-    def __cmp__(self, other):
-        return cmp(self.value, other.value)
+    def __eq__(self, other):
+        return self.value == other.value
 
     def __lt__(self, other):
         return self.value < other.value
@@ -140,11 +140,8 @@ class AcceptElement(HeaderElement):
         return float(val)
     qvalue = property(qvalue, doc="The qvalue, or priority, of this value.")
 
-    def __cmp__(self, other):
-        diff = cmp(self.qvalue, other.qvalue)
-        if diff == 0:
-            diff = cmp(str(self), str(other))
-        return diff
+    def __eq__(self, other):
+        return self.qvalue == other.qvalue
 
     def __lt__(self, other):
         if self.qvalue == other.qvalue:
