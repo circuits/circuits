@@ -11,13 +11,13 @@ from circuits import Event, Component, Timer
 class App(Component):
 
     def hello(self):
-        print "Hello World"
+        print("Hello World")
 
     def foo(self):
-        print "Foo"
+        print("Foo")
 
     def bar(self):
-        print "Bar"
+        print("Bar")
 
     def started(self, component):
         Timer(5, Event.create("Hello")).register(self)
