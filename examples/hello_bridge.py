@@ -1,5 +1,24 @@
 #!/usr/bin/python -i
 
+"""Bridge Example
+
+To use this example run it interactively through the Python interactive shell
+using the -i option as per the shebang line above.
+
+i.e: python -i hello_bridge.py
+
+At the python prompt:
+
+    >>> x = m.fire(Hello())
+    .
+    .
+    .
+    >>> x
+    <Value ('Hello World! (15969)') result: True errors: False for <Hello[*.hello] ( )>
+
+"""
+
+
 from os import getpid
 
 from circuits import Component, Debugger, Event, Manager
