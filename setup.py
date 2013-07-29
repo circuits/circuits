@@ -97,5 +97,3 @@ setup(
     zip_safe=False,
     test_suite="tests.main.main"
 )
-
-# hghooks: no-pyflakes
