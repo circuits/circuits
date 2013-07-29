@@ -37,3 +37,5 @@ class App(Component):
 m = Manager() + Debugger()
 m.start()
 App().start(process=True, link=m)
+
+# flake8: noqa

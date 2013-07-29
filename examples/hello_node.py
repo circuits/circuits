@@ -58,3 +58,5 @@ node1.add("app2", *bind)
 
 # Start app1 as a thread
 app1.start()
+
+# flake8: noqa

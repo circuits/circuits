@@ -13,7 +13,6 @@ class App(Component):
         print("Hello World!")
         event.stop()
 
-
     def started(self, event, component):
         event.stop()
         self.fire(Hello())
