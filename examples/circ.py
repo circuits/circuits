@@ -15,7 +15,6 @@ For usage type:
 
 import os
 import sys
-from operator import add
 from select import select
 from inspect import getargspec
 from socket import gethostname
@@ -315,14 +314,13 @@ def main():
 
     # Configure and run the system.
 
-    components = [Client(host, port, opts=opts)]
+    client = Client(host, port, opts=opts)
 
     if opts.debug:
         from circuits import Debugger
-        components.append(Debugger(file=sys.stderr))
+        Debugger(file=sys.stderr).register(client)
 
-    system = reduce(add, components)
-    system.run()
+    client.run()
 
 if __name__ == "__main__":
     main()
