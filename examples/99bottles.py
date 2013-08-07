@@ -45,5 +45,6 @@ class Grep(Component):
             print(line)
 
 # Configure and "run" the System.
-from circuits import Debugger
-(Tail(sys.argv[1]) + Debugger() + Grep(sys.argv[2])).run()
+app = Tail(sys.argv[1])
+Grep(sys.argv[2]).register(app)
+app.run()
