@@ -18,6 +18,11 @@ class EchoServer(TCPServer):
 
         This is fired by the underlying Socket Component when there has been
         new data read from the connected client.
+
+        ..note :: By simply returning, client/server socket components listen
+                  to ValueChagned events (feedback) to determine if a handler
+                  returned some data and fires a subsequent Write event with
+                  the value returned.
         """
 
         return data
