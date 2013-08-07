@@ -115,7 +115,7 @@ def main():
     opts, args = parse_options()
 
     # Configure and "run" the System.
-    (ChatServer(args, opts)).run()
+    ChatServer(args, opts).run()
 
 
 if __name__ == "__main__":
