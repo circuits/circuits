@@ -43,10 +43,10 @@ class App(Component):
 app1 = App() + Debugger()
 node1 = Node().register(app1)
 
-# Our 2nd app is going to bind itself to tcp://127.0.0.1:8000
+# Our 2nd app is going to bind itself to tcp://127.0.0.1:9000
 bind = ("127.0.0.1", 9000)
 
-# Setup app2 and bind the Node to tcp://127.0.0.1:8000
+# Setup app2 and bind the Node to tcp://127.0.0.1:9000
 app2 = App()
 node2 = Node(bind).register(app2)
 
