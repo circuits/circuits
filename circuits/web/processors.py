@@ -1,4 +1,5 @@
 import re
+from cgi import parse_header
 
 from .headers import HeaderElement
 from .parsers import MultipartParser
@@ -45,8 +46,11 @@ def process(request, params):
         return
 
     mtype, mencoding = ctype.split("/", 1) if "/" in ctype else (ctype, None)
+    mencoding, extra = parse_header(mencoding)
+
+    charset = extra.get("charset", "utf-8")
 
     if mtype == "multipart":
         process_multipart(request, params)
     elif mtype == "application" and mencoding == "x-www-form-urlencoded":
-        process_urlencoded(request, params)
+        process_urlencoded(request, params, encoding=charset)
