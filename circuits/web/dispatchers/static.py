@@ -52,7 +52,7 @@ class Static(BaseComponent):
         super(Static, self).__init__()
 
         self.path = path
-        self.docroot = os.path.abspath(docroot) or os.getcwd()
+        self.docroot = os.path.abspath(docroot) if docroot is not None else os.path.abspath(os.getcwd())
         self.defaults = defaults
         self.dirlisting = dirlisting
 
