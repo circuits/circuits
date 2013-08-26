@@ -38,8 +38,8 @@ class Timer(BaseComponent):
         super(Timer, self).__init__()
 
         self.expiry = None
+        self.interval = None
         self.event = event
-        self.interval = interval
         self.channels = channels
         self.persist = kwargs.get("persist", False)
 
@@ -65,15 +65,15 @@ class Timer(BaseComponent):
         else:
             event.reduce_time_left(self.expiry - now)
 
-    def reset(self, interval):
+    def reset(self, interval=None):
         """
         Reset the timer, i.e. clear the amount of time already waited
         for.
         """
 
-        if isinstance(interval, datetime):
+        if interval is not None and isinstance(interval, datetime):
             self.interval = mktime(interval.timetuple()) - time()
-        else:
+        elif interval is not None:
             self.interval = interval
 
         self.expiry = time() + self.interval
