@@ -91,7 +91,8 @@ class BaseController(BaseComponent):
         .. seealso:: :py:class:`circuits.web.url.URL`
         """
 
-        return self.request.uri
+        if hasattr(self, "request"):
+            return self.request.uri
 
     def forbidden(self, description=None):
         """Return a 403 (Forbidden) response

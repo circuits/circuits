@@ -80,7 +80,7 @@ class Timer(BaseComponent):
 
     @property
     def expiry(self):
-        return self._expiry
+        return getattr(self, "_expiry", None)
 
     @expiry.setter
     def expiry(self, seconds):
