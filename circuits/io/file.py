@@ -14,11 +14,10 @@ except ImportError:
     #will fail anyway.
     pass
 
-from os import write
+from os import read, write
 from collections import deque
 from sys import getdefaultencoding
-from socket import error as SocketError
-from errno import ENOTCONN, EPIPE, EWOULDBLOCK
+from errno import EINTR, EWOULDBLOCK
 
 from circuits.tools import tryimport
 from circuits.core.utils import findcmp
@@ -129,7 +128,7 @@ class File(Component):
         if fcntl is not None:
             # Set non-blocking file descriptor (non-portable)
             flag = fcntl.fcntl(self._fd, fcntl.F_GETFL)
-            flag = flag | fcntl.FASYNC
+            flag = flag | O_NONBLOCK
             fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
 
         if "r" in self.mode or "+" in self.mode:
@@ -188,7 +187,7 @@ class File(Component):
 
     def _read(self):
         try:
-            data = self._fd.read(self._bufsize)
+            data = read(self._fd.fileno(), self._bufsize)
             if not isinstance(data, binary_type):
                 data = data.encode(self._encoding)
 
@@ -200,8 +199,9 @@ class File(Component):
                 #    self.close()
                 #else:
                 #    self._poller.discard(self._fd)
-        except SocketError as e:
-            if e.args[0] == EWOULDBLOCK:
+        except (OSError, IOError) as e:
+            print e
+            if e.args[0] in (EWOULDBLOCK, EINTR):
                 return
             else:
                 self.fire(Error(e))
@@ -219,11 +219,12 @@ class File(Component):
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
-        except SocketError as e:
-            if e.args[0] in (EPIPE, ENOTCONN):
-                self._close()
+        except (OSError, IOError) as e:
+            if e.args[0] in (EWOULDBLOCK, EINTR):
+                return
             else:
                 self.fire(Error(e))
+                self._close()
 
     def write(self, data):
         if self._poller is not None and not self._poller.isWriting(self._fd):

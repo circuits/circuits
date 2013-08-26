@@ -83,7 +83,7 @@ class Telnet(Component):
 
         print("Connected to {0}".format(host))
 
-    def error(self, *args):
+    def error(self, *args, **kwargs):
         """Error Event Handler
 
         If any exception/error occurs in the system this event is triggered.
@@ -104,7 +104,7 @@ class Telnet(Component):
         print(data.strip())
 
     # Setup an Event Handler for "read" events on the "stdin" channel.
-    @handler("read", "stdin")
+    @handler("read", channel="stdin")
     def _on_stdin_read(self, data):
         """Read Event Handler for stdin
 
