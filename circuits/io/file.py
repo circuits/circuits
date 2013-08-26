@@ -200,7 +200,6 @@ class File(Component):
                 else:
                     self._poller.discard(self._fd)
         except (OSError, IOError) as e:
-            print e
             if e.args[0] in (EWOULDBLOCK, EINTR):
                 return
             else:
