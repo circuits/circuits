@@ -195,10 +195,10 @@ class File(Component):
                 self.fire(Read(data)).notify = True
             else:
                 self.fire(EOF())
-                #if not any(m in self.mode for m in ("a", "+")):
-                #    self.close()
-                #else:
-                #    self._poller.discard(self._fd)
+                if not any(m in self.mode for m in ("a", "+")):
+                    self.close()
+                else:
+                    self._poller.discard(self._fd)
         except (OSError, IOError) as e:
             print e
             if e.args[0] in (EWOULDBLOCK, EINTR):
