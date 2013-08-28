@@ -30,7 +30,7 @@ class QueryStringParser(object):
         [self.process(x) for x in sorted_pairs]
 
     def _sorted_from_string(self, data):
-        stage1 = parse_qsl(data)
+        stage1 = parse_qsl(data, keep_blank_values=True)
         stage2 = [(x[0].strip(), x[1].strip()) for x in stage1]
         return sorted(stage2, key=lambda p: p[0])
 
