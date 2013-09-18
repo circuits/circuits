@@ -7,16 +7,9 @@
 This module defines utilities used by circuits.
 """
 
-import re
 import sys
 
 from imp import reload
-
-UNCAMELRE = re.compile("([a-z0-9])([A-Z])")
-
-
-def uncamel(s):
-    return UNCAMELRE.sub("\g<1>_\g<2>", s).lower()
 
 
 def flatten(root, visited=None):
