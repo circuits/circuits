@@ -6,7 +6,6 @@
 This module defines the basic Event class and common events.
 """
 
-from .utils import uncamel
 from inspect import ismethod
 
 
@@ -15,7 +14,7 @@ class EventMetaClass(type):
     def __init__(cls, name, bases, ns):
         super(EventMetaClass, cls).__init__(name, bases, ns)
 
-        setattr(cls, "name", ns.get("name", uncamel(cls.__name__)))
+        setattr(cls, "name", ns.get("name", cls.__name__))
 
 
 class BaseEvent(object):
@@ -45,8 +44,7 @@ class BaseEvent(object):
         used for creating the event.
 
         Every event has a :attr:`name` attribute that is used for matching
-        the event with the handlers. By default, the name is the uncameled
-        class name of the event.
+        the event with the handlers.
 
         :cvar channels: an optional attribute that may be set before firing
             the event. If defined (usually as a class variable), the attribute
@@ -110,8 +108,8 @@ class BaseEvent(object):
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        name = self.name
-        type = self.__class__.__name__
+        name = self.__class__.__name__
+
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:
@@ -124,7 +122,7 @@ class BaseEvent(object):
             ", ".join("%s=%s" % (k, repr(v)) for k, v in self.kwargs.items())
         )
 
-        return "<%s[%s.%s] (%s)>" % (type, channels, name, data)
+        return "<%s[%s] (%s)>" % (name, channels, data)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
@@ -166,22 +164,7 @@ class BaseEvent(object):
         self.stopped = True
 
 Event = EventMetaClass("Event", (BaseEvent,), {})
-
-
-class LiteralEvent(Event):
-    """
-    An event whose name is not uncameled when looking for a handler.
-    """
-
-    @staticmethod
-    def create(cls, name, *args, **kwargs):
-        """
-        Utility method to create an event that inherits from
-        a base event class (passed in as *cls*) and from
-        LiteralEvent.
-        """
-
-        return type(cls)(name, (cls,), {"name": name})(*args, **kwargs)
+LiteralEvent = Event
 
 
 class DerivedEvent(Event):
@@ -189,7 +172,7 @@ class DerivedEvent(Event):
     @classmethod
     def create(cls, topic, event, *args, **kwargs):
         if isinstance(event, LiteralEvent):
-            name = "%s%s" % (event.__class__.__name__, uncamel("_%s" % topic))
+            name = "%s%s" % (event.__class__.__name__, "_%s" % topic)
             return type(cls)(name, (cls,),
                              {"name": name})(event, *args, **kwargs)
         else:
