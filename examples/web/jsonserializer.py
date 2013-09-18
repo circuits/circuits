@@ -23,8 +23,8 @@ class Root(Controller):
     def index(self):
         return {"message": "Hello World!"}
 
-(
-    Server(("0.0.0.0", 8000))
-    + JSONSerializer()
-    + Root() + Logger()
-).run()
+app = Server(("0.0.0.0", 8000))
+JSONSerializer().register(app)
+Logger().register(app)
+Root().register(app)
+app.run()

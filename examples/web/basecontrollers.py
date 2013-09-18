@@ -17,4 +17,6 @@ class Root(BaseController):
 
         return "Hello World!"
 
-(Server(9000) + Root()).run()
+app = Server(("0.0.0.0", 8000))
+Root().register(app)
+app.run()

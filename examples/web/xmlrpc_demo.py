@@ -9,4 +9,8 @@ class Test(Component):
     def foo(self, a, b, c):
         return a, b, c
 
-(Server(8000) + Logger() + XMLRPC() + Test()).run()
+app = Server(("0.0.0.0", 8000))
+Logger().register(app)
+XMLRPC().register(app)
+Test().register(app)
+app.run()

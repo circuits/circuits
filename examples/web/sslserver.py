@@ -9,9 +9,6 @@ class Root(Controller):
         return "Hello World!"
 
 
-from circuits import Debugger
-(
-    Server(("localhost", 9000), secure=True, certfile="cert.pem") +
-    Debugger() +
-    Root()
-).run()
+app = Server(("0.0.0.0", 8443), secure=True, certfile="cert.pem")
+Root().register(app)
+app.run()

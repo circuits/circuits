@@ -61,4 +61,7 @@ class Root(Controller):
     def index(self):
         return "Hello, {0:s}".format(self.request.login)
 
-(Server("0.0.0.0:8000") + PasswdAuth() + Root()).run()
+app = Server(("0.0.0.0", 8000))
+PasswdAuth().register(app)
+Root().register(app)
+app.run()

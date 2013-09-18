@@ -19,10 +19,9 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
-(
-    Server(("0.0.0.0", 8000))
-    + Echo()
-    + Root()
-    + Logger()
-    + WebSockets("/websocket")
-).run()
+app = Server(("0.0.0.0", 8000))
+Echo().register(app)
+Root().register(app)
+Logger().register(app)
+WebSockets("/websocket").register(app)
+app.run()

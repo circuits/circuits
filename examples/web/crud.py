@@ -29,4 +29,7 @@ class Root(Controller):
         return "HEAD({0:s}, {1:s})".format(repr(args), repr(kwargs))
 
 
-(Server(("0.0.0.0", 0)) + Logger() + Root()).run()
+app = Server(("0.0.0.0", 8000))
+Logger().register(app)
+Root().register(app)
+app.run()

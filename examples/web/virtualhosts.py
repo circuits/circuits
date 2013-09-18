@@ -30,4 +30,9 @@ domains = {
     "bar.localdomain:8000": "bar",
 }
 
-(Server(8000) + VirtualHosts(domains) + Root() + Foo() + Bar()).run()
+app = Server(("0.0.0.0", 8000))
+VirtualHosts(domains).register(app)
+Root().register(app)
+Foo().register(app)
+Bar().register(app)
+app.run()
