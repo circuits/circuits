@@ -64,7 +64,8 @@ class Client(Component):
         self.ircchannel = opts.channel
 
         # Add TCPClient and IRC to the system.
-        self += (TCPClient(channel=self.channel) + IRC(channel=self.channel))
+        TCPClient(channel=self.channel).register(self)
+        IRC(channel=self.channel).register(self)
 
     def ready(self, component):
         """Ready Event
@@ -159,7 +160,9 @@ def main():
         port = 6667
 
     # Configure and run the system.
-    (Client(host, port, opts=opts) + stdin).run()
+    client = Client(host, port, opts=opts)
+    stdin.register(client)
+    client.run()
 
 
 if __name__ == "__main__":

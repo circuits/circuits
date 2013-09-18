@@ -60,13 +60,13 @@ class Telnet(Component):
 
         if len(args) == 1:
             if os.path.exists(args[0]):
-                self += UNIXClient(channel=self.channel)
+                UNIXClient(channel=self.channel).register(self)
                 host = dest = port = args[0]
                 dest = (dest,)
             else:
                 raise OSError("Path %s not found" % args[0])
         else:
-            self += TCPClient(channel=self.channel)
+            TCPClient(channel=self.channel).register(self)
             host, port = args
             port = int(port)
             dest = host, port
@@ -119,7 +119,9 @@ def main():
     opts, args = parse_options()
 
     # Configure and "run" the System.
-    (Telnet(*args) + stdin).run()
+    app = Telnet(*args)
+    stdin.register(app)
+    app.run()
 
 
 if __name__ == "__main__":

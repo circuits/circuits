@@ -9,7 +9,7 @@ echo anything privately messages to it in response.
 """
 
 
-from circuits import Component, Debugger
+from circuits import Component
 from circuits.net.sockets import TCPClient, Connect
 from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
 
@@ -27,7 +27,8 @@ class Bot(Component):
         self.port = port
 
         # Add TCPClient and IRC to the system.
-        self += TCPClient(channel=self.channel) + IRC(channel=self.channel)
+        TCPClient(channel=self.channel).register(self)
+        IRC(channel=self.channel).register(self)
 
     def ready(self, component):
         """Ready Event
@@ -71,7 +72,9 @@ class Bot(Component):
 
 
 # Configure and run the system
-bot = Bot("irc.freenode.net") + Debugger()
+bot = Bot("irc.freenode.net")
+
 # To register a 2nd ``Bot`` instance. Simply use a separate channel.
-Bot("irc.freenode.net", channel="foo").register(bot)
+#Bot("irc.freenode.net", channel="foo").register(bot)
+
 bot.run()
