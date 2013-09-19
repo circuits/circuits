@@ -4,6 +4,7 @@ syntax: glob
 *.pyo
 *.xml
 tmp
+.git
 .tox
 dist
 build
