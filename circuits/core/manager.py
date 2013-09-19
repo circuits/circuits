@@ -8,6 +8,7 @@ This module defines the Manager class.
 
 import atexit
 from os import getpid
+from warnings import warn
 from inspect import isfunction
 from uuid import uuid4 as uuid
 from types import GeneratorType
@@ -30,6 +31,10 @@ from .events import Error, Started, Stopped, Signal, GenerateEvents
 thread = tryimport(("thread", "_thread"))
 
 TIMEOUT = 0.1  # 100ms timeout when idle
+
+
+class UnhandledEventWarning(RuntimeWarning):
+    """Raised for any event that is not handled by any event handler."""
 
 
 class UnregistrableError(Exception):
@@ -584,6 +589,9 @@ class Manager(object):
 
             if event.stopped:
                 break  # Stop further event processing
+
+        if event.handler is None:
+            warn(repr(event), UnhandledEventWarning)
 
         self._currently_handling = None
         self._eventDone(event, error)
