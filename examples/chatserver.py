@@ -91,6 +91,9 @@ class ChatServer(Component):
     def disconnect(self, sock):
         """Disconnect Event -- Triggered for disconnecting clients"""
 
+        if sock not in self.clients:
+            return
+
         nickname = self.clients[sock]["state"]["nickname"]
         self.broadcast("!!! {0:s} has left !!!\n".format(nickname),
                        exclude=[sock])

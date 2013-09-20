@@ -16,4 +16,6 @@ class Root(Controller):
 
         return basic_auth(self.request, self.response, realm, users, encrypt)
 
-(Server(8000) + Root()).run()
+app = Server(("0.0.0.0", 8000))
+Root().register(app)
+app.run()

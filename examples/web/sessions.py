@@ -11,4 +11,7 @@ class Root(Controller):
         self.session["name"] = name
         return "Hello %s!" % name
 
-(Server(8000) + Sessions() + Root()).run()
+app = Server(("0.0.0.0", 8000))
+Sessions().register(app)
+Root().register(app)
+app.run()

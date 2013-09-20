@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits.web import Server, Controller, Logger
+from circuits.web import Server, Controller
 
 
 class Root(Controller):
@@ -15,4 +15,6 @@ class Root(Controller):
 
         return "Hello World!"
 
-(Server(("0.0.0.0", 8000)) + Root()).run()
+app = Server(("0.0.0.0", 8000))
+Root().register(app)
+app.run()

@@ -95,7 +95,8 @@ class Client(Component):
         self.ircchannel = opts.channel
 
         # Add TCPClient and IRC to the system.
-        self += (TCPClient(channel=self.channel) + IRC(channel=self.channel))
+        TCPClient(channel=self.channel).register(self)
+        IRC(channel=self.channel).register(self)
 
         self.create_interface()
 

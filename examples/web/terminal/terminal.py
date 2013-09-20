@@ -129,12 +129,11 @@ class Root(Controller):
 
 from circuits import Debugger
 
-(
-    Server(("0.0.0.0", 8000))
-    + Debugger()
-    + Static("/js", docroot="static/js")
-    + Static("/css", docroot="static/css")
-    + Sessions()
-    + Logger()
-    + Root()
-).run()
+app = Server(("0.0.0.0", 8000))
+Debugger().register(app)
+Static("/js", docroot="static/js").register(app)
+Static("/css", docroot="static/css").register(app)
+Sessions().register(app)
+Logger().register(app)
+Root().register(app)
+app.run()

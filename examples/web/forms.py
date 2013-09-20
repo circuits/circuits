@@ -69,4 +69,6 @@ class Root(Controller):
         )
 
 
-(Server(9000) + Root()).run()
+app = Server(("0.0.0.0", 8000))
+Root().register(app)
+app.run()
