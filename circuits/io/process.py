@@ -1,42 +1,23 @@
-#!/usr/bin/python -i
+# Module:   process
+# Date:     4th January 2013
+# Author:   James Mills <prologic@shortcircuit.net.au>
+
+"""Process
+
+This module implements a wrapper for basic ``subprocess.Popen`` functionality.
+"""
 
 from io import BytesIO
 from subprocess import Popen, PIPE
+
 from circuits.core.manager import TIMEOUT
+from circuits import handler, BaseComponent
 
-from circuits.io import File, Write
-from circuits import handler, Component, Event
-
-
-class Started(Event):
-    """Started Event"""
+from .file import File
+from .evenets import started, stopped, write
 
 
-class Stopped(Event):
-    """Stopped Event"""
-
-
-class Start(Event):
-    """Start Event"""
-
-
-class Stop(Event):
-    """Stop Event"""
-
-
-class Signal(Event):
-    """Signal Event"""
-
-
-class Kill(Event):
-    """Kill Event"""
-
-
-class Wait(Event):
-    """Wait Event"""
-
-
-class Process(Component):
+class Process(BaseComponent):
 
     channel = "process"
 
@@ -119,7 +100,7 @@ class Process(Component):
             )
         )
 
-        self.fire(Started(self))
+        self.fire(started(self))
 
     @staticmethod
     def _on_stdout_closed(self):
@@ -143,7 +124,7 @@ class Process(Component):
         return self.p.wait()
 
     def write(self, data):
-        self.fire(Write(data), "{0:d}.stdin".format(self.p.pid))
+        self.fire(write(data), "{0:d}.stdin".format(self.p.pid))
 
     @property
     def status(self):
@@ -170,7 +151,7 @@ class Process(Component):
             self.removeHandler(self._stdout_read_handler)
             self.removeHandler(self._stderr_closed_handler)
             self.removeHandler(self._stdout_closed_handler)
-            self.fire(Stopped(self))
+            self.fire(stopped(self))
             event.reduce_time_left(0)
             return True
         else:

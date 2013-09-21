@@ -14,8 +14,9 @@ except ImportError:
     #will fail anyway.
     pass
 
-from os import read, write
 from collections import deque
+from os import read as fd_read
+from os import write as fd_write
 from sys import getdefaultencoding
 from errno import EINTR, EWOULDBLOCK
 
@@ -25,11 +26,7 @@ from circuits.core import handler, Component, Event
 from circuits.core.pollers import BasePoller, Poller
 from circuits.six import binary_type, string_types, PY3
 
-if PY3:
-    from io import FileIO
-    FileType = FileIO
-else:
-    FileType = file
+from .events import close, closed, eof, error, opened, read, ready
 
 fcntl = tryimport("fcntl")
 
@@ -37,44 +34,8 @@ TIMEOUT = 0.2
 BUFSIZE = 4096
 
 
-class EOF(Event):
-    """EOF Event"""
-
-
-class Seek(Event):
-    """Seek Event"""
-
-
-class Read(Event):
-    """Read Event"""
-
-
-class Close(Event):
-    """Close Event"""
-
-
-class Write(Event):
-    """Write Event"""
-
-
-class Error(Event):
-    """Error Event"""
-
-
-class Open(Event):
-    """Open Event"""
-
-
-class Opened(Event):
-    """Opened Event"""
-
-
-class Closed(Event):
-    """Closed Event"""
-
-
-class Ready(Event):
-    """Ready Event"""
+class _open(Event):
+    """_open Event"""
 
 
 class File(Component):
@@ -108,9 +69,9 @@ class File(Component):
 
     @handler("ready")
     def _on_ready(self, component):
-        self.fire(Open(), self.channel)
+        self.fire(_open(), self.channel)
 
-    @handler("open")
+    @handler("_open")
     def _on_open(self, filename=None, mode=None, bufsize=None):
         self._filename = filename or self._filename
         self._bufsize = bufsize or self._bufsize
@@ -134,28 +95,28 @@ class File(Component):
         if "r" in self.mode or "+" in self.mode:
             self._poller.addReader(self, self._fd)
 
-        self.fire(Opened(self.filename, self.mode))
+        self.fire(opened(self.filename, self.mode))
 
     @handler("registered", "started", channel="*")
     def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
-                self.fire(Ready(self))
+                self.fire(ready(self))
             else:
                 if component is not self:
                     return
                 component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component
-                    self.fire(Ready(self))
+                    self.fire(ready(self))
                 else:
                     self._poller = Poller().register(self)
-                    self.fire(Ready(self))
+                    self.fire(ready(self))
 
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
-        self.fire(Close())
+        self.fire(close())
 
     @handler("prepare_unregister", channel="*")
     def _on_prepare_unregister(self, event, c):
@@ -177,7 +138,7 @@ class File(Component):
         except:
             pass
 
-        self.fire(Closed())
+        self.fire(closed())
 
     def close(self):
         if not self._buffer:
@@ -187,14 +148,14 @@ class File(Component):
 
     def _read(self):
         try:
-            data = read(self._fd.fileno(), self._bufsize)
+            data = fd_read(self._fd.fileno(), self._bufsize)
             if not isinstance(data, binary_type):
                 data = data.encode(self._encoding)
 
             if data:
-                self.fire(Read(data)).notify = True
+                self.fire(read(data)).notify = True
             else:
-                self.fire(EOF())
+                self.fire(eof())
                 if not any(m in self.mode for m in ("a", "+")):
                     self.close()
                 else:
@@ -203,7 +164,7 @@ class File(Component):
             if e.args[0] in (EWOULDBLOCK, EINTR):
                 return
             else:
-                self.fire(Error(e))
+                self.fire(error(e))
                 self._close()
 
     def seek(self, offset, whence=0):
@@ -214,7 +175,7 @@ class File(Component):
             if not isinstance(data, binary_type):
                 data = data.encode(self._encoding)
 
-            nbytes = write(self._fd.fileno(), data)
+            nbytes = fd_write(self._fd.fileno(), data)
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
@@ -222,7 +183,7 @@ class File(Component):
             if e.args[0] in (EWOULDBLOCK, EINTR):
                 return
             else:
-                self.fire(Error(e))
+                self.fire(error(e))
                 self._close()
 
     def write(self, data):

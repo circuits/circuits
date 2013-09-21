@@ -10,41 +10,65 @@ This module implements commonly used I/O events used by other I/O modules.
 from circuits.core import Event
 
 
-class EOF(Event):
-    """EOF Event"""
+class eof(Event):
+    """eof Event"""
 
 
-class Seek(Event):
-    """Seek Event"""
+class seek(Event):
+    """seek Event"""
 
 
-class Read(Event):
-    """Read Event"""
+class read(Event):
+    """read Event"""
 
 
-class Close(Event):
-    """Close Event"""
+class close(Event):
+    """close Event"""
 
 
-class Write(Event):
-    """Write Event"""
+class write(Event):
+    """write Event"""
 
 
-class Error(Event):
-    """Error Event"""
+class error(Event):
+    """error Event"""
 
 
-class Open(Event):
-    """Open Event"""
+class open(Event):
+    """open Event"""
 
 
-class Opened(Event):
-    """Opened Event"""
+class opened(Event):
+    """opened Event"""
 
 
-class Closed(Event):
-    """Closed Event"""
+class closed(Event):
+    """closed Event"""
 
 
-class Ready(Event):
-    """Ready Event"""
+class ready(Event):
+    """ready Event"""
+
+
+class moved(Event):
+    """moved Event"""
+
+
+class created(Event):
+    """created Event"""
+
+
+class deleted(Event):
+    """deleted Event"""
+
+
+class accessed(Event):
+    """accessed Event"""
+
+
+class modified(Event):
+    """modified Event"""
+
+
+class unmounted(Event):
+    """unmounted Event"""
