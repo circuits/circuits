@@ -5,8 +5,8 @@ if pytest.PLATFORM == "win32":
     pytest.skip("Broken on Windows")
 
 from circuits import Component, Event
-from circuits.net.sockets import Close
-from circuits.node import Node, Remote
+from circuits.net.events import close
+from circuits.node import Node, remote
 from circuits.net.sockets import UDPServer
 
 
@@ -39,7 +39,7 @@ def bind(manager, watcher):
 
     host, port = server.host, server.port
 
-    server.fire(Close())
+    server.fire(close())
     assert watcher.wait("closed")
 
     server.unregister()
@@ -59,7 +59,7 @@ def test_return_value(manager, watcher, bind):
     e = Event.create("foo")
     e.notify = True
 
-    r = Remote(e, "a2")
+    r = remote(e, "a2")
     r.notify = True
 
     value = a1.fire(r)

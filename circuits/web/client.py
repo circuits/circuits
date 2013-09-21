@@ -4,12 +4,11 @@ try:
 except ImportError:
     from urlparse import urlparse  # NOQA
 
+from circuits.protocols.http import HTTP
 from circuits.web.headers import Headers
 from circuits.net.sockets import TCPClient
 from circuits.net.events import close, connect, write
 from circuits.core import handler, BaseComponent, Event
-
-from circuits.net.protocols.http import HTTP
 
 
 def parse_url(url):

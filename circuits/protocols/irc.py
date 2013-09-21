@@ -16,7 +16,7 @@ import re
 from circuits.net.events import write
 from circuits.core import handler, Event, DerivedEvent, Component
 
-from .line import LP
+from .line import Line
 
 ###
 ### Supporting Functions
@@ -237,7 +237,7 @@ class IRC(Component):
 
     def __init__(self, *args, **kwargs):
         super(IRC, self).__init__(*args, **kwargs)
-        LP(**kwargs).register(self)
+        Line(**kwargs).register(self)
 
     ###
     ### IRC Command Event Handlers

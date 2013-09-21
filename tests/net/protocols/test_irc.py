@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
 from circuits import handler, Event, Component
-from circuits.net.protocols.irc import strip, sourceJoin, sourceSplit, IRC
+from circuits.protocols.irc import strip, sourceJoin, sourceSplit, IRC
 
-from circuits.net.protocols.irc import (
-        PASS, USER, NICK, PING, PONG, QUIT,
-        JOIN, PART, PRIVMSG, NOTICE, CTCP, CTCPREPLY,
-        KICK, TOPIC, MODE, INVITE, NAMES, WHOIS, AWAY)
+from circuits.protocols.irc import (
+    PASS, USER, NICK, PING, PONG, QUIT,
+    JOIN, PART, PRIVMSG, NOTICE, CTCP, CTCPREPLY,
+    KICK, TOPIC, MODE, INVITE, NAMES, WHOIS, AWAY
+)
 
 
 class Read(Event):
@@ -38,8 +39,9 @@ class App(Component):
 
 def pytest_funcarg__app(request):
     return request.cached_setup(
-            setup=lambda: setupapp(request),
-            scope="module")
+        setup=lambda: setupapp(request),
+        scope="module"
+    )
 
 
 def setupapp(request):
@@ -80,8 +82,8 @@ def test_sourceSplit():
     s = "test"
     nick, ident, host = sourceSplit(s)
     assert nick == "test"
-    assert ident == None
-    assert host == None
+    assert ident is None
+    assert host is None
 
 ###
 ### Test IRC Commands
@@ -814,8 +816,11 @@ def test_ping(app):
 def test_numerics(app):
     app.reset()
 
-    app.fire(Read(b":localhost 001 test " +
-        b":Welcome to the circuits Internet Relay Chat Network test\r\n"))
+    app.fire(Read(
+        b":localhost 001 test " +
+        b":Welcome to the circuits Internet Relay Chat Network test\r\n"
+    ))
+
     while app:
         app.flush()
 
@@ -824,21 +829,21 @@ def test_numerics(app):
     e = next(events)
     assert e.name == "read"
     assert e.args[0] == b":localhost 001 test " \
-            b":Welcome to the circuits Internet Relay Chat Network test\r\n"
+        b":Welcome to the circuits Internet Relay Chat Network test\r\n"
 
     e = next(events)
     assert e.name == "line"
     assert e.args[0] == ":localhost 001 test " \
-            ":Welcome to the circuits Internet Relay Chat Network test"
+        ":Welcome to the circuits Internet Relay Chat Network test"
 
     e = next(events)
     assert e.name == "numeric"
     assert e.args[0] == "localhost"
     assert e.args[1] == "test"
     assert e.args[2] == 1
-    assert e.args[3] == None
+    assert e.args[3] is None
     assert e.args[4] == \
-            "Welcome to the circuits Internet Relay Chat Network test"
+        "Welcome to the circuits Internet Relay Chat Network test"
 
     app.reset()
 

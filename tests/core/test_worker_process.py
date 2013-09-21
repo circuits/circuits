@@ -8,7 +8,7 @@ import pytest
 
 from os import getpid
 
-from circuits import Task, Worker
+from circuits import task, Worker
 
 
 @pytest.fixture(scope="module")
@@ -41,7 +41,7 @@ def pid():
 
 
 def test_failure(manager, watcher, worker):
-    e = Task(err)
+    e = task(err)
     e.failure = True
 
     x = worker.fire(e)
@@ -52,7 +52,7 @@ def test_failure(manager, watcher, worker):
 
 
 def test_success(manager, watcher, worker):
-    e = Task(foo)
+    e = task(foo)
     e.success = True
 
     x = worker.fire(e)

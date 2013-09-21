@@ -13,8 +13,8 @@ from .sessions import Sessions
 from .url import parse_url, URL
 from .servers import BaseServer, Server
 from .controllers import expose, Controller
-from .events import Request, Response, Stream
-from .errors import HTTPError, Forbidden, NotFound, Redirect
+from .events import request, response, stream
+from .errors import httperror, forbidden, notfound, redirect
 from .dispatchers import Static, Dispatcher, VirtualHosts, XMLRPC
 
 try:

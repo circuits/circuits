@@ -2,7 +2,7 @@
 
 from circuits.web import Controller
 
-from circuits.web.client import Client, Request
+from circuits.web.client import Client, request
 
 
 class Root(Controller):
@@ -15,7 +15,7 @@ def test(webapp):
     client = Client()
     client.start()
 
-    client.fire(Request("GET", webapp.server.http.base))
+    client.fire(request("GET", webapp.server.http.base))
     while client.response is None:
         pass
 

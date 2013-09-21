@@ -6,7 +6,7 @@
 
 import pytest
 
-from circuits import Task, Worker
+from circuits import task, Worker
 
 
 @pytest.fixture(scope="module")
@@ -39,7 +39,7 @@ def f():
 
 
 def test(worker):
-    x = worker.fire(Task(f))
+    x = worker.fire(task(f))
 
     assert pytest.wait_for(x, "result")
 

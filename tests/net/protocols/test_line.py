@@ -2,8 +2,8 @@
 
 from collections import defaultdict
 
+from circuits.protocols import Line
 from circuits import Event, Component
-from circuits.net.protocols import LP
 
 
 class Read(Event):
@@ -30,7 +30,7 @@ class AppServer(Component):
 
 def test():
     app = App()
-    LP().register(app)
+    Line().register(app)
 
     while app:
         app.flush()
@@ -48,8 +48,10 @@ def test():
 def test_server():
     app = AppServer()
     buffers = defaultdict(bytes)
-    LP(getBuffer=buffers.__getitem__,
-            updateBuffer=buffers.__setitem__).register(app)
+    Line(
+        getBuffer=buffers.__getitem__,
+        updateBuffer=buffers.__setitem__
+    ).register(app)
 
     while app:
         app.flush()

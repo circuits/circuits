@@ -2,14 +2,14 @@
 # Date:     26th February 2011
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
-import hashlib
 import base64
+import hashlib
 
 from circuits.tools import deprecated
-from circuits.net.sockets import Connect
-from circuits.web.errors import HTTPError
+from circuits.net.events import connect
+from circuits.web.errors import httperror
 from circuits import handler, BaseComponent
-from circuits.net.protocols.websocket import WebSocketCodec
+from circuits.protocols.websocket import WebSocketCodec
 
 
 class WebSocketsDispatcher(BaseComponent):
@@ -67,10 +67,10 @@ class WebSocketsDispatcher(BaseComponent):
             or not "upgrade" in connection_tokens
             or sec_key is None
                 or len(base64.b64decode(sec_key)) != 16):
-                return HTTPError(request, response, code=400)
+                return httperror(request, response, code=400)
         if headers.get("Sec-WebSocket-Version", "") != "13":
             response.headers["Sec-WebSocket-Version"] = "13"
-            return HTTPError(request, response, code=400)
+            return httperror(request, response, code=400)
 
         # Generate accept header information
         msg = sec_key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
@@ -89,7 +89,7 @@ class WebSocketsDispatcher(BaseComponent):
         codec = WebSocketCodec(request.sock, channel=self._wschannel)
         self._codecs[request.sock] = codec
         codec.register(self)
-        self.fire(Connect(request.sock, *request.sock.getpeername()),
+        self.fire(connect(request.sock, *request.sock.getpeername()),
                   self._wschannel)
         return response
 

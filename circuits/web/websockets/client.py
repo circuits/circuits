@@ -16,13 +16,13 @@ except ImportError:
 from circuits.web import client
 from circuits.tools import deprecated
 from circuits.web.headers import Headers
+from circuits.protocols.http import HTTP
 from circuits.core.handlers import handler
 from circuits.net.sockets import TCPClient
 from circuits.web.client import NotConnected
-from circuits.net.protocols.http import HTTP
 from circuits.core.components import BaseComponent
 from circuits.net.events import connect, write, close
-from circuits.net.protocols.websocket import WebSocketCodec
+from circuits.protocols.websocket import WebSocketCodec
 
 
 class WebSocketClient(BaseComponent):
