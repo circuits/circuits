@@ -29,8 +29,8 @@ def splitLines(s, buffer):
     return lines[:-1], lines[-1]
 
 
-class Line(Event):
-    """Line Event"""
+class line(Event):
+    """line Event"""
 
 
 class LP(BaseComponent):
@@ -101,12 +101,10 @@ class LP(BaseComponent):
             # Client read
             data, = args
             lines, self.buffer = self.splitter(data, self.buffer)
-            for line in lines:
-                self.fire(Line(line.decode(self.encoding, "replace")))
+            [self.fire(line(x.decode(self.encoding, "replace"))) for x in lines]
         else:
             # Server read
             sock, data = args
             lines, buffer = self.splitter(data, self.getBuffer(sock))
             self.updateBuffer(sock, buffer)
-            for line in lines:
-                self.fire(Line(sock, line.decode(self.encoding, "replace")))
+            [self.fire(line(sock, x.decode(self.encoding, "replace"))) for x in lines]

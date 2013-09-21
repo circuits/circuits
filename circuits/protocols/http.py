@@ -6,12 +6,12 @@ from circuits.web.constants import HTTP_STATUS_CODES
 from circuits.core import handler, BaseComponent, Event
 
 
-class Request(Event):
-    """Request Event"""
+class request(Event):
+    """request Event"""
 
 
-class Response(Event):
-    """Response Event"""
+class response(Event):
+    """response Event"""
 
 
 class ResponseObject(object):
@@ -60,6 +60,6 @@ class HTTP(BaseComponent):
             response = ResponseObject(headers, status, version)
             response.body.write(self._parser.recv_body())
             response.body.seek(0)
-            self.fire(Response(response))
+            self.fire(response(response))
 
             self._parser = HttpParser(1, True, self._encoding)

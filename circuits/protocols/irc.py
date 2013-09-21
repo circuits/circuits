@@ -14,7 +14,7 @@ implementations.
 import re
 
 from circuits.net.sockets import Write
-from circuits.core import handler, Event, Component
+from circuits.core import handler, Event, DerivedEvent, Component
 
 from .line import LP
 
@@ -78,92 +78,87 @@ def sourceSplit(source):
 ###
 
 
-class Command(Event):
-    """Command Event"""
-
-    def __init__(self, *args, **kwargs):
-        super(Command, self).__init__(*args, **kwargs)
-
-        self.name = "command_{0}".format(self.__class__.__name__.lower())
+class command(DerivedEvent):
+    """command DerivedEvent"""
 
 
-class AWAY(Command):
+class AWAY(command):
     """AWAY command"""
 
 
-class RAW(Command):
+class RAW(command):
     """RAW command"""
 
 
-class PASS(Command):
+class PASS(command):
     """PASS command"""
 
 
-class USER(Command):
+class USER(command):
     """USER command"""
 
 
-class NICK(Command):
+class NICK(command):
     """NICK command"""
 
 
-class PING(Command):
+class PING(command):
     """PING command"""
 
 
-class PONG(Command):
+class PONG(command):
     """PONG command"""
 
 
-class QUIT(Command):
+class QUIT(command):
     """QUIT command"""
 
 
-class JOIN(Command):
+class JOIN(command):
     """JOIN command"""
 
 
-class PART(Command):
+class PART(command):
     """PART command"""
 
 
-class PRIVMSG(Command):
+class PRIVMSG(command):
     """PRIVMSG command"""
 
 
-class NOTICE(Command):
+class NOTICE(command):
     """NOTICE command"""
 
 
-class CTCP(Command):
+class CTCP(command):
     """CTCP command"""
 
 
-class CTCPREPLY(Command):
+class CTCPREPLY(command):
     """CTCPREPLY command"""
 
 
-class KICK(Command):
+class KICK(command):
     """KICK command"""
 
 
-class TOPIC(Command):
+class TOPIC(command):
     """TOPIC command"""
 
 
-class MODE(Command):
+class MODE(command):
     """MODE command"""
 
 
-class INVITE(Command):
+class INVITE(command):
     """INVITE command"""
 
 
-class NAMES(Command):
+class NAMES(command):
     """NAMES command"""
 
 
-class WHOIS(Command):
+class WHOIS(command):
     """WHOIS command"""
 
 ###
@@ -171,56 +166,56 @@ class WHOIS(Command):
 ###
 
 
-class Response(Event):
-    """Response (Event)"""
+class response(Event):
+    """response Event"""
 
 
-class Numeric(Response):
-    """Numeric response"""
+class numeric(response):
+    """numeric response"""
 
 
-class Away(Response):
+class away(response):
     """Target user is away."""
 
 
-class Ping(Response):
-    """Ping response"""
+class ping(response):
+    """ping response"""
 
 
-class Ctcp(Response):
-    """Ctcp response"""
+class ctcp(response):
+    """ctcp response"""
 
 
-class Message(Response):
-    """Message response"""
+class message(response):
+    """message response"""
 
 
-class Notice(Response):
-    """Notice response"""
+class notice(response):
+    """notice response"""
 
 
-class Join(Response):
-    """Join response"""
+class join(response):
+    """join response"""
 
 
-class Part(Response):
-    """Part response"""
+class part(response):
+    """part response"""
 
 
-class Quit(Response):
-    """Quit response"""
+class quit(response):
+    """quit response"""
 
 
-class Nick(Response):
-    """Nick response"""
+class nick(response):
+    """nick response"""
 
 
-class Mode(Response):
-    """Mode response"""
+class mode(response):
+    """mode response"""
 
 
-class Invite(Response):
-    """Invite response"""
+class invite(response):
+    """invite response"""
 
 
 ###
@@ -248,75 +243,74 @@ class IRC(Component):
     ### IRC Command Event Handlers
     ###
 
-    def command_raw(self, data):
+    def command_RAW(self, data):
         self.fire(Write("%s\r\n" % data))
 
-    @handler("command_pass")
-    def _on_command_pass(self, password):
+    def command_PASS(self, password):
         self.fire(RAW("PASS %s" % password))
 
-    def command_away(self, message=""):
+    def command_AWAY(self, message=""):
         self.fire(RAW("AWAY :%s" % message))
 
-    def command_user(self, ident, host, server, name):
+    def command_USER(self, ident, host, server, name):
         self.fire(RAW("USER %s \"%s\" \"%s\" :%s" % (
             ident, host, server, name)))
 
-    def command_nick(self, nick):
+    def command_NICK(self, nick):
         self.fire(RAW("NICK %s" % nick))
 
-    def command_ping(self, server):
+    def command_PING(self, server):
         self.fire(RAW("PING :%s" % server))
 
-    def command_pong(self, server):
+    def command_PONG(self, server):
         self.fire(RAW("PONG :%s" % server))
 
-    def command_quit(self, message="Leaving"):
+    def command_QUIT(self, message="Leaving"):
         self.fire(RAW("QUIT :%s" % message))
 
-    def command_join(self, channel, key=None):
+    def command_JOIN(self, channel, key=None):
         if key is None:
             self.fire(RAW("JOIN %s" % channel))
         else:
             self.fire(RAW("JOIN %s %s" % (channel, key)))
 
-    def command_part(self, channel, message="Leaving"):
+    def command_PART(self, channel, message="Leaving"):
         self.fire(RAW("PART %s :%s" % (channel, message)))
 
-    def command_privmsg(self, target, message):
+    def command_PRIVMSG(self, target, message):
         self.fire(RAW("PRIVMSG %s :%s" % (target, message)))
 
-    def command_notice(self, target, message):
+    def command_NOTICE(self, target, message):
         self.fire(RAW("NOTICE %s :%s" % (target, message)))
 
-    def command_ctcp(self, target, type, message):
+    def command_CTCP(self, target, type, message):
         self.fire(PRIVMSG(target, "%s %s" % (type, message)))
 
-    def command_ctcpreply(self, target, type, message):
+    def command_CTCPREPLY(self, target, type, message):
         self.fire(NOTICE(target, "%s %s" % (type, message)))
 
-    def command_kick(self, channel, target, message=""):
+    def command_KICK(self, channel, target, message=""):
         self.fire(RAW("KICK %s %s :%s" % (channel, target, message)))
 
-    def command_topic(self, channel, topic):
+    def command_TOPIC(self, channel, topic):
         self.fire(RAW("TOPIC %s :%s" % (channel, topic)))
 
-    def command_mode(self, modes, channel=None):
+    def command_MODE(self, modes, channel=None):
         if channel is None:
             self.fire(RAW("MODE :%s" % modes))
         else:
             self.fire(RAW("MODE %s :%s" % (channel, modes)))
 
-    def command_invite(self, target, channel):
+    def command_INVITE(self, target, channel):
         self.fire(RAW("INVITE %s %s" % (target, channel)))
 
-    def command_names(self, channel=None):
+    def command_NAMES(self, channel=None):
         if channel:
             self.fire(RAW("NAMES %s" % channel))
         else:
             self.fire(RAW("NAMES"))
 
-    def command_whois(self, nick):
+    def command_WHOIS(self, nick):
         self.fire(RAW("WHOIS :%s" % nick))
 
     ###
@@ -336,13 +330,14 @@ class IRC(Component):
         tokens = line.split(" ")
 
         if tokens[0] == "PING":
-            self.fire(Ping(strip(tokens[1])))
+            self.fire(ping(strip(tokens[1])))
 
         elif re.match("[0-9]+", tokens[1]):
             source = strip(tokens[0])
             target = tokens[2]
 
-            numeric = int(tokens[1])
+            n = int(tokens[1])
+
             if tokens[3].startswith(":"):
                 arg = None
                 message = strip(" ".join(tokens[3:]))
@@ -350,10 +345,10 @@ class IRC(Component):
                 arg = tokens[3]
                 message = strip(" ".join(tokens[4:]))
 
-            self.fire(Numeric(source, target, numeric, arg, message))
+            self.fire(numeric(source, target, n, arg, message))
 
-            if numeric == 301:
-                self.fire(Away(arg, message))
+            if n == 301:
+                self.fire(away(arg, message))
 
         elif tokens[1] == "PRIVMSG":
             source = sourceSplit(strip(tokens[0]))
@@ -364,48 +359,48 @@ class IRC(Component):
                 tokens = strip(message, color=True).split(" ")
                 type = tokens[0]
                 message = " ".join(tokens[1:])
-                self.fire(Ctcp(source, target, type, message))
+                self.fire(ctcp(source, target, type, message))
             else:
-                self.fire(Message(source, target, message))
+                self.fire(message(source, target, message))
 
         elif tokens[1] == "NOTICE":
             source = sourceSplit(strip(tokens[0]))
             target = tokens[2]
             message = strip(" ".join(tokens[3:]))
-            self.fire(Notice(source, target, message))
+            self.fire(notice(source, target, message))
 
         elif tokens[1] == "JOIN":
             source = sourceSplit(strip(tokens[0]))
             channel = strip(tokens[2])
-            self.fire(Join(source, channel))
+            self.fire(join(source, channel))
 
         elif tokens[1] == "PART":
             source = sourceSplit(strip(tokens[0]))
             channel = strip(tokens[2])
             message = strip(" ".join(tokens[3:]))
-            self.fire(Part(source, channel, message))
+            self.fire(part(source, channel, message))
 
         elif tokens[1] == "QUIT":
             source = sourceSplit(strip(tokens[0]))
             message = strip(" ".join(tokens[2:]))
-            self.fire(Quit(source, message))
+            self.fire(quit(source, message))
 
         elif tokens[1] == "NICK":
             source = sourceSplit(strip(tokens[0]))
             newNick = strip(tokens[2])
 
-            self.fire(Nick(source, newNick))
+            self.fire(nick(source, newNick))
 
         elif tokens[1] == "MODE":
             source = sourceSplit(strip(tokens[0]))
             target = tokens[2]
             modes = strip(" ".join(tokens[3:]))
-            self.fire(Mode(source, target, modes))
+            self.fire(mode(source, target, modes))
         elif tokens[1] == "INVITE":
             source = sourceSplit(strip(tokens[0]))
             target = tokens[2]
             channel = strip(tokens[3])
-            self.fire(Invite(source, target, channel))
+            self.fire(invite(source, target, channel))
 
     ###
     ### Default Events
@@ -422,7 +417,7 @@ class IRC(Component):
         or sending your own Pong reponse.
         """
 
-        if isinstance(event, Ping):
+        if isinstance(event, ping):
             self.fire(PONG(server))
             return True
 
