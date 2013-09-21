@@ -18,9 +18,9 @@ __author__ = "James Mills"
 __date__ = "24th February 2013"
 __version__ = "2.2.0"
 
-from circuits.core import Task, Worker
+from circuits.core import task, Worker
+from circuits.core import DerivedEvent, Event
 from circuits.core import Debugger, Bridge, Loader, Manager, Timer
-from circuits.core import BaseEvent, DerivedEvent, Event, LiteralEvent
 from circuits.core import handler, reprhandler, BaseComponent, Component
 
 __import__("pkg_resources").declare_namespace(__name__)

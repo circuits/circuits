@@ -26,8 +26,8 @@ from .components import BaseComponent
 DEFAULT_WORKERS = 10
 
 
-class Task(Event):
-    """Task Event
+class task(Event):
+    """task Event
 
     This Event is used to initiate a new task to be performed by a Worker
     or a Pool of Worker(s).
@@ -48,7 +48,7 @@ class Task(Event):
     def __init__(self, f, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Task, self).__init__(f, *args, **kwargs)
+        super(task, self).__init__(f, *args, **kwargs)
 
 
 class Worker(BaseComponent):

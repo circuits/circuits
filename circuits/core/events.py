@@ -3,16 +3,16 @@
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
 """
-This module defines the basic Event class and common events.
+This module defines the basic event class and common events.
 """
 
 from inspect import ismethod
 
 
-class EventMetaClass(type):
+class EventType(type):
 
     def __init__(cls, name, bases, ns):
-        super(EventMetaClass, cls).__init__(name, bases, ns)
+        super(EventType, cls).__init__(name, bases, ns)
 
         setattr(cls, "name", ns.get("name", cls.__name__))
 
@@ -34,7 +34,7 @@ class BaseEvent(object):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
-        """An Event is a message send to one or more channels. It is eventually
+        """An event is a message send to one or more channels. It is eventually
         dispatched to all components that have handlers for one
         of the channels and the event type.
 
@@ -62,8 +62,8 @@ class BaseEvent(object):
             for the event.
 
         :var success: if this optional attribute is set to
-            ``True``, an associated event ``EventSuccess`` (original name
-            with "Success" appended) will automatically be fired when all
+            ``True``, an associated event ``success`` (original name
+            with "_success" appended) will automatically be fired when all
             handlers for the event have been invoked successfully.
 
         :var success_channels: the success event is, by default, delivered
@@ -72,8 +72,8 @@ class BaseEvent(object):
             destinations using this attribute.
 
         :var complete: if this optional attribute is set to
-            ``True``, an associated event ``EventComplete`` (original name
-            with "Complete" appended) will automatically be fired when all
+            ``True``, an associated event ``complete`` (original name
+            with "_complete" appended) will automatically be fired when all
             handlers for the event and all events fired by these handlers
             (recursively) have been invoked successfully.
 
@@ -127,7 +127,7 @@ class BaseEvent(object):
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
 
-        Get and return data from the Event object requested by "x".
+        Get and return data from the event object requested by "x".
         If an int is passed to x, the requested argument from self.args
         is returned index by x. If a str is passed to x, the requested
         keyword argument from self.kwargs is returned keyed by x.
@@ -144,7 +144,7 @@ class BaseEvent(object):
     def __setitem__(self, i, y):
         """x.__setitem__(i, y) <==> x[i] = y
 
-        Modify the data in the Event object requested by "x".
+        Modify the data in the event object requested by "x".
         If i is an int, the ith requested argument from self.args
         shall be changed to y. If i is a str, the requested value
         keyed by i from self.kwargs, shall by changed to y.
@@ -163,28 +163,25 @@ class BaseEvent(object):
 
         self.stopped = True
 
-Event = EventMetaClass("Event", (BaseEvent,), {})
-LiteralEvent = Event
+
+class Event(BaseEvent):
+
+    __metaclass__ = EventType
 
 
 class DerivedEvent(Event):
 
     @classmethod
     def create(cls, topic, event, *args, **kwargs):
-        if isinstance(event, LiteralEvent):
-            name = "%s%s" % (event.__class__.__name__, "_%s" % topic)
-            return type(cls)(name, (cls,),
-                             {"name": name})(event, *args, **kwargs)
-        else:
-            name = "%s_%s" % (event.__class__.__name__, topic)
-            return type(cls)(name, (cls,), {})(event, *args, **kwargs)
+        name = "{0:s}_{1:s}".format(event.__class__.__name__, topic)
+        return type(cls)(name, (cls,), {"name": name})(event, *args, **kwargs)
 
 
-class Error(Event):
-    """Error Event
+class error(Event):
+    """error Event
 
-    This Event is sent for any exceptions that occur during the execution
-    of an Event Handler that is not SystemExit or KeyboardInterrupt.
+    This event is sent for any exceptions that occur during the execution
+    of an event Handler that is not SystemExit or KeyboardInterrupt.
 
     :param type: type of exception
     :type  type: type
@@ -198,110 +195,92 @@ class Error(Event):
     :param handler: handler that raised the exception
     :type  handler: @handler(<method>)
 
-    :param fevent: event that failed
-    :type  fevent: Event
+    :param event: event that failed
+    :type  event: event
     """
 
-    def __init__(self, type, value, traceback, handler=None, fevent=None):
-        super(Error, self).__init__(type, value, traceback,
-                                    handler=handler, fevent=fevent)
+    def __init__(self, type, value, traceback, handler=None, event=None):
+        super(error, self).__init__(type, value, traceback, handler=handler, event=event)
 
 
-class Done(DerivedEvent):
-    """Done Event
+class done(DerivedEvent):
+    """done DerivedEvent
 
     This Event is sent when an event is done. It is used by the wait and call
     primitives to know when to stop waiting. Don't use this for application
     development, use :class:`Success` instead.
     """
-    def __init__(self, *args, **kwargs):
-        super(Done, self).__init__(*args, **kwargs)
 
 
-class Success(DerivedEvent):
-    """Success Event
+class success(DerivedEvent):
+    """success DerivedEvent
 
     This Event is sent when all handlers (for a particular event) have been
     executed successfully, see :class:`~.manager.Manager`.
-
-    :param event: The event that has completed.
-    :type  event: Event
     """
-    def __init__(self, *args, **kwargs):
-        super(Success, self).__init__(*args, **kwargs)
 
 
-class Complete(DerivedEvent):
-    """Complete Event
+class complete(DerivedEvent):
+    """complete DerivedEvent
 
     This Event is sent when all handlers (for a particular event) have been
     executed and (recursively) all handlers for all events fired by those
     handlers etc., see :class:`~.manager.Manager`.
-
-    :param event: The event that has completed.
-    :type  event: Event
     """
-    def __init__(self, *args, **kwargs):
-        super(Complete, self).__init__(*args, **kwargs)
 
 
-class Failure(DerivedEvent):
-    """Failure Event
+class failure(DerivedEvent):
+    """failure DerivedEvent
 
     This Event is sent when an error has occurred with the execution of an
     Event Handlers.
-
-    :param event: The event that failed
-    :type  event: Event
-    """
-    def __init__(self, *args, **kwargs):
-        super(DerivedEvent, self).__init__(*args, **kwargs)
-
-
-class Started(Event):
-    """Started Event
-
-    This Event is sent when a Component has started running.
-
-    :param component: The component that was started
-    :type  component: Component or Manager
     """
 
-    def __init__(self, component):
-        super(Started, self).__init__(component)
 
+class started(Event):
+    """started Event
 
-class Stopped(Event):
-    """Stopped Event
+    This Event is sent when a Component or Manager  has started running.
 
-    This Event is sent when a Component has stopped running.
-
-    :param component: The component that has stopped
-    :type  component: Component or Manager
+    :param manager: The component or manager that was started
+    :type  manager: Component or Manager
     """
 
-    def __init__(self, component):
-        super(Stopped, self).__init__(component)
+    def __init__(self, manager):
+        super(started, self).__init__(manager)
 
 
-class Signal(Event):
-    """Signal Event
+class stopped(Event):
+    """stopped Event
+
+    This Event is sent when a Component or Manager has stopped running.
+
+    :param manager: The component or manager that has stopped
+    :type  manager: Component or Manager
+    """
+
+    def __init__(self, manager):
+        super(stopped, self).__init__(manager)
+
+
+class signal(Event):
+    """signal Event
 
     This Event is sent when a Component receives a signal.
 
-    :param signal: The signal number received.
-    :type  int:    An int value for the signal
+    :param signo: The signal number received.
+    :type  int:   An int value for the signal
 
     :param stack:  The interrupted stack frame.
     :type  object: A stack frame
     """
 
-    def __init__(self, signal, stack):
-        super(Signal, self).__init__(signal, stack)
+    def __init__(self, signo, stack):
+        super(signal, self).__init__(signo, stack)
 
 
-class Registered(Event):
-    """Registered Event
+class registered(Event):
+    """registered Event
 
     This Event is sent when a Component has registered with another Component
     or Manager. This Event is only sent iif the Component or Manager being
@@ -315,35 +294,29 @@ class Registered(Event):
     """
 
     def __init__(self, component, manager):
-        super(Registered, self).__init__(component, manager)
+        super(registered, self).__init__(component, manager)
 
 
-class Unregister(Event):
-    """Unregister Event
+class unregister(Event):
+    """unregister Event
 
     This Event ask for a Component to unregister from its
     Component or Manager.
     """
 
-    def __init__(self, component=None):
-        super(Unregister, self).__init__(component)
 
-
-class Unregistered(Event):
-    """Unregistered Event
+class unregistered(Event):
+    """unregistered Event
 
     This Event is sent when a Component has been unregistered from its
     Component or Manager.
     """
 
-    def __init__(self, component, manager):
-        super(Unregistered, self).__init__(component, manager)
 
+class generate_events(Event):
+    """generate_events Event
 
-class GenerateEvents(Event):
-    """Generate events event
-
-    This event is sent by the circuits core. All components that generate
+    This Event is sent by the circuits core. All components that generate
     timed events or events from external sources (e.g. data becoming
     available) should fire any pending events in their "generate_events"
     handler. The handler must either be a filter (preventing other
@@ -359,7 +332,8 @@ class GenerateEvents(Event):
     """
 
     def __init__(self, lock, max_wait):
-        super(GenerateEvents, self).__init__()
+        super(generate_events, self).__init__()
+
         self._time_left = max_wait
         self._lock = lock
 
@@ -371,6 +345,7 @@ class GenerateEvents(Event):
         one component in your system (usually a poller component) that
         spends up to "time left" until it generates an event.
         """
+
         return self._time_left
 
     def reduce_time_left(self, time_left):
@@ -388,6 +363,7 @@ class GenerateEvents(Event):
         If the time left is reduced to 0 and the event is currently
         being handled, the handler's *resume* method is invoked.
         """
+
         with self._lock:
             if time_left >= 0 and (self._time_left < 0
                                    or self._time_left > time_left):

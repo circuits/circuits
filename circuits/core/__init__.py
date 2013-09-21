@@ -13,18 +13,18 @@ from .loader import Loader
 from .manager import Manager
 from .handlers import handler, reprhandler
 from .components import BaseComponent, Component
-from .events import BaseEvent, DerivedEvent, Event, LiteralEvent
+from .events import BaseEvent, DerivedEvent, Event
 
 from .values import Value
 
 from .timers import Timer
 
-from .workers import Task, Worker
+from .workers import task, Worker
 
 from .debugger import Debugger
 
 __all__ = (
-    "handler", "BaseComponent", "Component", "Event", "Map", "Pool", "Task",
+    "handler", "BaseComponent", "Component", "Event", "Map", "Pool", "task",
     "Worker", "Bridge", "Debugger", "Timer", "Manager",
 )
 

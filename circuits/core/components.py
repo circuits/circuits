@@ -1,6 +1,7 @@
 # Package:  components
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+
 """
 This module defines the BaseComponent and its subclass Component.
 """
@@ -11,11 +12,11 @@ from inspect import getmembers
 from collections import Callable
 
 from .manager import Manager
-from .events import Event, Registered, Unregistered
 from .handlers import handler, HandlerMetaClass
+from .events import Event, registered, unregistered
 
 
-class PrepareUnregister(Event):
+class prepare_unregister(Event):
     """
     This event is fired when a component is about to be unregistered
     from the component tree. Unregistering a component actually
@@ -33,7 +34,7 @@ class PrepareUnregister(Event):
     complete = True
 
     def __init__(self, *args, **kwargs):
-        super(PrepareUnregister, self).__init__(*args, **kwargs)
+        super(prepare_unregister, self).__init__(*args, **kwargs)
 
     def in_subtree(self, component):
         """
@@ -147,7 +148,7 @@ class BaseComponent(Manager):
         if parent is not self:
             parent.registerChild(self)
             self._updateRoot(parent.root)
-            self.fire(Registered(self, self.parent))
+            self.fire(registered(self, self.parent))
         else:
             self._updateRoot(parent.root)
 
@@ -166,13 +167,13 @@ class BaseComponent(Manager):
         Removing a component from the component tree is a two stage process.
         First, the component is marked as to be removed, which prevents it
         from receiving further events, and a
-        :class:`~.components.PrepareUnregister` event is fired. This
+        :class:`~.components.prepare_unregister` event is fired. This
         allows other components to e.g. release references to the component
         to be removed before it is actually removed from the component tree.
 
-        After the processing of the ``PrepareUnregister`` event has completed,
+        After the processing of the ``prepare_unregister`` event has completed,
         the component is removed from the tree and an
-        :class:`~.events.Unregistered` event is fired.
+        :class:`~.events.unregistered` event is fired.
         """
 
         if self.unregister_pending or self.parent == self:
@@ -183,7 +184,7 @@ class BaseComponent(Manager):
         self.root._cache_needs_refresh = True
 
         # Give components a chance to prepare for unregister
-        evt = PrepareUnregister(self)
+        evt = prepare_unregister(self)
         evt.complete_channels = (self,)
         self.fire(evt)
 
@@ -196,7 +197,7 @@ class BaseComponent(Manager):
     def _do_prepare_unregister_complete(self, e, value):
         # Remove component from tree now
         delattr(self, "_unregister_pending")
-        self.fire(Unregistered(self, self.parent))
+        self.fire(unregistered(self, self.parent))
 
         if self.parent is not self:
             self.parent.unregisterChild(self)
