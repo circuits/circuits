@@ -14,7 +14,7 @@ from circuits.core.manager import TIMEOUT
 from circuits import handler, BaseComponent
 
 from .file import File
-from .evenets import started, stopped, write
+from .events import started, stopped, write
 
 
 class Process(BaseComponent):

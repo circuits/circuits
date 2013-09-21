@@ -24,7 +24,7 @@ class WebSocketsDispatcher(BaseComponent):
     connection to the client. Any subsequent data from the client is
     handled as a WebSocket data frame, decoded and fired as
     a :class:`~.sockets.Read` event on the ``wschannel`` passed to
-    the constructor. The data from :class:`~.sockets.Write` events on
+    the constructor. The data from :class:`~.net.events.write` events on
     that channel is encoded as data frames and forwarded to the client.
 
     Firing a :class:`~.sockets.Close` event on the ``wschannel`` closes the
@@ -41,7 +41,7 @@ class WebSocketsDispatcher(BaseComponent):
 
         :param wschannel: the channel on which :class:`~.sockets.Read`
             events from the client will be delivered and where
-            :class:`~.sockets.Write` events to the client will be
+            :class:`~.net.events.write` events to the client will be
             sent to.
         """
 

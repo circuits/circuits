@@ -17,7 +17,7 @@ from circuits.core import handler, BaseComponent
 
 from . import tools
 from .wrappers import Response
-from .errors import Forbidden, HTTPError, NotFound, Redirect
+from .errors import forbidden, httperror, notfound, redirect
 
 
 def expose(*channels, **config):
@@ -101,7 +101,7 @@ class BaseController(BaseComponent):
         :type description: str
         """
 
-        return Forbidden(self.request, self.response, description=description)
+        return forbidden(self.request, self.response, description=description)
 
     def notfound(self, description=None):
         """Return a 404 (Not Found) response
@@ -110,7 +110,7 @@ class BaseController(BaseComponent):
         :type description: str
         """
 
-        return NotFound(self.request, self.response, description=description)
+        return notfound(self.request, self.response, description=description)
 
     def redirect(self, urls, code=None):
         """Return a 30x (Redirect) response
@@ -124,7 +124,7 @@ class BaseController(BaseComponent):
         :param code: HTTP Redirect code
         :type code: int
         """
-        return Redirect(self.request, self.response, urls, code=code)
+        return redirect(self.request, self.response, urls, code=code)
 
     def serve_file(self, path, type=None, disposition=None, name=None):
         return tools.serve_file(
@@ -155,7 +155,7 @@ def exposeJSON(*channels, **config):
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
                 result = f(self, *args, **kwargs)
-                if (isinstance(result, HTTPError)
+                if (isinstance(result, httperror)
                         or isinstance(result, Response)):
                     return result
                 else:

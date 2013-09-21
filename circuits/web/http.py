@@ -20,16 +20,16 @@ except ImportError:
 
 
 from circuits.six import text_type
-from circuits.net.sockets import Close, Write
+from circuits.net.events import close, write
 from circuits.core import handler, BaseComponent, Value
 
 from . import wrappers
 from .url import parse_url
 from .utils import is_ssl_handshake
 from .exceptions import HTTPException
-from .events import Request, Response, Stream
+from .events import request, response, stream
 from .parsers import HttpParser, BAD_FIRST_LINE
-from .errors import HTTPError, NotFound, Redirect
+from .errors import httperror, notfound, redirect
 from .exceptions import Redirect as RedirectException
 from .constants import SERVER_VERSION, SERVER_PROTOCOL
 
@@ -101,12 +101,12 @@ class HTTP(BaseComponent):
         return self.uri.utf8().rstrip(b"/").decode(self._encoding)
 
     @handler("stream")
-    def _on_stream(self, response, data):
+    def _on_stream(self, res, data):
         if data is not None:
             if isinstance(data, text_type):
                 data = data.encode(self._encoding)
 
-            if response.chunked:
+            if res.chunked:
                 buf = [
                     hex(len(data))[2:].encode(self._encoding),
                     b"\r\n",
@@ -115,26 +115,26 @@ class HTTP(BaseComponent):
                 ]
                 data = b"".join(buf)
 
-            self.fire(Write(response.request.sock, data))
+            self.fire(write(response.request.sock, data))
 
-            if response.body and not response.done:
+            if res.body and not res.done:
                 try:
-                    data = next(response.body)
+                    data = next(res.body)
                 except StopIteration:
                     data = None
-                self.fire(Stream(response, data))
+                self.fire(stream(res, data))
         else:
-            if response.body:
-                response.body.close()
-            if response.chunked:
-                self.fire(Write(response.request.sock, b"0\r\n\r\n"))
-            if response.close:
-                self.fire(Close(response.request.sock))
-            del self._clients[response.request.sock]
-            response.done = True
+            if res.body:
+                res.body.close()
+            if res.chunked:
+                self.fire(write(res.request.sock, b"0\r\n\r\n"))
+            if res.close:
+                self.fire(close(res.request.sock))
+            del self._clients[res.request.sock]
+            res.done = True
 
     @handler("response")
-    def _on_response(self, response):
+    def _on_response(self, res):
         """``Response`` Event Handler
 
         :param response: the ``Response`` object created when the
@@ -143,41 +143,41 @@ class HTTP(BaseComponent):
 
         This handler builds an HTTP response data stream from
         the information contained in the *response* object and
-        sends it to the client (firing ``Write`` events).
+        sends it to the client (firing ``write`` events).
         """
         # send HTTP response status line and headers
 
-        request = response.request
-        headers = response.headers
-        sock = request.sock
+        req = res.request
+        headers = res.headers
+        sock = req.sock
 
         # process body
-        if response.stream and response.body:
+        if res.stream and res.body:
             try:
-                data = next(response.body)
+                data = next(res.body)
             except StopIteration:
                 data = None
-            self.fire(Write(sock, bytes(response)))
-            self.fire(Write(sock, bytes(headers)))
-            self.fire(Stream(response, data))
+            self.fire(write(sock, bytes(res)))
+            self.fire(write(sock, bytes(headers)))
+            self.fire(stream(res, data))
         else:
-            self.fire(Write(sock, bytes(response)))
-            self.fire(Write(sock, bytes(headers)))
+            self.fire(write(sock, bytes(res)))
+            self.fire(write(sock, bytes(headers)))
 
-            if isinstance(response.body, bytes):
-                body = response.body
-            elif isinstance(response.body, text_type):
-                body = response.body.encode(self._encoding)
+            if isinstance(res.body, bytes):
+                body = res.body
+            elif isinstance(res.body, text_type):
+                body = res.body.encode(self._encoding)
             else:
                 parts = (
                     s
                     if isinstance(s, bytes) else s.encode(self._encoding)
-                    for s in response.body if s is not None
+                    for s in res.body if s is not None
                 )
                 body = b"".join(parts)
 
             if body:
-                if response.chunked:
+                if res.chunked:
                     buf = [
                         hex(len(body))[2:].encode(self._encoding),
                         b"\r\n",
@@ -186,18 +186,18 @@ class HTTP(BaseComponent):
                     ]
                     body = b"".join(buf)
 
-                self.fire(Write(sock, body))
+                self.fire(write(sock, body))
 
-                if response.chunked:
-                    self.fire(Write(sock, b"0\r\n\r\n"))
+                if res.chunked:
+                    self.fire(write(sock, b"0\r\n\r\n"))
 
-            if not response.stream:
-                if response.close:
-                    self.fire(Close(sock))
+            if not res.stream:
+                if res.close:
+                    self.fire(close(sock))
                 # Delete the request/response objects if present
                 if sock in self._clients:
                     del self._clients[sock]
-                response.done = True
+                res.done = True
 
     @handler("disconnect")
     def _on_disconnect(self, sock):
@@ -227,16 +227,16 @@ class HTTP(BaseComponent):
                     del self._buffers[sock]
                 if sock in self._clients:
                     del self._clients[sock]
-                return self.fire(Close(sock))
+                return self.fire(close(sock))
 
         _scheme = "https" if self._server.secure else "http"
         parser.execute(data, len(data))
         if not parser.is_headers_complete():
             if parser.errno is not None:
                 if parser.errno == BAD_FIRST_LINE:
-                    request = wrappers.Request(sock, server=self._server)
+                    req = wrappers.Request(sock, server=self._server)
                 else:
-                    request = wrappers.Request(
+                    req = wrappers.Request(
                         sock,
                         parser.get_method(),
                         parser.get_scheme() or _scheme,
@@ -245,14 +245,14 @@ class HTTP(BaseComponent):
                         parser.get_query_string(),
                         server=self._server
                     )
-                request.server = self._server
-                response = wrappers.Response(request, encoding=self._encoding)
+                req.server = self._server
+                res = wrappers.Response(req, encoding=self._encoding)
                 del self._buffers[sock]
-                return self.fire(HTTPError(request, response, 400))
+                return self.fire(httperror(req, res, 400))
             return
 
         if sock in self._clients:
-            request, response = self._clients[sock]
+            req, res = self._clients[sock]
         else:
             method = parser.get_method()
             scheme = parser.get_scheme() or _scheme
@@ -260,54 +260,54 @@ class HTTP(BaseComponent):
             version = parser.get_version()
             query_string = parser.get_query_string()
 
-            request = wrappers.Request(
+            req = wrappers.Request(
                 sock, method, scheme, path, version, query_string,
                 headers=parser.get_headers(), server=self._server
             )
 
-            response = wrappers.Response(request, encoding=self._encoding)
+            res = wrappers.Response(req, encoding=self._encoding)
 
-            self._clients[sock] = (request, response)
+            self._clients[sock] = (req, res)
 
-            rp = request.protocol
+            rp = req.protocol
             sp = self.protocol
 
             if rp[0] != sp[0]:
                 # the major HTTP version differs
-                return self.fire(HTTPError(request, response, 505))
+                return self.fire(httperror(req, res, 505))
 
-            response.protocol = "HTTP/{0:d}.{1:d}".format(*min(rp, sp))
-            response.close = not parser.should_keep_alive()
+            res.protocol = "HTTP/{0:d}.{1:d}".format(*min(rp, sp))
+            res.close = not parser.should_keep_alive()
 
-        clen = int(request.headers.get("Content-Length", "0"))
+        clen = int(req.headers.get("Content-Length", "0"))
         if clen and not parser.is_message_complete():
             return
 
         if hasattr(sock, "getpeercert"):
             peer_cert = sock.getpeercert()
             if peer_cert:
-                req = Request(request, response, peer_cert)
+                req = request(req, res, peer_cert)
             else:
-                req = Request(request, response)
+                req = request(req, res)
         else:
-            req = Request(request, response)
+            req = request(req, res)
 
         # Guard against unwanted request paths (SECURITY).
-        path = request.path
-        _path = request.uri._path
+        path = req.path
+        _path = req.uri._path
         if (path.encode(self._encoding) != _path) and (
                 quote(path).encode(self._encoding) != _path):
             return self.fire(
-                Redirect(request, response, [request.uri.utf8()], 301)
+                redirect(req, res, [req.uri.utf8()], 301)
             )
 
-        request.body = BytesIO(parser.recv_body())
+        req.body = BytesIO(parser.recv_body())
         del self._buffers[sock]
 
         self.fire(req)
 
     @handler("httperror")
-    def _on_httperror(self, event, request, response, code, **kwargs):
+    def _on_httperror(self, event, req, res, code, **kwargs):
         """Default HTTP Error Handler
 
         Default Error Handler that by default just fires a ``Response``
@@ -316,8 +316,8 @@ class HTTP(BaseComponent):
         or a subclass thereof.
         """
 
-        response.body = str(event)
-        self.fire(Response(response))
+        res.body = str(event)
+        self.fire(response(res))
 
     @handler("request_success")
     def _on_request_success(self, e, value):
@@ -348,44 +348,44 @@ class HTTP(BaseComponent):
         if isinstance(value, Value) and not value.promise:
             value = value.getValue(recursive=False)
 
-        request, response = e.args[:2]
+        req, res = e.args[:2]
 
         if value is None:
-            self.fire(NotFound(request, response))
-        elif isinstance(value, HTTPError):
-            response.body = str(value)
-            self.fire(Response(response))
+            self.fire(notfound(req, res))
+        elif isinstance(value, httperror):
+            res.body = str(value)
+            self.fire(response(res))
         elif isinstance(value, wrappers.Response):
-            self.fire(Response(value))
+            self.fire(response(value))
         elif isinstance(value, Value):
             if value.result and not value.errors:
-                response.body = value.value
-                self.fire(Response(response))
+                res.body = value.value
+                self.fire(response(res))
             elif value.errors:
                 error = value.value
                 etype, evalue, traceback = error
                 if isinstance(evalue, RedirectException):
                     self.fire(
-                        Redirect(request, response, evalue.urls, evalue.code)
+                        redirect(req, res, evalue.urls, evalue.code)
                     )
                 elif isinstance(evalue, HTTPException):
                     if evalue.traceback:
                         self.fire(
-                            HTTPError(
-                                request, response, evalue.code,
+                            httperror(
+                                req, res, evalue.code,
                                 description=evalue.description,
                                 error=error
                             )
                         )
                     else:
                         self.fire(
-                            HTTPError(
-                                request, response, evalue.code,
+                            httperror(
+                                req, res, evalue.code,
                                 description=evalue.description
                             )
                         )
                 else:
-                    self.fire(HTTPError(request, response, error=error))
+                    self.fire(httperror(req, res, error=error))
             else:
                 # We want to be notified of changes to the value
                 value = e.value.getValue(recursive=False)
@@ -396,89 +396,89 @@ class HTTP(BaseComponent):
 
             if isinstance(evalue, RedirectException):
                 self.fire(
-                    Redirect(request, response, evalue.urls, evalue.code)
+                    redirect(req, res, evalue.urls, evalue.code)
                 )
             elif isinstance(evalue, HTTPException):
                 if evalue.traceback:
                     self.fire(
-                        HTTPError(
-                            request, response, evalue.code,
+                        httperror(
+                            req, res, evalue.code,
                             description=evalue.description,
                             error=error
                         )
                     )
                 else:
                     self.fire(
-                        HTTPError(
-                            request, response, evalue.code,
+                        httperror(
+                            req, res, evalue.code,
                             description=evalue.description
                         )
                     )
             else:
-                self.fire(HTTPError(request, response, error=error))
+                self.fire(httperror(req, res, error=error))
         elif not isinstance(value, bool):
-            response.body = value
-            self.fire(Response(response))
+            res.body = value
+            self.fire(response(res))
 
     @handler("error")
-    def _on_error(self, etype, evalue, etraceback, handler=None, fevent=None):
-        if isinstance(fevent, Response):
-            response = fevent.args[0]
-            sock = response.request.sock
+    def _on_error(self, etype, evalue, etraceback, handler=None, event=None):
+        if isinstance(event, response):
+            res = event.args[0]
+            sock = res.request.sock
         else:
-            sock = fevent.args[0]
+            sock = event.args[0]
 
         try:
-            request = wrappers.Request(sock, "", "", "", (1, 1), "")
+            req = wrappers.Request(sock, "", "", "", (1, 1), "")
         except:
             # If we can't work with the socket, do nothing.
             return
 
-        request.server = self._server
+        req.server = self._server
 
-        response = wrappers.Response(request, encoding=self._encoding)
+        res = wrappers.Response(req, encoding=self._encoding)
 
         self.fire(
-            HTTPError(
-                request, response, error=(etype, evalue, etraceback)
+            httperror(
+                req, res, error=(etype, evalue, etraceback)
             )
         )
 
     @handler("request_failure")
     def _on_request_failure(self, erequest, error):
-        request, response = erequest.args
+        req, res = erequest.args
 
         # Ignore filtered requests already handled (eg: HTTPException(s)).
-        if request.handled:
+        if req.handled:
             return
 
-        request.handled = True
+        req.handled = True
 
         etype, evalue, traceback = error
 
         if isinstance(evalue, RedirectException):
             self.fire(
-                Redirect(request, response, evalue.urls, evalue.code)
+                redirect(req, res, evalue.urls, evalue.code)
             )
         elif isinstance(evalue, HTTPException):
             self.fire(
-                HTTPError(
-                    request, response, evalue.code,
+                httperror(
+                    req, res, evalue.code,
                     description=evalue.description,
                     error=error
                 )
             )
         else:
-            self.fire(HTTPError(request, response, error=error))
+            self.fire(httperror(req, res, error=error))
 
     @handler("response_failure")
     def _on_response_failure(self, eresponse, error):
-        response = eresponse.args[0]
-        request = response.request
+        res = eresponse.args[0]
+        req = res.request
 
         # Ignore failed "response" handlers (eg: Loggers or Tools)
-        if response.done:
+        if res.done:
             return
 
-        response = wrappers.Response(request, self._encoding, 500)
-        self.fire(HTTPError(request, response, error=error))
+        res = wrappers.Response(req, self._encoding, 500)
+        self.fire(httperror(req, res, error=error))

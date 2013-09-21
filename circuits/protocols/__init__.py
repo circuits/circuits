@@ -7,7 +7,8 @@
 This package contains components that implement various networking protocols.
 """
 
-from .line import LP
 from .irc import IRC
+from .line import Line
+from .http import HTTP
 
 # flake8: noqa

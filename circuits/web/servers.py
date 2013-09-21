@@ -10,12 +10,12 @@ This module implements the several Web Server components.
 
 from circuits import io
 from circuits.tools import deprecated
-from circuits.net.sockets import Read, Write
+from circuits.net.sockets import read, write
 from circuits.core import handler, BaseComponent
 from circuits.net.sockets import TCPServer, UNIXServer
 
 from .http import HTTP
-from .events import WebEvent
+from .events import webevent
 from .dispatchers import Dispatcher
 
 
@@ -171,7 +171,7 @@ class StdinServer(BaseComponent):
     def __init__(self, encoding="utf-8", channel=channel):
         super(StdinServer, self).__init__(channel=channel)
 
-        WebEvent.channels = (channel,)
+        webevent.channels = (channel,)
 
         self.server = (io.stdin + io.stdout).register(self)
         self.http = HTTP(
@@ -194,8 +194,8 @@ class StdinServer(BaseComponent):
 
     @handler("read", channel="stdin")
     def read(self, data):
-        self.fire(Read(FakeSock(), data))
+        self.fire(read(FakeSock(), data))
 
     @handler("write")
     def write(self, sock, data):
-        self.fire(Write(data))
+        self.fire(write(data))

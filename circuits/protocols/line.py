@@ -33,7 +33,7 @@ class line(Event):
     """line Event"""
 
 
-class LP(BaseComponent):
+class Line(BaseComponent):
     """Line Protocol
 
     Implements the Line Protocol.
@@ -83,7 +83,7 @@ class LP(BaseComponent):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(LP, self).__init__(*args, **kwargs)
+        super(Line, self).__init__(*args, **kwargs)
 
         self.encoding = kwargs.get('encoding', 'utf-8')
 

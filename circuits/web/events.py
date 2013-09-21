@@ -8,12 +8,11 @@ This module implements the necessary Events needed.
 """
 
 from circuits import Event
-from circuits.core.events import LiteralEvent
 
 
-class WebEvent(Event):
+class webevent(Event):
     """
-    WebEvents have both their ``success`` and ``failure`` attributes set to
+    webevents have both their ``success`` and ``failure`` attributes set to
     True. So event processing generates the derived events
     ``...Success`` or ``...Failure`` events.
     """
@@ -23,29 +22,22 @@ class WebEvent(Event):
     complete = True
 
 
-class Request(WebEvent):
-    """Request(WebEvent) -> Request WebEvent
-
-    args: request, response
-    """
-
-    @classmethod
-    def create(cls, name, *args, **kwargs):
-        """
-        All classes derived dynamically from Request are LiteralEvents.
-        """
-        return LiteralEvent.create(cls, name, *args, **kwargs)
-
-
-class Response(WebEvent):
-    """Response(WebEvent) -> Response WebEvent
+class request(webevent):
+    """request(eebEvent) -> request webevent
 
     args: request, response
     """
 
 
-class Stream(WebEvent):
-    """Stream(WebEvent) -> Stream WebEvent
+class response(webevent):
+    """response(webevent) -> response webevent
+
+    args: request, response
+    """
+
+
+class stream(webevent):
+    """stream(webevent) -> stream webevent
 
     args: request, response
     """

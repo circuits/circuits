@@ -50,6 +50,14 @@ class ready(Event):
     """ready Event"""
 
 
+class started(Event):
+    """started Event"""
+
+
+class stopped(Event):
+    """stopped Event"""
+
+
 class moved(Event):
     """moved Event"""
 

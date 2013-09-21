@@ -5,8 +5,9 @@ except ImportError:
     from urlparse import urlparse  # NOQA
 
 from circuits.web.headers import Headers
+from circuits.net.sockets import TCPClient
+from circuits.net.events import close, connect, write
 from circuits.core import handler, BaseComponent, Event
-from circuits.net.sockets import Close, Connect, TCPClient, Write
 
 from circuits.net.protocols.http import HTTP
 
@@ -44,8 +45,8 @@ class NotConnected(HTTPException):
     pass
 
 
-class Request(Event):
-    """Request Event
+class request(Event):
+    """request Event
 
     This Event is used to initiate a new request.
 
@@ -59,7 +60,7 @@ class Request(Event):
     def __init__(self, method, path, body=None, headers={}):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Request, self).__init__(method, path, body, headers)
+        super(request, self).__init__(method, path, body, headers)
 
 
 class Client(BaseComponent):
@@ -77,17 +78,17 @@ class Client(BaseComponent):
     @handler("write")
     def write(self, data):
         if self._transport.connected:
-            self.fire(Write(data), self._transport)
+            self.fire(write(data), self._transport)
 
     @handler("close")
     def close(self):
         if self._transport.connected:
-            self.fire(Close(), self._transport)
+            self.fire(close(), self._transport)
 
     @handler("connect", filter=True)
     def connect(self, host=None, port=None, secure=None):
         if not self._transport.connected:
-            self.fire(Connect(host, port, secure), self._transport)
+            self.fire(connect(host, port, secure), self._transport)
 
         return True
 
@@ -96,7 +97,7 @@ class Client(BaseComponent):
         host, port, path, secure = parse_url(url)
 
         if not self._transport.connected:
-            self.fire(Connect(host, port, secure))
+            self.fire(connect(host, port, secure))
             yield self.wait("connected", self._transport.channel)
 
         headers = Headers([(k, v) for k, v in headers.items()])
@@ -112,9 +113,9 @@ class Client(BaseComponent):
 
         command = "%s %s HTTP/1.1" % (method, path)
         message = "%s\r\n%s" % (command, headers)
-        self.fire(Write(message.encode('utf-8')), self._transport)
+        self.fire(write(message.encode('utf-8')), self._transport)
         if body is not None:
-            self.fire(Write(body), self._transport)
+            self.fire(write(body), self._transport)
 
         yield (yield self.wait("response"))
 
@@ -122,7 +123,7 @@ class Client(BaseComponent):
     def _on_response(self, response):
         self._response = response
         if response.headers.get("Connection") == "close":
-            self.fire(Close(), self._transport)
+            self.fire(close(), self._transport)
         return response
 
     @property

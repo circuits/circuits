@@ -13,11 +13,11 @@ from circuits.tools import tryimport
 json = tryimport(("json", "simplejson"))
 
 from circuits.six import binary_type
-from circuits.web.events import Response
+from circuits.web.events import response
 from circuits import handler, Event, BaseComponent
 
 
-class RPC(Event):
+class rpc(Event):
     """RPC Event"""
 
 
@@ -36,14 +36,14 @@ class JSONRPC(BaseComponent):
         self.rpc_channel = rpc_channel
 
     @handler("request", filter=True, priority=0.2)
-    def _on_request(self, request, response):
-        if self.path is not None and self.path != request.path.rstrip("/"):
+    def _on_request(self, req, res):
+        if self.path is not None and self.path != req.path.rstrip("/"):
             return
 
-        response.headers["Content-Type"] = "application/javascript"
+        res.headers["Content-Type"] = "application/javascript"
 
         try:
-            data = request.body.read().decode(self.encoding)
+            data = req.body.read().decode(self.encoding)
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o["params"]
             if isinstance(params, dict):
@@ -59,20 +59,20 @@ class JSONRPC(BaseComponent):
             @handler("%s_value_changed" % name, priority=0.1)
             def _on_value_changed(self, value):
                 id = value.id
-                response = value.response
-                response.body = self._response(id, value.value)
-                self.fire(Response(response), self.channel)
+                res = value.response
+                res.body = self._response(id, value.value)
+                self.fire(response(res), self.channel)
                 value.handled = True
 
             self.addHandler(_on_value_changed)
 
             if isinstance(params, dict):
-                value = self.fire(RPC.create(name, **params), channel)
+                value = self.fire(rpc.create(name, **params), channel)
             else:
-                value = self.fire(RPC.create(name, *params), channel)
+                value = self.fire(rpc.create(name, *params), channel)
 
             value.id = id
-            value.response = response
+            value.response = res
             value.notify = True
         except Exception as e:
             r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))

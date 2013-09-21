@@ -4,7 +4,7 @@ import time
 
 from circuits import Component
 from circuits.web.servers import Server
-from circuits.net.sockets import Connect, Write
+from circuits.net.sockets import connect, write
 from circuits.web.controllers import Controller
 from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
 
@@ -14,7 +14,7 @@ class Echo(Component):
     channel = "ws"
 
     def read(self, sock, data):
-        self.fire(Write(sock, "Received: " + data))
+        self.fire(write(sock, "Received: " + data))
 
 
 class Root(Controller):
@@ -41,8 +41,8 @@ def test1(webapp):
     client = WebSocketClient("ws://localhost:8123/websocket")
     wsclient = WSClient().register(client)
     client.start()
-    client.fire(Connect())
-    client.fire(Write("Hello!"), "ws")
+    client.fire(connect())
+    client.fire(write("Hello!"), "ws")
     for i in range(100):
         if wsclient.response is not None:
             break

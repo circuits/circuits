@@ -17,10 +17,11 @@ from circuits.web import client
 from circuits.tools import deprecated
 from circuits.web.headers import Headers
 from circuits.core.handlers import handler
+from circuits.net.sockets import TCPClient
 from circuits.web.client import NotConnected
 from circuits.net.protocols.http import HTTP
 from circuits.core.components import BaseComponent
-from circuits.net.sockets import TCPClient, Connect, Write, Close
+from circuits.net.events import connect, write, close
 from circuits.net.protocols.websocket import WebSocketCodec
 
 
@@ -29,7 +30,7 @@ class WebSocketClient(BaseComponent):
     An RFC 6455 compliant WebSocket client component. Upon receiving a
     :class:`circuits.web.client.Connect` event, the component tries to
     establish the connection to the server in a two stage process. First, a
-    :class:`circuits.net.sockets.Connect` event is sent to a child
+    :class:`circuits.net.events.connect` event is sent to a child
     :class:`~.sockets.TCPClient`. When the TCP connection has been established,
     the HTTP request for opening the WebSocket is sent to the server.
     A failure in this setup process is signaled by a
@@ -37,10 +38,10 @@ class WebSocketClient(BaseComponent):
 
     When the server accepts the request, the WebSocket connection is
     established and can be used very much like an ordinary socket
-    by handling :class:`~.sockets.Read` events on and sending
-    :class:`~.sockets.Write` events to the channel
+    by handling :class:`~.net.events.read` events on and sending
+    :class:`~.net.events.write` events to the channel
     specified as the ``wschannel`` parameter of the constructor. Firing
-    a :class:`~.sockets.Close` event on that channel closes the
+    a :class:`~.net.events.close` event on that channel closes the
     connection in an orderly fashion (i.e. as specified by the
     WebSocket protocol).
     """
@@ -87,7 +88,7 @@ class WebSocketClient(BaseComponent):
         self._resource = p.path or "/"
         if p.query:
             self._resource += "?" + p.query
-        self.fire(Connect(self._host, self._port, self._secure),
+        self.fire(connect(self._host, self._port, self._secure),
                   self._transport)
 
     @handler("connected")
@@ -108,7 +109,7 @@ class WebSocketClient(BaseComponent):
         command = "GET %s HTTP/1.1" % self._resource
         message = "%s\r\n%s" % (command, headers)
         self._pending += 1
-        self.fire(Write(message.encode('utf-8')), self._transport)
+        self.fire(write(message.encode('utf-8')), self._transport)
         return True
 
     @handler("response")
@@ -117,7 +118,7 @@ class WebSocketClient(BaseComponent):
         self._pending -= 1
         if response.headers.get("Connection") == "Close" \
                 or response.status != 101:
-            self.fire(Close(), self._transport)
+            self.fire(close(), self._transport)
             self.fire(NotConnected())
         WebSocketCodec(channel=self._wschannel).register(self)
 

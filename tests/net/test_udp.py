@@ -6,8 +6,8 @@ import socket
 import select
 
 from circuits import Manager
-from circuits.core.events import Unregister
-from circuits.net.sockets import Close, Write
+from circuits.core.events import unregister
+from circuits.net.events import close, write
 from circuits.core.pollers import Select, Poll, EPoll, KQueue
 from circuits.net.sockets import UDPServer, UDPClient, UDP6Server, UDP6Client
 
@@ -62,13 +62,13 @@ def test_basic(Poller, ipv6):
         assert pytest.wait_for(client, "ready")
         wait_host(server)
 
-        client.fire(Write((server.host, server.port), b"foo"))
+        client.fire(write((server.host, server.port), b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "closed")
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
@@ -86,10 +86,10 @@ def test_close(Poller, ipv6):
 
         host, port = server.host, server.port
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Unregister(server))
+        server.fire(unregister(server))
 
         def test(obj, attr):
             return attr not in obj.components

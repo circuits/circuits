@@ -10,7 +10,7 @@ if sys.platform in ("win32", "cygwin"):
     pytest.skip("Test Not Applicable on Windows")
 
 from circuits import Manager
-from circuits.net.sockets import Close, Connect, Write
+from circuits.net.sockets import close, connect, write
 from circuits.net.sockets import UNIXServer, UNIXClient
 from circuits.core.pollers import Select, Poll, EPoll, KQueue
 
@@ -49,19 +49,19 @@ def test_unix(tmpdir, Poller):
         assert pytest.wait_for(server, "ready")
         assert pytest.wait_for(client, "ready")
 
-        client.fire(Connect(filename))
+        client.fire(connect(filename))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()

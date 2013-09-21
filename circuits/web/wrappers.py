@@ -20,7 +20,7 @@ except ImportError:
 from .url import parse_url
 from .headers import Headers
 from ..six import binary_type
-from .errors import HTTPError
+from .errors import httperror
 from circuits.tools import deprecated
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION
@@ -248,7 +248,7 @@ class Body(object):
         elif hasattr(value, "read"):
             response.stream = True
             value = file_generator(value)
-        elif isinstance(value, HTTPError):
+        elif isinstance(value, httperror):
             value = [str(value)]
         elif value is None:
             value = []

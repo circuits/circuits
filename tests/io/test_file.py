@@ -5,8 +5,9 @@ if pytest.PLATFORM == "win32":
     pytest.skip("Unsupported Platform")
 
 from io import BytesIO
+from circuits.io import File
 from circuits import Component
-from circuits.io import File, Write, Close
+from circuits.io.events import write, close
 
 
 class FileApp(Component):
@@ -36,7 +37,7 @@ def test_open_fileobj(manager, watcher, tmpdir):
 
     assert watcher.wait("eof", app.file.channel)
 
-    app.fire(Close(), app.file.channel)
+    app.fire(close(), app.file.channel)
     assert watcher.wait("closed", app.file.channel)
 
     app.unregister()
@@ -52,10 +53,10 @@ def test_read_write(manager, watcher, tmpdir):
     app = FileApp(filename, "w").register(manager)
     assert watcher.wait("opened", app.file.channel)
 
-    app.fire(Write(b"Hello World!"), app.file.channel)
+    app.fire(write(b"Hello World!"), app.file.channel)
     assert watcher.wait("write", app.file.channel)
 
-    app.fire(Close(), app.file.channel)
+    app.fire(close(), app.file.channel)
     assert watcher.wait("closed", app.file.channel)
 
     app.unregister()
@@ -66,7 +67,7 @@ def test_read_write(manager, watcher, tmpdir):
 
     assert watcher.wait("eof", app.file.channel)
 
-    app.fire(Close(), app.file.channel)
+    app.fire(close(), app.file.channel)
     assert watcher.wait("closed", app.file.channel)
 
     app.unregister()

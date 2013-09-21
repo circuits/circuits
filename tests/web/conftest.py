@@ -8,10 +8,10 @@ import os
 
 import pytest
 
-from circuits.net.sockets import Close
+from circuits.net.sockets import close
 from circuits.web import Server, Static
 from circuits import Component, Debugger
-from circuits.web.client import Client, Connect, Request
+from circuits.web.client import Client, request
 
 
 DOCROOT = os.path.join(os.path.dirname(__file__), "static")
@@ -28,7 +28,7 @@ class WebClient(Client):
 
     def __call__(self, method, path, body=None, headers={}):
         waiter = pytest.WaitEvent(self, "response", channel=self.channel)
-        self.fire(Request(method, path, body, headers))
+        self.fire(request(method, path, body, headers))
         assert waiter.wait()
 
         return self.response
@@ -55,7 +55,7 @@ def webapp(request):
     assert waiter.wait()
 
     def finalizer():
-        webapp.fire(Close(), webapp.server)
+        webapp.fire(close(), webapp.server)
         webapp.stop()
 
     request.addfinalizer(finalizer)

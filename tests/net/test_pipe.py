@@ -7,7 +7,7 @@ if pytest.PLATFORM == "win32":
 from circuits import Manager
 from circuits.net.sockets import Pipe
 from circuits.core.pollers import Select
-from circuits.net.sockets import Close, Write
+from circuits.net.events import close, write
 
 from .client import Client
 
@@ -32,16 +32,16 @@ def test_pipe(Poller):
         assert pytest.wait_for(a, "ready")
         assert pytest.wait_for(b, "ready")
 
-        a.fire(Write(b"foo"))
+        a.fire(write(b"foo"))
         assert pytest.wait_for(b, "data", b"foo")
 
-        b.fire(Write(b"foo"))
+        b.fire(write(b"foo"))
         assert pytest.wait_for(a, "data", b"foo")
 
-        a.fire(Close())
+        a.fire(close())
         assert pytest.wait_for(a, "disconnected")
 
-        b.fire(Close())
+        b.fire(close())
         assert pytest.wait_for(b, "disconnected")
     finally:
         m.stop()

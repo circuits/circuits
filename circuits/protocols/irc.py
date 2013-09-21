@@ -13,7 +13,7 @@ implementations.
 
 import re
 
-from circuits.net.sockets import Write
+from circuits.net.events import write
 from circuits.core import handler, Event, DerivedEvent, Component
 
 from .line import LP
@@ -244,7 +244,7 @@ class IRC(Component):
     ###
 
     def command_RAW(self, data):
-        self.fire(Write("%s\r\n" % data))
+        self.fire(write("%s\r\n" % data))
 
     def command_PASS(self, password):
         self.fire(RAW("PASS %s" % password))

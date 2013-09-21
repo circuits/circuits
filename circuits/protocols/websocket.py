@@ -8,7 +8,7 @@ import random
 from circuits.six import string_types
 from circuits.core.handlers import handler
 from circuits.core.components import BaseComponent
-from circuits.net.sockets import Write, Read, Close
+from circuits.net.events import write, read, close
 
 
 class WebSocketCodec(BaseComponent):
@@ -24,10 +24,10 @@ class WebSocketCodec(BaseComponent):
     (if used in a client). The data is decoded and the contained payload
     is emitted as Read events on the codec's channel.
 
-    The data from Write events sent to the codec's channel
+    The data from write events sent to the codec's channel
     (with socket argument if used in a server) is
     encoded according to the WebSocket Data Framing protocol. The
-    encoded data is then forwarded as Write events on the parents channel.
+    encoded data is then forwarded as write events on the parents channel.
     """
 
     channel = "ws"
@@ -36,7 +36,7 @@ class WebSocketCodec(BaseComponent):
         """
         Creates a new codec.
 
-        :param sock: the socket used in Read and Write events
+        :param sock: the socket used in Read and write events
             (if used in a server, else None)
         """
         super(WebSocketCodec, self).__init__(*args, **kwargs)
@@ -63,9 +63,9 @@ class WebSocketCodec(BaseComponent):
                 messages = self._parse_messages()
                 for message in messages:
                     if self._sock is not None:
-                        self.fire(Read(self._sock, message))
+                        self.fire(read(self._sock, message))
                     else:
-                        self.fire(Read(message))
+                        self.fire(read(message))
                 return True
 
             self.addHandler(_on_read_raw)
@@ -127,9 +127,9 @@ class WebSocketCodec(BaseComponent):
                 elif opcode == 8:
                     self._close_received = True
                     if self._sock:
-                        self.fire(Close(self._sock))
+                        self.fire(close(self._sock))
                     else:
-                        self.fire(Close())
+                        self.fire(close())
                     break
                 # check for Ping
                 elif opcode == 9:
@@ -195,9 +195,9 @@ class WebSocketCodec(BaseComponent):
 
     def _write(self, data):
         if self._sock is not None:
-            self.fire(Write(self._sock, data), self.parent.channel)
+            self.fire(write(self._sock, data), self.parent.channel)
         else:
-            self.fire(Write(data), self.parent.channel)
+            self.fire(write(data), self.parent.channel)
 
     @handler("close")
     def _on_close(self, *args):
@@ -206,6 +206,6 @@ class WebSocketCodec(BaseComponent):
             self._close_sent = True
         if self._close_received and self._close_sent:
             if self._sock:
-                self.fire(Close(self._sock), self.parent.channel)
+                self.fire(close(self._sock), self.parent.channel)
             else:
-                self.fire(Close(), self.parent.channel)
+                self.fire(close(), self.parent.channel)

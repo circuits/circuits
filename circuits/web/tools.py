@@ -26,7 +26,7 @@ mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
 from . import _httpauth
 from .utils import get_ranges, compress
-from .errors import HTTPError, NotFound, Redirect, Unauthorized
+from .errors import httperror, notfound, redirect, unauthorized
 
 
 def expires(request, response, secs=0, force=False):
@@ -98,12 +98,12 @@ def serve_file(request, response, path, type=None, disposition=None,
     try:
         st = os.stat(path)
     except OSError:
-        return NotFound(request, response)
+        return notfound(request, response)
 
     # Check if path is a directory.
     if stat.S_ISDIR(st.st_mode):
         # Let the caller deal with it as they like.
-        return NotFound(request, response)
+        return notfound(request, response)
 
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
@@ -141,7 +141,7 @@ def serve_file(request, response, path, type=None, disposition=None,
         r = get_ranges(request.headers.get('Range'), c_len)
         if r == []:
             response.headers['Content-Range'] = "bytes */%s" % c_len
-            return HTTPError(request, response, 416)
+            return httperror(request, response, 416)
         if r:
             if len(r) == 1:
                 # Return a single-part response.
@@ -242,7 +242,7 @@ def validate_etags(request, response, autotags=False):
         conditions = request.headers.elements('If-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions and not (conditions == ["*"] or etag in conditions):
-            return HTTPError(
+            return httperror(
                 request, response, 412,
                 description="If-Match failed: ETag %r did not match %r" % (
                     etag, conditions
@@ -253,9 +253,9 @@ def validate_etags(request, response, autotags=False):
         conditions = [str(x) for x in conditions]
         if conditions == ["*"] or etag in conditions:
             if request.method in ("GET", "HEAD"):
-                return Redirect(request, response, [], code=304)
+                return redirect(request, response, [], code=304)
             else:
-                return HTTPError(
+                return httperror(
                     request, response, 412,
                     description=(
                         "If-None-Match failed: ETag %r matched %r" % (
@@ -279,15 +279,15 @@ def validate_since(request, response):
         since = request.headers.get('If-Unmodified-Since')
         if since and since != lastmod:
             if (status >= 200 and status <= 299) or status == 412:
-                return HTTPError(request, response, 412)
+                return httperror(request, response, 412)
 
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod:
             if (status >= 200 and status <= 299) or status == 304:
                 if request.method in ("GET", "HEAD"):
-                    return Redirect(request, response, [], code=304)
+                    return redirect(request, response, [], code=304)
                 else:
-                    return HTTPError(request, response, 412)
+                    return httperror(request, response, 412)
 
 
 def check_auth(request, response, realm, users, encrypt=None):
@@ -311,7 +311,7 @@ def check_auth(request, response, realm, users, encrypt=None):
         # make sure the provided credentials are correctly set
         ah = _httpauth.parseAuthorization(request.headers.get("Authorization"))
         if ah is None:
-            return HTTPError(request, response, 400)
+            return httperror(request, response, 400)
 
         if not encrypt:
             encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
@@ -371,7 +371,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
     # inform the user-agent this path is protected
     response.headers["WWW-Authenticate"] = _httpauth.basicAuth(realm)
 
-    return Unauthorized(request, response)
+    return unauthorized(request, response)
 
 
 def digest_auth(request, response, realm, users):
@@ -393,7 +393,7 @@ def digest_auth(request, response, realm, users):
     # inform the user-agent this path is protected
     response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
 
-    return Unauthorized(request, response)
+    return unauthorized(request, response)
 
 
 def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
@@ -450,6 +450,6 @@ def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
             return response
-    return HTTPError(
+    return httperror(
         response.request, response, 406, description="identity, gzip"
     )

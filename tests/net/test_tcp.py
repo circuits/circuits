@@ -6,7 +6,7 @@ import select
 from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
 
 from circuits import Manager
-from circuits.net.sockets import Close, Connect, Write
+from circuits.net.events import close, connect, write
 from circuits.core.pollers import Select, Poll, EPoll, KQueue
 from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
 
@@ -61,20 +61,20 @@ def test_tcp_basic(Poller, ipv6):
         assert pytest.wait_for(server, "ready")
         wait_host(server)
 
-        client.fire(Connect(server.host, server.port))
+        client.fire(connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
         assert pytest.wait_for(client, "data", b"foo")
 
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
@@ -110,32 +110,32 @@ def test_tcp_reconnect(Poller, ipv6):
         wait_host(server)
 
         # 1st connect
-        client.fire(Connect(server.host, server.port))
+        client.fire(connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
         # disconnect
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "disconnected")
 
         # 2nd reconnect
-        client.fire(Connect(server.host, server.port))
+        client.fire(connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
@@ -175,14 +175,14 @@ def test_tcp_connect_closed_port(Poller, ipv6):
         tcp_server._sock.close()
 
         # 1st connect
-        client.fire(Connect(host, port))
+        client.fire(connect(host, port))
         assert pytest.wait_for(client, "connected")
 
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(client, "disconnected")
 
         client.disconnected = False
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(client, "disconnected", timeout=1.0) is None
     finally:
         m.stop()
@@ -218,21 +218,21 @@ def test_tcp_bind(Poller, ipv6):
         assert pytest.wait_for(server, "ready")
         wait_host(server)
 
-        client.fire(Connect(server.host, server.port))
+        client.fire(connect(server.host, server.port))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
         #assert server.client[1] == bind_port
 
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()

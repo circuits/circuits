@@ -21,9 +21,8 @@ from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 
-class HTTPError(Event):
-    """An event for signaling an HTTP error
-    """
+class httperror(Event):
+    """An event for signaling an HTTP error"""
 
     code = 500
     description = ""
@@ -34,10 +33,7 @@ class HTTPError(Event):
         The constructor creates a new instance and modifies the *response*
         argument to reflect the error.
         """
-        super(HTTPError, self).__init__(request, response, code, **kwargs)
-
-        # Override HTTPError subclasses
-        self.name = "httperror"
+        super(httperror, self).__init__(request, response, code, **kwargs)
 
         self.request = request
         self.response = response
@@ -89,25 +85,25 @@ class HTTPError(Event):
         )
 
 
-class Forbidden(HTTPError):
+class forbidden(httperror):
     """An event for signaling the HTTP Forbidden error"""
 
     code = 403
 
 
-class Unauthorized(HTTPError):
+class unauthorized(httperror):
     """An event for signaling the HTTP Unauthorized error"""
 
     code = 401
 
 
-class NotFound(HTTPError):
+class notfound(httperror):
     """An event for signaling the HTTP Not Fouond error"""
 
     code = 404
 
 
-class Redirect(HTTPError):
+class redirect(httperror):
     """An event for signaling the HTTP Redirect response"""
 
     def __init__(self, request, response, urls, code=None):
@@ -143,7 +139,7 @@ class Redirect(HTTPError):
             if code < 300 or code > 399:
                 raise ValueError("status code must be between 300 and 399.")
 
-        super(Redirect, self).__init__(request, response, code)
+        super(redirect, self).__init__(request, response, code)
 
         if code in (300, 301, 302, 303, 307):
             response.headers["Content-Type"] = "text/html"

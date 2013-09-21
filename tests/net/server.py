@@ -1,5 +1,5 @@
 from circuits import Component
-from circuits.net.sockets import Write
+from circuits.net.events import write
 
 
 class Server(Component):
@@ -28,7 +28,7 @@ class Server(Component):
     def connect(self, sock, *args):
         self.connected = True
         self.client = args
-        self.fire(Write(sock, b"Ready"))
+        self.fire(write(sock, b"Ready"))
 
     def disconnect(self, sock):
         self.client = None
