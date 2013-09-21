@@ -7,8 +7,9 @@
 ...
 """
 
+from circuits.net.events import write
+from circuits.net.sockets import TCPServer
 from circuits import handler, BaseComponent
-from circuits.net.sockets import TCPServer, Write
 
 from .utils import load_event, dump_value
 
@@ -49,7 +50,7 @@ class Server(BaseComponent):
     def send(self, v):
         data = dump_value(v)
         packet = data.encode("utf-8") + DELIMITER
-        self.fire(Write(v.node_sock, packet))
+        self.fire(write(v.node_sock, packet))
 
     @handler("read")
     def _on_read(self, sock, data):

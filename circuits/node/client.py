@@ -9,8 +9,9 @@
 
 from weakref import WeakValueDictionary
 
+from circuits.net.sockets import TCPClient
 from circuits import handler, BaseComponent
-from circuits.net.sockets import Close, Connect, TCPClient, Write
+from circuits.net.events import close, connect, write
 
 from .utils import dump_event, load_value
 
@@ -36,7 +37,7 @@ class Client(BaseComponent):
         self._values = WeakValueDictionary()
 
         TCPClient(channel=self.channel).register(self)
-        self.fire(Connect(self._host, self._port))
+        self.fire(connect(self._host, self._port))
 
     def process(self, packet):
         v, id, errors = load_value(packet)
@@ -47,10 +48,10 @@ class Client(BaseComponent):
             value.errors = errors
 
     def close(self):
-        self.fire(Close())
+        self.fire(close())
 
     def connect(self, host, port):
-        self.fire(Connect(host, port))
+        self.fire(connect(host, port))
 
     def send(self, event, e):
         id = self._nid
@@ -60,7 +61,7 @@ class Client(BaseComponent):
         data = dump_event(e, id)
         packet = data.encode("utf-8") + DELIMITER
 
-        self.fire(Write(packet))
+        self.fire(write(packet))
 
     @handler("read")
     def _on_read(self, data):
