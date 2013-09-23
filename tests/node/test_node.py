@@ -46,11 +46,13 @@ def bind(manager, watcher):
 def test_return_value(manager, watcher, bind):
     a1 = App().register(manager)
     n1 = Node().register(a1)
+    assert watcher.wait("ready")
 
     a2 = (App() + Node(bind))
     a2.start(process=True)
 
     n1.add("a2", *bind)
+    assert watcher.wait("ready")
 
     e = Event.create("foo")
     e.notify = True
@@ -59,7 +61,7 @@ def test_return_value(manager, watcher, bind):
     r.notify = True
 
     value = a1.fire(r)
-    watcher.wait("remote_value_changed")
+    assert watcher.wait("remote_value_changed")
 
     assert value.value == "Hello World!"
 

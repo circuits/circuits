@@ -37,6 +37,8 @@ class Client(BaseComponent):
         self._values = WeakValueDictionary()
 
         TCPClient(channel=self.channel).register(self)
+
+    def ready(self, component):
         self.fire(connect(self._host, self._port))
 
     def process(self, packet):
@@ -50,8 +52,8 @@ class Client(BaseComponent):
     def close(self):
         self.fire(close())
 
-    def connect(self, host, port):
-        self.fire(connect(host, port))
+#    def connect(self, host, port):
+#        self.fire(connect(host, port))
 
     def send(self, event, e):
         id = self._nid
