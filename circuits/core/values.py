@@ -7,12 +7,12 @@ This defines the Value object used by components and events.
 """
 
 
+from .events import Event
 from ..six import string_types
-from .events import DerivedEvent, Event
 
 
-class value_changed(DerivedEvent):
-    """value_changed DerivedEvent
+class value_changed(Event):
+    """value_changed Event
 
     This Event is triggered when the return Value of an Event Handler has
     changed its value.
@@ -103,7 +103,7 @@ class Value(object):
             if isinstance(notify, string_types):
                 e = Event.create(notify, self)
             else:
-                e = value_changed(self)
+                e = value_changed.create("{0:s}_value_changed".format(self.event.__class__.__name__), self)
 
             self.manager.fire(e, self.manager)
 
