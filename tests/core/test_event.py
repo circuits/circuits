@@ -27,12 +27,12 @@ def test_repr():
     e = test()
 
     s = repr(e)
-    assert s == "<Test[.test] ( )>"
+    assert s == "<test[] ( )>"
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*.test] ( )>"
+    assert s == "<test[*] ( )>"
 
 
 def test_create():
@@ -40,15 +40,15 @@ def test_create():
     while app:
         app.flush()
 
-    e = Event.create("Test")
+    e = Event.create("test")
 
     s = repr(e)
-    assert s == "<Test[.test] ( )>"
+    assert s == "<test[] ( )>"
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*.test] ( )>"
+    assert s == "<test[*] ( )>"
 
 
 def test_getitem():
