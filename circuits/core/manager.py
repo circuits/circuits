@@ -555,7 +555,7 @@ class Manager(object):
                 if event.failure:
                     self.fire(failure.create("failure", event.name, event, err), *event.channels)
 
-                self.fire(error(etype, evalue, traceback, handler=handler, event=event))
+                self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
 
             if value is not None:
                 if isinstance(value, GeneratorType):
@@ -733,7 +733,7 @@ class Manager(object):
             if event.failure:
                 self.fire(failure.create("failure", event.name, event, err), *event.channels)
 
-            self.fire(error(etype, evalue, traceback, handler=handler, event=event))
+            self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
 
     def tick(self, timeout=-1):
         """

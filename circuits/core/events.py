@@ -195,12 +195,12 @@ class error(Event):
     :param handler: handler that raised the exception
     :type  handler: @handler(<method>)
 
-    :param event: event that failed
-    :type  event: event
+    :param fevent: event that failed
+    :type  fevent: event
     """
 
-    def __init__(self, type, value, traceback, handler=None, event=None):
-        super(error, self).__init__(type, value, traceback, handler=handler, event=event)
+    def __init__(self, type, value, traceback, handler=None, fevent=None):
+        super(error, self).__init__(type, value, traceback, handler=handler, fevent=fevent)
 
 
 class done(DerivedEvent):

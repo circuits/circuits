@@ -55,7 +55,7 @@ class Debugger(BaseComponent):
 
     @handler("error", channel="*", priority=100.0)
     def _on_error(self, error_type, value, traceback,
-                  handler=None, event=None):
+                  handler=None, fevent=None):
 
         if not self.errors:
             return
@@ -67,7 +67,7 @@ class Debugger(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, event, error_type, value)
+        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, fevent, error_type, value)
         s.append(msg)
         s.extend(traceback)
         s.append("\n")
