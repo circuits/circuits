@@ -421,12 +421,12 @@ class HTTP(BaseComponent):
             self.fire(response(res))
 
     @handler("error")
-    def _on_error(self, etype, evalue, etraceback, handler=None, event=None):
-        if isinstance(event, response):
-            res = event.args[0]
+    def _on_error(self, etype, evalue, etraceback, handler=None, fevent=None):
+        if isinstance(fevent, response):
+            res = fevent.args[0]
             sock = res.request.sock
         else:
-            sock = event.args[0]
+            sock = fevent.args[0]
 
         try:
             req = wrappers.Request(sock, "", "", "", (1, 1), "")
