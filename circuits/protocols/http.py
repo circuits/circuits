@@ -57,9 +57,9 @@ class HTTP(BaseComponent):
             version = self._parser.get_version()
             headers = self._parser.get_headers()
 
-            response = ResponseObject(headers, status, version)
-            response.body.write(self._parser.recv_body())
-            response.body.seek(0)
-            self.fire(response(response))
+            res = ResponseObject(headers, status, version)
+            res.body.write(self._parser.recv_body())
+            res.body.seek(0)
+            self.fire(response(res))
 
             self._parser = HttpParser(1, True, self._encoding)
