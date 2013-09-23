@@ -39,7 +39,7 @@ class WebSocketsDispatcher(BaseComponent):
         :param path: the path to handle. Requests that start with this
             path are considered to be WebSocket Opening Handshakes.
 
-        :param wschannel: the channel on which :class:`~.sockets.Read`
+        :param wschannel: the channel on which :class:`~.sockets.read`
             events from the client will be delivered and where
             :class:`~.net.events.write` events to the client will be
             sent to.
