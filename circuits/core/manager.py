@@ -553,7 +553,7 @@ class Manager(object):
                 value = err
 
                 if event.failure:
-                    self.fire(failure.create("failure", event.name, event, err), *event.channels)
+                    self.fire(failure.create("failure", event, event, err), *event.channels)
 
                 self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
 
@@ -731,7 +731,7 @@ class Manager(object):
             event.value.inform(True)
 
             if event.failure:
-                self.fire(failure.create("failure", event.name, event, err), *event.channels)
+                self.fire(failure.create("failure", event, event, err), *event.channels)
 
             self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
 
