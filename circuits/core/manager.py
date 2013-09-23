@@ -545,8 +545,9 @@ class Manager(object):
             except (KeyboardInterrupt, SystemExit):
                 self.stop()
             except:
-                err = (etype, evalue, etraceback) = _exc_info()
+                etype, evalue, etraceback = _exc_info()
                 traceback = format_tb(etraceback)
+                err = (etype, evalue, traceback)
 
                 event.value.errors = True
 
@@ -723,8 +724,9 @@ class Manager(object):
         except:
             self.unregisterTask((event, task, None))
 
-            err = (etype, evalue, etraceback) = _exc_info()
+            etype, evalue, etraceback = _exc_info()
             traceback = format_tb(etraceback)
+            err = (etype, evalue, etraceback)
 
             event.value.value = err
             event.value.errors = True
