@@ -437,7 +437,7 @@ class Manager(object):
                 handler("%s_done" % event, channel=channel)(_on_done))
             if state['timeout'] >= 0:
                 _on_tick_handler = self.addHandler(
-                    handler("generate_event", channel=channel)(_on_tick))
+                    handler("generate_events", channel=channel)(_on_tick))
 
         yield state
 
@@ -553,7 +553,7 @@ class Manager(object):
                 value = err
 
                 if event.failure:
-                    self.fire(failure(event, err), *event.channels)
+                    self.fire(failure.create("failure", event.name, event, err), *event.channels)
 
                 self.fire(error(etype, evalue, traceback, handler=handler, event=event))
 
@@ -586,11 +586,11 @@ class Manager(object):
         # interested in being notified about the last handler for
         # an event having been invoked.
         if event.alert_done:
-            self.fire(done(event, event.value.value), *event.channels)
+            self.fire(done.create("done", event, event.value.value), *event.channels)
 
         if err is None and event.success:
             channels = getattr(event, "success_channels", event.channels)
-            self.fire(success(event, event.value.value), *channels)
+            self.fire(success.create("success", event, event.value.value), *channels)
 
         while True:
             # cause attributes indicates interest in completion event
@@ -602,7 +602,7 @@ class Manager(object):
             if event.effects > 0:
                 break  # some nested events remain to be completed
             if event.complete:  # does this event want signaling?
-                self.fire(complete(event, event.value.value), *getattr(event, "complete_channels", event.channels))
+                self.fire(complete.create("complete", event, event.value.value), *getattr(event, "complete_channels", event.channels))
 
             # this event and nested events are done now
             delattr(event, "cause")
@@ -731,7 +731,7 @@ class Manager(object):
             event.value.inform(True)
 
             if event.failure:
-                self.fire(failure(event, err), *event.channels)
+                self.fire(failure.create("failure", event.name, event, err), *event.channels)
 
             self.fire(error(etype, evalue, traceback, handler=handler, event=event))
 
