@@ -115,7 +115,7 @@ class HTTP(BaseComponent):
                 ]
                 data = b"".join(buf)
 
-            self.fire(write(response.request.sock, data))
+            self.fire(write(res.request.sock, data))
 
             if res.body and not res.done:
                 try:
