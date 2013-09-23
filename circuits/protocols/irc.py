@@ -14,7 +14,7 @@ implementations.
 import re
 
 from circuits.net.events import write
-from circuits.core import handler, Event, DerivedEvent, Component
+from circuits.core import handler, Event, Component
 
 from .line import Line
 
@@ -78,8 +78,13 @@ def sourceSplit(source):
 ###
 
 
-class command(DerivedEvent):
-    """command DerivedEvent"""
+class command(Event):
+    """command Event"""
+
+    def __init__(self, *args, **kwargs):
+        super(command, self).__init__(*args, **kwargs)
+
+        self.name = "command_{0}".format(self.__class__.__name__)
 
 
 class AWAY(command):
@@ -340,34 +345,34 @@ class IRC(Component):
 
             if tokens[3].startswith(":"):
                 arg = None
-                message = strip(" ".join(tokens[3:]))
+                msg = strip(" ".join(tokens[3:]))
             else:
                 arg = tokens[3]
-                message = strip(" ".join(tokens[4:]))
+                msg = strip(" ".join(tokens[4:]))
 
-            self.fire(numeric(source, target, n, arg, message))
+            self.fire(numeric(source, target, n, arg, msg))
 
             if n == 301:
-                self.fire(away(arg, message))
+                self.fire(away(arg, msg))
 
         elif tokens[1] == "PRIVMSG":
             source = sourceSplit(strip(tokens[0]))
             target = tokens[2]
-            message = strip(" ".join(tokens[3:]))
+            msg = strip(" ".join(tokens[3:]))
 
-            if message and message[0] == "":
-                tokens = strip(message, color=True).split(" ")
+            if msg and msg[0] == "":
+                tokens = strip(msg, color=True).split(" ")
                 type = tokens[0]
-                message = " ".join(tokens[1:])
-                self.fire(ctcp(source, target, type, message))
+                msg = " ".join(tokens[1:])
+                self.fire(ctcp(source, target, type, msg))
             else:
-                self.fire(message(source, target, message))
+                self.fire(message(source, target, msg))
 
         elif tokens[1] == "NOTICE":
             source = sourceSplit(strip(tokens[0]))
             target = tokens[2]
-            message = strip(" ".join(tokens[3:]))
-            self.fire(notice(source, target, message))
+            msg = strip(" ".join(tokens[3:]))
+            self.fire(notice(source, target, msg))
 
         elif tokens[1] == "JOIN":
             source = sourceSplit(strip(tokens[0]))
@@ -377,13 +382,13 @@ class IRC(Component):
         elif tokens[1] == "PART":
             source = sourceSplit(strip(tokens[0]))
             channel = strip(tokens[2])
-            message = strip(" ".join(tokens[3:]))
-            self.fire(part(source, channel, message))
+            msg = strip(" ".join(tokens[3:]))
+            self.fire(part(source, channel, msg))
 
         elif tokens[1] == "QUIT":
             source = sourceSplit(strip(tokens[0]))
-            message = strip(" ".join(tokens[2:]))
-            self.fire(quit(source, message))
+            msg = strip(" ".join(tokens[2:]))
+            self.fire(quit(source, msg))
 
         elif tokens[1] == "NICK":
             source = sourceSplit(strip(tokens[0]))
