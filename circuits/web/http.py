@@ -286,11 +286,11 @@ class HTTP(BaseComponent):
         if hasattr(sock, "getpeercert"):
             peer_cert = sock.getpeercert()
             if peer_cert:
-                req = request(req, res, peer_cert)
+                e = request(req, res, peer_cert)
             else:
-                req = request(req, res)
+                e = request(req, res)
         else:
-            req = request(req, res)
+            e = request(req, res)
 
         # Guard against unwanted request paths (SECURITY).
         path = req.path
@@ -304,7 +304,7 @@ class HTTP(BaseComponent):
         req.body = BytesIO(parser.recv_body())
         del self._buffers[sock]
 
-        self.fire(req)
+        self.fire(e)
 
     @handler("httperror")
     def _on_httperror(self, event, req, res, code, **kwargs):

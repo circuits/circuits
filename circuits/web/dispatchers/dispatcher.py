@@ -111,7 +111,7 @@ class Dispatcher(BaseComponent):
 
             return self.fire(
                 Event.create(
-                    Event, name, *event.args, **event.kwargs
+                    name, *event.args, **event.kwargs
                 ),
                 channel
             )
