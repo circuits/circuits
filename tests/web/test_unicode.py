@@ -8,7 +8,7 @@ except ImportError:
 
 from circuits.six import b
 from circuits.web import Controller
-from circuits.web.client import Client, Request
+from circuits.web.client import Client, request
 
 from .helpers import urlopen
 
@@ -87,7 +87,7 @@ def test_response_headers(webapp):
     client = Client()
     client.start()
     client.fire(
-        Request(
+        request(
             "GET",
             "http://%s:%s/response_headers" % (
                 webapp.server.host, webapp.server.port

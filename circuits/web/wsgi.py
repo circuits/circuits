@@ -23,9 +23,9 @@ from circuits.core import handler, BaseComponent
 StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 from .http import HTTP
-from .events import Request
+from .events import request
 from .headers import Headers
-from .errors import HTTPError
+from .errors import httperror
 from circuits.web import wrappers
 from .dispatchers import Dispatcher
 
@@ -98,7 +98,7 @@ class Application(BaseComponent):
         headers = Headers(list(self.translateHeaders(environ)))
 
         protocol = tuple(map(int, env("SERVER_PROTOCOL")[5:].split(".")))
-        request = wrappers.Request(
+        req = wrappers.Request(
             None,
             env("REQUEST_METHOD"),
             env("wsgi.url_scheme"),
@@ -108,26 +108,26 @@ class Application(BaseComponent):
             headers=headers
         )
 
-        request.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
-        request.script_name = env("SCRIPT_NAME")
-        request.wsgi_environ = environ
+        req.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
+        req.script_name = env("SCRIPT_NAME")
+        req.wsgi_environ = environ
 
         try:
             cl = int(headers.get("Content-Length", "0"))
         except:
             cl = 0
 
-        request.body.write(env("wsgi.input").read(cl))
-        request.body.seek(0)
+        req.body.write(env("wsgi.input").read(cl))
+        req.body.seek(0)
 
-        response = wrappers.Response(request)
-        response.gzip = "gzip" in request.headers.get("Accept-Encoding", "")
+        res = wrappers.Response(req)
+        res.gzip = "gzip" in req.headers.get("Accept-Encoding", "")
 
-        return request, response
+        return req, res
 
     def __call__(self, environ, start_response, exc_info=None):
         self.request, self.response = self.getRequestResponse(environ)
-        self.fire(Request(self.request, self.response))
+        self.fire(request(self.request, self.response))
 
         self._finished = False
         while self or not self._finished:
@@ -180,11 +180,11 @@ class Gateway(BaseComponent):
         self.errors = dict((k, StringIO()) for k in self.apps.keys())
 
     @handler("request", filter=True, priority=0.2)
-    def _on_request(self, event, request, response):
+    def _on_request(self, event, req, res):
         if not self.apps:
             return
 
-        parts = request.path.split("/")
+        parts = req.path.split("/")
 
         candidates = []
         for i in range(len(parts)):
@@ -201,23 +201,23 @@ class Gateway(BaseComponent):
         buffer = StringIO()
 
         def start_response(status, headers, exc_info=None):
-            response.status = int(status.split(" ", 1)[0])
+            res.status = int(status.split(" ", 1)[0])
             for header in headers:
-                response.headers.add_header(*header)
+                res.headers.add_header(*header)
             return buffer.write
 
         errors = self.errors[path]
 
-        environ = create_environ(errors, path, request)
+        environ = create_environ(errors, path, req)
 
         try:
             body = app(environ, start_response)
             if isinstance(body, list):
                 body = "".join(body)
             elif isinstance(body, GeneratorType):
-                response.body = body
-                response.stream = True
-                return response
+                res.body = body
+                res.stream = True
+                return res
 
             if not body:
                 if not buffer.tell():
@@ -230,4 +230,4 @@ class Gateway(BaseComponent):
         except Exception as error:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))
-            return HTTPError(request, response, 500, error=error)
+            return httperror(req, res, 500, error=error)
