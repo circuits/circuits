@@ -60,7 +60,7 @@ class XMLRPC(BaseComponent):
 
             self.addHandler(_on_value_changed)
 
-            value = self.fire(rpc.create(name.title(), *params), channel)
+            value = self.fire(rpc.create(name, *params), channel)
             value.response = res
             value.notify = True
         except Exception as e:
