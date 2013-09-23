@@ -14,16 +14,16 @@ class App(Component):
 
     def registered(self, component, manager):
         if component is self:
-            self.fire(Event.create("Ready"))
+            self.fire(Event.create("ready"))
 
     def generate_events(self, event):
         if not self._ready or self._done:
             return
 
         if self._counter < 10:
-            self.fire(Event.create("Hello"))
+            self.fire(Event.create("hello"))
         else:
-            self.fire(Event.create("Done"))
+            self.fire(Event.create("done"))
         event.reduce_time_left(0)
 
     def done(self):
