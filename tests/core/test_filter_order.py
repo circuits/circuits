@@ -11,7 +11,7 @@ such that Filters preceed non-filters.
 from circuits import handler, Component, Event
 
 
-class Test(Event):
+class test(Event):
     pass
 
 
@@ -29,9 +29,9 @@ class App(Component):
         return True
 
 
-def test():
+def test_main():
     app = App()
-    app.fire(Test())
+    app.fire(test())
     while app:
         app.flush()
     assert app.events_executed == ['test_filter']

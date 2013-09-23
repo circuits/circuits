@@ -6,8 +6,8 @@ import pytest
 from circuits import Component, Event
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
     success = True
 
@@ -34,7 +34,7 @@ def app(request, manager, watcher):
 
 
 def test(manager, watcher, app):
-    x = manager.fire(Hello(), app)
+    x = manager.fire(hello(), app)
     assert watcher.wait("hello_success")
 
     value = x.value

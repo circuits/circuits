@@ -5,8 +5,8 @@ import pytest
 from circuits import handler, Event, Manager
 
 
-class Foo(Event):
-    """Foo Event"""
+class foo(Event):
+    """foo Event"""
 
 
 @handler("foo")
@@ -21,7 +21,7 @@ def test_addHandler():
     m.addHandler(on_foo)
 
     waiter = pytest.WaitEvent(m, "foo")
-    x = m.fire(Foo())
+    x = m.fire(foo())
     waiter.wait()
 
     s = x.value
@@ -37,7 +37,7 @@ def test_removeHandler():
     method = m.addHandler(on_foo)
 
     waiter = pytest.WaitEvent(m, "foo")
-    x = m.fire(Foo())
+    x = m.fire(foo())
     waiter.wait()
 
     s = x.value
@@ -46,7 +46,7 @@ def test_removeHandler():
     m.removeHandler(method)
 
     waiter = pytest.WaitEvent(m, "foo")
-    x = m.fire(Foo())
+    x = m.fire(foo())
     waiter.wait()
 
     assert x.value is None

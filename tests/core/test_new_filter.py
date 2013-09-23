@@ -5,8 +5,8 @@ import pytest
 from circuits import Component, Event
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
     success = True
 
@@ -34,12 +34,12 @@ def app(request, manager, watcher):
 
 
 def test_normal(app, watcher):
-    x = app.fire(Hello())
+    x = app.fire(hello())
     watcher.wait("hello_success")
     assert x.value == ["Hello World!", "Hello World!"]
 
 
 def test_filter(app, watcher):
-    x = app.fire(Hello(stop=True))
+    x = app.fire(hello(stop=True))
     watcher.wait("hello_success")
     assert x.value == "Hello World!"

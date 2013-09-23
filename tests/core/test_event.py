@@ -9,8 +9,8 @@ import py
 from circuits import Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -24,7 +24,7 @@ def test_repr():
     while app:
         app.flush()
 
-    e = Test()
+    e = test()
 
     s = repr(e)
     assert s == "<Test[.test] ( )>"
@@ -56,7 +56,7 @@ def test_getitem():
     while app:
         app.flush()
 
-    e = Test(1, 2, 3, foo="bar")
+    e = test(1, 2, 3, foo="bar")
 
     assert e[0] == 1
     assert e["foo"] == "bar"
@@ -72,7 +72,7 @@ def test_setitem():
     while app:
         app.flush()
 
-    e = Test(1, 2, 3, foo="bar")
+    e = test(1, 2, 3, foo="bar")
 
     assert e[0] == 1
     assert e["foo"] == "bar"

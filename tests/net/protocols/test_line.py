@@ -6,8 +6,8 @@ from circuits.protocols import Line
 from circuits import Event, Component
 
 
-class Read(Event):
-    """Read Event"""
+class read(Event):
+    """read Event"""
 
 
 class App(Component):
@@ -35,7 +35,7 @@ def test():
     while app:
         app.flush()
 
-    app.fire(Read(b"1\n2\r\n3\n4"))
+    app.fire(read(b"1\n2\r\n3\n4"))
 
     while app:
         app.flush()
@@ -56,8 +56,8 @@ def test_server():
     while app:
         app.flush()
 
-    app.fire(Read(1, b"1\n2\r\n3\n4"))
-    app.fire(Read(2, b"1\n2\r\n3\n4"))
+    app.fire(read(1, b"1\n2\r\n3\n4"))
+    app.fire(read(2, b"1\n2\r\n3\n4"))
 
     while app:
         app.flush()

@@ -2,7 +2,7 @@
 
 import pytest
 
-from circuits import Component, Event
+from circuits import handler, Component, Event
 
 
 class BaseEvent(Event):
@@ -11,71 +11,73 @@ class BaseEvent(Event):
     success = True
 
 
-class TestWait(BaseEvent):
-    """TestWait Event"""
+class wait(BaseEvent):
+    """wait Event"""
 
 
-class TestCall(BaseEvent):
-    """TestCall Event"""
+class call(BaseEvent):
+    """call Event"""
 
 
-class TestLongCall(BaseEvent):
-    """TestLongCall Event"""
+class long_call(BaseEvent):
+    """long_call Event"""
 
 
-class TestLongWait(BaseEvent):
-    """TestLongCall Event"""
+class long_wait(BaseEvent):
+    """long_wait Event"""
 
 
-class TestWaitReturn(BaseEvent):
-    """TestWaitReturn Event"""
+class wait_return(BaseEvent):
+    """wait_return Event"""
 
 
-class Hello(BaseEvent):
-    """Hello Event"""
+class hello(BaseEvent):
+    """hello Event"""
 
 
-class Foo(BaseEvent):
-    """Foo Event"""
+class foo(BaseEvent):
+    """foo Event"""
 
 
-class GetX(BaseEvent):
-    """Get X Event"""
+class get_x(BaseEvent):
+    """get_x Event"""
 
 
-class GetY(BaseEvent):
-    """Get Y Event"""
+class get_y(BaseEvent):
+    """get_y Event"""
 
 
-class TestEval(BaseEvent):
-    """Test Eval Event"""
+class eval(BaseEvent):
+    """eval Event"""
 
 
 class App(Component):
 
-    def test_wait(self):
-        x = self.fire(Hello())
+    @handler("wait")
+    def _on_wait(self):
+        x = self.fire(hello())
         yield self.wait("hello")
         yield x.value
 
-    def test_call(self):
-        x = yield self.call(Hello())
+    @handler("call")
+    def _on_call(self):
+        x = yield self.call(hello())
         yield x.value
 
     def hello(self):
         return "Hello World!"
 
-    def test_long_wait(self):
-        x = self.fire(Foo())
+    def long_wait(self):
+        x = self.fire(foo())
         yield self.wait("foo")
         yield x.value
 
-    def test_wait_return(self):
-        self.fire(Foo())
+    def wait_return(self):
+        self.fire(foo())
         yield (yield self.wait("foo"))
 
-    def test_long_call(self):
-        x = yield self.call(Foo())
+    def long_call(self):
+        x = yield self.call(foo())
         yield x.value
 
     def foo(self):
@@ -88,9 +90,9 @@ class App(Component):
     def get_y(self):
         return 2
 
-    def test_eval(self):
-        x = yield self.call(GetX())
-        y = yield self.call(GetY())
+    def eval(self):
+        x = yield self.call(get_x())
+        y = yield self.call(get_y())
         yield x.value + y.value
 
 
@@ -108,48 +110,48 @@ def app(request, manager, watcher):
 
 
 def test_wait_simple(manager, watcher, app):
-    x = manager.fire(TestWait())
-    assert watcher.wait("test_wait_success")
+    x = manager.fire(wait())
+    assert watcher.wait("wait_success")
 
     value = x.value
     assert value == "Hello World!"
 
 
-def test_call_simple(manager, watcher, app):
-    x = manager.fire(TestCall())
-    assert watcher.wait("test_call_success")
+def call_simple(manager, watcher, app):
+    x = manager.fire(call())
+    assert watcher.wait("call_success")
 
     value = x.value
     assert value == "Hello World!"
 
 
 def test_long_call(manager, watcher, app):
-    x = manager.fire(TestLongCall())
-    assert watcher.wait("test_long_call_success")
+    x = manager.fire(long_call())
+    assert watcher.wait("long_call_success")
 
     value = x.value
     assert value == list(range(1, 10))
 
 
 def test_long_wait(manager, watcher, app):
-    x = manager.fire(TestLongWait())
-    assert watcher.wait("test_long_wait_success")
+    x = manager.fire(long_wait())
+    assert watcher.wait("long_wait_success")
 
     value = x.value
     assert value == list(range(1, 10))
 
 
 def test_wait_return(manager, watcher, app):
-    x = manager.fire(TestWaitReturn())
-    assert watcher.wait("test_wait_return_success")
+    x = manager.fire(wait_return())
+    assert watcher.wait("wait_return_success")
 
     value = x.value
     assert value == list(range(1, 10))
 
 
 def test_eval(manager, watcher, app):
-    x = manager.fire(TestEval())
-    assert watcher.wait("test_eval_success")
+    x = manager.fire(eval())
+    assert watcher.wait("eval_success")
 
     value = x.value
     assert value == 3

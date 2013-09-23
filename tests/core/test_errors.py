@@ -5,8 +5,8 @@ import pytest
 from circuits import Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -48,8 +48,8 @@ def app(request, manager, watcher):
     return app
 
 
-def test(app, watcher):
-    e = Test()
+def test_main(app, watcher):
+    e = test()
     app.fire(e)
     watcher.wait("error")
 

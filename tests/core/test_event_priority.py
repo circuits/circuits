@@ -3,12 +3,12 @@
 from circuits import Component, Event
 
 
-class Foo(Event):
-    """Foo Event"""
+class foo(Event):
+    """foo Event"""
 
 
-class Done(Event):
-    """Done Event"""
+class done(Event):
+    """done Event"""
 
 
 class App(Component):
@@ -27,8 +27,8 @@ def test1():
     app = App()
 
     # Normal Order
-    [app.fire(Foo(1)), app.fire(Foo(2))]
-    app.fire(Done())
+    [app.fire(foo(1)), app.fire(foo(2))]
+    app.fire(done())
 
     app.run()
 
@@ -39,8 +39,8 @@ def test2():
     app = App()
 
     # Priority Order
-    [app.fire(Foo(1), priority=2), app.fire(Foo(2), priority=0)]
-    app.fire(Done())
+    [app.fire(foo(1), priority=2), app.fire(foo(2), priority=0)]
+    app.fire(done())
 
     app.run()
 

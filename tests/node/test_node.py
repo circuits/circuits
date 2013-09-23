@@ -10,10 +10,6 @@ from circuits.node import Node, remote
 from circuits.net.sockets import UDPServer
 
 
-class Foo(Event):
-    """Foo Event"""
-
-
 class App(Component):
     disconnected = False
     ready = False

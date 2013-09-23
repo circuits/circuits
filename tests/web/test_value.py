@@ -6,8 +6,8 @@ from circuits import Event, Component
 from .helpers import urlopen
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
 class Test(Component):
@@ -19,7 +19,7 @@ class Test(Component):
 class Root(Controller):
 
     def index(self):
-        return self.fire(Hello())
+        return self.fire(hello())
 
 
 def test(webapp):

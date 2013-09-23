@@ -5,20 +5,20 @@ import pytest
 from circuits import handler, Event, Component
 
 
-class Hello(Event):
-    "Hello Event"
+class hello(Event):
+    "Hhllo Event"
 
 
-class Test(Event):
-    "Test Event"
+class test(Event):
+    "test Event"
 
 
-class Foo(Event):
-    "Foo Event"
+class foo(Event):
+    "foo Event"
 
 
-class Values(Event):
-    "Values Event"
+class values(Event):
+    "values Event"
 
     complete = True
 
@@ -29,7 +29,7 @@ class App(Component):
         return "Hello World!"
 
     def test(self):
-        return self.fire(Hello())
+        return self.fire(hello())
 
     def foo(self):
         raise Exception("ERROR")
@@ -52,7 +52,7 @@ class App(Component):
 
     @handler("values", priority=0.0)
     def _value3(self):
-        return self.fire(Hello())
+        return self.fire(hello())
 
 
 @pytest.fixture
@@ -70,7 +70,7 @@ def app(request, manager, watcher):
 
 
 def test_value(app, watcher):
-    x = app.fire(Hello())
+    x = app.fire(hello())
     watcher.wait("hello")
 
     assert "Hello World!" in x
@@ -78,7 +78,7 @@ def test_value(app, watcher):
 
 
 def test_nested_value(app, watcher):
-    x = app.fire(Test())
+    x = app.fire(test())
     watcher.wait("test")
 
     assert x.value == "Hello World!"
@@ -86,7 +86,7 @@ def test_nested_value(app, watcher):
 
 
 def test_value_notify(app, watcher):
-    x = app.fire(Hello())
+    x = app.fire(hello())
     x.notify = True
 
     watcher.wait("hello_value_changed")
@@ -97,7 +97,7 @@ def test_value_notify(app, watcher):
 
 
 def test_nested_value_notify(app, watcher):
-    x = app.fire(Test())
+    x = app.fire(test())
     x.notify = True
 
     watcher.wait("hello_value_changed")
@@ -108,7 +108,7 @@ def test_nested_value_notify(app, watcher):
 
 
 def test_error_value(app, watcher):
-    x = app.fire(Foo())
+    x = app.fire(foo())
     watcher.wait("foo")
 
     etype, evalue, etraceback = x
@@ -118,7 +118,7 @@ def test_error_value(app, watcher):
 
 
 def test_multiple_values(app, watcher):
-    v = app.fire(Values())
+    v = app.fire(values())
     watcher.wait("values_complete")
 
     assert isinstance(v.value, list)

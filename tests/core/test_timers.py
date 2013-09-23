@@ -30,8 +30,8 @@ def teardownapp(app):
     app.stop()
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -54,7 +54,7 @@ class App(Component):
 
 
 def test_timer(app):
-    timer = Timer(0.1, Test(), "timer")
+    timer = Timer(0.1, test(), "timer")
     timer.register(app)
     assert pytest.wait_for(app, "flag")
     app.reset()
@@ -62,7 +62,7 @@ def test_timer(app):
 
 def test_persistentTimer(app):
     app.timestamps.append(time.time())
-    timer = Timer(0.2, Test(), "timer", persist=True)
+    timer = Timer(0.2, test(), "timer", persist=True)
     timer.register(app)
 
     wait_res = pytest.wait_for(app, "count", 2)
@@ -81,7 +81,7 @@ def test_persistentTimer(app):
 def test_datetime(app):
     now = datetime.now()
     d = now + timedelta(seconds=0.1)
-    timer = Timer(d, Test(), "timer")
+    timer = Timer(d, test(), "timer")
     timer.register(app)
     assert pytest.wait_for(app, "flag")
     app.reset()

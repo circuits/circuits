@@ -3,8 +3,8 @@
 from circuits import Event, Component, Manager
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -21,7 +21,7 @@ while app:
 
 
 def test_fire():
-    x = m.fire(Test())
+    x = m.fire(test())
     m.flush()
     assert x.value == "Hello World!"
 

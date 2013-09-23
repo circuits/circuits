@@ -10,8 +10,8 @@ from circuits.protocols.irc import (
 )
 
 
-class Read(Event):
-    """Read Event"""
+class read(Event):
+    """read Event"""
 
 
 class App(Component):
@@ -777,7 +777,7 @@ def test_WHOIS(app):
 def test_ping(app):
     app.reset()
 
-    app.fire(Read(b"PING :localhost\r\n"))
+    app.fire(read(b"PING :localhost\r\n"))
     while app:
         app.flush()
 
@@ -816,7 +816,7 @@ def test_ping(app):
 def test_numerics(app):
     app.reset()
 
-    app.fire(Read(
+    app.fire(read(
         b":localhost 001 test " +
         b":Welcome to the circuits Internet Relay Chat Network test\r\n"
     ))
@@ -847,7 +847,7 @@ def test_numerics(app):
 
     app.reset()
 
-    app.fire(Read(b":localhost 332 test #test :Hello World!\r\n"))
+    app.fire(read(b":localhost 332 test #test :Hello World!\r\n"))
     while app:
         app.flush()
 
@@ -873,7 +873,7 @@ def test_numerics(app):
 def test_ctcp(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost PRIVMSG test :TIME\r\n"))
+    app.fire(read(b":test!foo@localhost PRIVMSG test :TIME\r\n"))
     while app:
         app.flush()
 
@@ -898,7 +898,7 @@ def test_ctcp(app):
 def test_message(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost PRIVMSG test :Hello\r\n"))
+    app.fire(read(b":test!foo@localhost PRIVMSG test :Hello\r\n"))
     while app:
         app.flush()
 
@@ -922,7 +922,7 @@ def test_message(app):
 def test_notice(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost NOTICE test :Hello\r\n"))
+    app.fire(read(b":test!foo@localhost NOTICE test :Hello\r\n"))
     while app:
         app.flush()
 
@@ -946,7 +946,7 @@ def test_notice(app):
 def test_join(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost JOIN #test\r\n"))
+    app.fire(read(b":test!foo@localhost JOIN #test\r\n"))
     while app:
         app.flush()
 
@@ -969,7 +969,7 @@ def test_join(app):
 def test_part(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost PART #test :Leaving\r\n"))
+    app.fire(read(b":test!foo@localhost PART #test :Leaving\r\n"))
     while app:
         app.flush()
 
@@ -993,7 +993,7 @@ def test_part(app):
 def test_quit(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost QUIT :Leaving\r\n"))
+    app.fire(read(b":test!foo@localhost QUIT :Leaving\r\n"))
     while app:
         app.flush()
 
@@ -1016,7 +1016,7 @@ def test_quit(app):
 def test_nick(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost NICK :test_\r\n"))
+    app.fire(read(b":test!foo@localhost NICK :test_\r\n"))
     while app:
         app.flush()
 
@@ -1039,7 +1039,7 @@ def test_nick(app):
 def test_mode(app):
     app.reset()
 
-    app.fire(Read(b":test!foo@localhost MODE #test +o test\r\n"))
+    app.fire(read(b":test!foo@localhost MODE #test +o test\r\n"))
     while app:
         app.flush()
 
@@ -1063,7 +1063,7 @@ def test_mode(app):
 def test_away(app):
     app.reset()
 
-    app.fire(Read(b":irc.example.com 301 circuits somenick :is away\r\n"))
+    app.fire(read(b":irc.example.com 301 circuits somenick :is away\r\n"))
     while app:
         app.flush()
 

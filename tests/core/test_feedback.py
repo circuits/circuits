@@ -9,8 +9,8 @@ import py
 from circuits import handler, Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
     success = True
     failure = True
@@ -58,7 +58,7 @@ def test_success():
     while app:
         app.flush()
 
-    e = Test()
+    e = test()
     value = app.fire(e)
 
     while app:
@@ -82,7 +82,7 @@ def test_failure():
     while app:
         app.flush()
 
-    e = Test(error=True)
+    e = test(error=True)
     x = app.fire(e)
 
     while app:
