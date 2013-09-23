@@ -38,10 +38,11 @@ class Client(BaseComponent):
 
         TCPClient(channel=self.channel).register(self)
 
-    def ready(self, component):
+    @handler("ready")
+    def _on_ready(self, component):
         self.fire(connect(self._host, self._port))
 
-    def process(self, packet):
+    def _process_packet(self, packet):
         v, id, errors = load_value(packet)
 
         if id in self._values:
@@ -52,8 +53,8 @@ class Client(BaseComponent):
     def close(self):
         self.fire(close())
 
-#    def connect(self, host, port):
-#        self.fire(connect(host, port))
+    def connect(self, host, port):
+        self.fire(connect(host, port))
 
     def send(self, event, e):
         id = self._nid
@@ -73,4 +74,4 @@ class Client(BaseComponent):
         if delimiter > 0:
             packet = self._buffer[:delimiter].decode("utf-8")
             self._buffer = self._buffer[(delimiter + len(DELIMITER)):]
-            self.process(packet)
+            self._process_packet(packet)

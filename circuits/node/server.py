@@ -31,7 +31,7 @@ class Server(BaseComponent):
 
         TCPServer(bind, channel=self.channel).register(self)
 
-    def process(self, sock, packet):
+    def _process_packet(self, sock, packet):
         e, id = load_event(packet)
 
         name = "%s_value_changed" % e.name
@@ -62,4 +62,4 @@ class Server(BaseComponent):
         if delimiter > 0:
             packet = buffer[:delimiter].decode("utf-8")
             self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
-            self.process(sock, packet)
+            self._process_packet(sock, packet)

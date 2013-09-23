@@ -11,9 +11,10 @@ from circuits.net.sockets import UDPServer
 
 
 class App(Component):
-    disconnected = False
+
     ready = False
     value = False
+    disconnected = False
 
     def foo(self):
         return "Hello World!"
@@ -39,6 +40,7 @@ def bind(manager, watcher):
     assert watcher.wait("closed")
 
     server.unregister()
+    assert watcher.wait("unregistered")
 
     return host, port
 
@@ -52,7 +54,7 @@ def test_return_value(manager, watcher, bind):
     a2.start(process=True)
 
     n1.add("a2", *bind)
-    assert watcher.wait("ready")
+    assert watcher.wait("connected")
 
     e = Event.create("foo")
     e.notify = True
