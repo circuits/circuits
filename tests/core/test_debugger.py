@@ -177,7 +177,7 @@ def test_exceptions():
     app.flush()
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<Error[*.error]")
+    assert s.startswith("ERROR <listener[*.test] (App.test)> (<test[*]")
     stderr.seek(0)
     stderr.truncate()
 
