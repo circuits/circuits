@@ -35,6 +35,9 @@ class httperror(Event):
         """
         super(httperror, self).__init__(request, response, code, **kwargs)
 
+        # Override HTTPError subclasses
+        self.name = "httperror"
+
         self.request = request
         self.response = response
 
