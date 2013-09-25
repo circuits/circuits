@@ -494,6 +494,9 @@ class Manager(object):
     flush = flushEvents
 
     def _dispatcher(self, event, channels, remaining):
+        if event.cancelled:
+            return
+
         if event.complete:
             if not getattr(event, "cause", None):
                 event.cause = event

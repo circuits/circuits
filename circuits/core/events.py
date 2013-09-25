@@ -99,6 +99,7 @@ class BaseEvent(object):
         self.value = None
         self.handler = None
         self.stopped = False
+        self.cancelled = False
 
     def __getstate__(self):
         odict = self.__dict__.copy()
@@ -164,6 +165,11 @@ class BaseEvent(object):
             self.kwargs[i] = y
         else:
             raise TypeError("Expected int or str, got %r" % type(i))
+
+    def cancel(self):
+        """Cancel the event from being processed (if not already)"""
+
+        self.cancelled = True
 
     def stop(self):
         """Stop further processing of this event"""
