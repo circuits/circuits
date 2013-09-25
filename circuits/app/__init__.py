@@ -11,10 +11,8 @@ common to applications.
 :license: MIT (See: LICENSE)
 """
 
-from .log import Logger
-from .config import Config
 from .daemon import Daemon
 
-__all__ = ("Logger", "Config", "Daemon",)
+__all__ = ("Daemon",)
 
 # flake8: noqa
