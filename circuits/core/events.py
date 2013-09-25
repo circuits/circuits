@@ -14,7 +14,7 @@ class EventType(type):
     def __init__(cls, name, bases, ns):
         super(EventType, cls).__init__(name, bases, ns)
 
-        parts = [base.__name__ for base in getmro(cls)][::-1][4:-1]
+        parts = [base.__name__ for base in getmro(cls)][::-1][3:-1]
         parts.append(ns.get("name", cls.__name__))
 
         setattr(cls, "name", "_".join(parts))
