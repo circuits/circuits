@@ -11,9 +11,9 @@ This package contains the essential core parts of the circuits framework.
 from .bridge import Bridge
 from .loader import Loader
 from .manager import Manager
+from .events import BaseEvent, Event
 from .handlers import handler, reprhandler
 from .components import BaseComponent, Component
-from .events import BaseEvent, DerivedEvent, Event
 
 from .values import Value
 
