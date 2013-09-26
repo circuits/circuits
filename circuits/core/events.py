@@ -6,7 +6,7 @@
 This module defines the basic event class and common events.
 """
 
-from inspect import ismethod
+from inspect import ismethod, getmro
 
 
 class EventType(type):
@@ -14,7 +14,10 @@ class EventType(type):
     def __init__(cls, name, bases, ns):
         super(EventType, cls).__init__(name, bases, ns)
 
-        setattr(cls, "name", ns.get("name", cls.__name__))
+        parts = [base.__name__ for base in getmro(cls)][::-1][3:-1]
+        parts.append(ns.get("name", cls.__name__))
+
+        setattr(cls, "name", "_".join(parts))
 
 
 class BaseEvent(object):
@@ -22,6 +25,7 @@ class BaseEvent(object):
     channels = ()
     "The channels this message is sent to."
 
+    parent = None
     notify = False
     success = False
     failure = False
@@ -32,6 +36,11 @@ class BaseEvent(object):
     @classmethod
     def create(cls, name, *args, **kwargs):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
+
+    def child(self, name, *args, **kwargs):
+        e = self.create(name, *args, **kwargs)
+        e.parent = self
+        return e
 
     def __init__(self, *args, **kwargs):
         """An event is a message send to one or more channels. It is eventually
@@ -90,6 +99,7 @@ class BaseEvent(object):
         self.value = None
         self.handler = None
         self.stopped = False
+        self.cancelled = False
 
     def __getstate__(self):
         odict = self.__dict__.copy()
@@ -108,8 +118,6 @@ class BaseEvent(object):
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        name = self.__class__.__name__
-
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:
@@ -122,7 +130,7 @@ class BaseEvent(object):
             ", ".join("%s=%s" % (k, repr(v)) for k, v in self.kwargs.items())
         )
 
-        return "<%s[%s] (%s)>" % (name, channels, data)
+        return "<%s[%s] (%s)>" % (self.name, channels, data)
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
@@ -158,6 +166,11 @@ class BaseEvent(object):
         else:
             raise TypeError("Expected int or str, got %r" % type(i))
 
+    def cancel(self):
+        """Cancel the event from being processed (if not already)"""
+
+        self.cancelled = True
+
     def stop(self):
         """Stop further processing of this event"""
 
@@ -167,14 +180,6 @@ class BaseEvent(object):
 class Event(BaseEvent):
 
     __metaclass__ = EventType
-
-
-class DerivedEvent(Event):
-
-    @classmethod
-    def create(cls, topic, event, *args, **kwargs):
-        name = "{0:s}_{1:s}".format(event.__class__.__name__, topic)
-        return type(cls)(name, (cls,), {"name": name})(event, *args, **kwargs)
 
 
 class error(Event):
@@ -201,40 +206,6 @@ class error(Event):
 
     def __init__(self, type, value, traceback, handler=None, fevent=None):
         super(error, self).__init__(type, value, traceback, handler=handler, fevent=fevent)
-
-
-class done(DerivedEvent):
-    """done DerivedEvent
-
-    This Event is sent when an event is done. It is used by the wait and call
-    primitives to know when to stop waiting. Don't use this for application
-    development, use :class:`Success` instead.
-    """
-
-
-class success(DerivedEvent):
-    """success DerivedEvent
-
-    This Event is sent when all handlers (for a particular event) have been
-    executed successfully, see :class:`~.manager.Manager`.
-    """
-
-
-class complete(DerivedEvent):
-    """complete DerivedEvent
-
-    This Event is sent when all handlers (for a particular event) have been
-    executed and (recursively) all handlers for all events fired by those
-    handlers etc., see :class:`~.manager.Manager`.
-    """
-
-
-class failure(DerivedEvent):
-    """failure DerivedEvent
-
-    This Event is sent when an error has occurred with the execution of an
-    Event Handlers.
-    """
 
 
 class started(Event):
