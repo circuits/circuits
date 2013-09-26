@@ -17,7 +17,15 @@ class EventType(type):
         parts = [base.__name__ for base in getmro(cls)][::-1][3:-1]
         parts.append(ns.get("name", cls.__name__))
 
-        setattr(cls, "name", "_".join(parts))
+        # Prevent inheritance of these
+        # Subclassing is used for subevent
+        # thus it is does not make sense to inherit these
+        cls.notify = cls.__dict__.get('notify', False)
+        cls.success = cls.__dict__.get('success', False)
+        cls.failure = cls.__dict__.get('failure', False)
+        cls.complete = cls.__dict__.get('complete', False)
+
+        cls.name = "_".join(parts)
 
 
 class BaseEvent(object):
@@ -100,6 +108,8 @@ class BaseEvent(object):
         self.handler = None
         self.stopped = False
         self.cancelled = False
+        if not hasattr(self, 'name'):
+            self.name = self.__class__.__name__
 
     def __getstate__(self):
         odict = self.__dict__.copy()

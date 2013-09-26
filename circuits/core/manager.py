@@ -413,8 +413,8 @@ class Manager(object):
                 state['run'] = True
                 state['event'] = event
 
-        def _on_done(self, event, source, *args, **kwargs):
-            if state['event'] == source:
+        def _on_done(self, event, *args, **kwargs):
+            if state['event'] == event.parent:
                 state['flag'] = True
                 self.registerTask((state['task_event'],
                                    state['task'],

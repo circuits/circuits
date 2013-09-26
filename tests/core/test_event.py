@@ -87,3 +87,10 @@ def test_setitem():
 
     assert e[0] == 0
     assert e["foo"] == "Hello"
+
+
+def test_subclass_looses_properties():
+    class hello(Event):
+        success = True
+    e = hello().child('success')
+    assert e.success is False

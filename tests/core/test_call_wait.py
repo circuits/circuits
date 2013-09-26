@@ -5,50 +5,54 @@ import pytest
 from circuits import handler, Component, Event
 
 
-class BaseEvent(Event):
-    """BaseEvent Event"""
-
+class wait(Event):
+    """wait Event"""
     success = True
 
 
-class wait(BaseEvent):
-    """wait Event"""
-
-
-class call(BaseEvent):
+class call(Event):
     """call Event"""
+    success = True
 
 
-class long_call(BaseEvent):
+class long_call(Event):
     """long_call Event"""
+    success = True
 
 
-class long_wait(BaseEvent):
+class long_wait(Event):
     """long_wait Event"""
+    success = True
 
 
-class wait_return(BaseEvent):
+class wait_return(Event):
     """wait_return Event"""
+    success = True
 
 
-class hello(BaseEvent):
+class hello(Event):
     """hello Event"""
+    success = True
 
 
-class foo(BaseEvent):
+class foo(Event):
     """foo Event"""
+    success = True
 
 
-class get_x(BaseEvent):
+class get_x(Event):
     """get_x Event"""
+    success = True
 
 
-class get_y(BaseEvent):
+class get_y(Event):
     """get_y Event"""
+    success = True
 
 
-class eval(BaseEvent):
+class eval(Event):
     """eval Event"""
+    success = True
 
 
 class App(Component):
