@@ -15,7 +15,6 @@ from circuits.core import handler, BaseComponent
 from circuits.net.sockets import TCPServer, UNIXServer
 
 from .http import HTTP
-from .events import webevent
 from .dispatchers import Dispatcher
 
 
@@ -170,8 +169,6 @@ class StdinServer(BaseComponent):
 
     def __init__(self, encoding="utf-8", channel=channel):
         super(StdinServer, self).__init__(channel=channel)
-
-        webevent.channels = (channel,)
 
         self.server = (io.stdin + io.stdout).register(self)
         self.http = HTTP(
