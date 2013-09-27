@@ -557,7 +557,7 @@ class Manager(object):
                 value = err
 
                 if event.failure:
-                    self.fire(event.child("failure", err), *event.channels)
+                    self.fire(event.child("failure", event, err), *event.channels)
 
                 self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
 
@@ -594,7 +594,7 @@ class Manager(object):
 
         if err is None and event.success:
             channels = getattr(event, "success_channels", event.channels)
-            self.fire(event.child("success", event.value.value), *channels)
+            self.fire(event.child("success", event, event.value.value), *channels)
 
         while True:
             # cause attributes indicates interest in completion event
@@ -606,7 +606,7 @@ class Manager(object):
             if event.effects > 0:
                 break  # some nested events remain to be completed
             if event.complete:  # does this event want signaling?
-                self.fire(event.child("complete", event.value.value), *getattr(event, "complete_channels", event.channels))
+                self.fire(event.child("complete", event, event.value.value), *getattr(event, "complete_channels", event.channels))
 
             # this event and nested events are done now
             delattr(event, "cause")
@@ -736,7 +736,7 @@ class Manager(object):
             event.value.inform(True)
 
             if event.failure:
-                self.fire(event.child("failure", err), *event.channels)
+                self.fire(event.child("failure", event, err), *event.channels)
 
             self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
 
