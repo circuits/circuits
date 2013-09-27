@@ -81,11 +81,14 @@ class WebSocketsDispatcher(BaseComponent):
         # Successful completion
         response.status = 101
         response.close = False
-        del response.headers["Content-Type"]
+        try:
+            del response.headers["Content-Type"]
+        except KeyError:
+            pass
         response.headers["Upgrade"] = "WebSocket"
         response.headers["Connection"] = "Upgrade"
         response.headers["Sec-WebSocket-Accept"] = accept
-        response.message = "WebSocket Protocol Handshake"
+        response.body = ["WebSocket Protocol Handshake"]
         codec = WebSocketCodec(request.sock, channel=self._wschannel)
         self._codecs[request.sock] = codec
         codec.register(self)

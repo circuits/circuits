@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import pytest
-pytest.skip("XXX: Broken -- Not sure why :/")
+pytest.skip("XXX: Broken -- Needs the connect() event to be split from TCPClient or it triggers both the client and the TCPClient when connecting.")
 
 import time
 
 from circuits import Component
 from circuits.web.servers import Server
-from circuits.net.sockets import connect, write
+from circuits.web import client
+from circuits.net.sockets import write
 from circuits.web.controllers import Controller
 from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
 
@@ -30,6 +31,9 @@ class WSClient(Component):
 
     response = None
 
+    def ready(self, *args):
+        self.fire(client.connect())
+
     def read(self, data):
         self.response = data
 
@@ -43,14 +47,13 @@ def test1(webapp):
 
     client = WebSocketClient("ws://localhost:8123/websocket")
     wsclient = WSClient().register(client)
+    waiter = pytest.WaitEvent(client, "connected")
     client.start()
-    client.fire(connect())
+    waiter.wait()
+    waiter = pytest.WaitEvent(wsclient, "read")
     client.fire(write("Hello!"), "ws")
-    for i in range(100):
-        if wsclient.response is not None:
-            break
-        time.sleep(0.010)
-    assert wsclient.response is not None
+    waiter.wait()
+    assert wsclient.response == u'Received: Hello!'
     client.stop()
 
     server.stop()

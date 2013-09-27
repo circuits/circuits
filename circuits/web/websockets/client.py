@@ -70,7 +70,7 @@ class WebSocketClient(BaseComponent):
 
     @handler("connect", priority=0.1, filter=True)
     def _on_connect(self, event, *args, **kwargs):
-        if not isinstance(event, client.Connect):
+        if not isinstance(event, client.connect):
             return
         p = urlparse(self._url)
         if not p.hostname:
