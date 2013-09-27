@@ -8,10 +8,10 @@ This package contains the essential core parts of the circuits framework.
 """
 
 
+from .events import Event
 from .bridge import Bridge
 from .loader import Loader
 from .manager import Manager
-from .events import BaseEvent, Event
 from .handlers import handler, reprhandler
 from .components import BaseComponent, Component
 

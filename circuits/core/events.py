@@ -6,7 +6,7 @@
 This module defines the basic event class and common events.
 """
 
-from inspect import ismethod, getmro
+from inspect import ismethod
 
 
 class EventType(type):
@@ -14,21 +14,17 @@ class EventType(type):
     def __init__(cls, name, bases, ns):
         super(EventType, cls).__init__(name, bases, ns)
 
-        parts = [base.__name__ for base in getmro(cls)][::-1][3:-1]
-        parts.append(ns.get("name", cls.__name__))
-
-        # Prevent inheritance of these
-        # Subclassing is used for subevent
-        # thus it is does not make sense to inherit these
         cls.notify = cls.__dict__.get('notify', False)
         cls.success = cls.__dict__.get('success', False)
         cls.failure = cls.__dict__.get('failure', False)
         cls.complete = cls.__dict__.get('complete', False)
 
-        cls.name = "_".join(parts)
+        setattr(cls, "name", ns.get("name", cls.__name__))
 
 
-class BaseEvent(object):
+class Event(object):
+
+    __metaclass__ = EventType
 
     channels = ()
     "The channels this message is sent to."
@@ -46,7 +42,7 @@ class BaseEvent(object):
         return type(cls)(name, (cls,), {})(*args, **kwargs)
 
     def child(self, name, *args, **kwargs):
-        e = self.create(name, *args, **kwargs)
+        e = self.create("{0:s}_{1:s}".format(self.name, name), *args, **kwargs)
         e.parent = self
         return e
 
@@ -185,11 +181,6 @@ class BaseEvent(object):
         """Stop further processing of this event"""
 
         self.stopped = True
-
-
-class Event(BaseEvent):
-
-    __metaclass__ = EventType
 
 
 class error(Event):
