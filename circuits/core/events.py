@@ -14,11 +14,6 @@ class EventType(type):
     def __init__(cls, name, bases, ns):
         super(EventType, cls).__init__(name, bases, ns)
 
-        cls.notify = cls.__dict__.get('notify', False)
-        cls.success = cls.__dict__.get('success', False)
-        cls.failure = cls.__dict__.get('failure', False)
-        cls.complete = cls.__dict__.get('complete', False)
-
         setattr(cls, "name", ns.get("name", cls.__name__))
 
 
@@ -39,7 +34,7 @@ class Event(object):
 
     @classmethod
     def create(cls, name, *args, **kwargs):
-        return type(cls)(name, (cls,), {})(*args, **kwargs)
+        return type(Event)(name, (Event,), {})(*args, **kwargs)
 
     def child(self, name, *args, **kwargs):
         e = self.create("{0:s}_{1:s}".format(self.name, name), *args, **kwargs)
