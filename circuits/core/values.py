@@ -11,19 +11,6 @@ from .events import Event
 from ..six import string_types
 
 
-class value_changed(Event):
-    """value_changed Event
-
-    This Event is triggered when the return Value of an Event Handler has
-    changed its value.
-    """
-
-    def __init__(self, value):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
-        super(value_changed, self).__init__(value)
-
-
 class Value(object):
     """Create a new future Value Object
 
@@ -103,7 +90,7 @@ class Value(object):
             if isinstance(notify, string_types):
                 e = Event.create(notify, self)
             else:
-                e = value_changed.create("{0:s}_value_changed".format(self.event.__class__.__name__), self)
+                e = self.event.child("value_changed", self)
 
             self.manager.fire(e, self.manager)
 
