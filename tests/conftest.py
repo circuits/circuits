@@ -17,7 +17,7 @@ from circuits import handler, BaseComponent, Debugger, Manager
 from circuits.core.manager import TIMEOUT, UnhandledEventWarning
 
 
-warnings.filterwarnings("ignore", category=UnhandledEventWarning) 
+warnings.filterwarnings("ignore", category=UnhandledEventWarning)
 
 
 class Watcher(BaseComponent):
@@ -124,7 +124,11 @@ def manager(request):
     assert waiter.wait()
 
     if request.config.option.verbose:
-        Debugger().register(manager)
+        verbose = True
+    else:
+        verbose = False
+
+    Debugger(events=verbose).register(manager)
 
     return manager
 
