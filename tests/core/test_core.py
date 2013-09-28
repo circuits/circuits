@@ -12,6 +12,13 @@ class App(Component):
     def test(self):
         return "Hello World!"
 
+    def unregistered(self, *args):
+        return
+
+    def prepare_unregister(self, *args):
+        return
+
+
 m = Manager()
 app = App()
 app.register(m)
