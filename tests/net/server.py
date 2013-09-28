@@ -22,6 +22,9 @@ class Server(Component):
         self.ready = True
         self.host, self.port = bind
 
+    def close(self):
+        return
+
     def closed(self):
         self.closed = True
 
