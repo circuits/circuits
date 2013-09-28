@@ -16,6 +16,7 @@ class FileApp(Component):
         self.file = File(*args, **kwargs).register(self)
 
         self.eof = False
+        self.closed = False
         self.buffer = BytesIO()
 
     def read(self, data):
@@ -23,6 +24,9 @@ class FileApp(Component):
 
     def eof(self):
         self.eof = True
+
+    def closed(self):
+        self.closed = True
 
 
 def test_open_fileobj(manager, watcher, tmpdir):
@@ -36,9 +40,11 @@ def test_open_fileobj(manager, watcher, tmpdir):
     assert watcher.wait("opened", app.file.channel)
 
     assert watcher.wait("eof", app.file.channel)
+    assert app.eof
 
     app.fire(close(), app.file.channel)
     assert watcher.wait("closed", app.file.channel)
+    assert app.closed
 
     app.unregister()
     assert watcher.wait("unregistered")
@@ -58,6 +64,7 @@ def test_read_write(manager, watcher, tmpdir):
 
     app.fire(close(), app.file.channel)
     assert watcher.wait("closed", app.file.channel)
+    assert app.closed
 
     app.unregister()
     assert watcher.wait("unregistered")
@@ -66,9 +73,11 @@ def test_read_write(manager, watcher, tmpdir):
     assert watcher.wait("opened", app.file.channel)
 
     assert watcher.wait("eof", app.file.channel)
+    assert app.eof
 
     app.fire(close(), app.file.channel)
     assert watcher.wait("closed", app.file.channel)
+    assert app.closed
 
     app.unregister()
     assert watcher.wait("unregistered")

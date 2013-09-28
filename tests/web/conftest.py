@@ -10,7 +10,7 @@ import pytest
 
 from circuits.net.sockets import close
 from circuits.web import Server, Static
-from circuits import Component, Debugger
+from circuits import handler, Component, Debugger
 from circuits.web.client import Client, request
 
 
@@ -19,12 +19,27 @@ DOCROOT = os.path.join(os.path.dirname(__file__), "static")
 
 class WebApp(Component):
 
+    channel = "web"
+
     def init(self):
+        self.closed = False
+
         self.server = Server(0).register(self)
         Static("/static", DOCROOT, dirlisting=True).register(self)
 
+    @handler("closed", channel="*", priority=1.0)
+    def _on_closed(self):
+        self.closed = True
+
+    @handler("ready", channel="*", priority=1.0)
+    def _on_ready(self, event, server, host, port):
+        event.stop()
+
 
 class WebClient(Client):
+
+    def init(self, *args, **kwargs):
+        self.closed = False
 
     def __call__(self, method, path, body=None, headers={}):
         waiter = pytest.WaitEvent(self, "response", channel=self.channel)
@@ -32,6 +47,10 @@ class WebClient(Client):
         assert waiter.wait()
 
         return self.response
+
+    @handler("closed", channel="*", priority=1.0)
+    def _on_closed(self):
+        self.closed = True
 
 
 @pytest.fixture(scope="module")

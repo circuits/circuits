@@ -131,6 +131,14 @@ class BaseServer(BaseComponent):
         if hasattr(self, "http"):
             return self.http.version
 
+    @handler("closed")
+    def _on_closed(self):
+        return
+
+    @handler("signal")
+    def _on_signal(self, sig, stack):
+        return
+
     @handler("ready")
     def _on_ready(self, server, bind):
         print(
