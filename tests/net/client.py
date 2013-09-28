@@ -9,6 +9,7 @@ class Client(Component):
         super(Client, self).__init__(channel=channel)
 
         self.data = ""
+        self.error = None
         self.ready = False
         self.closed = False
         self.connected = False
@@ -16,6 +17,9 @@ class Client(Component):
 
     def ready(self, *args):
         self.ready = True
+
+    def error(self, error):
+        self.error = error
 
     def connected(self, host, port):
         self.connected = True

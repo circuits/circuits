@@ -177,6 +177,8 @@ def test_tcp_connect_closed_port(Poller, ipv6):
         # 1st connect
         client.fire(connect(host, port))
         assert pytest.wait_for(client, "connected")
+        assert client.error[0] == 111
+        assert client.error[1] == "Connection refused"
 
         client.fire(write(b"foo"))
         assert pytest.wait_for(client, "disconnected")
