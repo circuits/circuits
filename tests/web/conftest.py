@@ -27,22 +27,6 @@ class WebApp(Component):
         self.server = Server(0).register(self)
         Static("/static", DOCROOT, dirlisting=True).register(self)
 
-    @handler("prepare_unregister", channel="*", priority=1.0)
-    def _on_prepare_unregister(self):
-        return
-
-    @handler("close", channel="*", priority=1.0)
-    def _on_close(self):
-        return
-
-    @handler("closed", channel="*", priority=1.0)
-    def _on_closed(self):
-        self.closed = True
-
-    @handler("ready", channel="*", priority=1.0)
-    def _on_ready(self, event, server, host, port):
-        event.stop()
-
 
 class WebClient(Client):
 
