@@ -15,8 +15,8 @@ example is run you should only get a single line of output "Hello World!".
 from circuits import Component, Event
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
 class App(Component):
@@ -36,7 +36,7 @@ class App(Component):
         """
 
         event.stop()  # Stop further event processing
-        self.fire(Hello())  # Fire a Hello event
+        self.fire(hello())  # Fire a Hello event
         raise SystemExit(0)  # Terminate the application
 
 # Start and "run" the system.

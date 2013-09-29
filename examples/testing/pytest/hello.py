@@ -5,8 +5,8 @@
 from circuits import Component, Event
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
 class App(Component):
@@ -23,7 +23,7 @@ class App(Component):
         trigger events that only occur once during startup.
         """
 
-        x = self.fire(Hello())  # Fire Hello Event
+        x = self.fire(hello())  # Fire hello Event
         yield self.wait("hello")  # Wait for Hello Event to fire
 
         print(x.value)  # Print the value we got back from firing Hello

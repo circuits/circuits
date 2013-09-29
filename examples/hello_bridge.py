@@ -24,8 +24,8 @@ from os import getpid
 from circuits import Component, Debugger, Event, Manager
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
 class App(Component):

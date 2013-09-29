@@ -29,8 +29,8 @@ from circuits.node import Node, Remote
 from circuits import Component, Debugger, Event
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
 class App(Component):

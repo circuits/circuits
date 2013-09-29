@@ -7,9 +7,9 @@ from StringIO import StringIO
 from subprocess import Popen, PIPE
 
 from circuits.io import File
-from circuits.web.events import Stream
-from circuits.net.sockets import Write
-from circuits.tools import kill, inspect
+from circuits.tools import inspect
+from circuits.net.events import write
+from circuits.web.events import stream
 from circuits import handler, Event, Component
 from circuits.web import Server, Controller, Logger, Static, Sessions
 
@@ -17,12 +17,12 @@ BUFFERING = 1
 STREAMING = 2
 
 
-class Kill(Event):
-    pass
+class kill(Event):
+    """kill Event"""
 
 
-class Input(Event):
-    pass
+class input(Event):
+    """input Event"""
 
 
 class Command(Component):
@@ -63,7 +63,7 @@ class Command(Component):
     @handler("disconnect", channel="web")
     def disconnect(self, sock):
         if sock == self._request.sock:
-            self.fire(Kill(), self)
+            self.fire(kill(), self)
 
     @handler("response", channel="web", priority=-1)
     def response(self, response):
@@ -72,20 +72,20 @@ class Command(Component):
 
     def kill(self):
         os.killpg(self._p.pid, signal.SIGINT)
-        kill(self)
+        self.unregister()
 
     def input(self, data):
         if self._stdin is not None:
-            self.fire(Write(data), self._stdin)
+            self.fire(write(data), self._stdin)
 
     @staticmethod
     def _on_stdout_eof(self):
         if self._buffer is not None:
             self._buffer.flush()
             data = self._buffer.getvalue()
-            self.fire(Stream(self._response, data), "web")
-        self.fire(Stream(self._response, None), "web")
-        self.fire(Kill())
+            self.fire(stream(self._response, data), "web")
+        self.fire(stream(self._response, None), "web")
+        self.fire(kill())
 
     @staticmethod
     def _on_stdout_read(self, data):
@@ -99,9 +99,9 @@ class Command(Component):
                 self._buffer.flush()
                 data = self._buffer.getvalue()
                 self._buffer = None
-                self.fire(Stream(self._response, data), "web")
+                self.fire(stream(self._response, data), "web")
             else:
-                self.fire(Stream(self._response, data), "web")
+                self.fire(stream(self._response, data), "web")
 
 
 class Root(Controller):

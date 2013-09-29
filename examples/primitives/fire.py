@@ -3,16 +3,16 @@
 from circuits import Component, Event
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
-class Foo(Event):
-    """Foo Event"""
+class foo(Event):
+    """foo Event"""
 
 
-class Bar(Event):
-    """Bar Event"""
+class bar(Event):
+    """bar Event"""
 
 
 class App(Component):
@@ -24,12 +24,12 @@ class App(Component):
         print("Bar!")
 
     def hello(self):
-        self.fire(Foo())
-        self.fire(Bar())
+        self.fire(foo())
+        self.fire(bar())
         print("Hello World!")
 
     def started(self, component):
-        self.fire(Hello())
+        self.fire(hello())
         self.stop()
 
 App().run()
