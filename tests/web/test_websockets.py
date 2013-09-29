@@ -3,8 +3,6 @@
 import pytest
 pytest.skip("XXX: Broken -- Needs the connect() event to be split from TCPClient or it triggers both the client and the TCPClient when connecting.")
 
-import time
-
 from circuits import Component
 from circuits.web.servers import Server
 from circuits.web import client
@@ -53,7 +51,7 @@ def test1(webapp):
     waiter = pytest.WaitEvent(wsclient, "read")
     client.fire(write("Hello!"), "ws")
     waiter.wait()
-    assert wsclient.response == u'Received: Hello!'
+    assert wsclient.response == 'Received: Hello!'
     client.stop()
 
     server.stop()
