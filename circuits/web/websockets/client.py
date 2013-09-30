@@ -13,7 +13,6 @@ try:
 except ImportError:
     from urlparse import urlparse  # NOQA
 
-from circuits.web import client
 from circuits.tools import deprecated
 from circuits.web.headers import Headers
 from circuits.protocols.http import HTTP
@@ -68,10 +67,8 @@ class WebSocketClient(BaseComponent):
         self._transport = TCPClient(channel=self.channel).register(self)
         HTTP(channel=self.channel).register(self._transport)
 
-    @handler("connect", priority=0.1, filter=True)
-    def _on_connect(self, event, *args, **kwargs):
-        if not isinstance(event, client.connect):
-            return
+    @handler("ready")
+    def _on_ready(self, event, *args, **kwargs):
         p = urlparse(self._url)
         if not p.hostname:
             raise ValueError("URL must be absolute")

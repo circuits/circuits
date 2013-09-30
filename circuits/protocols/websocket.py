@@ -51,8 +51,8 @@ class WebSocketCodec(BaseComponent):
     @handler("registered")
     def _on_registered(self, component, parent):
         if component == self:
-            @handler("read", priority=10, filter=True, channel=parent.channel)
-            def _on_read_raw(self, *args):
+            @handler("read", priority=10, channel=parent.channel)
+            def _on_read_raw(self, event, *args):
                 if self._sock is not None:
                     if args[0] != self._sock:
                         return
@@ -66,7 +66,7 @@ class WebSocketCodec(BaseComponent):
                         self.fire(read(self._sock, message))
                     else:
                         self.fire(read(message))
-                return True
+                event.stop()
 
             self.addHandler(_on_read_raw)
 

@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("XXX: Broken -- Needs the connect() event to be split from TCPClient or it triggers both the client and the TCPClient when connecting.")
-
 from circuits import Component
-from circuits.web.servers import Server
 from circuits.web import client
 from circuits.net.sockets import write
+from circuits.web.servers import Server
 from circuits.web.controllers import Controller
 from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
 
@@ -25,33 +22,32 @@ class Root(Controller):
         return "Hello World!"
 
 
-class WSClient(Component):
+class Client(WebSocketClient):
 
-    response = None
-
-    def ready(self, *args):
-        self.fire(client.connect())
+    def init(self, *args, **kwargs):
+        self.response = None
 
     def read(self, data):
         self.response = data
 
 
-def test1(webapp):
-    server = Server(("localhost", 8123))
+def test(manager, watcher):
+    server = Server(("localhost", 8123)).register(manager)
+    watcher.wait("ready")
+
     Echo().register(server)
     Root().register(server)
     WebSocketsDispatcher("/websocket").register(server)
-    server.start()
 
-    client = WebSocketClient("ws://localhost:8123/websocket")
-    wsclient = WSClient().register(client)
-    waiter = pytest.WaitEvent(client, "connected")
-    client.start()
-    waiter.wait()
-    waiter = pytest.WaitEvent(wsclient, "read")
+    client = WebSocketClient("ws://localhost:8123/websocket").register(manager)
+    watcher.wait("connected")
+
     client.fire(write("Hello!"), "ws")
-    waiter.wait()
-    assert wsclient.response == 'Received: Hello!'
-    client.stop()
+    watcher.wait("read")
+    assert client.response == "Received: Hello!"
 
-    server.stop()
+    client.unregister()
+    watcher.wait("unregistered")
+
+    server.unregister()
+    watcher.wait("unregistered")
