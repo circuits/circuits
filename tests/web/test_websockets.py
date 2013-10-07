@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import pytest
-pytest.skip("XXX: Still broken :/")
 
 from circuits import Component
 from circuits.net.sockets import write
@@ -12,7 +11,7 @@ from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
 
 class Echo(Component):
 
-    channel = "ws"
+    channel = "wsserver"
 
     def read(self, sock, data):
         self.fire(write(sock, "Received: " + data))
@@ -24,7 +23,8 @@ class Root(Controller):
         return "Hello World!"
 
 
-class Client(WebSocketClient):
+class Client(Component):
+    channel = "ws"
 
     def init(self, *args, **kwargs):
         self.response = None
@@ -40,13 +40,16 @@ def test(manager, watcher):
     Echo().register(server)
     Root().register(server)
     WebSocketsDispatcher("/websocket").register(server)
+    watcher.wait("registered", channel="wsserver")
+    WebSocketClient("ws://localhost:8123/websocket").register(manager)
+    watcher.wait("connected", channel="wsclient")
 
-    client = WebSocketClient("ws://localhost:8123/websocket").register(manager)
-    watcher.wait("connected")
-
+    client = Client().register(manager)
     client.fire(write("Hello!"), "ws")
-    watcher.wait("read")
+    watcher.wait("read", channel="ws")
     assert client.response == "Received: Hello!"
+    client.fire(write("foo"), "ws")
+    watcher.wait("read", channel="ws")
 
     client.unregister()
     watcher.wait("unregistered")

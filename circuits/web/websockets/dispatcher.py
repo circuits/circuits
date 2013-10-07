@@ -34,7 +34,7 @@ class WebSocketsDispatcher(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, path=None, wschannel="ws", *args, **kwargs):
+    def __init__(self, path=None, wschannel="wsserver", *args, **kwargs):
         """
         :param path: the path to handle. Requests that start with this
             path are considered to be WebSocket Opening Handshakes.

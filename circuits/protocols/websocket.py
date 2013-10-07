@@ -148,10 +148,14 @@ class WebSocketCodec(BaseComponent):
     def _on_write(self, *args):
         if self._close_sent:
             return
+
         if self._sock is not None:
+            if args[0] != self._sock:
+                return
             data = args[1]
         else:
             data = args[0]
+
         frame = bytearray()
         first = 0x80  # set FIN flag, we never fragment
         if isinstance(data, string_types):
