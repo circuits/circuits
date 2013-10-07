@@ -39,8 +39,10 @@ def test(manager, watcher):
 
     Echo().register(server)
     Root().register(server)
-    WebSocketsDispatcher("/websocket").register(server)
     watcher.wait("registered", channel="wsserver")
+    watcher.clear()
+    WebSocketsDispatcher("/websocket").register(server)
+    watcher.wait("registered", channel="web")
     WebSocketClient("ws://localhost:8123/websocket").register(manager)
     watcher.wait("connected", channel="wsclient")
 
@@ -48,11 +50,10 @@ def test(manager, watcher):
     client.fire(write("Hello!"), "ws")
     watcher.wait("read", channel="ws")
     assert client.response == "Received: Hello!"
-    client.fire(write("foo"), "ws")
-    watcher.wait("read", channel="ws")
 
     client.unregister()
     watcher.wait("unregistered")
+    watcher.clear()
 
     server.unregister()
     watcher.wait("unregistered")

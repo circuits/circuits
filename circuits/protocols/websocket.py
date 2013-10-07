@@ -42,7 +42,6 @@ class WebSocketCodec(BaseComponent):
         super(WebSocketCodec, self).__init__(*args, **kwargs)
 
         self._sock = sock
-        self._buffer = bytearray()
         self._pending_payload = bytearray()
         self._pending_type = None
         self._close_received = False
@@ -59,8 +58,7 @@ class WebSocketCodec(BaseComponent):
                     data = args[1]
                 else:
                     data = args[0]
-                self._buffer += data
-                messages = self._parse_messages()
+                messages = self._parse_messages(bytearray(data))
                 for message in messages:
                     if self._sock is not None:
                         self.fire(read(self._sock, message))
@@ -78,34 +76,34 @@ class WebSocketCodec(BaseComponent):
                 self.unregister()
             self.addHandler(_on_disconnect)
 
-    def _parse_messages(self):
+    def _parse_messages(self, data):
         msgs = []  # one chunk of bytes may result in several messages
         if self._close_received:
             return msgs
-        while self._buffer:
+        while data:
             # extract final flag, opcode and masking
-            final = True if self._buffer[0] & 0x80 != 0 else False
-            opcode = self._buffer[0] & 0xf
-            masking = True if self._buffer[1] & 0x80 != 0 else False
+            final = True if data[0] & 0x80 != 0 else False
+            opcode = data[0] & 0xf
+            masking = True if data[1] & 0x80 != 0 else False
             # evaluate payload length
-            payload_length = self._buffer[1] & 0x7f
+            payload_length = data[1] & 0x7f
             offset = 2
             if payload_length >= 126:
                 payload_bytes = 2 if payload_length == 126 else 8
                 payload_length = 0
                 for _ in range(payload_bytes):
                     payload_length = payload_length * 256 \
-                        + self._buffer[offset]
+                        + data[offset]
                     offset += 1
             # retrieve optional masking key
             if masking:
-                masking_key = self._buffer[offset:offset + 4]
+                masking_key = data[offset:offset + 4]
                 offset += 4
             # if not enough bytes available yet, retry after next read
-            if len(self._buffer) - offset < payload_length:
+            if len(data) - offset < payload_length:
                 break
             # rest of _buffer is payload
-            msg = self._buffer[offset:offset + payload_length]
+            msg = data[offset:offset + payload_length]
             if masking:  # unmask
                 msg = list(msg)
                 for i, c in enumerate(msg):
@@ -113,7 +111,7 @@ class WebSocketCodec(BaseComponent):
                 msg = bytearray(msg)
             # remove bytes of processed frame from byte _buffer
             offset += payload_length
-            self._buffer = self._buffer[offset:]
+            data = data[offset:]
             # if there have been parts already, combine
             msg = self._pending_payload + msg
             if final:
@@ -122,6 +120,8 @@ class WebSocketCodec(BaseComponent):
                     if opcode == 1 \
                             or opcode == 0 and self._pending_type == 1:
                         msg = msg.decode("utf-8", "replace")
+                    self._pending_type = None
+                    self._pending_payload = bytearray()
                     msgs.append(msg)
                 # check for client closing the connection
                 elif opcode == 8:

@@ -31,6 +31,9 @@ class Watcher(BaseComponent):
         with self._lock:
             self.events.append(event)
 
+    def clear(self):
+        self.events.clear()
+
     def wait(self, name, channel=None, timeout=6.0):
         try:
             for i in range(int(timeout / TIMEOUT)):
