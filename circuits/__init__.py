@@ -23,6 +23,11 @@ from circuits.core import task, Worker
 from circuits.core import Debugger, Bridge, Loader, Manager, Timer
 from circuits.core import handler, reprhandler, BaseComponent, Component
 
-__import__("pkg_resources").declare_namespace(__name__)
+# See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
+try:
+    __import__('pkg_resources').declare_namespace(__name__)
+except ImportError:
+    from pkgutil import extend_path
+    __path__ = extend_path(__path__, __name__)
 
 # flake8: noqa
