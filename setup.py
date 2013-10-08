@@ -94,7 +94,6 @@ setup(
     [console_scripts]
     circuits.web = circuits.web.main:main
     """,
-    namespace_packages=["circuits"],
     zip_safe=False,
     test_suite="tests.main.main"
 )
