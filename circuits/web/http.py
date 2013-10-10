@@ -482,3 +482,15 @@ class HTTP(BaseComponent):
 
         res = wrappers.Response(req, self._encoding, 500)
         self.fire(httperror(req, res, error=error))
+
+    @handler("request_complete")
+    def _on_request_complete(self, *args, **kwargs):
+        """Dummy Event Handler for request_complete"""
+
+    @handler("response_success", "response_complete")
+    def _on_response_feedback(self, *args, **kwargs):
+        """Dummy Event Handler for response_success and response_complete"""
+
+    @handler("stream_success", "stream_failure", "stream_complete")
+    def _on_stream_feedback(self, *args, **kwargs):
+        """Dummy Event Handler for stream_success, stream_failure and stream_complete"""

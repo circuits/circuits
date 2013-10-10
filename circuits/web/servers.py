@@ -131,13 +131,17 @@ class BaseServer(BaseComponent):
         if hasattr(self, "http"):
             return self.http.version
 
+    @handler("connect")
+    def _on_connect(self, *args, **kwargs):
+        """Dummy Event Handler for connect"""
+
     @handler("closed")
-    def _on_closed(self):
-        return
+    def _on_closed(self, *args, **kwargs):
+        """Dummy Event Handler for closed"""
 
     @handler("signal")
-    def _on_signal(self, sig, stack):
-        return
+    def _on_signal(self, *args, **kwargs):
+        """Dummy Event Handler for signal"""
 
     @handler("ready")
     def _on_ready(self, server, bind):
