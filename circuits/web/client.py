@@ -62,10 +62,6 @@ class request(Event):
         super(request, self).__init__(method, path, body, headers)
 
 
-class connect(Event):
-    pass
-
-
 class Client(BaseComponent):
 
     channel = "client"

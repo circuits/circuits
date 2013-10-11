@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-
 from circuits import Component
 from circuits.net.sockets import write
 from circuits.web.servers import Server

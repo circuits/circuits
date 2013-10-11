@@ -32,8 +32,8 @@ class WebSocketClient(BaseComponent):
     :class:`circuits.net.events.connect` event is sent to a child
     :class:`~.sockets.TCPClient`. When the TCP connection has been established,
     the HTTP request for opening the WebSocket is sent to the server.
-    A failure in this setup process is signaled by a
-    :class:`~.client.NotConnected` event.
+    A failure in this setup process is signaled by raising an
+    :class:`~.client.NotConnected` exception.
 
     When the server accepts the request, the WebSocket connection is
     established and can be used very much like an ordinary socket
@@ -80,8 +80,7 @@ class WebSocketClient(BaseComponent):
             self._secure = True
             self._port = p.port or 443
         else:
-            self.fire(NotConnected())
-            return
+            raise NotConnected()
         self._resource = p.path or "/"
         if p.query:
             self._resource += "?" + p.query
@@ -116,7 +115,7 @@ class WebSocketClient(BaseComponent):
         if response.headers.get("Connection") == "Close" \
                 or response.status != 101:
             self.fire(close(), self._transport)
-            self.fire(NotConnected())
+            raise NotConnected()
         WebSocketCodec(channel=self._wschannel).register(self)
 
     @handler("error", filter=True, priority=10)
