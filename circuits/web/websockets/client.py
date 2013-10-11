@@ -100,7 +100,7 @@ class WebSocketClient(BaseComponent):
             sec_key = os.urandom(16)
         except NotImplementedError:
             sec_key = "".join([chr(random.randint(0, 255)) for i in range(16)])
-        headers["Sec-WebSocket-Key"] = base64.b64encode(sec_key)
+        headers["Sec-WebSocket-Key"] = base64.b64encode(sec_key).decode("latin1")
         headers["Sec-WebSocket-Version"] = "13"
         command = "GET %s HTTP/1.1" % self._resource
         message = "%s\r\n%s" % (command, headers)

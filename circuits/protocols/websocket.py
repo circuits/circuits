@@ -186,7 +186,7 @@ class WebSocketCodec(BaseComponent):
             tail.append(data_length >> (i * 8) & 0xff)
         if mask:
             try:
-                masking_key = bytearray([ord(x) for x in list(os.urandom(4))])
+                masking_key = bytearray([x for x in list(os.urandom(4))])
             except NotImplementedError:
                 masking_key \
                     = bytearray([random.randint(0, 255) for i in range(4)])
