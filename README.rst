@@ -47,8 +47,8 @@ designed and built this way.
    :target: https://crate.io/packages/circuits/
    :alt: Number of PyPI downloads
 
-.. image:: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/badge/icon
-   :target: https://jenkins.shiningpanda-ci.com/circuits/job/circuits/
+.. image:: https://jenkins.shiningpanda-ci.com/prologic/job/circuits/badge/icon
+   :target: https://jenkins.shiningpanda-ci.com/prologic/job/circuits/
    :alt: Build Status
 
 

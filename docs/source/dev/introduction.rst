@@ -41,4 +41,4 @@ We use the following tools to develop circuits and share code:
 - **Package Hosting:**
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
 - **Continious Integration:**
-  `Shining Panda CI <https://jenkins.shiningpanda-ci.com/circuits/job/circuits/>`_
+  `Shining Panda CI <https://jenkins.shiningpanda-ci.com/prologic/job/circuits/>`_
