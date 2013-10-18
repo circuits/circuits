@@ -21,9 +21,13 @@ from imp import new_module
 sys.path.insert(0, path.abspath('../..'))
 
 version_module = new_module("version")
-exec compile(open(path.abspath(path.join(path.dirname(__file__), "../../circuits/version.py")), "r").read(), "../../circuits/version.py", "exec") in version_module.__dict__
-
-import sphinx_bootstrap_theme
+exec compile(
+    open(
+        path.abspath(path.join(path.dirname(__file__), "../../circuits/version.py")),
+        "r"
+    ).read(),
+    "../../circuits/version.py", "exec"
+) in version_module.__dict__
 
 # -- General configuration -----------------------------------------------------
 
@@ -129,7 +133,7 @@ exclude_trees = []
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'trac'
+pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -139,7 +143,9 @@ pygments_style = 'trac'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'om'
+html_theme = 'default'
+html_style = 'rtd.css'
+html_context = {}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -158,7 +164,7 @@ html_theme_path = ["_themes"]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/logo.png"
+#html_logo = "_static/logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -220,8 +226,10 @@ htmlhelp_basename = 'circuitsdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'circuits.tex', u'circuits Documentation',
-   u'James Mills', 'manual'),
+    (
+        'index', 'circuits.tex', u'circuits Documentation',
+        u'James Mills', 'manual'
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -241,11 +249,7 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_use_modindex = True
 
+
 def setup(app):
     # ifconfig variables
-    app.add_config_value('devel', '', True)
-
-html_theme = 'bootstrap'
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-
-# flake8: noqa
+    app.add_config_value('devel', '', devel)

@@ -84,7 +84,7 @@ The important thing here to note is the Event Handler listening on the
 appropriate channel and the request.path being modified appropriately.
 
 You'll also note that in [source:circuits/web/dispatchers.py] all of the
-dispatchers have a set priority. These priorities are defined as:
+dispatchers have a set priority. These priorities are defined as::
     
     $ grin "priority" circuits/web/dispatchers/
     circuits/web/dispatchers/dispatcher.py:

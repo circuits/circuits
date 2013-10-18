@@ -1,4 +1,4 @@
-sphinx-bootstrap-theme
 sphinxcontrib-bitbucket
+sphinxcontrib-programoutput
 sphinxcontrib-googleanalytics
 -e hg+https://bitbucket.org/circuits/circuits-dev#egg=circuits

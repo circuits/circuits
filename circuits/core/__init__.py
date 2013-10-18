@@ -24,7 +24,7 @@ from .workers import task, Worker
 from .debugger import Debugger
 
 __all__ = (
-    "handler", "BaseComponent", "Component", "Event", "Map", "Pool", "task",
+    "handler", "BaseComponent", "Component", "Event", "task",
     "Worker", "Bridge", "Debugger", "Timer", "Manager",
 )
 
