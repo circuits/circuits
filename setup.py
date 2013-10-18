@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import os
 from glob import glob
+from imp import new_module
+from os import listdir, path
 from distutils.util import convert_path
 
 try:
@@ -17,10 +18,10 @@ def find_packages(where=".", exclude=()):
     stack = [(convert_path(where), "")]
     while stack:
         where, prefix = stack.pop(0)
-        for name in os.listdir(where):
-            fn = os.path.join(where, name)
-            if ("." not in name and os.path.isdir(fn) and
-                    os.path.isfile(os.path.join(fn, "__init__.py"))):
+        for name in listdir(where):
+            fn = path.join(where, name)
+            if ("." not in name and path.isdir(fn) and
+                    path.isfile(path.join(fn, "__init__.py"))):
                 out.append(prefix + name)
                 stack.append((fn, prefix + name + "."))
 
@@ -30,18 +31,18 @@ def find_packages(where=".", exclude=()):
 
     return out
 
-path = os.path.abspath(os.path.dirname(__file__))
 try:
-    README = open(os.path.join(path, "README.rst")).read()
-    RELEASE = open(os.path.join(path, "RELEASE.rst")).read()
+    README = open(path.join(path.dirname(__file__), "README.rst")).read()
+    RELEASE = open(path.join(path.dirname(__file__), "RELEASE.rst")).read()
 except IOError:
     README = RELEASE = ""
 
-import circuits
+version = new_module("version")
+exec compile(open(path.join(path.dirname(__file__), "circuits/version.py"), "r").read(), "circuits/version.py", "exec") in version.__dict__
 
 setup(
     name="circuits",
-    version=circuits.__version__,
+    version=version.version,
     description="Asynchronous Component based Event Application Framework",
     long_description="%s\n\n%s" % (README, RELEASE),
     author="James Mills",

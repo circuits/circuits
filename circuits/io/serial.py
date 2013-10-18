@@ -14,7 +14,7 @@ from collections import deque
 from circuits.core import Component
 from circuits.tools import tryimport
 
-from .events import Closed, Error, Opened, Read
+from .events import closed, error, opened, read
 
 serial = tryimport("serial")
 
@@ -57,7 +57,7 @@ class Serial(Component):
 
         self._read.append(self._fd)
 
-        self.fire(Opened(self.port))
+        self.fire(opened(self.port))
 
     def __tick__(self):
         r, w, e = select.select(self._read, self._write, [], self._timeout)
@@ -71,13 +71,13 @@ class Serial(Component):
                 else:
                     if not self._buffer and self._fd in self._write:
                         self._write.remove(self._fd)
-            except OSError as error:
-                self.fire(Error(error))
+            except OSError as e:
+                self.fire(error(e))
 
         if r:
             data = os.read(self._fd, self._bufsize)
             if data:
-                self.fire(Read(data))
+                self.fire(read(data))
 
     def write(self, data):
         if self._fd not in self._write:
@@ -89,4 +89,4 @@ class Serial(Component):
         self._read = []
         self._write = []
         self._serial.close()
-        self.fire(Closed(self.port))
+        self.fire(closed(self.port))

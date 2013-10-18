@@ -11,14 +11,18 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys
+from os import path
+from imp import new_module
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../..'))
+# documentation root, use path.abspath to make it absolute, like shown here.
+sys.path.insert(0, path.abspath('../..'))
 
-import circuits
+version_module = new_module("version")
+exec compile(open(path.abspath(path.join(path.dirname(__file__), "../../circuits/version.py")), "r").read(), "../../circuits/version.py", "exec") in version_module.__dict__
+
 import sphinx_bootstrap_theme
 
 # -- General configuration -----------------------------------------------------
@@ -51,13 +55,13 @@ url = "http://circuitsframework.com/"
 # built documents.
 #
 # The short X.Y version.
-version = circuits.__version__
+version = ".".join(map(str, version_module.version_info[:2]))
 # The full version, including alpha/beta/rc tags.
-release = circuits.__version__
+release = version_module.version
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = "dev" in version
+devel = version_module.version_info[-1] == "dev"
 
 # -- Autodoc
 

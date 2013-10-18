@@ -16,18 +16,12 @@ with a strong **Component** Architecture.
 
 __author__ = "James Mills"
 __date__ = "24th February 2013"
-__version__ = "3.0dev"
 
-from circuits.core import Event
-from circuits.core import task, Worker
-from circuits.core import Debugger, Bridge, Loader, Manager, Timer
-from circuits.core import handler, reprhandler, BaseComponent, Component
+from version import version as __version__
 
-# See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
-try:
-    __import__('pkg_resources').declare_namespace(__name__)
-except ImportError:
-    from pkgutil import extend_path
-    __path__ = extend_path(__path__, __name__)
+from core import Event
+from core import task, Worker
+from core import Debugger, Bridge, Loader, Manager, Timer
+from core import handler, reprhandler, BaseComponent, Component
 
 # flake8: noqa
