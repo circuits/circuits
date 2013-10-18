@@ -38,7 +38,7 @@ except IOError:
     README = RELEASE = ""
 
 version = new_module("version")
-exec compile(open(path.join(path.dirname(__file__), "circuits/version.py"), "r").read(), "circuits/version.py", "exec") in version.__dict__
+exec(compile(open(path.join(path.dirname(__file__), "circuits/version.py"), "r").read(), "circuits/version.py", "exec"), version.__dict__)
 
 setup(
     name="circuits",

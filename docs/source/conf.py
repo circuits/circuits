@@ -21,13 +21,16 @@ from imp import new_module
 sys.path.insert(0, path.abspath('../..'))
 
 version_module = new_module("version")
-exec compile(
-    open(
-        path.abspath(path.join(path.dirname(__file__), "../../circuits/version.py")),
-        "r"
-    ).read(),
-    "../../circuits/version.py", "exec"
-) in version_module.__dict__
+exec(
+    compile(
+        open(
+            path.abspath(path.join(path.dirname(__file__), "../../circuits/version.py")),
+            "r"
+        ).read(),
+        "../../circuits/version.py", "exec"
+    ),
+    version_module.__dict__
+)
 
 # -- General configuration -----------------------------------------------------
 
