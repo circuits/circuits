@@ -28,7 +28,7 @@ Contents
    tutorial/index
    man/index
    web/index
-   api/modules
+   api/index
    dev/index
    changes
    contributors
