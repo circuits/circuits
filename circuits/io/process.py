@@ -153,6 +153,6 @@ class Process(BaseComponent):
             self.removeHandler(self._stdout_closed_handler)
             self.fire(stopped(self))
             event.reduce_time_left(0)
-            return True
+            event.stop()
         else:
             event.reduce_time_left(TIMEOUT)
