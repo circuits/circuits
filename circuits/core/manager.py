@@ -33,10 +33,6 @@ thread = tryimport(("thread", "_thread"))
 TIMEOUT = 0.1  # 100ms timeout when idle
 
 
-class UnhandledEventWarning(RuntimeWarning):
-    """Raised for any event that is not handled by any event handler."""
-
-
 class UnregistrableError(Exception):
     """Raised if a component cannot be registered as child."""
 
@@ -574,9 +570,6 @@ class Manager(object):
 
             if event.stopped:
                 break  # Stop further event processing
-
-        if event.handler is None:
-            warn(repr(event), UnhandledEventWarning)
 
         self._currently_handling = None
         self._eventDone(event, err)
