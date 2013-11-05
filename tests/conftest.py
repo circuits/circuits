@@ -7,7 +7,6 @@
 import pytest
 
 import sys
-import warnings
 import threading
 import collections
 from time import sleep
@@ -15,9 +14,6 @@ from collections import deque
 
 from circuits import handler, BaseComponent, Debugger, Manager
 from circuits.core.manager import TIMEOUT, UnhandledEventWarning
-
-
-warnings.filterwarnings("ignore", category=UnhandledEventWarning)
 
 
 class Watcher(BaseComponent):
