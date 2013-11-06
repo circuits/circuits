@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+from os import getcwd
 from glob import glob
 from imp import new_module
 from os import listdir, path
 from distutils.util import convert_path
+
 
 try:
     from setuptools import setup
@@ -31,14 +33,23 @@ def find_packages(where=".", exclude=()):
 
     return out
 
+
 try:
     README = open(path.join(path.dirname(__file__), "README.rst")).read()
     RELEASE = open(path.join(path.dirname(__file__), "RELEASE.rst")).read()
 except IOError:
     README = RELEASE = ""
 
+
 version = new_module("version")
-exec(compile(open(path.join(path.dirname(__file__), "circuits/version.py"), "r").read(), "circuits/version.py", "exec"), version.__dict__)
+
+exec(
+    compile(
+        open(path.join(path.dirname(globals().get("__file__", path.join(getcwd(), "circuits"))), "circuits/version.py"), "r").read(),
+        "circuits/version.py", "exec"
+    ),
+    version.__dict__
+)
 
 setup(
     name="circuits",

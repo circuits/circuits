@@ -12,8 +12,8 @@ import collections
 from time import sleep
 from collections import deque
 
+from circuits.core.manager import TIMEOUT
 from circuits import handler, BaseComponent, Debugger, Manager
-from circuits.core.manager import TIMEOUT, UnhandledEventWarning
 
 
 class Watcher(BaseComponent):
