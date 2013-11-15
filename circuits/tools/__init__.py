@@ -79,7 +79,7 @@ def graph(x, name=None):
     """
 
     networkx = tryimport("networkx")
-    pygraphviz = tryimport("pygraphviz") 
+    pygraphviz = tryimport("pygraphviz")
     plt = tryimport("matplotlib.pyplot", "pyplot")
 
     if networkx is not None and pygraphviz is not None and plt is not None:
@@ -114,7 +114,7 @@ def graph(x, name=None):
 
         plt.axis("off")
 
-        plt.savefig("{0:s}.png".format(x.name or name))
+        plt.savefig("{0:s}.png".format(name or x.name))
         networkx.write_dot(g, "{0:s}.dot".format(x.name or name))
 
         plt.clf()
