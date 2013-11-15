@@ -115,7 +115,7 @@ def graph(x, name=None):
         plt.axis("off")
 
         plt.savefig("{0:s}.png".format(name or x.name))
-        networkx.write_dot(g, "{0:s}.dot".format(x.name or name))
+        networkx.write_dot(g, "{0:s}.dot".format(name, or x.name))
 
         plt.clf()
 
