@@ -79,9 +79,10 @@ def graph(x, name=None):
     """
 
     networkx = tryimport("networkx")
+    pygraphviz = tryimport("pygraphviz") 
     plt = tryimport("matplotlib.pyplot", "pyplot")
 
-    if networkx is not None and plt is not None:
+    if networkx is not None and pygraphviz is not None and plt is not None:
         graph_edges = []
         for (u, v, d) in edges(x):
             graph_edges.append((u.name, v.name, float(d)))
