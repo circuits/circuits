@@ -8,7 +8,7 @@ from circuits.web import Controller, Logger, Server, Static
 
 class Echo(Component):
 
-    channel = "ws"
+    channel = "wsserver"
 
     def read(self, sock, data):
         self.fireEvent(write(sock, "Received: " + data))

@@ -90,7 +90,6 @@ class WebSocketsDispatcher(BaseComponent):
         response.headers["Upgrade"] = "WebSocket"
         response.headers["Connection"] = "Upgrade"
         response.headers["Sec-WebSocket-Accept"] = accept
-        response.body = ["WebSocket Protocol Handshake"]
         codec = WebSocketCodec(request.sock, channel=self._wschannel)
         self._codecs[request.sock] = codec
         codec.register(self)
