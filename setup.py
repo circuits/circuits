@@ -1,44 +1,11 @@
 #!/usr/bin/env python
 
-from os import getcwd
 from glob import glob
+from os import getcwd, path
 from imp import new_module
-from os import listdir, path
-from distutils.util import convert_path
 
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup  # NOQA
-
-
-def find_packages(where=".", exclude=()):
-    """Borrowed directly from setuptools"""
-
-    out = []
-    stack = [(convert_path(where), "")]
-    while stack:
-        where, prefix = stack.pop(0)
-        for name in listdir(where):
-            fn = path.join(where, name)
-            if ("." not in name and path.isdir(fn) and
-                    path.isfile(path.join(fn, "__init__.py"))):
-                out.append(prefix + name)
-                stack.append((fn, prefix + name + "."))
-
-    from fnmatch import fnmatchcase
-    for pat in list(exclude) + ["ez_setup"]:
-        out = [item for item in out if not fnmatchcase(item, pat)]
-
-    return out
-
-
-try:
-    README = open(path.join(path.dirname(__file__), "README.rst")).read()
-    RELEASE = open(path.join(path.dirname(__file__), "RELEASE.rst")).read()
-except IOError:
-    README = RELEASE = ""
+from setuptools import setup, find_packages
 
 
 version = new_module("version")
@@ -51,13 +18,16 @@ exec(
     version.__dict__
 )
 
+
 setup(
     name="circuits",
     version=version.version,
     description="Asynchronous Component based Event Application Framework",
-    long_description="%s\n\n%s" % (README, RELEASE),
+    long_description="{0:s}\n\n{1:s}".format(
+        open("README.rst").read(), open("CHANGES.rst").read()
+    ),
     author="James Mills",
-    author_email="James Mills, prologic at shortcircuit dot net dot au",
+    author_email="James Mills, j dot mills at griffith dot edu dot au",
     url="http://circuitsframework.com/",
     download_url="http://bitbucket.org/circuits/circuits/downloads/",
     classifiers=[
@@ -101,11 +71,13 @@ setup(
     keywords="event framework distributed concurrent component asynchronous",
     platforms="POSIX",
     packages=find_packages("."),
-    scripts=glob("scripts/*"),
-    entry_points="""
-    [console_scripts]
-    circuits.web = circuits.web.main:main
-    """,
-    zip_safe=False,
-    test_suite="tests.main.main"
+    scripts=glob("bin/*"),
+    install_requires=[],
+    entry_points={
+        "console_scripts": [
+            "circuits.web=circuits.web.main:main",
+        ]
+    },
+    test_suite="tests.main.main",
+    zip_safe=True
 )

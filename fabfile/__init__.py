@@ -10,9 +10,10 @@ from __future__ import print_function
 from os import getcwd
 
 
-from fabric.api import abort, cd, execute, hide, hosts, lcd, local, prefix, prompt, run, settings, task
+from fabric.api import abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings, task
 
 
+import docs  # noqa
 from .utils import msg, pip, requires, tobool
 
 
