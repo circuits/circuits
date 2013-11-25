@@ -10,9 +10,10 @@ from __future__ import print_function
 from os import getcwd
 
 
-from fabric.api import abort, cd, execute, hide, hosts, lcd, local, prefix, prompt, run, settings, task
+from fabric.api import abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings, task
 
 
+import docs  # noqa
 from .utils import msg, pip, requires, tobool
 
 
@@ -38,7 +39,7 @@ def build(**options):
 def clean():
     """Clean up build files and directories"""
 
-    files = ["build", ".converage", "coverage", "dist", "docs/build"]
+    files = ["build", ".coverage", "coverage", "dist", "docs/build"]
 
     local("rm -rf {0:s}".format(" ".join(files)))
 
@@ -54,27 +55,6 @@ def develop():
     """Build and Install in Development Mode"""
 
     return execute(build, dev=True)
-
-
-@task()
-@requires("make", "sphinx-build")
-def docs(**options):
-    """Generate the Sphinx documentation
-
-    The following options are recognized:
-
-    - ``clean`` - Perform a clean of the docs build
-    - ``view``  - Open a web browser to display the built documentation
-    """
-
-    clean = tobool(options.get("clean", False))
-    view = tobool(options.get("view", False))
-
-    with lcd("docs"):
-        local("make clean html") if clean else local("make html")
-
-        if view:
-            local("open build/html/index.html")
 
 
 @task()
