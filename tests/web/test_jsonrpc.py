@@ -7,7 +7,7 @@ from .jsonrpclib import ServerProxy
 from .helpers import urlopen
 
 
-class Test(Component):
+class App(Component):
 
     def eval(self, s):
         return eval(s)
@@ -21,7 +21,7 @@ class Root(Controller):
 
 def test(webapp):
     rpc = JSONRPC("/rpc")
-    test = Test()
+    test = App()
     rpc.register(webapp)
     test.register(webapp)
 

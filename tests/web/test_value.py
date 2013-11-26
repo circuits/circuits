@@ -10,7 +10,7 @@ class hello(Event):
     """hello Event"""
 
 
-class Test(Component):
+class App(Component):
 
     def hello(self):
         return "Hello World!"
@@ -23,7 +23,7 @@ class Root(Controller):
 
 
 def test(webapp):
-    Test().register(webapp)
+    App().register(webapp)
 
     f = urlopen(webapp.server.http.base)
     s = f.read()

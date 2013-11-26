@@ -39,37 +39,8 @@ components.
 Examples
 --------
 
-Echo Server:
 
-.. code-block:: python
-    
-    from circuits.net.sockets import TCPServer
-    
-    
-    class EchoServer(TCPServer):
-    
-        def read(self, sock, data):
-            return data
-    
-    EchoServer(8000).run()
-
-Hello Web App:
-
-.. code-block:: python
-    
-    from circuits.web import Server, Controller
-    
-    
-    class Root(Controller):
-    
-        def index(self):
-            return "Hello World!"
-    
-    app = Server(("0.0.0.0", 8000))
-    Root().register(app)
-    app.run()
-
-See `examples <https://bitbucket.org/circuits/circuits/src/tip/examples/>`_
+.. include: examples/index.rst
 
 
 Features

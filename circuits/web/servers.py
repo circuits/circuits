@@ -9,7 +9,6 @@ This module implements the several Web Server components.
 
 
 from circuits import io
-from circuits.tools import deprecated
 from circuits.net.sockets import read, write
 from circuits.core import handler, BaseComponent
 from circuits.net.sockets import TCPServer, UNIXServer
@@ -87,49 +86,6 @@ class BaseServer(BaseComponent):
     def secure(self):
         if hasattr(self, "server"):
             return self.server.secure
-
-    @property
-    @deprecated
-    def base(self):
-        """
-        .. deprecated:: 2.2
-           Use :attr:~.http.base`
-        """
-
-        if hasattr(self, "http"):
-            return self.http.base
-
-    @property
-    @deprecated
-    def scheme(self):
-        """
-        .. deprecated:: 2.2
-           Use :attr:~.http.scheme`
-        """
-
-        if hasattr(self, "http"):
-            return self.http.scheme
-
-    @property
-    @deprecated
-    def protocol(self):
-        """
-        .. deprecated:: 2.2
-           Use :attr:~.http.protocol`
-        """
-
-        if hasattr(self, "http"):
-            return self.http.protocol
-
-    @deprecated
-    def version(self):
-        """
-        .. deprecated:: 2.2
-           Use :attr:~.http.version`
-        """
-
-        if hasattr(self, "http"):
-            return self.http.version
 
     @handler("connect")
     def _on_connect(self, *args, **kwargs):

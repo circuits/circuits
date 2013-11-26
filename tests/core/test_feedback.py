@@ -27,10 +27,10 @@ class App(Component):
         self.success = False
         self.failure = False
 
-    @handler("*", filter=True)
+    @handler("*")
     def event(self, event, *args, **kwargs):
         if kwargs.get("filter", False):
-            return True
+            event.stop()
 
     def test(self, error=False):
         if error:

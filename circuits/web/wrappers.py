@@ -21,7 +21,6 @@ from .url import parse_url
 from .headers import Headers
 from ..six import binary_type
 from .errors import httperror
-from circuits.tools import deprecated
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 
@@ -214,18 +213,6 @@ class Request(object):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
-    @deprecated
-    def url(self, path):
-        """
-        .. deprecated:: 2.2
-           Use :attr:~.uri`
-        """
-
-        if not hasattr(self, "uri"):
-            return None
-
-        return self.uri.relative(path).utf8()
-
 
 class Body(object):
     """Response Body"""
@@ -310,11 +297,6 @@ class Response(object):
 
         self.protocol = "HTTP/%d.%d" % self.request.protocol
 
-    @property
-    @deprecated
-    def _encoding(self):
-        return self.encoding
-
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
             self.status,
@@ -330,16 +312,6 @@ class Response(object):
 
     def __bytes__(self):
         return str(self).encode(self.encoding)
-
-    @property
-    @deprecated
-    def code(self):
-        return self.status.status
-
-    @property
-    @deprecated
-    def message(self):
-        return self.status.reason
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
