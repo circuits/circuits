@@ -34,7 +34,8 @@ class Client(Component):
 def test(manager, watcher):
     server = Server(("localhost", 8123)).register(manager)
     watcher.wait("ready")
-
+    from circuits import Debugger
+    Debugger.register(manager)
     Echo().register(server)
     Root().register(server)
     watcher.wait("registered", channel="wsserver")
