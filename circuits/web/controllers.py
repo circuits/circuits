@@ -12,7 +12,6 @@ from inspect import getargspec
 from collections import Callable
 from functools import update_wrapper
 
-from circuits.tools import deprecated
 from circuits.core import handler, BaseComponent
 
 from . import tools
@@ -73,16 +72,6 @@ class ExposeMetaClass(type):
 class BaseController(BaseComponent):
 
     channel = "/"
-
-    @deprecated
-    def url(self, *args, **kwargs):
-        """Return the current URI or create a new URI
-
-        .. deprecated:: 2.2
-           Use :meth:~`uri`
-        """
-
-        return self.request.url(*args, **kwargs)
 
     @property
     def uri(self):

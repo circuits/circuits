@@ -13,7 +13,6 @@ try:
 except ImportError:
     from urlparse import urlparse  # NOQA
 
-from circuits.tools import deprecated
 from circuits.web.headers import Headers
 from circuits.protocols.http import HTTP
 from circuits.core.handlers import handler
@@ -134,15 +133,3 @@ class WebSocketClient(BaseComponent):
     def connected(self):
         return getattr(self._transport, "connected", False) \
             if hasattr(self, "_transport") else False
-
-
-class WebSocket(object):
-    """WebSocket Client
-
-    .. deprecated:: 2.2
-       Use :class:`WebSocketClient
-    """
-
-    @deprecated
-    def __new__(cls, *args, **kwargs):
-        return WebSocketClient(*args, **kwargs)

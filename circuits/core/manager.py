@@ -8,9 +8,9 @@ This module defines the Manager class.
 
 import atexit
 from os import getpid
-from warnings import warn
 from inspect import isfunction
 from uuid import uuid4 as uuid
+from operator import attrgetter
 from types import GeneratorType
 from signal import SIGINT, SIGTERM
 from itertools import chain, count
@@ -35,10 +35,6 @@ TIMEOUT = 0.1  # 100ms timeout when idle
 
 class UnregistrableError(Exception):
     """Raised if a component cannot be registered as child."""
-
-
-def _sortkey(handler):
-    return (handler.priority, handler.filter)
 
 
 class CallValue(object):
@@ -509,7 +505,7 @@ class Manager(object):
             handlers = self._cache[(event.name, channels)]
         except KeyError:
             h = (self.getHandlers(event, channel) for channel in channels)
-            handlers = sorted(chain(*h), key=_sortkey, reverse=True)
+            handlers = sorted(chain(*h), key=attrgetter("priority"), reverse=True)
             if isinstance(event, generate_events):
                 from .helpers import FallBackGenerator
                 handlers.append(FallBackGenerator()._on_generate_events)
@@ -564,9 +560,6 @@ class Manager(object):
                     self.registerTask((event, value, None))
                 else:
                     event.value.value = value
-                # None is false, but not None may still be True or False
-                if handler.filter and value:
-                    break
 
             if event.stopped:
                 break  # Stop further event processing

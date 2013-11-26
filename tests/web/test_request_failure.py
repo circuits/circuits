@@ -9,7 +9,7 @@ class Root(BaseComponent):
 
     channel = "web"
 
-    @handler("request", filter=True, priority=0.2)
+    @handler("request", priority=0.2)
     def request(self, request, response):
         raise Exception()
 
