@@ -37,6 +37,7 @@ Documentation
    :hidden:
 
    glossary
+   examples/index
 
 .. ifconfig:: devel
 
