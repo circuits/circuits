@@ -335,8 +335,10 @@ class IOrderedDict(dict, MutableMapping):
 
         '''
         if isinstance(other, IOrderedDict):
-            return len(self)==len(other) and \
-                    set(self.items()) == set(other.items())
+            return (
+                len(self) == len(other)
+                and set(self.items()) == set(other.items())
+            )
         return dict.__eq__(self, other)
 
     def __del__(self):
