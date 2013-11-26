@@ -45,6 +45,7 @@ Documentation
       :hidden:
 
       todo
+      readme
 
 
 Indices and tables

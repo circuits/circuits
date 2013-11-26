@@ -1,10 +1,39 @@
-Hello (*:download: `source <hello.py>`_*)
-.........................................
+Hello
+.....
 
 
-.. literal-include: hello.py
+.. literalinclude:: examples/hello.py
     :language: python
     :linenos:
+
+
+Download Source Code: :download:`hello.py: <examples/hello.py>`
+
+
+Echo Server
+...........
+
+
+.. literalinclude:: examples/echoserver.py
+    :language: python
+    :linenos:
+
+
+Download Source Code: :download:`echoserver.py: <examples/echoserver.py>`
+
+
+Hello Web
+.........
+
+
+.. literalinclude:: examples/helloweb.py
+    :language: python
+    :linenos:
+
+
+Download Source Code: :download:`helloweb.py: <examples/helloweb.py>`
+
+
 
 
 More `examples <https://bitbucket.org/circuits/circuits/src/tip/examples/>`_...

@@ -145,14 +145,6 @@ web Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`websocket` Module
------------------------
-
-.. automodule:: circuits.web.websocket
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`wrappers` Module
 ----------------------
 

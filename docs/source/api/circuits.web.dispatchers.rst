@@ -41,14 +41,6 @@ dispatchers Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`websockets` Module
-------------------------
-
-.. automodule:: circuits.web.dispatchers.websockets
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`xmlrpc` Module
 --------------------
 

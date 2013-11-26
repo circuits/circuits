@@ -25,6 +25,9 @@ setup(
     description="Asynchronous Component based Event Application Framework",
     long_description="{0:s}\n\n{1:s}".format(
         open("README.rst").read(), open("CHANGES.rst").read()
+    ).replace(
+        ".. include:: examples/index.rst",
+        open("examples/index.rst", "r").read()
     ),
     author="James Mills",
     author_email="James Mills, j dot mills at griffith dot edu dot au",

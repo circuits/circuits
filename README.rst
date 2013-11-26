@@ -40,7 +40,7 @@ Examples
 --------
 
 
-.. include: examples/index.rst
+.. include:: examples/index.rst
 
 
 Features
