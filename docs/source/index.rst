@@ -60,3 +60,4 @@ Indices and tables
 .. ifconfig:: devel
 
    * :doc:`todo`
+   * :doc:`readme`
