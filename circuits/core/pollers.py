@@ -77,7 +77,7 @@ class BasePoller(BaseComponent):
         """
         Pollers have slightly higher priority than the default handler
         from Manager to ensure that they are invoked before the
-        default handler. They act as filters to avoid the additional
+        default handler. They act as event filters to avoid the additional
         invocation of the default handler which would be unnecessary
         overhead.
         """

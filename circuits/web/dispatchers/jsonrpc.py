@@ -35,8 +35,8 @@ class JSONRPC(BaseComponent):
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("request", filter=True, priority=0.2)
-    def _on_request(self, req, res):
+    @handler("request", priority=0.2)
+    def _on_request(self, event, req, res):
         if self.path is not None and self.path != req.path.rstrip("/"):
             return
 
@@ -77,8 +77,8 @@ class JSONRPC(BaseComponent):
         except Exception as e:
             r = self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
             return r
-        else:
-            return True
+        finally:
+            event.stop()
 
     def _response(self, id, result):
         data = {

@@ -84,12 +84,12 @@ class Client(BaseComponent):
         if self._transport.connected:
             self.fire(close(), self._transport)
 
-    @handler("connect", filter=True)
-    def connect(self, host=None, port=None, secure=None):
+    @handler("connect", priority=1)
+    def connect(self, event, host=None, port=None, secure=None):
         if not self._transport.connected:
             self.fire(connect(host, port, secure), self._transport)
 
-        return True
+        event.stop()
 
     @handler("request")
     def request(self, method, url, body=None, headers={}):

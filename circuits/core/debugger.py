@@ -17,7 +17,7 @@ from .handlers import handler, reprhandler
 class Debugger(BaseComponent):
     """Create a new Debugger Component
 
-    Creates a new Debugger Component that filters all events in the system
+    Creates a new Debugger Component that listens to all events in the system
     printing each event to sys.stderr or a Logger Component.
 
     :var IgnoreEvents: list of events (str) to ignore
@@ -85,7 +85,7 @@ class Debugger(BaseComponent):
     def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 
-        Event handler to listen and filter all events printing
+        Event handler to listen to all events printing
         each event to self.file or a Logger Component instance
         by calling self.logger.debug
         """

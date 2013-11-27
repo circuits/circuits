@@ -117,13 +117,13 @@ class WebSocketClient(BaseComponent):
             raise NotConnected()
         WebSocketCodec(channel=self._wschannel).register(self)
 
-    @handler("error", filter=True, priority=10)
-    def _on_error(self, error, *args, **kwargs):
+    @handler("error", priority=10)
+    def _on_error(self, event, error, *args, **kwargs):
         # For HTTP 1.1 we leave the connection open. If the peer closes
         # it after some time and we have no pending request, that's OK.
         if isinstance(error, SocketError) and error.args[0] == ECONNRESET \
                 and self._pending == 0:
-            return True
+            event.stop()
 
     def close(self):
         if self._transport is not None:

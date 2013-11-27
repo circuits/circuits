@@ -92,7 +92,7 @@ class Dispatcher(BaseComponent):
                 self.paths):
             del self.paths[component.channel]
 
-    @handler("request", filter=True, priority=0.1)
+    @handler("request", priority=0.1)
     def _on_request(self, event, req, res, peer_cert=None):
         if peer_cert:
             event.peer_cert = peer_cert
