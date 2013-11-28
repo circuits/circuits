@@ -4,40 +4,41 @@
 
 """Documentation Tasks"""
 
-from fabric.api import execute, lcd, local, task
+from fabric.api import lcd, local, task
 
-from .utils import pip, requires, tobool
+from .utils import pip, requires
+
+
+PACKAGE = "circuits"
 
 
 @task()
-@requires("sphinx-apidoc")
-def apidoc():
-    """Generate API Documentation"""
+@requires("make")
+def clean():
+    """Delete Generated Documentation"""
 
-    local("sphinx-apidoc -f -T -o docs/source/api circuits")
+    with lcd("docs"):
+        local("make clean")
 
 
 @task(default=True)
-@requires("make", "sphinx-build")
+@requires("make")
 def build(**options):
-    """Generate the Sphinx documentation
+    """Build the Documentation"""
 
-    The following options are recognized:
+    pip(requirements="docs/requirements.txt")
 
-    - ``clean``
-      Perform a clean of the docs build
-    - ``view``
-      Open a web browser to display the built documentation
-    """
-
-    clean = tobool(options.get("clean", False))
-    view = tobool(options.get("view", False))
-
-    execute(apidoc)
+    if PACKAGE is not None:
+        local("sphinx-apidoc -f -T -o docs/source/api {0:s}".format(PACKAGE))
 
     with lcd("docs"):
-        pip(requirements="requirements.txt")
-        local("make clean html") if clean else local("make html")
+        local("make html")
 
-        if view:
-            local("open build/html/index.html")
+
+@task()
+@requires("open")
+def view(**options):
+    """View the Documentation"""
+
+    with lcd("docs"):
+        local("open build/html/index.html")

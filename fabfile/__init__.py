@@ -13,6 +13,7 @@ from os import getcwd
 from fabric.api import abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings, task
 
 
+import help  # noqa
 import docs  # noqa
 from .utils import msg, pip, requires, tobool
 
