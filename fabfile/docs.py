@@ -9,7 +9,16 @@ from fabric.api import lcd, local, task
 from .utils import pip, requires
 
 
-PACKAGE = "circuits"
+PACKAGE = "src/ccav"
+
+
+@task()
+@requires("sphinx-apidoc")
+def api():
+    """Generate the API Documentation"""
+
+    if PACKAGE is not None:
+        local("sphinx-apidoc -f -T -o docs/source/api {0:s}".format(PACKAGE))
 
 
 @task()
@@ -27,9 +36,6 @@ def build(**options):
     """Build the Documentation"""
 
     pip(requirements="docs/requirements.txt")
-
-    if PACKAGE is not None:
-        local("sphinx-apidoc -f -T -o docs/source/api {0:s}".format(PACKAGE))
 
     with lcd("docs"):
         local("make html")
