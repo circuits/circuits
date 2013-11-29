@@ -35,6 +35,10 @@ components.
    :target: https://jenkins.shiningpanda-ci.com/prologic/job/circuits/
    :alt: Build Status
 
+.. image:: https://requires.io/bitbucket/circuits/circuits-dev/requirements.png?branch=default
+   :target: https://requires.io/bitbucket/circuits/circuits-dev/requirements/?branch=default
+   :alt: Requirements Status
+
 
 Examples
 --------
