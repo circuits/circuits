@@ -9,9 +9,12 @@ class test(Event):
 
 class App(BaseComponent):
 
-    @handler("test", filter=True)
-    def _on_test(self):
-        return "Hello World!"
+    @handler("test")
+    def _on_test(self, event):
+        try:
+            return "Hello World!"
+        finally:
+            event.stop()
 
     def _on_test2(self):
         pass  # Never reached

@@ -93,15 +93,14 @@ class Notify(BaseComponent):
                     self._poller = Poller().register(self)
                     self.fire(ready(self))
 
-    @handler("started", filter=True, channel="*")
-    def _on_started(self, component):
+    @handler("started", channel="*", priority=1)
+    def _on_started(self, event, component):
         if self._poller is None:
             self._poller = Poller().register(self)
             self.fire(ready(self))
+            event.stop()
 
-            return True
-
-    @handler("_read", filter=True)
+    @handler("_read", priority=1)
     def __on_read(self, fd):
         self._notifier.read_events()
         self._notifier.process_events()

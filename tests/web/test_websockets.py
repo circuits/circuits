@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import pytest
-pytest.skip("XXX: Passes but not reliable -- Fails on CI")
-
 from circuits import Component
 from circuits.net.sockets import write
 from circuits.web.servers import Server
@@ -37,7 +34,8 @@ class Client(Component):
 def test(manager, watcher):
     server = Server(("localhost", 8123)).register(manager)
     watcher.wait("ready")
-
+    from circuits import Debugger
+    Debugger().register(manager)
     Echo().register(server)
     Root().register(server)
     watcher.wait("registered", channel="wsserver")

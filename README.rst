@@ -2,17 +2,14 @@
 .. _#circuits IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
 .. _FreeNode IRC Network: http://freenode.net
 .. _Python Standard Library: http://docs.python.org/library/
-.. _Website: https://circuitsframework.com/
-.. _PyPi Page: http://pypi.python.org/pypi/circuits
-.. _Read the Docs: http://circuits.readthedocs.org/
 .. _MIT License: http://www.opensource.org/licenses/mit-license.php
 .. _Create an Issue: https://bitbucket.org/circuits/circuits/issue/new
 .. _Mailing List: http://groups.google.com/group/circuits-users
-.. _Downloads page: https://bitbucket.org/circuits/circuits/downloads
+.. _Project Website: http://circuitsframework.com/
+.. _PyPi Page: http://pypi.python.org/pypi/circuits
+.. _Read the Docs: http://circuits.readthedocs.org/en/latest/
+.. _Downloads Page: https://bitbucket.org/circuits/circuits/downloads
 
-
-Overview
---------
 
 circuits is a **Lightweight** **Event** driven and **Asynchronous**
 **Application Framework** for the `Python Programming Language`_
@@ -22,22 +19,9 @@ circuits also includes a lightweight, high performance and scalable
 HTTP/WSGI compliant web server as well as various I/O and Networking
 components.
 
-To take full advantage of circuits and its architecture, circuits
-encourages you to design your application in terms of loosely coupled
-components. Circuits has a very powerful message passing system that
-enables components to interact with each other via events. Applications
-written this way tend to be more maintainable, easier to develop and
-scale to complex systems.
-
-circuits' **Loosely Coupled** **Component Architecture** allows for a
-high level of **Reuse** and **Scalability**. Simpler components can be
-combined together to form Complex Components and provide higher level
-functionality and abstraction. Much of the circuits component library is
-designed and built this way.
-
-- **Documentation**: http://packages.python.org/circuits or `Read the Docs`_.
-- **Project website**: http://circuitsframework.com/
-- **PyPI page**: http://pypi.python.org/pypi/circuits
+- Visit the `Project Website`_
+- `Read the Docs`_
+- Download it from the `Downloads Page`_
 
 .. image:: https://pypip.in/v/circuits/badge.png
    :target: https://crate.io/packages/circuits/
@@ -50,6 +34,17 @@ designed and built this way.
 .. image:: https://jenkins.shiningpanda-ci.com/prologic/job/circuits/badge/icon
    :target: https://jenkins.shiningpanda-ci.com/prologic/job/circuits/
    :alt: Build Status
+
+.. image:: https://requires.io/bitbucket/circuits/circuits-dev/requirements.png?branch=default
+   :target: https://requires.io/bitbucket/circuits/circuits-dev/requirements/?branch=default
+   :alt: Requirements Status
+
+
+Examples
+--------
+
+
+.. include:: examples/index.rst
 
 
 Features
@@ -75,7 +70,7 @@ Supported Platforms
 
 - Linux, FreeBSD, Mac OS X, Windows
 - Python 2.6, 2.7, 3.2, 3.3
-- pypy 2.0
+- pypy 2.0, 2.1, 2.2
 
 
 Installation
@@ -91,8 +86,7 @@ If you do not have pip, you may use easy_install::
     > easy_install circuits
 
 Alternatively, you may download the source package from the
-`PyPi Page`_ or the `Downloads page`_ on the
-`Website`_; extract it and install using::
+`PyPi Page`_ or the `Downloads Page`_ extract it and install using::
 
     > python setup.py install
 

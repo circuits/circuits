@@ -182,7 +182,7 @@ class WebSocketCodec(BaseComponent):
         if mask:
             len_byte = len_byte | 0x80
         tail.append(len_byte)
-        for i in range(lbytes - 1, 0, -1):
+        for i in range(lbytes - 1, -1, -1):
             tail.append(data_length >> (i * 8) & 0xff)
         if mask:
             try:

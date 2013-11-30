@@ -30,6 +30,26 @@ as is usual in Python, you can also pass additional information by setting
 attributes of the event object, though this usage pattern is discouraged
 for events.
 
+
+Filtering
+---------
+
+Events can be filtered by stopping further handler processing of any given event by simply calling it's ``.stop()`` method.
+
+Example:
+
+.. code-block:: python
+    
+    @handler("foo")
+    def _on_foo(self, event, *args, **kwargs):
+        event.stop()
+    
+Here any other event handlers also listening to "foo" will not be processed.
+
+.. note:: It's important to use priority event handlers here in this case as all event handlers and events run with the same priority unless explicitly
+          told otherwise.
+
+
 Events as result collectors
 ---------------------------
 

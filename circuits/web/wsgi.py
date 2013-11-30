@@ -141,10 +141,10 @@ class Application(BaseComponent):
         start_response(str(status), headers, exc_info)
         return body
 
-    @handler("response", filter=True, channel="web")
-    def response(self, response):
+    @handler("response", channel="web")
+    def response(self, event, response):
         self._finished = True
-        return True
+        event.stop()
 
     @property
     def host(self):
@@ -179,7 +179,7 @@ class Gateway(BaseComponent):
 
         self.errors = dict((k, StringIO()) for k in self.apps.keys())
 
-    @handler("request", filter=True, priority=0.2)
+    @handler("request", priority=0.2)
     def _on_request(self, event, req, res):
         if not self.apps:
             return
@@ -231,3 +231,5 @@ class Gateway(BaseComponent):
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))
             return httperror(req, res, 500, error=error)
+        finally:
+            event.stop()

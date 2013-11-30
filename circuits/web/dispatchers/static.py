@@ -56,8 +56,8 @@ class Static(BaseComponent):
         self.defaults = defaults
         self.dirlisting = dirlisting
 
-    @handler("request", filter=True, priority=0.9)
-    def _on_request(self, request, response):
+    @handler("request", priority=0.9)
+    def _on_request(self, event, request, response):
         if self.path is not None and not request.path.startswith(self.path):
             return
 
@@ -77,60 +77,63 @@ class Static(BaseComponent):
             return
 
         if not location.startswith(os.path.dirname(self.docroot)):
-            return # hacking attemp e.g. /foo/../../../../../etc/shadow
+            return  # hacking attemp e.g. /foo/../../../../../etc/shadow
 
-        # Is it a file we can serve directly?
-        if os.path.isfile(location):
-            # Don't set cookies for static content
-            response.cookie.clear()
-            return serve_file(request, response, location)
+        try:
+            # Is it a file we can serve directly?
+            if os.path.isfile(location):
+                # Don't set cookies for static content
+                response.cookie.clear()
+                return serve_file(request, response, location)
 
-        # Is it a directory?
-        elif os.path.isdir(location):
+            # Is it a directory?
+            elif os.path.isdir(location):
 
-            # Try to serve one of default files first..
-            for default in self.defaults:
-                location = os.path.abspath(
-                    os.path.join(self.docroot, path, default)
-                )
-                if os.path.exists(location):
-                    # Don't set cookies for static content
-                    response.cookie.clear()
-                    return serve_file(request, response, location)
+                # Try to serve one of default files first..
+                for default in self.defaults:
+                    location = os.path.abspath(
+                        os.path.join(self.docroot, path, default)
+                    )
+                    if os.path.exists(location):
+                        # Don't set cookies for static content
+                        response.cookie.clear()
+                        return serve_file(request, response, location)
 
-            # .. serve a directory listing if allowed to.
-            if self.dirlisting:
-                directory = os.path.abspath(os.path.join(self.docroot, path))
-                cur_dir = os.path.join(self.path, path) if self.path else ""
+                # .. serve a directory listing if allowed to.
+                if self.dirlisting:
+                    directory = os.path.abspath(os.path.join(self.docroot, path))
+                    cur_dir = os.path.join(self.path, path) if self.path else ""
 
-                if not path:
-                    url_up = ""
-                else:
-                    if self.path is None:
-                        url_up = os.path.join("/", os.path.split(path)[0])
+                    if not path:
+                        url_up = ""
                     else:
-                        url_up = os.path.join(cur_dir, "..")
-                    url_up = '<li><a href="%s">%s</a></li>' % (url_up, "..")
-
-                listing = []
-                for item in os.listdir(directory):
-                    if not item.startswith("."):
-                        url = os.path.join("/", path, cur_dir, item)
-                        location = os.path.abspath(
-                            os.path.join(self.docroot, path, item)
-                        )
-                        if os.path.isdir(location):
-                            li = '<li><a href="%s/">%s/</a></li>' % (
-                                quote(url), item
-                            )
+                        if self.path is None:
+                            url_up = os.path.join("/", os.path.split(path)[0])
                         else:
-                            li = '<li><a href="%s">%s</a></li>' % (
-                                quote(url), item
-                            )
-                        listing.append(li)
+                            url_up = os.path.join(cur_dir, "..")
+                        url_up = '<li><a href="%s">%s</a></li>' % (url_up, "..")
 
-                ctx = {}
-                ctx["directory"] = cur_dir or os.path.join("/", cur_dir, path)
-                ctx["url_up"] = url_up
-                ctx["listing"] = "\n".join(listing)
-                return _dirlisting_template.safe_substitute(ctx)
+                    listing = []
+                    for item in os.listdir(directory):
+                        if not item.startswith("."):
+                            url = os.path.join("/", path, cur_dir, item)
+                            location = os.path.abspath(
+                                os.path.join(self.docroot, path, item)
+                            )
+                            if os.path.isdir(location):
+                                li = '<li><a href="%s/">%s/</a></li>' % (
+                                    quote(url), item
+                                )
+                            else:
+                                li = '<li><a href="%s">%s</a></li>' % (
+                                    quote(url), item
+                                )
+                            listing.append(li)
+
+                    ctx = {}
+                    ctx["directory"] = cur_dir or os.path.join("/", cur_dir, path)
+                    ctx["url_up"] = url_up
+                    ctx["listing"] = "\n".join(listing)
+                    return _dirlisting_template.safe_substitute(ctx)
+        finally:
+            event.stop()

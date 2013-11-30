@@ -411,7 +411,7 @@ class IRC(Component):
     ### Default Events
     ###
 
-    @handler("ping", filter=True)
+    @handler("ping", priority=1)
     def _on_ping(self, event, server):
         """Ping Event
 
@@ -424,7 +424,7 @@ class IRC(Component):
 
         if isinstance(event, ping):
             self.fire(PONG(server))
-            return True
+            event.stop()
 
 ###
 ### Errors and Numeric Replies

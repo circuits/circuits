@@ -13,7 +13,6 @@ try:
 except ImportError:
     from urlparse import urlparse  # NOQA
 
-from circuits.tools import deprecated
 from circuits.web.headers import Headers
 from circuits.protocols.http import HTTP
 from circuits.core.handlers import handler
@@ -118,13 +117,13 @@ class WebSocketClient(BaseComponent):
             raise NotConnected()
         WebSocketCodec(channel=self._wschannel).register(self)
 
-    @handler("error", filter=True, priority=10)
-    def _on_error(self, error, *args, **kwargs):
+    @handler("error", priority=10)
+    def _on_error(self, event, error, *args, **kwargs):
         # For HTTP 1.1 we leave the connection open. If the peer closes
         # it after some time and we have no pending request, that's OK.
         if isinstance(error, SocketError) and error.args[0] == ECONNRESET \
                 and self._pending == 0:
-            return True
+            event.stop()
 
     def close(self):
         if self._transport is not None:
@@ -134,15 +133,3 @@ class WebSocketClient(BaseComponent):
     def connected(self):
         return getattr(self._transport, "connected", False) \
             if hasattr(self, "_transport") else False
-
-
-class WebSocket(object):
-    """WebSocket Client
-
-    .. deprecated:: 2.2
-       Use :class:`WebSocketClient
-    """
-
-    @deprecated
-    def __new__(cls, *args, **kwargs):
-        return WebSocketClient(*args, **kwargs)

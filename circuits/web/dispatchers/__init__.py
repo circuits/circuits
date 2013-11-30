@@ -14,6 +14,6 @@ from .xmlrpc import XMLRPC
 from .jsonrpc import JSONRPC
 from .dispatcher import Dispatcher
 from .virtualhosts import VirtualHosts
-from ..websockets.dispatcher import WebSockets
+from ..websockets.dispatcher import WebSocketsDispatcher
 
 # flake8: noqa

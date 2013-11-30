@@ -33,7 +33,7 @@ class XMLRPC(BaseComponent):
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("request", filter=True, priority=0.2)
+    @handler("request", priority=0.2)
     def _on_request(self, req, res):
         if self.path is not None and self.path != req.path.rstrip("/"):
             return
@@ -66,8 +66,8 @@ class XMLRPC(BaseComponent):
         except Exception as e:
             r = self._error(1, "%s: %s" % (type(e), e))
             return r
-        else:
-            return True
+        finally:
+            event.stop()
 
     def _response(self, result):
         return dumps((result,), encoding=self.encoding, allow_none=True)

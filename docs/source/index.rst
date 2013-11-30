@@ -7,18 +7,17 @@ circuits |version| Documentation
 :Date: |today|
 
 
-README
-======
+About
+=====
+
+.. include:: ../../README.rst
 
 
-.. toctree::
-   :maxdepth: 1
-
-   readme
+.. _documentation-index:
 
 
-Contents
-========
+Documentation
+=============
 
 
 .. toctree::
@@ -38,6 +37,7 @@ Contents
    :hidden:
 
    glossary
+   examples/index
 
 .. ifconfig:: devel
 
@@ -45,6 +45,7 @@ Contents
       :hidden:
 
       todo
+      readme
 
 
 Indices and tables
@@ -59,3 +60,4 @@ Indices and tables
 .. ifconfig:: devel
 
    * :doc:`todo`
+   * :doc:`readme`

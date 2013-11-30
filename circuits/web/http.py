@@ -120,6 +120,8 @@ class HTTP(BaseComponent):
             if res.body and not res.done:
                 try:
                     data = next(res.body)
+                    while not data:  # Skip over any null byte sequences
+                        data = next(res.body)
                 except StopIteration:
                     data = None
                 self.fire(stream(res, data))

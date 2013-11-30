@@ -24,8 +24,8 @@ class FallBackGenerator(BaseComponent):
         When the queue is empty a GenerateEvents event is fired, here
         we sleep for as long as possible to avoid using extra cpu cycles.
 
-        A poller would overwrite with with a higher priority filter, e.g.
-        @handler("generate_events", priority=0)
+        A poller would override with with a higher priority handler.
+        e.g: ``@handler("generate_events", priority=0)``
         and provide a different way to idle when the queue is empty.
         """
 

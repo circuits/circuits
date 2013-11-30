@@ -299,4 +299,4 @@ def test_Logger_error():
     app.fire(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("ERROR <listener[*.test] (App.test)> (")
+    assert logger.msg.startswith("ERROR <handler[*.test] (App.test)> (")

@@ -179,15 +179,15 @@ class Client(BaseComponent):
             self._poller.addWriter(self, self._sock)
         self._buffer.append(data)
 
-    @handler("_disconnect", filter=True)
+    @handler("_disconnect", priority=1)
     def __on_disconnect(self, sock):
         self._close()
 
-    @handler("_read", filter=True)
+    @handler("_read", priority=1)
     def __on_read(self, sock):
         self._read()
 
-    @handler("_write", filter=True)
+    @handler("_write", priority=1)
     def __on_write(self, sock):
         if self._buffer:
             data = self._buffer.popleft()
@@ -558,18 +558,18 @@ class Server(BaseComponent):
         self._clients.append(newsock)
         self.fire(connect(newsock, *host))
 
-    @handler("_disconnect", filter=True)
+    @handler("_disconnect", priority=1)
     def _on_disconnect(self, sock):
         self._close(sock)
 
-    @handler("_read", filter=True)
+    @handler("_read", priority=1)
     def _on_read(self, sock):
         if sock == self._sock:
             self._accept()
         else:
             self._read(sock)
 
-    @handler("_write", filter=True)
+    @handler("_write", priority=1)
     def _on_write(self, sock):
         if self._buffers[sock]:
             data = self._buffers[sock].popleft()
@@ -728,15 +728,15 @@ class UDPServer(Server):
     def broadcast(self, data, port):
         self.write(("<broadcast>", port), data)
 
-    @handler("_disconnect", filter=True, override=True)
+    @handler("_disconnect", priority=1, override=True)
     def _on_disconnect(self, sock):
         self._close(sock)
 
-    @handler("_read", filter=True, override=True)
+    @handler("_read", priority=1, override=True)
     def _on_read(self, sock):
         self._read()
 
-    @handler("_write", filter=True, override=True)
+    @handler("_write", priority=1, override=True)
     def _on_write(self, sock):
         if self._buffers[self._sock]:
             address, data = self._buffers[self._sock].popleft()
