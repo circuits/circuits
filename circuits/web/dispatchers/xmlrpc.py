@@ -14,7 +14,6 @@ except ImportError:
     from xmlrpclib import dumps, loads, Fault  # NOQA
 
 from circuits.six import binary_type
-from circuits.web.events import response
 from circuits import handler, Event, BaseComponent
 
 
@@ -34,7 +33,7 @@ class XMLRPC(BaseComponent):
         self.rpc_channel = rpc_channel
 
     @handler("request", priority=0.2)
-    def _on_request(self, req, res):
+    def _on_request(self, event, req, res):
         if self.path is not None and self.path != req.path.rstrip("/"):
             return
 
@@ -51,21 +50,10 @@ class XMLRPC(BaseComponent):
 
             name = str(name) if not isinstance(name, binary_type) else name
 
-            @handler("%s_value_changed" % name, priority=0.1)
-            def _on_value_changed(self, value):
-                res = value.response
-                res.body = self._response(value.value)
-                self.fire(response(res), self.channel)
-                value.handled = True
-
-            self.addHandler(_on_value_changed)
-
-            value = self.fire(rpc.create(name, *params), channel)
-            value.response = res
-            value.notify = True
+            value = yield self.call(rpc.create(name, *params), channel)
+            yield self._response(value.value)
         except Exception as e:
-            r = self._error(1, "%s: %s" % (type(e), e))
-            return r
+            yield self._error(1, "%s: %s" % (type(e), e))
         finally:
             event.stop()
 
