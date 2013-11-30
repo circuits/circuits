@@ -105,3 +105,21 @@ def release():
 
         with msg("Destroying env"):
             run("rmvirtualenv test")
+
+
+@task()
+def sync(*args):
+    """Synchronouse Local Repository with Remote(s)"""
+
+    status = local("hg status", capture=True)
+    if status:
+        abort("Repository is not in a clean state! Please commit, revert or shelve!")
+
+    local("hg fetch")
+    local("hg fetch github")
+    local("hg fetch upstream")
+
+    with settings(warn_only=True):
+        local("hg push")
+        local("hg push github")
+        local("hg push upstream")
