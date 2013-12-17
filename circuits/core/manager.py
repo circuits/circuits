@@ -33,6 +33,14 @@ thread = tryimport(("thread", "_thread"))
 TIMEOUT = 0.1  # 100ms timeout when idle
 
 
+class TimeoutError(Exception):
+    """Raised for events that timedout while waiting/calling"""
+
+
+class WrappedTimeoutError(Exception):
+    """Internally raised for events that timedout while waiting/calling"""
+
+
 class UnregistrableError(Exception):
     """Raised if a component cannot be registered as child."""
 
@@ -414,9 +422,11 @@ class Manager(object):
 
         def _on_tick(self):
             if state['timeout'] == 0:
-                self.registerTask((state['task_event'],
-                                   state['task'],
-                                   state['parent']))
+                try:
+                    raise WrappedTimeoutError(state["parent"], state["task_event"])
+                finally:
+                    self.removeHandler(state["tick_handler"], "generate_events")
+
             state['timeout'] -= 1
 
         if not channels:
@@ -428,13 +438,13 @@ class Manager(object):
             _on_done_handler = self.addHandler(
                 handler("%s_done" % event, channel=channel)(_on_done))
             if state['timeout'] >= 0:
-                _on_tick_handler = self.addHandler(
+                _on_tick_handler = state["tick_handler"] = self.addHandler(
                     handler("generate_events", channel=channel)(_on_tick))
 
         yield state
 
         self.removeHandler(_on_done_handler, "%s_done" % event)
-        if state['timeout'] >= 0:
+        if state['timeout'] > 0:
             self.removeHandler(_on_tick_handler, "generate_events")
 
         if state["event"] is not None:
@@ -539,6 +549,9 @@ class Manager(object):
                     value = handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
                 self.stop()
+            except WrappedTimeoutError as e:
+                parent, event = e.args
+                parent.throw(TimeoutError, event)
             except:
                 etype, evalue, etraceback = _exc_info()
                 traceback = format_tb(etraceback)

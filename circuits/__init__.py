@@ -21,7 +21,7 @@ from .version import version as __version__
 
 from .core import Event
 from .core import task, Worker
-from .core import Debugger, Bridge, Loader, Manager, Timer
 from .core import handler, reprhandler, BaseComponent, Component
+from .core import Debugger, Bridge, Loader, Manager, Timer, TimeoutError
 
 # flake8: noqa

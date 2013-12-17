@@ -11,7 +11,7 @@ This package contains the essential core parts of the circuits framework.
 from .events import Event
 from .bridge import Bridge
 from .loader import Loader
-from .manager import Manager
+from .manager import Manager, TimeoutError
 from .handlers import handler, reprhandler
 from .components import BaseComponent, Component
 
@@ -25,7 +25,7 @@ from .debugger import Debugger
 
 __all__ = (
     "handler", "BaseComponent", "Component", "Event", "task",
-    "Worker", "Bridge", "Debugger", "Timer", "Manager",
+    "Worker", "Bridge", "Debugger", "Timer", "Manager", "TimeoutError",
 )
 
 # flake8: noqa
