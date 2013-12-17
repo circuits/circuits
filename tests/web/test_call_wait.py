@@ -21,10 +21,15 @@ class App(Component):
 class Root(Controller):
 
     def index(self):
-        yield (yield self.call(foo(), "app"))
+        value = (yield self.call(foo(), "app"))
+        yield value.value
 
 
 def test(webapp):
-    f = urlopen(webapp.server.http.base)
-    s = f.read()
-    assert s == b"Hello World!"
+    app = App().register(webapp)
+    try:
+        f = urlopen(webapp.server.http.base)
+        s = f.read()
+        assert s == b"Hello World!"
+    finally:
+        app.unregister()

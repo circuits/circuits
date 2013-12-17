@@ -125,6 +125,8 @@ class Dispatcher(BaseComponent):
         if value.result and not value.errors:
             res.body = value.value
             self.fire(response(res))
+        elif value.promise:
+            value.event.notify = True
         else:
             # This possibly never occurs.
             self.fire(httperror(req, res, error=value.value))
