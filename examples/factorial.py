@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from circuits import Component
 from circuits import task, Worker
+from circuits import Component, Debugger
 
 
 def factorial(n):
@@ -21,4 +21,6 @@ class App(Component):
         print("{0:d}".format(x.value))
         self.stop()
 
-App().run()
+app = App()
+Debugger().register(app)
+app.run()
