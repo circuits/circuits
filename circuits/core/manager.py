@@ -805,7 +805,7 @@ class Manager(object):
             for _ in range(3):
                 self.tick()
         except Exception as e:
-            print("ERROR: {0:s}".format(e))
+            print("Unhandled ERROR: {0:s}".format(e))
             print(format_exc())
         finally:
             try:
