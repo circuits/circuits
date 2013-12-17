@@ -435,7 +435,7 @@ class Manager(object):
 
         self.removeHandler(_on_done_handler, "%s_done" % event)
         if state['timeout'] >= 0:
-            self.removeHandler(_on_tick_handler, "generate_event")
+            self.removeHandler(_on_tick_handler, "generate_events")
 
         if state["event"] is not None:
             yield CallValue(state["event"].value)
