@@ -33,21 +33,25 @@ thread = tryimport(("thread", "_thread"))
 TIMEOUT = 0.1  # 100ms timeout when idle
 
 
-class TimeoutError(Exception):
-    """Raised for events that timedout while waiting/calling"""
-
-
-class WrappedTimeoutError(Exception):
-    """Internally raised for events that timedout while waiting/calling"""
-
-
 class UnregistrableError(Exception):
     """Raised if a component cannot be registered as child."""
+
+
+class TimeoutError(Exception):
+    """Raised if wait event timeout occurred"""
 
 
 class CallValue(object):
     def __init__(self, value):
         self.value = value
+
+
+class ExceptionWrapper(object):
+    def __init__(self, exception):
+        self.exception = exception
+
+    def extract(self):
+        return self.exception
 
 
 class Dummy(object):
@@ -419,15 +423,18 @@ class Manager(object):
                 self.registerTask((state['task_event'],
                                    state['task'],
                                    state['parent']))
+                if state['timeout'] > 0:
+                    self.removeHandler(state['tick_handler'], "generate_events")
 
         def _on_tick(self):
             if state['timeout'] == 0:
-                try:
-                    raise WrappedTimeoutError(state["parent"], state["task_event"])
-                finally:
-                    self.removeHandler(state["tick_handler"], "generate_events")
-
-            state['timeout'] -= 1
+                self.registerTask((state['task_event'],
+                                   (e for e in (ExceptionWrapper(TimeoutError()),)),
+                                   state['parent']))
+                self.removeHandler(_on_done_handler, "%s_done" % event)
+                self.removeHandler(_on_tick_handler, "generate_events")
+            elif state['timeout'] > 0:
+                state['timeout'] -= 1
 
         if not channels:
             channels = (None, )
@@ -438,14 +445,14 @@ class Manager(object):
             _on_done_handler = self.addHandler(
                 handler("%s_done" % event, channel=channel)(_on_done))
             if state['timeout'] >= 0:
-                _on_tick_handler = state["tick_handler"] = self.addHandler(
+                _on_tick_handler = state['tick_handler'] = self.addHandler(
                     handler("generate_events", channel=channel)(_on_tick))
 
         yield state
 
         self.removeHandler(_on_done_handler, "%s_done" % event)
         if state['timeout'] > 0:
-            self.removeHandler(_on_tick_handler, "generate_events")
+                    self.removeHandler(_on_tick_handler, "generate_events")
 
         if state["event"] is not None:
             yield CallValue(state["event"].value)
@@ -529,7 +536,7 @@ class Manager(object):
                 self._currently_handling = event
                 if remaining > 0 or len(self._queue) or not self._running:
                     event.reduce_time_left(0)
-                elif len(self._tasks):
+                elif self._tasks:
                     event.reduce_time_left(TIMEOUT)
                 # From now on, firing an event will reduce time left
                 # to 0, which prevents handlers from waiting (or wakes
@@ -549,9 +556,6 @@ class Manager(object):
                     value = handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
                 self.stop()
-            except WrappedTimeoutError as e:
-                parent, event = e.args
-                parent.throw(TimeoutError, event)
             except:
                 etype, evalue, etraceback = _exc_info()
                 traceback = format_tb(etraceback)
@@ -573,6 +577,10 @@ class Manager(object):
                     self.registerTask((event, value, None))
                 else:
                     event.value.value = value
+
+            # it is kind of a temporal hack to allow processing of tasks, added in one of handlers here
+            if isinstance(event, generate_events) and self._tasks:
+                event.reduce_time_left(TIMEOUT)
 
             if event.stopped:
                 break  # Stop further event processing
@@ -710,7 +718,16 @@ class Manager(object):
                 task_state['parent'] = task
                 # The below code is delegated to handlers
                 # in the waitEvent generator
-                # self.registerTask((event, value, task))
+                #self.registerTask((event, value, task))
+            elif isinstance(value, ExceptionWrapper):
+                self.unregisterTask((event, task, parent))
+                if parent:
+                    value = parent.throw(value.extract())
+                    if value is not None:
+                        value_generator = (val for val in (value,))
+                        self.registerTask((event, value_generator, parent))
+                else:
+                    raise value.extract()
             elif value is not None:
                 event.value.value = value
         except StopIteration:
@@ -724,7 +741,7 @@ class Manager(object):
         except (KeyboardInterrupt, SystemExit):
             self.stop()
         except:
-            self.unregisterTask((event, task, None))
+            self.unregisterTask((event, task, parent))
 
             etype, evalue, etraceback = _exc_info()
             traceback = format_tb(etraceback)
