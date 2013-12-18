@@ -10,7 +10,7 @@ in circuits to write a very simple clone of the standard UNIX "cat" command.
 
 import sys
 
-from circuits.io import stdout, File, Write
+from circuits.io import stdout, File, write
 
 
 class Cat(File):
@@ -25,7 +25,7 @@ class Cat(File):
         from the underlying file that was opened.
         """
 
-        self.fire(Write(data), stdout)
+        self.fire(write(data), stdout)
 
     def eof(self):
         """End Of File Event

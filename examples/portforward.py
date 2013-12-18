@@ -19,7 +19,7 @@ from optparse import OptionParser
 
 from circuits.app import Daemon
 from circuits import handler, Component, Debugger
-from circuits.net.sockets import Close, Connect, Write
+from circuits.net.events import close, Connect, write
 from circuits.net.sockets import TCPClient, TCPServer
 
 __version__ = "0.2"
@@ -63,7 +63,7 @@ def _on_target_disconnected(self, event):
     channel = event.channels[0]
     sock = self._sockets[channel]
 
-    self.fire(Close(sock), "source")
+    self.fire(close(sock), "source")
 
     del self._sockets[channel]
     del self._clients[sock]
@@ -77,7 +77,7 @@ def _on_target_ready(self, component):
     Ready events of a registered client.
     """
 
-    self.fire(Connect(*self._target, secure=self._secure), component.channel)
+    self.fire(connect(*self._target, secure=self._secure), component.channel)
 
 
 def _on_target_read(self, event, data):
@@ -89,7 +89,7 @@ def _on_target_read(self, event, data):
     """
 
     sock = self._sockets[event.channels[0]]
-    self.fire(Write(sock, data), "source")
+    self.fire(write(sock, data), "source")
 
 
 class PortForwarder(Component):
@@ -108,7 +108,7 @@ class PortForwarder(Component):
 
     @handler("connect", channel="source")
     def _on_source_connect(self, sock, host, port):
-        """Explicitly defined Connect Event Handler
+        """Explicitly defined connect Event Handler
 
         This evens is triggered by the underlying TCPServer Component when
         a new client connection has been made.
@@ -146,13 +146,13 @@ class PortForwarder(Component):
         This evens is triggered by the underlying TCPServer Component when
         a connected client has some data ready to be processed.
 
-        Here we simply fire a cooresponding Write event to the cooresponding
+        Here we simply fire a cooresponding write event to the cooresponding
         matching client which we lookup using the socket object as the key
         to determinte the unique id.
         """
 
         client = self._clients[sock]
-        self.fire(Write(data), client.channel)
+        self.fire(write(data), client.channel)
 
 
 def sanitize(s):
