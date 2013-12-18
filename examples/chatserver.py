@@ -8,8 +8,11 @@ server that supports many connecting clients.
 
 from optparse import OptionParser
 
+
+from circuits.net.events import write
 from circuits import Component, Debugger
-from circuits.net.sockets import TCPServer, Write
+from circuits.net.sockets import TCPServer
+
 
 __version__ = "0.0.1"
 
@@ -71,7 +74,7 @@ class ChatServer(Component):
         exclude = exclude or []
         targets = (sock for sock in self.clients.keys() if sock not in exclude)
         for target in targets:
-            self.fire(Write(target, data))
+            self.fire(write(target, data))
 
     def connect(self, sock, host, port):
         """Connect Event -- Triggered for new connecting clients"""
@@ -85,8 +88,8 @@ class ChatServer(Component):
             }
         }
 
-        self.fire(Write(sock, "Welcome to the circuits Chat Server!\n"))
-        self.fire(Write(sock, "Please enter a desired nickname: "))
+        self.fire(write(sock, "Welcome to the circuits Chat Server!\n"))
+        self.fire(write(sock, "Please enter a desired nickname: "))
 
     def disconnect(self, sock):
         """Disconnect Event -- Triggered for disconnecting clients"""
