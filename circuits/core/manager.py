@@ -450,9 +450,8 @@ class Manager(object):
 
         yield state
 
-        self.removeHandler(_on_done_handler, "%s_done" % event)
-        if state['timeout'] > 0:
-                    self.removeHandler(_on_tick_handler, "generate_events")
+        if not state['timeout']:
+            self.removeHandler(_on_done_handler, "%s_done" % event)
 
         if state["event"] is not None:
             yield CallValue(state["event"].value)

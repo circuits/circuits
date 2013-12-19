@@ -60,7 +60,7 @@ def app(request, manager, watcher):
 
 
 def test_wait_success(manager, watcher, app):
-    x = manager.fire(wait())
+    x = manager.fire(wait(10))
     assert watcher.wait('wait_success')
 
     value = x.value
@@ -78,7 +78,7 @@ def test_wait_failure(manager, watcher, app):
 
 
 def test_call_success(manager, watcher, app):
-    x = manager.fire(call())
+    x = manager.fire(call(10))
     assert watcher.wait('call_success')
 
     value = x.value
