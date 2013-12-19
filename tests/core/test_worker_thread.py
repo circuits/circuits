@@ -38,6 +38,10 @@ def f():
     return x
 
 
+def add(a, b):
+    return a + b
+
+
 def test(worker):
     x = worker.fire(task(f))
 
@@ -45,3 +49,12 @@ def test(worker):
 
     assert x.result
     assert x.value == 1000000
+
+
+def test_args(worker):
+    x = worker.fire(task(add, 1, 2))
+
+    assert pytest.wait_for(x, "result")
+
+    assert x.result
+    assert x.value == 3

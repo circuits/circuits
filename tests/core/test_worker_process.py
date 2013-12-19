@@ -40,6 +40,10 @@ def pid():
     return "Hello from {0:d}".format(getpid())
 
 
+def add(a, b):
+    return a + b
+
+
 def test_failure(manager, watcher, worker):
     e = task(err)
     e.failure = True
@@ -60,3 +64,14 @@ def test_success(manager, watcher, worker):
     assert watcher.wait("task_success")
 
     assert x.value == 1000000
+
+
+def test_args(manager, watcher, worker):
+    e = task(add, 1, 2)
+    e.success = True
+
+    x = worker.fire(e)
+
+    assert watcher.wait("task_success")
+
+    assert x.value == 3
