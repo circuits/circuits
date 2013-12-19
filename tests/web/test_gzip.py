@@ -73,4 +73,4 @@ def test2(webapp, gziptool):
 
     f = opener.open(request)
     s = decompress(f.read())
-    assert s == open(path.join(DOCROOT, "largefile.txt"), "r").read()
+    assert s == open(path.join(DOCROOT, "largefile.txt"), "rb").read()

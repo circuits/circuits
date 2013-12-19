@@ -43,7 +43,7 @@ def test_largefile(webapp):
     url = "%s/static/largefile.txt" % webapp.server.http.base
     f = urlopen(url)
     s = f.read().strip()
-    assert s == open(path.join(DOCROOT, "largefile.txt"), "r").read()
+    assert s == open(path.join(DOCROOT, "largefile.txt"), "rb").read()
 
 
 def test_file404(webapp):
