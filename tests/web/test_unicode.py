@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import pytest
+
+
 try:
     from httplib import HTTPConnection
 except ImportError:
     from http.client import HTTPConnection  # NOQA
 
-from circuits.six import b
+
 from circuits.web import Controller
 from circuits.web.client import Client, request
 
@@ -35,20 +38,25 @@ class Root(Controller):
 def test_index(webapp):
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b("Hello World!")
+
+    if pytest.PYVER[0] == 3:
+        assert s == "Hello World!".encode("utf-8")
+    else:
+        assert s == "Hello World!"
 
 
 def test_request_body(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
-    body = b("ä")
+    body = u"ä".encode("utf-8")
+
     connection.request("GET", "/request_body", body)
     response = connection.getresponse()
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == b("ä")
+    assert s == u"ä".encode("utf-8")
 
     connection.close()
 
@@ -62,7 +70,7 @@ def test_response_body(webapp):
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == b("ä")
+    assert s == u"ä".encode("utf-8")
 
     connection.close()
 
@@ -71,14 +79,14 @@ def test_request_headers(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
-    body = b("")
+    body = u"".encode("utf-8")
     headers = {"A": "ä"}
     connection.request("GET", "/request_headers", body, headers)
     response = connection.getresponse()
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == b("ä")
+    assert s == u"ä".encode("utf-8")
 
     connection.close()
 
@@ -101,5 +109,5 @@ def test_response_headers(webapp):
     assert client.response.reason == 'OK'
     s = client.response.read()
     a = client.response.headers.get('A')
-    assert a == "ä"
-    assert s == b("ä")
+    assert a == u"ä".encode("utf-8")
+    assert s == u"ä".encode("utf-8")
