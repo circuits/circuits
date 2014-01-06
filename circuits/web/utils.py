@@ -25,7 +25,7 @@ try:
 except ImportError:
     from cgi import parse_qs as _parse_qs  # NOQA
 
-from circuits.six import iterbytes
+from circuits.compat import iterbytes
 
 from .exceptions import RequestEntityTooLarge
 

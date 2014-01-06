@@ -11,7 +11,7 @@
 import json
 
 from circuits.core import Event
-from circuits.six import bytes_to_str, text_type
+from circuits.compat import bytes_to_str, text_type
 
 
 def load_event(s):

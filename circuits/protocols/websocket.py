@@ -5,7 +5,7 @@
 import os
 import random
 
-from circuits.six import string_types
+from circuits.compat import string_types
 from circuits.core.handlers import handler
 from circuits.core.components import BaseComponent
 from circuits.net.events import write, read, close

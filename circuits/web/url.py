@@ -33,7 +33,7 @@ except ImportError:
     from urllib import quote, unquote  # NOQA
     from urlparse import urljoin, urlparse, urlunparse  # NOQA
 
-from circuits.six import b, string_types, text_type
+from circuits.compat import b, string_types, text_type
 
 # Come codes that we'll need
 IDNA = codecs.lookup('idna')

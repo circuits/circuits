@@ -7,7 +7,7 @@ except ImportError:
     from urllib.parse import parse_qsl  # NOQA
 
 
-from circuits.six import iteritems, string_types
+from circuits.compat import iteritems, string_types
 
 
 class QueryStringToken(object):

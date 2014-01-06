@@ -12,7 +12,7 @@ from circuits.tools import tryimport
 
 json = tryimport(("json", "simplejson"))
 
-from circuits.six import binary_type
+from circuits.compat import binary_type
 from circuits import handler, Event, BaseComponent
 
 

@@ -8,7 +8,7 @@ This defines the Value object used by components and events.
 
 
 from .events import Event
-from ..six import string_types
+from ..compat import string_types
 
 
 class Value(object):

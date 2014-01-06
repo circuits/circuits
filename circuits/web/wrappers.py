@@ -19,7 +19,7 @@ except ImportError:
 
 from .url import parse_url
 from .headers import Headers
-from ..six import binary_type
+from ..compat import binary_type
 from .errors import httperror
 from circuits.net.sockets import BUFSIZE
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION

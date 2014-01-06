@@ -15,7 +15,7 @@ from circuits.core import Component, handler, Event
 from circuits.core.pollers import BasePoller, Poller
 from circuits.core.utils import findcmp
 from circuits.tools import tryimport
-from circuits.six import binary_type, string_types
+from circuits.compat import binary_type, string_types
 
 from .events import closed, error, opened, read, ready, close
 

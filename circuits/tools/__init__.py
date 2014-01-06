@@ -11,7 +11,8 @@ tools are installed as executables with a prefix of "circuits."
 from functools import wraps
 from warnings import warn, warn_explicit
 
-from circuits.six import _func_code
+from circuits.compat import _func_code
+from .version import version as __version__
 
 
 def tryimport(modules, obj=None, message=None):
@@ -165,3 +166,9 @@ def deprecated(f):
         )
         return f(*args, **kwargs)
     return wrapper
+# See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
+try:
+    __import__('pkg_resources').declare_namespace(__name__)
+except ImportError:
+    from pkgutil import extend_path
+    __path__ = extend_path(__path__, __name__)

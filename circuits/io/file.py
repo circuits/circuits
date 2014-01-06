@@ -24,7 +24,7 @@ from circuits.tools import tryimport
 from circuits.core.utils import findcmp
 from circuits.core import handler, Component, Event
 from circuits.core.pollers import BasePoller, Poller
-from circuits.six import binary_type, string_types, PY3
+from circuits.compat import binary_type, string_types, PY3
 
 from .events import close, closed, eof, error, opened, read, ready
 

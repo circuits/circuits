@@ -36,7 +36,7 @@ except ImportError:
     HAS_SSL = 0
 
 
-from circuits.six import binary_type
+from circuits.compat import binary_type
 from circuits.core.utils import findcmp
 from circuits.core import handler, BaseComponent
 from circuits.core.pollers import BasePoller, Poller

@@ -13,7 +13,7 @@ import datetime
 from io import IOBase
 from email._parseaddr import _monthnames
 
-from circuits.six import string_types
+from circuits.compat import string_types
 from circuits.core import handler, BaseComponent
 
 

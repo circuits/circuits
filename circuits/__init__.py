@@ -17,11 +17,16 @@ with a strong **Component** Architecture.
 __author__ = "James Mills"
 __date__ = "24th February 2013"
 
-from .version import version as __version__
-
-from .core import Event
-from .core import task, Worker
-from .core import handler, reprhandler, BaseComponent, Component
-from .core import Debugger, Bridge, Loader, Manager, Timer, TimeoutError
+from circuits.core import Event
+from circuits.core import task, Worker
+from circuits.version import version as __version__
+from circuits.core import handler, reprhandler, BaseComponent, Component
+from circuits.core import Debugger, Bridge, Loader, Manager, Timer, TimeoutError
 
 # flake8: noqa
+# See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
+try:
+    __import__('pkg_resources').declare_namespace(__name__)
+except ImportError:
+    from pkgutil import extend_path
+    __path__ = extend_path(__path__, __name__)
