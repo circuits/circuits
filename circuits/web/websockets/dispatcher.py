@@ -5,7 +5,7 @@
 import base64
 import hashlib
 
-from circuits.compat import b
+from circuits.six import b
 from circuits.net.events import connect
 from circuits.web.errors import httperror
 from circuits import handler, BaseComponent

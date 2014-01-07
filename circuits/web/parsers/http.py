@@ -13,7 +13,7 @@ except ImportError:
     import urllib.parse as urlparse  # NOQA
     from urllib.parse import unquote  # NOQA
 
-from circuits.compat import b, bytes_to_str, MAXSIZE
+from circuits.six import b, bytes_to_str, MAXSIZE
 
 from ..headers import Headers
 

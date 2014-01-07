@@ -171,16 +171,16 @@ for attr in _moved_attributes:
     setattr(_MovedItems, attr.name, attr)
 del attr
 
-moves = sys.modules["compat.moves"] = _MovedItems("moves")
+moves = sys.modules["six.moves"] = _MovedItems("moves")
 
 
 def add_move(move):
-    """Add an item to compat.moves."""
+    """Add an item to six.moves."""
     setattr(_MovedItems, move.name, move)
 
 
 def remove_move(name):
-    """Remove item from compat.moves."""
+    """Remove item from six.moves."""
     try:
         delattr(_MovedItems, name)
     except AttributeError:

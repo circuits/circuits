@@ -13,7 +13,7 @@ try:
 except ImportError:
     from urllib.parse import quote, unquote  # NOQA
 
-from circuits.compat import text_type
+from circuits.six import text_type
 
 from circuits import handler, BaseComponent, Event
 

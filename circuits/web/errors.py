@@ -16,7 +16,7 @@ except ImportError:
 
 from circuits import Event
 
-from ..compat import string_types
+from ..six import string_types
 from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 

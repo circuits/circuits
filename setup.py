@@ -12,8 +12,8 @@ version = new_module("version")
 
 exec(
     compile(
-        open(path.join(path.dirname(globals().get("__file__", path.join(getcwd(), "circuits"))), "circuits/version/__init__.py"), "r").read(),
-        "circuits/version/__init__.py", "exec"
+        open(path.join(path.dirname(globals().get("__file__", path.join(getcwd(), "circuits"))), "circuits/version.py"), "r").read(),
+        "circuits/version.py", "exec"
     ),
     version.__dict__
 )
@@ -73,17 +73,6 @@ setup(
     license="MIT",
     keywords="event framework distributed concurrent component asynchronous",
     platforms="POSIX",
-    namespace_packages=[
-        "circuits",
-        "circuits.app",
-        "circuits.core",
-        "circuits.io",
-        "circuits.net",
-        "circuits.node",
-        "circuits.protocols",
-        "circuits.tools",
-        "circuits.web",
-    ],
     packages=find_packages("."),
     scripts=glob("bin/*"),
     install_requires=[],

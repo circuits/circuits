@@ -49,7 +49,7 @@ try:
 except ImportError: # pragma: no cover (fallback for Python 2.5)
     from StringIO import StringIO as BytesIO
 
-from circuits.compat import text_type
+from circuits.six import text_type
 
 ##############################################################################
 ################################ Helper & Misc ################################

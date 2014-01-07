@@ -25,9 +25,8 @@ from multiprocessing import current_process, Process
 from .values import Value
 from ..tools import tryimport
 from .handlers import handler
+from ..six import create_bound_method, next
 from .events import error, generate_events, signal, started, stopped
-
-from circuits.compat import create_bound_method, next
 
 thread = tryimport(("thread", "_thread"))
 

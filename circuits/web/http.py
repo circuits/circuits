@@ -19,7 +19,7 @@ except ImportError:
     from urlparse import urlparse, urlunparse  # NOQA
 
 
-from circuits.compat import text_type
+from circuits.six import text_type
 from circuits.net.events import close, write
 from circuits.core import handler, BaseComponent, Value
 
