@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pytest
-
-
 try:
     from httplib import HTTPConnection
 except ImportError:
     from http.client import HTTPConnection  # NOQA
 
-
+from circuits.six import b
 from circuits.web import Controller
 
 
@@ -25,11 +22,7 @@ def test_bad_header(webapp):
 
     connection.putrequest("GET", "/", "HTTP/1.1")
     connection.putheader("Connection", "close")
-    if pytest.PYVER[0] == 3:
-        connection._output("X-Foo".encode("utf-8"))  # Bad Header
-    else:
-        connection._output("X-Foo")  # Bad Header
-
+    connection._output(b("X-Foo"))  # Bad Header
     connection.endheaders()
 
     response = connection.getresponse()
