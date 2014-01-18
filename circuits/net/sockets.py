@@ -1,7 +1,6 @@
 # Module:   sockets
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
-import select
 
 """Socket Components
 
@@ -9,6 +8,7 @@ This module contains various Socket Components for use with Networking.
 """
 
 import os
+import select
 from collections import defaultdict, deque
 
 from errno import EAGAIN, EALREADY, EBADF
