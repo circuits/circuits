@@ -22,13 +22,15 @@ This example makes use of:
 import os
 from optparse import OptionParser
 
+
+import circuits
 from circuits.io import stdin
 from circuits import handler, Component
-from circuits import __version__ as systemVersion
-from circuits.net.sockets import TCPClient, UNIXClient, Connect, Write
+from circuits.net.events import connect, write
+from circuits.net.sockets import TCPClient, UNIXClient
 
 USAGE = "%prog [options] host [port]"
-VERSION = "%prog v" + systemVersion
+VERSION = "%prog v" + circuits.__version__
 
 
 def parse_options():
@@ -60,31 +62,31 @@ class Telnet(Component):
 
         if len(args) == 1:
             if os.path.exists(args[0]):
-                self += UNIXClient(channel=self.channel)
+                UNIXClient(channel=self.channel).register(self)
                 host = dest = port = args[0]
                 dest = (dest,)
             else:
                 raise OSError("Path %s not found" % args[0])
         else:
-            self += TCPClient(channel=self.channel)
+            TCPClient(channel=self.channel).register(self)
             host, port = args
             port = int(port)
             dest = host, port
 
         print("Trying %s ..." % host)
-        self.fire(Connect(*dest))
+        self.fire(connect(*dest))
 
     def connected(self, host, port=None):
-        """Connected Event Handler
+        """connected Event Handler
 
         This event is fired by the TCPClient Componentt to indicate a
         successful connection.
         """
 
-        print("Connected to {0}".format(host))
+        print("connected to {0}".format(host))
 
-    def error(self, *args):
-        """Error Event Handler
+    def error(self, *args, **kwargs):
+        """error Event Handler
 
         If any exception/error occurs in the system this event is triggered.
         """
@@ -95,7 +97,7 @@ class Telnet(Component):
             print("ERROR: {0}".format(args[0]))
 
     def read(self, data):
-        """Read Event Handler
+        """read Event Handler
 
         This event is fired by the underlying TCPClient Component when there
         is data to be read from the connection.
@@ -104,22 +106,24 @@ class Telnet(Component):
         print(data.strip())
 
     # Setup an Event Handler for "read" events on the "stdin" channel.
-    @handler("read", "stdin")
+    @handler("read", channel="stdin")
     def _on_stdin_read(self, data):
-        """Read Event Handler for stdin
+        """read Event Handler for stdin
 
         This event is triggered by the connected ``stdin`` component when
         there is new data to be read in from standard input.
         """
 
-        self.fire(Write(data))
+        self.fire(write(data))
 
 
 def main():
     opts, args = parse_options()
 
     # Configure and "run" the System.
-    (Telnet(*args) + stdin).run()
+    app = Telnet(*args)
+    stdin.register(app)
+    app.run()
 
 
 if __name__ == "__main__":

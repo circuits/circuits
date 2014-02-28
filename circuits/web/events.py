@@ -1,7 +1,6 @@
 # Module:   events
 # Date:     3rd February 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-from circuits.core.events import LiteralEvent
 
 """Events
 
@@ -11,38 +10,34 @@ This module implements the necessary Events needed.
 from circuits import Event
 
 
-class WebEvent(Event):
+class request(Event):
+    """request(Event) -> request Event
+
+    args: request, response
     """
-    WebEvents have both their ``success`` and ``failure`` attributes set to
-    True. So event processing generates the derived events
-    ``...Success`` or ``...Failure`` events.
-    """
+
     success = True
     failure = True
+    complete = True
 
 
-class Request(WebEvent):
-    """Request(WebEvent) -> Request WebEvent
-
-    args: request, response
-    """
-    @classmethod
-    def create(cls, name, *args, **kwargs):
-        """
-        All classes derived dynamically from Request are LiteralEvents.
-        """
-        return LiteralEvent.create(cls, name, *args, **kwargs)
-
-
-class Response(WebEvent):
-    """Response(WebEvent) -> Response WebEvent
+class response(Event):
+    """response(Event) -> response Event
 
     args: request, response
     """
 
+    success = True
+    failure = True
+    complete = True
 
-class Stream(WebEvent):
-    """Stream(WebEvent) -> Stream WebEvent
+
+class stream(Event):
+    """stream(Event) -> stream Event
 
     args: request, response
     """
+
+    success = True
+    failure = True
+    complete = True

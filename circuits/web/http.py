@@ -9,23 +9,29 @@ or commonly known as HTTP.
 """
 
 
-try:
-    from urllib.parse import unquote
-    from urllib.parse import urlparse
-except ImportError:
-    from urllib import unquote  # NOQA
-    from urlparse import urlparse  # NOQA
+from io import BytesIO
 
-from circuits.net.sockets import Close, Write
+try:
+    from urllib.parse import quote
+    from urllib.parse import urlparse, urlunparse
+except ImportError:
+    from urllib import quote  # NOQA
+    from urlparse import urlparse, urlunparse  # NOQA
+
+
+from circuits.six import text_type
+from circuits.net.events import close, write
 from circuits.core import handler, BaseComponent, Value
 
 from . import wrappers
-from .utils import quoted_slash
+from .url import parse_url
+from .utils import is_ssl_handshake
 from .exceptions import HTTPException
-from .headers import parse_headers, Headers
-from .events import Request, Response, Stream
-from .errors import HTTPError, NotFound, Redirect
+from .events import request, response, stream
+from .parsers import HttpParser, BAD_FIRST_LINE
+from .errors import httperror, notfound, redirect
 from .exceptions import Redirect as RedirectException
+from .constants import SERVER_VERSION, SERVER_PROTOCOL
 
 MAX_HEADER_FRAGENTS = 20
 HTTP_ENCODING = 'utf-8'
@@ -56,40 +62,81 @@ class HTTP(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, encoding="utf-8", channel=channel):
+    def __init__(self, server, encoding=HTTP_ENCODING, channel=channel):
         super(HTTP, self).__init__(channel=channel)
 
+        self._server = server
         self._encoding = encoding
+
+        url = "{0:s}://{1:s}{2:s}".format(
+            (server.secure and "https") or "http",
+            server.host or "0.0.0.0",
+            ":{0:d}".format(server.port or 80)
+            if server.port not in (80, 443)
+            else ""
+        )
+        self.uri = parse_url(url)
 
         self._clients = {}
         self._buffers = {}
 
+    @property
+    def version(self):
+        return SERVER_VERSION
+
+    @property
+    def protocol(self):
+        return SERVER_PROTOCOL
+
+    @property
+    def scheme(self):
+        if not hasattr(self, "_server"):
+            return
+        return "https" if self._server.secure else "http"
+
+    @property
+    def base(self):
+        if not hasattr(self, "uri"):
+            return
+        return self.uri.utf8().rstrip(b"/").decode(self._encoding)
+
     @handler("stream")
-    def _on_stream(self, response, data):
+    def _on_stream(self, res, data):
         if data is not None:
-            if data:
-                if response.chunked:
-                    data = "{0:s}\r\n{1:s}\r\n".format(
-                        hex(len(data))[2:], data
-                    ).encode(self._encoding)
-                self.fire(Write(response.request.sock, data))
-            if response.body and not response.done:
+            if isinstance(data, text_type):
+                data = data.encode(self._encoding)
+
+            if res.chunked:
+                buf = [
+                    hex(len(data))[2:].encode(self._encoding),
+                    b"\r\n",
+                    data,
+                    b"\r\n"
+                ]
+                data = b"".join(buf)
+
+            self.fire(write(res.request.sock, data))
+
+            if res.body and not res.done:
                 try:
-                    data = next(response.body)
+                    data = next(res.body)
+                    while not data:  # Skip over any null byte sequences
+                        data = next(res.body)
                 except StopIteration:
                     data = None
-                self.fire(Stream(response, data))
+                self.fire(stream(res, data))
         else:
-            if response.body:
-                response.body.close()
-            if response.chunked:
-                self.fire(Write(response.request.sock, b"0\r\n\r\n"))
-            if response.close:
-                self.fire(Close(response.request.sock))
-            response.done = True
+            if res.body:
+                res.body.close()
+            if res.chunked:
+                self.fire(write(res.request.sock, b"0\r\n\r\n"))
+            if res.close:
+                self.fire(close(res.request.sock))
+            del self._clients[res.request.sock]
+            res.done = True
 
     @handler("response")
-    def _on_response(self, response):
+    def _on_response(self, res):
         """``Response`` Event Handler
 
         :param response: the ``Response`` object created when the
@@ -98,44 +145,61 @@ class HTTP(BaseComponent):
 
         This handler builds an HTTP response data stream from
         the information contained in the *response* object and
-        sends it to the client (firing ``Write`` events).
+        sends it to the client (firing ``write`` events).
         """
-        self.fire(
-            Write(response.request.sock, str(response).encode(HTTP_ENCODING))
-        )
+        # send HTTP response status line and headers
 
-        if response.stream and response.body:
+        req = res.request
+        headers = res.headers
+        sock = req.sock
+
+        # process body
+        if res.stream and res.body:
             try:
-                data = next(response.body)
+                data = next(res.body)
             except StopIteration:
                 data = None
-            self.fire(Stream(response, data))
+            self.fire(write(sock, bytes(res)))
+            self.fire(write(sock, bytes(headers)))
+            self.fire(stream(res, data))
         else:
-            if isinstance(response.body, bytes):
-                body = response.body
-            elif isinstance(response.body, unicode):
-                body = response.body.encode(self._encoding)
+            self.fire(write(sock, bytes(res)))
+            self.fire(write(sock, bytes(headers)))
+
+            if isinstance(res.body, bytes):
+                body = res.body
+            elif isinstance(res.body, text_type):
+                body = res.body.encode(self._encoding)
             else:
                 parts = (
                     s
                     if isinstance(s, bytes) else s.encode(self._encoding)
-                    for s in response.body if s is not None
+                    for s in res.body if s is not None
                 )
                 body = b"".join(parts)
 
             if body:
-                if response.chunked:
-                    buf = [hex(len(body))[2:].encode(), b"\r\n", body, b"\r\n"]
+                if res.chunked:
+                    buf = [
+                        hex(len(body))[2:].encode(self._encoding),
+                        b"\r\n",
+                        body,
+                        b"\r\n"
+                    ]
                     body = b"".join(buf)
-                self.fire(Write(response.request.sock, body))
 
-                if response.chunked:
-                    self.fire(Write(response.request.sock, b"0\r\n\r\n"))
+                self.fire(write(sock, body))
 
-            if not response.stream:
-                if response.close:
-                    self.fire(Close(response.request.sock))
-                response.done = True
+                if res.chunked:
+                    self.fire(write(sock, b"0\r\n\r\n"))
+
+            if not res.stream:
+                if res.close:
+                    self.fire(close(sock))
+                # Delete the request/response objects if present
+                if sock in self._clients:
+                    del self._clients[sock]
+                res.done = True
 
     @handler("disconnect")
     def _on_disconnect(self, sock):
@@ -151,134 +215,101 @@ class HTTP(BaseComponent):
         Raw Event per line. Any unfinished lines of text, leave in the buffer.
         """
 
-        if sock in self._clients:
-            request, response = self._clients[sock]
-            if response.done:
-                del self._clients[sock]
-
-        if sock in self._clients:
-            request, response = self._clients[sock]
-            request.body.write(data)
-            contentLength = int(request.headers.get("Content-Length", "0"))
-            if not request.body.tell() == contentLength:
-                return
+        if sock in self._buffers:
+            parser = self._buffers[sock]
         else:
-            if sock in self._buffers:
-                # header fragments have been received before
-                self._buffers[sock].append(data)
-                data = b"".join(self._buffers[sock])
-                if data.find(b'\r\n\r\n') == -1:
-                    # still not all headers received
-                    return
-                # all headers received, use combined data and remove buffer
-                del self._buffers[sock]
-            else:
-                # no pending header fragments for this socket
-                if data.find(b'\r\n\r\n') == -1:
-                    # this first chunk doesn't contain all headers yet, buffer
-                    buf = self._buffers.setdefault(sock, [])
-                    buf.append(data)
-                    if len(buf) > MAX_HEADER_FRAGENTS:
-                        del self._buffers[sock]
-                        raise ValueError("Too many HTTP Headers Fragments.")
-                    return
+            self._buffers[sock] = parser = HttpParser(0, True, self._encoding)
 
-            requestline, data = data.split(b"\r\n", 1)
-            requestline = requestline.strip().decode(
-                HTTP_ENCODING, "replace"
-            )
-            method, path, protocol = requestline.split(" ", 2)
-            scheme, location, path, params, qs, frag = urlparse(path)
+            # If we receive an SSL handshake at the start of a request
+            # and we're not a secure server, then immediately close the
+            # client connection since we can't respond to it anyway.
 
-            protocol = tuple(map(int, protocol[5:].split(".")))
-            request = wrappers.Request(
-                sock, method, scheme, path, protocol, qs
-            )
-            response = wrappers.Response(request, encoding=self._encoding)
-            self._clients[sock] = request, response
+            if is_ssl_handshake(data) and not self._server.secure:
+                if sock in self._buffers:
+                    del self._buffers[sock]
+                if sock in self._clients:
+                    del self._clients[sock]
+                return self.fire(close(sock))
 
-            if frag:
-                return self.fire(HTTPError(request, response, 400))
-
-            if params:
-                path = "%s;%s" % (path, params)
-
-            # Unquote the path+params (e.g. "/this%20path" -> "this path").
-            # http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
-            #
-            # But note that "...a URI must be separated into its components
-            # before the escaped characters within those components can be
-            # safely decoded." http://www.ietf.org/rfc/rfc2396.txt, sec 2.4.2
-            path = "%2F".join(map(unquote, quoted_slash.split(path)))
-
-            # Compare request and server HTTP protocol versions, in case our
-            # server does not support the requested protocol. Limit our output
-            # to min(req, server). We want the following output:
-            #    request    server   actual written supported response
-            #    protocol protocol response protocol    feature set
-            # a  1.0        1.0         1.0             1.0
-            # b  1.0        1.1         1.1             1.0
-            # c  1.1        1.0         1.0             1.0
-            # d  1.1        1.1         1.1             1.1
-            # Notice that, in (b), the response will be "HTTP/1.1" even though
-            # the client only understands 1.0. RFC 2616 10.5.6 says we should
-            # only return 505 if the _major_ version is different.
-            if not request.protocol[0] == request.server_protocol[0]:
-                return self.fire(HTTPError(request, response, 505))
-
-            rp = request.protocol
-            sp = request.server_protocol
-            response.protocol = "HTTP/%s.%s" % min(rp, sp)
-
-            end_of_headers = data.find(b"\r\n\r\n")
-            if end_of_headers > -1:
-                header_data = data[:end_of_headers].decode(
-                    HTTP_ENCODING, "replace"
-                )
-                headers = request.headers = parse_headers(header_data)
-            else:
-                headers = request.headers = Headers([])
-
-            request.body.write(data[(end_of_headers + 4):])
-
-            if headers.get("Expect", "") == "100-continue":
-                return self.fire(
-                    Response(
-                        wrappers.Response(
-                            request, code=100, encoding=self._encoding
-                        )
+        _scheme = "https" if self._server.secure else "http"
+        parser.execute(data, len(data))
+        if not parser.is_headers_complete():
+            if parser.errno is not None:
+                if parser.errno == BAD_FIRST_LINE:
+                    req = wrappers.Request(sock, server=self._server)
+                else:
+                    req = wrappers.Request(
+                        sock,
+                        parser.get_method(),
+                        parser.get_scheme() or _scheme,
+                        parser.get_path(),
+                        parser.get_version(),
+                        parser.get_query_string(),
+                        server=self._server
                     )
-                )
+                req.server = self._server
+                res = wrappers.Response(req, encoding=self._encoding)
+                del self._buffers[sock]
+                return self.fire(httperror(req, res, 400))
+            return
 
-            contentLength = int(headers.get("Content-Length", "0"))
-            if request.body.tell() < contentLength:
-                return
-
-        # Persistent connection support
-        if request.protocol == (1, 1):
-            # Both server and client are HTTP/1.1
-            if request.headers.get("Connection", "").lower() == "close":
-                response.close = True
+        if sock in self._clients:
+            req, res = self._clients[sock]
         else:
-            # Either the server or client (or both) are HTTP/1.0
-            if request.headers.get("Connection", "").lower() != "keep-alive":
-                response.close = True
+            method = parser.get_method()
+            scheme = parser.get_scheme() or _scheme
+            path = parser.get_path()
+            version = parser.get_version()
+            query_string = parser.get_query_string()
 
-        request.body.seek(0)
+            req = wrappers.Request(
+                sock, method, scheme, path, version, query_string,
+                headers=parser.get_headers(), server=self._server
+            )
+
+            res = wrappers.Response(req, encoding=self._encoding)
+
+            self._clients[sock] = (req, res)
+
+            rp = req.protocol
+            sp = self.protocol
+
+            if rp[0] != sp[0]:
+                # the major HTTP version differs
+                return self.fire(httperror(req, res, 505))
+
+            res.protocol = "HTTP/{0:d}.{1:d}".format(*min(rp, sp))
+            res.close = not parser.should_keep_alive()
+
+        clen = int(req.headers.get("Content-Length", "0"))
+        if clen and not parser.is_message_complete():
+            return
 
         if hasattr(sock, "getpeercert"):
             peer_cert = sock.getpeercert()
             if peer_cert:
-                req = Request(request, response, peer_cert)
+                e = request(req, res, peer_cert)
             else:
-                req = Request(request, response)
+                e = request(req, res)
         else:
-            req = Request(request, response)
+            e = request(req, res)
 
-        self.fire(req)
+        # Guard against unwanted request paths (SECURITY).
+        path = req.path
+        _path = req.uri._path
+        if (path.encode(self._encoding) != _path) and (
+                quote(path).encode(self._encoding) != _path):
+            return self.fire(
+                redirect(req, res, [req.uri.utf8()], 301)
+            )
+
+        req.body = BytesIO(parser.recv_body())
+        del self._buffers[sock]
+
+        self.fire(e)
 
     @handler("httperror")
-    def _on_httperror(self, event, request, response, code, **kwargs):
+    def _on_httperror(self, event, req, res, code, **kwargs):
         """Default HTTP Error Handler
 
         Default Error Handler that by default just fires a ``Response``
@@ -286,8 +317,9 @@ class HTTP(BaseComponent):
         modified by a :class:`~circuits.web.errors.HTTPError` instance
         or a subclass thereof.
         """
-        response.body = str(event)
-        self.fire(Response(response))
+
+        res.body = str(event)
+        self.fire(response(res))
 
     @handler("request_success")
     def _on_request_success(self, e, value):
@@ -318,115 +350,149 @@ class HTTP(BaseComponent):
         if isinstance(value, Value) and not value.promise:
             value = value.getValue(recursive=False)
 
-        request, response = e.args[:2]
+        req, res = e.args[:2]
 
         if value is None:
-            self.fire(NotFound(request, response))
-        elif isinstance(value, HTTPError):
-            response.body = str(value)
-            self.fire(Response(response))
+            self.fire(notfound(req, res))
+        elif isinstance(value, httperror):
+            res.body = str(value)
+            self.fire(response(res))
         elif isinstance(value, wrappers.Response):
-            self.fire(Response(value))
+            self.fire(response(value))
         elif isinstance(value, Value):
             if value.result and not value.errors:
-                response.body = value.value
-                self.fire(Response(response))
+                res.body = value.value
+                self.fire(response(res))
             elif value.errors:
                 error = value.value
                 etype, evalue, traceback = error
                 if isinstance(evalue, RedirectException):
                     self.fire(
-                        Redirect(request, response, evalue.urls, evalue.status)
+                        redirect(req, res, evalue.urls, evalue.code)
                     )
                 elif isinstance(evalue, HTTPException):
                     if evalue.traceback:
                         self.fire(
-                            HTTPError(
-                                request, response, evalue.code,
+                            httperror(
+                                req, res, evalue.code,
                                 description=evalue.description,
                                 error=error
                             )
                         )
                     else:
                         self.fire(
-                            HTTPError(
-                                request, response, evalue.code,
+                            httperror(
+                                req, res, evalue.code,
                                 description=evalue.description
                             )
                         )
                 else:
-                    self.fire(HTTPError(request, response, error=error))
+                    self.fire(httperror(req, res, error=error))
             else:
                 # We want to be notified of changes to the value
                 value = e.value.getValue(recursive=False)
                 value.event = e
                 value.notify = True
-        elif type(value) is tuple:
+        elif isinstance(value, tuple):
             etype, evalue, traceback = error = value
 
             if isinstance(evalue, RedirectException):
                 self.fire(
-                    Redirect(request, response, evalue.urls, evalue.status)
+                    redirect(req, res, evalue.urls, evalue.code)
                 )
             elif isinstance(evalue, HTTPException):
                 if evalue.traceback:
                     self.fire(
-                        HTTPError(
-                            request, response, evalue.code,
+                        httperror(
+                            req, res, evalue.code,
                             description=evalue.description,
                             error=error
                         )
                     )
                 else:
                     self.fire(
-                        HTTPError(
-                            request, response, evalue.code,
+                        httperror(
+                            req, res, evalue.code,
                             description=evalue.description
                         )
                     )
             else:
-                self.fire(HTTPError(request, response, error=error))
-        elif type(value) is not bool:
-            response.body = value
-            self.fire(Response(response))
+                self.fire(httperror(req, res, error=error))
+        elif not isinstance(value, bool):
+            res.body = value
+            self.fire(response(res))
 
-    @handler("request_failure", "response_failure")
-    def _on_request_or_response_failure(self, evt, err):
-        if len(evt.args) == 1:
-            response = evt.args[0]
-            request = response.request
+    @handler("error")
+    def _on_error(self, etype, evalue, etraceback, handler=None, fevent=None):
+        if isinstance(fevent, response):
+            res = fevent.args[0]
+            sock = res.request.sock
         else:
-            request, response = evt.args[:2]
+            sock = fevent.args[0]
 
-        # Ignore filtered requests already handled (eg: HTTPException(s)).
-        # Ignore failed "response" handlers (eg: Loggers or Tools)
-        if request.handled or response.done:
+        try:
+            req = wrappers.Request(sock, "", "", "", (1, 1), "")
+        except:
+            # If we can't work with the socket, do nothing.
             return
 
-        if not request.handled:
-            request.handled = True
+        req.server = self._server
 
-        etype, evalue, traceback = err
+        res = wrappers.Response(req, encoding=self._encoding)
+
+        self.fire(
+            httperror(
+                req, res, error=(etype, evalue, etraceback)
+            )
+        )
+
+    @handler("request_failure")
+    def _on_request_failure(self, erequest, error):
+        req, res = erequest.args
+
+        # Ignore filtered requests already handled (eg: HTTPException(s)).
+        if req.handled:
+            return
+
+        req.handled = True
+
+        etype, evalue, traceback = error
 
         if isinstance(evalue, RedirectException):
             self.fire(
-                Redirect(request, response, evalue.urls, evalue.status)
+                redirect(req, res, evalue.urls, evalue.code)
             )
         elif isinstance(evalue, HTTPException):
-            if evalue.traceback:
-                self.fire(
-                    HTTPError(
-                        request, response, evalue.code,
-                        description=evalue.description,
-                        error=err
-                    )
+            self.fire(
+                httperror(
+                    req, res, evalue.code,
+                    description=evalue.description,
+                    error=error
                 )
-            else:
-                self.fire(
-                    HTTPError(
-                        request, response, evalue.code,
-                        description=evalue.description
-                    )
-                )
+            )
         else:
-            self.fire(HTTPError(request, response, error=err))
+            self.fire(httperror(req, res, error=error))
+
+    @handler("response_failure")
+    def _on_response_failure(self, eresponse, error):
+        res = eresponse.args[0]
+        req = res.request
+
+        # Ignore failed "response" handlers (eg: Loggers or Tools)
+        if res.done:
+            return
+
+        res = wrappers.Response(req, self._encoding, 500)
+        self.fire(httperror(req, res, error=error))
+
+    @handler("request_complete")
+    def _on_request_complete(self, *args, **kwargs):
+        """Dummy Event Handler for request_complete"""
+
+    @handler("response_success", "response_complete")
+    def _on_response_feedback(self, *args, **kwargs):
+        """Dummy Event Handler for response_success and response_complete"""
+
+    @handler("stream_success", "stream_failure", "stream_complete")
+    def _on_stream_feedback(self, *args, **kwargs):
+        """Dummy Event Handler for stream_success, stream_failure and stream_complete"""

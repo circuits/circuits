@@ -16,20 +16,18 @@ import errno
 from circuits.core import handler, BaseComponent, Event
 
 
-class Daemonize(Event):
-    """Daemonize Event
+class daemonize(Event):
+    """daemonize Event
 
     This event can be fired to notify the `Daemon` Component to begin the
     "daemonization" process. This event is (*by default*) used
     automatically by the `Daemon` Component in its "started" Event
     Handler (*This behavior can be overridden*).
-
-    Arguments: *None*
     """
 
 
-class WritePID(Event):
-    """"WritePID Event
+class write_pid(Event):
+    """"write_pid Event
 
     This event can be fired to notify the `Daemon` Component that is should
     retrive the current process's id (pid) and write it out to the
@@ -82,7 +80,7 @@ class Daemon(BaseComponent):
                 setattr(self, stdio_attrs[i], "/dev/null")
 
     @handler("write_pid")
-    def _on_writepid(self):
+    def _on_write_pid(self):
         f = open(self._pidfile, "w")
         f.write(str(os.getpid()))
         f.close()
@@ -124,14 +122,14 @@ class Daemon(BaseComponent):
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
-        self.fire(WritePID())
+        self.fire(write_pid())
 
-    @handler("started", filter=True, priority=100.0, channel="*")
+    @handler("started", priority=100.0, channel="*")
     def _on_started(self, component):
         if component is not self:
-            self.fire(Daemonize())
+            self.fire(daemonize())
 
     @handler("registered")
     def _on_registered(self, component, manager):
         if component == self and manager.root.running:
-            self.fire(Daemonize())
+            self.fire(daemonize())

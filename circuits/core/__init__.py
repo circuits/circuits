@@ -8,24 +8,24 @@ This package contains the essential core parts of the circuits framework.
 """
 
 
+from .events import Event
 from .bridge import Bridge
 from .loader import Loader
-from .manager import Manager
+from .manager import Manager, TimeoutError
 from .handlers import handler, reprhandler
 from .components import BaseComponent, Component
-from .events import BaseEvent, DerivedEvent, Event, LiteralEvent
 
 from .values import Value
 
 from .timers import Timer
 
-from .workers import Task, Worker
+from .workers import task, Worker
 
 from .debugger import Debugger
 
 __all__ = (
-    "handler", "BaseComponent", "Component", "Event", "Map", "Pool", "Task",
-    "Worker", "Bridge", "Debugger", "Timer", "Manager",
+    "handler", "BaseComponent", "Component", "Event", "task",
+    "Worker", "Bridge", "Debugger", "Timer", "Manager", "TimeoutError",
 )
 
 # flake8: noqa

@@ -5,8 +5,8 @@ import pytest
 from circuits import handler, Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class Base(Component):
@@ -33,7 +33,7 @@ def test_inheritence():
     app = App1()
     app.start()
 
-    x = app.fire(Test())
+    x = app.fire(test())
     assert pytest.wait_for(x, "result")
     v = x.value
     assert v == ["Hello World!", "Foobar"]
@@ -45,7 +45,7 @@ def test_override():
     app = App2()
     app.start()
 
-    x = app.fire(Test())
+    x = app.fire(test())
     assert pytest.wait_for(x, "result")
     v = x.value
     assert v == "Foobar"

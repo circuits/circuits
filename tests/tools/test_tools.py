@@ -58,11 +58,11 @@ INSPECT = """\
 
  Event Handlers: 3
   unregister; 1
-   <listener[*.unregister] (A._on_unregister)>
+   <handler[*.unregister] (A._on_unregister)>
   foo; 1
-   <listener[*.foo] (A.foo)>
+   <handler[*.foo] (A.foo)>
   prepare_unregister_complete; 1
-   <listener[<instance of A>.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
+   <handler[<instance of A>.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
 """
 
 
@@ -151,7 +151,7 @@ def test_findroot():
 def test_reprhandler():
     a = A()
     s = reprhandler(a.foo)
-    assert s == "<listener[*.foo] (A.foo)>"
+    assert s == "<handler[*.foo] (A.foo)>"
 
     f = lambda: None
     pytest.raises(AttributeError, reprhandler, f)

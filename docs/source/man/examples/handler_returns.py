@@ -19,7 +19,7 @@ class Pound(Component):
     def started(self, *args):
         self.fire(Identify())
         
-    def identify_success(self, evt, result):
+    def Identify_success(self, evt, result):
         if not isinstance(result, list):
             result = [result]
         print "In pound:"
@@ -28,7 +28,7 @@ class Pound(Component):
 
 class Dog(Component):
 
-    def identify(self):
+    def Identify(self):
         return self.__class__.__name__
 
 class Bob(Dog):

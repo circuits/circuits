@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
 import pytest
+
 import socket
+import select
 
 from circuits import Manager
-from circuits.core.pollers import Select
-from circuits.core.events import Unregister
-from circuits.net.sockets import Close, Write
+from circuits.core.events import unregister
+from circuits.net.events import close, write
+from circuits.core.pollers import Select, Poll, EPoll, KQueue
 from circuits.net.sockets import UDPServer, UDPClient, UDP6Server, UDP6Client
 
 from .client import Client
@@ -22,26 +24,14 @@ def wait_host(server):
 def _pytest_generate_tests(metafunc, ipv6):
     metafunc.addcall(funcargs={"Poller": Select, "ipv6": ipv6})
 
-    try:
-        from circuits.core.pollers import Poll
-        Poll()
+    if hasattr(select, "poll"):
         metafunc.addcall(funcargs={"Poller": Poll, "ipv6": ipv6})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import EPoll
-        EPoll()
+    if hasattr(select, "epoll"):
         metafunc.addcall(funcargs={"Poller": EPoll, "ipv6": ipv6})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import KQueue
-        KQueue()
+    if hasattr(select, "kqueue"):
         metafunc.addcall(funcargs={"Poller": KQueue, "ipv6": ipv6})
-    except AttributeError:
-        pass
 
 
 def pytest_generate_tests(metafunc):
@@ -72,13 +62,13 @@ def test_basic(Poller, ipv6):
         assert pytest.wait_for(client, "ready")
         wait_host(server)
 
-        client.fire(Write((server.host, server.port), b"foo"))
+        client.fire(write((server.host, server.port), b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "closed")
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()
@@ -96,10 +86,10 @@ def test_close(Poller, ipv6):
 
         host, port = server.host, server.port
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Unregister(server))
+        server.fire(unregister(server))
 
         def test(obj, attr):
             return attr not in obj.components

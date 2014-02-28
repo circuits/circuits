@@ -22,9 +22,11 @@ First, let's check the installed version:
    
    >>> import circuits
    >>> print circuits.__version__
-   2.1.0
-   
-Try some of the examples in the examples/ directory shipped with the
-distribution or check out some :doc:`Applications using circuits <../users>`
+
+This should output:
+
+.. program-output: python -c "import circuits; print circuits.__version__"
+
+Try some of the examples in the examples/ directory shipped with the distribution.
 
 Have fun :)

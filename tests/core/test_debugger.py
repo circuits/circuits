@@ -17,8 +17,8 @@ from circuits import Debugger
 from circuits.core import Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -40,7 +40,7 @@ class Logger(object):
     error = debug
 
 
-def test():
+def test_main():
     app = App()
     stderr = StringIO()
     debugger = Debugger(file=stderr)
@@ -164,7 +164,7 @@ def test_exceptions():
     assert debugger.events
     assert debugger.errors
 
-    e = Test(raiseException=True)
+    e = test(raiseException=True)
     app.fire(e)
     app.flush()
 
@@ -177,7 +177,7 @@ def test_exceptions():
     app.flush()
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<Error[*.error]")
+    assert s.startswith("<error[*]")
     stderr.seek(0)
     stderr.truncate()
 
@@ -187,7 +187,7 @@ def test_exceptions():
     assert not debugger.events
     assert not debugger.errors
 
-    e = Test(raiseException=True)
+    e = test(raiseException=True)
     app.fire(e)
     app.flush()
 
@@ -227,7 +227,7 @@ def test_IgnoreEvents():
     stderr.seek(0)
     stderr.truncate()
 
-    e = Test()
+    e = test()
     app.fire(e)
     app.flush()
 
@@ -261,7 +261,7 @@ def test_IgnoreChannels():
     stderr.seek(0)
     stderr.truncate()
 
-    e = Test()
+    e = test()
     app.fire(e)
     app.flush()
 
@@ -295,8 +295,8 @@ def test_Logger_error():
     while app:
         app.flush()
 
-    e = Test(raiseException=True)
+    e = test(raiseException=True)
     app.fire(e)
     app.flush()
     app.flush()
-    assert logger.msg.startswith("ERROR <listener[*.test] (App.test)> (")
+    assert logger.msg.startswith("ERROR <handler[*.test] (App.test)> (")

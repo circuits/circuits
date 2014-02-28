@@ -11,12 +11,26 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys
+from os import path
+from imp import new_module
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../..'))
+# documentation root, use path.abspath to make it absolute, like shown here.
+sys.path.insert(0, path.abspath('../..'))
+
+version_module = new_module("version")
+exec(
+    compile(
+        open(
+            path.abspath(path.join(path.dirname(__file__), "../../circuits/version.py")),
+            "r"
+        ).read(),
+        "../../circuits/version.py", "exec"
+    ),
+    version_module.__dict__
+)
 
 # -- General configuration -----------------------------------------------------
 
@@ -24,7 +38,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = []
 
-bitbucket_project_url = 'https://bitbucket.org/prologic/circuits'
+bitbucket_project_url = 'https://bitbucket.org/circuits/circuits'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,24 +54,21 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'circuits'
-copyright = u'2004-2012, James Mills'
-url = "http://bitbucket.org/prologic/circuits/"
+copyright = u'2004-2013, James Mills'
+url = "http://circuitsframework.com/"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '2.1.0'
+version = ".".join(map(str, version_module.version_info[:2]))
 # The full version, including alpha/beta/rc tags.
-release = '2.1.0'
+release = version_module.version
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = False
-
-if devel:
-    release += "dev"
+devel = version_module.version_info[-1] == "dev"
 
 # -- Autodoc
 
@@ -125,7 +136,7 @@ exclude_trees = []
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'trac'
+pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -135,7 +146,9 @@ pygments_style = 'trac'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'om'
+html_theme = 'default'
+html_style = 'rtd.css'
+html_context = {}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -154,7 +167,7 @@ html_theme_path = ["_themes"]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/logo.png"
+#html_logo = "_static/logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -216,8 +229,10 @@ htmlhelp_basename = 'circuitsdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'circuits.tex', u'circuits Documentation',
-   u'James Mills', 'manual'),
+    (
+        'index', 'circuits.tex', u'circuits Documentation',
+        u'James Mills', 'manual'
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -237,8 +252,7 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_use_modindex = True
 
+
 def setup(app):
     # ifconfig variables
-    app.add_config_value('devel', '', True)
-
-# flake8: noqa
+    app.add_config_value('devel', '', devel)

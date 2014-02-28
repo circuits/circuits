@@ -17,7 +17,8 @@ if PY3:
     class_types = type,
     text_type = str
     binary_type = bytes
-
+    byteindex = lambda x, i: x[i]
+    iterbytes = lambda x: iter(x)
     MAXSIZE = sys.maxsize
 else:
     string_types = basestring,
@@ -43,6 +44,12 @@ else:
             # 64-bit
             MAXSIZE = int((1 << 63) - 1)
             del X
+
+    def byteindex(data, index):
+        return ord(data[index])
+
+    def iterbytes(data):
+        return (ord (char) for char in data)
 
 
 def _add_doc(func, doc):
@@ -260,10 +267,12 @@ def iteritems(d):
 
 
 if PY3:
-    def b(s):
-        return s.encode("latin-1")
-    def u(s):
+    def b(s, encoding='utf-8'):
+        return s.encode(encoding)
+    def u(s, encoding='utf-8'):
         return s
+    def bytes_to_str(b):
+        return str(b, "unicode_escape")
     if sys.version_info[1] <= 1:
         def int2byte(i):
             return bytes((i,))
@@ -274,10 +283,12 @@ if PY3:
     StringIO = io.StringIO
     BytesIO = io.BytesIO
 else:
-    def b(s):
+    def b(s, encoding='utf-8'):
         return s
-    def u(s):
-        return unicode(s, "unicode_escape")
+    def u(s, encoding='utf-8'):
+        return unicode(s, encoding)
+    def bytes_to_str(s):
+        return s
     int2byte = chr
     import StringIO
     StringIO = BytesIO = StringIO.StringIO

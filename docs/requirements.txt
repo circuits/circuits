@@ -1,0 +1,5 @@
+Sphinx
+Sphinx-PyPI-upload
+sphinxcontrib-bitbucket
+sphinxcontrib-programoutput
+sphinxcontrib-googleanalytics

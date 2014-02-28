@@ -9,7 +9,7 @@ class Root(BaseComponent):
 
     channel = "web"
 
-    @handler("request", filter=True, priority=0.2)
+    @handler("request", priority=0.2)
     def request(self, request, response):
         raise Exception()
 
@@ -17,7 +17,7 @@ class Root(BaseComponent):
 def test(webapp):
     try:
         Root().register(webapp)
-        urlopen(webapp.server.base)
+        urlopen(webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 500
     else:

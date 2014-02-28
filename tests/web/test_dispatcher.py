@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-import pytest
-
 from circuits.web import Controller
-from circuits.web.client import Client, Connect, Request
+from circuits.web.client import Client, request
 
 
 class Root(Controller):
@@ -29,15 +27,11 @@ class Leaf(Controller):
         return "Hello City!"
 
 
-def request(webapp, path):
-    client = Client(webapp.server.base)
+def make_request(webapp, path):
+    client = Client()
     client.start()
 
-    waiter = pytest.WaitEvent(client, 'connected', channel='client')
-    client.fire(Connect())
-    assert waiter.wait()
-
-    client.fire(Request("GET", path))
+    client.fire(request("GET", path))
     while client.response is None:
         pass
 
@@ -49,28 +43,28 @@ def request(webapp, path):
 
 
 def test_root(webapp):
-    status, content = request(webapp, "/")
+    status, content = make_request(webapp, webapp.server.http.base)
 
     assert status == 200
     assert content == b"Hello World!"
 
 
 def test_root_name(webapp):
-    status, content = request(webapp, "/name")
+    status, content = make_request(webapp, "%s/name" % webapp.server.http.base)
 
     assert status == 200
     assert content == b"Earth"
 
 
 def test_leaf(webapp):
-    status, content = request(webapp, "/world/country/region")
+    status, content = make_request(webapp, "%s/world/country/region" % webapp.server.http.base)
 
     assert status == 200
     assert content == b"Hello cities!"
 
 
 def test_city(webapp):
-    status, content = request(webapp, "/world/country/region/city")
+    status, content = make_request(webapp, "%s/world/country/region/city" % webapp.server.http.base)
 
     assert status == 200
     assert content == b"Hello City!"

@@ -64,14 +64,6 @@ def test_safeimport(tmpdir):
     assert foo not in sys.modules
 
 
-def test_uncamel():
-    from circuits.core.utils import uncamel
-
-    s = "FooBar"
-    x = uncamel(s)
-    assert x == "foo_bar"
-
-
 def test_findroot():
     app = App()
     a = A()

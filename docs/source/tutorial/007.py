@@ -3,8 +3,8 @@
 from circuits import Component, Event
 
 
-class Woof(Event):
-    """Woof Event"""
+class woof(Event):
+    """woof Event"""
 
 
 class Pound(Component):
@@ -16,7 +16,7 @@ class Pound(Component):
         self.fred = Fred().register(self)
 
     def started(self, *args):
-        self.fire(Woof(), self.bob)
+        self.fire(woof(), self.bob)
 
 
 class Dog(Component):

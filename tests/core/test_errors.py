@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import py
+import pytest
 
 from circuits import Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -18,31 +18,43 @@ class App(Component):
         self.evalue = None
         self.etraceback = None
         self.handler = None
+        self.fevent = None
 
     def test(self):
         return x  # NOQA
 
-    def error(self, etype, evalue, etraceback, handler=None):
+    def error(self, etype, evalue, etraceback, handler=None, fevent=None):
         self.etype = etype
         self.evalue = evalue
         self.etraceback = etraceback
         self.handler = handler
+        self.fevent = fevent
 
 
 def reraise(e):
     raise e
 
 
-def test():
-    app = App()
-    while app:
-        app.flush()
+@pytest.fixture
+def app(request, manager, watcher):
+    app = App().register(manager)
+    watcher.wait("registered")
 
-    app.fire(Test())
-    while app:
-        app.flush()
+    def finalizer():
+        app.unregister()
+
+    request.addfinalizer(finalizer)
+
+    return app
+
+
+def test_main(app, watcher):
+    e = test()
+    app.fire(e)
+    watcher.wait("error")
 
     assert app.etype == NameError
-    py.test.raises(NameError, lambda e: reraise(e), app.evalue)
+    pytest.raises(NameError, lambda e: reraise(e), app.evalue)
     assert isinstance(app.etraceback, list)
     assert app.handler == app.test
+    assert app.fevent == e

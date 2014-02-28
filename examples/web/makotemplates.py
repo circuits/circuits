@@ -36,4 +36,7 @@ class Root(Controller):
         msg = "Thank you %s %s" % (firstName, lastName)
         return render(self.tpl, message=msg)
 
-(Server(8000) + Static() + Root()).run()
+app = Server(("0.0.0.0", 8000))
+Static().register(app)
+Root().register(app)
+app.run()

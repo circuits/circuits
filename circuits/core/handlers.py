@@ -33,13 +33,6 @@ def handler(*names, **kwargs):
     for a specific event are invoked. The higher the priority, the earlier
     the handler is executed.
 
-    A handler may also be specified as a filter by adding
-    the keyword argument ``filter=True`` to the decorator.
-    If such a handler returns a value different from ``None``, no more
-    handlers are invoked for the handled event. Filtering handlers are
-    invoked before normal handlers with the same priority (but after any
-    handlers with higher priority).
-
     If you want to override a handler defined in a base class of your
     component, you must specify ``override=True``, else your method becomes
     an additional handler for the event.
@@ -74,7 +67,7 @@ def handler(*names, **kwargs):
     """
 
     def wrapper(f):
-        if names and type(names[0]) is bool and not names[0]:
+        if names and isinstance(names[0], bool) and not names[0]:
             f.handler = False
             return f
 
@@ -82,7 +75,6 @@ def handler(*names, **kwargs):
 
         f.names = names
         f.priority = kwargs.get("priority", 0)
-        f.filter = kwargs.get("filter", False)
         f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
 
@@ -102,14 +94,13 @@ class Unknown(object):
 
 
 def reprhandler(handler):
-    format = "<%s[%s.%s] (%s.%s)>"
+    format = "<handler[%s.%s] (%s.%s)>"
 
     channel = handler.channel if handler.channel is not None else "*"
     from circuits.core.manager import Manager
     if isinstance(channel, Manager):
         channel = "<instance of " + channel.__class__.__name__ + ">"
     names = ".".join(handler.names)
-    type = "filter" if handler.filter else "listener"
 
     instance = getattr(
         handler, "im_self", getattr(
@@ -119,7 +110,7 @@ def reprhandler(handler):
 
     method = handler.__name__
 
-    return format % (type, channel, names, instance, method)
+    return format % (channel, names, instance, method)
 
 
 class HandlerMetaClass(type):

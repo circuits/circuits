@@ -8,25 +8,32 @@ This module implements the Request and Response objects.
 """
 
 
-from io import BytesIO, IOBase
-from time import strftime, time
+from time import time
+from io import BytesIO
+from functools import partial
 
 try:
     from Cookie import SimpleCookie
 except ImportError:
     from http.cookies import SimpleCookie  # NOQA
 
-from .utils import url
+from .url import parse_url
 from .headers import Headers
 from ..six import binary_type
-from .errors import HTTPError
+from .errors import httperror
 from circuits.net.sockets import BUFSIZE
-from .constants import HTTP_STATUS_CODES, SERVER_PROTOCOL, SERVER_VERSION
+from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 
 try:
     unicode
 except NameError:
     unicode = str
+
+try:
+    from email.utils import formatdate
+    formatdate = partial(formatdate, usegmt=True)
+except ImportError:
+    from rfc822 import formatdate as HTTPDate  # NOQA
 
 
 def file_generator(input, chunkSize=BUFSIZE):
@@ -53,10 +60,53 @@ class Host(object):
         self.port = port
         if name is None:
             name = ip
-            self.name = name
+        self.name = name
 
     def __repr__(self):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
+
+
+class HTTPStatus(object):
+
+    __slots__ = ("_reason", "_status",)
+
+    def __init__(self, status=200, reason=None):
+        self._status = status
+        self._reason = reason or HTTP_STATUS_CODES.get(status, "")
+
+    def __int__(self):
+        return self._status
+
+    def __lt__(self, other):
+        if isinstance(other, int):
+            return self._status < other
+        return super(HTTPStatus, self).__lt__(other)
+
+    def __gt__(self, other):
+        if isinstance(other, int):
+            return self._status > other
+        return super(HTTPStatus, self).__gt__(other)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self._status == other
+        return super(HTTPStatus, self).__eq__(other)
+
+    def __str__(self):
+        return "{0:d} {1:s}".format(self._status, self._reason)
+
+    def __repr__(self):
+        return "<Status (status={0:d} reason={1:s}>".format(
+            self._status, self._reason
+        )
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def reason(self):
+        return self._reason
 
 
 class Request(object):
@@ -82,16 +132,13 @@ class Request(object):
     """
 
     server = None
-    """@cvar: A reference to the underlying server"""
+    """:cvar: A reference to the underlying server"""
 
     scheme = "http"
     protocol = (1, 1)
-    server_protocol = (1, 1)
     host = ""
     local = Host("127.0.0.1", 80)
     remote = Host("", 0)
-
-    xhr = False
 
     index = None
     script_name = ""
@@ -99,10 +146,8 @@ class Request(object):
     login = None
     handled = False
 
-    args = None
-    kwargs = None
-
-    def __init__(self, sock, method, scheme, path, protocol, qs):
+    def __init__(self, sock, method="GET", scheme="http", path="/",
+                 protocol=(1, 1), qs="", headers=None, server=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.sock = sock
@@ -111,48 +156,62 @@ class Request(object):
         self.path = path
         self.protocol = protocol
         self.qs = qs
+
+        self.headers = headers or Headers()
+        self.server = server
+
         self.cookie = SimpleCookie()
 
-        self._headers = None
-
-        if sock:
+        if sock is not None:
             name = sock.getpeername()
-            if name:
+            if name is not None:
                 self.remote = Host(*name)
             else:
                 name = sock.getsockname()
                 self.remote = Host(name, "", name)
 
+        cookie = self.headers.get("Cookie")
+        if cookie is not None:
+            self.cookie.load(cookie)
+
         self.body = BytesIO()
 
-    def _getHeaders(self):
-        return self._headers
+        if self.server is not None:
+            self.local = Host(self.server.host, self.server.port)
 
-    def _setHeaders(self, headers):
-        self._headers = headers
-
-        if "Cookie" in self.headers:
-            rawcookies = self.headers["Cookie"]
-            if not isinstance(rawcookies, str):
-                rawcookies = rawcookies.encode('utf-8')
-            self.cookie.load(rawcookies)
-
-        host = self.headers.get("Host", None)
-        if not host:
+        try:
+            host = self.headers["Host"]
+            if ":" in host:
+                parts = host.split(":", 1)
+                host = parts[0]
+                port = int(parts[1])
+            else:
+                port = 443 if self.scheme == "https" else 80
+        except KeyError:
             host = self.local.name or self.local.ip
-        self.base = "%s://%s" % (self.scheme, host)
+            port = getattr(self.server, "port")
 
-        self.xhr = self.headers.get(
-            "X-Requested-With", "").lower() == "xmlhttprequest"
+        self.host = host
+        self.port = port
 
-    headers = property(_getHeaders, _setHeaders)
+        base = "{0:s}://{1:s}{2:s}/".format(
+            self.scheme,
+            self.host,
+            ":{0:d}".format(self.port) if self.port not in (80, 443) else ""
+        )
+        self.base = parse_url(base)
+
+        url = "{0:s}{1:s}{2:s}".format(
+            base,
+            self.path,
+            "?{0:s}".format(self.qs) if self.qs else ""
+        )
+        self.uri = parse_url(url)
+        self.uri.sanitize()
 
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
-
-    def url(self, *args, **kwargs):
-        return url(self, *args, **kwargs)
 
 
 class Body(object):
@@ -173,15 +232,30 @@ class Body(object):
                 value = [value]
             else:
                 value = []
-        elif isinstance(value, IOBase):
+        elif hasattr(value, "read"):
             response.stream = True
             value = file_generator(value)
-        elif isinstance(value, HTTPError):
+        elif isinstance(value, httperror):
             value = [str(value)]
         elif value is None:
             value = []
 
         response._body = value
+
+
+class Status(object):
+    """Response Status"""
+
+    def __get__(self, response, cls=None):
+        if response is None:
+            return self
+        else:
+            return response._status
+
+    def __set__(self, response, value):
+        value = HTTPStatus(value) if isinstance(value, int) else value
+
+        response._status = value
 
 
 class Response(object):
@@ -192,70 +266,57 @@ class Response(object):
     is sent in the correct order.
     """
 
-    code = 200
-    message = None
-
     body = Body()
+    status = Status()
+
     done = False
     close = False
     stream = False
     chunked = False
 
-    protocol = "HTTP/%d.%d" % SERVER_PROTOCOL
-
-    def __init__(self, request, encoding='utf-8', code=None, message=None):
+    def __init__(self, request, encoding='utf-8', status=None):
         "initializes x; see x.__class__.__doc__ for signature"
 
         self.request = request
         self.encoding = encoding
 
-        if code is not None:
-            self.code = code
-
-        if message is not None:
-            self.message = message
-
         self._body = []
+        self._status = HTTPStatus(status if status is not None else 200)
+
         self.time = time()
 
-        self.headers = Headers([])
-        self.headers.add_header("Date", strftime("%a, %d %b %Y %H:%M:%S %Z"))
+        self.headers = Headers()
+        self.headers["Date"] = formatdate()
 
-        if self.request.server:
-            self.headers.add_header("Server", self.request.server.version)
+        if self.request.server is not None:
+            self.headers.add_header("Server", self.request.server.http.version)
         else:
             self.headers.add_header("X-Powered-By", SERVER_VERSION)
 
         self.cookie = self.request.cookie
 
-        self.protocol = "HTTP/%d.%d" % self.request.server_protocol
-
-        self._encoding = encoding
+        self.protocol = "HTTP/%d.%d" % self.request.protocol
 
     def __repr__(self):
         return "<Response %s %s (%d)>" % (
             self.status,
-            self.headers["Content-Type"],
-            (len(self.body) if type(self.body) == str else 0)
+            self.headers.get("Content-Type"),
+            (len(self.body) if isinstance(self.body, str) else 0)
         )
 
     def __str__(self):
         self.prepare()
         protocol = self.protocol
-        status = self.status
-        headers = self.headers
-        return "%s %s\r\n%s" % (protocol, status, headers)
+        status = "{0:s}".format(self.status)
+        return "{0:s} {1:s}\r\n".format(protocol, status)
 
-    @property
-    def status(self):
-        return "%d %s" % (
-            self.code, self.message or HTTP_STATUS_CODES[self.code]
-        )
+    def __bytes__(self):
+        return str(self).encode(self.encoding)
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
-        self.headers.setdefault("Content-Type",
-            "text/html; charset={0:s}".format(self.encoding)
+        self.headers.setdefault(
+            "Content-Type", "text/html; charset={0:s}".format(self.encoding)
         )
 
         cLength = None
@@ -263,11 +324,11 @@ class Response(object):
             if isinstance(self.body, bytes):
                 cLength = len(self.body)
             elif isinstance(self.body, unicode):
-                cLength = len(self.body.encode(self._encoding))
+                cLength = len(self.body.encode(self.encoding))
             elif isinstance(self.body, list):
                 cLength = sum(
                     [
-                        len(s.encode(self._encoding))
+                        len(s.encode(self.encoding))
                         if not isinstance(s, bytes)
                         else len(s) for s in self.body
                         if s is not None
@@ -280,7 +341,7 @@ class Response(object):
         for k, v in self.cookie.items():
             self.headers.add_header("Set-Cookie", v.OutputString())
 
-        status = self.code
+        status = self.status
 
         if status == 413:
             self.close = True

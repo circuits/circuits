@@ -17,74 +17,31 @@ except ImportError:
     raise Exception("No pyinotify support available. Is pyinotify installed?")
 
 from circuits.core.utils import findcmp
-from circuits.core import handler, Component, Event
+from circuits.core import handler, BaseComponent
 from circuits.core.pollers import BasePoller, Poller
+
+from .events import accessed, closed, created, deleted, modified, moved, opened, ready, unmounted
 
 MASK = ALL_EVENTS
 
-
-class Ready(Event):
-    """Ready Event"""
-
-
-class AddPath(Event):
-    """Add path to watch"""
-
-
-class RemovePath(Event):
-    """Remove path from watch"""
-
-
-class Moved(Event):
-    """Moved Event"""
-
-
-class Opened(Event):
-    """Opened Event"""
-
-
-class Closed(Event):
-    """Closed Event"""
-
-
-class Created(Event):
-    """Created Event"""
-
-
-class Deleted(Event):
-    """Deleted Event"""
-
-
-class Accessed(Event):
-    """Accessed Event"""
-
-
-class Modified(Event):
-    """Modified Event"""
-
-
-class Unmounted(Event):
-    """Unmounted Event"""
-
-
 EVENT_MAP = {
-    IN_MOVED_TO:        Moved,
-    IN_MOVE_SELF:       Moved,
-    IN_MOVED_FROM:      Moved,
-    IN_CLOSE_WRITE:     Closed,
-    IN_CLOSE_NOWRITE:   Closed,
-    IN_OPEN:            Opened,
-    IN_DELETE_SELF:     Deleted,
-    IN_DELETE:          Deleted,
-    IN_CREATE:          Created,
-    IN_ACCESS:          Accessed,
-    IN_MODIFY:          Modified,
-    IN_ATTRIB:          Modified,
-    IN_UNMOUNT:         Unmounted,
+    IN_MOVED_TO:        moved,
+    IN_MOVE_SELF:       moved,
+    IN_MOVED_FROM:      moved,
+    IN_CLOSE_WRITE:     closed,
+    IN_CLOSE_NOWRITE:   closed,
+    IN_OPEN:            opened,
+    IN_DELETE_SELF:     deleted,
+    IN_DELETE:          deleted,
+    IN_CREATE:          created,
+    IN_ACCESS:          accessed,
+    IN_MODIFY:          modified,
+    IN_ATTRIB:          modified,
+    IN_UNMOUNT:         unmounted,
 }
 
 
-class Notify(Component):
+class Notify(BaseComponent):
 
     channel = "notify"
 
@@ -124,27 +81,26 @@ class Notify(Component):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
-                self.fire(Ready(self))
+                self.fire(ready(self))
             else:
                 if component is not self:
                     return
                 component = findcmp(self.root, BasePoller)
                 if component is not None:
                     self._poller = component
-                    self.fire(Ready(self))
+                    self.fire(ready(self))
                 else:
                     self._poller = Poller().register(self)
-                    self.fire(Ready(self))
+                    self.fire(ready(self))
 
-    @handler("started", filter=True, channel="*")
-    def _on_started(self, component):
+    @handler("started", channel="*", priority=1)
+    def _on_started(self, event, component):
         if self._poller is None:
             self._poller = Poller().register(self)
-            self.fire(Ready(self))
+            self.fire(ready(self))
+            event.stop()
 
-            return True
-
-    @handler("_read", filter=True)
+    @handler("_read", priority=1)
     def __on_read(self, fd):
         self._notifier.read_events()
         self._notifier.process_events()

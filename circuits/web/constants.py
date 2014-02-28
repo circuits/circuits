@@ -10,8 +10,8 @@ This module implements required shared global constants.
 from circuits import __version__
 
 SERVER_PROTOCOL = (1, 1)
-SERVER_VERSION = "circuits/%s" % __version__
-SERVER_URL = "http://bitbucket.org/prologic/circuits/"
+SERVER_VERSION = "circuits.web/%s" % __version__
+SERVER_URL = "http://circuitsweb.com/"
 
 DEFAULT_ERROR_MESSAGE = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"

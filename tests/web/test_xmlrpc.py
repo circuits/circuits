@@ -11,7 +11,7 @@ from circuits.web import Controller, XMLRPC
 from .helpers import urlopen
 
 
-class Test(Component):
+class App(Component):
 
     def eval(self, s):
         return eval(s)
@@ -25,15 +25,15 @@ class Root(Controller):
 
 def test(webapp):
     rpc = XMLRPC("/rpc")
-    test = Test()
+    test = App()
     rpc.register(webapp)
     test.register(webapp)
 
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
 
-    url = "%s/rpc/" % webapp.server.base
+    url = "%s/rpc" % webapp.server.http.base
     server = ServerProxy(url, allow_none=True)
 
     r = server.eval("1 + 2")

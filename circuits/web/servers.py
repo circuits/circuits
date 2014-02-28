@@ -7,17 +7,13 @@
 This module implements the several Web Server components.
 """
 
-from circuits.core import handler, BaseComponent
 
 from circuits import io
-
-from circuits.net.sockets import Read, Write
+from circuits.net.sockets import read, write
+from circuits.core import handler, BaseComponent
 from circuits.net.sockets import TCPServer, UNIXServer
 
 from .http import HTTP
-from .events import WebEvent
-from .wrappers import Request, Host
-from .constants import SERVER_VERSION
 from .dispatchers import Dispatcher
 
 
@@ -60,13 +56,10 @@ class BaseServer(BaseComponent):
 
         super(BaseServer, self).__init__(channel=channel)
 
-        if type(bind) in (int, list, tuple):
+        if any((isinstance(bind, o) for o in (int, list, tuple,))):
             SocketType = TCPServer
         else:
-            if ":" in bind:
-                SocketType = TCPServer
-            else:
-                SocketType = UNIXServer
+            SocketType = TCPServer if ":" in bind else UNIXServer
 
         self.server = SocketType(
             bind,
@@ -75,21 +68,9 @@ class BaseServer(BaseComponent):
             channel=channel
         ).register(self)
 
-        HTTP(encoding=encoding, channel=channel).register(self)
-
-        Request.server = self
-        if isinstance(self.server._bind, tuple):
-            Request.local = Host(
-                self.server._bind[0], self.server._bind[1]
-            )
-        else:
-            Request.local = Host(self.server._bind, None)
-        Request.host = self.host
-        Request.scheme = "https" if self.server.secure else "http"
-
-    @property
-    def version(self):
-        return SERVER_VERSION
+        self.http = HTTP(
+            self, encoding=encoding, channel=channel
+        ).register(self)
 
     @property
     def host(self):
@@ -106,25 +87,25 @@ class BaseServer(BaseComponent):
         if hasattr(self, "server"):
             return self.server.secure
 
-    @property
-    def scheme(self):
-        return "https" if self.secure else "http"
+    @handler("connect")
+    def _on_connect(self, *args, **kwargs):
+        """Dummy Event Handler for connect"""
 
-    @property
-    def base(self):
-        host = self.host or "0.0.0.0"
-        port = self.port or 80
-        scheme = self.scheme
-        secure = self.secure
+    @handler("closed")
+    def _on_closed(self, *args, **kwargs):
+        """Dummy Event Handler for closed"""
 
-        tpl = "%s://%s%s"
+    @handler("signal")
+    def _on_signal(self, *args, **kwargs):
+        """Dummy Event Handler for signal"""
 
-        if (port == 80 and not secure) or (port == 443 and secure):
-            port = ""
-        else:
-            port = ":%d" % port
-
-        return tpl % (scheme, host, port)
+    @handler("ready")
+    def _on_ready(self, server, bind):
+        print(
+            "{0:s} ready! Listening on: {1:s}".format(
+                self.http.version, self.http.base
+            )
+        )
 
 
 class Server(BaseServer):
@@ -142,7 +123,7 @@ class Server(BaseServer):
 
         super(Server, self).__init__(bind, **kwargs)
 
-        Dispatcher(channel=self.channel).register(self)
+        Dispatcher(channel=self.channel).register(self.http)
 
 
 class FakeSock():
@@ -157,23 +138,29 @@ class StdinServer(BaseComponent):
     def __init__(self, encoding="utf-8", channel=channel):
         super(StdinServer, self).__init__(channel=channel)
 
-        WebEvent.channels = (channel,)
+        self.server = (io.stdin + io.stdout).register(self)
+        self.http = HTTP(
+            self, encoding=encoding, channel=channel
+        ).register(self)
 
-        self.server = (
-            io.stdin
-            + io.stdout
-            + HTTP(encoding=encoding, channel=channel)
-        )
-
-        self += self.server
-
-        Request.server = self
         Dispatcher(channel=self.channel).register(self)
+
+    @property
+    def host(self):
+        return io.stdin.filename
+
+    @property
+    def port(self):
+        return 0
+
+    @property
+    def secure(self):
+        return False
 
     @handler("read", channel="stdin")
     def read(self, data):
-        self.fire(Read(FakeSock(), data))
+        self.fire(read(FakeSock(), data))
 
     @handler("write")
     def write(self, sock, data):
-        self.fire(Write(data))
+        self.fire(write(data))

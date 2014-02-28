@@ -8,8 +8,10 @@ circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
 
-from hashlib import md5
-from warnings import warn
+from functools import wraps
+from warnings import warn, warn_explicit
+
+from circuits.six import _func_code
 
 
 def tryimport(modules, obj=None, message=None):
@@ -37,14 +39,15 @@ def walk(x, f, d=0, v=None):
                 yield r
 
 
-def edges(x, e=None, v=None):
+def edges(x, e=None, v=None, d=0):
     if not e:
         e = set()
     if not v:
         v = []
+    d += 1
     for c in x.components.copy():
-        e.add((x, c))
-        edges(c, e, v)
+        e.add((x, c, d))
+        edges(c, e, v, d)
     return e
 
 
@@ -75,23 +78,46 @@ def graph(x, name=None):
     @rtype:  str
     """
 
-    def getname(c):
-        s = "%d" % id(c)
-        h = md5(s.encode("utf-8")).hexdigest()[-4:]
-        return "%s-%s" % (c.name, h)
+    networkx = tryimport("networkx")
+    pygraphviz = tryimport("pygraphviz")
+    plt = tryimport("matplotlib.pyplot", "pyplot")
 
-    pydot = tryimport("pydot")
-    if pydot is not None:
+    if networkx is not None and pygraphviz is not None and plt is not None:
         graph_edges = []
-        for (u, v) in edges(x):
-            graph_edges.append(("\"%s\"" % getname(u), "\"%s\"" % getname(v)))
+        for (u, v, d) in edges(x):
+            graph_edges.append((u.name, v.name, float(d)))
 
-        g = pydot.graph_from_edges(graph_edges, directed=True)
-        g.write("%s.dot" % (name or x.name))
-        try:
-            g.write("%s.png" % (name or x.name), format="png")
-        except pydot.InvocationException:
-            pass
+        g = networkx.DiGraph()
+        g.add_weighted_edges_from(graph_edges)
+
+        elarge = [(u, v) for (u, v, d) in g.edges(data=True)
+                  if d["weight"] > 3.0]
+        esmall = [(u, v) for (u, v, d) in g.edges(data=True)
+                  if d["weight"] <= 3.0]
+
+        pos = networkx.spring_layout(g)  # positions for all nodes
+
+        # nodes
+        networkx.draw_networkx_nodes(g, pos, node_size=700)
+
+        # edges
+        networkx.draw_networkx_edges(g, pos, edgelist=elarge, width=1)
+        networkx.draw_networkx_edges(
+            g, pos, edgelist=esmall, width=1,
+            alpha=0.5, edge_color="b", style="dashed"
+        )
+
+        # labels
+        networkx.draw_networkx_labels(
+            g, pos, font_size=10, font_family="sans-serif"
+        )
+
+        plt.axis("off")
+
+        plt.savefig("{0:s}.png".format(name or x.name))
+        networkx.write_dot(g, "{0:s}.dot".format(name or x.name))
+
+        plt.clf()
 
     def printer(d, x):
         return "%s* %s" % (" " * d, x)
@@ -126,3 +152,16 @@ def inspect(x):
             write("   %s\n" % reprhandler(handler))
 
     return "".join(s)
+
+
+def deprecated(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        warn_explicit(
+            "Call to deprecated function {0:s}".format(f.__name__),
+            category=DeprecationWarning,
+            filename=getattr(f, _func_code).co_filename,
+            lineno=getattr(f, _func_code).co_firstlineno + 1
+        )
+        return f(*args, **kwargs)
+    return wrapper

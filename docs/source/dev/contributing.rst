@@ -11,7 +11,7 @@ Share your story
 One of the best ways you can contribute to circuits is by using circuits.
 Share with us your story of how you've used circuits to solve a problem
 or create a new software solution using the circuits framework and library
-of components. See our :doc:`Users Page </users>`.
+of components.
 
 
 Submitting Bug Reports
@@ -24,7 +24,7 @@ a bug to us is by writing a unit test (//similar to the ones in our tests//)
 so that we can verify the bug, fix it and commit the fix along with the test.
 
 To submit a bug report, please use:
- http://bitbucket.org/prologic/circuits/issues
+ http://bitbucket.org/circuits/circuits/issues
 
 
 Writing new tests
@@ -32,8 +32,8 @@ Writing new tests
 
 
 We're not perfect, and we're still writing more tests to ensure quality code.
-If you'd like to help, please `Fork circuits-dev <https://bitbucket.org/prologic/circuits-dev/fork>`_, write more tests that cover more of our code base and
-submit a `Pull Request <https://bitbucket.org/prologic/circuits-dev/pull-request/new>`_. Many Thanks!
+If you'd like to help, please `Fork circuits-dev <https://bitbucket.org/circuits/circuits-dev/fork>`_, write more tests that cover more of our code base and
+submit a `Pull Request <https://bitbucket.org/circuits/circuits-dev/pull-request/new>`_. Many Thanks!
 
 
 Adding New Features
@@ -48,4 +48,4 @@ as valid use-cases. To start the discussions off, please either:
 
   or
 
-- `Submit a NEW Issue <http://bitbucket.org/prologic/circuits/issues>`_
+- `Submit a NEW Issue <http://bitbucket.org/circuits/circuits/issues>`_

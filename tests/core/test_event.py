@@ -9,8 +9,8 @@ import py
 from circuits import Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -24,15 +24,15 @@ def test_repr():
     while app:
         app.flush()
 
-    e = Test()
+    e = test()
 
     s = repr(e)
-    assert s == "<Test[.test] ( )>"
+    assert s == "<test[] ( )>"
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*.test] ( )>"
+    assert s == "<test[*] ( )>"
 
 
 def test_create():
@@ -40,15 +40,15 @@ def test_create():
     while app:
         app.flush()
 
-    e = Event.create("Test")
+    e = Event.create("test")
 
     s = repr(e)
-    assert s == "<Test[.test] ( )>"
+    assert s == "<test[] ( )>"
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<Test[*.test] ( )>"
+    assert s == "<test[*] ( )>"
 
 
 def test_getitem():
@@ -56,7 +56,7 @@ def test_getitem():
     while app:
         app.flush()
 
-    e = Test(1, 2, 3, foo="bar")
+    e = test(1, 2, 3, foo="bar")
 
     assert e[0] == 1
     assert e["foo"] == "bar"
@@ -72,7 +72,7 @@ def test_setitem():
     while app:
         app.flush()
 
-    e = Test(1, 2, 3, foo="bar")
+    e = test(1, 2, 3, foo="bar")
 
     assert e[0] == 1
     assert e["foo"] == "bar"
@@ -87,3 +87,10 @@ def test_setitem():
 
     assert e[0] == 0
     assert e["foo"] == "Hello"
+
+
+def test_subclass_looses_properties():
+    class hello(Event):
+        success = True
+    e = hello().child('success')
+    assert e.success is False

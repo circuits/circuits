@@ -6,11 +6,11 @@ from circuits import Event, Component
 from .helpers import urlopen
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
-class Test(Component):
+class App(Component):
 
     def hello(self):
         return "Hello World!"
@@ -19,12 +19,12 @@ class Test(Component):
 class Root(Controller):
 
     def index(self):
-        return self.fire(Hello())
+        return self.fire(hello())
 
 
 def test(webapp):
-    Test().register(webapp)
+    App().register(webapp)
 
-    f = urlopen(webapp.server.base)
+    f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"

@@ -24,41 +24,29 @@ from circuits.core.handlers import handler
 from .events import Event
 from .components import BaseComponent
 
-TIMEOUT = 0.01  # 10ms timeout
+
+class _read(Event):
+    """_read Event"""
 
 
-class Read(Event):
-    """Read Event"""
-
-    name = "_read"
+class _write(Event):
+    """_write Event"""
 
 
-class Write(Event):
-    """Write Event"""
-
-    name = "_write"
+class _error(Event):
+    """_error Event"""
 
 
-class Error(Event):
-    """Error Event"""
-
-    name = "_error"
-
-
-class Disconnect(Event):
-    """Disconnect Event"""
-
-    name = "_disconnect"
+class _disconnect(Event):
+    """_disconnect Event"""
 
 
 class BasePoller(BaseComponent):
 
     channel = None
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
+    def __init__(self, channel=channel):
         super(BasePoller, self).__init__(channel=channel)
-
-        self.timeout = timeout
 
         self._read = []
         self._write = []
@@ -84,17 +72,18 @@ class BasePoller(BaseComponent):
         at.join()
         return (res_list[0], clnt_sock)
 
-    @handler("generate_events", priority=-9, filter=True)
+    @handler("generate_events", priority=-9)
     def _on_generate_events(self, event):
         """
         Pollers have slightly higher priority than the default handler
         from Manager to ensure that they are invoked before the
-        default handler. They act as filters to avoid the additional
+        default handler. They act as event filters to avoid the additional
         invocation of the default handler which would be unnecessary
         overhead.
         """
+
+        event.stop()
         self._generate_events(event)
-        return True
 
     def resume(self):
         if isinstance(self._ctrl_send, socket):
@@ -124,13 +113,13 @@ class BasePoller(BaseComponent):
     def removeReader(self, fd):
         if fd in self._read:
             self._read.remove(fd)
-        if fd in self._targets:
+        if not (fd in self._read or fd in self._write) and fd in self._targets:
             del self._targets[fd]
 
     def removeWriter(self, fd):
         if fd in self._write:
             self._write.remove(fd)
-        if not (fd in self._read or fd in self._write):
+        if not (fd in self._read or fd in self._write) and fd in self._targets:
             del self._targets[fd]
 
     def isReading(self, fd):
@@ -162,8 +151,8 @@ class Select(BasePoller):
 
     channel = "select"
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
-        super(Select, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(Select, self).__init__(channel=channel)
 
         self._read.append(self._ctrl_recv)
 
@@ -209,14 +198,14 @@ class Select(BasePoller):
 
         for sock in w:
             if self.isWriting(sock):
-                self.fire(Write(sock), self.getTarget(sock))
+                self.fire(_write(sock), self.getTarget(sock))
 
         for sock in r:
             if sock == self._ctrl_recv:
                 self._read_ctrl()
                 continue
             if self.isReading(sock):
-                self.fire(Read(sock), self.getTarget(sock))
+                self.fire(_read(sock), self.getTarget(sock))
 
 
 class Poll(BasePoller):
@@ -228,8 +217,8 @@ class Poll(BasePoller):
 
     channel = "poll"
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
-        super(Poll, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(Poll, self).__init__(channel=channel)
 
         self._map = {}
         self._poller = select.poll()
@@ -244,7 +233,7 @@ class Poll(BasePoller):
         self._updateRegistration(self._ctrl_recv)
 
     def _updateRegistration(self, fd):
-        fileno = fd.fileno()
+        fileno = fd.fileno() if not isinstance(fd, int) else fd
 
         try:
             self._poller.unregister(fileno)
@@ -311,19 +300,19 @@ class Poll(BasePoller):
             return
 
         if event & self._disconnected_flag and not (event & select.POLLIN):
-            self.fire(Disconnect(fd), self.getTarget(fd))
+            self.fire(_disconnect(fd), self.getTarget(fd))
             self._poller.unregister(fileno)
             super(Poll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & select.POLLIN:
-                    self.fire(Read(fd), self.getTarget(fd))
+                    self.fire(_read(fd), self.getTarget(fd))
                 if event & select.POLLOUT:
-                    self.fire(Write(fd), self.getTarget(fd))
+                    self.fire(_write(fd), self.getTarget(fd))
             except Exception as e:
-                self.fire(Error(fd, e), self.getTarget(fd))
-                self.fire(Disconnect(fd), self.getTarget(fd))
+                self.fire(_error(fd, e), self.getTarget(fd))
+                self.fire(_disconnect(fd), self.getTarget(fd))
                 self._poller.unregister(fileno)
                 super(Poll, self).discard(fd)
                 del self._map[fileno]
@@ -338,8 +327,8 @@ class EPoll(BasePoller):
 
     channel = "epoll"
 
-    def __init__(self, timeout=TIMEOUT, channel=channel):
-        super(EPoll, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(EPoll, self).__init__(channel=channel)
 
         self._map = {}
         self._poller = select.epoll()
@@ -351,7 +340,7 @@ class EPoll(BasePoller):
 
     def _updateRegistration(self, fd):
         try:
-            fileno = fd.fileno()
+            fileno = fd.fileno() if not isinstance(fd, int) else fd
             self._poller.unregister(fileno)
         except (SocketError, IOError) as e:
             if e.args[0] == EBADF:
@@ -421,19 +410,19 @@ class EPoll(BasePoller):
             return
 
         if event & self._disconnected_flag and not (event & select.POLLIN):
-            self.fire(Disconnect(fd), self.getTarget(fd))
+            self.fire(_disconnect(fd), self.getTarget(fd))
             self._poller.unregister(fileno)
             super(EPoll, self).discard(fd)
             del self._map[fileno]
         else:
             try:
                 if event & select.EPOLLIN:
-                    self.fire(Read(fd), self.getTarget(fd))
+                    self.fire(_read(fd), self.getTarget(fd))
                 if event & select.EPOLLOUT:
-                    self.fire(Write(fd), self.getTarget(fd))
+                    self.fire(_write(fd), self.getTarget(fd))
             except Exception as e:
-                self.fire(Error(fd, e), self.getTarget(fd))
-                self.fire(Disconnect(fd), self.getTarget(fd))
+                self.fire(_error(fd, e), self.getTarget(fd))
+                self.fire(_disconnect(fd), self.getTarget(fd))
                 self._poller.unregister(fileno)
                 super(EPoll, self).discard(fd)
                 del self._map[fileno]
@@ -448,8 +437,8 @@ class KQueue(BasePoller):
 
     channel = "kqueue"
 
-    def __init__(self, timeout=0.00001, channel=channel):
-        super(KQueue, self).__init__(timeout, channel=channel)
+    def __init__(self, channel=channel):
+        super(KQueue, self).__init__(channel=channel)
         self._map = {}
         self._poller = select.kqueue()
 
@@ -544,13 +533,13 @@ class KQueue(BasePoller):
             return
 
         if event.flags & select.KQ_EV_ERROR:
-            self.fire(Error(sock, "error"), self.getTarget(sock))
+            self.fire(_error(sock, "error"), self.getTarget(sock))
         elif event.flags & select.KQ_EV_EOF:
-            self.fire(Disconnect(sock), self.getTarget(sock))
+            self.fire(_disconnect(sock), self.getTarget(sock))
         elif event.filter == select.KQ_FILTER_WRITE:
-            self.fire(Write(sock), self.getTarget(sock))
+            self.fire(_write(sock), self.getTarget(sock))
         elif event.filter == select.KQ_FILTER_READ:
-            self.fire(Read(sock), self.getTarget(sock))
+            self.fire(_read(sock), self.getTarget(sock))
 
 Poller = Select
 

@@ -23,17 +23,17 @@ class App(Component):
         pass
 
 
-class Test(Event):
+class test(Event):
     pass
 
 
-def test():
+def test_main():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
     app = App()
 
     assert repr(app) == "<App/* %s (queued=0) [S]>" % id
 
-    app.fire(Test())
+    app.fire(test())
     assert repr(app) == "<App/* %s (queued=1) [S]>" % id
 
     app.flush()
@@ -46,7 +46,7 @@ def test_non_str_channel():
 
     assert repr(app) == "<App/(1, 1) %s (queued=0) [S]>" % id
 
-    app.fire(Test())
+    app.fire(test())
     assert repr(app) == "<App/(1, 1) %s (queued=1) [S]>" % id
 
     app.flush()

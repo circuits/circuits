@@ -3,12 +3,12 @@
 from circuits import handler, Event, Component
 
 
-class Foo(Event):
-    """Foo Event"""
+class foo(Event):
+    """foo Event"""
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class A(Component):
@@ -30,12 +30,12 @@ class B(Component):
         return "Bar"
 
 
-def test():
+def test_main():
     app = A() + B()
     while app:
         app.flush()
 
-    x = app.fire(Test(), "a")
+    x = app.fire(test(), "a")
     while app:
         app.flush()
 
@@ -49,7 +49,7 @@ def test_event():
     while app:
         app.flush()
 
-    e = Test()
+    e = test()
     x = app.fire(e)
     while app:
         app.flush()
@@ -64,7 +64,7 @@ def test_channel():
     while app:
         app.flush()
 
-    e = Foo()
+    e = foo()
     x = app.fire(e, "b")
     while app:
         app.flush()

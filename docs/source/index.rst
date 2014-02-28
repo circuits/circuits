@@ -7,11 +7,17 @@ circuits |version| Documentation
 :Date: |today|
 
 
+About
+=====
+
 .. include:: ../../README.rst
 
 
-Contents
-========
+.. _documentation-index:
+
+
+Documentation
+=============
 
 
 .. toctree::
@@ -21,7 +27,6 @@ Contents
    tutorial/index
    man/index
    web/index
-   howtos/index
    api/index
    dev/index
    changes
@@ -32,14 +37,15 @@ Contents
    :hidden:
 
    glossary
+   examples/index
 
 .. ifconfig:: devel
 
    .. toctree::
       :hidden:
 
-      pypitest
       todo
+      readme
 
 
 Indices and tables
@@ -53,11 +59,5 @@ Indices and tables
 
 .. ifconfig:: devel
 
-   * :doc:`pypitest`
    * :doc:`todo`
-
-
-.. raw:: html
-   
-   <script type="text/javascript" src="http://www.ohloh.net/p/587962/widgets/project_thin_badge.js"></script>
-   
+   * :doc:`readme`

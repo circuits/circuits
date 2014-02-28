@@ -11,14 +11,14 @@
 from circuits import Event
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 def test_events():
     from circuits.node.utils import dump_event, load_event
 
-    e = Test(1, 2, 3, foo="bar")
+    e = test(1, 2, 3, foo="bar")
     e.success = True
     e.failure = False
 

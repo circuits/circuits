@@ -16,25 +16,24 @@ except ImportError:
 
 from circuits import Event
 
-from . import utils
 from ..six import string_types
 from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 
-class HTTPError(Event):
-    """An event for signaling an HTTP error
-    """
+class httperror(Event):
+    """An event for signaling an HTTP error"""
 
     code = 500
     description = ""
+    contenttype = "text/html"
 
     def __init__(self, request, response, code=None, **kwargs):
         """
         The constructor creates a new instance and modifies the *response*
         argument to reflect the error.
         """
-        super(HTTPError, self).__init__(request, response, code, **kwargs)
+        super(httperror, self).__init__(request, response, code, **kwargs)
 
         # Override HTTPError subclasses
         self.name = "httperror"
@@ -59,7 +58,9 @@ class HTTPError(Event):
             self.traceback = ""
 
         self.response.close = True
-        self.response.code = self.code
+        self.response.status = self.code
+
+        self.response.headers["Content-Type"] = self.contenttype
 
         self.data = {
             "code": self.code,
@@ -71,7 +72,7 @@ class HTTPError(Event):
         }
 
     def sanitize(self):
-        if self.code < 300 or self.code > 399:
+        if self.code != 201 and not (299 < self.code < 400):
             if "Location" in self.response.headers:
                 del self.response.headers["Location"]
 
@@ -87,27 +88,26 @@ class HTTPError(Event):
         )
 
 
-class Forbidden(HTTPError):
-    """An event for signaling the HTTP Forbidden error
-    """
+class forbidden(httperror):
+    """An event for signaling the HTTP Forbidden error"""
+
     code = 403
 
 
-class Unauthorized(HTTPError):
-    """An event for signaling the HTTP Unauthorized error
-    """
+class unauthorized(httperror):
+    """An event for signaling the HTTP Unauthorized error"""
+
     code = 401
 
 
-class NotFound(HTTPError):
-    """An event for signaling the HTTP Not Fouond error
-    """
+class notfound(httperror):
+    """An event for signaling the HTTP Not Fouond error"""
+
     code = 404
 
 
-class Redirect(HTTPError):
-    """An event for signaling the HTTP Redirect response
-    """
+class redirect(httperror):
+    """An event for signaling the HTTP Redirect response"""
 
     def __init__(self, request, response, urls, code=None):
         """
@@ -115,6 +115,7 @@ class Redirect(HTTPError):
         *response* argument to reflect a redirect response to the
         given *url*.
         """
+
         if isinstance(urls, string_types):
             urls = [urls]
 
@@ -125,7 +126,7 @@ class Redirect(HTTPError):
             #  2. a URL relative to root (e.g. "/dummy")
             #  3. a URL relative to the current path
             # Note that any query string in request is discarded.
-            url = _urljoin(utils.url(request), url)
+            url = request.uri.relative(url).unicode()
             abs_urls.append(url)
         self.urls = urls = abs_urls
 
@@ -141,7 +142,7 @@ class Redirect(HTTPError):
             if code < 300 or code > 399:
                 raise ValueError("status code must be between 300 and 399.")
 
-        super(Redirect, self).__init__(request, response, code)
+        super(redirect, self).__init__(request, response, code)
 
         if code in (300, 301, 302, 303, 307):
             response.headers["Content-Type"] = "text/html"

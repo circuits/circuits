@@ -27,19 +27,28 @@ class Watcher(BaseComponent):
         with self._lock:
             self.events.append(event)
 
-    def wait(self, name, channel=None, timeout=3.0):
-        for i in range(int(timeout / TIMEOUT)):
-            if channel is None:
-                with self._lock:
-                    for event in self.events:
-                        if event.name == name:
-                            return True
-            else:
-                with self._lock:
-                    for event in self.events:
-                        if event.name == name and channel in event.channels:
-                            return True
-            sleep(TIMEOUT)
+    def clear(self):
+        self.events.clear()
+
+    def wait(self, name, channel=None, timeout=6.0):
+        try:
+            for i in range(int(timeout / TIMEOUT)):
+                if channel is None:
+                    with self._lock:
+                        for event in self.events:
+                            if event.name == name:
+                                return True
+                else:
+                    with self._lock:
+                        for event in self.events:
+                            if event.name == name and \
+                                    channel in event.channels:
+                                return True
+
+                sleep(TIMEOUT)
+        finally:
+            pass
+            #self.events.clear()
 
 
 class Flag(object):
@@ -63,7 +72,7 @@ def call_event(manager, event, *channels):
 
 class WaitEvent(object):
 
-    def __init__(self, manager, name, channel=None, timeout=3.0):
+    def __init__(self, manager, name, channel=None, timeout=6.0):
         if channel is None:
             channel = getattr(manager, "channel", None)
 
@@ -114,7 +123,11 @@ def manager(request):
     assert waiter.wait()
 
     if request.config.option.verbose:
-        Debugger().register(manager)
+        verbose = True
+    else:
+        verbose = False
+
+    Debugger(events=verbose).register(manager)
 
     return manager
 
@@ -124,7 +137,11 @@ def watcher(request, manager):
     watcher = Watcher().register(manager)
 
     def finalizer():
+        waiter = WaitEvent(manager, "unregistered")
         watcher.unregister()
+        waiter.wait()
+
+    request.addfinalizer(finalizer)
 
     return watcher
 

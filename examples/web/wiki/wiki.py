@@ -83,9 +83,8 @@ class Root(Controller):
         self.db.save(name, form.get("text", ""))
         return self.redirect(name)
 
-(
-    Server(("0.0.0.0", 8000))
-    + Static(docroot="static")
-    + Root()
-    + Logger()
-).run()
+app = Server(("0.0.0.0", 9000))
+Static(docroot="static").register(app)
+Root().register(app)
+Logger().register(app)
+app.run()

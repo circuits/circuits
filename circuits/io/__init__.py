@@ -12,10 +12,8 @@ and StdErr are also created by importing this package.
 import sys
 
 from .file import File
-from .file import Close, Open, Seek, Write
-
 from .process import Process
-from .process import Start, Stop, Signal, Kill, Wait
+from .events import close, open, seek, write
 
 try:
     from .notify import Notify

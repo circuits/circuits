@@ -12,20 +12,21 @@ import os
 import stat
 import hashlib
 import mimetypes
+import collections
 from time import mktime
 from email.utils import formatdate
 from datetime import datetime, timedelta
 from email.generator import _make_boundary
-import collections
 
 mimetypes.init()
 mimetypes.add_type("image/x-dwg", ".dwg")
 mimetypes.add_type("image/x-icon", ".ico")
+mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
 from . import _httpauth
 from .utils import get_ranges, compress
-from .errors import HTTPError, NotFound, Redirect, Unauthorized
+from .errors import httperror, notfound, redirect, unauthorized
 
 
 def expires(request, response, secs=0, force=False):
@@ -97,12 +98,12 @@ def serve_file(request, response, path, type=None, disposition=None,
     try:
         st = os.stat(path)
     except OSError:
-        return NotFound(request, response)
+        return notfound(request, response)
 
     # Check if path is a directory.
     if stat.S_ISDIR(st.st_mode):
         # Let the caller deal with it as they like.
-        return NotFound(request, response)
+        return notfound(request, response)
 
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
@@ -140,13 +141,13 @@ def serve_file(request, response, path, type=None, disposition=None,
         r = get_ranges(request.headers.get('Range'), c_len)
         if r == []:
             response.headers['Content-Range'] = "bytes */%s" % c_len
-            return HTTPError(request, response, 416)
+            return httperror(request, response, 416)
         if r:
             if len(r) == 1:
                 # Return a single-part response.
                 start, stop = r[0]
                 r_len = stop - start
-                response.code = 206
+                response.status = 206
                 response.headers['Content-Range'] = (
                     "bytes %s-%s/%s" % (start, stop - 1, c_len)
                 )
@@ -155,7 +156,7 @@ def serve_file(request, response, path, type=None, disposition=None,
                 response.body = bodyfile.read(r_len)
             else:
                 # Return a multipart/byteranges response.
-                response.code = 206
+                response.status = 206
                 boundary = _make_boundary()
                 ct = "multipart/byteranges; boundary=%s" % boundary
                 response.headers['Content-Type'] = ct
@@ -221,13 +222,13 @@ def validate_etags(request, response, autotags=False):
     if hasattr(response, "ETag"):
         return
 
-    code = response.code
+    status = response.status
 
     etag = response.headers.get('ETag')
 
     # Automatic ETag generation. See warning in docstring.
     if (not etag) and autotags:
-        if code == 200:
+        if status == 200:
             etag = response.collapse_body()
             etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
             response.headers['ETag'] = etag
@@ -237,11 +238,11 @@ def validate_etags(request, response, autotags=False):
     # "If the request would, without the If-Match header field, result in
     # anything other than a 2xx or 412 status, then the If-Match header
     # MUST be ignored."
-    if code >= 200 and code <= 299:
+    if status >= 200 and status <= 299:
         conditions = request.headers.elements('If-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions and not (conditions == ["*"] or etag in conditions):
-            return HTTPError(
+            return httperror(
                 request, response, 412,
                 description="If-Match failed: ETag %r did not match %r" % (
                     etag, conditions
@@ -252,9 +253,9 @@ def validate_etags(request, response, autotags=False):
         conditions = [str(x) for x in conditions]
         if conditions == ["*"] or etag in conditions:
             if request.method in ("GET", "HEAD"):
-                return Redirect(request, response, [], code=304)
+                return redirect(request, response, [], code=304)
             else:
-                return HTTPError(
+                return httperror(
                     request, response, 412,
                     description=(
                         "If-None-Match failed: ETag %r matched %r" % (
@@ -273,26 +274,26 @@ def validate_since(request, response):
 
     lastmod = response.headers.get('Last-Modified')
     if lastmod:
-        code = response.code
+        status = response.status
 
         since = request.headers.get('If-Unmodified-Since')
         if since and since != lastmod:
-            if (code >= 200 and code <= 299) or code == 412:
-                return HTTPError(request, response, 412)
+            if (status >= 200 and status <= 299) or status == 412:
+                return httperror(request, response, 412)
 
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod:
-            if (code >= 200 and code <= 299) or code == 304:
+            if (status >= 200 and status <= 299) or status == 304:
                 if request.method in ("GET", "HEAD"):
-                    return Redirect(request, response, [], code=304)
+                    return redirect(request, response, [], code=304)
                 else:
-                    return HTTPError(request, response, 412)
+                    return httperror(request, response, 412)
 
 
 def check_auth(request, response, realm, users, encrypt=None):
     """Check Authentication
 
-    If an authorization header contains credentials, return True, else False.
+    If an Authorization header contains credentials, return True, else False.
 
     :param realm: The authentication realm.
     :type  realm: str
@@ -306,11 +307,11 @@ def check_auth(request, response, realm, users, encrypt=None):
     :type  encrypt: callable
     """
 
-    if 'authorization' in request.headers:
+    if "Authorization" in request.headers:
         # make sure the provided credentials are correctly set
-        ah = _httpauth.parseAuthorization(request.headers['authorization'])
+        ah = _httpauth.parseAuthorization(request.headers.get("Authorization"))
         if ah is None:
-            return HTTPError(request, response, 400)
+            return httperror(request, response, 400)
 
         if not encrypt:
             encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
@@ -335,7 +336,7 @@ def check_auth(request, response, realm, users, encrypt=None):
             # fetch the user password
             password = users.get(ah["username"], None)
 
-        # validate the authorization by re-computing it here
+        # validate the Authorization by re-computing it here
         # and compare it with what the user-agent provided
         if _httpauth.checkResponse(ah, password, method=request.method,
                                    encrypt=encrypt, realm=realm):
@@ -370,7 +371,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
     # inform the user-agent this path is protected
     response.headers["WWW-Authenticate"] = _httpauth.basicAuth(realm)
 
-    return Unauthorized(request, response)
+    return unauthorized(request, response)
 
 
 def digest_auth(request, response, realm, users):
@@ -392,7 +393,7 @@ def digest_auth(request, response, realm, users):
     # inform the user-agent this path is protected
     response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
 
-    return Unauthorized(request, response)
+    return unauthorized(request, response)
 
 
 def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
@@ -449,6 +450,6 @@ def gzip(response, level=4, mime_types=['text/html', 'text/plain']):
                     # Delete Content-Length header so finalize() recalcs it.
                     del response.headers["Content-Length"]
             return response
-    return HTTPError(
+    return httperror(
         response.request, response, 406, description="identity, gzip"
     )

@@ -1,71 +1,88 @@
 #!/usr/bin/env python
 
-from time import sleep
 import pytest
 
-from circuits import Component, Event
+from circuits import handler, Component, Event
 
 
-class TestWait(Event):
-    """TestWait Event"""
-
-
-class TestCall(Event):
-    """TestCall Event"""
-
-
-class TestLongCall(Event):
-    """TestLongCall Event"""
-
-
-class TestLongWait(Event):
-    """TestLongCall Event"""
-
-
-class Hello(Event):
-    """Hello Event"""
-
+class wait(Event):
+    """wait Event"""
     success = True
 
 
-class Foo(Event):
-    """Foo Event"""
+class call(Event):
+    """call Event"""
+    success = True
 
 
-class GetX(Event):
-    """Get X Event"""
+class long_call(Event):
+    """long_call Event"""
+    success = True
 
 
-class GetY(Event):
-    """Get Y Event"""
+class long_wait(Event):
+    """long_wait Event"""
+    success = True
 
 
-class TestEval(Event):
-    """Test Eval Event"""
+class wait_return(Event):
+    """wait_return Event"""
+    success = True
 
 
-class Test(Component):
+class hello(Event):
+    """hello Event"""
+    success = True
 
-    def test_wait(self):
-        x = self.fire(Hello())
+
+class foo(Event):
+    """foo Event"""
+    success = True
+
+
+class get_x(Event):
+    """get_x Event"""
+    success = True
+
+
+class get_y(Event):
+    """get_y Event"""
+    success = True
+
+
+class eval(Event):
+    """eval Event"""
+    success = True
+
+
+class App(Component):
+
+    @handler("wait")
+    def _on_wait(self):
+        x = self.fire(hello())
         yield self.wait("hello")
-        yield x
+        yield x.value
 
-    def test_call(self):
-        x = yield self.call(Hello())
-        yield x
+    @handler("call")
+    def _on_call(self):
+        x = yield self.call(hello())
+        yield x.value
 
     def hello(self):
         return "Hello World!"
 
-    def test_long_wait(self):
-        x = self.fire(Foo())
+    def long_wait(self):
+        x = self.fire(foo())
         yield self.wait("foo")
-        yield x
+        yield x.value
 
-    def test_long_call(self):
-        x = yield self.call(Foo())
-        yield x
+    def wait_return(self):
+        self.fire(foo())
+        yield (yield self.wait("foo"))
+
+    def long_call(self):
+        x = yield self.call(foo())
+        yield x.value
 
     def foo(self):
         for i in range(1, 10):
@@ -77,67 +94,68 @@ class Test(Component):
     def get_y(self):
         return 2
 
-    def test_eval(self):
-        x = yield self.call(GetX())
-        y = yield self.call(GetY())
+    def eval(self):
+        x = yield self.call(get_x())
+        y = yield self.call(get_y())
         yield x.value + y.value
 
 
-def test_wait():
-    test = Test()
-    test.start()
+@pytest.fixture(scope="module")
+def app(request, manager, watcher):
+    app = App().register(manager)
+    assert watcher.wait("registered")
 
-    x = pytest.call_event_from_name(test, TestWait(), "hello_success")
-    # After event is done, app needs some time to update value
-    # (happens when tasks are called again).
-    sleep(0.1)
+    def finalizer():
+        app.unregister()
+
+    request.addfinalizer(finalizer)
+
+    return app
+
+
+def test_wait_simple(manager, watcher, app):
+    x = manager.fire(wait())
+    assert watcher.wait("wait_success")
+
     value = x.value
     assert value == "Hello World!"
 
-    test.stop()
 
+def call_simple(manager, watcher, app):
+    x = manager.fire(call())
+    assert watcher.wait("call_success")
 
-def test_call():
-    test = Test()
-    test.start()
-
-    x = pytest.call_event(test, TestCall())
     value = x.value
     assert value == "Hello World!"
 
-    test.stop()
 
-
-def test_long_call():
-    test = Test()
-    test.start()
-
-    x = pytest.call_event(test, TestLongCall())
+def test_long_call(manager, watcher, app):
+    x = manager.fire(long_call())
+    assert watcher.wait("long_call_success")
 
     value = x.value
     assert value == list(range(1, 10))
 
-    test.stop()
 
-
-def test_long_wait():
-    test = Test()
-    test.start()
-
-    x = pytest.call_event(test, TestLongWait())
+def test_long_wait(manager, watcher, app):
+    x = manager.fire(long_wait())
+    assert watcher.wait("long_wait_success")
 
     value = x.value
     assert value == list(range(1, 10))
 
-    test.stop()
+
+def test_wait_return(manager, watcher, app):
+    x = manager.fire(wait_return())
+    assert watcher.wait("wait_return_success")
+
+    value = x.value
+    assert value == list(range(1, 10))
 
 
-def test_eval():
-    test = Test()
-    test.start()
+def test_eval(manager, watcher, app):
+    x = manager.fire(eval())
+    assert watcher.wait("eval_success")
 
-    x = pytest.call_event(test, TestEval())
     value = x.value
     assert value == 3
-
-    test.stop()

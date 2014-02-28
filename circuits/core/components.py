@@ -1,44 +1,22 @@
 # Package:  components
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
+
 """
 This module defines the BaseComponent and its subclass Component.
 """
 
 from itertools import chain
 from types import MethodType
+from inspect import getmembers
 from collections import Callable
-from inspect import getmembers, isclass
 
 from .manager import Manager
-from .utils import flatten, findroot
-from .events import Event, Registered, Unregistered
 from .handlers import handler, HandlerMetaClass
+from .events import Event, registered, unregistered
 
 
-def check_singleton(x, y):
-    """Return True if x contains a singleton that is already a member of y"""
-
-    singletons = [i for i in flatten(x) if getattr(i, "singleton", False)]
-
-    for component in singletons:
-        singleton = getattr(component, "singleton", False)
-        if isclass(singleton) and issubclass(singleton, Manager):
-            if any([isinstance(c, singleton) for c in flatten(findroot(y))]):
-                return True
-        elif singleton:
-            if any([type(component) in c for c in flatten(findroot(y))]):
-                return True
-
-    return False
-
-
-class SingletonError(Exception):
-    """Raised if a Component with the `singleton` class attribute is True.
-    """
-
-
-class PrepareUnregister(Event):
+class prepare_unregister(Event):
     """
     This event is fired when a component is about to be unregistered
     from the component tree. Unregistering a component actually
@@ -56,7 +34,7 @@ class PrepareUnregister(Event):
     complete = True
 
     def __init__(self, *args, **kwargs):
-        super(PrepareUnregister, self).__init__(*args, **kwargs)
+        super(prepare_unregister, self).__init__(*args, **kwargs)
 
     def in_subtree(self, component):
         """
@@ -104,7 +82,6 @@ class BaseComponent(Manager):
     """
 
     channel = "*"
-    singleton = False
 
     def __new__(cls, *args, **kwargs):
         self = super(BaseComponent, cls).__new__(cls)
@@ -145,10 +122,10 @@ class BaseComponent(Manager):
 
         if hasattr(self, "init") and isinstance(self.init, Callable):
             self.init(*args, **kwargs)
-            
+
         @handler("prepare_unregister_complete", channel=self)
-        def _on_prepare_unregister_complete(self, e, value):
-            self._do_prepare_unregister_complete(e, value)
+        def _on_prepare_unregister_complete(self, event, e, value):
+            self._do_prepare_unregister_complete(event.parent, value)
         self.addHandler(_on_prepare_unregister_complete)
 
     def register(self, parent):
@@ -162,8 +139,6 @@ class BaseComponent(Manager):
         This method fires a :class:`~.events.Registered` event to inform
         other components in the tree about the new member.
         """
-        if check_singleton(self, parent):
-            raise SingletonError(self)
 
         self.parent = parent
         self.root = parent.root
@@ -173,7 +148,7 @@ class BaseComponent(Manager):
         if parent is not self:
             parent.registerChild(self)
             self._updateRoot(parent.root)
-            self.fire(Registered(self, self.parent))
+            self.fire(registered(self, self.parent))
         else:
             self._updateRoot(parent.root)
 
@@ -192,13 +167,13 @@ class BaseComponent(Manager):
         Removing a component from the component tree is a two stage process.
         First, the component is marked as to be removed, which prevents it
         from receiving further events, and a
-        :class:`~.components.PrepareUnregister` event is fired. This
+        :class:`~.components.prepare_unregister` event is fired. This
         allows other components to e.g. release references to the component
         to be removed before it is actually removed from the component tree.
 
-        After the processing of the ``PrepareUnregister`` event has completed,
+        After the processing of the ``prepare_unregister`` event has completed,
         the component is removed from the tree and an
-        :class:`~.events.Unregistered` event is fired.
+        :class:`~.events.unregistered` event is fired.
         """
 
         if self.unregister_pending or self.parent == self:
@@ -209,7 +184,7 @@ class BaseComponent(Manager):
         self.root._cache_needs_refresh = True
 
         # Give components a chance to prepare for unregister
-        evt = PrepareUnregister(self)
+        evt = prepare_unregister(self)
         evt.complete_channels = (self,)
         self.fire(evt)
 
@@ -222,7 +197,7 @@ class BaseComponent(Manager):
     def _do_prepare_unregister_complete(self, e, value):
         # Remove component from tree now
         delattr(self, "_unregister_pending")
-        self.fire(Unregistered(self, self.parent))
+        self.fire(unregistered(self, self.parent))
 
         if self.parent is not self:
             self.parent.unregisterChild(self)
@@ -240,6 +215,15 @@ class BaseComponent(Manager):
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
 
+        return list(
+            getattr(cls, k) for k in dir(cls)
+            if getattr(getattr(cls, k), "handler", False)
+        )
+
+    @classmethod
+    def events(cls):
+        """Returns a list of all events this Component listens to"""
+
         handlers = (
             getattr(cls, k).names for k in dir(cls)
             if getattr(getattr(cls, k), "handler", False)
@@ -254,7 +238,7 @@ class BaseComponent(Manager):
     def handles(cls, *names):
         """Returns True if all names are event handlers of this Component"""
 
-        return all(name in cls.handlers() for name in names)
+        return all(name in cls.events() for name in names)
 
 
 Component = HandlerMetaClass("Component", (BaseComponent,), {})

@@ -5,7 +5,7 @@ from circuits.core.handlers import handler
 
 """Component Setup Tests
 
-Tests that filters and listeners of a Component are
+Tests that event handlers of a Component are
 automatically registered as event handlers.
 """
 

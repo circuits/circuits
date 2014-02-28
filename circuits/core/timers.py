@@ -1,9 +1,8 @@
 # Module:   timers
 # Date:     04th August 2004
 # Author:   James Mills <prologic@shortcircuit.net.au>
-"""
-Timer component to facilitate timed events.
-"""
+
+"""Timer component to facilitate timed events."""
 
 from circuits.core.handlers import handler
 
@@ -14,7 +13,8 @@ from .components import BaseComponent
 
 
 class Timer(BaseComponent):
-    """
+    """Timer Component
+
     A timer is a component that fires an event once after a certain
     delay or periodically at a regular interval.
     """
@@ -34,24 +34,25 @@ class Timer(BaseComponent):
         the event will be fired repeatedly. Else the timer fires the
         event once and then unregisters itself.
         """
+
         super(Timer, self).__init__()
 
-        if isinstance(interval, datetime):
-            self.interval = mktime(interval.timetuple()) - time()
-        else:
-            self.interval = interval
-
+        self.expiry = None
+        self.interval = None
         self.event = event
         self.channels = channels
-
         self.persist = kwargs.get("persist", False)
 
-        self.reset()
+        self.reset(interval)
 
     @handler("generate_events")
     def _on_generate_events(self, event):
+        if self.expiry is None:
+            return
+
         now = time()
-        if now >= self._eTime:
+
+        if now >= self.expiry:
             if self.unregister_pending:
                 return
             self.fire(self.event, *self.channels)
@@ -62,16 +63,25 @@ class Timer(BaseComponent):
                 self.unregister()
             event.reduce_time_left(0)
         else:
-            event.reduce_time_left(self._eTime - now)
+            event.reduce_time_left(self.expiry - now)
 
-    def reset(self):
+    def reset(self, interval=None):
         """
         Reset the timer, i.e. clear the amount of time already waited
         for.
         """
 
-        self._eTime = time() + self.interval
+        if interval is not None and isinstance(interval, datetime):
+            self.interval = mktime(interval.timetuple()) - time()
+        elif interval is not None:
+            self.interval = interval
+
+        self.expiry = time() + self.interval
 
     @property
     def expiry(self):
-        return getattr(self, "_eTime", None)
+        return getattr(self, "_expiry", None)
+
+    @expiry.setter
+    def expiry(self, seconds):
+        self._expiry = seconds

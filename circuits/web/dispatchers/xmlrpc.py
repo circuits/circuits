@@ -14,12 +14,11 @@ except ImportError:
     from xmlrpclib import dumps, loads, Fault  # NOQA
 
 from circuits.six import binary_type
-from circuits.web.events import Response
 from circuits import handler, Event, BaseComponent
 
 
-class RPC(Event):
-    """RPC Event"""
+class rpc(Event):
+    """rpc Event"""
 
 
 class XMLRPC(BaseComponent):
@@ -33,15 +32,15 @@ class XMLRPC(BaseComponent):
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("request", filter=True, priority=0.2)
-    def _on_request(self, request, response):
-        if self.path is not None and self.path != request.path.rstrip("/"):
+    @handler("request", priority=0.2)
+    def _on_request(self, event, req, res):
+        if self.path is not None and self.path != req.path.rstrip("/"):
             return
 
-        response.headers["Content-Type"] = "text/xml"
+        res.headers["Content-Type"] = "text/xml"
 
         try:
-            data = request.body.read()
+            data = req.body.read()
             params, method = loads(data)
 
             if "." in method:
@@ -51,23 +50,12 @@ class XMLRPC(BaseComponent):
 
             name = str(name) if not isinstance(name, binary_type) else name
 
-            @handler("%s_value_changed" % name, priority=0.1)
-            def _on_value_changed(self, value):
-                response = value.response
-                response.body = self._response(value.value)
-                self.fire(Response(response), self.channel)
-                value.handled = True
-
-            self.addHandler(_on_value_changed)
-
-            value = self.fire(RPC.create(name.title(), *params), channel)
-            value.response = response
-            value.notify = True
+            value = yield self.call(rpc.create(name, *params), channel)
+            yield self._response(value.value)
         except Exception as e:
-            r = self._error(1, "%s: %s" % (type(e), e))
-            return r
-        else:
-            return True
+            yield self._error(1, "%s: %s" % (type(e), e))
+        finally:
+            event.stop()
 
     def _response(self, result):
         return dumps((result,), encoding=self.encoding, allow_none=True)

@@ -16,7 +16,7 @@ from circuits.core import handler, BaseComponent
 
 from . import tools
 from .wrappers import Response
-from .errors import Forbidden, HTTPError, NotFound, Redirect
+from .errors import forbidden, httperror, notfound, redirect
 
 
 def expose(*channels, **config):
@@ -47,6 +47,10 @@ def expose(*channels, **config):
             getargspec(f)
         if wrapper.args and wrapper.args[0] == "self":
             del wrapper.args[0]
+
+        if wrapper.args and wrapper.args[0] == "event":
+            f.event = True
+            del wrapper.args[0]
         wrapper.event = True
 
         return update_wrapper(wrapper, f)
@@ -69,16 +73,15 @@ class BaseController(BaseComponent):
 
     channel = "/"
 
-    def url(self, *args, **kwargs):
-        """Return the current URL or create a new URL
+    @property
+    def uri(self):
+        """Return the current Request URI
 
-        If no arguments or keywords arguments are passed, returns the
-        current URL for the current request.
-
-        .. seealso:: :py:func:`circuits.web.utils.url`
+        .. seealso:: :py:class:`circuits.web.url.URL`
         """
 
-        return self.request.url(*args, **kwargs)
+        if hasattr(self, "request"):
+            return self.request.uri
 
     def forbidden(self, description=None):
         """Return a 403 (Forbidden) response
@@ -87,7 +90,7 @@ class BaseController(BaseComponent):
         :type description: str
         """
 
-        return Forbidden(self.request, self.response, description=description)
+        return forbidden(self.request, self.response, description=description)
 
     def notfound(self, description=None):
         """Return a 404 (Not Found) response
@@ -96,7 +99,7 @@ class BaseController(BaseComponent):
         :type description: str
         """
 
-        return NotFound(self.request, self.response, description=description)
+        return notfound(self.request, self.response, description=description)
 
     def redirect(self, urls, code=None):
         """Return a 30x (Redirect) response
@@ -110,7 +113,7 @@ class BaseController(BaseComponent):
         :param code: HTTP Redirect code
         :type code: int
         """
-        return Redirect(self.request, self.response, urls, code=code)
+        return redirect(self.request, self.response, urls, code=code)
 
     def serve_file(self, path, type=None, disposition=None, name=None):
         return tools.serve_file(
@@ -141,7 +144,7 @@ def exposeJSON(*channels, **config):
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
                 result = f(self, *args, **kwargs)
-                if (isinstance(result, HTTPError)
+                if (isinstance(result, httperror)
                         or isinstance(result, Response)):
                     return result
                 else:

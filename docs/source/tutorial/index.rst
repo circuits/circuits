@@ -344,5 +344,4 @@ tutorial on some of the basic concepts. As you're no doubt itching to get
 started on your next circuits project, here's some recommended reading:
 
 - :doc:`../faq`
-- :doc:`../howtos/index`
 - :doc:`../api/index`

@@ -3,14 +3,14 @@
 from circuits import Event, Component, Manager
 
 
-class Foo(Event):
-    """Foo Event"""
+class foo(Event):
+    """foo Event"""
 
     channels = ("a",)
 
 
-class Bar(Event):
-    """Bar Event"""
+class bar(Event):
+    """bar Event"""
 
 
 class A(Component):
@@ -34,7 +34,7 @@ class C(Component):
     channel = "c"
 
     def foo(self):
-        return self.fire(Bar())
+        return self.fire(bar())
 
     def bar(self):
         return "Bar"
@@ -47,22 +47,22 @@ def test():
         m.flush()
 
     # Rely on Event.channels
-    x = m.fire(Foo())
+    x = m.fire(foo())
     m.flush()
     assert x.value == "Foo"
 
     # Explicitly specify the channel
-    x = m.fire(Foo(), "b")
+    x = m.fire(foo(), "b")
     m.flush()
     assert x.value == "Hello World!"
 
     # Explicitly specify a set of channels
-    x = m.fire(Foo(), "a", "b")
+    x = m.fire(foo(), "a", "b")
     m.flush()
     assert x.value == ["Foo", "Hello World!"]
 
     # Rely on self.channel
-    x = m.fire(Foo(), "c")
+    x = m.fire(foo(), "c")
     m.flush()
     m.flush()
     assert x.value == "Bar"

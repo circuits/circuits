@@ -56,7 +56,7 @@ class Bridge(BaseComponent):
     def _process_packet(self, eid, obj):
         if isinstance(obj, Event):
             obj.remote = True
-            obj.notify = "ValueChanged"
+            obj.notify = "value_changed"
             value = self.fire(obj)
             self._values[value] = eid
         elif isinstance(obj, Value):
@@ -87,5 +87,5 @@ class Bridge(BaseComponent):
         if event.name in self.ignore or getattr(event, "remote", False):
             return
 
-        event.notify = "ValueChanged"
+        event.notify = "value_changed"
         self.send(event)

@@ -1,51 +1,38 @@
 #!/usr/bin/env python
 
-import os
 from glob import glob
-from distutils.util import convert_path
-
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup  # NOQA
+from os import getcwd, path
+from imp import new_module
 
 
-def find_packages(where=".", exclude=()):
-    """Borrowed directly from setuptools"""
+from setuptools import setup, find_packages
 
-    out = []
-    stack = [(convert_path(where), "")]
-    while stack:
-        where, prefix = stack.pop(0)
-        for name in os.listdir(where):
-            fn = os.path.join(where, name)
-            if ("." not in name and os.path.isdir(fn) and
-                    os.path.isfile(os.path.join(fn, "__init__.py"))):
-                out.append(prefix + name)
-                stack.append((fn, prefix + name + "."))
 
-    from fnmatch import fnmatchcase
-    for pat in list(exclude) + ["ez_setup"]:
-        out = [item for item in out if not fnmatchcase(item, pat)]
+version = new_module("version")
 
-    return out
+exec(
+    compile(
+        open(path.join(path.dirname(globals().get("__file__", path.join(getcwd(), "circuits"))), "circuits/version.py"), "r").read(),
+        "circuits/version.py", "exec"
+    ),
+    version.__dict__
+)
 
-path = os.path.abspath(os.path.dirname(__file__))
-try:
-    README = open(os.path.join(path, "README.rst")).read()
-    RELEASE = open(os.path.join(path, "RELEASE.rst")).read()
-except IOError:
-    README = RELEASE = ""
 
 setup(
     name="circuits",
-    version="2.1.0",
+    version=version.version,
     description="Asynchronous Component based Event Application Framework",
-    long_description="%s\n\n%s" % (README, RELEASE),
+    long_description="{0:s}\n\n{1:s}".format(
+        open("README.rst").read(), open("CHANGES.rst").read()
+    ).replace(
+        ".. include:: examples/index.rst",
+        open("examples/index.rst", "r").read()
+    ),
     author="James Mills",
-    author_email="James Mills, prologic at shortcircuit dot net dot au",
-    url="http://bitbucket.org/prologic/circuits/",
-    download_url="http://bitbucket.org/prologic/circuits/downloads/",
+    author_email="James Mills, j dot mills at griffith dot edu dot au",
+    url="http://circuitsframework.com/",
+    download_url="http://bitbucket.org/circuits/circuits/downloads/",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
@@ -87,13 +74,13 @@ setup(
     keywords="event framework distributed concurrent component asynchronous",
     platforms="POSIX",
     packages=find_packages("."),
-    scripts=glob("scripts/*"),
-    entry_points="""
-    [console_scripts]
-    circuits.web = circuits.web.main:main
-    """,
-    zip_safe=False,
-    test_suite="tests.main.runtests",
+    scripts=glob("bin/*"),
+    install_requires=[],
+    entry_points={
+        "console_scripts": [
+            "circuits.web=circuits.web.main:main",
+        ]
+    },
+    test_suite="tests.main.main",
+    zip_safe=True
 )
-
-# hghooks: no-pyflakes

@@ -4,11 +4,11 @@ try:
 except ImportError:
     from urlparse import urlparse  # NOQA
 
+from circuits.protocols.http import HTTP
 from circuits.web.headers import Headers
+from circuits.net.sockets import TCPClient
+from circuits.net.events import close, connect, write
 from circuits.core import handler, BaseComponent, Event
-from circuits.net.sockets import TCPClient, Connect, Write, Close
-
-from circuits.net.protocols.http import HTTP
 
 
 def parse_url(url):
@@ -28,12 +28,12 @@ def parse_url(url):
     else:
         raise ValueError("Invalid URL scheme")
 
-    resource = p.path or "/"
+    path = p.path or "/"
 
     if p.query:
-        resource += "?" + p.query
+        path += "?" + p.query
 
-    return (host, port, resource, secure)
+    return (host, port, path, secure)
 
 
 class HTTPException(Exception):
@@ -44,32 +44,30 @@ class NotConnected(HTTPException):
     pass
 
 
-class Request(Event):
-    """Request Event
+class request(Event):
+    """request Event
 
     This Event is used to initiate a new request.
 
     :param method: HTTP Method (PUT, GET, POST, DELETE)
     :type  method: str
 
-    :param path: Path to resource
-    :type  path: str
+    :param url: Request URL
+    :type  url: str
     """
 
     def __init__(self, method, path, body=None, headers={}):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Request, self).__init__(method, path, body, headers)
+        super(request, self).__init__(method, path, body, headers)
 
 
 class Client(BaseComponent):
 
     channel = "client"
 
-    def __init__(self, url, channel=channel):
+    def __init__(self, channel=channel):
         super(Client, self).__init__(channel=channel)
-        self._host, self._port, self._resource, self._secure = parse_url(url)
-
         self._response = None
 
         self._transport = TCPClient(channel=channel).register(self)
@@ -79,47 +77,53 @@ class Client(BaseComponent):
     @handler("write")
     def write(self, data):
         if self._transport.connected:
-            self.fire(Write(data), self._transport)
+            self.fire(write(data), self._transport)
 
     @handler("close")
     def close(self):
         if self._transport.connected:
-            self.fire(Close(), self._transport)
+            self.fire(close(), self._transport)
 
-    @handler("connect", filter=True)
-    def connect(self, host=None, port=None, secure=None):
-        host = host or self._host
-        port = port or self._port
-        secure = secure or self._secure
-
+    @handler("connect", priority=1)
+    def connect(self, event, host=None, port=None, secure=None):
         if not self._transport.connected:
-            self.fire(Connect(host, port, secure), self._transport)
+            self.fire(connect(host, port, secure), self._transport)
 
-        return True
+        event.stop()
 
     @handler("request")
-    def request(self, method, path, body=None, headers={}):
-        if self._transport.connected:
-            headers = Headers([(k, v) for k, v in headers.items()])
-            # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-            if "Host" not in headers:
-                headers["Host"] = self._host \
-                    + (":" + str(self._port)) if self._port else ""
-            if body is not None:
-                headers["Content-Length"] = len(body)
-            command = "%s %s HTTP/1.1" % (method, path)
-            message = "%s\r\n%s" % (command, headers)
-            self.fire(Write(message.encode('utf-8')), self._transport)
-            if body is not None:
-                self.fire(Write(body), self._transport)
-        else:
-            raise NotConnected()
+    def request(self, method, url, body=None, headers={}):
+        host, port, path, secure = parse_url(url)
+
+        if not self._transport.connected:
+            self.fire(connect(host, port, secure))
+            yield self.wait("connected", self._transport.channel)
+
+        headers = Headers([(k, v) for k, v in headers.items()])
+
+        # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
+        if "Host" not in headers:
+            headers["Host"] = "{0:s}{1:s}".format(
+                host, "" if port in (80, 443) else ":{0:d}".format(port)
+            )
+
+        if body is not None:
+            headers["Content-Length"] = len(body)
+
+        command = "%s %s HTTP/1.1" % (method, path)
+        message = "%s\r\n%s" % (command, headers)
+        self.fire(write(message.encode('utf-8')), self._transport)
+        if body is not None:
+            self.fire(write(body), self._transport)
+
+        yield (yield self.wait("response"))
 
     @handler("response")
     def _on_response(self, response):
         self._response = response
-        if response.headers.get("Connection") == "Close":
-            self.fire(Close(), self._transport)
+        if response.headers.get("Connection") == "close":
+            self.fire(close(), self._transport)
+        return response
 
     @property
     def connected(self):

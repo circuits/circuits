@@ -1,22 +1,26 @@
 #!/usr/bin/python -i
 
-from circuits import handler, Event, Component, Manager
+import pytest
+
+from circuits import handler, Event, Component
 
 
-class Hello(Event):
-    "Hello Event"
+class hello(Event):
+    "Hhllo Event"
 
 
-class Test(Event):
-    "Test Event"
+class test(Event):
+    "test Event"
 
 
-class Foo(Event):
-    "Foo Event"
+class foo(Event):
+    "foo Event"
 
 
-class Values(Event):
-    "Values Event"
+class values(Event):
+    "values Event"
+
+    complete = True
 
 
 class App(Component):
@@ -25,7 +29,7 @@ class App(Component):
         return "Hello World!"
 
     def test(self):
-        return self.fire(Hello())
+        return self.fire(hello())
 
     def foo(self):
         raise Exception("ERROR")
@@ -48,83 +52,79 @@ class App(Component):
 
     @handler("values", priority=0.0)
     def _value3(self):
-        return self.fire(Hello())
+        return self.fire(hello())
 
 
-m = Manager()
-app = App()
-app.register(m)
+@pytest.fixture
+def app(request, manager, watcher):
+    app = App().register(manager)
+    watcher.wait("registered")
 
-while m:
-    m.flush()
+    def finalizer():
+        app.unregister()
+        watcher.wait("unregistered")
+
+    request.addfinalizer(finalizer)
+
+    return app
 
 
-def test_value():
-    x = m.fire(Hello())
-
-    while m:
-        m.flush()
+def test_value(app, watcher):
+    x = app.fire(hello())
+    watcher.wait("hello")
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
 
 
-def test_nested_value():
-    x = m.fire(Test())
-
-    while m:
-        m.flush()
+def test_nested_value(app, watcher):
+    x = app.fire(test())
+    watcher.wait("test")
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
 
 
-def test_value_notify():
-    x = m.fire(Hello())
+def test_value_notify(app, watcher):
+    x = app.fire(hello())
     x.notify = True
 
-    while m:
-        m.flush()
+    watcher.wait("hello_value_changed")
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
     assert app.value is x
 
-    app.value = None
 
-
-def test_nested_value_notify():
-    x = m.fire(Test())
+def test_nested_value_notify(app, watcher):
+    x = app.fire(test())
     x.notify = True
 
-    while m:
-        m.flush()
+    watcher.wait("hello_value_changed")
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
     assert app.value is x
 
-    app.value = None
 
+def test_error_value(app, watcher):
+    x = app.fire(foo())
+    watcher.wait("foo")
 
-def test_error_value():
-    x = m.fire(Foo())
-    while m:
-        m.flush()
     etype, evalue, etraceback = x
     assert etype is Exception
     assert str(evalue) == "ERROR"
     assert isinstance(etraceback, list)
 
 
-def test_multiple_values():
-    v = m.fire(Values())
-
-    while m:
-        m.flush()
+def test_multiple_values(app, watcher):
+    v = app.fire(values())
+    watcher.wait("values_complete")
 
     assert isinstance(v.value, list)
+
     x = list(v)
+
     assert "foo" in v
     assert x == ["foo", "bar", "Hello World!"]
     assert x[0] == "foo"

@@ -14,7 +14,8 @@ from circuits import Debugger
 from circuits.io import Notify
 
 # Configure the system
-app = (Notify() + Debugger())  # app gets assigned the Notify instance
+app = Notify()
+Debugger().register(app)
 
 # Add the path to watch
 app.add_path(sys.argv[1])

@@ -33,7 +33,7 @@ We use the following tools to develop circuits and share code:
 - **Code Sharing:**
   `Mercurial <http://mercurial.selenic.com/>`_
 - **Code Hosting and Bug Reporting:**
-  `BitBucket <http://bitbucket.org/prologic/circuits>`_
+  `BitBucket <http://bitbucket.org/circuits/circuits>`_
 - **Project Management:**
   `Pivotal Tracker <http://pivotaltracker.com/projects/695621>`_
 - **Documentation Hosting:**
@@ -41,4 +41,4 @@ We use the following tools to develop circuits and share code:
 - **Package Hosting:**
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
 - **Continious Integration:**
-  `Shining Panda CI <https://jenkins.shiningpanda-ci.com/circuits/job/circuits/>`_
+  `Shining Panda CI <https://jenkins.shiningpanda-ci.com/prologic/job/circuits/>`_

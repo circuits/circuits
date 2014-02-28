@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# XXX: Broken - Does O_NONBLOCK work at all?
+
 """An implementation of the Python Concurrency Problem of 99 Bottles of Beer
 
 See: http://wiki.python.org/moin/Concurrency/99Bottles
@@ -24,7 +26,7 @@ class Tail(Component):
         NB: This is automatically called after ``__new__`` and ``__init__``.
         """
 
-        (File(filename, "r", autoclose=False) + LP()).register(self).seek(0, 2)
+        (File(filename, "r") + LP()).register(self)
 
 
 class Grep(Component):
@@ -43,4 +45,6 @@ class Grep(Component):
             print(line)
 
 # Configure and "run" the System.
-(Tail(sys.argv[1]) + Grep(sys.argv[2])).run()
+app = Tail(sys.argv[1])
+Grep(sys.argv[2]).register(app)
+app.run()

@@ -3,12 +3,12 @@
 from circuits import Event, Component
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
-class Hello(Event):
-    """Hello Event"""
+class hello(Event):
+    """hello Event"""
 
 
 class App(Component):
@@ -29,7 +29,7 @@ def test_return_generator():
     while app:
         app.flush()
 
-    v = app.fire(Test())
+    v = app.fire(test())
     app.tick()
     app.tick()
 
@@ -42,7 +42,7 @@ def test_yield():
     while app:
         app.flush()
 
-    v = app.fire(Hello())
+    v = app.fire(hello())
     app.tick()
     app.tick()
     app.tick()

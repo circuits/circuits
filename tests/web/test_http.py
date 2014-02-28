@@ -6,7 +6,7 @@ from circuits import Component
 from circuits.web import Controller
 from circuits.web.client import parse_url
 from circuits.net.sockets import TCPClient
-from circuits.net.sockets import Connect, Write
+from circuits.net.events import connect, write
 
 
 class Client(Component):
@@ -36,12 +36,12 @@ def test(webapp):
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.base)
-    client.fire(Connect(host, port))
+    host, port, resource, secure = parse_url(webapp.server.http.base)
+    client.fire(connect(host, port))
     assert pytest.wait_for(transport, "connected")
 
-    client.fire(Write(b"GET / HTTP/1.1\r\n"))
-    client.fire(Write(b"Content-Type: text/plain\r\n\r\n"))
+    client.fire(write(b"GET / HTTP/1.1\r\n"))
+    client.fire(write(b"Content-Type: text/plain\r\n\r\n"))
     assert pytest.wait_for(client, "done")
 
     client.stop()

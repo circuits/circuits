@@ -3,24 +3,27 @@
 from circuits import handler, Event, BaseComponent
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(BaseComponent):
 
-    @handler("test", filter=True)
-    def _on_test(self):
-        return "Hello World!"
+    @handler("test")
+    def _on_test(self, event):
+        try:
+            return "Hello World!"
+        finally:
+            event.stop()
 
     def _on_test2(self):
         pass  # Never reached
 
 
-def test():
+def test_main():
     app = App()
     while app:
         app.flush()
-    x = app.fire(Test())
+    x = app.fire(test())
     app.flush()
     assert x.value == "Hello World!"

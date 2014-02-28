@@ -1,22 +1,18 @@
 #!/usr/bin/env python
 
-from circuits.web.servers import Server
-
 from circuits import Component
-from circuits.net.sockets import Write
-from circuits.web.dispatchers import WebSockets
+from circuits.net.sockets import write
+from circuits.web.servers import Server
 from circuits.web.controllers import Controller
-from circuits.web.websocket import WebSocketClient
-from circuits.web.client import Connect
-import time
+from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
 
 
 class Echo(Component):
 
-    channel = "ws"
+    channel = "wsserver"
 
     def read(self, sock, data):
-        self.fireEvent(Write(sock, "Received: " + data))
+        self.fire(write(sock, "Received: " + data))
 
 
 class Root(Controller):
@@ -25,31 +21,38 @@ class Root(Controller):
         return "Hello World!"
 
 
-class WSClient(Component):
+class Client(Component):
+    channel = "ws"
 
-    response = None
+    def init(self, *args, **kwargs):
+        self.response = None
 
     def read(self, data):
         self.response = data
 
 
-def test1(webapp):
-    server = Server(("localhost", 8123))
+def test(manager, watcher):
+    server = Server(("localhost", 8123)).register(manager)
+    watcher.wait("ready")
+    from circuits import Debugger
+    Debugger().register(manager)
     Echo().register(server)
     Root().register(server)
-    WebSockets("/websocket").register(server)
-    server.start()
+    watcher.wait("registered", channel="wsserver")
+    watcher.clear()
+    WebSocketsDispatcher("/websocket").register(server)
+    watcher.wait("registered", channel="web")
+    WebSocketClient("ws://localhost:8123/websocket").register(manager)
+    watcher.wait("connected", channel="wsclient")
 
-    client = WebSocketClient("ws://localhost:8123/websocket")
-    wsclient = WSClient().register(client)
-    client.start()
-    client.fire(Connect())
-    client.fire(Write("Hello!"), "ws")
-    for i in range(100):
-        if wsclient.response is not None:
-            break
-        time.sleep(0.010)
-    assert wsclient.response is not None
-    client.stop()
+    client = Client().register(manager)
+    client.fire(write("Hello!"), "ws")
+    watcher.wait("read", channel="ws")
+    assert client.response == "Received: Hello!"
 
-    server.stop()
+    client.unregister()
+    watcher.wait("unregistered")
+    watcher.clear()
+
+    server.unregister()
+    watcher.wait("unregistered")

@@ -17,7 +17,7 @@ from .handlers import handler, reprhandler
 class Debugger(BaseComponent):
     """Create a new Debugger Component
 
-    Creates a new Debugger Component that filters all events in the system
+    Creates a new Debugger Component that listens to all events in the system
     printing each event to sys.stderr or a Logger Component.
 
     :var IgnoreEvents: list of events (str) to ignore
@@ -39,9 +39,9 @@ class Debugger(BaseComponent):
         self.errors = errors
         self.events = events
 
-        if type(file) is str:
+        if isinstance(file, str):
             self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
-        elif type(file) is file or hasattr(file, "write"):
+        elif hasattr(file, "write"):
             self.file = file
         else:
             self.file = sys.stderr
@@ -54,7 +54,9 @@ class Debugger(BaseComponent):
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("error", channel="*", priority=100.0)
-    def _on_error(self, error_type, value, traceback, handler=None):
+    def _on_error(self, error_type, value, traceback,
+                  handler=None, fevent=None):
+
         if not self.errors:
             return
 
@@ -65,7 +67,7 @@ class Debugger(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
+        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, fevent, error_type, value)
         s.append(msg)
         s.extend(traceback)
         s.append("\n")
@@ -83,7 +85,7 @@ class Debugger(BaseComponent):
     def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 
-        Event handler to listen and filter all events printing
+        Event handler to listen to all events printing
         each event to self.file or a Logger Component instance
         by calling self.logger.debug
         """

@@ -27,8 +27,9 @@ class Root(Controller):
     def exit(self):
         raise SystemExit(0)
 
-server = (Server(8000) + Root())
-server.start()
+app = Server(("0.0.0.0", 8000))
+Root().register(app)
+app.start()
 
 webbrowser.open("http://127.0.0.1:8000/")
-server.join()
+app.join()

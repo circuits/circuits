@@ -19,10 +19,7 @@ event is dispatched. These can be declared explicitly on a
 :download:`Download handler_annotation.py <examples/handler_annotation.py>`
 
 The handler decorator on line 14 turned the method ``_on_started`` into an
-event handler for the event ``Started``. Event names used to define
-handlers are the uncameled class names of the event. An event with a class 
-name ``MySpecialEvent`` becomes "``my_special_event``" when referred to
-in a handler definition.
+event handler for the event ``started``.
 
 When defining explicit event handlers in this way, it's convention to
 use the following pattern::

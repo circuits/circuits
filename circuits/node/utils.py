@@ -11,13 +11,13 @@
 import json
 
 from circuits.core import Event
-from circuits.six import text_type
+from circuits.six import bytes_to_str, text_type
 
 
 def load_event(s):
     data = json.loads(s)
 
-    name = "".join(x.title() for x in str(data["name"]).split("_"))
+    name = bytes_to_str(data["name"].encode("utf-8"))
 
     args = []
     for arg in data["args"]:

@@ -9,8 +9,9 @@
 
 from weakref import WeakValueDictionary
 
+from circuits.net.sockets import TCPClient
 from circuits import handler, BaseComponent
-from circuits.net.sockets import Close, Connect, TCPClient, Write
+from circuits.net.events import close, connect, write
 
 from .utils import dump_event, load_value
 
@@ -36,9 +37,12 @@ class Client(BaseComponent):
         self._values = WeakValueDictionary()
 
         TCPClient(channel=self.channel).register(self)
-        self.fire(Connect(self._host, self._port))
 
-    def process(self, packet):
+    @handler("ready")
+    def _on_ready(self, component):
+        self.fire(connect(self._host, self._port))
+
+    def _process_packet(self, packet):
         v, id, errors = load_value(packet)
 
         if id in self._values:
@@ -47,10 +51,10 @@ class Client(BaseComponent):
             value.errors = errors
 
     def close(self):
-        self.fire(Close())
+        self.fire(close())
 
     def connect(self, host, port):
-        self.fire(Connect(host, port))
+        self.fire(connect(host, port))
 
     def send(self, event, e):
         id = self._nid
@@ -60,7 +64,7 @@ class Client(BaseComponent):
         data = dump_event(e, id)
         packet = data.encode("utf-8") + DELIMITER
 
-        self.fire(Write(packet))
+        self.fire(write(packet))
 
     @handler("read")
     def _on_read(self, data):
@@ -70,4 +74,4 @@ class Client(BaseComponent):
         if delimiter > 0:
             packet = self._buffer[:delimiter].decode("utf-8")
             self._buffer = self._buffer[(delimiter + len(DELIMITER)):]
-            self.process(packet)
+            self._process_packet(packet)

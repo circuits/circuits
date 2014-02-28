@@ -3,12 +3,13 @@
 from circuits import Event, Component
 
 
-class SimpleEvent(Event):
+class simple_event(Event):
     complete = True
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
+
     success = True
 
 
@@ -30,8 +31,8 @@ class Nested2(Component):
         """ Updating state. """
         self.root._state = "New state"
         # State change involves even more components as well.
-        self.fire(Test(), Nested3.channel)
-        self.fire(Test(), Nested3.channel)
+        self.fire(test(), Nested3.channel)
+        self.fire(test(), Nested3.channel)
 
 
 class Nested1(Component):
@@ -39,7 +40,7 @@ class Nested1(Component):
 
     def test(self):
         """ State change involves other components as well. """
-        self.fire(Test(), Nested2.channel)
+        self.fire(test(), Nested2.channel)
 
 
 class App(Component):
@@ -54,7 +55,7 @@ class App(Component):
 
     def test(self):
         """ Fire the test event that should produce a state change. """
-        evt = Test()
+        evt = test()
         evt.complete = True
         evt.complete_channels = [self.channel]
         self.fire(evt, Nested1.channel)
@@ -82,7 +83,7 @@ def test_complete_simple():
     """
     Test if complete works for an event without further effects
     """
-    app.fire(SimpleEvent())
+    app.fire(simple_event())
     while app:
         app.flush()
 
@@ -90,7 +91,7 @@ def test_complete_simple():
 
 
 def test_complete_nested():
-    app.fire(Test())
+    app.fire(test())
     while app:
         app.flush()
 

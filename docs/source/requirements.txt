@@ -1,2 +1,0 @@
-sphinxcontrib-bitbucket
-sphinxcontrib-googleanalytics

@@ -16,7 +16,7 @@ class PrefixingDispatcher(BaseComponent):
     def __init__(self, channel):
         super(PrefixingDispatcher, self).__init__(channel=channel)
 
-    @handler("request", filter=True, priority=1.0)
+    @handler("request", priority=1.0)
     def _on_request(self, event, request, response):
         path = request.path.strip("/")
 
@@ -67,10 +67,10 @@ def test_disps():
     DummyRoot().register(manager)
     manager.start()
 
-    f = urlopen(server1.base, timeout=3)
+    f = urlopen(server1.http.base, timeout=3)
     s = f.read()
     assert s == b"Hello from site 1!"
 
-    f = urlopen(server2.base, timeout=3)
+    f = urlopen(server2.http.base, timeout=3)
     s = f.read()
     assert s == b"Hello from site 2!"

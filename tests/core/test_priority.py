@@ -3,8 +3,8 @@
 from circuits import handler, Event, Component, Manager
 
 
-class Test(Event):
-    """Test Event"""
+class test(Event):
+    """test Event"""
 
 
 class App(Component):
@@ -29,8 +29,8 @@ while m:
     m.flush()
 
 
-def test():
-    v = m.fire(Test())
+def test_main():
+    v = m.fire(test())
     while m:
         m.flush()
     x = list(v)

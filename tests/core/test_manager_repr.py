@@ -13,7 +13,7 @@ from threading import current_thread
 
 import pytest
 
-from circuits import Event, Component, Manager
+from circuits import Component, Manager
 
 
 class App(Component):
@@ -22,11 +22,7 @@ class App(Component):
         pass
 
 
-class Test(Event):
-    pass
-
-
-def test():
+def test_main():
     id = "%s:%s" % (os.getpid(), current_thread().getName())
 
     m = Manager()

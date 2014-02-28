@@ -8,7 +8,7 @@ circuits is a **Lightweight** **Event** driven and **Asynchronous**
 **Application Framework** for the `Python Programming Language`_
 with a strong **Component** Architecture.
 
-:copyright: CopyRight (C) 2004-2012 by James Mills
+:copyright: CopyRight (C) 2004-2013 by James Mills
 :license: MIT (See: LICENSE)
 
 .. _Python Programming Language: http://www.python.org/
@@ -16,11 +16,12 @@ with a strong **Component** Architecture.
 
 __author__ = "James Mills"
 __date__ = "24th February 2013"
-__version__ = "2.1.0"
 
-from circuits.core import  Task, Worker
-from circuits.core import Debugger, Bridge, Loader, Manager, Timer
-from circuits.core import BaseEvent, DerivedEvent, Event, LiteralEvent
-from circuits.core import handler, reprhandler, BaseComponent, Component
+from .version import version as __version__
+
+from .core import Event
+from .core import task, Worker
+from .core import handler, reprhandler, BaseComponent, Component
+from .core import Debugger, Bridge, Loader, Manager, Timer, TimeoutError
 
 # flake8: noqa

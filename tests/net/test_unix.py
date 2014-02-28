@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 
+import pytest
+
 import os
 import sys
-
-import pytest
+import select
 
 if sys.platform in ("win32", "cygwin"):
     pytest.skip("Test Not Applicable on Windows")
 
 from circuits import Manager
-from circuits.core.pollers import Select
-from circuits.net.sockets import Close, Connect, Write
+from circuits.net.sockets import close, connect, write
 from circuits.net.sockets import UNIXServer, UNIXClient
+from circuits.core.pollers import Select, Poll, EPoll, KQueue
 
 from .client import Client
 from .server import Server
@@ -20,26 +21,14 @@ from .server import Server
 def pytest_generate_tests(metafunc):
     metafunc.addcall(funcargs={"Poller": Select})
 
-    try:
-        from circuits.core.pollers import Poll
-        Poll()
+    if hasattr(select, "poll"):
         metafunc.addcall(funcargs={"Poller": Poll})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import EPoll
-        EPoll()
+    if hasattr(select, "epoll"):
         metafunc.addcall(funcargs={"Poller": EPoll})
-    except AttributeError:
-        pass
 
-    try:
-        from circuits.core.pollers import KQueue
-        KQueue()
+    if hasattr(select, "kqueue"):
         metafunc.addcall(funcargs={"Poller": KQueue})
-    except AttributeError:
-        pass
 
 
 def test_unix(tmpdir, Poller):
@@ -60,19 +49,19 @@ def test_unix(tmpdir, Poller):
         assert pytest.wait_for(server, "ready")
         assert pytest.wait_for(client, "ready")
 
-        client.fire(Connect(filename))
+        client.fire(connect(filename))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        client.fire(Write(b"foo"))
+        client.fire(write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
 
-        client.fire(Close())
+        client.fire(close())
         assert pytest.wait_for(client, "disconnected")
         assert pytest.wait_for(server, "disconnected")
 
-        server.fire(Close())
+        server.fire(close())
         assert pytest.wait_for(server, "closed")
     finally:
         m.stop()

@@ -10,15 +10,15 @@
 from circuits import Event
 
 
-class Packet(Event):
-    """Packet Event"""
+class packet(Event):
+    """packet Event"""
 
 
-class Remote(Event):
-    """Remote Event
+class remote(Event):
+    """remote Event
 
     ...
     """
 
     def __init__(self, event, node, channel=None):
-        super(Remote, self).__init__(event, node, channel=None)
+        super(remote, self).__init__(event, node, channel=None)

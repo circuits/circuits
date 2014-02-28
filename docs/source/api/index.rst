@@ -1,15 +1,10 @@
-=============
-API Reference
-=============
+=================
+API Documentation
+=================
+
 
 .. toctree::
-   :maxdepth: 1
-   
-   circuits_core
-   circuits_io
-   circuits_net
-   circuits_node
-   circuits_tools
-   circuits_web
-   circuits_app
-   
+    :maxdepth: 2
+    :glob:
+    
+    circuits*

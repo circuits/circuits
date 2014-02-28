@@ -16,7 +16,7 @@ class FallBackGenerator(BaseComponent):
         super(FallBackGenerator, self).__init__(*args, **kwargs)
         self._continue = Event()
 
-    @handler("generate_events", priority=-100, filter=True)
+    @handler("generate_events", priority=-100)
     def _on_generate_events(self, event):
         """
         Fall back handler for the :class:`~.events.GenerateEvents` event.
@@ -24,13 +24,14 @@ class FallBackGenerator(BaseComponent):
         When the queue is empty a GenerateEvents event is fired, here
         we sleep for as long as possible to avoid using extra cpu cycles.
 
-        A poller would overwrite with with a higher priority filter, e.g.
-        @handler("generate_events", priority=0, filter=True)
+        A poller would override with with a higher priority handler.
+        e.g: ``@handler("generate_events", priority=0)``
         and provide a different way to idle when the queue is empty.
         """
+
         with event.lock:
             if event.time_left == 0:
-                return True
+                event.stop()
             self._continue.clear()
 
         if event.time_left > 0:
@@ -43,7 +44,7 @@ class FallBackGenerator(BaseComponent):
             # reduce_time_left(0) has been called. So calling this
             # here is OK in any case.
             event.reduce_time_left(0)
-            return True
+            event.stop()
 
         while event.time_left < 0:
             # If we get here, there was no work left to do when creating
@@ -55,7 +56,7 @@ class FallBackGenerator(BaseComponent):
             # Python ignores signals when waiting without timeout.
             self._continue.wait(10000)
 
-        return True
+        event.stop()
 
     def resume(self):
         """
@@ -73,7 +74,8 @@ class FallBackErrorHandler(BaseComponent):
     """
 
     @handler("error", channel="*")
-    def _on_error(self, error_type, value, traceback, handler=None):
+    def _on_error(self, error_type, value, traceback,
+                  handler=None, fevent=None):
         s = []
 
         if handler is None:
@@ -81,7 +83,7 @@ class FallBackErrorHandler(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR %s (%s): %s\n" % (handler, error_type, value)
+        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, fevent, error_type, value)
         s.append(msg)
         s.extend(traceback)
         s.append("\n")

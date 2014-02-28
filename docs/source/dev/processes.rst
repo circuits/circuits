@@ -23,7 +23,7 @@ Bug Reports
 
 
 - New Bug Reports are submitted via:
-  http://bitbucket.org/prologic/circuits/issues
+  http://bitbucket.org/circuits/circuits/issues
 - Confirmation and Discussion of all New Bug Reports.
 - Once confirmed, a new Bug is raised in `Pivotal Tracker`_ into the IceBox.
 
@@ -33,7 +33,7 @@ Feature Requests
 
 
 - New Feature Requests are submitted via:
-  http://bitbucket.org/prologic/circuits/issues
+  http://bitbucket.org/circuits/circuits/issues
 - Confirmation and Discussion of all New Feature Requests.
 - Once confirmed, a new Feature is raised in `Pivotal Tracker`_ into the IceBox.
 

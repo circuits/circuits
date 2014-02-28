@@ -7,8 +7,9 @@
 ...
 """
 
+from circuits.net.events import write
+from circuits.net.sockets import TCPServer
 from circuits import handler, BaseComponent
-from circuits.net.sockets import TCPServer, Write
 
 from .utils import load_event, dump_value
 
@@ -30,11 +31,10 @@ class Server(BaseComponent):
 
         TCPServer(bind, channel=self.channel).register(self)
 
-    def process(self, sock, packet):
+    def _process_packet(self, sock, packet):
         e, id = load_event(packet)
 
         name = "%s_value_changed" % e.name
-        channel = e.channels[0] if e.channels else self
 
         @handler(name, channel=self)
         def on_value_changed(self, event, value):
@@ -50,7 +50,7 @@ class Server(BaseComponent):
     def send(self, v):
         data = dump_value(v)
         packet = data.encode("utf-8") + DELIMITER
-        self.fire(Write(v.node_sock, packet))
+        self.fire(write(v.node_sock, packet))
 
     @handler("read")
     def _on_read(self, sock, data):
@@ -62,4 +62,4 @@ class Server(BaseComponent):
         if delimiter > 0:
             packet = buffer[:delimiter].decode("utf-8")
             self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
-            self.process(sock, packet)
+            self._process_packet(sock, packet)

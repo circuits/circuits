@@ -1,7 +1,6 @@
 # Module:   dispatcher
 # Date:     13th September 2007
 # Author:   James Mills, prologic at shortcircuit dot net dot au
-from circuits.web.errors import HTTPError
 
 """Dispatcher
 
@@ -10,15 +9,19 @@ This is the default dispatcher used by circuits.web
 """
 
 try:
-    unicodestr = unicode
-except NameError:
-    unicodestr = str
+    from urllib import quote, unquote
+except ImportError:
+    from urllib.parse import quote, unquote  # NOQA
 
-from circuits import handler, BaseComponent
+from circuits.six import text_type
 
-from circuits.web.events import Request, Response
+from circuits import handler, BaseComponent, Event
+
+from circuits.web.utils import parse_qs
+from circuits.web.events import response
+from circuits.web.errors import httperror
+from circuits.web.processors import process
 from circuits.web.controllers import BaseController
-from circuits.web.utils import parse_body, parse_qs
 
 
 class Dispatcher(BaseComponent):
@@ -53,7 +56,7 @@ class Dispatcher(BaseComponent):
 
         yield 'index', parts
 
-    def find_handler(self, request):
+    def find_handler(self, req):
         def get_handlers(path, method):
             component = self.paths[path]
             return component._handlers.get(method, None)
@@ -63,16 +66,16 @@ class Dispatcher(BaseComponent):
             return all(len(h.args) == args_no or h.varargs for h in handlers)
 
         # Split /hello/world to ['hello', 'world']
-        starting_parts = [x for x in request.path.strip("/").split("/") if x]
+        starting_parts = [x for x in req.path.strip("/").split("/") if x]
 
         for path, parts in self.resolve_path(self.paths, starting_parts):
-            if get_handlers(path, request.method):
-                return request.method, path, parts
+            if get_handlers(path, req.method):
+                return req.method, path, parts
 
             for method, vpath in self.resolve_methods(parts):
                 handlers = get_handlers(path, method)
                 if handlers and (not vpath or accepts_vpath(handlers, vpath)):
-                    request.index = (method == 'index')
+                    req.index = (method == 'index')
                     return method, path, vpath
 
         return None, None, None
@@ -89,36 +92,41 @@ class Dispatcher(BaseComponent):
                 self.paths):
             del self.paths[component.channel]
 
-    @handler("request", filter=True, priority=0.1)
-    def _on_request(self, event, request, response, peer_cert=None):
+    @handler("request", priority=0.1)
+    def _on_request(self, event, req, res, peer_cert=None):
         if peer_cert:
             event.peer_cert = peer_cert
 
-        name, channel, vpath = self.find_handler(request)
+        name, channel, vpath = self.find_handler(req)
 
         if name is not None and channel is not None:
-            event.kwargs = parse_qs(request.qs)
-            parse_body(request, response, event.kwargs)
+            event.kwargs = parse_qs(req.qs)
+            process(req, event.kwargs)
 
             if vpath:
                 event.args += tuple(vpath)
 
-            if isinstance(name, unicodestr):
+            if isinstance(name, text_type):
                 name = str(name)
 
             return self.fire(
-                Request.create(name, *event.args, **event.kwargs), channel
+                Event.create(
+                    name, *event.args, **event.kwargs
+                ),
+                channel
             )
 
     @handler("request_value_changed")
     def _on_request_value_changed(self, value):
         if value.handled:
             return
-        request, response = value.event.args[:2]
+
+        req, res = value.event.args[:2]
         if value.result and not value.errors:
-            response.body = value.value
-            self.fire(Response(response))
+            res.body = value.value
+            self.fire(response(res))
+        elif value.promise:
+            value.event.notify = True
         else:
             # This possibly never occurs.
-            self.fire(HTTPError(request, response, error=value.value))
-
+            self.fire(httperror(req, res, error=value.value))

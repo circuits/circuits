@@ -20,6 +20,9 @@ class App(Component):
 
         Daemon(pidfile).register(self)
 
+    def prepare_unregister(self, *args):
+        return
+
 
 def main():
     if HAS_COVERAGE:
