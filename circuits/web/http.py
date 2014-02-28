@@ -153,8 +153,10 @@ class HTTP(BaseComponent):
         headers = res.headers
         sock = req.sock
 
-        # process body
-        if res.stream and res.body:
+        if req.method == "HEAD":
+            self.fire(write(sock, bytes(res)))
+            self.fire(write(sock, bytes(headers)))
+        elif res.stream and res.body:
             try:
                 data = next(res.body)
             except StopIteration:
