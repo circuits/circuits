@@ -1,4 +1,5 @@
 """
+
 .. codeauthor: mnl
 """
 
@@ -32,7 +33,7 @@ class WebSocketCodec(BaseComponent):
 
     channel = "ws"
 
-    def __init__(self, sock=None, *args, **kwargs):
+    def __init__(self, sock=None, data=bytearray(), *args, **kwargs):
         """
         Creates a new codec.
 
@@ -42,10 +43,18 @@ class WebSocketCodec(BaseComponent):
         super(WebSocketCodec, self).__init__(*args, **kwargs)
 
         self._sock = sock
+
         self._pending_payload = bytearray()
         self._pending_type = None
         self._close_received = False
         self._close_sent = False
+
+        messages = self._parse_messages(bytearray(data))
+        for message in messages:
+            if self._sock is not None:
+                self.fire(read(self._sock, message))
+            else:
+                self.fire(read(message))
 
     @handler("registered")
     def _on_registered(self, component, parent):

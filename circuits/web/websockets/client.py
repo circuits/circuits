@@ -115,7 +115,7 @@ class WebSocketClient(BaseComponent):
                 or response.status != 101:
             self.fire(close(), self._transport)
             raise NotConnected()
-        WebSocketCodec(channel=self._wschannel).register(self)
+        WebSocketCodec(data=response.body.read(), channel=self._wschannel).register(self)
 
     @handler("error", priority=10)
     def _on_error(self, event, error, *args, **kwargs):

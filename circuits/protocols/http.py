@@ -29,7 +29,7 @@ class ResponseObject(object):
         return "<Response {0:d} {1:s} {2:s} ({3:d})>".format(
             self.status,
             self.reason,
-            self.headers["Content-Type"],
+            self.headers.get("Content-Type"),
             len(self.body.getvalue())
         )
 
@@ -54,6 +54,7 @@ class HTTP(BaseComponent):
     def _on_client_read(self, data):
         self._parser.execute(data, len(data))
         if self._parser.is_message_complete() or \
+                self._parser.is_upgrade() or \
                 (self._parser.is_headers_complete() and
                  self._parser._clen == 0):
             status = self._parser.get_status_code()
