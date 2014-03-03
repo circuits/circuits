@@ -9,6 +9,8 @@ each event to sys.stderr or to a Logger Component instance.
 
 import os
 import sys
+from traceback import format_exc
+
 
 from .components import BaseComponent
 from .handlers import handler, reprhandler
@@ -81,7 +83,7 @@ class Debugger(BaseComponent):
             except IOError:
                 pass
 
-    @handler(channel="*", priority=101.0)
+    @handler(priority=101.0)
     def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 
@@ -90,31 +92,35 @@ class Debugger(BaseComponent):
         by calling self.logger.debug
         """
 
-        if not self.events:
-            return
+        try:
+            if not self.events:
+                return
 
-        channels = event.channels
+            channels = event.channels
 
-        if event.name in self.IgnoreEvents:
-            return
+            if event.name in self.IgnoreEvents:
+                return
 
-        if all(channel in self.IgnoreChannels for channel in channels):
-            return
+            if all(channel in self.IgnoreChannels for channel in channels):
+                return
 
-        s = repr(event)
+            s = repr(event)
 
-        if self.prefix:
-            s = "%s: %s" % (self.prefix, s)
+            if self.prefix:
+                s = "%s: %s" % (self.prefix, s)
 
-        if self.trim:
-            s = "%s ...>" % s[:self.trim]
+            if self.trim:
+                s = "%s ...>" % s[:self.trim]
 
-        if self.logger is not None:
-            self.logger.debug(s)
-        else:
-            try:
-                self.file.write(s)
-                self.file.write("\n")
-                self.file.flush()
-            except IOError:
-                pass
+            if self.logger is not None:
+                self.logger.debug(s)
+            else:
+                try:
+                    self.file.write(s)
+                    self.file.write("\n")
+                    self.file.flush()
+                except IOError:
+                    pass
+        except Exception as e:
+            print("ERROR (Debugger): {}".format(e))
+            print(format_exc())
