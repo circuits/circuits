@@ -42,6 +42,7 @@ except IOError:
 
 setup(
     name="circuits",
+    version="1.5.1",
     description="Asynchronous Component based Event Application Framework",
     long_description="%s\n\n%s" % (README, RELEASE),
     author="James Mills",
@@ -96,6 +97,4 @@ setup(
     [console_scripts]
     circuits.web = circuits.web.main:main
     """,
-    setup_requires=("hgtools",),
-    use_hg_version={"increment": "0.01"},
 )

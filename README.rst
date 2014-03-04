@@ -9,6 +9,13 @@
 .. _circuits Downloads page: https://bitbucket.org/prologic/circuits/downloads
 
 
+.. note:: This is a "Release Fix" for a **very old** version of circuits that the `Zato <https://zato.io/>`_ project
+          has asked for. See: `Issue #62 <https://bitbucket.org/circuits/circuits/issue/62/installing-circuits-15-install-1515>`_
+
+.. warning:: Please **DO NOT** use this release if you are not using `Zato <https://zato.io/>`_. circuits 1.x and 2.x are considered retired
+             and are no longer supported. For the latest version of circuits see: https://pypi.python.org/pypi/circuits
+
+
 Overview
 --------
 

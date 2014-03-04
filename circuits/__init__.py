@@ -13,7 +13,7 @@ Lightweight Event driven and Asynchronous Application Framework
 
 __author__ = "James Mills"
 __date__ = "12th February 2011"
-__version__ = "1.5"
+__version__ = "1.5.1"
 
 from circuits.core import handler, BaseComponent, Component, Event
 from circuits.core import future, Pool, Task, Worker
