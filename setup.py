@@ -30,7 +30,7 @@ setup(
         open("examples/index.rst", "r").read()
     ),
     author="James Mills",
-    author_email="James Mills, j dot mills at griffith dot edu dot au",
+    author_email="prologic@shortcircuit.net.au",
     url="http://circuitsframework.com/",
     download_url="http://bitbucket.org/circuits/circuits/downloads/",
     classifiers=[
@@ -78,6 +78,7 @@ setup(
     install_requires=[],
     entry_points={
         "console_scripts": [
+            "circuits.bench=circuits.bench.main:main",
             "circuits.web=circuits.web.main:main",
         ]
     },
