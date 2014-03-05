@@ -5,7 +5,4 @@ Changes
 circuits-3.0.dev
 ................
 
-- 10th Year Release
-- Improved Documentation
-- Improved API.
-- More Examples.
+- Fixed a bug with Web Sockets preventing initial data in the Response (Issue #53)
