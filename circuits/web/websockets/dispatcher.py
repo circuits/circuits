@@ -93,11 +93,15 @@ class WebSocketsDispatcher(BaseComponent):
             codec = WebSocketCodec(request.sock, channel=self._wschannel)
             self._codecs[request.sock] = codec
             codec.register(self)
-            self.fire(connect(request.sock, *request.sock.getpeername()),
-                      self._wschannel)
             return response
         finally:
             event.stop()
+
+    @handler("response_complete")
+    def _on_response_complete(self, e, value):
+        response = e.args[0]
+        request = response.request
+        self.fire(connect(request.sock, *request.sock.getpeername()), self._wschannel)
 
     @handler("disconnect")
     def _on_disconnect(self, sock):
