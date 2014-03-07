@@ -149,7 +149,7 @@ Component Inheritance
 
 Since circuits is a framework written for the `Python Programming
 Language`_ it naturally inherits properties of Object Orientated
-Programming (OOP) -- such as inheritence.
+Programming (OOP) -- such as inheritance.
 
 So let's take our ``Bob`` and ``Fred`` components and create a Base
 Component called ``Dog`` and modify our two dogs (``Bob`` and ``Fred``) to
