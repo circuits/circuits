@@ -42,9 +42,9 @@ def build(**options):
 
 
 @task()
-@requires("open")
 def view(**options):
     """View the Documentation"""
 
     with lcd("docs"):
-        local("open build/html/index.html")
+        import webbrowser
+        webbrowser.open_new_tab("build/html/index.html")
