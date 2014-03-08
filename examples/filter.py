@@ -40,8 +40,8 @@ class App(Component):
         raise SystemExit(0)  # Terminate the application
 
 # Start and "run" the system.
-# We're deliberately creating two instnaces of ``App``
-# so we can demonstrating event filtering.
+# We're deliberately creating two instances of ``App``
+# so we can demonstrate event filtering.
 app = App()
 App().register(app)  # 2nd App
 app.run()
