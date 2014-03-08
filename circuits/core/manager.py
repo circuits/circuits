@@ -256,11 +256,11 @@ class Manager(object):
         name = event.name
         handlers = set()
 
-        handlers_chain = [self._handlers.get("*", [])]
+        _handlers = set()
+        _handlers.update(self._handlers.get("*", []))
+        _handlers.update(self._handlers.get(name, []))
 
-        handlers_chain.append(self._handlers.get(name, []))
-
-        for _handler in chain(*handlers_chain):
+        for _handler in _handlers:
             handler_channel = _handler.channel
             if handler_channel is None:
                 handler_channel = getattr(
