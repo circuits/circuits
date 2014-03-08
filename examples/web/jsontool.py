@@ -15,7 +15,7 @@ class Root(Controller):
 
     @json
     def getrange(self, limit=4):
-        return range(int(limit))
+        return list(range(int(limit)))
 
 app = Server(("0.0.0.0", 8000))
 Root().register(app)
