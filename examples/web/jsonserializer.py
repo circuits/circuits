@@ -15,7 +15,7 @@ class JSONSerializer(Component):
         request, response = evt.args[:2]
 
         event[2] = json.dumps(retval.value)
-        response.headers["Content-Type"] = "application/javascript"
+        response.headers["Content-Type"] = "application/json"
 
 
 class Root(Controller):
