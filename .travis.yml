@@ -6,8 +6,6 @@ python:
   - "3.3"
   - "pypy"
 # command to install dependencies
-install:
-  - ./bootstrap.sh
-  - fab develop
+install: python setup.py install
 # command to run tests
-script: fab test
+script: python setup.py test
