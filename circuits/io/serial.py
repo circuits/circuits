@@ -24,8 +24,6 @@ serial = tryimport("serial")
 TIMEOUT = 0.2
 BUFSIZE = 4096
 
-print("Using circuits-dev serial")
-
 
 class _open(Event):
     """_open Event"""
