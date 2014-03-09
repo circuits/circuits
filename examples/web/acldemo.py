@@ -9,8 +9,8 @@ class ACL(Component):
 
     allowed = ["127.0.0.1"]
 
-    @handler("request", filter=True, priority=1.0)
-    def on_request(self, request, response):
+    @handler("request", priority=1.0)
+    def on_request(self, event, request, response):
         """Filter Requests applying IP based Authorization
 
         Filter any incoming requests at a higher priority than the
@@ -20,6 +20,7 @@ class ACL(Component):
         """
 
         if not request.remote.ip in self.allowed:
+            event.stop()
             return Forbidden(request, response)
 
 
