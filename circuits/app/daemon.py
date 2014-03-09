@@ -4,7 +4,7 @@
 
 """Daemon Component
 
-Component to daemonizae a system into the background and detach it from its
+Component to daemonize a system into the background and detach it from its
 controlling PTY. Supports PID file writing, logging stdin, stdout and stderr
 and changing the current working directory.
 """
@@ -30,7 +30,7 @@ class write_pid(Event):
     """"write_pid Event
 
     This event can be fired to notify the `Daemon` Component that is should
-    retrive the current process's id (pid) and write it out to the
+    retrieve the current process's id (pid) and write it out to the
     configured path in the `Daemon` Component. This event (*by default*)
     is used automatically by the `Daemon` Component after the
     :class:`Daemonize`.
@@ -81,9 +81,8 @@ class Daemon(BaseComponent):
 
     @handler("write_pid")
     def _on_write_pid(self):
-        f = open(self._pidfile, "w")
-        f.write(str(os.getpid()))
-        f.close()
+        with open(self._pidfile, "w") as fd:
+            fd.write(str(os.getpid()))
 
     @handler("daemonize")
     def _on_daemonize(self):
@@ -93,8 +92,8 @@ class Daemon(BaseComponent):
             if pid > 0:
                 # Exit first parent
                 os._exit(0)
-        except OSError as e:
-            print >> sys.stderr, "fork #1 failed: (%d) %s\n" % (errno, str(e))
+        except OSError as exc:
+            sys.stderr.write("fork #1 failed: (%d) %s\n" % (errno, exc))
             raise SystemExit(1)
 
         # Decouple from parent environment.
@@ -108,8 +107,8 @@ class Daemon(BaseComponent):
             if pid > 0:
                 # Exit second parent
                 os._exit(0)
-        except OSError as e:
-            print >> sys.stderr, "fork #2 failed: (%d) %s\n" % (e, str(e))
+        except OSError as exc:
+            sys.stderr.write("fork #2 failed: (%d) %s\n" % (e, exc))
             raise SystemExit(1)
 
         # Now I am a daemon!
