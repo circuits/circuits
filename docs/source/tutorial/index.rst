@@ -31,7 +31,7 @@ Okay so that's pretty boring as it doesn't do very much! But that's okay...
 Read on!
 
 Let's try to create our own custom Component called ``MyComponent``. This is done
-using the normal Python subclassing.
+using normal Python subclassing.
 
 .. literalinclude:: 002.py
    :language: python
@@ -66,7 +66,7 @@ Here we've created a simple **Event Handler** that listens for the ``started`` E
           **Event Handlers**. The only exception to this are methods prefixed with an underscore (``_``).
 
 .. note:: If you do not want this *automatic* behavior, inherit from ``BaseComponent`` instead which means
-          you will **have to** used the use the ``~circuits.core.handlers.handler`` decorator to define
+          you will **have to** use the ``~circuits.core.handlers.handler`` decorator to define
           your **Event Handlers**.
 
 Running this we get::
