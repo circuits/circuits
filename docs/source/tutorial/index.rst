@@ -44,7 +44,7 @@ custom components with the behavior we want.
 
 Let's move on to something more interesting...
 
-.. note:: Component(s) in circuits are what sets circuits apart from other Asynchrnoous or Concurrent
+.. note:: Component(s) in circuits are what sets circuits apart from other Asynchronous or Concurrent
           Application Frameworks. Components(s) are used as building blocks from simple behaviors to
           complex ones (*composition of simpler components to form more complex ones*).
 
