@@ -1,0 +1,13 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "pypy"
+# command to install dependencies
+install:
+  - ./bootstrap.sh
+  - fab develop
+# command to run tests
+script: fab test
