@@ -30,7 +30,8 @@ simple application.
 Okay so that's pretty boring as it doesn't do very much! But that's okay...
 Read on!
 
-Let's try to create our own custom Component called ``MyComponent``.
+Let's try to create our own custom Component called ``MyComponent``. This is done
+using normal Python subclassing.
 
 .. literalinclude:: 002.py
    :language: python
@@ -39,15 +40,19 @@ Let's try to create our own custom Component called ``MyComponent``.
 :download:`Download 002.py <002.py>`
 
 Okay, so this still isn't very useful! But at least we can create
-components with the behavior we want.
+custom components with the behavior we want.
 
 Let's move on to something more interesting...
+
+.. note:: Component(s) in circuits are what sets circuits apart from other Asynchronous or Concurrent
+          Application Frameworks. Components(s) are used as building blocks from simple behaviors to
+          complex ones (*composition of simpler components to form more complex ones*).
 
 
 Event Handlers
 --------------
 
-Let's now extend our little example to say "Hello World!" when its started.
+Let's now extend our little example to say "Hello World!" when it's started.
 
 .. literalinclude:: 003.py
    :language: python
@@ -55,9 +60,14 @@ Let's now extend our little example to say "Hello World!" when its started.
 
 :download:`Download 003.py <003.py>`
 
-Here we've created a simple **Event Handler** that listens for events on
-the "started" channel. Methods defined in a Component are converted into
-Event Handlers.
+Here we've created a simple **Event Handler** that listens for the ``started`` Event.
+
+.. note:: Methods defined in a custom subclassed ``Component`` are automatically turned into
+          **Event Handlers**. The only exception to this are methods prefixed with an underscore (``_``).
+
+.. note:: If you do not want this *automatic* behavior, inherit from ``BaseComponent`` instead which means
+          you will **have to** use the ``~circuits.core.handlers.handler`` decorator to define
+          your **Event Handlers**.
 
 Running this we get::
    
@@ -76,6 +86,8 @@ So now that we've learned how to use a Component, create a custom Component
 and create simple Event Handlers, let's try something a bit more complex
 by creating a complex component made up of two simpler ones.
 
+.. note:: We call this **Component Composition** which is the very essence of the circuits Application Framework.
+
 Let's create two components:
 
 - ``Bob``
@@ -89,7 +101,7 @@ Let's create two components:
 
 Notice the way we register the two components ``Bob`` and ``Fred`` together
 ? Don't worry if this doesn't make sense right now. Think of it as putting
-two components together and plugging them into a circuits board.
+two components together and plugging them into a circuit board.
 
 Running this example produces the following result::
    
@@ -108,6 +120,11 @@ to create a new Component made up of two other smaller components?
 
 We can do this by simply registering components to a Complex Component
 during initialization.
+
+.. note:: This is also called **Component Composition** and avoids the
+          classical `Diamond problem <http://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem>`_
+          of Multiple Inheritance. In circuits we do not use Multiple Inheritance to create **Complex Components**
+          made up of two or more base classes of components, we instead compose them together via registration.
 
 .. literalinclude:: 005.py
    :language: python
@@ -196,8 +213,7 @@ Event Objects
 -------------
 
 So far in our tutorial we have been defining an Event Handler for a builtin
-Event called ``Started`` (*which incidentally gets fired on a channel called
-"started"*). What if we wanted to define our own Event Handlers and our own
+Event called ``started``. What if we wanted to define our own Event Handlers and our own
 Events? You've already seen how easy it is to create a new Event Handler
 by simply defining a normal Python method on a Component.
 
