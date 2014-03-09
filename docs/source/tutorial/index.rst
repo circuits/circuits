@@ -86,7 +86,7 @@ So now that we've learned how to use a Component, create a custom Component
 and create simple Event Handlers, let's try something a bit more complex
 by creating a complex component made up of two simpler ones.
 
-.. note:: We call this **Component Composition** and is the very essence of the circuits Application Framework.
+.. note:: We call this **Component Composition** which is the very essence of the circuits Application Framework.
 
 Let's create two components:
 
