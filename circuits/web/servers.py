@@ -7,6 +7,7 @@
 This module implements the several Web Server components.
 """
 
+from sys import stderr
 
 from circuits import io
 from circuits.net.sockets import read, write
@@ -101,7 +102,7 @@ class BaseServer(BaseComponent):
 
     @handler("ready")
     def _on_ready(self, server, bind):
-        print(
+        stderr.write(
             "{0:s} ready! Listening on: {1:s}".format(
                 self.http.version, self.http.base
             )

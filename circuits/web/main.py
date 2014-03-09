@@ -8,6 +8,7 @@ circutis.web Web Server and Testing Tool.
 """
 
 import os
+from sys import stderr
 from optparse import OptionParser
 from wsgiref.validate import validator
 from wsgiref.simple_server import make_server
@@ -154,13 +155,13 @@ def main():
     poller = opts.type.lower()
     if poller == "poll":
         if Poll is None:
-            print("No poll support available - defaulting to Select...")
+            stderr.write("No poll support available - defaulting to Select...")
             Poller = Select
         else:
             Poller = Poll
     elif poller == "epoll":
         if EPoll is None:
-            print("No epoll support available - defaulting to Select...")
+            stderr.write("No epoll support available - defaulting to Select...")
             Poller = Select
         else:
             Poller = EPoll

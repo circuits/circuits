@@ -15,7 +15,7 @@ from types import GeneratorType
 from signal import SIGINT, SIGTERM
 from itertools import chain, count
 from heapq import heappush, heappop
-from sys import exc_info as _exc_info
+from sys import exc_info as _exc_info, stderr
 from weakref import WeakValueDictionary
 from traceback import format_exc, format_tb
 from signal import signal as set_signal_handler
@@ -821,8 +821,8 @@ class Manager(object):
             for _ in range(3):
                 self.tick()
         except Exception as e:
-            print("Unhandled ERROR: {0:s}".format(e))
-            print(format_exc())
+            stderr.write("Unhandled ERROR: {0:s}".format(e))
+            stderr.write("{}".format(format_exc()))
         finally:
             try:
                 self.tick()
