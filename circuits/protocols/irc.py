@@ -234,7 +234,7 @@ class IRC(Component):
     Creates a new IRC Component instance that implements the IRC Protocol.
     Incoming messages are handled by the "read" Event Handler, parsed and
     processed with appropriate Events created and exposed to the rest of
-    te system to listen to and handle.
+    the system to listen to and handle.
 
     @note: This Component must be used in conjunction with a Component that
            exposes Read Events on a "read" Channel.
@@ -325,9 +325,9 @@ class IRC(Component):
     def line(self, line):
         """Line Event Handler
 
-        Process a line of text and generate the appropiate
+        Process a line of text and generate the appropriate
         event. This must not be overridden by sub-classes,
-        if it is, this must be explitetly called by the
+        if it is, this must be explicitly called by the
         sub-class. Other Components may however listen to
         this event and process custom IRC events.
         """
@@ -415,11 +415,11 @@ class IRC(Component):
     def _on_ping(self, event, server):
         """Ping Event
 
-        This is a default event ro respond to Ping Events
+        This is a default event to respond to Ping Events
         by sending out a Pong in response. Sub-classes
         may override this, but be sure to respond to
-        Ping Events by either explitetly calling this method
-        or sending your own Pong reponse.
+        Ping Events by either explicitly calling this method
+        or sending your own Pong response.
         """
 
         if isinstance(event, ping):

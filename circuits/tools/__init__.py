@@ -74,7 +74,7 @@ def graph(x, name=None):
     :param name: A name for the graph (defaults to x's name)
     :type  name: str
 
-    @return: A directed graph representing x's Component sturcture.
+    @return: A directed graph representing x's Component structure.
     @rtype:  str
     """
 

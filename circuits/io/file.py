@@ -10,8 +10,8 @@ This module implements a wrapper for basic File I/O.
 try:
     from os import O_NONBLOCK
 except ImportError:
-    #If it fails, that's fine. the fcntl import
-    #will fail anyway.
+    # If it fails, that's fine. the fcntl import
+    # will fail anyway.
     pass
 
 from collections import deque

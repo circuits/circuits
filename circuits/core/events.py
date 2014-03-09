@@ -207,7 +207,7 @@ class error(Event):
 class started(Event):
     """started Event
 
-    This Event is sent when a Component or Manager  has started running.
+    This Event is sent when a Component or Manager has started running.
 
     :param manager: The component or manager that was started
     :type  manager: Component or Manager
@@ -250,8 +250,8 @@ class registered(Event):
     """registered Event
 
     This Event is sent when a Component has registered with another Component
-    or Manager. This Event is only sent iif the Component or Manager being
-    registered with is not itself.
+    or Manager. This Event is only sent if the Component or Manager being
+    registered which is not itself.
 
     :param component: The Component being registered
     :type  component: Component
@@ -287,7 +287,7 @@ class generate_events(Event):
     timed events or events from external sources (e.g. data becoming
     available) should fire any pending events in their "generate_events"
     handler.
-    
+
     The handler must either call :meth:`~stop` (*preventing other handlers
     from being called in the same iteration)
     or must invoke :meth:`~.reduce_time_left` with parameter 0.
