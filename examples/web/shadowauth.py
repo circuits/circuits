@@ -38,11 +38,12 @@ class PasswdAuth(Component):
     def init(self, realm=None):
         self.realm = realm or gethostname()
 
-    @handler("request", filter=True, priority=1.0)
-    def _on_request(self, request, response):
+    @handler("request", priority=1.0)
+    def _on_request(self, event, request, response):
         if "authorization" in request.headers:
             ah = _httpauth.parseAuthorization(request.headers["authorization"])
             if ah is None:
+                event.stop()
                 return HTTPError(request, response, 400)
 
             username, password = ah["username"], ah["password"]
@@ -53,6 +54,7 @@ class PasswdAuth(Component):
 
         response.headers["WWW-Authenticate"] = _httpauth.basicAuth(self.realm)
 
+        event.stop()
         return Unauthorized(request, response)
 
 

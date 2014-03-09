@@ -1,5 +1,3 @@
-syntax: glob
-
 *.pyc
 *.pyo
 *.xml
@@ -14,6 +12,3 @@ build
 coverage
 docs/build
 circuits.egg-info
-
-syntax: regexp
-^tests/trace\.html$
