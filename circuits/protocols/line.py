@@ -45,7 +45,7 @@ class Line(BaseComponent):
     A custom line splitter function can be passed to customize how data
     is split into lines. This function must accept two arguments, the data
     to process and any left over data from a previous invocation of the
-    splitter function. The function must also return a tiple of two items,
+    splitter function. The function must also return a tuple of two items,
     a list of lines and any left over data.
 
     :param splitter: a line splitter function

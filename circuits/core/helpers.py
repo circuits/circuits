@@ -24,7 +24,7 @@ class FallBackGenerator(BaseComponent):
         When the queue is empty a GenerateEvents event is fired, here
         we sleep for as long as possible to avoid using extra cpu cycles.
 
-        A poller would override with with a higher priority handler.
+        A poller would override this with a higher priority handler.
         e.g: ``@handler("generate_events", priority=0)``
         and provide a different way to idle when the queue is empty.
         """
@@ -68,7 +68,7 @@ class FallBackGenerator(BaseComponent):
 
 class FallBackErrorHandler(BaseComponent):
     """
-    If ther is no handler for error events in the component hierarchy, this
+    If there is no handler for error events in the component hierarchy, this
     component's handler is added automatically. It simply prints
     the error information on stderr.
     """

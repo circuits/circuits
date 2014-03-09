@@ -24,11 +24,12 @@ serial = tryimport("serial")
 TIMEOUT = 0.2
 BUFSIZE = 4096
 
+print("Using circuits-dev serial")
+
+
 class _open(Event):
     """_open Event"""
 
-
-print ("Using circuits-dev serial")
 
 class Serial(Component):
 
@@ -53,7 +54,7 @@ class Serial(Component):
     @handler("ready")
     def _on_ready(self, component):
         self.fire(_open(), self.channel)
-        
+
     @handler("_open")
     def _on_open(self, port=None, baudrate=None, bufsize=None):
         self._port = port or self._port
@@ -61,7 +62,7 @@ class Serial(Component):
         self._bufsize = bufsize or self._bufsize
 
         self._serial = serial.Serial(port=self._port, baudrate=self._baudrate, timeout=0)
-        self._fd = self._serial.fileno() # not portable!
+        self._fd = self._serial.fileno()  # not portable!
 
         self._poller.addReader(self, self._fd)
 
@@ -83,7 +84,6 @@ class Serial(Component):
                 else:
                     self._poller = Poller().register(self)
                     self.fire(ready(self))
-
 
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
@@ -168,4 +168,3 @@ class Serial(Component):
                 self._close()
             elif self._poller.isWriting(self._fd):
                 self._poller.removeWriter(self._fd)
-

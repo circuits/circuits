@@ -4,8 +4,8 @@
 
 """I/O Support
 
-This package contains various I/O Components. Provided are a a generic File
-Component, StdIn, StdOut and StdErr components. Instances of StdIn, StdOUt
+This package contains various I/O Components. Provided are a generic File
+Component, StdIn, StdOut and StdErr components. Instances of StdIn, StdOut
 and StdErr are also created by importing this package.
 """
 
