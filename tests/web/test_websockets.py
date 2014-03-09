@@ -16,7 +16,7 @@ class Echo(Component):
 
     def connect(self, sock, host, port):
         print("WebSocket Client Connected:", host, port)
-        self.fire(write(sock, "Welcome {}:{}".format(host, port)))
+        self.fire(write(sock, "Welcome {0:s}:{1:d}".format(host, port)))
 
     def read(self, sock, data):
         self.fire(write(sock, "Received: " + data))
