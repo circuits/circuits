@@ -122,5 +122,5 @@ class Debugger(BaseComponent):
                 except IOError:
                     pass
         except Exception as e:
-            print("ERROR (Debugger): {}".format(e))
-            print(format_exc())
+            sys.stderr.write("ERROR (Debugger): {}".format(e))
+            sys.stderr.write("{}".format(format_exc()))
