@@ -91,9 +91,9 @@ class WebSocketCodec(BaseComponent):
             return msgs
         while data:
             # extract final flag, opcode and masking
-            final = True if data[0] & 0x80 != 0 else False
+            final = bool(data[0] & 0x80 != 0)
             opcode = data[0] & 0xf
-            masking = True if data[1] & 0x80 != 0 else False
+            masking = bool(data[1] & 0x80 != 0)
             # evaluate payload length
             payload_length = data[1] & 0x7f
             offset = 2
@@ -195,7 +195,7 @@ class WebSocketCodec(BaseComponent):
             tail.append(data_length >> (i * 8) & 0xff)
         if mask:
             try:
-                masking_key = bytearray([x for x in list(os.urandom(4))])
+                masking_key = bytearray(list(os.urandom(4)))
             except NotImplementedError:
                 masking_key \
                     = bytearray([random.randint(0, 255) for i in range(4)])

@@ -93,7 +93,7 @@ class URL(object):
             b('^;|;$'), b(''), re.sub(b(';{2,}'), b(';'), self._params)
         )
         # Strip off extra leading ?'s
-        self._query = re.sub(b('^\?+'), b(''), query)
+        self._query = query.lstrip(b('?'))
         self._query = re.sub(
             b('^&|&$'), b(''), re.sub(b('&{2,}'), b('&'), self._query)
         )

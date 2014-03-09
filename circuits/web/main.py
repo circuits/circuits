@@ -184,10 +184,9 @@ def main():
     if opts.logging:
         Logger().register(manager)
 
-    if opts.profile:
-        if hotshot:
-            profiler = hotshot.Profile(".profile")
-            profiler.start()
+    if opts.profile and hotshot:
+        profiler = hotshot.Profile(".profile")
+        profiler.start()
 
     if opts.debug:
         print(graph(manager, name="circuits.web"))

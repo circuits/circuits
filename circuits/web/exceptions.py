@@ -35,7 +35,7 @@ class HTTPException(Exception):
     @property
     def name(self):
         """The status name."""
-        return HTTP_STATUS_CODES[self.code]
+        return HTTP_STATUS_CODES.get(self.code, '')
 
     def __repr__(self):
         return '<%s \'%s\'>' % (self.__class__.__name__, self)
