@@ -57,7 +57,7 @@ class BaseServer(BaseComponent):
 
         super(BaseServer, self).__init__(channel=channel)
 
-        if any((isinstance(bind, o) for o in (int, list, tuple,))):
+        if isinstance(bind, (int, list, tuple,)):
             SocketType = TCPServer
         else:
             SocketType = TCPServer if ":" in bind else UNIXServer
