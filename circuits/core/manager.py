@@ -26,7 +26,7 @@ from .values import Value
 from ..tools import tryimport
 from .handlers import handler
 from ..six import create_bound_method, next
-from .events import error, generate_events, signal, started, stopped
+from .events import exception, generate_events, signal, started, stopped
 
 thread = tryimport(("thread", "_thread"))
 
@@ -525,7 +525,7 @@ class Manager(object):
             if isinstance(event, generate_events):
                 from .helpers import FallBackGenerator
                 handlers.append(FallBackGenerator()._on_generate_events)
-            elif isinstance(event, error) and len(handlers) == 0:
+            elif isinstance(event, exception) and len(handlers) == 0:
                 from .helpers import FallBackErrorHandler
                 handlers.append(FallBackErrorHandler()._on_error)
             self._cache[(event.name, channels)] = handlers
@@ -567,7 +567,7 @@ class Manager(object):
                 if event.failure:
                     self.fire(event.child("failure", event, err), *event.channels)
 
-                self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
+                self.fire(exception(etype, evalue, traceback, handler=handler, fevent=event))
 
             if value is not None:
                 if isinstance(value, GeneratorType):
@@ -753,7 +753,7 @@ class Manager(object):
             if event.failure:
                 self.fire(event.child("failure", event, err), *event.channels)
 
-            self.fire(error(etype, evalue, traceback, handler=handler, fevent=event))
+            self.fire(exception(etype, evalue, traceback, handler=handler, fevent=event))
 
     def tick(self, timeout=-1):
         """

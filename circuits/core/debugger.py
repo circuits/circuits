@@ -55,10 +55,8 @@ class Debugger(BaseComponent):
         self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
-    @handler("error", channel="*", priority=100.0)
-    def _on_error(self, error_type, value, traceback,
-                  handler=None, fevent=None):
-
+    @handler("exception", channel="*", priority=100.0)
+    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
         if not self.errors:
             return
 
