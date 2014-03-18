@@ -1,5 +1,6 @@
 Sphinx
+#releases
+-e git+https://github.com/bitprophet/releases.git#egg=releases
 Sphinx-PyPI-upload
-sphinxcontrib-bitbucket
 sphinxcontrib-programoutput
 sphinxcontrib-googleanalytics

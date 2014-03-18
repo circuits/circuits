@@ -1,43 +1,46 @@
-protocols Package
-=================
+circuits.protocols package
+==========================
 
-:mod:`protocols` Package
-------------------------
+Submodules
+----------
 
-.. automodule:: circuits.protocols
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`http` Module
-------------------
+circuits.protocols.http module
+------------------------------
 
 .. automodule:: circuits.protocols.http
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`irc` Module
------------------
+circuits.protocols.irc module
+-----------------------------
 
 .. automodule:: circuits.protocols.irc
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`line` Module
-------------------
+circuits.protocols.line module
+------------------------------
 
 .. automodule:: circuits.protocols.line
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`websocket` Module
------------------------
+circuits.protocols.websocket module
+-----------------------------------
 
 .. automodule:: circuits.protocols.websocket
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: circuits.protocols
+    :members:
+    :undoc-members:
+    :show-inheritance:

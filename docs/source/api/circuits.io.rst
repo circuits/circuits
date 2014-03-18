@@ -1,51 +1,54 @@
-io Package
-==========
+circuits.io package
+===================
 
-:mod:`io` Package
------------------
+Submodules
+----------
 
-.. automodule:: circuits.io
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`events` Module
---------------------
+circuits.io.events module
+-------------------------
 
 .. automodule:: circuits.io.events
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`file` Module
-------------------
+circuits.io.file module
+-----------------------
 
 .. automodule:: circuits.io.file
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`notify` Module
---------------------
+circuits.io.notify module
+-------------------------
 
 .. automodule:: circuits.io.notify
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`process` Module
----------------------
+circuits.io.process module
+--------------------------
 
 .. automodule:: circuits.io.process
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`serial` Module
---------------------
+circuits.io.serial module
+-------------------------
 
 .. automodule:: circuits.io.serial
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: circuits.io
+    :members:
+    :undoc-members:
+    :show-inheritance:

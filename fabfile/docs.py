@@ -9,7 +9,7 @@ from fabric.api import lcd, local, task
 from .utils import pip, requires
 
 
-PACKAGE = "src/ccav"
+PACKAGE = "circuits"
 
 
 @task()

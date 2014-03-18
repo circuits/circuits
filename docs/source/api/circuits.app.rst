@@ -1,19 +1,22 @@
-app Package
-===========
+circuits.app package
+====================
 
-:mod:`app` Package
-------------------
+Submodules
+----------
 
-.. automodule:: circuits.app
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`daemon` Module
---------------------
+circuits.app.daemon module
+--------------------------
 
 .. automodule:: circuits.app.daemon
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: circuits.app
+    :members:
+    :undoc-members:
+    :show-inheritance:

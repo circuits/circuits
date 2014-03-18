@@ -1,35 +1,38 @@
-parsers Package
-===============
+circuits.web.parsers package
+============================
 
-:mod:`parsers` Package
-----------------------
+Submodules
+----------
 
-.. automodule:: circuits.web.parsers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`http` Module
-------------------
+circuits.web.parsers.http module
+--------------------------------
 
 .. automodule:: circuits.web.parsers.http
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`multipart` Module
------------------------
+circuits.web.parsers.multipart module
+-------------------------------------
 
 .. automodule:: circuits.web.parsers.multipart
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`querystring` Module
--------------------------
+circuits.web.parsers.querystring module
+---------------------------------------
 
 .. automodule:: circuits.web.parsers.querystring
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: circuits.web.parsers
+    :members:
+    :undoc-members:
+    :show-inheritance:

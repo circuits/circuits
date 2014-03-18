@@ -1,11 +1,10 @@
-tools Package
-=============
+circuits.tools package
+======================
 
-:mod:`tools` Package
---------------------
+Module contents
+---------------
 
 .. automodule:: circuits.tools
     :members:
     :undoc-members:
     :show-inheritance:
-

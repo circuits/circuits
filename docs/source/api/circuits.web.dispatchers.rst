@@ -1,51 +1,54 @@
-dispatchers Package
-===================
+circuits.web.dispatchers package
+================================
 
-:mod:`dispatchers` Package
---------------------------
+Submodules
+----------
 
-.. automodule:: circuits.web.dispatchers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`dispatcher` Module
-------------------------
+circuits.web.dispatchers.dispatcher module
+------------------------------------------
 
 .. automodule:: circuits.web.dispatchers.dispatcher
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`jsonrpc` Module
----------------------
+circuits.web.dispatchers.jsonrpc module
+---------------------------------------
 
 .. automodule:: circuits.web.dispatchers.jsonrpc
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`static` Module
---------------------
+circuits.web.dispatchers.static module
+--------------------------------------
 
 .. automodule:: circuits.web.dispatchers.static
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`virtualhosts` Module
---------------------------
+circuits.web.dispatchers.virtualhosts module
+--------------------------------------------
 
 .. automodule:: circuits.web.dispatchers.virtualhosts
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`xmlrpc` Module
---------------------
+circuits.web.dispatchers.xmlrpc module
+--------------------------------------
 
 .. automodule:: circuits.web.dispatchers.xmlrpc
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: circuits.web.dispatchers
+    :members:
+    :undoc-members:
+    :show-inheritance:

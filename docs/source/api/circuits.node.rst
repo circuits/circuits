@@ -1,51 +1,54 @@
-node Package
-============
+circuits.node package
+=====================
 
-:mod:`node` Package
--------------------
+Submodules
+----------
 
-.. automodule:: circuits.node
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`client` Module
---------------------
+circuits.node.client module
+---------------------------
 
 .. automodule:: circuits.node.client
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`events` Module
---------------------
+circuits.node.events module
+---------------------------
 
 .. automodule:: circuits.node.events
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`node` Module
-------------------
+circuits.node.node module
+-------------------------
 
 .. automodule:: circuits.node.node
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`server` Module
---------------------
+circuits.node.server module
+---------------------------
 
 .. automodule:: circuits.node.server
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`utils` Module
--------------------
+circuits.node.utils module
+--------------------------
 
 .. automodule:: circuits.node.utils
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: circuits.node
+    :members:
+    :undoc-members:
+    :show-inheritance:
