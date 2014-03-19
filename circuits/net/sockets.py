@@ -219,6 +219,7 @@ def _do_handshake_for_non_blocking(ssock):
 
 
 class TCPClient(Client):
+
     socket_family = AF_INET
 
     def _create_socket(self):
@@ -272,6 +273,7 @@ class TCPClient(Client):
 
 
 class TCP6Client(TCPClient):
+
     socket_family = AF_INET6
 
     def parse_bind_parameter(self, bind_parameter):
@@ -584,6 +586,7 @@ class Server(BaseComponent):
 
 
 class TCPServer(Server):
+
     socket_family = AF_INET
 
     def _create_socket(self):
@@ -631,6 +634,7 @@ def parse_ipv6_parameter(bind_parameter):
 
 
 class TCP6Server(TCPServer):
+
     socket_family = AF_INET6
 
     def parse_bind_parameter(self, bind_parameter):
@@ -656,6 +660,7 @@ class UNIXServer(Server):
 
 
 class UDPServer(Server):
+
     socket_family = AF_INET
 
     def _create_socket(self):
