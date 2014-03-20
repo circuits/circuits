@@ -124,6 +124,26 @@ class error(Event):
         super(error, self).__init__(*args)
 
 
+class broadcast(Event):
+    """broadcast Event
+
+    This Event is used by the UDPServer/UDPClient sockets to send a message on the ``<broadcast>``
+    network.
+
+    .. note::
+        - This event is never sent, it is used to send data.
+        - This event is used for both Client and Server UDP Components.
+
+    :param args:  (data, port)
+    :type  tuple: tuple
+    """
+
+    def __init__(self, *args):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(broadcast, self).__init__(*args)
+
+
 class write(Event):
     """write Event
 
