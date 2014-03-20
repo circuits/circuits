@@ -2,9 +2,13 @@
 #
 # This file is part of http-parser released under the MIT license.
 # See the NOTICE for more information.
+#
+# This module is liberally borrowed (with modifications) from: https://raw.githubusercontent.com/benoitc/http-parser/master/http_parser/pyparser.py
+
 
 import re
 import zlib
+
 
 try:
     import urlparse
@@ -13,9 +17,12 @@ except ImportError:
     import urllib.parse as urlparse  # NOQA
     from urllib.parse import unquote  # NOQA
 
+
 from circuits.six import b, bytes_to_str, MAXSIZE
 
+
 from ..headers import Headers
+
 
 METHOD_RE = re.compile("^[A-Z0-9$-_.]{1,20}$")
 VERSION_RE = re.compile("^HTTP/(\d+).(\d+)$")
@@ -42,10 +49,9 @@ class InvalidChunkSize(Exception):
 
 class HttpParser(object):
 
-    def __init__(self, kind=2, decompress=False, encoding="utf-8"):
+    def __init__(self, kind=2, decompress=False):
         self.kind = kind
         self.decompress = decompress
-        self.encoding = encoding
 
         # errors vars
         self.errno = None
