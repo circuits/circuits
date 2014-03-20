@@ -220,7 +220,7 @@ class HTTP(BaseComponent):
         if sock in self._buffers:
             parser = self._buffers[sock]
         else:
-            self._buffers[sock] = parser = HttpParser(0, True, self._encoding)
+            self._buffers[sock] = parser = HttpParser(0, True)
 
             # If we receive an SSL handshake at the start of a request
             # and we're not a secure server, then immediately close the
