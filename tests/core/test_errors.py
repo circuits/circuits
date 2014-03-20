@@ -23,7 +23,7 @@ class App(Component):
     def test(self):
         return x  # NOQA
 
-    def error(self, etype, evalue, etraceback, handler=None, fevent=None):
+    def exception(self, etype, evalue, etraceback, handler=None, fevent=None):
         self.etype = etype
         self.evalue = evalue
         self.etraceback = etraceback
@@ -51,7 +51,7 @@ def app(request, manager, watcher):
 def test_main(app, watcher):
     e = test()
     app.fire(e)
-    watcher.wait("error")
+    watcher.wait("exception")
 
     assert app.etype == NameError
     pytest.raises(NameError, lambda e: reraise(e), app.evalue)

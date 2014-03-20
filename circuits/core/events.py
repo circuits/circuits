@@ -178,8 +178,8 @@ class Event(object):
         self.stopped = True
 
 
-class error(Event):
-    """error Event
+class exception(Event):
+    """exception Event
 
     This event is sent for any exceptions that occur during the execution
     of an event Handler that is not SystemExit or KeyboardInterrupt.
@@ -201,7 +201,7 @@ class error(Event):
     """
 
     def __init__(self, type, value, traceback, handler=None, fevent=None):
-        super(error, self).__init__(type, value, traceback, handler=handler, fevent=fevent)
+        super(exception, self).__init__(type, value, traceback, handler=handler, fevent=fevent)
 
 
 class started(Event):
