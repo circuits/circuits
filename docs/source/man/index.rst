@@ -8,11 +8,11 @@ circuits  User Manual
    components
    events
    handlers
+   tools
 
 .. toctree::
    :hidden:
 
    values
    debugging
-   tools
    manager
