@@ -12,13 +12,13 @@ These are:
 These can be found in the :py:mod:`circuits.tools` module.
 
 
-Introspecing your Application
+Introspecting your Application
 -----------------------------
 
 The :py:func:`~circuits.tools.inspect` function is used to help
 introspect your application by displaying all the channels
-and events handlers defined thorugh the system including
-any additional metadata tbout them.
+and events handlers defined through the system including
+any additional meta data about them.
 
 Example:
 
@@ -43,7 +43,7 @@ Example:
        <handler[<instance of App>.prepare_unregister_complete] (App._on_prepare_unregister_complete)>
    
 
-Displaying a Visual Represenation of your Application
+Displaying a Visual Representation of your Application
 -----------------------------------------------------
 
 The :py:func:`~circuits.tools.graph` function is used to help
