@@ -9,15 +9,15 @@ from fabric.api import lcd, local, task
 from .utils import pip, requires
 
 
-PACKAGE = "src/ccav"
+PACKAGE = "circuits"
 
 
 @task()
-@requires("sphinx-apidoc")
 def api():
     """Generate the API Documentation"""
 
     if PACKAGE is not None:
+        pip(requirements="docs/requirements.txt")
         local("sphinx-apidoc -f -T -o docs/source/api {0:s}".format(PACKAGE))
 
 
@@ -27,6 +27,7 @@ def clean():
     """Delete Generated Documentation"""
 
     with lcd("docs"):
+        pip(requirements="requirements.txt")
         local("make clean")
 
 
@@ -42,6 +43,7 @@ def build(**options):
 
 
 @task()
+@requires("open")
 def view(**options):
     """View the Documentation"""
 
