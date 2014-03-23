@@ -11,7 +11,7 @@ by using the :meth:`~circuits.core.manager.Manager.fire` method of any
 registered component.
 
 Some events in circuits are fired implicitely by the circuits core
-(*like the :class:`~circuits.core.events.started` event used in the tutorial*)
+like the :class:`~circuits.core.events.started` event used in the tutorial
 or explicitly by components while handling some other event. Once fired,
 events are dispatched to the components that are interested in these events
 (*components whoose event handlers match events of interest*).
@@ -59,7 +59,7 @@ Here any other event handlers also listening to "foo" will not be processed.
 .. note:: It's important to use priority event handlers here in this case as all event handlers and events run with the same priority unless explicitly
           told otherwise.
 
-.. versionchanged::
+.. versionchanged:: 3.0
    In circuits 2.x you declared your event handler to be a filter by using ``@handler(filter=True)`` and
    returned a ``True``-ish value from the respective event handler to achieve the same effect.
    This is **no longer** the case in circuits 3.x Please use ``event.stop()`` as noted above.
