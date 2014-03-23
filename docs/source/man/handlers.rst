@@ -116,7 +116,10 @@ Example:
             
             This will not be turned into an event handlers
             because of the ``False`` argument passed to the
-            ``@handler`` decorator.
+            ``@handler`` decorator. This only makes sense
+            when subclassing ``Component`` and you want to
+            have fine grained control over what methods
+            are not turned into event handlers.
             """
             
             pass
