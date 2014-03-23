@@ -10,11 +10,11 @@ about the message being sent to a receiving component. Events are triggered
 by using the :meth:`~circuits.core.manager.Manager.fire` method of any
 registered component.
 
-Some events in circuits are fired implicitely by the circuits core
+Some events in circuits are fired implicitly by the circuits core
 like the :class:`~circuits.core.events.started` event used in the tutorial
 or explicitly by components while handling some other event. Once fired,
 events are dispatched to the components that are interested in these events
-(*components whoose event handlers match events of interest*).
+(*components whose event handlers match events of interest*).
 
 Events are usually fired on one or more channels, allowing components 
 to gather in "interest groups". This is especially useful if you want to
@@ -42,7 +42,7 @@ attributes of the event object, though this usage pattern is discouraged.
 Filtering
 ---------
 
-Events can be filtered by stopping otehr event handlers from continuing to process the event.
+Events can be filtered by stopping other event handlers from continuing to process the event.
 
 To do this, simply call the :meth:`~circuits.core.events.Event.stop` method.
 
