@@ -3,6 +3,7 @@
 import pytest
 
 import select
+from socket import EAI_NONAME
 from socket import error as SocketError
 from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
 
@@ -236,5 +237,28 @@ def test_tcp_bind(Poller, ipv6):
 
         server.fire(close())
         assert pytest.wait_for(server, "closed")
+    finally:
+        m.stop()
+
+
+def test_tcp_lookup_failure(Poller, ipv6):
+    m = Manager() + Poller()
+
+    if ipv6:
+        tcp_client = TCP6Client()
+    else:
+        tcp_client = TCPClient()
+    client = Client() + tcp_client
+
+    client.register(m)
+
+    m.start()
+
+    try:
+        assert pytest.wait_for(client, "ready")
+
+        client.fire(connect("foo", 1234))
+        assert pytest.wait_for(client, "error", lambda obj, attr: isinstance(getattr(obj, attr), SocketError))
+        assert client.error.errno == EAI_NONAME
     finally:
         m.stop()
