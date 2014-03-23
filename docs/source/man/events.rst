@@ -34,7 +34,7 @@ for events.
 Filtering
 ---------
 
-Events can be filtered by stopping further handler processing of any given event by simply calling it's ``.stop()`` method.
+Events can be filtered by stopping further handler processing of any given event by simply calling its ``.stop()`` method.
 
 Example:
 
