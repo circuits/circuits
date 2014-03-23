@@ -58,7 +58,7 @@ can be used and subclassed instead which provides an implicit mechanism for
 creating event handlers.
 
 Basically every method in the component is automatically and implicitly
-marked as an event handler with ``@handler(<name>))`` where ``<name>`` is
+marked as an event handler with ``@handler(<name>)`` where ``<name>`` is
 the name of each method applied.
 
 The only exceptions are:
@@ -85,7 +85,7 @@ Example:
         def _say(self, message):
             """Print the given message
             
-            This is a private method as denoated via the prefixed underscore.
+            This is a private method as denoted via the prefixed underscore.
             This will not be turned into an event handler.
             """
             
@@ -125,5 +125,5 @@ Example:
     
 
 .. note::
-   You can specify that a method not be marked as an event handler by passing ``False`` as the
+   You can specify that a method will not be marked as an event handler by passing ``False`` as the
    first argument to ``@handler()``.
