@@ -1,53 +1,68 @@
 Events
 ======
 
+
 Basic usage
 -----------
 
-Events are objects that are fired by the circuits framework implicitly
-(like the :class:`~circuits.core.events.Started` event used in the tutorial) 
+Events are objects that contain data (*arguments and keyword arguments*) 
+about the message being sent to a receiving component. Events are triggered
+by using the :meth:`~circuits.core.manager.Manager.fire` method of any
+registered component.
+
+Some events in circuits are fired implicitely by the circuits core
+(*like the :class:`~circuits.core.events.started` event used in the tutorial*)
 or explicitly by components while handling some other event. Once fired,
-events are dispatched to the components that are interested in these events,
-i.e. that have registered themselves as handlers for these events.
+events are dispatched to the components that are interested in these events
+(*components whoose event handlers match events of interest*).
 
 Events are usually fired on one or more channels, allowing components 
 to gather in "interest groups". This is especially useful if you want to
-reuse basic components such as a TCP server. A TCP server component
-fires a ``Read`` event for every package of data that it receives. If we 
-hadn't the channels, it would be very difficult to separate the data from 
-two different TCP connections. But using the channels, we can put one TCP 
-server and all components interested in its events on one channel, and 
-another TCP server and the components interested in this other TCP server's 
-events on another channel. Components are associated with a channel by
-setting their ``channel`` attribute (see API description for 
-:class:`~.components.Component`).
+reuse basic components such as a :class:`~circuits.net.sockets.TCPServer`.
+A :class:`~circuits.net.sockets.TCPServer` component fires a
+:class:`~circuits.net.events.read` event for every package of data that it receives.
+If we did not have support for channels, it would be very difficult to build two
+servers in a single process without their read events colliding.
+
+Using channels, we can put one server and all components interested in its events on one channel,
+and another server and the components interested in this other server's events on another channel.
+
+Components are associated with a channel by setting their ``channel`` class or instance attribute.
+
+.. seealso:: :class:`~.components.Component`
 
 Besides having a name, events carry additional arbitrary information.
 This information is passed as arguments or keyword arguments to the
-constructor. It is then delivered to the handler function that must have
+constructor. It is then delivered to the event handler method that must have
 exactly the same number of arguments and keyword arguments. Of course,
 as is usual in Python, you can also pass additional information by setting
-attributes of the event object, though this usage pattern is discouraged
-for events.
+attributes of the event object, though this usage pattern is discouraged.
 
 
 Filtering
 ---------
 
-Events can be filtered by stopping further handler processing of any given event by simply calling its ``.stop()`` method.
+Events can be filtered by stopping otehr event handlers from continuing to process the event.
+
+To do this, simply call the :meth:`~circuits.core.events.Event.stop` method.
 
 Example:
 
 .. code-block:: python
     
     @handler("foo")
-    def _on_foo(self, event, *args, **kwargs):
+    def stop_foo(self, event, *args, **kwargs):
         event.stop()
     
 Here any other event handlers also listening to "foo" will not be processed.
 
 .. note:: It's important to use priority event handlers here in this case as all event handlers and events run with the same priority unless explicitly
           told otherwise.
+
+.. versionchanged::
+   In circuits 2.x you declared your event handler to be a filter by using ``@handler(filter=True)`` and
+   returned a ``True``-ish value from the respective event handler to achieve the same effect.
+   This is **no longer** the case in circuits 3.x Please use ``event.stop()`` as noted above.
 
 
 Events as result collectors
