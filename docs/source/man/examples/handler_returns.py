@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
-from circuits import Component, Event
-from circuits.core.debugger import Debugger
+from circuits import Component, Debugger, Event
+
 
 class Identify(Event):
     """Identify Event"""
+
     success = True
+
 
 class Pound(Component):
 
@@ -18,7 +20,7 @@ class Pound(Component):
 
     def started(self, *args):
         self.fire(Identify())
-        
+
     def Identify_success(self, evt, result):
         if not isinstance(result, list):
             result = [result]
@@ -26,13 +28,16 @@ class Pound(Component):
         for name in result:
             print name
 
+
 class Dog(Component):
 
     def Identify(self):
         return self.__class__.__name__
 
+
 class Bob(Dog):
     """Bob"""
+
 
 class Fred(Dog):
     """Fred"""

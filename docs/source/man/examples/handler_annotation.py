@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-from circuits.core.debugger import Debugger
-from circuits.core.components import BaseComponent
-from circuits.core.handlers import handler
+from circuits import handler, BaseComponent, Debugger
+
 
 class MyComponent(BaseComponent):
 
@@ -12,7 +11,7 @@ class MyComponent(BaseComponent):
         Debugger().register(self)
 
     @handler("started", channel="*")
-    def _on_started(self, component):
+    def system_started(self, component):
         print "Start event detected"
 
 MyComponent().run()
