@@ -1,29 +1,5 @@
-circuits Package
+circuits package
 ================
-
-:mod:`circuits` Package
------------------------
-
-.. automodule:: circuits.__init__
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`six` Module
------------------
-
-.. automodule:: circuits.six
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`version` Module
----------------------
-
-.. automodule:: circuits.version
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 Subpackages
 -----------
@@ -39,3 +15,18 @@ Subpackages
     circuits.tools
     circuits.web
 
+Submodules
+----------
+
+.. toctree::
+
+   circuits.six
+   circuits.version
+
+Module contents
+---------------
+
+.. automodule:: circuits
+    :members:
+    :undoc-members:
+    :show-inheritance:

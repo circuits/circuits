@@ -1,51 +1,21 @@
-node Package
-============
+circuits.node package
+=====================
 
-:mod:`node` Package
--------------------
+Submodules
+----------
+
+.. toctree::
+
+   circuits.node.client
+   circuits.node.events
+   circuits.node.node
+   circuits.node.server
+   circuits.node.utils
+
+Module contents
+---------------
 
 .. automodule:: circuits.node
     :members:
     :undoc-members:
     :show-inheritance:
-
-:mod:`client` Module
---------------------
-
-.. automodule:: circuits.node.client
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`events` Module
---------------------
-
-.. automodule:: circuits.node.events
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`node` Module
-------------------
-
-.. automodule:: circuits.node.node
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`server` Module
---------------------
-
-.. automodule:: circuits.node.server
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`utils` Module
--------------------
-
-.. automodule:: circuits.node.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-

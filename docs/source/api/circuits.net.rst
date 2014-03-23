@@ -1,27 +1,18 @@
-net Package
-===========
+circuits.net package
+====================
 
-:mod:`net` Package
-------------------
+Submodules
+----------
+
+.. toctree::
+
+   circuits.net.events
+   circuits.net.sockets
+
+Module contents
+---------------
 
 .. automodule:: circuits.net
     :members:
     :undoc-members:
     :show-inheritance:
-
-:mod:`events` Module
---------------------
-
-.. automodule:: circuits.net.events
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`sockets` Module
----------------------
-
-.. automodule:: circuits.net.sockets
-    :members:
-    :undoc-members:
-    :show-inheritance:
-

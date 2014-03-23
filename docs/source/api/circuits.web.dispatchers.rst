@@ -1,51 +1,21 @@
-dispatchers Package
-===================
+circuits.web.dispatchers package
+================================
 
-:mod:`dispatchers` Package
---------------------------
+Submodules
+----------
+
+.. toctree::
+
+   circuits.web.dispatchers.dispatcher
+   circuits.web.dispatchers.jsonrpc
+   circuits.web.dispatchers.static
+   circuits.web.dispatchers.virtualhosts
+   circuits.web.dispatchers.xmlrpc
+
+Module contents
+---------------
 
 .. automodule:: circuits.web.dispatchers
     :members:
     :undoc-members:
     :show-inheritance:
-
-:mod:`dispatcher` Module
-------------------------
-
-.. automodule:: circuits.web.dispatchers.dispatcher
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`jsonrpc` Module
----------------------
-
-.. automodule:: circuits.web.dispatchers.jsonrpc
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`static` Module
---------------------
-
-.. automodule:: circuits.web.dispatchers.static
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`virtualhosts` Module
---------------------------
-
-.. automodule:: circuits.web.dispatchers.virtualhosts
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`xmlrpc` Module
---------------------
-
-.. automodule:: circuits.web.dispatchers.xmlrpc
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
