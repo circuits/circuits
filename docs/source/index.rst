@@ -30,6 +30,7 @@ Documentation
    api/index
    dev/index
    changes
+   roadmap
    contributors
    faq
 
