@@ -48,7 +48,7 @@ class HTTP(BaseComponent):
 
         # XXX: This sucks :/ Avoiding the circuit import here :/
         from circuits.web.parsers import HttpParser
-        self._parser = HttpParser(1, True, self._encoding)
+        self._parser = HttpParser(1, True)
 
     @handler("read")
     def _on_client_read(self, data):
@@ -68,4 +68,4 @@ class HTTP(BaseComponent):
 
             # XXX: This sucks :/ Avoiding the circuit import here :/
             from circuits.web.parsers import HttpParser
-            self._parser = HttpParser(1, True, self._encoding)
+            self._parser = HttpParser(1, True)

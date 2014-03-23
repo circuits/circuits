@@ -27,7 +27,7 @@ import circuits
 from circuits.io import stdin
 from circuits import handler, Component
 from circuits.net.events import connect, write
-from circuits.net.sockets import TCPClient, UNIXClient
+from circuits.net.sockets import TCPClient, UNIXClient, UDPClient
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + circuits.__version__
@@ -37,9 +37,15 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-s", "--ssl",
-        action="store_true", default=False, dest="ssl",
-        help="Enable Secure Socket Layer (SSL)"
+        "-u", "--udp",
+        action="store_true", default=False, dest="udp",
+        help="Use UDP transport",
+    )
+
+    parser.add_option(
+        "-v", "--verbose",
+        action="store_true", default=False, dest="verbose",
+        help="Enable verbose debugging",
     )
 
     opts, args = parser.parse_args()
@@ -57,8 +63,11 @@ class Telnet(Component):
     # the ``read`` event of the ``stdin`` component.
     channel = "telnet"
 
-    def __init__(self, *args):
+    def __init__(self, *args, **opts):
         super(Telnet, self).__init__()
+
+        self.args = args
+        self.opts = opts
 
         if len(args) == 1:
             if os.path.exists(args[0]):
@@ -68,13 +77,24 @@ class Telnet(Component):
             else:
                 raise OSError("Path %s not found" % args[0])
         else:
-            TCPClient(channel=self.channel).register(self)
+            if not opts["udp"]:
+                TCPClient(channel=self.channel).register(self)
+            else:
+                UDPClient(0, channel=self.channel).register(self)
+
             host, port = args
             port = int(port)
             dest = host, port
 
+        self.host = host
+        self.port = port
+
         print("Trying %s ..." % host)
-        self.fire(connect(*dest))
+
+        if not opts["udp"]:
+            self.fire(connect(*dest))
+        else:
+            self.fire(write((host, port), b"\x00"))
 
     def connected(self, host, port=None):
         """connected Event Handler
@@ -96,12 +116,17 @@ class Telnet(Component):
         else:
             print("ERROR: {0}".format(args[0]))
 
-    def read(self, data):
+    def read(self, *args):
         """read Event Handler
 
         This event is fired by the underlying TCPClient Component when there
         is data to be read from the connection.
         """
+
+        if len(args) == 1:
+            data = args[0]
+        else:
+            peer, data = args
 
         print(data.strip())
 
@@ -114,14 +139,20 @@ class Telnet(Component):
         there is new data to be read in from standard input.
         """
 
-        self.fire(write(data))
+        if not self.opts["udp"]:
+            self.fire(write(data))
+        else:
+            self.fire(write((self.host, self.port), data))
 
 
 def main():
     opts, args = parse_options()
 
     # Configure and "run" the System.
-    app = Telnet(*args)
+    app = Telnet(*args, **opts.__dict__)
+    if opts.verbose:
+        from circuits import Debugger
+        Debugger().register(app)
     stdin.register(app)
     app.run()
 
