@@ -1,11 +1,11 @@
 # Convenient Development Tasks
-Fabric==1.8.2
+Fabric==1.8.3
 
 # Debugging
 pudb==2014.1
 
 # Running Tests
-tox==1.7.0
+tox==1.7.1
 pytest==2.5.2
 pytest-cov==1.6
 
