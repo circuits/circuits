@@ -53,18 +53,6 @@ class F(Component):
     def foo(self):
         print("F!")
 
-INSPECT = """\
- Components: 0
-
- Event Handlers: 3
-  unregister; 1
-   <handler[*.unregister] (A._on_unregister)>
-  foo; 1
-   <handler[*.foo] (A.foo)>
-  prepare_unregister_complete; 1
-   <handler[<instance of A>.prepare_unregister_complete] (A._on_prepare_unregister_complete)>
-"""
-
 
 def test_kill():
     a = A()
@@ -127,7 +115,14 @@ def test_inspect():
     a = A()
     s = inspect(a)
 
-    assert s == INSPECT
+    assert "Components: 0" in s
+    assert "Event Handlers: 3" in s
+    assert "unregister; 1" in s
+    assert "<handler[*.unregister] (A._on_unregister)>" in s
+    assert "foo; 1" in s
+    assert "<handler[*.foo] (A.foo)>" in s
+    assert "prepare_unregister_complete; 1" in s
+    assert "<handler[<instance of A>.prepare_unregister_complete] (A._on_prepare_unregister_complete)>" in s
 
 
 def test_findroot():
@@ -172,6 +167,3 @@ def test_tryimport_obj():
 def test_tryimport_fail():
     m = tryimport("asdf")
     assert m is None
-
-
-# flake8: noqa
