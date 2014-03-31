@@ -196,7 +196,7 @@ def get_ranges(headervalue, content_length):
     # Can we satisfy the requested Range?
     # If we have an exceedingly high standard deviation
     # of Range(s) we reject the request.
-    # See Iseue #59
+    # See Issue #59
 
     if len(result) > 1 and stddev([x[1] - x[0] for x in result]) > 2.0:
         raise RangeUnsatisfiable()
