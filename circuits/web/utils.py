@@ -11,6 +11,7 @@ import re
 import zlib
 import time
 import struct
+from math import sqrt
 from io import TextIOWrapper
 from cgi import FieldStorage
 from collections import MutableMapping
@@ -27,10 +28,23 @@ except ImportError:
 
 from circuits.six import iterbytes
 
-from .exceptions import RequestEntityTooLarge
+from .exceptions import RangeUnsatisfiable, RequestEntityTooLarge
 
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile("^[0-9]+,[0-9]+$")
+
+
+def average(xs):
+    return sum(xs) * 1.0 / len(xs)
+
+
+def variance(xs):
+    avg = average(xs)
+    return map(lambda x: (x - avg)**2, xs)
+
+
+def stddev(xs):
+    return sqrt(average(variance(xs)))
 
 
 def parse_body(request, response, params):
@@ -167,13 +181,25 @@ def get_ranges(headervalue, content_length):
                 # did not exist. (Normally, this means return a 200
                 # response containing the full entity)."
                 return None
-            result.append((start, stop + 1))
+            # Prevent duplicate ranges. See Issue #59
+            if (start, stop + 1) not in result:
+                result.append((start, stop + 1))
         else:
             if not stop:
                 # See rfc quote above.
                 return None
             # Negative subscript (last N bytes)
-            result.append((content_length - int(stop), content_length))
+            # Prevent duplicate ranges. See Issue #59
+            if (content_length - int(stop), content_length) not in result:
+                result.append((content_length - int(stop), content_length))
+
+    # Can we satisfy the requested Range?
+    # If we have an exceedingly high standard deviation
+    # of Range(s) we reject the request.
+    # See Iseue #59
+
+    if len(result) > 1 and stddev([x[1] - x[0] for x in result]) > 2.0:
+        raise RangeUnsatisfiable()
 
     return result
 
