@@ -229,6 +229,18 @@ class UnsupportedMediaType(HTTPException):
     )
 
 
+class RangeUnsatisfiable(HTTPException):
+    """*416* `Range Unsatisfiable`
+
+    The status code returned if the server is unable to satisfy the request range
+    """
+
+    code = 416
+    description = (
+        '<p>The server cannot satisfy the request range(s).</p>'
+    )
+
+
 class InternalServerError(HTTPException):
     """*500* `Internal Server Error`
 
