@@ -116,7 +116,7 @@ class BaseComponent(Manager):
         for k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
                 self.addHandler(v)
-            # XXX: Document this feature. See Issue #88
+            # TODO: Document this feature. See Issue #88
             if v is not self and isinstance(v, BaseComponent) \
                     and v not in ('parent', 'root'):
                 v.register(self)
