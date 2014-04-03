@@ -417,7 +417,7 @@ class Manager(object):
         }
 
         def _on_event(self, event, *args, **kwargs):
-            if not state['run'] and (event_object is None or (event_object is not None and event is event_object)):
+            if not state['run'] and (event_object is None or event is event_object):
                 self.removeHandler(_on_event_handler, event_name)
                 event.alert_done = True
                 state['run'] = True
