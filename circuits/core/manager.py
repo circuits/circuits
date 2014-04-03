@@ -26,7 +26,7 @@ from .values import Value
 from ..tools import tryimport
 from .handlers import handler
 from ..six import create_bound_method, next
-from .events import exception, generate_events, signal, started, stopped
+from .events import exception, generate_events, signal, started, stopped, Event
 
 thread = tryimport(("thread", "_thread"))
 
@@ -402,17 +402,23 @@ class Manager(object):
             self.root._tasks.remove(g)
 
     def waitEvent(self, event, *channels, **kwargs):
+        if isinstance(event, Event):
+            event_object = event
+            event_name = event.name
+        else:
+            event_object = None
+            event_name = event
+
         state = {
             'run': False,
             'flag': False,
             'event': None,
             'timeout': kwargs.get("timeout", -1)
         }
-        _event = event
 
         def _on_event(self, event, *args, **kwargs):
-            if not state['run']:
-                self.removeHandler(_on_event_handler, _event)
+            if not state['run'] and (event_object is None or (event_object is not None and event is event_object)):
+                self.removeHandler(_on_event_handler, event_name)
                 event.alert_done = True
                 state['run'] = True
                 state['event'] = event
@@ -431,19 +437,19 @@ class Manager(object):
                 self.registerTask((state['task_event'],
                                    (e for e in (ExceptionWrapper(TimeoutError()),)),
                                    state['parent']))
-                self.removeHandler(_on_done_handler, "%s_done" % event)
+                self.removeHandler(_on_done_handler, "%s_done" % event_name)
                 self.removeHandler(_on_tick_handler, "generate_events")
             elif state['timeout'] > 0:
                 state['timeout'] -= 1
 
         if not channels:
-            channels = (None, )
+            channels = (None,)
 
         for channel in channels:
             _on_event_handler = self.addHandler(
-                handler(event, channel=channel)(_on_event))
+                handler(event_name, channel=channel)(_on_event))
             _on_done_handler = self.addHandler(
-                handler("%s_done" % event, channel=channel)(_on_done))
+                handler("%s_done" % event_name, channel=channel)(_on_done))
             if state['timeout'] >= 0:
                 _on_tick_handler = state['tick_handler'] = self.addHandler(
                     handler("generate_events", channel=channel)(_on_tick))
@@ -451,7 +457,7 @@ class Manager(object):
         yield state
 
         if not state['timeout']:
-            self.removeHandler(_on_done_handler, "%s_done" % event)
+            self.removeHandler(_on_done_handler, "%s_done" % event_name)
 
         if state["event"] is not None:
             yield CallValue(state["event"].value)
@@ -469,7 +475,7 @@ class Manager(object):
         been dispatched (see :func:`circuits.core.handlers.handler`).
         """
         value = self.fire(event, *channels)
-        for r in self.waitEvent(event.name, *event.channels, **kwargs):
+        for r in self.waitEvent(event, *event.channels, **kwargs):
             yield r
         yield CallValue(value)
 
