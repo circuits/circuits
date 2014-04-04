@@ -13,7 +13,8 @@ These can be found in the :py:mod:`circuits.tools` module.
 
 
 Introspecting your Application
------------------------------
+------------------------------
+
 
 The :py:func:`~circuits.tools.inspect` function is used to help
 introspect your application by displaying all the channels
@@ -44,7 +45,8 @@ Example:
    
 
 Displaying a Visual Representation of your Application
------------------------------------------------------
+------------------------------------------------------
+
 
 The :py:func:`~circuits.tools.graph` function is used to help
 visualize the different components in your application and
@@ -85,3 +87,11 @@ An output image will be saved to your current working directory
 and by called ``<name>.png`` where **<name>** is the name of
 the top-level component in your application of the value you pass
 to the ``name=`` keyword argument of ``~circuits.tools.graph``.
+
+Example output of `telnet Example <https://bitbucket.org/circuits/circuits/src/tip/examples/telnet.py>`_:
+
+.. image:: ../examples/Telnet.png
+
+And it's DOT Graph:
+
+.. graphviz:: ../examples/Telnet.dot

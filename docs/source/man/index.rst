@@ -3,6 +3,10 @@ circuits User Manual
 ====================
 
 
+Core Library
+------------
+
+
 .. toctree::
    :maxdepth: 2
 
@@ -19,3 +23,13 @@ circuits User Manual
    utils
    values
    workers
+
+
+Miscellaneous
+-------------
+
+
+.. toctree::
+   :maxdepth: 2
+
+   misc/tools

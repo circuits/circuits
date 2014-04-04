@@ -25,6 +25,7 @@ from optparse import OptionParser
 
 import circuits
 from circuits.io import stdin
+from circuits.tools import graph
 from circuits import handler, Component
 from circuits.net.events import connect, write
 from circuits.net.sockets import TCPClient, UNIXClient, UDPClient
@@ -95,6 +96,9 @@ class Telnet(Component):
             self.fire(connect(*dest))
         else:
             self.fire(write((host, port), b"\x00"))
+
+    def ready(self, socket):
+        graph(self.root)
 
     def connected(self, host, port=None):
         """connected Event Handler
