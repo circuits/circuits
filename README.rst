@@ -69,7 +69,7 @@ Supported Platforms
 -------------------
 
 - Linux, FreeBSD, Mac OS X, Windows
-- Python 2.6, 2.7, 3.2, 3.3
+- Python 2.6, 2.7, 3.2, 3.3, 3.4
 - pypy 2.0, 2.1, 2.2
 
 
