@@ -60,6 +60,10 @@ packages installed:
 - `pygraphviz <http://pypi.python.org/pypi/pygraphviz>`_
 - `matplotlib <http://pypi.python.org/pypi/matplotlib>`_
 
+You can install the required dependencies via::
+    
+    pip install matplotlib networkx pygraphviz
+
 Example:
 
 .. code:: pycon
