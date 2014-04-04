@@ -759,7 +759,7 @@ class Manager(object):
             if event.failure:
                 self.fire(event.child("failure", event, err), *event.channels)
 
-            self.fire(exception(etype, evalue, traceback, handler=handler, fevent=event))
+            self.fire(exception(etype, evalue, traceback, handler=None, fevent=event))
 
     def tick(self, timeout=-1):
         """
