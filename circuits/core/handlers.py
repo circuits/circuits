@@ -97,6 +97,8 @@ def reprhandler(handler):
     format = "<handler[%s.%s] (%s.%s)>"
 
     channel = getattr(handler, "channel", "*")
+    if channel is None:
+        channel = "*"
 
     from circuits.core.manager import Manager
     if isinstance(channel, Manager):
