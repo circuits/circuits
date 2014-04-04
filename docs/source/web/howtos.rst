@@ -217,7 +217,7 @@ Integrate with WSGI Applications
 
 
 Integrating with other WSGI Applications is
-quite easy to do. Simplly add in an instance
+quite easy to do. Simply add in an instance
 of the :class:`~circuits.web.wsgi.Gateway`
 component into your circuits.web application.
 
