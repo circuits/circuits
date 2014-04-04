@@ -96,10 +96,12 @@ class Unknown(object):
 def reprhandler(handler):
     format = "<handler[%s.%s] (%s.%s)>"
 
-    channel = handler.channel if handler.channel is not None else "*"
+    channel = getattr(handler, "channel", "*")
+
     from circuits.core.manager import Manager
     if isinstance(channel, Manager):
         channel = "<instance of " + channel.__class__.__name__ + ">"
+
     names = ".".join(handler.names)
 
     instance = getattr(
