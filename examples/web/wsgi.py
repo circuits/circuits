@@ -1,13 +1,22 @@
 #!/usr/bin/env python
 
-from circuits.web import BaseServer
 from circuits.web.wsgi import Gateway
+from circuits.web import Controller, Server
 
 
-def application(environ, start_response):
+def foo(environ, start_response):
     start_response("200 OK", [("Content-Type", "text/plain")])
-    return ["Hello World!"]
+    return ["Foo!"]
 
-app = BaseServer(("0.0.0.0", 8000))
-Gateway(application).register(app)
+
+class Root(Controller):
+    """App Rot"""
+
+    def index(self):
+        return "Hello World!"
+
+
+app = Server(("0.0.0.0", 10000))
+Root().register(app)
+Gateway({"/foo": foo}).register(app)
 app.run()

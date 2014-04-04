@@ -216,7 +216,43 @@ Integrate with WSGI Applications
 --------------------------------
 
 
-.. todo:: Write about this ...
+Integrating with other WSGI Applications is
+quite easy to do. Simplly add in an instance
+of the :class:`~circuits.web.wsgi.Gateway`
+component into your circuits.web application.
+
+Example:
+
+.. code-block:: python
+    :linenos:
+    
+    #!/usr/bin/env python
+
+    from circuits.web.wsgi import Gateway
+    from circuits.web import Controller, Server
+
+
+    def foo(environ, start_response):
+        start_response("200 OK", [("Content-Type", "text/plain")])
+        return ["Foo!"]
+
+
+    class Root(Controller):
+        """App Rot"""
+
+        def index(self):
+            return "Hello World!"
+
+
+    app = Server(("0.0.0.0", 10000))
+    Root().register(app)
+    Gateway({"/foo": foo}).register(app)
+    app.run()
+
+The ``apps`` argument of the :class:`~circuits.web.wsgi.Gateway`
+component takes a key/value pair of ``path -> callable``
+(*a Python dictionary*) that maps each URI to a given
+WSGI callable.
 
 
 Deploy with Apache and mod_wsgi
