@@ -35,7 +35,7 @@ the ``.value`` property.
 
 The only other API you may need in your application
 is the :py:attr:`~Value.notify` which can be used
-to trigger a :class:`~value_changed` event when the
+to trigger a ``value_changed`` event when the
 underlying :class:`~Value` of the event handler has
 changed. In this way you can do something asynchronously
 with the event handler's return value no matter when
@@ -98,18 +98,18 @@ Example Session:
     'Hello World!'
     >>> 
 
-The :py:attr:`~Value.notify` attribute can also be
+The :py:attr:`Value.notify` attribute can also be
 set to the name of an event which should be used
-to fire the :class:`~value_changed` event to.
+to fire the ``value_changed`` event to.
 
 If the form ``x.notify = True`` used then the event that
 gets fired is a concatenation of the original event
-and the value_changed event. e.g: ``foo_value_changed``.
+and the ``value_changed`` event. e.g: ``foo_value_changed``.
 
 .. note:: This is a bit advanced and should only be used
           by experienced users of the circuits framework.
           If you simply want basic synchronization of
           event handlers it's recommended that you try
-          the :meth:`~circuits.core.components.Component.call`
-          and :meth:`~circuits.core.components.Component.wait`
+          the :meth:`circuits.Component.call`
+          and :meth:`circuits.Component.wait`
           synchronization primitives first.
