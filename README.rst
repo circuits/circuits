@@ -31,12 +31,12 @@ components.
    :target: https://crate.io/packages/circuits/
    :alt: Number of PyPI downloads
 
-.. image:: https://jenkins.shiningpanda-ci.com/prologic/job/circuits/badge/icon
-   :target: https://jenkins.shiningpanda-ci.com/prologic/job/circuits/
+.. image:: https://drone.io/bitbucket.org/circuits/circuits/status.png
+   :target: https://drone.io/bitbucket.org/circuits/circuits
    :alt: Build Status
 
-.. image:: https://requires.io/bitbucket/circuits/circuits-dev/requirements.png?branch=default
-   :target: https://requires.io/bitbucket/circuits/circuits-dev/requirements/?branch=default
+.. image:: https://requires.io/bitbucket/circuits/circuits/requirements.png?branch=default
+   :target: https://requires.io/bitbucket/circuits/circuits/requirements/?branch=default
    :alt: Requirements Status
 
 
@@ -93,7 +93,7 @@ Alternatively, you may download the source package from the
 
 .. note::
     You can install the `development version
-    <https://bitbucket.org/circuits/circuits/get/tip.tar.gz#egg=circuits-dev>`_
+    <https://bitbucket.org/circuits/circuits/get/tip.tar.gz#egg=circuits>`_
     via ``pip install circuits==dev``.
 
 

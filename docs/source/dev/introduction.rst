@@ -1,6 +1,6 @@
 .. _circuits-dev Mailing List: http://groups.google.com/group/circuits-users
 .. _FreeNode IRC Network: http://freenode.net
-.. _#circuits-dev IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits-dev&uio=d4
+.. _#circuits IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
 
 
 Development Introduction
@@ -13,7 +13,7 @@ Here's how we do things in circuits...
 Communication
 -------------
 
-- `#circuits-dev IRC Channel`_ on the `FreeNode IRC Network`_
+- `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
 - `circuits-dev Mailing List`_
 
 
@@ -41,4 +41,4 @@ We use the following tools to develop circuits and share code:
 - **Package Hosting:**
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
 - **Continious Integration:**
-  `Shining Panda CI <https://jenkins.shiningpanda-ci.com/prologic/job/circuits/>`_
+  `Drone <https://drone.io/bitbucket.org/circuits/circuits>`_

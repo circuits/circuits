@@ -32,8 +32,8 @@ Writing new tests
 
 
 We're not perfect, and we're still writing more tests to ensure quality code.
-If you'd like to help, please `Fork circuits-dev <https://bitbucket.org/circuits/circuits-dev/fork>`_, write more tests that cover more of our code base and
-submit a `Pull Request <https://bitbucket.org/circuits/circuits-dev/pull-request/new>`_. Many Thanks!
+If you'd like to help, please `Fork circuits <https://bitbucket.org/circuits/circuits/fork>`_, write more tests that cover more of our code base and
+submit a `Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_. Many Thanks!
 
 
 Adding New Features
