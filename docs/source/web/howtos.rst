@@ -1,3 +1,6 @@
+.. module:: circuits
+
+
 How To Guides
 =============
 
@@ -79,37 +82,34 @@ How Do I: Integrate with a Database
 -----------------------------------
 
 
-.. warning:: There is no good way to integrate
-             with a database since most database
-             implementations don't cooperative
-             nicely with asynchronous I/O frameworks
-             such as circuits.web
+.. warning:: Using databases in an asynchronous framework is problematic
+             because most database implementations don't support asynchronous
+             I/O operations.
 
-Nevertheless circuits.web can still integrate database
-connectivity by regular means. The only caveats is that
-if your database query blocks for extensive periods of
-time it will affect the concurrent performance of your
-web application. To mitigate this you should spawn
-multiple instances of your web application and use
-load balancing.
+             Generally the solution is to use threading to hand off
+             database operations to a separate thread.
 
-The other approach would involve using the
-:class:`~circuits.Worker` component and fire
-:class:`~circuits.task` events when performing
-potentially blocking operations such as those
-of a typical database using the Python DB-API
-functionality.
+Here are some ways to help integrate databases into your application:
 
-.. note:: There is no example shown here because
-          I personally avoid using databases wherever
-          possible and prefer to use the file system
-          where I can get away with it and since there is
-          no *good way* of integrating databases right now
-          this is left up to you as an exercise.
-        
-          If you need HTTP integrating databases in your
-          application such as SQLite, or SQLAlchemy
-          please come talk to us and we'll give you a hand!
+1. Ensure your queries are optimized and do not block
+   for extensive periods of time.
+2. Use a library like `SQLAlchemy <http://www.sqlalchemy.org/>`_
+   that supports multi-threaded database operations
+   to help prevent your circuits.web web application
+   from blocking.
+3. *Optionally* take advantage of the :class:`~circuits.Worker`
+   component to fire :class:`~circuits.task` events wrapping
+   database calls in a thread or process pool. You can then use
+   the :meth:`~circuits.Component.call` and :meth:`~.circuits.Component.wait`
+   synchronization primitives to help with the control flow of
+   your requests and responses.
+
+Another way you can help improve performance
+is by load balancing across multiple backends
+of your web application. Using things like
+`haproxy <http://haproxy.1wt.eu/>`_ or
+`nginx <http://nginx.org/en/>`_ for load balancing
+can really help.
 
 
 How Do I: Use WebSockets
