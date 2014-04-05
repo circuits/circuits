@@ -544,8 +544,9 @@ Session Handling
 ----------------
 
 Session Handling in circuits.web is very similar to Cookies.
-A dict-like object is called **.session** is attached to every
-Request Object during the life-cycle of that Request.
+A dict-like object called **.session** is attached to every
+Request Object during the life-cycle of that request. Internally
+a Cookie named **circuits.session** is set in the response.
 
 Rewriting the Cookie Example to use a session instead:
 
@@ -573,27 +574,3 @@ Rewriting the Cookie Example to use a session instead:
           not persist. No future Session Handling
           components are planned. For persistent
           data you should use some kind of Database.
-
-Combining Sessions with Cookies:
-
-.. code-block:: python
-    :linenos:
-    
-    from circuits.web import Server, Controller, Sessions
-    
-    
-    class Root(Controller):
-        
-        def index(self, name=None):
-            if name:
-                self.session["name"] = name
-            else:
-                name = self.session.get("name", "World!")
-            
-            visits = self.cookie.get("visits", 0)
-            self.cookie["visits"] += 1
-            
-            return "Hello {0:s}! You have visited {1:d} times today!".format(name, visits)
-    
-    
-    (Server(8000) + Sessions() + Root()).run()
