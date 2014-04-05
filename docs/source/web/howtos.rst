@@ -88,7 +88,7 @@ How Do I: Integrate with a Database
 Nevertheless circuits.web can still integrate database
 connectivity by regular means. The only caveats is that
 if your database query blocks for extensive periods of
-time it will affect the concurrent performance if your
+time it will affect the concurrent performance of your
 web application. To mitigate this you should spawn
 multiple instances of your web application and use
 load balancing.
