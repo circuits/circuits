@@ -96,6 +96,6 @@ Example output of `telnet Example <https://bitbucket.org/circuits/circuits/src/t
 
 .. image:: ../examples/Telnet.png
 
-And it's DOT Graph:
+And its DOT Graph:
 
 .. graphviz:: ../examples/Telnet.dot
