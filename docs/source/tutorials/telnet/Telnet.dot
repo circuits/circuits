@@ -1,0 +1,5 @@
+strict digraph  {
+	TCPClient -> Select	 [weight="2.0"];
+	Telnet -> TCPClient	 [weight="1.0"];
+	Telnet -> File	 [weight="1.0"];
+}

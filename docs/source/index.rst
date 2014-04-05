@@ -24,7 +24,7 @@ Documentation
    :maxdepth: 1
 
    start/index
-   tutorial/index
+   tutorials/index
    man/index
    web/index
    api/index
