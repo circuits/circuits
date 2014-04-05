@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import pytest
+
+
 from circuits.web import Controller
 
 from .helpers import urlencode, urlopen, HTTPError
@@ -12,6 +15,9 @@ class Root(Controller):
 
     def test_args(self, *args, **kwargs):
         return "{0}\n{1}".format(repr(args), repr(kwargs))
+
+    def test_default_args(self, a=None, b=None):
+        return "a={0}\nb={1}".format(repr(a), repr(b))
 
     def test_redirect(self):
         return self.redirect("/")
@@ -51,6 +57,19 @@ def test_args(webapp):
     data = f.read().split(b"\n")
     assert eval(data[0]) == args
     assert eval(data[1]) == kwargs
+
+
+@pytest.mark.parametrize("data,expected", [
+    ((["1"], {}),           "a='1'\nb=None"),
+    ((["1", "2"], {}),       "a='1'\nb='2'"),
+    ((["1"], {"b": "2"}),   "a='1'\nb=u'2'"),
+])
+def test_default_args(webapp, data, expected):
+    args, kwargs = data
+    url = "%s/test_default_args/%s" % (webapp.server.http.base, "/".join(args))
+    data = urlencode(kwargs).encode('utf-8')
+    f = urlopen(url, data)
+    assert f.read() == expected
 
 
 def test_redirect(webapp):

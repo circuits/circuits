@@ -63,7 +63,7 @@ class Dispatcher(BaseComponent):
 
         def accepts_vpath(handlers, vpath):
             args_no = len(vpath)
-            return all(len(h.args) == args_no or h.varargs for h in handlers)
+            return all(len(h.args) == args_no or h.varargs or (h.defaults is not None and args_no <= len(h.defaults)) for h in handlers)
 
         # Split /hello/world to ['hello', 'world']
         starting_parts = [x for x in req.path.strip("/").split("/") if x]
@@ -77,6 +77,12 @@ class Dispatcher(BaseComponent):
                 if handlers and (not vpath or accepts_vpath(handlers, vpath)):
                     req.index = (method == 'index')
                     return method, path, vpath
+                else:
+                    method, vpath = "index", [method] + vpath
+                    handlers = get_handlers(path, method)
+                    if handlers and (not vpath or accepts_vpath(handlers, vpath)):
+                        req.index = True
+                        return method, path, vpath
 
         return None, None, None
 
