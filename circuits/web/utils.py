@@ -40,7 +40,7 @@ def average(xs):
 
 def variance(xs):
     avg = average(xs)
-    return map(lambda x: (x - avg)**2, xs)
+    return list(map(lambda x: (x - avg)**2, xs))
 
 
 def stddev(xs):
