@@ -13,6 +13,8 @@ Share with us your story of how you've used circuits to solve a problem
 or create a new software solution using the circuits framework and library
 of components.
 
+.. see: http://circuitsframework.com/Community
+
 
 Submitting Bug Reports
 ----------------------
@@ -40,7 +42,7 @@ Adding New Features
 -------------------
 
 
-If you'd like to see a new feature added to circutis, then we'd like to hear
+If you'd like to see a new feature added to circuits, then we'd like to hear
 about it~ We would like to see some discussion around any new features as well
 as valid use-cases. To start the discussions off, please either:
 
@@ -48,4 +50,4 @@ as valid use-cases. To start the discussions off, please either:
 
   or
 
-- `Submit a NEW Issue <http://bitbucket.org/circuits/circuits/issues>`_
+- `Submit a **New** Issue <http://bitbucket.org/circuits/circuits/issues>`_

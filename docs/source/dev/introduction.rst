@@ -1,6 +1,7 @@
-.. _circuits-dev Mailing List: http://groups.google.com/group/circuits-users
+.. _Developer Mailing List: http://groups.google.com/group/circuits-dev
+.. _Issue Tracker: https://bitbucket.org/circuits/circuits/issues
 .. _FreeNode IRC Network: http://freenode.net
-.. _#circuits IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
+.. _IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
 
 
 Development Introduction
@@ -13,8 +14,13 @@ Here's how we do things in circuits...
 Communication
 -------------
 
-- `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
-- `circuits-dev Mailing List`_
+- `IRC Channel`_ on the `FreeNode IRC Network`_
+- `Developer Mailing List`_
+- `Issue Tracker`_
+
+
+.. note:: If you are familiar with `IRC <http://en.wikipedia.org/wiki/Internet_Relay_Chat>`_
+          and use your own IRC Client then connect to the FreeNode Network and ``/join #circuits``.
 
 
 Standards
@@ -23,6 +29,19 @@ Standards
 We use the following coding standard:
 
 - `pep8 <http://www.python.org/dev/peps/pep-0008/>`_
+
+We also lint our codebase with the following tools:
+
+- `pyflakes <https://pypi.python.org/pypi/pyflakes>`_
+- `pep8 <https://pypi.python.org/pypi/pep8>`_
+- `mccabe <https://pypi.python.org/pypi/mccabe/0.2.1>`_
+
+Please ensure your Development IDE or Editor has the above
+linters and checkers in place and enabled.
+
+Alternatively you can use the following command line tool:
+
+- `flake8 <https://pypi.python.org/pypi/flake8>`_
 
 
 Tools
@@ -33,12 +52,13 @@ We use the following tools to develop circuits and share code:
 - **Code Sharing:**
   `Mercurial <http://mercurial.selenic.com/>`_
 - **Code Hosting and Bug Reporting:**
-  `BitBucket <http://bitbucket.org/circuits/circuits>`_
-- **Project Management:**
-  `Pivotal Tracker <http://pivotaltracker.com/projects/695621>`_
+  `BitBucket <https://bitbucket.org/circuits/circuits>`_
+  `GitHub <https://github.com/circuits/circuits>`_ (*Mirror Only*)
+- **Issue Tracker:**
+  `Issue Tracker <https://bitbucket.org/circuits/circuits/issues>`_
 - **Documentation Hosting:**
   `Read the Docs <http://circuits.readthedocs.org>`_
 - **Package Hosting:**
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
-- **Continious Integration:**
+- **Continuous Integration:**
   `Drone <https://drone.io/bitbucket.org/circuits/circuits>`_

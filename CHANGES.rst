@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :support:`95` Updated Developer Documentation with corrections and a new workflow.
 - :support:`86` Telnet Tutorial
 - :bug:`47 major` Dispatcher does not fully respect optional arguments. web
 - :support:`61` circuits.web documentation enhancements docs
