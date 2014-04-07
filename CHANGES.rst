@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :feature:`94` Modified the :class:`circuits.web.Logger` to use the ``response_success`` event.
 - :support:`86` Telnet Tutorial
 - :bug:`47 major` Dispatcher does not fully respect optional arguments. web
 - :support:`61` circuits.web documentation enhancements docs
