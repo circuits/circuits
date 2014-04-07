@@ -259,6 +259,9 @@ def test_tcp_lookup_failure(Poller, ipv6):
 
         client.fire(connect("foo", 1234))
         assert pytest.wait_for(client, "error", lambda obj, attr: isinstance(getattr(obj, attr), SocketError))
-        assert client.error.errno in (EAI_NODATA, EAI_NONAME,)
+        if pytest.PLATFORM == "win32":
+            assert client.error.errno == 11004
+        else:
+            assert client.error.errno in (EAI_NODATA, EAI_NONAME,)
     finally:
         m.stop()
