@@ -6,7 +6,6 @@ Change Log
 ==========
 
 
-- :support:`78` Migrate Change Log maintenance and build to Releases
 - :support:`86` Telnet Tutorial
 - :bug:`47 major` Dispatcher does not fully respect optional arguments. web
 - :support:`61` circuits.web documentation enhancements docs
@@ -16,6 +15,7 @@ Change Log
 - :bug:`89 major` Class attribtues that reference methods cause duplicate event handlers core
 - :support:`92` Update circuitsframework.com content docs
 - :support:`71` Document the value_changed event docs
+- :support:`78` Migrate Change Log maintenance and build to Releases
 - :bug:`91 major` Call/Wait and specific instances of events
 - :bug:`59 major` circuits.web DoS in serve_file (remote denial of service) web
 - :bug:`66 major` web examples jsonserializer broken web
@@ -32,7 +32,13 @@ Change Log
 - :bug:`67 major` web example jsontool is broken on python3 web
 - :support:`63` typos in documentation docs
 - :bug:`53 major` WebSocketClient treating WebSocket data in same TCP segment as HTTP response as part the HTTP response. web
+- :bug:`62 major` Fix packaging and bump circuits 1.5.1 for @dsuch (*Dariusz Suchojad*) for `Zato <https://zato.io/>`_
 - :bug:`56 major` circuits.web HEAD request send response body web
+- :bug:`45 major` Fixed use of ``cmp()`` and ``__cmp__()`` for Python 3 compatibility.
+- :bug:`48 major` Allow ``event`` to be passed to the decorated function (*the request handler*) for circuits.web
+- :bug:`46 major` Set ``Content-Type`` header on response for errors. (circuits.web)
+- :bug:`38 major` Guard against invalid headers. (circuits.web)
+- :bug:`37 major` Fixed a typo in :class:`~circuits.io.file.File`
 
 
 Older Change Logs
