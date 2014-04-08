@@ -38,8 +38,8 @@ class Debugger(BaseComponent):
 
         super(Debugger, self).__init__()
 
-        self.errors = errors
-        self.events = events
+        self._errors = errors
+        self._events = events
 
         if isinstance(file, str):
             self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
@@ -56,8 +56,10 @@ class Debugger(BaseComponent):
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("exception", channel="*", priority=100.0)
-    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
-        if not self.errors:
+    def _on_exception(self, error_type, value, traceback,
+                      handler=None, fevent=None):
+
+        if not self._errors:
             return
 
         s = []
@@ -67,7 +69,10 @@ class Debugger(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, fevent, error_type, value)
+        msg = "ERROR {0:s} ({1:s}) {{2:s}}: {3:s}\n".format(
+            handler, fevent, error_type, value
+        )
+
         s.append(msg)
         s.extend(traceback)
         s.append("\n")
@@ -91,7 +96,7 @@ class Debugger(BaseComponent):
         """
 
         try:
-            if not self.events:
+            if not self._events:
                 return
 
             channels = event.channels
@@ -113,12 +118,9 @@ class Debugger(BaseComponent):
             if self.logger is not None:
                 self.logger.debug(s)
             else:
-                try:
-                    self.file.write(s)
-                    self.file.write("\n")
-                    self.file.flush()
-                except IOError:
-                    pass
+                self.file.write(s)
+                self.file.write("\n")
+                self.file.flush()
         except Exception as e:
             sys.stderr.write("ERROR (Debugger): {}".format(e))
             sys.stderr.write("{}".format(format_exc()))

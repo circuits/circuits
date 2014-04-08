@@ -50,7 +50,7 @@ def test_main():
     stderr.seek(0)
     stderr.truncate()
 
-    assert debugger.events
+    assert debugger._events
 
     e = Event()
     app.fire(e)
@@ -61,8 +61,8 @@ def test_main():
     stderr.seek(0)
     stderr.truncate()
 
-    debugger.events = False
-    assert not debugger.events
+    debugger._events = False
+    assert not debugger._events
 
     e = Event()
     app.fire(e)
@@ -86,7 +86,7 @@ def test_file(tmpdir):
     stderr.seek(0)
     stderr.truncate()
 
-    assert debugger.events
+    assert debugger._events
 
     e = Event()
     app.fire(e)
@@ -98,8 +98,8 @@ def test_file(tmpdir):
     stderr.seek(0)
     stderr.truncate()
 
-    debugger.events = False
-    assert not debugger.events
+    debugger._events = False
+    assert not debugger._events
 
     e = Event()
     app.fire(e)
@@ -126,7 +126,7 @@ def test_filename(tmpdir):
     stderr.seek(0)
     stderr.truncate()
 
-    assert debugger.events
+    assert debugger._events
 
     e = Event()
     app.fire(e)
@@ -138,8 +138,8 @@ def test_filename(tmpdir):
     stderr.seek(0)
     stderr.truncate()
 
-    debugger.events = False
-    assert not debugger.events
+    debugger._events = False
+    assert not debugger._events
 
     e = Event()
     app.fire(e)
@@ -161,8 +161,8 @@ def test_exceptions():
     stderr.seek(0)
     stderr.truncate()
 
-    assert debugger.events
-    assert debugger.errors
+    assert debugger._events
+    assert debugger._errors
 
     e = test(raiseException=True)
     app.fire(e)
@@ -181,11 +181,11 @@ def test_exceptions():
     stderr.seek(0)
     stderr.truncate()
 
-    debugger.events = False
-    debugger.errors = False
+    debugger._events = False
+    debugger._errors = False
 
-    assert not debugger.events
-    assert not debugger.errors
+    assert not debugger._events
+    assert not debugger._errors
 
     e = test(raiseException=True)
     app.fire(e)
@@ -213,7 +213,7 @@ def test_IgnoreEvents():
     stderr.seek(0)
     stderr.truncate()
 
-    assert debugger.events
+    assert debugger._events
 
     debugger.IgnoreEvents.extend(["test"])
 
@@ -248,7 +248,7 @@ def test_IgnoreChannels():
     stderr.seek(0)
     stderr.truncate()
 
-    assert debugger.events
+    assert debugger._events
     debugger.IgnoreChannels.extend([("*", "test")])
 
     e = Event()
