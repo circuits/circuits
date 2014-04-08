@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :bug:`97 major` Fixed ``tests.net.test_tcp.test_lookup_failure`` test for Windows
 - :support:`86` Telnet Tutorial
 - :bug:`47 major` Dispatcher does not fully respect optional arguments. web
 - :support:`61` circuits.web documentation enhancements docs
