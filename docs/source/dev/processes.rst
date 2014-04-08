@@ -30,7 +30,7 @@ Bug Reports
 - An appropriate milestone will be set (*depending on current milestone's schedule and resources*)
 - A unit test developed that demonstrates the bug's failure.
 - A fix developed that passes the unit test and breaks no others.
-- A `Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_ created with the fix.
+- A `New Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_ created with the fix.
 
   This must contains:
   - A new or modified unit test.
@@ -51,7 +51,7 @@ Feature Requests
 - An appropriate milestone will be set (*depending on current milestone's schedule and resources*)
 - A unit test developed that demonstrates the new feature.
 - The new feature developed that passes the unit test and breaks no others.
-- A `Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_ created with the fix.
+- A `New Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_ created with the fix.
 
   This must contains:
   - A new or modified unit test.
@@ -75,7 +75,7 @@ Writing new Code
 - Ensure any new or modified code does not break existing unit tests.
 - Update any relevant doc strings or documentation.
 - Update the `Change Log <https://bitbucket.org/circuits/circuits/src/tip/CHANGES.rst>`_ updated.
-- Submit a `Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_.
+- Submit a `New Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_.
 
 
 Running the Tests
