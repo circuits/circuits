@@ -155,12 +155,6 @@ class BaseComponent(Manager):
 
         return self
 
-    @handler('unregister')
-    def _on_unregister(self, component):
-        if component is not self:
-            return
-        return self.unregister()
-
     def unregister(self):
         """
         Removes this component from the component tree.
