@@ -201,7 +201,8 @@ class exception(Event):
     """
 
     def __init__(self, type, value, traceback, handler=None, fevent=None):
-        super(exception, self).__init__(type, value, traceback, handler=handler, fevent=fevent)
+        super(exception, self).__init__(type, value, traceback,
+                                        handler=handler, fevent=fevent)
 
 
 class started(Event):
@@ -262,14 +263,6 @@ class registered(Event):
 
     def __init__(self, component, manager):
         super(registered, self).__init__(component, manager)
-
-
-class unregister(Event):
-    """unregister Event
-
-    This Event ask for a Component to unregister from its
-    Component or Manager.
-    """
 
 
 class unregistered(Event):
