@@ -116,9 +116,7 @@ def test_inspect():
     s = inspect(a)
 
     assert "Components: 0" in s
-    assert "Event Handlers: 3" in s
-    assert "unregister; 1" in s
-    assert "<handler[*.unregister] (A._on_unregister)>" in s
+    assert "Event Handlers: 2" in s
     assert "foo; 1" in s
     assert "<handler[*.foo] (A.foo)>" in s
     assert "prepare_unregister_complete; 1" in s
