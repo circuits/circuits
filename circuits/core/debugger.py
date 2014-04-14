@@ -69,7 +69,7 @@ class Debugger(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR {0:s} ({1:s}) {{2:s}}: {3:s}\n".format(
+        msg = "ERROR {0:s} ({1:s}) ({2:s}): {3:s}\n".format(
             handler, fevent, error_type, value
         )
 
