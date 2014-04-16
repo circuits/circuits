@@ -25,7 +25,7 @@ class App(Component):
 def test(manager, watcher):
     app = App()
     process, bridge = app.start(process=True, link=manager)
-    assert watcher.wait("ready")
+    assert watcher.wait("ready", timeout=30)
 
     x = manager.fire(hello())
 

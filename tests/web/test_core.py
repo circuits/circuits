@@ -3,7 +3,9 @@
 import pytest
 
 
+from circuits.six import b, u
 from circuits.web import Controller
+
 
 from .helpers import urlencode, urlopen, HTTPError
 
@@ -17,7 +19,7 @@ class Root(Controller):
         return "{0}\n{1}".format(repr(args), repr(kwargs))
 
     def test_default_args(self, a=None, b=None):
-        return "a={0}\nb={1}".format(repr(a), repr(b))
+        return "a={0}\nb={1}".format(a, b)
 
     def test_redirect(self):
         return self.redirect("/")
@@ -60,14 +62,17 @@ def test_args(webapp):
 
 
 @pytest.mark.parametrize("data,expected", [
-    ((["1"], {}),           "a='1'\nb=None"),
-    ((["1", "2"], {}),       "a='1'\nb='2'"),
-    ((["1"], {"b": "2"}),   "a='1'\nb=u'2'"),
+    ((["1"], {}),           b("a=1\nb=None")),
+    ((["1", "2"], {}),      b("a=1\nb=2")),
+    ((["1"], {"b": "2"}),   b("a=1\nb=2")),
 ])
 def test_default_args(webapp, data, expected):
     args, kwargs = data
-    url = "%s/test_default_args/%s" % (webapp.server.http.base, "/".join(args))
-    data = urlencode(kwargs).encode('utf-8')
+    url = u("{0:s}/test_default_args/{1:s}".format(
+        webapp.server.http.base,
+        u("/").join(args)
+    ))
+    data = urlencode(kwargs).encode("utf-8")
     f = urlopen(url, data)
     assert f.read() == expected
 
