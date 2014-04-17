@@ -2,7 +2,9 @@
 # Date:     03rd April 2013
 # Author:   James Mills, j dot mills at griffith dot edu dot au
 
+
 """Utilities"""
+
 
 from functools import wraps
 from imp import find_module
@@ -62,7 +64,8 @@ def has_binary(name):
 def requires(*names, **kwargs):
     """Decorator/Wrapper that aborts if not all requirements are met.
 
-    Aborts if not all requirements are met given a test function (defaulting to :func:`~has_binary`).
+    Aborts if not all requirements are met given a test function
+    (defaulting to :func:`~has_binary`).
 
     :param kwargs: Optional kwargs. e.g: ``test=has_module``
     :type kwargs: dict

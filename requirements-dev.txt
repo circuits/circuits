@@ -1,3 +1,5 @@
+-e .
+
 # Convenient Development Tasks
 Fabric==1.8.3
 

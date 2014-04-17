@@ -2,7 +2,8 @@
 # Date:     18th June 2013
 # Author:   James Mills, j dot mills at griffith dot edu dot au
 
-"""Fabric fabfile"""
+
+"""Development Task"""
 
 
 from __future__ import print_function
@@ -10,7 +11,10 @@ from __future__ import print_function
 from os import getcwd
 
 
-from fabric.api import abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings, task
+from fabric.api import (
+    abort, cd, execute, hide, hosts,
+    local, prefix, prompt, run, settings, task
+)
 
 
 import help  # noqa
@@ -23,14 +27,16 @@ from .utils import msg, pip, requires, tobool
 def build(**options):
     """Build and install required dependencies
 
-    Options can be provided to customize the build. The following options are supported:
+    Options can be provided to customize the build.
+    The following options are supported:
 
     - dev -> Whether to install in development mode (Default: Fase)
     """
 
     dev = tobool(options.get("dev", False))
 
-    pip(requirements="requirements{0:s}.txt".format("-dev" if dev else ""))
+    if dev:
+        pip("requirements-dev.txt")
 
     with settings(hide("stdout", "stderr"), warn_only=True):
         local("python setup.py {0:s}".format("develop" if dev else "install"))
@@ -113,7 +119,12 @@ def sync(*args):
 
     status = local("hg status", capture=True)
     if status:
-        abort("Repository is not in a clean state! Please commit, revert or shelve!")
+        abort(
+            (
+                "Repository is not in a clean state! "
+                "Please commit, revert or shelve!"
+            )
+        )
 
     with settings(warn_only=True):
         local("hg pull --update")
