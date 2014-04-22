@@ -36,7 +36,7 @@ def build(**options):
     dev = tobool(options.get("dev", False))
 
     if dev:
-        pip("requirements-dev.txt")
+        pip(requirements="requirements-dev.txt")
 
     with settings(hide("stdout", "stderr"), warn_only=True):
         local("python setup.py {0:s}".format("develop" if dev else "install"))
