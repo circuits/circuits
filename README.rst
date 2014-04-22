@@ -31,8 +31,8 @@ components.
    :target: https://crate.io/packages/circuits/
    :alt: Number of PyPI downloads
 
-.. image:: https://drone.io/bitbucket.org/circuits/circuits/status.png
-   :target: https://drone.io/bitbucket.org/circuits/circuits
+.. image:: http://jenkins.vz1.bne.shortcircuit.net.au/buildStatus/icon?job=circuits
+   :target: http://jenkins.vz1.bne.shortcircuit.net.au/job/circuits/
    :alt: Build Status
 
 .. image:: https://requires.io/bitbucket/circuits/circuits/requirements.png?branch=default
