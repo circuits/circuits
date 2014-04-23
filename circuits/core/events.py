@@ -2,9 +2,11 @@
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """
 This module defines the basic event class and common events.
 """
+
 
 from inspect import ismethod
 
@@ -42,9 +44,9 @@ class Event(object):
         return e
 
     def __init__(self, *args, **kwargs):
-        """An event is a message send to one or more channels. It is eventually
-        dispatched to all components that have handlers for one
-        of the channels and the event type.
+        """An event is a message send to one or more channels.
+        It is eventually dispatched to all components
+        that have handlers for one of the channels and the event type.
 
         All normal arguments and keyword arguments passed to the constructor
         of an event are passed on to the handler. When declaring a
