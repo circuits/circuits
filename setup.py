@@ -12,7 +12,18 @@ version = new_module("version")
 
 exec(
     compile(
-        open(path.join(path.dirname(globals().get("__file__", path.join(getcwd(), "circuits"))), "circuits/version.py"), "r").read(),
+        open(
+            path.join(
+                path.dirname(
+                    globals().get(
+                        "__file__",
+                        path.join(getcwd(), "circuits")
+                    )
+                ),
+                "circuits/version.py"
+            ),
+            "r"
+        ).read(),
         "circuits/version.py", "exec"
     ),
     version.__dict__
@@ -78,7 +89,6 @@ setup(
     install_requires=[],
     entry_points={
         "console_scripts": [
-            "circuits.bench=circuits.bench.main:main",
             "circuits.web=circuits.web.main:main",
         ]
     },

@@ -7,10 +7,10 @@
 THis tool does some simple benchmaking of the circuits library.
 """
 
+
 import sys
 import math
 import optparse
-
 from time import sleep
 
 if sys.platform == "win32":
@@ -24,13 +24,16 @@ try:
 except ImportError:
     hotshot = None  # NOQA
 
+
 try:
     import psyco
 except ImportError:
     psyco = None  # NOQA
 
+
 from circuits import __version__ as systemVersion
 from circuits import handler, Event, Component, Manager, Debugger
+
 
 USAGE = "%prog [options]"
 VERSION = "%prog v" + systemVersion
@@ -47,12 +50,6 @@ def duration(seconds):
 
 
 def parse_options():
-    """parse_options() -> opts, args
-
-    Parse the command-line options given returning both
-    the parsed options and arguments.
-    """
-
     parser = optparse.OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
@@ -248,9 +245,6 @@ def main():
         stats.sort_stats("time", "calls")
         stats.print_stats(20)
 
-###
-### Entry Point
-###
 
 if __name__ == "__main__":
     main()
