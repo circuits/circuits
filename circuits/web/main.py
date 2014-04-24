@@ -75,31 +75,31 @@ def parse_options():
     )
 
     parser.add_option(
-        "--poller",
+        "", "--poller",
         action="store", type="string", default="select", dest="poller",
         help="Specify type of poller to use"
     )
 
     parser.add_option(
-        "--server",
+        "", "--server",
         action="store", type="string", default="server", dest="server",
         help="Specify server to use"
     )
 
     parser.add_option(
-        "--profile",
+        "", "--profile",
         action="store_true", default=False, dest="profile",
         help="Enable execution profiling support"
     )
 
     parser.add_option(
-        "--debug",
+        "", "--debug",
         action="store_true", default=False, dest="debug",
         help="Enable debug mode"
     )
 
     parser.add_option(
-        "--validate",
+        "", "--validate",
         action="store_true", default=False, dest="validate",
         help="Enable WSGI validation mode"
     )
