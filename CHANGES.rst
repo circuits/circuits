@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :feature:`99 major` Added Digest Auth support to the ``circuits.web`` CLI Tool
 - :feature:`98 major` Dockerized circuits. See: https://docker.io/
 - :bug:`97 major` Fixed ``tests.net.test_tcp.test_lookup_failure`` test for Windows
 - :support:`95` Updated Developer Documentation with corrections and a new workflow.
