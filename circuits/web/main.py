@@ -7,8 +7,10 @@
 circutis.web Web Server and Testing Tool.
 """
 
+
 import os
 from sys import stderr
+from hashlib import md5
 from optparse import OptionParser
 from wsgiref.validate import validator
 from wsgiref.simple_server import make_server
@@ -19,17 +21,15 @@ try:
 except ImportError:
     hostshot = None
 
-try:
-    import psyco
-except:
-    psyco = None  # NOQA
+
+import circuits
+from circuits import handler, Component, Manager, Debugger
 
 from circuits.core.pollers import Select
 from circuits.tools import inspect, graph
-from circuits import Component, Manager, Debugger
-from circuits import __version__ as systemVersion
 
 from circuits.web.wsgi import Application
+from circuits.web.tools import check_auth, digest_auth
 from circuits.web import BaseServer, Controller, Logger, Server, Static
 
 try:
@@ -44,7 +44,7 @@ except ImportError:
 
 
 USAGE = "%prog [options] [docroot]"
-VERSION = "%prog v" + systemVersion
+VERSION = "%prog v" + circuits.__version__
 
 
 def parse_options():
@@ -59,48 +59,47 @@ def parse_options():
     parser.add_option(
         "-l", "--logging",
         action="store_true", default=False, dest="logging",
-        help="Enable access logs"
-    )
-
-    if psyco is not None:
-        parser.add_option(
-            "-j", "--jit",
-            action="store_true", default=False, dest="jit",
-            help="Use python HIT (psyco)"
-        )
-
-    parser.add_option(
-        "-m", "--multiprocessing",
-        action="store", type="int", default=0, dest="mp",
-        help="Specify no. of processes to start (multiprocessing)"
+        help="Enable logging of requests"
     )
 
     parser.add_option(
-        "-t", "--type",
-        action="store", type="string", default="select", dest="type",
+        "-p", "--passwd",
+        action="store", default=None, dest="passwd",
+        help="Location to passwd file for Digest Auth"
+    )
+
+    parser.add_option(
+        "-j", "--jobs",
+        action="store", type="int", default=0, dest="jobs",
+        help="Specify no. of jobs/processes to start"
+    )
+
+    parser.add_option(
+        "--poller",
+        action="store", type="string", default="select", dest="poller",
         help="Specify type of poller to use"
     )
 
     parser.add_option(
-        "-s", "--server",
+        "--server",
         action="store", type="string", default="server", dest="server",
         help="Specify server to use"
     )
 
     parser.add_option(
-        "-p", "--profile",
+        "--profile",
         action="store_true", default=False, dest="profile",
         help="Enable execution profiling support"
     )
 
     parser.add_option(
-        "-d", "--debug",
+        "--debug",
         action="store_true", default=False, dest="debug",
         help="Enable debug mode"
     )
 
     parser.add_option(
-        "-v", "--validate",
+        "--validate",
         action="store_true", default=False, dest="validate",
         help="Enable WSGI validation mode"
     )
@@ -108,6 +107,31 @@ def parse_options():
     opts, args = parser.parse_args()
 
     return opts, args
+
+
+class Authentication(Component):
+
+    channel = "web"
+
+    realm = "Secure Area"
+    users = {"admin": md5("admin").hexdigest()}
+
+    def __init__(self, channel=channel, realm=None, passwd=None):
+        super(Authentication, self).__init__(self, channel=channel)
+
+        if realm is not None:
+            self.realm = realm
+
+        if passwd is not None:
+            with open(passwd, "r") as f:
+                lines = (line.strip() for line in f)
+                self.users = dict((line.split(":", 1) for line in lines))
+
+    @handler("request", priority=10)
+    def request(self, event, request, response):
+        if not check_auth(request, response, self.realm, self.users):
+            event.stop()
+            return digest_auth(request, response, self.realm, self.users)
 
 
 class HelloWorld(Component):
@@ -124,50 +148,58 @@ class Root(Controller):
         return "Hello World!"
 
 
-def main():
-    opts, args = parse_options()
-
-    if psyco and opts.jit:
-        psyco.full()
-
-    if ":" in opts.bind:
-        address, port = opts.bind.split(":")
-        port = int(port)
-    else:
-        address, port = opts.bind, 8000
-
-    bind = (address, port)
-
-    if opts.validate:
-        application = (Application() + Root())
-        app = validator(application)
-
-        httpd = make_server(address, port, app)
-        httpd.serve_forever()
-
-        raise SystemExit(0)
-
-    manager = Manager()
-
-    if opts.debug:
-        manager += Debugger()
-
-    poller = opts.type.lower()
+def select_poller(poller):
     if poller == "poll":
         if Poll is None:
-            stderr.write("No poll support available - defaulting to Select...")
+            stderr.write(
+                "No poll support available - defaulting to Select..."
+            )
             Poller = Select
         else:
             Poller = Poll
     elif poller == "epoll":
         if EPoll is None:
-            stderr.write("No epoll support available - defaulting to Select...")
+            stderr.write(
+                "No epoll support available - defaulting to Select..."
+            )
             Poller = Select
         else:
             Poller = EPoll
     else:
         Poller = Select
 
+    return Poller
+
+
+def parse_bind(bind):
+    if ":" in bind:
+        address, port = bind.split(":")
+        port = int(port)
+    else:
+        address, port = bind, 8000
+
+    return (address, port)
+
+
+def main():
+    opts, args = parse_options()
+
+    bind = parse_bind(opts.bind)
+
+    if opts.validate:
+        application = (Application() + Root())
+        app = validator(application)
+
+        httpd = make_server(bind[0], bind[1], app)
+        httpd.serve_forever()
+
+        raise SystemExit(0)
+
+    manager = Manager()
+
+    opts.debug and Debugger().register(manager)
+
+    Poller = select_poller(opts.poller.lower())
     Poller().register(manager)
 
     if opts.server.lower() == "base":
@@ -181,8 +213,9 @@ def main():
 
     Static(docroot=docroot, dirlisting=True).register(manager)
 
-    if opts.logging:
-        Logger().register(manager)
+    opts.passwd and Authentication(passwd=opts.passwd).register(manager)
+
+    opts.logging and Logger().register(manager)
 
     if opts.profile and hotshot:
         profiler = hotshot.Profile(".profile")
@@ -193,7 +226,7 @@ def main():
         print()
         print(inspect(manager))
 
-    for i in range(opts.mp):
+    for i in range(opts.jobs):
         manager.start(process=True)
 
     manager.run()
