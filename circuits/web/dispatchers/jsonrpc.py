@@ -39,7 +39,7 @@ class JSONRPC(BaseComponent):
         if self.path is not None and self.path != req.path.rstrip("/"):
             return
 
-        res.headers["Content-Type"] = "application/javascript"
+        res.headers["Content-Type"] = "application/json"
 
         try:
             data = req.body.read().decode(self.encoding)
