@@ -54,10 +54,15 @@ class Dummy(Component):
         id = response.header.id
         qname = response.q.qname
 
-        print("DNS Response from {0:s}:{1:d} id={2:d} qname={3:s}".format(peer[0], peer[1], id, qname), file=sys.stderr)
+        print(
+            "DNS Response from {0:s}:{1:d} id={2:d} qname={3:s}".format(
+                peer[0], peer[1], id, qname
+            ),
+            file=sys.stderr
+        )
 
         for rr in response.rr:
-            print(" {0:s}".format(rr.rdata.data))
+            print(" {0:s}".format(rr))
 
         raise SystemExit(0)
 
