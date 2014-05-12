@@ -97,7 +97,7 @@ class Telnet(Component):
         else:
             self.fire(write((host, port), b"\x00"))
 
-    def ready(self, socket):
+    def ready(self, *args):
         graph(self.root)
 
     def connected(self, host, port=None):
