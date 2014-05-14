@@ -6,6 +6,8 @@ Change Log
 ==========
 
 
+- :feature`103` Added the firing of a ``disconnect`` event for the
+                WebSocketsDispatcher.
 - :bug:`102` Fixed minor bug with WebSocketsDispatcher causing superflusous
              ``connect()`` events from being fired.
 - :bug:`100` Fixed returned Content-Type in JSON-RPC Dispatcher.

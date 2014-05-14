@@ -2,13 +2,15 @@
 # Date:     26th February 2011
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 import base64
 import hashlib
 
+
 from circuits.six import b
-from circuits.net.events import connect
 from circuits.web.errors import httperror
 from circuits import handler, BaseComponent
+from circuits.net.events import connect, disconnect
 from circuits.protocols.websocket import WebSocketCodec
 
 
@@ -113,4 +115,5 @@ class WebSocketsDispatcher(BaseComponent):
     @handler("disconnect")
     def _on_disconnect(self, sock):
         if sock in self._codecs:
+            self.fire(disconnect(sock), self._wschannel)
             del self._codecs[sock]
