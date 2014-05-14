@@ -101,7 +101,14 @@ class WebSocketsDispatcher(BaseComponent):
     def _on_response_complete(self, e, value):
         response = e.args[0]
         request = response.request
-        self.fire(connect(request.sock, *request.sock.getpeername()), self._wschannel)
+        if request.sock in self._codecs:
+            self.fire(
+                connect(
+                    request.sock,
+                    *request.sock.getpeername()
+                ),
+                self._wschannel
+            )
 
     @handler("disconnect")
     def _on_disconnect(self, sock):

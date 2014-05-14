@@ -6,6 +6,8 @@ Change Log
 ==========
 
 
+- :bug:`102` Fixed minor bug with WebSocketsDispatcher causing superflusous
+             ``connect()`` events from being fired.
 - :bug:`100` Fixed returned Content-Type in JSON-RPC Dispatcher.
 - :feature:`99 major` Added Digest Auth support to the ``circuits.web`` CLI Tool
 - :feature:`98 major` Dockerized circuits. See: https://docker.io/
