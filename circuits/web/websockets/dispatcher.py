@@ -64,9 +64,9 @@ class WebSocketsDispatcher(BaseComponent):
                              headers.get("Connection", "").lower().split(",")]
 
         try:
-            if (not "Host" in headers
+            if ("Host" not in headers
                 or headers.get("Upgrade", "").lower() != "websocket"
-                or not "upgrade" in connection_tokens
+                or "upgrade" not in connection_tokens
                 or sec_key is None
                     or len(base64.b64decode(sec_key)) != 16):
                     return httperror(request, response, code=400)
