@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :bug:`104` Prevent other websockets sessions from closing.
 - :feature`103` Added the firing of a ``disconnect`` event for the
                 WebSocketsDispatcher.
 - :bug:`102` Fixed minor bug with WebSocketsDispatcher causing superflusous

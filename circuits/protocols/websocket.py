@@ -214,6 +214,9 @@ class WebSocketCodec(BaseComponent):
 
     @handler("close")
     def _on_close(self, *args):
+        if self._sock is not None:
+            if args and (args[0] != self._sock):
+                return
         if not self._close_sent:
             self._write(b"\x88\x00")
             self._close_sent = True
