@@ -51,10 +51,10 @@ class Proxy(Component):
         self.clients[sock] = client
 
     def disconnect(self, sock):
-        client = self.clients[sock]
-        client.unregister()
-
-        del self.clients[sock]
+        client = self.clients.get(sock)
+        if client is not None:
+            client.unregister()
+            del self.clients[sock]
 
     def read(self, sock, data):
         client = self.clients[sock]
