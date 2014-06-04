@@ -19,6 +19,8 @@ from fabric.api import (
 
 import help  # noqa
 import docs  # noqa
+import docker  # noqa
+
 from .utils import msg, pip, requires, tobool
 
 
@@ -70,18 +72,6 @@ def test():
     """Run all unit tests and doctests."""
 
     local("python setup.py test")
-
-
-@task()
-@requires("docker")
-def docker():
-    """Build and Publish Docker Image"""
-
-    with msg("Building Image"):
-        local("docker build -t prologic/circuits .")
-
-    with msg("Pushing Image"):
-        local("docker push  prologic/circuits")
 
 
 @task()
