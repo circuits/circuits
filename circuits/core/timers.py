@@ -22,17 +22,19 @@ class Timer(BaseComponent):
     def __init__(self, interval, event, *channels, **kwargs):
         """
         :param interval: the delay or interval to wait for until
-            the event is fired. If interval is specified as
-            datetime, the interval is recalculated as the time span from
-            now to the given datetime.
-        :type interval: datetime or float number
+                         the event is fired. If interval is specified as
+                         datetime, the interval is recalculated as the
+                         time span from now to the given datetime.
+        :type interval:  ``datetime`` or number of seconds as a ``float``
 
-        :param event: the event to fire.
-        :type event: :class:`~.events.Event`
+        :param event:    the event to fire.
+        :type event:     :class:`~.events.Event`
 
-        If the optional keyword argument *persist* is set to ``True``,
-        the event will be fired repeatedly. Else the timer fires the
-        event once and then unregisters itself.
+        :param persist:  An optional keyword argument which if ``True``
+                         will cause the event to be fired repeatedly
+                         once per configured interval until the timer
+                         is unregistered. **Default:** ``False``
+        :type persist:   ``bool``
         """
 
         super(Timer, self).__init__()
