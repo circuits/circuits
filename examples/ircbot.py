@@ -10,11 +10,11 @@ echo anything privately messages to it in response.
 
 
 from circuits import Component
-from circuits.net.sockets import TCPClient, Connect
-from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
+from circuits.net.sockets import TCPClient, connect
+from circuits.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
 
-from circuits.net.protocols.irc import ERR_NICKNAMEINUSE
-from circuits.net.protocols.irc import RPL_ENDOFMOTD, ERR_NOMOTD
+from circuits.protocols.irc import ERR_NICKNAMEINUSE
+from circuits.protocols.irc import RPL_ENDOFMOTD, ERR_NOMOTD
 
 
 class Bot(Component):
@@ -37,7 +37,7 @@ class Bot(Component):
         when it is ready to start making a new connection.
         """
 
-        self.fire(Connect(self.host, self.port))
+        self.fire(connect(self.host, self.port))
 
     def connected(self, host, port):
         """Connected Event
