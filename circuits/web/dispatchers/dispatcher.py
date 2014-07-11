@@ -24,6 +24,68 @@ from circuits.web.processors import process
 from circuits.web.controllers import BaseController
 
 
+def resolve_path(paths, parts):
+
+    def rebuild_path(url_parts):
+        return '/%s' % '/'.join(url_parts)
+
+    left_over = []
+
+    while parts:
+        if rebuild_path(parts) in paths:
+            yield rebuild_path(parts), left_over
+        left_over.insert(0, parts.pop())
+
+    if '/' in paths:
+        yield '/', left_over
+
+
+def resolve_methods(parts):
+    if parts:
+        method = parts[0]
+        vpath = parts[1:]
+        yield method, vpath
+
+    yield 'index', parts
+
+
+def find_handlers(req, paths):
+    def get_handlers(path, method):
+        component = paths[path]
+        return component._handlers.get(method, None)
+
+    def accepts_vpath(handlers, vpath):
+        args_no = len(vpath)
+        return all(
+            len(h.args) == args_no or h.varargs or (
+                h.defaults is not None and args_no <= len(h.defaults)
+            )
+            for h in handlers
+        )
+
+    # Split /hello/world to ['hello', 'world']
+    starting_parts = [x for x in req.path.strip("/").split("/") if x]
+
+    for path, parts in resolve_path(paths, starting_parts):
+        handlers = get_handlers(path, req.method)
+        if handlers:
+            return handlers, req.method, path, parts
+
+        for method, vpath in resolve_methods(parts):
+            handlers = get_handlers(path, method)
+            if handlers and (not vpath or accepts_vpath(handlers, vpath)):
+                req.index = (method == 'index')
+                return handlers, method, path, vpath
+            else:
+                method, vpath = "index", [method] + vpath
+                handlers = get_handlers(path, method)
+                if handlers and (not vpath or accepts_vpath(handlers, vpath)):
+                    req.index = True
+                    return handlers, method, path, vpath
+
+    return [], None, None, None
+
+
 class Dispatcher(BaseComponent):
 
     channel = "web"
@@ -32,59 +94,6 @@ class Dispatcher(BaseComponent):
         super(Dispatcher, self).__init__(**kwargs)
 
         self.paths = dict()
-
-    def resolve_path(self, paths, parts):
-
-        def rebuild_path(url_parts):
-            return '/%s' % '/'.join(url_parts)
-
-        left_over = []
-
-        while parts:
-            if rebuild_path(parts) in self.paths:
-                yield rebuild_path(parts), left_over
-            left_over.insert(0, parts.pop())
-
-        if '/' in self.paths:
-            yield '/', left_over
-
-    def resolve_methods(self, parts):
-        if parts:
-            method = parts[0]
-            vpath = parts[1:]
-            yield method, vpath
-
-        yield 'index', parts
-
-    def find_handler(self, req):
-        def get_handlers(path, method):
-            component = self.paths[path]
-            return component._handlers.get(method, None)
-
-        def accepts_vpath(handlers, vpath):
-            args_no = len(vpath)
-            return all(len(h.args) == args_no or h.varargs or (h.defaults is not None and args_no <= len(h.defaults)) for h in handlers)
-
-        # Split /hello/world to ['hello', 'world']
-        starting_parts = [x for x in req.path.strip("/").split("/") if x]
-
-        for path, parts in self.resolve_path(self.paths, starting_parts):
-            if get_handlers(path, req.method):
-                return req.method, path, parts
-
-            for method, vpath in self.resolve_methods(parts):
-                handlers = get_handlers(path, method)
-                if handlers and (not vpath or accepts_vpath(handlers, vpath)):
-                    req.index = (method == 'index')
-                    return method, path, vpath
-                else:
-                    method, vpath = "index", [method] + vpath
-                    handlers = get_handlers(path, method)
-                    if handlers and (not vpath or accepts_vpath(handlers, vpath)):
-                        req.index = True
-                        return method, path, vpath
-
-        return None, None, None
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):
@@ -103,7 +112,7 @@ class Dispatcher(BaseComponent):
         if peer_cert:
             event.peer_cert = peer_cert
 
-        name, channel, vpath = self.find_handler(req)
+        handlers, name, channel, vpath = find_handlers(req, self.paths)
 
         if name is not None and channel is not None:
             event.kwargs = parse_qs(req.qs)
