@@ -2,6 +2,7 @@
 # Date:     13th September 2007
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """Hyper Text Transfer Protocol
 
 This module implements the server side Hyper Text Transfer Protocol
@@ -100,7 +101,7 @@ class HTTP(BaseComponent):
             return
         return self.uri.utf8().rstrip(b"/").decode(self._encoding)
 
-    @handler("stream")
+    @handler("stream")  # noqa
     def _on_stream(self, res, data):
         if data is not None:
             if isinstance(data, text_type):
@@ -135,7 +136,7 @@ class HTTP(BaseComponent):
             del self._clients[res.request.sock]
             res.done = True
 
-    @handler("response")
+    @handler("response")  # noqa
     def _on_response(self, res):
         """``Response`` Event Handler
 
@@ -208,7 +209,7 @@ class HTTP(BaseComponent):
         if sock in self._clients:
             del self._clients[sock]
 
-    @handler("read")
+    @handler("read")  # noqa
     def _on_read(self, sock, data):
         """Read Event Handler
 
@@ -323,7 +324,7 @@ class HTTP(BaseComponent):
         res.body = str(event)
         self.fire(response(res))
 
-    @handler("request_success")
+    @handler("request_success")  # noqa
     def _on_request_success(self, e, value):
         """
         Handler for the ``RequestSuccess`` event that is automatically
@@ -425,7 +426,13 @@ class HTTP(BaseComponent):
             self.fire(response(res))
 
     @handler("error")
-    def _on_error(self, etype, evalue, etraceback, handler=None, fevent=None):
+    def _on_error(self, *args, **kwargs):
+        if not len(args) == 3:
+            return
+
+        etype, evalue, etraceback = args
+        fevent = kwargs["fevent"]
+
         if isinstance(fevent, response):
             res = fevent.args[0]
             sock = res.request.sock
@@ -489,12 +496,24 @@ class HTTP(BaseComponent):
 
     @handler("request_complete")
     def _on_request_complete(self, *args, **kwargs):
-        """Dummy Event Handler for request_complete"""
+        """Dummy Event Handler for request events
+
+        - request_complete
+        """
 
     @handler("response_success", "response_complete")
     def _on_response_feedback(self, *args, **kwargs):
-        """Dummy Event Handler for response_success and response_complete"""
+        """Dummy Event Handler for response events
+
+        - response_success
+        - response_complete
+        """
 
     @handler("stream_success", "stream_failure", "stream_complete")
     def _on_stream_feedback(self, *args, **kwargs):
-        """Dummy Event Handler for stream_success, stream_failure and stream_complete"""
+        """Dummy Event Handler for stream events
+
+        - stream_success
+        - stream_failure
+        - stream_complete
+        """
