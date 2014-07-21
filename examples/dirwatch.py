@@ -10,12 +10,25 @@ stdour every file system event it sees.
 
 import sys
 
-from circuits import Debugger
+
+from circuits import Component
 from circuits.io import Notify
+
+
+class FileWatcher(Component):
+
+    channel = "notify"
+
+    def opened(self, filename, path, fullpath, isdir):
+        print("File {0:s} opened".format(filename))
+
+    def closed(self, filename, path, fullpath, isdir):
+        print("File {0:s} closed".format(filename))
+
 
 # Configure the system
 app = Notify()
-Debugger().register(app)
+FileWatcher().register(app)
 
 # Add the path to watch
 app.add_path(sys.argv[1])
