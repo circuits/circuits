@@ -18,7 +18,7 @@ event is dispatched. These can be declared explicitly on a
 
 :download:`Download handler_annotation.py <examples/handler_annotation.py>`
 
-The handler decorator on line 14 turned the method ``_on_started`` into an
+The handler decorator on line 14 turned the method ``system_started`` into an
 event handler for the event ``started``.
 
 When defining explicit event handlers in this way, it's convention to
