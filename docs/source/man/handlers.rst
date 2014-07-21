@@ -39,9 +39,9 @@ handler to a different channel than the component's channel
 
 Handler methods must be declared with arguments and keyword arguments that
 match the arguments passed to the event upon its creation. Looking at the
-API for :class:`~circuits.core.events.Started` you'll find that the
+API for :class:`~circuits.core.events.started` you'll find that the
 component that has been started is passed as an argument to its constructor.
-Therefore, our handler method must declare one argument (*Line 15*).
+Therefore, our handler method must declare one argument (*Line 14*).
 
 The :func:`~circuits.core.handlers.handler` decorator accepts other keyword arguments that 
 influence the behavior of the event handler and its invocation. Details can
