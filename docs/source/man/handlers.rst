@@ -102,7 +102,7 @@ Example:
             
             Print "Hello World!" when the ``hello`` Event is received.
             
-            As this is already decorated with the ``@handler11
+            As this is already decorated with the ``@handler``
             decorator, it will be left as it is and won't get
             touched by the implicit event handler creation
             mechanisms.
