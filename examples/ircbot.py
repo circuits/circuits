@@ -40,7 +40,7 @@ class Bot(Component):
         self.fire(connect(self.host, self.port))
 
     def connected(self, host, port):
-        """Connected Event
+        """connected Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
