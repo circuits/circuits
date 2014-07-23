@@ -4,18 +4,12 @@
 
 """Bridge
 
-Bridge Component to Bridge one or more components in a single System.
-That is, events in System A bridged to System B are shared. For example:
+The Bridge Component is used for inter-process communications between
+processes. Bridge is used internally when a Component is started in
+"process mode" via :meth:`circuits.core.manager.start`. Typically a
+Pipe is used as the socket transport between two sides of a Bridge
+(*there must be a :class:`~Bridge` instnace on both sides*).
 
-A <--> Bridge <--> B
-
-Events that propagate in A, will propagate to B across the Bridge.
-Events that propagate in B, will propagate to A across the Bridge.
-
-When the Bridge is created, it will automatically attempt to send a
-Hello Event to any configured nodes or on a broadcast address if no
-nodes are initially configured. The default Bridge implementation
-uses bidirectional pipes for high speec inter-process communications.
 """
 
 try:
