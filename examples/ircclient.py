@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 """Example IRC Client
 
 A basic IRC client with a very basic console interface.
@@ -11,15 +12,22 @@ For usage type:
 
 """
 
+
 import os
 from socket import gethostname
 from optparse import OptionParser
 
-from circuits.io import stdin
+
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
-from circuits.net.sockets import TCPClient, Connect
-from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
+
+from circuits.io import stdin
+
+from circuits.net.events import connect
+from circuits.net.sockets import TCPClient
+
+from circuits.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
+
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
@@ -68,16 +76,16 @@ class Client(Component):
         IRC(channel=self.channel).register(self)
 
     def ready(self, component):
-        """Ready Event
+        """ready Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when it is ready to start making a new connection.
         """
 
-        self.fire(Connect(self.host, self.port))
+        self.fire(connect(self.host, self.port))
 
     def connected(self, host, port):
-        """Connected Event
+        """connected Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
@@ -93,7 +101,7 @@ class Client(Component):
         self.fire(NICK(nick))
 
     def numeric(self, source, target, numeric, args, message):
-        """Numeric Event
+        """numeric Event
 
         This event is triggered by the ``IRC`` Protocol Component when we have
         received an IRC Numberic Event from server we are connected to.
@@ -106,7 +114,7 @@ class Client(Component):
             self.fire(NICK(newnick))
 
     def join(self, source, channel):
-        """Join Event
+        """join Event
 
         This event is triggered by the ``IRC`` Protocol Component when a
         user has joined a channel.
@@ -118,7 +126,7 @@ class Client(Component):
             print("--> %s (%s) has joined %s" % (source[0], source, channel))
 
     def notice(self, source, target, message):
-        """Notice Event
+        """notice Event
 
         This event is triggered by the ``IRC`` Protocol Component for each
         notice we receieve from the server.
@@ -127,7 +135,7 @@ class Client(Component):
         print("-%s- %s" % (source[0], message))
 
     def message(self, source, target, message):
-        """Message Event
+        """message Event
 
         This event is triggered by the ``IRC`` Protocol Component for each
         message we receieve from the server.
@@ -140,7 +148,7 @@ class Client(Component):
 
     @handler("read", channel="stdin")
     def stdin_read(self, data):
-        """Read Event (on channel ``stdin``)
+        """read Event (on channel ``stdin``)
 
         This is the event handler for ``read`` events specifically from the
         ``stdin`` channel. This is triggered each time stdin has data that
