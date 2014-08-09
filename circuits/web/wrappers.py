@@ -100,6 +100,9 @@ class HTTPStatus(object):
             self._status, self._reason
         )
 
+    def __format__(self, format_spec):
+        return format(str(self), format_spec)
+
     @property
     def status(self):
         return self._status
