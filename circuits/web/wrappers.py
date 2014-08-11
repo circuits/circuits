@@ -87,6 +87,16 @@ class HTTPStatus(object):
             return self._status > other
         return super(HTTPStatus, self).__gt__(other)
 
+    def __le__(self, other):
+        if isinstance(other, int):
+            return self._status <= other
+        return super(HTTPStatus, self).__le__(other)
+
+    def __ge__(self, other):
+        if isinstance(other, int):
+            return self._status >= other
+        return super(HTTPStatus, self).__ge__(other)
+
     def __eq__(self, other):
         if isinstance(other, int):
             return self._status == other
