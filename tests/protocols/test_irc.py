@@ -100,11 +100,11 @@ def test_PASS(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_PASS"
+    assert e.name == "PASS"
     assert e.args[0] == "secret"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PASS secret"
 
     e = next(events)
@@ -127,24 +127,24 @@ def test_USER(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_USER"
+    assert e.name == "USER"
     assert e.args[0] == "foo"
     assert e.args[1] == "localhost"
     assert e.args[2] == "localhost"
     assert e.args[3] == "Test Client"
 
     e = next(events)
-    assert e.name == "command_RAW"
-    assert e.args[0] == "USER foo \"localhost\" \"localhost\" :Test Client"
+    assert e.name == "RAW"
+    assert e.args[0] == "USER foo localhost localhost :Test Client"
 
     e = next(events)
     assert e.name == "write"
-    assert e.args[0] == "USER foo \"localhost\" \"localhost\" :Test Client\r\n"
+    assert e.args[0] == "USER foo localhost localhost :Test Client\r\n"
 
     data = iter(app.data)
 
     s = next(data)
-    assert s == "USER foo \"localhost\" \"localhost\" :Test Client\r\n"
+    assert s == "USER foo localhost localhost :Test Client\r\n"
 
 
 def test_NICK(app):
@@ -157,11 +157,11 @@ def test_NICK(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_NICK"
+    assert e.name == "NICK"
     assert e.args[0] == "test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "NICK test"
 
     e = next(events)
@@ -184,11 +184,11 @@ def test_PING(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_PING"
+    assert e.name == "PING"
     assert e.args[0] == "localhost"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PING :localhost"
 
     e = next(events)
@@ -211,11 +211,11 @@ def test_PONG(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_PONG"
+    assert e.name == "PONG"
     assert e.args[0] == "localhost"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PONG :localhost"
 
     e = next(events)
@@ -238,11 +238,11 @@ def test_QUIT(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_QUIT"
+    assert e.name == "QUIT"
     assert not e.args
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "QUIT :Leaving"
 
     e = next(events)
@@ -263,11 +263,11 @@ def test_QUIT(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_QUIT"
+    assert e.name == "QUIT"
     assert e.args[0] == "Test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "QUIT :Test"
 
     e = next(events)
@@ -290,11 +290,11 @@ def test_JOIN(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_JOIN"
+    assert e.name == "JOIN"
     assert e.args[0] == "#test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "JOIN #test"
 
     e = next(events)
@@ -315,12 +315,12 @@ def test_JOIN(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_JOIN"
+    assert e.name == "JOIN"
     assert e.args[0] == "#test"
     assert e.args[1] == "secret"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "JOIN #test secret"
 
     e = next(events)
@@ -343,11 +343,11 @@ def test_PART(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_PART"
+    assert e.name == "PART"
     assert e.args[0] == "#test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PART #test :Leaving"
 
     e = next(events)
@@ -368,12 +368,12 @@ def test_PART(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_PART"
+    assert e.name == "PART"
     assert e.args[0] == "#test"
     assert e.args[1] == "Test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PART #test :Test"
 
     e = next(events)
@@ -396,12 +396,12 @@ def test_PRIVMSG(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_PRIVMSG"
+    assert e.name == "PRIVMSG"
     assert e.args[0] == "test"
     assert e.args[1] == "Hello"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PRIVMSG test :Hello"
 
     e = next(events)
@@ -424,12 +424,12 @@ def test_NOTICE(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_NOTICE"
+    assert e.name == "NOTICE"
     assert e.args[0] == "test"
     assert e.args[1] == "Hello"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "NOTICE test :Hello"
 
     e = next(events)
@@ -452,18 +452,18 @@ def test_CTCP(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_CTCP"
+    assert e.name == "CTCP"
     assert e.args[0] == "test"
     assert e.args[1] == "PING"
     assert e.args[2] == "1234567890"
 
     e = next(events)
-    assert e.name == "command_PRIVMSG"
+    assert e.name == "PRIVMSG"
     assert e.args[0] == "test"
     assert e.args[1] == "PING 1234567890"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PRIVMSG test :PING 1234567890"
 
     e = next(events)
@@ -486,18 +486,18 @@ def test_CTCPREPLY(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_CTCPREPLY"
+    assert e.name == "CTCPREPLY"
     assert e.args[0] == "test"
     assert e.args[1] == "PING"
     assert e.args[2] == "1234567890"
 
     e = next(events)
-    assert e.name == "command_NOTICE"
+    assert e.name == "NOTICE"
     assert e.args[0] == "test"
     assert e.args[1] == "PING 1234567890"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "NOTICE test :PING 1234567890"
 
     e = next(events)
@@ -520,12 +520,12 @@ def test_KICK(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_KICK"
+    assert e.name == "KICK"
     assert e.args[0] == "#test"
     assert e.args[1] == "test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "KICK #test test :"
 
     e = next(events)
@@ -546,13 +546,13 @@ def test_KICK(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_KICK"
+    assert e.name == "KICK"
     assert e.args[0] == "#test"
     assert e.args[1] == "test"
     assert e.args[2] == "Bye"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "KICK #test test :Bye"
 
     e = next(events)
@@ -575,12 +575,12 @@ def test_TOPIC(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_TOPIC"
+    assert e.name == "TOPIC"
     assert e.args[0] == "#test"
     assert e.args[1] == "Hello World!"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "TOPIC #test :Hello World!"
 
     e = next(events)
@@ -603,11 +603,11 @@ def test_MODE(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_MODE"
+    assert e.name == "MODE"
     assert e.args[0] == "+i"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "MODE :+i"
 
     e = next(events)
@@ -628,12 +628,12 @@ def test_MODE(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_MODE"
+    assert e.name == "MODE"
     assert e.args[0] == "+o test"
     assert e.args[1] == "#test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "MODE #test :+o test"
 
     e = next(events)
@@ -656,12 +656,12 @@ def test_INVITE(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_INVITE"
+    assert e.name == "INVITE"
     assert e.args[0] == "test"
     assert e.args[1] == "#test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "INVITE test #test"
 
     e = next(events)
@@ -684,11 +684,11 @@ def test_NAMES(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_NAMES"
+    assert e.name == "NAMES"
     assert not e.args
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "NAMES"
 
     e = next(events)
@@ -709,11 +709,11 @@ def test_NAMES(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_NAMES"
+    assert e.name == "NAMES"
     assert e.args[0] == "#test"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "NAMES #test"
 
     e = next(events)
@@ -736,11 +736,11 @@ def test_AWAY(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_AWAY"
+    assert e.name == "AWAY"
     assert e.args[0] == "I am away."
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "AWAY :I am away."
 
     e = next(events)
@@ -758,11 +758,11 @@ def test_WHOIS(app):
     events = iter(app.events)
 
     e = next(events)
-    assert e.name == "command_WHOIS"
+    assert e.name == "WHOIS"
     assert e.args[0] == "somenick"
 
     e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "WHOIS :somenick"
 
     e = next(events)
@@ -793,14 +793,14 @@ def test_ping(app):
 
     e = next(events)
     assert e.name == "ping"
+    assert e.args == [("", None, None), "localhost"]
+
+    e = next(events)
+    assert e.name == "PONG"
     assert e.args[0] == "localhost"
 
     e = next(events)
-    assert e.name == "command_PONG"
-    assert e.args[0] == "localhost"
-
-    e = next(events)
-    assert e.name == "command_RAW"
+    assert e.name == "RAW"
     assert e.args[0] == "PONG :localhost"
 
     e = next(events)
@@ -838,12 +838,12 @@ def test_numerics(app):
 
     e = next(events)
     assert e.name == "numeric"
-    assert e.args[0] == "localhost"
-    assert e.args[1] == "test"
-    assert e.args[2] == 1
-    assert e.args[3] is None
-    assert e.args[4] == \
-        "Welcome to the circuits Internet Relay Chat Network test"
+    print(repr(e.args))
+    assert e.args == [
+        ('localhost', None, None),
+        1, 'test',
+        'Welcome to the circuits Internet Relay Chat Network test'
+    ]
 
     app.reset()
 
@@ -863,39 +863,13 @@ def test_numerics(app):
 
     e = next(events)
     assert e.name == "numeric"
-    assert e.args[0] == "localhost"
-    assert e.args[1] == "test"
-    assert e.args[2] == 332
-    assert e.args[3] == "#test"
-    assert e.args[4] == "Hello World!"
+    assert e.args == [
+        ("localhost", None, None),
+        332, "test", "#test", "Hello World!"
+    ]
 
 
-def test_ctcp(app):
-    app.reset()
-
-    app.fire(read(b":test!foo@localhost PRIVMSG test :TIME\r\n"))
-    while app:
-        app.flush()
-
-    events = iter(app.events)
-
-    e = next(events)
-    assert e.name == "read"
-    assert e.args[0] == b":test!foo@localhost PRIVMSG test :TIME\r\n"
-
-    e = next(events)
-    assert e.name == "line"
-    assert e.args[0] == ":test!foo@localhost PRIVMSG test :TIME"
-
-    e = next(events)
-    assert e.name == "ctcp"
-    assert e.args[0] == ("test", "foo", "localhost")
-    assert e.args[1] == "test"
-    assert e.args[2] == "TIME"
-    assert e.args[3] == ""
-
-
-def test_message(app):
+def test_privmsg(app):
     app.reset()
 
     app.fire(read(b":test!foo@localhost PRIVMSG test :Hello\r\n"))
@@ -913,10 +887,11 @@ def test_message(app):
     assert e.args[0] == ":test!foo@localhost PRIVMSG test :Hello"
 
     e = next(events)
-    assert e.name == "message"
-    assert e.args[0] == ("test", "foo", "localhost")
-    assert e.args[1] == "test"
-    assert e.args[2] == "Hello"
+    assert e.name == "privmsg"
+    assert e.args == [
+        ("test", "foo", "localhost"),
+        "test", "Hello"
+    ]
 
 
 def test_notice(app):
@@ -1055,9 +1030,10 @@ def test_mode(app):
 
     e = next(events)
     assert e.name == "mode"
-    assert e.args[0] == ("test", "foo", "localhost")
-    assert e.args[1] == "#test"
-    assert e.args[2] == "+o test"
+    assert e.args == [
+        ("test", "foo", "localhost"),
+        "#test", "+o", "test"
+    ]
 
 
 def test_away(app):
@@ -1079,13 +1055,7 @@ def test_away(app):
 
     e = next(events)
     assert e.name == "numeric"
-    assert e.args[0] == "irc.example.com"
-    assert e.args[1] == "circuits"
-    assert e.args[2] == 301
-    assert e.args[3] == "somenick"
-    assert e.args[4] == "is away"
-
-    e = next(events)
-    assert e.name == "away"
-    assert e.args[0] == "somenick"
-    assert e.args[1] == "is away"
+    assert e.args == [
+        ("irc.example.com", None, None),
+        301, "circuits", "somenick", "is away"
+    ]

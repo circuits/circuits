@@ -6,12 +6,11 @@ Change Log
 ==========
 
 
+- :feature:`108` Improved server support for the IRC Protocol.
 - :bug:`106` Added ``__format__`` method to circuits.web.wrappers.HTTPStatus.
 - :bug:`104` Prevent other websockets sessions from closing.
-- :feature`103` Added the firing of a ``disconnect`` event for the
-                WebSocketsDispatcher.
-- :bug:`102` Fixed minor bug with WebSocketsDispatcher causing superflusous
-             ``connect()`` events from being fired.
+- :feature:`103` Added the firing of a ``disconnect`` event for the WebSocketsDispatcher.
+- :bug:`102` Fixed minor bug with WebSocketsDispatcher causing superflusous ``connect()`` events from being fired.
 - :bug:`100` Fixed returned Content-Type in JSON-RPC Dispatcher.
 - :feature:`99 major` Added Digest Auth support to the ``circuits.web`` CLI Tool
 - :feature:`98 major` Dockerized circuits. See: https://docker.io/

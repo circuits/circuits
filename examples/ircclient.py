@@ -97,7 +97,7 @@ class Client(Component):
         hostname = self.hostname
         name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
 
-        self.fire(USER(nick, hostname, host, name))
+        self.fire(USER(nick, nick, self.hostname, name))
         self.fire(NICK(nick))
 
     def numeric(self, source, target, numeric, args, message):

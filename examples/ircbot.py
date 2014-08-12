@@ -46,10 +46,10 @@ class Bot(Component):
         when a successfully connection has been made.
         """
 
-        self.fire(USER("circuits", host, host, "Test circuits IRC Bot"))
         self.fire(NICK("circuits"))
+        self.fire(USER("circuits", "circuits", host, "Test circuits IRC Bot"))
 
-    def numeric(self, source, target, numeric, args, message):
+    def numeric(self, source, numeric, *args):
         """Numeric Event
 
         This event is triggered by the ``IRC`` Protocol Component when we have
@@ -61,20 +61,23 @@ class Bot(Component):
         if numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
             self.fire(JOIN("#circuits"))
 
-    def message(self, source, target, message):
+    def privmsg(self, source, target, message):
         """Message Event
 
         This event is triggered by the ``IRC`` Protocol Component for each
         message we receieve from the server.
         """
 
-        self.fire(PRIVMSG(source[0], message))
+        if target.startswith("#"):
+            self.fire(PRIVMSG(target, message))
+        else:
+            self.fire(PRIVMSG(source[0], message))
 
 
 # Configure and run the system
 bot = Bot("irc.freenode.net")
 
 # To register a 2nd ``Bot`` instance. Simply use a separate channel.
-#Bot("irc.freenode.net", channel="foo").register(bot)
+# Bot("irc.freenode.net", channel="foo").register(bot)
 
 bot.run()

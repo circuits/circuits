@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 """Circuits IRC Client
 
 A circuits based IRC Client demonstrating integration with urwid - a curses
@@ -13,6 +14,7 @@ For usage type:
    ./circ.py --help
 """
 
+
 import os
 import sys
 from select import select
@@ -21,16 +23,19 @@ from socket import gethostname
 from optparse import OptionParser
 from re import compile as compile_regex
 
-from urwid.raw_display import Screen
-from urwid import AttrWrap, Edit, Frame, ListBox, Pile, SimpleListWalker, Text
 
 from circuits import handler, Component
 from circuits import __version__ as systemVersion
-from circuits.net.sockets import TCPClient, Connect
+from circuits.net.sockets import TCPClient, connect
 
-from circuits.net.protocols.irc import QUIT, PART, RAW
-from circuits.net.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
-from circuits.net.protocols.irc import ERR_NICKNAMEINUSE, RPL_WELCOME
+from circuits.protocols.irc import RPL_ENDOFMOTD
+from circuits.protocols.irc import QUIT, PART, RAW
+from circuits.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
+from circuits.protocols.irc import ERR_NICKNAMEINUSE, ERR_NOMOTD
+
+from urwid.raw_display import Screen
+from urwid import AttrWrap, Edit, Frame, ListBox, Pile, SimpleListWalker, Text
+
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
@@ -133,10 +138,10 @@ class Client(Component):
         when it is ready to start making a new connection.
         """
 
-        self.fire(Connect(self.host, self.port))
+        self.fire(connect(self.host, self.port))
 
     def connected(self, host, port):
-        """Connected Event
+        """connected Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
@@ -146,17 +151,17 @@ class Client(Component):
         hostname = self.hostname
         name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
 
-        self.fire(USER(nick, hostname, host, name))
         self.fire(NICK(nick))
+        self.fire(USER(nick, hostname, host, name))
 
-    def numeric(self, source, target, numeric, args, message):
+    def numeric(self, source, numeric, *args):
         """Numeric Event
 
         This event is triggered by the ``IRC`` Protocol Component when we have
         received an IRC Numberic Event from server we are connected to.
         """
 
-        if numeric == RPL_WELCOME:
+        if numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
             self.fire(JOIN(self.ircchannel))
         elif numeric == ERR_NICKNAMEINUSE:
             self.nick = newnick = "%s_" % self.nick
@@ -200,7 +205,7 @@ class Client(Component):
             )
         )
 
-    def processCommand(self, s):
+    def processCommand(self, s):  # noqa
 
         match = CMD_REGEX.match(s)
         if match is not None:
@@ -266,10 +271,10 @@ class Client(Component):
         raise SystemExit(0)
 
     def cmdSERVER(self, host, port=6667):
-        self.fire(Connect(host, port))
+        self.fire(connect(host, port))
 
     def cmdSSLSERVER(self, host, port=6697):
-        self.fire(Connect(host, port, secure=True))
+        self.fire(connect(host, port, secure=True))
 
     def cmdJOIN(self, channel):
         if self.ircchannel is not None:
@@ -294,8 +299,8 @@ class Client(Component):
         canvas = self.top.render(size, focus=True)
         self.screen.draw_screen(size, canvas)
 
-    @handler("notice", "message")
-    def _on_notice_or_message(self, event, source, target, message):
+    @handler("notice", "privmsg")
+    def _on_notice_or_privmsg(self, event, source, target, message):
         nick, ident, host = source
 
         if event.name == "notice":
