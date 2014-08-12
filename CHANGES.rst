@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :bug:`106` Added ``__format__`` method to circuits.web.wrappers.HTTPStatus.
 - :bug:`104` Prevent other websockets sessions from closing.
 - :feature`103` Added the firing of a ``disconnect`` event for the
                 WebSocketsDispatcher.
