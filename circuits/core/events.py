@@ -13,10 +13,19 @@ from inspect import ismethod
 
 class EventType(type):
 
-    def __init__(cls, name, bases, ns):
-        super(EventType, cls).__init__(name, bases, ns)
+    __cache__ = {}
 
-        setattr(cls, "name", ns.get("name", cls.__name__))
+    def __new__(cls, name, bases, ns):
+        key = (cls, name, bases)
+
+        try:
+            return cls.__cache__[key]
+        except KeyError:
+            cls = type.__new__(cls, name, bases, ns)
+
+            setattr(cls, "name", ns.get("name", cls.__name__))
+
+            return cls
 
 
 class Event(object):
@@ -36,10 +45,12 @@ class Event(object):
 
     @classmethod
     def create(cls, name, *args, **kwargs):
-        return type(Event)(name, (Event,), {})(*args, **kwargs)
+        return type(cls)(name, (cls,), {})(*args, **kwargs)
 
     def child(self, name, *args, **kwargs):
-        e = self.create("{0:s}_{1:s}".format(self.name, name), *args, **kwargs)
+        e = Event.create(
+            "{0:s}_{1:s}".format(self.name, name), *args, **kwargs
+        )
         e.parent = self
         return e
 

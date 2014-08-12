@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :bug:`109` Fixed ``Event.create()`` factory and metaclass.
 - :feature:`108` Improved server support for the IRC Protocol.
 - :bug:`106` Added ``__format__`` method to circuits.web.wrappers.HTTPStatus.
 - :bug:`104` Prevent other websockets sessions from closing.
