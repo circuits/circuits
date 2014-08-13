@@ -13,6 +13,8 @@ For usage type:
 """
 
 
+from __future__ import print_function
+
 import os
 from socket import gethostname
 from optparse import OptionParser
@@ -97,10 +99,10 @@ class Client(Component):
         hostname = self.hostname
         name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
 
-        self.fire(USER(nick, nick, self.hostname, name))
         self.fire(NICK(nick))
+        self.fire(USER(nick, nick, self.hostname, name))
 
-    def numeric(self, source, target, numeric, args, message):
+    def numeric(self, source, numeric, *args):
         """numeric Event
 
         This event is triggered by the ``IRC`` Protocol Component when we have
@@ -123,7 +125,11 @@ class Client(Component):
         if source[0].lower() == self.nick.lower():
             print("Joined %s" % channel)
         else:
-            print("--> %s (%s) has joined %s" % (source[0], source, channel))
+            print(
+                "--> %s (%s) has joined %s" % (
+                    source[0], "@".join(source[1:]), channel
+                )
+            )
 
     def notice(self, source, target, message):
         """notice Event
@@ -134,17 +140,17 @@ class Client(Component):
 
         print("-%s- %s" % (source[0], message))
 
-    def message(self, source, target, message):
-        """message Event
+    def privmsg(self, source, target, message):
+        """privmsg Event
 
         This event is triggered by the ``IRC`` Protocol Component for each
         message we receieve from the server.
         """
 
         if target[0] == "#":
-            print("<%s> %s" % (target, message))
+            print("<%s> %s" % (source[0], message))
         else:
-            print("-%s- %s" % (source, message))
+            print("-%s- %s" % (source[0], message))
 
     @handler("read", channel="stdin")
     def stdin_read(self, data):
@@ -155,6 +161,7 @@ class Client(Component):
         it has read.
         """
 
+        print("<{0:s}> {1:s}".format(self.nick, data.strip()))
         self.fire(PRIVMSG(self.ircchannel, data.strip()))
 
 
