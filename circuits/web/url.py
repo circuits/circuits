@@ -71,7 +71,7 @@ class URL(object):
             parsed = urlparse(url.decode(encoding).encode('utf-8'))
 
         try:
-            port = "{0:d}".format(parsed.port).encode("utf-8")
+            port = str(parsed.port).encode("utf-8")
         except ValueError:
             port = None
 

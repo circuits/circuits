@@ -18,13 +18,13 @@ from collections import defaultdict
 from circuits import handler, Component
 
 
-def who(request):
+def who(request, encoding="utf-8"):
     """Create a SHA1 Hash of the User's IP Address and User-Agent"""
 
     ip = request.remote.ip
     agent = request.headers.get("User-Agent", "")
 
-    return sha("{0:s}{1:s}".format(ip, agent)).hexdigest()
+    return sha("{0:s}{1:s}".format(ip, agent).encode(encoding)).hexdigest()
 
 
 def create_session(request):

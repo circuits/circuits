@@ -50,7 +50,7 @@ class Client(Component):
 
 
 def test(manager, watcher, webapp):
-    server = Server(("localhost", 8123)).register(manager)
+    server = Server(0).register(manager)
     watcher.wait("ready")
 
     echo = Echo().register(server)
@@ -66,7 +66,9 @@ def test(manager, watcher, webapp):
     WebSocketsDispatcher("/websocket").register(server)
     watcher.wait("registered", channel="web")
 
-    WebSocketClient("ws://localhost:8123/websocket").register(manager)
+    uri = "ws://{0:s}:{1:d}/websocket".format(server.host, server.port)
+
+    WebSocketClient(uri).register(manager)
     client = Client().register(manager)
     watcher.wait("connected", channel="wsclient")
 

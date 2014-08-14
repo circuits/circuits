@@ -40,9 +40,9 @@ def test():
     while app:
         app.flush()
 
-    assert app.lines[0] == "1"
-    assert app.lines[1] == "2"
-    assert app.lines[2] == "3"
+    assert app.lines[0] == b"1"
+    assert app.lines[1] == b"2"
+    assert app.lines[2] == b"3"
 
 
 def test_server():
@@ -62,10 +62,10 @@ def test_server():
     while app:
         app.flush()
 
-    assert app.lines[0] == (1, "1")
-    assert app.lines[1] == (1, "2")
-    assert app.lines[2] == (1, "3")
+    assert app.lines[0] == (1, b"1")
+    assert app.lines[1] == (1, b"2")
+    assert app.lines[2] == (1, b"3")
 
-    assert app.lines[3] == (2, "1")
-    assert app.lines[4] == (2, "2")
-    assert app.lines[5] == (2, "3")
+    assert app.lines[3] == (2, b"1")
+    assert app.lines[4] == (2, b"2")
+    assert app.lines[5] == (2, b"3")
