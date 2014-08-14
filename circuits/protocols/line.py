@@ -13,7 +13,10 @@ import re
 
 from circuits.core import handler, Event, BaseComponent
 
-LINESEP = re.compile(b"\r?\n")
+from circuits.six import b
+
+
+LINESEP = re.compile(b("\r?\n"))
 
 
 def splitLines(s, buffer):
@@ -101,10 +104,10 @@ class Line(BaseComponent):
             # Client read
             data, = args
             lines, self.buffer = self.splitter(data, self.buffer)
-            [self.fire(line(x.decode(self.encoding, "replace"))) for x in lines]
+            [self.fire(line(x)) for x in lines]
         else:
             # Server read
             sock, data = args
             lines, buffer = self.splitter(data, self.getBuffer(sock))
             self.updateBuffer(sock, buffer)
-            [self.fire(line(sock, x.decode(self.encoding, "replace"))) for x in lines]
+            [self.fire(line(sock, x)) for x in lines]
