@@ -103,6 +103,8 @@ class HTTP(BaseComponent):
 
     @handler("stream")  # noqa
     def _on_stream(self, res, data):
+        sock = res.request.sock
+
         if data is not None:
             if isinstance(data, text_type):
                 data = data.encode(self._encoding)
@@ -116,7 +118,7 @@ class HTTP(BaseComponent):
                 ]
                 data = b"".join(buf)
 
-            self.fire(write(res.request.sock, data))
+            self.fire(write(sock, data))
 
             if res.body and not res.done:
                 try:
@@ -130,10 +132,12 @@ class HTTP(BaseComponent):
             if res.body:
                 res.body.close()
             if res.chunked:
-                self.fire(write(res.request.sock, b"0\r\n\r\n"))
+                self.fire(write(sock, b"0\r\n\r\n"))
             if res.close:
-                self.fire(close(res.request.sock))
-            del self._clients[res.request.sock]
+                self.fire(close(sock))
+            if sock in self._clients:
+                del self._clients[sock]
+
             res.done = True
 
     @handler("response")  # noqa
