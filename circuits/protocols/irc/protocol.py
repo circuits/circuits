@@ -35,10 +35,13 @@ class IRC(Component):
 
     def __init__(self, *args, **kwargs):
         super(IRC, self).__init__(*args, **kwargs)
+
+        self.encoding = kwargs.get("encoding", "utf-8")
+
         Line(**kwargs).register(self)
 
     def RAW(self, data):
-        self.fire(write("%s\r\n" % data))
+        self.fire(write("{0:s}\r\n".format(data).encode(self.encoding)))
 
     def PASS(self, password):
         self.fire(RAW("PASS %s" % password))
@@ -124,9 +127,9 @@ class IRC(Component):
             # Server read
             sock, line = args
 
-        prefix, command, args = parsemsg(line)
+        prefix, command, args = parsemsg(line, encoding=self.encoding)
 
-        command = command.lower().encode("utf-8")
+        command = command.lower()
 
         if NUMERIC.match(command):
             args.insert(0, int(command))
