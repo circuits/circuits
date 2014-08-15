@@ -1,41 +1,54 @@
-#!/usr/bin/python -i
+#!/usr/bin/env python
+
 
 """Bridge Example
 
-To use this example run it interactively through the Python interactive shell
-using the -i option as per the shebang line above.
+Should display:
 
-i.e: python -i hello_bridge.py
+- foo <pid>
+. bar <pid>
 
-At the python prompt:
-
-    >>> x = m.fire(Hello())
-    .
-    .
-    .
-    >>> x
-    <Value ('Hello World! (15969)') result: True errors: False for <Hello[*.hello] ( )>
-
+Where <pid> is the parent and child process id respectively.y
 """
 
 
+from __future__ import print_function
+
 from os import getpid
 
-from circuits import Component, Debugger, Event, Manager
+
+from circuits import Component, Event
 
 
-class hello(Event):
-    """hello Event"""
+class foo(Event):
+    """foo Event"""
+
+
+class bar(Event):
+    """bar Event"""
 
 
 class App(Component):
 
-    def hello(self):
-        return "Hello World! ({0:d})".format(getpid())
+    def foo(self):
+        return "foo ({0:d})".format(getpid())
+
+    def started(self, *args):
+        x = yield self.call(foo())
+        print(x.value)
+
+        y = yield self.call(bar())
+        print(y.value)
+
+        raise SystemExit(0)
 
 
-m = Manager() + Debugger()
-m.start()
-App().start(process=True, link=m)
+class SubApp(Component):
 
-# flake8: noqa
+    def bar(self):
+        return "bar ({0:d})".format(getpid())
+
+
+app = App()
+SubApp().start(process=True, link=app)
+app.run()
