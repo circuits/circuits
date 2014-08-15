@@ -11,6 +11,9 @@ Implements commands::
 """
 
 
+import logging
+from logging import getLogger
+
 from time import time
 from sys import stderr
 from itertools import chain
@@ -100,10 +103,6 @@ class UserInfo(object):
         self.user = user
         self.host = host
         self.name = name
-
-
-import logging
-from logging import getLogger
 
 
 class Server(Component):
