@@ -237,7 +237,7 @@ class Poll(BasePoller):
 
         try:
             self._poller.unregister(fileno)
-        except KeyError:
+        except (KeyError, ValueError):
             pass
 
         mask = 0
@@ -252,7 +252,10 @@ class Poll(BasePoller):
             self._map[fileno] = fd
         else:
             super(Poll, self).discard(fd)
-            del self._map[fileno]
+            try:
+                del self._map[fileno]
+            except KeyError:
+                pass
 
     def addReader(self, source, fd):
         super(Poll, self).addReader(source, fd)
@@ -342,7 +345,7 @@ class EPoll(BasePoller):
         try:
             fileno = fd.fileno() if not isinstance(fd, int) else fd
             self._poller.unregister(fileno)
-        except (SocketError, IOError) as e:
+        except (SocketError, IOError, ValueError) as e:
             if e.args[0] == EBADF:
                 keys = [k for k, v in list(self._map.items()) if v == fd]
                 for key in keys:
