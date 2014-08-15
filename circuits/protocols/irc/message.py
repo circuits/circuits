@@ -21,9 +21,10 @@ class Message(object):
                 raise Error("Space can only appear in the very last arg")
 
         self.command = command
-        self.args = filter(lambda x: x is not None, list(args))
+        self.args = list(filter(lambda x: x is not None, list(args)))
         self.prefix = str(kwargs["prefix"]) if "prefix" in kwargs else None
 
+        self.encoding = kwargs.get("encoding", "utf-8")
         self.add_nick = kwargs.get("add_nick", False)
 
     @staticmethod
@@ -34,6 +35,9 @@ class Message(object):
         prefix, command, args = parsemsg(s)
 
         return Message(command, *args, prefix=prefix)
+
+    def __bytes__(self):
+        return str(self).encode(self.encoding)
 
     def __str__(self):
         args = self.args[:]

@@ -1,9 +1,17 @@
 #!/usr/bin/env python
 
 
-"""IRC Daemon"""
+"""Example IRC Server
+
+.. note:: This is an example only and is feature incomplete.
+
+Implements commands::
+
+    USER NICK JOIN PART NICK WHO QUIT
+"""
 
 
+from time import time
 from sys import stderr
 from itertools import chain
 from operator import attrgetter
@@ -49,7 +57,7 @@ def parse_args():
     )
 
     parser.add_argument(
-        "-d", "--debug",
+        "--debug",
         action="store_true",
         default=False, dest="debug",
         help="Enable debug mode"
@@ -76,6 +84,7 @@ class User(object):
         self.nick = None
         self.away = False
         self.channels = []
+        self.signon = None
         self.registered = False
         self.userinfo = UserInfo()
 
@@ -93,6 +102,10 @@ class UserInfo(object):
         self.name = name
 
 
+import logging
+from logging import getLogger
+
+
 class Server(Component):
 
     channel = "server"
@@ -101,8 +114,9 @@ class Server(Component):
     host = "localhost"
     version = "ircd v{0:s}".format(__version__)
 
-    def init(self, args):
+    def init(self, args, logger=None):
         self.args = args
+        self.logger = logger or getLogger(__name__)
 
         self.buffers = defaultdict(bytes)
 
@@ -110,8 +124,7 @@ class Server(Component):
         self.users = {}
         self.channels = {}
 
-        if args.debug:
-            Debugger().register(self)
+        Debugger(events=args.debug, logger=self.logger).register(self)
 
         if ":" in args.bind:
             address, port = args.bind.split(":")
@@ -142,13 +155,17 @@ class Server(Component):
         user = self.users[sock]
         host, port = user.host, user.port
 
-        stderr.write("[{0:s}:{1:d}] -> {2:s}\n".format(host, port, repr(data)))
+        self.logger.info(
+            "I: [{0:s}:{1:d}] {2:s}".format(host, port, repr(data))
+        )
 
     def write(self, sock, data):
         user = self.users[sock]
         host, port = user.host, user.port
 
-        stderr.write("[{0:s}:{1:d}] <- {2:s}\n".format(host, port, repr(data)))
+        self.logger.info(
+            "O: [{0:s}:{1:d}] {2:s}".format(host, port, repr(data))
+        )
 
     def ready(self, server, bind):
         stderr.write(
@@ -160,11 +177,15 @@ class Server(Component):
     def connect(self, sock, host, port):
         self.users[sock] = User(sock, host, port)
 
+        self.logger.info("C: [{0:s}:{1:d}]".format(host, port))
+
     def disconnect(self, sock):
         if sock not in self.users:
             return
 
         user = self.users[sock]
+
+        self.logger.info("D: [{0:s}:{1:d}]".format(user.host, user.port))
 
         nick = user.nick
         user, host = user.userinfo.user, user.userinfo.host
@@ -174,7 +195,9 @@ class Server(Component):
         )
 
         del self.users[sock]
-        del self.nicks[nick]
+
+        if nick in self.nicks:
+            del self.nicks[nick]
 
     def quit(self, sock, source, reason="Leaving"):
         user = self.users[sock]
@@ -200,15 +223,30 @@ class Server(Component):
         if nick in self.nicks:
             return self.fire(reply(sock, ERR_NICKNAMEINUSE(nick)))
 
+        if not user.registered:
+            user.registered = True
+            self.fire(response.create("signon", sock, user))
+
         user.nick = nick
         self.nicks[nick] = user
 
     def user(self, sock, source, nick, user, host, name):
         _user = self.users[sock]
 
-        _user.userinfo = UserInfo(user, host, name)
+        _user.userinfo.user = user
+        _user.userinfo.host = host
+        _user.userinfo.name = name
 
-        _user.registered = True
+        if _user.nick is not None:
+            _user.registered = True
+            self.fire(response.create("signon", sock, source))
+
+    def signon(self, sock, source):
+        user = self.users[sock]
+        if user.signon:
+            return
+
+        user.signon = time()
 
         self.fire(reply(sock, RPL_WELCOME(self.network)))
         self.fire(reply(sock, RPL_YOURHOST(self.host, self.version)))
@@ -313,7 +351,7 @@ class Server(Component):
         if message.prefix is None:
             message.prefix = self.host
 
-        self.fire(write(target, str(message)))
+        self.fire(write(target, bytes(message)))
 
     @property
     def commands(self):
@@ -334,7 +372,15 @@ class Server(Component):
 def main():
     args = parse_args()
 
-    Server(args).run()
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        stream=stderr,
+        level=logging.DEBUG if args.debug else logging.INFO
+    )
+
+    logger = getLogger(__name__)
+
+    Server(args, logger=logger).run()
 
 
 if __name__ == "__main__":
