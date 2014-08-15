@@ -163,11 +163,10 @@ class Client(Component):
         received an IRC Numberic Event from server we are connected to.
         """
 
-        if numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
+        if numeric == ERR_NICKNAMEINUSE:
+            self.fire(NICK("{0:s}_".format(args[0])))
+        elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
             self.fire(JOIN(self.ircchannel))
-        elif numeric == ERR_NICKNAMEINUSE:
-            self.nick = newnick = "%s_" % self.nick
-            self.fire(NICK(newnick))
 
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
