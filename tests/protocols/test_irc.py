@@ -9,7 +9,7 @@ from circuits import handler, Event, Component
 
 from circuits.net.events import read, write
 
-from circuits.protocols.irc import IRC, Message
+from circuits.protocols.irc import IRC
 from circuits.protocols.irc import strip, joinprefix, parseprefix
 
 from circuits.protocols.irc import (
@@ -17,6 +17,8 @@ from circuits.protocols.irc import (
     JOIN, PART, PRIVMSG, NOTICE, AWAY,
     KICK, TOPIC, MODE, INVITE, NAMES, WHOIS
 )
+
+from circuits.six import u
 
 
 class App(Component):
@@ -122,8 +124,8 @@ def test_commands(event, data):
     (
         b":localhost NOTICE * :*** Looking up your hostname...\r\n",
         Event.create(
-            "notice", (u"localhost", None, None), u"*",
-            u"*** Looking up your hostname...",
+            "notice", (u("localhost"), None, None), u("*"),
+            u("*** Looking up your hostname..."),
         )
     ),
 ])
