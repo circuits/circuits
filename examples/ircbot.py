@@ -9,6 +9,9 @@ echo anything privately messages to it in response.
 """
 
 
+import sys
+
+
 from circuits import Component
 from circuits.net.sockets import TCPClient, connect
 from circuits.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
@@ -22,9 +25,9 @@ class Bot(Component):
     # Define a separate channel so we can create many instances of ``Bot``
     channel = "ircbot"
 
-    def init(self, host, port=6667, channel=channel):
+    def init(self, host, port="6667", channel=channel):
         self.host = host
-        self.port = port
+        self.port = int(port)
 
         # Add TCPClient and IRC to the system.
         TCPClient(channel=self.channel).register(self)
@@ -48,6 +51,15 @@ class Bot(Component):
 
         self.fire(NICK("circuits"))
         self.fire(USER("circuits", "circuits", host, "Test circuits IRC Bot"))
+
+    def disconnected(self):
+        """disconnected Event
+
+        This event is triggered by the underlying ``TCPClient`` Component
+        when the connection is lost.
+        """
+
+        raise SystemExit(0)
 
     def numeric(self, source, numeric, *args):
         """Numeric Event
@@ -75,9 +87,9 @@ class Bot(Component):
 
 
 # Configure and run the system
-bot = Bot("irc.freenode.net")
+bot = Bot(*sys.argv[1:])
 
 # To register a 2nd ``Bot`` instance. Simply use a separate channel.
-# Bot("irc.freenode.net", channel="foo").register(bot)
+# Bot(*sys.argv[1:], channel="foo").register(bot)
 
 bot.run()
