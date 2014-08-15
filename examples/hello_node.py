@@ -1,9 +1,10 @@
 #!/usr/bin/python -i
 
+
 """Node Example
 
-To use this example run it interactively through the Python interactive shell
-using the -i option as per the shebang line above.
+To use this example run it interactively through the Python interactive
+shell using the -i option as per the shebang line above.
 
 i.e: python -i hello_node.py host port
 
@@ -20,15 +21,17 @@ At the python prompt:
     .
     >>> y
     <Value (u'Hello World! (16035)') result: True errors: False for <Remote[*.remote] (<Hello[.hello] ( )>, 'app2' channel=None)>
-"""
+"""  # noqa
 
+
+from __future__ import print_function
 
 import sys
 from os import getpid
 
 
+from circuits import Component, Event
 from circuits.node import Node, remote  # noqa
-from circuits import Component, Debugger, Event
 
 
 class hello(Event):
@@ -38,18 +41,19 @@ class hello(Event):
 class App(Component):
 
     def ready(self, client):
-        print "Ready!"
+        print("Ready!")
 
     def connected(self, host, port):
-        print "Connected to {}:{}".format(host, port)
-        print "Try: app.fire(hello())"
+        print("Connected to {}:{}".format(host, port))
+        print("Try: x = app.fire(hello())")
 
     def hello(self):
+        print("Now try: y = app.fire(remote(hello(), \"test\"))")
         return "Hello World! ({0:d})".format(getpid())
 
 
 # Setup app1 with a debugger
-app = App() + Debugger()
+app = App()
 node = Node().register(app)
 
 host = sys.argv[1]

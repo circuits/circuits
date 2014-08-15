@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
+
 """Node Server Example
 
 This example demonstrates how to create a very simple node server
 that supports bi-diractional messaging between server and connected
 clients forming a cluster of nodes.
 """
+
+
+from __future__ import print_function
 
 from os import getpid
 from optparse import OptionParser
@@ -88,8 +92,8 @@ class NodeServer(Component):
         del self.clients[sock]
 
     def ready(self, server, bind):
-        print "Ready! Listening on {}:{}".format(*bind)
-        print "Waiting for remote events..."
+        print("Ready! Listening on {}:{}".format(*bind))
+        print("Waiting for remote events...")
 
     def hello(self):
         return "Hello World! ({0:d})".format(getpid())
