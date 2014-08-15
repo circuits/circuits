@@ -4,7 +4,8 @@ omit = circuits/__init__.py
        circuits/io/__init__.py
        circuits/core/__init__.py
        circuits/net/__init__.py
-       circuits/net/protocols/__init__.py
+       circuits/protocols/__init__.py
+       circuits/protocols/irc/__init__.py
        circuits/node/__init__.py
        circuits/web/__init__.py
        circuits/web/main.py
