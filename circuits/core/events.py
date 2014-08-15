@@ -126,13 +126,6 @@ class Event(object):
     def __le__(self, other):
         return False
 
-    def __eq__(self, other):
-        return (
-            self.name == other.name,
-            self.args == other.args,
-            self.kwargs == other.kwargs,
-        )
-
     def __gt__(self, other):
         return False
 
