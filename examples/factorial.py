@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+
+from __future__ import print_function
+
 from time import sleep
 
 
@@ -28,6 +31,7 @@ class App(Component):
         x = yield self.call(task(factorial, 10))
         print("{0:d}".format(x.value))
         self.stop()
+
 
 app = App()
 Debugger().register(app)

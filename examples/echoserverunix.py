@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
+
 """Simple UNIX Echo Server
 
 This example shows how you can create a simple UNIX Server (an Echo Service)
 utilizing the builtin Socket Components that the circuits library ships with.
 """
+
 
 from circuits import handler, Debugger
 from circuits.net.sockets import UNIXServer
@@ -26,6 +28,7 @@ class EchoServer(UNIXServer):
         """
 
         return data
+
 
 # Start and "run" the system.
 # Bind to a UNIX Socket at /tmp/test.sock

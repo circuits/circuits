@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 """Telnet Example
 
 A basic telnet-like clone that connects to remote hosts
@@ -19,6 +20,9 @@ This example makes use of:
     * net.sockets.TCPClient
 """
 
+
+from __future__ import print_function
+
 import os
 from optparse import OptionParser
 
@@ -29,6 +33,7 @@ from circuits.tools import graph
 from circuits import handler, Component
 from circuits.net.events import connect, write
 from circuits.net.sockets import TCPClient, UNIXClient, UDPClient
+
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + circuits.__version__
@@ -132,7 +137,9 @@ class Telnet(Component):
         else:
             peer, data = args
 
-        print(data.strip())
+        data = data.strip().decode("utf-8")
+
+        print(data)
 
     # Setup an Event Handler for "read" events on the "stdin" channel.
     @handler("read", channel="stdin")

@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
+
 """Simple TCP Echo Server
 
 This example shows how you can create a simple TCP Server (an Echo Service)
 utilizing the builtin Socket Components that the circuits library ships with.
 """
+
 
 from circuits import handler, Debugger
 from circuits.net.sockets import TCPServer
@@ -27,8 +29,9 @@ class EchoServer(TCPServer):
 
         return data
 
+
 # Start and "run" the system.
-# Bind to port 0.0.0.0:9000
-app = EchoServer(9000)
+# Bind to port 0.0.0.0:8000
+app = EchoServer(("0.0.0.0", 8000))
 Debugger().register(app)
 app.run()
