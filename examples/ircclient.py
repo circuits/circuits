@@ -161,8 +161,10 @@ class Client(Component):
         it has read.
         """
 
-        print("<{0:s}> {1:s}".format(self.nick, data.strip()))
-        self.fire(PRIVMSG(self.ircchannel, data.strip()))
+        data = data.strip().decode("utf-8")
+
+        print("<{0:s}> {1:s}".format(self.nick, data))
+        self.fire(PRIVMSG(self.ircchannel, data))
 
 
 def main():

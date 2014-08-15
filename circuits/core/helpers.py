@@ -83,7 +83,10 @@ class FallBackErrorHandler(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR %s (%s) {%s}: %s\n" % (handler, fevent, error_type, value)
+        msg = "ERROR {0:s} ({1:s}) ({2:s}): {3:s}\n".format(
+            handler, repr(fevent), repr(error_type), repr(value)
+        )
+
         s.append(msg)
         s.extend(traceback)
         s.append("\n")

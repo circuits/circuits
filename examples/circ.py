@@ -235,7 +235,6 @@ class Client(Component):
                                     factor = len(tokens) - len(args) + 1
                                     f(*back_merge(tokens, factor))
                                 else:
-                                    print "1"
                                     self.syntaxError(
                                         command, " ".join(tokens),
                                         " ".join(
