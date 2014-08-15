@@ -891,8 +891,8 @@ class Manager(object):
             for _ in range(3):
                 self.tick()
         except Exception as e:
-            stderr.write("Unhandled ERROR: {0:s}".format(e))
-            stderr.write("{}".format(format_exc()))
+            stderr.write("Unhandled ERROR: {0:s}\n".format(str(e)))
+            stderr.write(format_exc())
         finally:
             try:
                 self.tick()
