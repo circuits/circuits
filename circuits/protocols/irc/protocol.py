@@ -15,10 +15,10 @@ from circuits.net.events import write
 from circuits.protocols.line import Line
 
 
+from .commands import PONG
 from .utils import parsemsg
 from .message import Message
 from .events import reply, response
-from .commands import NOTICE, PONG, PRIVMSG, RAW
 
 
 NUMERIC = compile_regex("[0-9]+")
@@ -39,76 +39,6 @@ class IRC(Component):
         self.encoding = kwargs.get("encoding", "utf-8")
 
         Line(**kwargs).register(self)
-
-    def RAW(self, data):
-        self.fire(write("{0:s}\r\n".format(data).encode(self.encoding)))
-
-    def PASS(self, password):
-        self.fire(RAW("PASS %s" % password))
-
-    def AWAY(self, message=""):
-        self.fire(RAW("AWAY :%s" % message))
-
-    def USER(self, ident, host, server, name):
-        self.fire(RAW("USER %s %s %s :%s" % (
-            ident, host, server, name)))
-
-    def NICK(self, nick):
-        self.fire(RAW("NICK %s" % nick))
-
-    def PING(self, server):
-        self.fire(RAW("PING :%s" % server))
-
-    def PONG(self, server):
-        self.fire(RAW("PONG :%s" % server))
-
-    def QUIT(self, message="Leaving"):
-        self.fire(RAW("QUIT :%s" % message))
-
-    def JOIN(self, channel, key=None):
-        if key is None:
-            self.fire(RAW("JOIN %s" % channel))
-        else:
-            self.fire(RAW("JOIN %s %s" % (channel, key)))
-
-    def PART(self, channel, message="Leaving"):
-        self.fire(RAW("PART %s :%s" % (channel, message)))
-
-    def PRIVMSG(self, target, message):
-        self.fire(RAW("PRIVMSG %s :%s" % (target, message)))
-
-    def NOTICE(self, target, message):
-        self.fire(RAW("NOTICE %s :%s" % (target, message)))
-
-    def CTCP(self, target, type, message):
-        self.fire(PRIVMSG(target, "%s %s" % (type, message)))
-
-    def CTCPREPLY(self, target, type, message):
-        self.fire(NOTICE(target, "%s %s" % (type, message)))
-
-    def KICK(self, channel, target, message=""):
-        self.fire(RAW("KICK %s %s :%s" % (channel, target, message)))
-
-    def TOPIC(self, channel, topic):
-        self.fire(RAW("TOPIC %s :%s" % (channel, topic)))
-
-    def MODE(self, modes, channel=None):
-        if channel is None:
-            self.fire(RAW("MODE :%s" % modes))
-        else:
-            self.fire(RAW("MODE %s :%s" % (channel, modes)))
-
-    def INVITE(self, target, channel):
-        self.fire(RAW("INVITE %s %s" % (target, channel)))
-
-    def NAMES(self, channel=None):
-        if channel:
-            self.fire(RAW("NAMES %s" % channel))
-        else:
-            self.fire(RAW("NAMES"))
-
-    def WHOIS(self, nick):
-        self.fire(RAW("WHOIS :%s" % nick))
 
     def line(self, *args):
         """line Event Handler
@@ -139,6 +69,21 @@ class IRC(Component):
             self.fire(response.create(command, sock, prefix, *args))
         else:
             self.fire(response.create(command, prefix, *args))
+
+    def request(self, event, message):
+        """request Event Handler (Default)
+
+        This is a default event handler to respond to ``request`` events
+        by converting the given message to bytes and firing a ``write``
+        event to a hopefully connected client socket.
+        Components may override this, but be sure to respond to
+        ``request`` events by either explicitly calling this method
+        or sending your own ``write`` events as the client socket.
+        """
+
+        event.stop()
+        message.encoding = self.encoding
+        self.fire(write(bytes(message)))
 
     def ping(self, event, *args):
         """ping Event Handler (Default)

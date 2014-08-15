@@ -28,10 +28,12 @@ from circuits import handler, Component
 from circuits import __version__ as systemVersion
 from circuits.net.sockets import TCPClient, connect
 
-from circuits.protocols.irc import RPL_ENDOFMOTD
-from circuits.protocols.irc import QUIT, PART, RAW
-from circuits.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
-from circuits.protocols.irc import ERR_NICKNAMEINUSE, ERR_NOMOTD
+from circuits.protocols.irc import (
+    request, Message,
+    IRC, RPL_ENDOFMOTD,
+    ERR_NICKNAMEINUSE, ERR_NOMOTD,
+    QUIT, PART, PRIVMSG, USER, NICK, JOIN
+)
 
 from urwid.raw_display import Screen
 from urwid import AttrWrap, Edit, Frame, ListBox, Pile, SimpleListWalker, Text
@@ -289,7 +291,7 @@ class Client(Component):
             self.ircchannel = None
 
     def cmdQUOTE(self, message):
-        self.fire(RAW(message))
+        self.fire(request(Message(message)))
 
     def cmdQUIT(self, message="Bye"):
         self.fire(QUIT(message))

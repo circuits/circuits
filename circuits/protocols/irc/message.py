@@ -49,8 +49,10 @@ class Message(object):
             args[-1] = ":{0:s}".format(args[-1])
 
         return "{prefix:s}{command:s} {args:s}\r\n".format(
-            prefix=":{0:s} ".format(
-                self.prefix if self.prefix is not None else ""
+            prefix=(
+                ":{0:s} ".format(self.prefix)
+                if self.prefix is not None
+                else ""
             ),
             command=str(self.command),
             args=" ".join(args)

@@ -6,88 +6,73 @@
 """Internet Relay Chat Protocol commands"""
 
 
-from circuits import Event
+from .events import request
+from .message import Message
 
 
-class command(Event):
-    """command Event"""
+def AWAY(message=None):
+    return request(Message("AWAY", message))
 
 
-class AWAY(command):
-    """AWAY command"""
+def NICK(nickname, hopcount=None):
+    return request(Message("NICK", nickname, hopcount))
 
 
-class RAW(command):
-    """RAW command"""
+def USER(user, host, server, name):
+    return request(Message("USER", user, host, server, name))
 
 
-class PASS(command):
-    """PASS command"""
+def PASS(password):
+    return request(Message("PASS", password))
 
 
-class USER(command):
-    """USER command"""
+def PONG(daemon1, daemon2=None):
+    return request(Message("PONG", daemon1, daemon2))
 
 
-class NICK(command):
-    """NICK command"""
+def QUIT(message=None):
+    return request(Message("QUIT", message))
 
 
-class PING(command):
-    """PING command"""
+def JOIN(channels, keys=None):
+    return request(Message("JOIN", channels, keys))
 
 
-class PONG(command):
-    """PONG command"""
+def PART(channels):
+    return request(Message("PART", channels))
 
 
-class QUIT(command):
-    """QUIT command"""
+def PRIVMSG(receivers, message):
+    return request(Message("PRIVMSG", receivers, message))
 
 
-class JOIN(command):
-    """JOIN command"""
+def NOTICE(receivers, message):
+    return request(Message("NOTICE", receivers, message))
 
 
-class PART(command):
-    """PART command"""
+def KICK(channel, user, comment=None):
+    return request(Message("KICK", channel, user, comment))
 
 
-class PRIVMSG(command):
-    """PRIVMSG command"""
+def TOPIC(channel, topic=None):
+    return request(Message("TOPIC", channel, topic))
 
 
-class NOTICE(command):
-    """NOTICE command"""
+def MODE(target, *args):
+    return request(Message("MODE", target, *args))
 
 
-class CTCP(command):
-    """CTCP command"""
+def INVITE(nickname, channel):
+    return request(Message("INVITE", nickname, channel))
 
 
-class CTCPREPLY(command):
-    """CTCPREPLY command"""
+def NAMES(channels=None):
+    return request(Message("NAMES", channels))
 
 
-class KICK(command):
-    """KICK command"""
+def WHOIS(nickmasks, server=None):
+    return request(Message(server, nickmasks))
 
 
-class TOPIC(command):
-    """TOPIC command"""
-
-
-class MODE(command):
-    """MODE command"""
-
-
-class INVITE(command):
-    """INVITE command"""
-
-
-class NAMES(command):
-    """NAMES command"""
-
-
-class WHOIS(command):
-    """WHOIS command"""
+def WHO(name=None, o=None):
+    return request(Message("WHO", name, o))
