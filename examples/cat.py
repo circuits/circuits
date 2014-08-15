@@ -10,6 +10,7 @@ in circuits to write a very simple clone of the standard UNIX "cat" command.
 
 import sys
 
+
 from circuits.io import stdout, File, write
 
 
@@ -35,6 +36,7 @@ class Cat(File):
         """
 
         raise SystemExit(0)
+
 
 # Start and "run" the system.
 Cat(sys.argv[1]).run()

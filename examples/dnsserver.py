@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 """DNS Server Example
 
 A simple little DNS Server example using
@@ -59,7 +60,10 @@ class Dummy(Component):
         id = request.header.id
         qname = request.q.qname
 
-        print("DNS Request for qname({0:s})".format(qname), file=sys.stderr)
+        print(
+            "DNS Request for qname({0:s})".format(str(qname)),
+            file=sys.stderr
+        )
 
         reply = DNSRecord(
             DNSHeader(id=id, qr=1, aa=1, ra=1),

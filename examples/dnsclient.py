@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 """DNS Client Example
 
 A simple little DNS Client example using
@@ -56,13 +57,13 @@ class Dummy(Component):
 
         print(
             "DNS Response from {0:s}:{1:d} id={2:d} qname={3:s}".format(
-                peer[0], peer[1], id, qname
+                peer[0], peer[1], id, str(qname)
             ),
             file=sys.stderr
         )
 
         for rr in response.rr:
-            print(" {0:s}".format(rr))
+            print(" {0:s}".format(str(rr)))
 
         raise SystemExit(0)
 

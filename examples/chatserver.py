@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
+
 """Chat Server Example
 
 This example demonstrates how to create a very simple telnet-style chat
 server that supports many connecting clients.
 """
+
 
 from optparse import OptionParser
 
@@ -88,8 +90,8 @@ class ChatServer(Component):
             }
         }
 
-        self.fire(write(sock, "Welcome to the circuits Chat Server!\n"))
-        self.fire(write(sock, "Please enter a desired nickname: "))
+        self.fire(write(sock, b"Welcome to the circuits Chat Server!\n"))
+        self.fire(write(sock, b"Please enter a desired nickname: "))
 
     def disconnect(self, sock):
         """Disconnect Event -- Triggered for disconnecting clients"""
@@ -98,23 +100,35 @@ class ChatServer(Component):
             return
 
         nickname = self.clients[sock]["state"]["nickname"]
-        self.broadcast("!!! {0:s} has left !!!\n".format(nickname),
-                       exclude=[sock])
+
+        self.broadcast(
+            "!!! {0:s} has left !!!\n".format(nickname).encode("utf-8"),
+            exclude=[sock]
+        )
+
         del self.clients[sock]
 
     def read(self, sock, data):
         """Read Event -- Triggered for when client conenctions have data"""
 
+        data = data.strip().decode("utf-8")
+
         if not self.clients[sock]["state"]["registered"]:
-            nickname = data.strip()
+            nickname = data
             self.clients[sock]["state"]["registered"] = True
             self.clients[sock]["state"]["nickname"] = nickname
-            self.broadcast("!!! {0:s} has joined !!!\n".format(nickname),
-                           exclude=[sock])
+
+            self.broadcast(
+                "!!! {0:s} has joined !!!\n".format(nickname).encode("utf-8"),
+                exclude=[sock]
+            )
         else:
             nickname = self.clients[sock]["state"]["nickname"]
-            self.broadcast("<{0:s}> {1:s}\n".format(nickname, data.strip()),
-                           exclude=[sock])
+
+            self.broadcast(
+                "<{0:s}> {1:s}\n".format(nickname, data).encode("utf-8"),
+                exclude=[sock]
+            )
 
 
 def main():
