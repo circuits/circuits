@@ -148,7 +148,7 @@ class Manager(object):
 
         name = self.__class__.__name__
 
-        channel = "/{0:s}".format(getattr(self, "channel", ""))
+        channel = "/{0:s}".format(str(getattr(self, "channel", "")))
 
         q = len(self._queue)
         state = "R" if self.running else "S"

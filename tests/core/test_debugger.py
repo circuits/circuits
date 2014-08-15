@@ -23,8 +23,6 @@ class test(Event):
 
 class App(Component):
 
-    raiseException = False
-
     def test(self, raiseException=False):
         if raiseException:
             raise Exception()
@@ -32,12 +30,14 @@ class App(Component):
 
 class Logger(object):
 
-    msg = None
+    error_msg = None
+    debug_msg = None
+
+    def error(self, msg):
+        self.error_msg = msg
 
     def debug(self, msg):
-        self.msg = msg
-
-    error = debug
+        self.debug_msg = msg
 
 
 def test_main():
@@ -284,7 +284,7 @@ def test_Logger_debug():
     app.fire(e)
     app.flush()
 
-    assert logger.msg == repr(e)
+    assert logger.debug_msg == repr(e)
 
 
 def test_Logger_error():
@@ -297,6 +297,7 @@ def test_Logger_error():
 
     e = test(raiseException=True)
     app.fire(e)
-    app.flush()
-    app.flush()
-    assert logger.msg.startswith("ERROR <handler[*.test] (App.test)> (")
+    while app:
+        app.flush()
+
+    assert logger.error_msg.startswith("ERROR <handler[*.test] (App.test)> (")

@@ -21,4 +21,4 @@ try:
 except ImportError:
     from urlparse import urlparse
 
-# flake8: noqa
+# pylama:skip=1
