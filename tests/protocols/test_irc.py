@@ -135,4 +135,8 @@ def test_responses(app, data, event):
     while app:
         app.flush()
 
-    assert event == app.events[-1]
+    e = app.events[-1]
+
+    assert event.name == e.name
+    assert event.args == e.args
+    assert event.kwargs == e.kwargs
