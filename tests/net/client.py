@@ -24,7 +24,7 @@ class Client(Component):
     def connected(self, host, port):
         self.connected = True
 
-    def disconnect(self):
+    def disconnect(self, *args):
         return
 
     def disconnected(self):
