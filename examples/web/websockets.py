@@ -2,7 +2,7 @@
 
 from circuits.net.events import write
 from circuits import Component, Debugger
-from circuits.web.dispatchers import WebSockets
+from circuits.web.dispatchers import WebSocketsDispatcher
 from circuits.web import Controller, Logger, Server, Static
 
 
@@ -25,5 +25,5 @@ Static().register(app)
 Echo().register(app)
 Root().register(app)
 Logger().register(app)
-WebSockets("/websocket").register(app)
+WebSocketsDispatcher("/websocket").register(app)
 app.run()
