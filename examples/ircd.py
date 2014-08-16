@@ -266,7 +266,7 @@ class Server(Component):
             return
 
         user.channels.append(name)
-        channel.users.append(user)
+        channel.users.append(user.nick)
 
         self._notify(
             channel.users,
