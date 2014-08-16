@@ -25,7 +25,7 @@ class Bot(Component):
     # Define a separate channel so we can create many instances of ``Bot``
     channel = "ircbot"
 
-    def init(self, host, port="6667", channel=channel):
+    def init(self, host="irc.freenode.net", port="6667", channel=channel):
         self.host = host
         self.port = int(port)
 
@@ -88,6 +88,9 @@ class Bot(Component):
 
 # Configure and run the system
 bot = Bot(*sys.argv[1:])
+
+from circuits import Debugger
+Debugger().register(bot)
 
 # To register a 2nd ``Bot`` instance. Simply use a separate channel.
 # Bot(*sys.argv[1:], channel="foo").register(bot)
