@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :bug:`111` Fixed broken Digest Auth Test for circuits.web
 - :feature:`112` Improved Signal Handling
 - :bug:`109` Fixed ``Event.create()`` factory and metaclass.
 - :feature:`108` Improved server support for the IRC Protocol.
