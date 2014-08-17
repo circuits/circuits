@@ -29,7 +29,7 @@ class Server(BaseComponent):
 
         self._buffers = {}
 
-        TCPServer(bind, channel=self.channel).register(self)
+        self.transport = TCPServer(bind, channel=self.channel).register(self)
 
     def _process_packet(self, sock, packet):
         e, id = load_event(packet)
@@ -63,3 +63,13 @@ class Server(BaseComponent):
             packet = buffer[:delimiter].decode("utf-8")
             self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
             self._process_packet(sock, packet)
+
+    @property
+    def host(self):
+        if hasattr(self, "transport"):
+            return self.transport.host
+
+    @property
+    def port(self):
+        if hasattr(self, "transport"):
+            return self.transport.port

@@ -26,12 +26,14 @@ class Node(BaseComponent):
     def __init__(self, bind=None, channel=channel):
         super(Node, self).__init__(channel=channel)
 
-        self._bind = bind
+        self.bind = bind
 
-        self._nodes = {}
+        self.nodes = {}
 
-        if self._bind is not None:
-            Server(self._bind).register(self)
+        if self.bind is not None:
+            self.server = Server(self.bind).register(self)
+        else:
+            self.server = None
 
     def add(self, name, host, port):
         channel = sha256(
@@ -40,11 +42,11 @@ class Node(BaseComponent):
         node = Client(host, port, channel=channel)
         node.register(self)
 
-        self._nodes[name] = node
+        self.nodes[name] = node
 
     @handler("remote")
     def _on_remote(self, event, e, name, channel=None):
-        node = self._nodes[name]
+        node = self.nodes[name]
         if channel is not None:
             e.channels = (channel,)
         return node.send(event, e)
