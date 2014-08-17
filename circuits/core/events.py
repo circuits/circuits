@@ -98,7 +98,7 @@ class Event(object):
             handlers for the event and all events fired by these handlers
             (recursively) have been invoked successfully.
 
-        :var success_channels: the complete event is, by default, delivered
+        :var complete_channels: the complete event is, by default, delivered
             to same channels as the initially dispatched event itself.
             This may be overridden by specifying an alternative list of
             destinations using this attribute.
