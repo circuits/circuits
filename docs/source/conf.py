@@ -24,7 +24,10 @@ version_module = new_module("version")
 exec(
     compile(
         open(
-            path.abspath(path.join(path.dirname(__file__), "../../circuits/version.py")),
+            path.abspath(path.join(
+                path.dirname(__file__),
+                "../../circuits/version.py"
+            )),
             "r"
         ).read(),
         "../../circuits/version.py", "exec"
