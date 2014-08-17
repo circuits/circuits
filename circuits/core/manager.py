@@ -2,9 +2,11 @@
 # Date:     11th April 2010
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """
 This module defines the Manager class.
 """
+
 
 import atexit
 from os import getpid
@@ -12,7 +14,6 @@ from inspect import isfunction
 from uuid import uuid4 as uuid
 from operator import attrgetter
 from types import GeneratorType
-from signal import SIGINT, SIGTERM
 from itertools import chain, count
 from heapq import heappush, heappop
 from sys import exc_info as _exc_info, stderr
@@ -22,13 +23,16 @@ from signal import signal as set_signal_handler
 from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
 
+
 from .values import Value
 from ..tools import tryimport
 from .handlers import handler
 from ..six import create_bound_method, next
 from .events import exception, generate_events, signal, started, stopped, Event
 
+
 thread = tryimport(("thread", "_thread"))
+
 
 TIMEOUT = 0.1  # 100ms timeout when idle
 
@@ -576,6 +580,10 @@ class Manager(object):
             elif isinstance(event, exception) and len(handlers) == 0:
                 from .helpers import FallBackErrorHandler
                 handlers.append(FallBackErrorHandler()._on_error)
+            elif isinstance(event, signal) and len(handlers) == 0:
+                from .helpers import FallBackSignalHandler
+                handlers.append(FallBackSignalHandler()._on_signal)
+
             self._cache[(event.name, channels)] = handlers
 
         if isinstance(event, generate_events):
@@ -684,8 +692,6 @@ class Manager(object):
 
     def _signal_handler(self, signo, stack):
         self.fire(signal(signo, stack))
-        if signo in [SIGINT, SIGTERM]:
-            self.stop()
 
     def start(self, process=False, link=None):
         """
@@ -741,6 +747,7 @@ class Manager(object):
         self._running = False
 
         self.fire(stopped(self))
+
         if self.root._executing_thread is None:
             for _ in range(3):
                 self.tick()

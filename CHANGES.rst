@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :feature:`112` Improved Signal Handling
 - :bug:`109` Fixed ``Event.create()`` factory and metaclass.
 - :feature:`108` Improved server support for the IRC Protocol.
 - :bug:`107` Added ``__le__`` and ``__ge__`` methods to ``circuits.web.wrappers.HTTPStatus``

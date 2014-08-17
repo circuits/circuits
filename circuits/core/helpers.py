@@ -3,6 +3,8 @@
 """
 
 from threading import Event
+from signal import SIGINT, SIGTERM
+
 
 from .handlers import handler
 from .components import BaseComponent
@@ -91,3 +93,16 @@ class FallBackErrorHandler(BaseComponent):
         s.extend(traceback)
         s.append("\n")
         sys.stderr.write("".join(s))
+
+
+class FallBackSignalHandler(BaseComponent):
+    """
+    If there is no handler for signal events in the component hierarchy, this
+    component's handler is added automatically. It simply terminates the
+    system if the signal is SIGINT or SIGTERM.
+    """
+
+    @handler("signal", channel="*")
+    def _on_signal(self, signo, stack):
+        if signo in [SIGINT, SIGTERM]:
+            raise SystemExit(0)
