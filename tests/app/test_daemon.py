@@ -1,17 +1,35 @@
 #!/usr/bin/env python
 
+
 import pytest
 if pytest.PLATFORM == "win32":
     pytest.skip("Unsupported Platform")
 
-import os
+
 import sys
-import errno
+from os import kill
 from time import sleep
+from errno import ESRCH
 from signal import SIGTERM
 from subprocess import Popen
 
-from tests.app import app
+
+from . import app
+
+
+def is_running(pid):
+    try:
+        kill(pid, 0)
+    except OSError as error:
+        if error.errno == ESRCH:
+            return False
+    return True
+
+
+def wait(pid, timeout=3):
+    count = timeout
+    while is_running(pid) and count:
+        sleep(1)
 
 
 def test(tmpdir):
@@ -32,8 +50,5 @@ def test(tmpdir):
     assert isinstance(pid, int)
     assert pid > 0
 
-    os.kill(pid, SIGTERM)
-    try:
-        os.waitpid(pid, os.WTERMSIG(0))
-    except OSError as e:
-        assert e.args[0] == errno.ECHILD
+    kill(pid, SIGTERM)
+    wait(pid)

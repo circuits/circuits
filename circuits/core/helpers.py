@@ -2,13 +2,14 @@
 .. codeauthor: mnl
 """
 
+
+from sys import stderr
 from threading import Event
 from signal import SIGINT, SIGTERM
 
 
 from .handlers import handler
 from .components import BaseComponent
-import sys
 from circuits.core.handlers import reprhandler
 
 
@@ -92,7 +93,7 @@ class FallBackErrorHandler(BaseComponent):
         s.append(msg)
         s.extend(traceback)
         s.append("\n")
-        sys.stderr.write("".join(s))
+        stderr.write("".join(s))
 
 
 class FallBackSignalHandler(BaseComponent):

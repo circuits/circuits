@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
-import pytest
-if pytest.PLATFORM == "win32":
-    pytest.skip("Broken on Windows")
+
+from pytest import fixture, skip, PLATFORM
+
+
+if PLATFORM == "win32":
+    skip("Broken on Windows")
+
 
 from circuits import Component, Event
 from circuits.net.events import close
@@ -29,8 +33,8 @@ class App(Component):
         self.value = True
 
 
-@pytest.fixture()
-def bind(manager, watcher):
+@fixture()
+def bind(request, manager, watcher):
     server = UDPServer(0).register(manager)
     assert watcher.wait("ready")
 
@@ -45,28 +49,34 @@ def bind(manager, watcher):
     return host, port
 
 
-def test_return_value(manager, watcher, bind):
-    a1 = App().register(manager)
-    n1 = Node().register(a1)
-    assert watcher.wait("ready")
+@fixture()
+def app(request, manager, watcher, bind):
+    app = App().register(manager)
+    node = Node().register(app)
+    watcher.wait("ready")
 
-    a2 = (App() + Node(bind))
-    a2.start(process=True)
+    child = (App() + Node(bind))
+    child.start(process=True)
 
-    n1.add("a2", *bind)
-    assert watcher.wait("connected")
+    node.add("child", *bind)
+    watcher.wait("connected")
 
+    def finalizer():
+        child.stop()
+
+    request.addfinalizer(finalizer)
+
+    return app
+
+
+def test_return_value(app, watcher):
     e = Event.create("foo")
     e.notify = True
 
-    r = remote(e, "a2")
+    r = remote(e, "child")
     r.notify = True
 
-    value = a1.fire(r)
+    value = app.fire(r)
     assert watcher.wait("remote_value_changed")
 
     assert value.value == "Hello World!"
-
-    a2.stop()
-    a1.unregister()
-    n1.unregister()

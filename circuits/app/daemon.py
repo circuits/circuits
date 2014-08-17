@@ -2,6 +2,7 @@
 # Date:     20th June 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """Daemon Component
 
 Component to daemonize a system into the background and detach it from its
@@ -9,35 +10,28 @@ controlling PTY. Supports PID file writing, logging stdin, stdout and stderr
 and changing the current working directory.
 """
 
-import os
-import sys
-import errno
 
-from circuits.core import handler, BaseComponent, Event
+from os.path import isabs
+from sys import stderr, stdin, stdout
+from os import _exit, chdir, dup2, setsid, fork, getpid, remove, umask
+
+
+from circuits.core import handler, Component, Event
 
 
 class daemonize(Event):
-    """daemonize Event
-
-    This event can be fired to notify the `Daemon` Component to begin the
-    "daemonization" process. This event is (*by default*) used
-    automatically by the `Daemon` Component in its "started" Event
-    Handler (*This behavior can be overridden*).
-    """
+    """daemonize Event"""
 
 
-class write_pid(Event):
-    """"write_pid Event
-
-    This event can be fired to notify the `Daemon` Component that is should
-    retrieve the current process's id (pid) and write it out to the
-    configured path in the `Daemon` Component. This event (*by default*)
-    is used automatically by the `Daemon` Component after the
-    :class:`Daemonize`.
-    """
+class deletepid(Event):
+    """"deletepid Event"""
 
 
-class Daemon(BaseComponent):
+class writepid(Event):
+    """"writepid Event"""
+
+
+class Daemon(Component):
     """Daemon Component
 
     :param pidfile: .pid filename
@@ -55,80 +49,87 @@ class Daemon(BaseComponent):
 
     channel = "daemon"
 
-    def __init__(self, pidfile, path="/", stdin=None, stdout=None,
-                 stderr=None, channel=channel):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+    def init(self, pidfile, path="/", stdin=None, stdout=None,
+             stderr=None, channel=channel):
 
-        super(Daemon, self).__init__(channel=channel)
+        assert isabs(path), "path must be absolute"
 
-        assert os.path.isabs(path), "path must be absolute"
+        self.pidfile = pidfile
+        self.path = path
 
-        if os.path.isabs(pidfile):
-            self._pidfile = pidfile
-        else:
-            self._pidfile = os.path.join(path, pidfile)
+        self.stdin = (
+            stdin if stdin is not None and isabs(stdin) else "/dev/null"
+        )
 
-        self._path = path
+        self.stdout = (
+            stdout if stdout is not None and isabs(stdout) else "/dev/null"
+        )
 
-        stdio_attrs = ["_stdin", "_stdout", "_stderr"]
-        for i, stdio in enumerate([stdin, stdout, stderr]):
-            if stdio and os.path.isabs(stdio):
-                setattr(self, stdio_attrs[i], stdio)
-            elif stdio:
-                setattr(self, stdio_attrs[i], os.path.join(path, stdio))
-            else:
-                setattr(self, stdio_attrs[i], "/dev/null")
+        self.stderr = (
+            stderr if stderr is not None and isabs(stderr) else "/dev/null"
+        )
 
-    @handler("write_pid")
-    def _on_write_pid(self):
-        with open(self._pidfile, "w") as fd:
-            fd.write(str(os.getpid()))
+    def deletepid(self):
+        remove(self.pidfile)
 
-    @handler("daemonize")
-    def _on_daemonize(self):
-        # Do first fork.
+    def writepid(self):
+        with open(self.pidfile, "w") as fd:
+            fd.write(str(getpid()))
+
+    def daemonize(self):
         try:
-            pid = os.fork()
+            pid = fork()
             if pid > 0:
-                # Exit first parent
-                os._exit(0)
-        except OSError as exc:
-            sys.stderr.write("fork #1 failed: (%d) %s\n" % (errno, exc))
+                # exit first parent
+                _exit(0)
+        except OSError as e:
+            stderr.write(
+                "fork #1 failed: {0:d} ({0:s})\n".format(
+                    e.errno, str(e)
+                )
+            )
+
             raise SystemExit(1)
 
-        # Decouple from parent environment.
-        os.chdir(self._path)
-        os.umask(0o077)
-        os.setsid()
+        # decouple from parent environment
+        chdir(self.path)
+        setsid()
+        umask(0)
 
-        # Do second fork.
+        # do second fork
         try:
-            pid = os.fork()
+            pid = fork()
             if pid > 0:
-                # Exit second parent
-                os._exit(0)
-        except OSError as exc:
-            sys.stderr.write("fork #2 failed: (%d) %s\n" % (e, exc))
+                # exit from second parent
+                _exit(0)
+        except OSError as e:
+            stderr.write(
+                "fork #2 failed: {0:d} ({0:s})\n".format(
+                    e.errno, str(e)
+                )
+            )
+
             raise SystemExit(1)
 
-        # Now I am a daemon!
+        # redirect standard file descriptors
+        stdout.flush()
+        stderr.flush()
 
-        # Redirect standard file descriptors.
-        si = open(self._stdin, "r")
-        so = open(self._stdout, "a+")
-        se = open(self._stderr, "a+")
-        os.dup2(si.fileno(), sys.stdin.fileno())
-        os.dup2(so.fileno(), sys.stdout.fileno())
-        os.dup2(se.fileno(), sys.stderr.fileno())
+        si = open(self.stdin, "r")
+        so = open(self.stdout, "a+")
+        se = open(self.stderr, "a+")
 
-        self.fire(write_pid())
+        dup2(si.fileno(), stdin.fileno())
+        dup2(so.fileno(), stdout.fileno())
+        dup2(se.fileno(), stderr.fileno())
 
-    @handler("started", priority=100.0, channel="*")
-    def _on_started(self, component):
-        if component is not self:
+        self.fire(writepid())
+
+    def registered(self, component, manager):
+        if component == self and manager.root.running:
             self.fire(daemonize())
 
-    @handler("registered")
-    def _on_registered(self, component, manager):
-        if component == self and manager.root.running:
+    @handler("started", priority=100.0, channel="*")
+    def on_started(self, component):
+        if component is not self:
             self.fire(daemonize())

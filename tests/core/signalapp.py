@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+
 import os
 import sys
+
 
 try:
     from coverage import coverage
@@ -9,15 +11,14 @@ try:
 except ImportError:
     HAS_COVERAGE = False
 
+
 from circuits import Component
 from circuits.app import Daemon
 
 
 class App(Component):
 
-    def __init__(self, pidfile, signalfile):
-        super(App, self).__init__()
-
+    def init(self, pidfile, signalfile):
         self.pidfile = pidfile
         self.signalfile = signalfile
 
@@ -27,6 +28,7 @@ class App(Component):
         f = open(self.signalfile, "w")
         f.write(str(signal))
         f.close()
+        self.stop()
 
 
 def main():

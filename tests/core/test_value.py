@@ -1,6 +1,8 @@
 #!/usr/bin/python -i
 
+
 import pytest
+
 
 from circuits import handler, Event, Component
 

@@ -1,20 +1,39 @@
 #!/usr/bin/env python
 
+
 import pytest
+
 
 import os
 import sys
+from time import sleep
+from errno import ESRCH
+from signal import SIGTERM
+from os import kill, remove
+from subprocess import Popen
+
+
+from . import signalapp
+
+
+def is_running(pid):
+    try:
+        kill(pid, 0)
+    except OSError as error:
+        if error.errno == ESRCH:
+            return False
+    return True
+
+
+def wait(pid, timeout=3):
+    count = timeout
+    while is_running(pid) and count:
+        sleep(1)
 
 
 def test(tmpdir):
     if not os.name == "posix":
         pytest.skip("Cannot run test on a non-POSIX platform.")
-
-    from time import sleep
-    from subprocess import Popen
-    from signal import SIGTERM
-
-    from tests.core import signalapp
 
     tmpdir.ensure(".pid")
     tmpdir.ensure(".signal")
@@ -37,8 +56,8 @@ def test(tmpdir):
     pid = int(f.read().strip())
     f.close()
 
-    os.kill(pid, SIGTERM)
-    sleep(1)
+    kill(pid, SIGTERM)
+    wait(pid)
 
     f = open(signalfile, "r")
     signal = f.read().strip()
@@ -46,5 +65,5 @@ def test(tmpdir):
 
     assert signal == str(SIGTERM)
 
-    os.remove(pidfile)
-    os.remove(signalfile)
+    remove(pidfile)
+    remove(signalfile)

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import os
-import sys
+
+from sys import argv
+from os.path import abspath
+
 
 try:
     from coverage import coverage
@@ -9,16 +11,15 @@ try:
 except ImportError:
     HAS_COVERAGE = False
 
+
 from circuits import Component
 from circuits.app import Daemon
 
 
 class App(Component):
 
-    def __init__(self, pidfile):
-        super(App, self).__init__()
-
-        Daemon(pidfile).register(self)
+    def init(self, pidfile, **kwargs):
+        Daemon(pidfile, **kwargs).register(self)
 
     def prepare_unregister(self, *args):
         return
@@ -29,13 +30,16 @@ def main():
         _coverage = coverage(data_suffix=True)
         _coverage.start()
 
-    pidfile = os.path.abspath(sys.argv[1])
+    pidfile = abspath(argv[1])
+
     app = App(pidfile)
+
     app.run()
 
     if HAS_COVERAGE:
         _coverage.stop()
         _coverage.save()
+
 
 if __name__ == "__main__":
     main()

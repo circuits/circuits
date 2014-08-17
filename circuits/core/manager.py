@@ -9,16 +9,17 @@ This module defines the Manager class.
 
 
 import atexit
-from os import getpid
+from os import getpid, kill
 from inspect import isfunction
 from uuid import uuid4 as uuid
 from operator import attrgetter
 from types import GeneratorType
 from itertools import chain, count
 from heapq import heappush, heappop
-from sys import exc_info as _exc_info, stderr
 from weakref import WeakValueDictionary
+from signal import SIGINT, SIGTERM, SIGKILL
 from traceback import format_exc, format_tb
+from sys import exc_info as _exc_info, stderr
 from signal import signal as set_signal_handler
 from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
@@ -741,6 +742,14 @@ class Manager(object):
         Stop this manager. Invoking this method causes
         an invocation of ``run()`` to return.
         """
+
+        if self.__process is not None and self.__process.is_alive():
+            self.__process.terminate()
+            self.__process.join(TIMEOUT)
+            
+            if self.__process.is_alive():
+                kill(self.__process.pid, SIGKILL)
+
         if not self.running:
             return
 
