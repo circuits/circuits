@@ -33,7 +33,7 @@ class EchoSerial(Component):
 
 
 # Start and "run" the system.
-# Bind to port 0.0.0.0:8000
+# Connect to /dev/ttyS0
 app = EchoSerial("/dev/ttyS0")
 Debugger().register(app)
 app.run()
