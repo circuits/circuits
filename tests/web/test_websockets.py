@@ -71,6 +71,7 @@ def test(manager, watcher, webapp):
 
     WebSocketClient(uri).register(manager)
     client = Client().register(manager)
+    watcher.wait("registered", channel="wsclient")
     watcher.wait("connected", channel="wsclient")
 
     assert len(echo.clients) == 1
