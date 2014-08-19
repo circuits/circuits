@@ -2,10 +2,12 @@
 # Date:     3rd February 2009
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """Events
 
 This module implements the necessary Events needed.
 """
+
 
 from circuits import Event
 
@@ -41,3 +43,7 @@ class stream(Event):
     success = True
     failure = True
     complete = True
+
+
+class terminate(Event):
+    """terminate Event"""

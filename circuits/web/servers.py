@@ -2,19 +2,23 @@
 # Date:     6th November 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """Web Servers
 
 This module implements the several Web Server components.
 """
 
+
 from sys import stderr
 
+
 from circuits import io
-from circuits.net.sockets import read, write
-from circuits.core import handler, BaseComponent
+from circuits.net.events import close, read, write
 from circuits.net.sockets import TCPServer, UNIXServer
+from circuits.core import handler, BaseComponent, Timer
 
 from .http import HTTP
+from .events import terminate
 from .dispatchers import Dispatcher
 
 
@@ -98,7 +102,14 @@ class BaseServer(BaseComponent):
 
     @handler("signal")
     def _on_signal(self, *args, **kwargs):
-        """Dummy Event Handler for signal"""
+        """signal Event Handler"""
+
+        self.fire(close())
+        Timer(3, terminate()).register(self)
+
+    @handler("terminate")
+    def _on_terminate(self):
+        raise SystemExit(0)
 
     @handler("ready")
     def _on_ready(self, server, bind):
