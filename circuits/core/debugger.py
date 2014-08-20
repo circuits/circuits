@@ -2,14 +2,17 @@
 # Date:     2nd April 2006
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """
 Debugger component used to debug each event in a system by printing
 each event to sys.stderr or to a Logger Component instance.
 """
 
+
 import os
 import sys
 from traceback import format_exc
+from signal import SIGINT, SIGTERM
 
 
 from .components import BaseComponent
@@ -54,6 +57,11 @@ class Debugger(BaseComponent):
 
         self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
+
+    @handler("signal", channel="*")
+    def _on_signal(self, signo, stack):
+        if signo in [SIGINT, SIGTERM]:
+            raise SystemExit(0)
 
     @handler("exception", channel="*", priority=100.0)
     def _on_exception(self, error_type, value, traceback,
