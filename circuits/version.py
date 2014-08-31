@@ -7,5 +7,5 @@
 So we only have to maintain version information in one place!
 """
 
-version_info = (3, 0)  # (major, minor, patch, dev?)
+version_info = (3, 1, 0, "dev")  # (major, minor, patch, dev?)
 version = ".".join(map(str, version_info))
