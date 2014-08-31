@@ -34,9 +34,7 @@ setup(
     name="circuits",
     version=version.version,
     description="Asynchronous Component based Event Application Framework",
-    long_description="{0:s}\n\n{1:s}".format(
-        open("README.rst").read(), open("CHANGES.rst").read()
-    ).replace(
+    long_description=open("README.rst").read().replace(
         ".. include:: examples/index.rst",
         open("examples/index.rst", "r").read()
     ),
