@@ -6,18 +6,19 @@ Change Log
 ==========
 
 
-- :bug:`111` Fixed broken Digest Auth Test for circuits.web
+- :release:`3.0 <2014-08-31>`
+- :bug:`111 major` Fixed broken Digest Auth Test for circuits.web
 - :feature:`112` Improved Signal Handling
-- :bug:`109` Fixed ``Event.create()`` factory and metaclass.
+- :bug:`109 major` Fixed ``Event.create()`` factory and metaclass.
 - :feature:`108` Improved server support for the IRC Protocol.
-- :bug:`107` Added ``__le__`` and ``__ge__`` methods to ``circuits.web.wrappers.HTTPStatus``
-- :bug:`106` Added ``__format__`` method to circuits.web.wrappers.HTTPStatus.
-- :bug:`104` Prevent other websockets sessions from closing.
+- :bug:`107 major` Added ``__le__`` and ``__ge__`` methods to ``circuits.web.wrappers.HTTPStatus``
+- :bug:`106 major` Added ``__format__`` method to circuits.web.wrappers.HTTPStatus.
+- :bug:`104 major` Prevent other websockets sessions from closing.
 - :feature:`103` Added the firing of a ``disconnect`` event for the WebSocketsDispatcher.
-- :bug:`102` Fixed minor bug with WebSocketsDispatcher causing superflusous ``connect()`` events from being fired.
-- :bug:`100` Fixed returned Content-Type in JSON-RPC Dispatcher.
-- :feature:`99 major` Added Digest Auth support to the ``circuits.web`` CLI Tool
-- :feature:`98 major` Dockerized circuits. See: https://docker.io/
+- :bug:`102 major` Fixed minor bug with WebSocketsDispatcher causing superflusous ``connect()`` events from being fired.
+- :bug:`100 major` Fixed returned Content-Type in JSON-RPC Dispatcher.
+- :feature:`99` Added Digest Auth support to the ``circuits.web`` CLI Tool
+- :feature:`98` Dockerized circuits. See: https://docker.io/
 - :bug:`97 major` Fixed ``tests.net.test_tcp.test_lookup_failure`` test for Windows
 - :support:`95` Updated Developer Documentation with corrections and a new workflow.
 - :feature:`94` Modified the :class:`circuits.web.Logger` to use the ``response_success`` event.
