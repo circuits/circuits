@@ -9,6 +9,8 @@ a remote web server requesting a given resource.
 """
 
 
+from __future__ import print_function
+
 import sys
 
 
