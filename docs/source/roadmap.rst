@@ -2,24 +2,16 @@ Road Map
 ========
 
 
-Here's a list of upcoming releases of circuits in order of "next release first".
+Here's a list of upcoming releases of circuits in order of "next release
+first".
 
-Each bullet point states a high level goal we're trying to achieve for the release
-whilst the "Issues List" (*linked to our Issue Tracker*) lists specific issues
-we've tagged with the respective milestone.
+Each bullet point states a high level goal we're trying to achieve for
+the release whilst the "Issues List" (*linked to our Issue Tracker*)
+lists specific issues we've tagged with the respective milestone.
 
-.. note:: At this stage we don't have any good estimates for our milestones but we hope
-          we can improve this with future releases and start adding estimates here.
-
-
-circuits 3.0
-------------
-
-- Improved Documentation
-- Improved Test Suite
-- More regular release cycle
-
-.. seealso:: `circuits 3.0 milestone <https://bitbucket.org/circuits/circuits/issues?milestone=3.0&status=open&status=new>`_
+.. note:: At this stage we don't have any good estimates for our milestones
+          but we hope we can improve this with future releases and start
+          adding estimates here.
 
 
 circuits 3.1
