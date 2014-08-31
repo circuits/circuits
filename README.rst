@@ -93,7 +93,7 @@ Alternatively, you may download the source package from the
 
 .. note::
     You can install the `development version
-    <https://bitbucket.org/circuits/circuits/get/tip.tar.gz#egg=circuits>`_
+    <https://bitbucket.org/circuits/circuits/get/tip.tar.gz#egg=circuits-dev>`_
     via ``pip install circuits==dev``.
 
 
