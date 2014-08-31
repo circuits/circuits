@@ -8,6 +8,7 @@
 .. _Project Website: http://circuitsframework.com/
 .. _PyPi Page: http://pypi.python.org/pypi/circuits
 .. _Read the Docs: http://circuits.readthedocs.org/en/latest/
+.. _View the ChangeLog: http://circuits.readthedocs.org/en/latest/changes.html
 .. _Downloads Page: https://bitbucket.org/circuits/circuits/downloads
 
 
@@ -22,6 +23,7 @@ components.
 - Visit the `Project Website`_
 - `Read the Docs`_
 - Download it from the `Downloads Page`_
+- `View the ChangeLog`_
 
 .. image:: https://pypip.in/v/circuits/badge.png
    :target: https://crate.io/packages/circuits/
