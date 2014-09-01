@@ -31,7 +31,7 @@ class Bridge(BaseComponent):
         "registered", "unregistered", "started", "stopped", "error",
         "value_changed", "generate_events", "read", "write", "close",
         "connected", "connect", "disconnect", "disconnected", "_read",
-        "_write"
+        "_write", "ready", "read_value_changed"
     ]
 
     def init(self, socket, channel=channel):
@@ -40,20 +40,23 @@ class Bridge(BaseComponent):
 
         if self._socket is not None:
             self._socket.register(self)
-            self.addHandler(
-                handler("read", channel=self._socket.channel)(
-                    self.__class__._on_read
-                )
-            )
 
     def _process_packet(self, eid, obj):
         if isinstance(obj, Event):
             obj.remote = True
             obj.notify = "value_changed"
+            obj.waitingHandlers = 0
             value = self.fire(obj)
             self._values[value] = eid
         elif isinstance(obj, Value):
-            self._values[eid].value = obj.value
+            if isinstance(obj.value, list):
+                for item in obj.value:
+                    self._values[eid].value = item
+            else:
+                self._values[eid].value = obj.value
+            event = Event.create(Bridge.__waiting_event(eid))
+            event.remote = True
+            self.fire(event)
 
     @handler("value_changed", channel="*")
     def _on_value_changed(self, value):
@@ -63,13 +66,12 @@ class Bridge(BaseComponent):
         except:
             pass
 
-    @staticmethod
+    @handler("read")
     def _on_read(self, data):
         self._process_packet(*loads(data))
 
-    def send(self, event):
+    def send(self, eid, event):
         try:
-            eid = hash(event)
             self._values[eid] = event.value
             self._socket.write(dumps((eid, event)))
         except:
@@ -77,8 +79,16 @@ class Bridge(BaseComponent):
 
     @handler(channel="*", priority=100.0)
     def _on_event(self, event, *args, **kwargs):
-        if event.name in self.ignore or getattr(event, "remote", False):
+        if event.name in self.ignore or getattr(event, "remote", False) \
+                or event.name.endswith('_done') \
+                or event.name.endswith('_success') \
+                or event.name.endswith('_complete'):
             return
 
-        event.notify = "value_changed"
-        self.send(event)
+        eid = hash(event)
+        self.send(eid, event)
+        yield self.wait(Bridge.__waiting_event(eid))
+
+    @staticmethod
+    def __waiting_event(eid):
+        return '%s_done' % eid
