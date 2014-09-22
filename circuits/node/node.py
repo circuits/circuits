@@ -7,8 +7,6 @@
 ...
 """
 
-from hashlib import sha256
-
 from .client import Client
 from .server import Server
 
@@ -40,13 +38,13 @@ class Node(BaseComponent):
             self.server = None
 
     def add(self, name, host, port, **kwargs):
-        channel = sha256(
-            "{0:s}:{1:d}".format(host, port).encode("utf-8")
-        ).hexdigest()
+        channel = kwargs['channel'] if 'channel' in kwargs else \
+            '%s_client_%s' % (self.channel, name)
         node = Client(host, port, channel=channel, **kwargs)
         node.register(self)
 
         self.nodes[name] = node
+        return channel
 
     @handler("remote")
     def _on_remote(self, event, e, name, channel=None):
