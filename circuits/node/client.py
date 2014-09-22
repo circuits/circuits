@@ -34,7 +34,7 @@ class Client(BaseComponent):
 
         self._nid = 0
         self._buffer = b""
-        self._values = WeakValueDictionary()
+        self._values = {}
 
         TCPClient(channel=self.channel, **kwargs).register(self)
 
@@ -43,12 +43,11 @@ class Client(BaseComponent):
         self.fire(connect(self._host, self._port))
 
     def _process_packet(self, packet):
-        v, id, errors = load_value(packet)
+        value, id, errors = load_value(packet)
 
         if id in self._values:
-            value = self._values[id]
-            value.value = v
-            value.errors = errors
+            self._values[id].value = value
+            self._values[id].errors = errors
 
     def close(self):
         self.fire(close())
@@ -65,6 +64,11 @@ class Client(BaseComponent):
         packet = data.encode("utf-8") + DELIMITER
 
         self.fire(write(packet))
+
+        while not self._values[id].result:
+            yield
+
+        del(self._values[id])
 
     @handler("read")
     def _on_read(self, data):
