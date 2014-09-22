@@ -23,23 +23,27 @@ class Node(BaseComponent):
 
     channel = "node"
 
-    def __init__(self, bind=None, channel=channel):
-        super(Node, self).__init__(channel=channel)
+    def __init__(self, bind=None, channel=channel, **kwargs):
+        super(Node, self).__init__(channel=channel, **kwargs)
 
         self.bind = bind
 
         self.nodes = {}
 
         if self.bind is not None:
-            self.server = Server(self.bind).register(self)
+            self.server = Server(
+                self.bind,
+                channel=channel,
+                **kwargs
+            ).register(self)
         else:
             self.server = None
 
-    def add(self, name, host, port):
+    def add(self, name, host, port, **kwargs):
         channel = sha256(
             "{0:s}:{1:d}".format(host, port).encode("utf-8")
         ).hexdigest()
-        node = Client(host, port, channel=channel)
+        node = Client(host, port, channel=channel, **kwargs)
         node.register(self)
 
         self.nodes[name] = node

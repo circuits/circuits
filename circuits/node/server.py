@@ -24,12 +24,12 @@ class Server(BaseComponent):
 
     channel = "node"
 
-    def __init__(self, bind, channel=channel):
-        super(Server, self).__init__(channel=channel)
+    def __init__(self, bind, channel=channel, **kwargs):
+        super(Server, self).__init__(channel=channel, **kwargs)
 
         self._buffers = {}
 
-        self.transport = TCPServer(bind, channel=self.channel).register(self)
+        self.transport = TCPServer(bind, channel=self.channel, **kwargs).register(self)
 
     def _process_packet(self, sock, packet):
         e, id = load_event(packet)

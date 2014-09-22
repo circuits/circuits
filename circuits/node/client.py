@@ -26,8 +26,8 @@ class Client(BaseComponent):
 
     channel = "node"
 
-    def __init__(self, host, port, channel=channel):
-        super(Client, self).__init__(channel=channel)
+    def __init__(self, host, port, channel=channel, **kwargs):
+        super(Client, self).__init__(channel=channel, **kwargs)
 
         self._host = host
         self._port = port
@@ -36,7 +36,7 @@ class Client(BaseComponent):
         self._buffer = b""
         self._values = WeakValueDictionary()
 
-        TCPClient(channel=self.channel).register(self)
+        TCPClient(channel=self.channel, **kwargs).register(self)
 
     @handler("ready")
     def _on_ready(self, component):
