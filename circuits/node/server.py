@@ -6,6 +6,7 @@
 
 ...
 """
+from circuits.core import Value
 
 from circuits.net.events import write
 from circuits.net.sockets import TCPServer
@@ -28,13 +29,21 @@ class Server(BaseComponent):
         super(Server, self).__init__(channel=channel, **kwargs)
 
         self._buffers = {}
+        self.__server_event_firewall = kwargs.get(
+            'server_event_firewall',
+            None
+        )
 
         self.transport = TCPServer(bind, channel=self.channel, **kwargs).register(self)
 
     def _process_packet(self, sock, packet):
-        e, id = load_event(packet)
+        event, id = load_event(packet)
 
-        name = "%s_value_changed" % e.name
+        if self.__server_event_firewall and \
+                not self.__server_event_firewall(event, sock):
+            value = Value(event, self)
+
+        name = "%s_value_changed" % event.name
 
         @handler(name, channel=self)
         def on_value_changed(self, event, value):
@@ -42,7 +51,7 @@ class Server(BaseComponent):
 
         self.addHandler(on_value_changed)
 
-        v = self.fire(e, *e.channels)
+        v = self.fire(event, *event.channels)
         v.notify = True
         v.node_trn = id
         v.node_sock = sock
