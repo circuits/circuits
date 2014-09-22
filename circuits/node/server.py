@@ -6,11 +6,12 @@
 
 ...
 """
+
 from circuits.core import Value
 
 from circuits.net.events import write
 from circuits.net.sockets import TCPServer
-from circuits import handler, BaseComponent
+from circuits import handler, BaseComponent, Event
 
 from .utils import load_event, dump_value
 
@@ -36,6 +37,7 @@ class Server(BaseComponent):
 
         self.transport = TCPServer(bind, channel=self.channel, **kwargs).register(self)
 
+    @handler('_process_packet')
     def _process_packet(self, sock, packet):
         event, id = load_event(packet)
 
@@ -43,18 +45,13 @@ class Server(BaseComponent):
                 not self.__server_event_firewall(event, sock):
             value = Value(event, self)
 
-        name = "%s_value_changed" % event.name
+        else:
+            value = yield self.call(event, *event.channels)
 
-        @handler(name, channel=self)
-        def on_value_changed(self, event, value):
-            self.send(value)
-
-        self.addHandler(on_value_changed)
-
-        v = self.fire(event, *event.channels)
-        v.notify = True
-        v.node_trn = id
-        v.node_sock = sock
+        value.notify = True
+        value.node_trn = id
+        value.node_sock = sock
+        self.send(value)
 
     def send(self, v):
         data = dump_value(v)
@@ -71,7 +68,7 @@ class Server(BaseComponent):
         if delimiter > 0:
             packet = buffer[:delimiter].decode("utf-8")
             self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
-            self._process_packet(sock, packet)
+            self.fire(Event.create('_process_packet', sock, packet))
 
     @property
     def host(self):
