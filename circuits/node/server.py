@@ -7,9 +7,11 @@
 ...
 """
 
+from circuits.core import Value
+
 from circuits.net.events import write
 from circuits.net.sockets import TCPServer
-from circuits import handler, BaseComponent
+from circuits import handler, BaseComponent, Event
 
 from .utils import load_event, dump_value
 
@@ -24,28 +26,32 @@ class Server(BaseComponent):
 
     channel = "node"
 
-    def __init__(self, bind, channel=channel):
-        super(Server, self).__init__(channel=channel)
+    def __init__(self, bind, channel=channel, **kwargs):
+        super(Server, self).__init__(channel=channel, **kwargs)
 
         self._buffers = {}
+        self.__server_event_firewall = kwargs.get(
+            'server_event_firewall',
+            None
+        )
 
-        self.transport = TCPServer(bind, channel=self.channel).register(self)
+        self.transport = TCPServer(bind, channel=self.channel, **kwargs).register(self)
 
+    @handler('_process_packet')
     def _process_packet(self, sock, packet):
-        e, id = load_event(packet)
+        event, id = load_event(packet)
 
-        name = "%s_value_changed" % e.name
+        if self.__server_event_firewall and \
+                not self.__server_event_firewall(event, sock):
+            value = Value(event, self)
 
-        @handler(name, channel=self)
-        def on_value_changed(self, event, value):
-            self.send(value)
+        else:
+            value = yield self.call(event, *event.channels)
 
-        self.addHandler(on_value_changed)
-
-        v = self.fire(e, *e.channels)
-        v.notify = True
-        v.node_trn = id
-        v.node_sock = sock
+        value.notify = True
+        value.node_trn = id
+        value.node_sock = sock
+        self.send(value)
 
     def send(self, v):
         data = dump_value(v)
@@ -62,7 +68,7 @@ class Server(BaseComponent):
         if delimiter > 0:
             packet = buffer[:delimiter].decode("utf-8")
             self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
-            self._process_packet(sock, packet)
+            self.fire(Event.create('_process_packet', sock, packet))
 
     @property
     def host(self):
