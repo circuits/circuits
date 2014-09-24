@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :bug:`115` Fixed FallbackErrorHandler API Change
 - :support:`96` Link to ChangeLog from README
 - :release:`3.0 <2014-08-31>`
 - :bug:`111 major` Fixed broken Digest Auth Test for circuits.web

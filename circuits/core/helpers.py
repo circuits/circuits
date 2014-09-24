@@ -76,9 +76,9 @@ class FallBackErrorHandler(BaseComponent):
     the error information on stderr.
     """
 
-    @handler("error", channel="*")
-    def _on_error(self, error_type, value, traceback,
-                  handler=None, fevent=None):
+    @handler("exception", channel="*")
+    def _on_exception(self, error_type, value, traceback,
+                      handler=None, fevent=None):
         s = []
 
         if handler is None:
