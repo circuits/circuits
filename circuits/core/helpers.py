@@ -69,7 +69,7 @@ class FallBackGenerator(BaseComponent):
         self._continue.set()
 
 
-class FallBackErrorHandler(BaseComponent):
+class FallBackExceptionHandler(BaseComponent):
     """
     If there is no handler for error events in the component hierarchy, this
     component's handler is added automatically. It simply prints
