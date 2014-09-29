@@ -28,7 +28,7 @@ class EchoServer(TCPServer):
         return data
 
 # Start and "run" the system.
-# Bind to port 0.0.0.0:9000
-app = EchoServer(9000)
+# Bind to port 0.0.0.0:8000
+app = EchoServer(("0.0.0.0", 8000))
 Debugger().register(app)
 app.run()
