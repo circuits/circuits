@@ -15,14 +15,20 @@ from uuid import uuid4 as uuid
 from operator import attrgetter
 from types import GeneratorType
 from itertools import chain, count
+from signal import SIGINT, SIGTERM
 from heapq import heappush, heappop
 from weakref import WeakValueDictionary
-from signal import SIGINT, SIGTERM, SIGKILL
 from traceback import format_exc, format_tb
 from sys import exc_info as _exc_info, stderr
 from signal import signal as set_signal_handler
 from threading import current_thread, Thread, RLock
 from multiprocessing import current_process, Process
+
+
+try:
+    from signal import SIGKILL
+except ImportError:
+    SIGKILL = SIGTERM
 
 
 from .values import Value

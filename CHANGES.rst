@@ -6,6 +6,7 @@ Change Log
 ==========
 
 
+- :bug:`113` Fixed bug with forced shutdown of subprocesses in Windows.
 - :bug:`115` Fixed FallbackErrorHandler API Change
 - :support:`96` Link to ChangeLog from README
 - :release:`3.0 <2014-08-31>`
