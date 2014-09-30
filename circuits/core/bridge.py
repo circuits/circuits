@@ -31,7 +31,7 @@ class Bridge(BaseComponent):
         "registered", "unregistered", "started", "stopped", "error",
         "value_changed", "generate_events", "read", "write", "close",
         "connected", "connect", "disconnect", "disconnected", "_read",
-        "_write", "ready", "read_value_changed"
+        "_write", "ready", "read_value_changed", "prepare_unregister"
     ]
 
     def init(self, socket, channel=channel):
