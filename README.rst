@@ -53,8 +53,8 @@ components.
    :target: https://pypi.python.org/pypi/circuits
    :alt: License
 
-.. image:: https://requires.io/bitbucket/circuits/circuits/requirements.png
-   :target: https://requires.io/bitbucket/circuits/circuits/requirements
+.. image:: https://requires.io/bitbucket/circuits/circuits/requirements.png?branch=default
+   :target: https://requires.io/bitbucket/circuits/circuits/requirements?branch=default
    :alt: Requirements Status
 
 
