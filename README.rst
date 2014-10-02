@@ -25,16 +25,36 @@ components.
 - Download it from the `Downloads Page`_
 - `View the ChangeLog`_
 
-.. image:: https://pypip.in/v/circuits/badge.png
-   :target: https://crate.io/packages/circuits/
-   :alt: Latest PyPI version
+.. image:: https://pypip.in/v/circuits/badge.png?text=version
+   :target: https://pypi.python.org/pypi/circuits
+   :alt: Latest Version
+
+.. image:: https://pypip.in/py_versions/circuits/badge.svg
+   :target: https://pypi.python.org/pypi/circuits
+   :alt: Supported Python Versions
+
+.. image:: https://pypip.in/implementation/circuits/badge.svg
+   :target: https://pypi.python.org/pypi/circuits
+   :alt: Supported Python implementations
+
+.. image:: https://pypip.in/status/circuits/badge.svg
+   :target: https://pypi.python.org/pypi/circuits
+   :alt: Development Status
 
 .. image:: https://pypip.in/d/circuits/badge.png
-   :target: https://crate.io/packages/circuits/
-   :alt: Number of PyPI downloads
+   :target: https://pypi.python.org/pypi/circuits
+   :alt: Number of Downloads
 
-.. image:: https://requires.io/bitbucket/circuits/circuits/requirements.png?branch=default
-   :target: https://requires.io/bitbucket/circuits/circuits/requirements/?branch=default
+.. image:: https://pypip.in/format/circuits/badge.svg
+   :target: https://pypi.python.org/pypi/circuits
+   :alt: Format
+
+.. image:: https://pypip.in/license/circuits/badge.svg
+   :target: https://pypi.python.org/pypi/circuits
+   :alt: License
+
+.. image:: https://requires.io/bitbucket/circuits/circuits/requirements.png
+   :target: https://requires.io/bitbucket/circuits/circuits/requirements
    :alt: Requirements Status
 
 
