@@ -586,7 +586,7 @@ class Manager(object):
                 handlers.append(FallBackGenerator()._on_generate_events)
             elif isinstance(event, exception) and len(handlers) == 0:
                 from .helpers import FallBackExceptionHandler
-                handlers.append(FallBackErrorHandler()._on_exception)
+                handlers.append(FallBackExceptionHandler()._on_exception)
             elif isinstance(event, signal) and len(handlers) == 0:
                 from .helpers import FallBackSignalHandler
                 handlers.append(FallBackSignalHandler()._on_signal)
