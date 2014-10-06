@@ -143,5 +143,5 @@ class Dispatcher(BaseComponent):
         elif value.promise:
             value.event.notify = True
         else:
-            # This possibly never occurs.
-            self.fire(httperror(req, res, error=value.value))
+            # Errors are handled by the ``HTTP`` Protocol Component
+            return

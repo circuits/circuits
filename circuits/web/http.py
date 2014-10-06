@@ -429,8 +429,8 @@ class HTTP(BaseComponent):
             res.body = value
             self.fire(response(res))
 
-    @handler("error")
-    def _on_error(self, *args, **kwargs):
+    @handler("exception")
+    def _on_exception(self, *args, **kwargs):
         if not len(args) == 3:
             return
 
@@ -439,23 +439,20 @@ class HTTP(BaseComponent):
 
         if isinstance(fevent, response):
             res = fevent.args[0]
-            sock = res.request.sock
+            req = res.request
+        elif isinstance(fevent.value.parent.event, request):
+            req, res = fevent.value.parent.event.args[:2]
         else:
-            sock = fevent.args[0]
+            req, res = fevent.args[2:]
 
-        try:
-            req = wrappers.Request(sock, "", "", "", (1, 1), "")
-        except:
-            # If we can't work with the socket, do nothing.
-            return
-
-        req.server = self._server
-
-        res = wrappers.Response(req, encoding=self._encoding)
+        if isinstance(evalue, HTTPException):
+            code = evalue.code
+        else:
+            code = None
 
         self.fire(
             httperror(
-                req, res, error=(etype, evalue, etraceback)
+                req, res, code=code, error=(etype, evalue, etraceback)
             )
         )
 
