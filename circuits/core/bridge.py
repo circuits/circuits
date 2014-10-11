@@ -53,11 +53,12 @@ class Bridge(BaseComponent):
             value = self.fire(obj)
             self._values[value] = eid
         elif isinstance(obj, Value):
-            if isinstance(obj.value, list):
-                for item in obj.value:
-                    self._values[eid].value = item
-            else:
-                self._values[eid].value = obj.value
+            if obj.result:
+                if isinstance(obj.value, list):
+                    for item in obj.value:
+                        self._values[eid].value = item
+                else:
+                    self._values[eid].value = obj.value
             event = Event.create(Bridge.__waiting_event(eid))
             event.remote = True
             self.fire(event, self.channel)
