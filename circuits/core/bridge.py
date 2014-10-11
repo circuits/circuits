@@ -21,6 +21,10 @@ from .values import Value
 from .events import Event
 from .handlers import handler
 from .components import BaseComponent
+from ..six import b
+
+
+_sentinel = b('~~~')
 
 
 class Bridge(BaseComponent):
@@ -56,26 +60,32 @@ class Bridge(BaseComponent):
                 self._values[eid].value = obj.value
             event = Event.create(Bridge.__waiting_event(eid))
             event.remote = True
-            self.fire(event)
+            self.fire(event, self.channel)
+
 
     @handler("value_changed", channel="*")
     def _on_value_changed(self, value):
         try:
             eid = self._values[value]
-            self._socket.write(dumps((eid, value)))
+            self.__write(eid, value)
         except:
             pass
 
     @handler("read")
     def _on_read(self, data):
-        self._process_packet(*loads(data))
+        data = data.split(_sentinel)
+        for item in data[:-1]:
+            self._process_packet(*loads(item))
 
     def send(self, eid, event):
         try:
             self._values[eid] = event.value
-            self._socket.write(dumps((eid, event)))
+            self.__write(eid, event)
         except:
             pass
+
+    def __write(self, eid, data):
+        self._socket.write(dumps((eid, data))+_sentinel)
 
     @handler(channel="*", priority=100.0)
     def _on_event(self, event, *args, **kwargs):
