@@ -11,6 +11,7 @@ Pipe is used as the socket transport between two sides of a Bridge
 (*there must be a :class:`~Bridge` instnace on both sides*).
 
 """
+import traceback
 
 try:
     from cPickle import dumps, loads
@@ -18,7 +19,7 @@ except ImportError:
     from pickle import dumps, loads  # NOQA
 
 from .values import Value
-from .events import Event
+from .events import Event, exception
 from .handlers import handler
 from .components import BaseComponent
 from ..six import b
@@ -80,6 +81,8 @@ class Bridge(BaseComponent):
 
     def send(self, eid, event):
         try:
+            if isinstance(event, exception):
+                Bridge.__adapt_exception(event)
             self._values[eid] = event.value
             self.__write(eid, event)
         except:
@@ -103,3 +106,8 @@ class Bridge(BaseComponent):
     @staticmethod
     def __waiting_event(eid):
         return '%s_done' % eid
+
+    @staticmethod
+    def __adapt_exception(ex):
+        fevent_value = ex.kwargs['fevent'].value
+        fevent_value._value = (fevent_value[0], fevent_value[1], traceback.extract_tb(fevent_value[2]))
