@@ -50,7 +50,7 @@ class ChatServer(Component):
         """Initialize our ``ChatServer`` Component.
 
         This uses the convenience ``init`` method which is called after the
-        component is proeprly constructed and initialized and passed the
+        component is properly constructed and initialized and passed the
         same args and kwargs that were passed during construction.
         """
 
@@ -109,7 +109,7 @@ class ChatServer(Component):
         del self.clients[sock]
 
     def read(self, sock, data):
-        """Read Event -- Triggered for when client conenctions have data"""
+        """Read Event -- Triggered for when client connections have data"""
 
         data = data.strip().decode("utf-8")
 
