@@ -1,17 +1,14 @@
 # Convenient Development Tasks
-Fabric==1.8.3
+Fabric
 
 # Debugging
-pudb==2014.1
+pudb
 
 # Running Tests
-tox==1.7.1
-pytest==2.5.2
-pytest-cov==1.6
+tox
+pytest
+pytest-cov
 
 # Generating Documentation
-Sphinx==1.2.2
-Sphinx-PyPI-upload==0.2.1
-sphinxcontrib-bitbucket==1.0
-sphinxcontrib-googleanalytics==0.1
-sphinxcontrib-programoutput==0.8
+Sphinx
+Sphinx-PyPI-upload
