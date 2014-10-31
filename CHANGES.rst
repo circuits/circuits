@@ -6,10 +6,27 @@ Change Log
 ==========
 
 
-- :support:`117` Fixed inconsistent top-level examples.
+- :release:`3.1 <2014-11-01>`
+- :bug:`-` Bridge waits for event processing on the other side before proxy handler ends. Now it is possible to collect values from remote handlers in %_success event.
+- :bug:`-` Rename the FallbackErrorHandler to FallbackExceptionHandler and the event it listens to to exception
+- :bug:`-` Fixes optional parameters handling (client / server).
+- :bug:`-` Node: add peer node: return channel name.
+- :bug:`-` Node: add event firewall (client / server).
+- :bug:`-` Node: fixes the event value issue.
+- :bug:`-` Node: fixes event response flood.
+- :bug:`-` Node: Add node examples.
+- :bug:`-` Fixed import of FallBackExceptionHandler
+- :bug:`-` Fixed exception handing in circuits.web
+- :bug:`-` Fixed issue in brige with ommiting all but the first events sent at once
+- :bug:`-` Bridge: Do not propagate no results via bridge
+- :bug:`-` Bridge: Send exceptions via brige before change the exceptions weren't propagated via bridge because traceback object is not pickable, now traceback object is replaced by corresponding traceback list
 - :bug:`113` Fixed bug with forced shutdown of subprocesses in Windows.
 - :bug:`115` Fixed FallbackErrorHandler API Change
-- :support:`96 minor` Link to ChangeLog from README
+
+- :release:`3.0.1 <2014-11-01>`
+- :support:`117` Fixed inconsistent top-level examples.
+- :support:`96` Link to ChangeLog from README
+
 - :release:`3.0 <2014-08-31>`
 - :bug:`111 major` Fixed broken Digest Auth Test for circuits.web
 - :feature:`112` Improved Signal Handling
