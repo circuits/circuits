@@ -1,0 +1,10 @@
+circuits:
+    build: .
+
+bench:
+    build: .
+    command: circuits.bench -e 100000
+
+web:
+    build: .
+    command: circuits.web /var/www

@@ -22,11 +22,17 @@
 FROM prologic/crux-python
 MAINTAINER James Mills <prologic@shortcircuitnet.au>
 
-# Install Source
-RUN pip install https://bitbucket.org/circuits/circuits/get/tip.tar.bz2#egg=circuits
+#  Services
+EXPOSE 80 443
 
-# Create Volume(s)
+# Volumes
 VOLUME /var/www
 
-# Expose Service
-EXPOSE 8000
+# Application
+WORKDIR /app
+ADD . /usr/src/circuits
+RUN pip install /usr/src/circuits
+
+# Build Triggers
+ONBUILD ADD . /app
+ONBUILD RUN pip install .
