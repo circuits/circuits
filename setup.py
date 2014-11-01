@@ -1,38 +1,18 @@
 #!/usr/bin/env python
 
+
 from glob import glob
-from os import getcwd, path
-from imp import new_module
 
 
 from setuptools import setup, find_packages
 
 
-version = new_module("version")
-
-exec(
-    compile(
-        open(
-            path.join(
-                path.dirname(
-                    globals().get(
-                        "__file__",
-                        path.join(getcwd(), "circuits")
-                    )
-                ),
-                "circuits/version.py"
-            ),
-            "r"
-        ).read(),
-        "circuits/version.py", "exec"
-    ),
-    version.__dict__
-)
+from circuits.version import version
 
 
 setup(
     name="circuits",
-    version=version.version,
+    version=version,
     description="Asynchronous Component based Event Application Framework",
     long_description=open("README.rst").read().replace(
         ".. include:: examples/index.rst",
