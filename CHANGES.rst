@@ -6,6 +6,8 @@ Change Log
 ==========
 
 
+- :bug:`119` Fixed bug in ``circuits.web.url.parse_url()`` that caused a
+  display issue with port bindings on ports 80 and 443.
 - :release:`3.1 <2014-11-01>`
 - :bug:`-` Bridge waits for event processing on the other side before proxy handler ends. Now it is possible to collect values from remote handlers in %_success event.
 - :bug:`-` Rename the FallbackErrorHandler to FallbackExceptionHandler and the event it listens to to exception

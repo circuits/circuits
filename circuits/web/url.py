@@ -70,9 +70,13 @@ class URL(object):
         else:
             parsed = urlparse(url.decode(encoding).encode('utf-8'))
 
-        try:
-            port = str(parsed.port).encode("utf-8")
-        except ValueError:
+        if isinstance(parsed.port, int):
+            port = (
+                str(parsed.port).encode("utf-8")
+                if parsed.port not in (80, 443)
+                else None
+            )
+        else:
             port = None
 
         return cls(
