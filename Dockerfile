@@ -15,11 +15,11 @@
 #     $ docker run -d -v /path/to/www:/var/www prologic/circuits circuits.web /var/www
 #     $ docker run -i -t prologic/circuits circuits.bench
 #
-# VERSION: 0.0.1
+# VERSION: 0.0.2
 #
-# Last Updated: 20140423
+# Last Updated: 20141115
 
-FROM prologic/crux-python
+FROM crux/python:onbuild
 MAINTAINER James Mills <prologic@shortcircuitnet.au>
 
 #  Services
@@ -27,12 +27,3 @@ EXPOSE 80 443
 
 # Volumes
 VOLUME /var/www
-
-# Application
-WORKDIR /app
-ADD . /usr/src/circuits
-RUN pip install /usr/src/circuits
-
-# Build Triggers
-ONBUILD ADD . /app
-ONBUILD RUN pip install .
