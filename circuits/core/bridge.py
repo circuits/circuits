@@ -69,6 +69,8 @@ class Bridge(BaseComponent):
     def _on_value_changed(self, value):
         try:
             eid = self._values[value]
+            if value.errors:
+                Bridge.__adapt_error_value(value)
             self.__write(eid, value)
         except:
             pass
@@ -110,4 +112,9 @@ class Bridge(BaseComponent):
     @staticmethod
     def __adapt_exception(ex):
         fevent_value = ex.kwargs['fevent'].value
-        fevent_value._value = (fevent_value[0], fevent_value[1], traceback.extract_tb(fevent_value[2]))
+        Bridge.__adapt_error_value(fevent_value)
+
+    @staticmethod
+    def __adapt_error_value(value):
+        if not isinstance(value[2], list):
+            value._value = (value[0], value[1], traceback.extract_tb(value[2]))
