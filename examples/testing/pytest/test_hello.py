@@ -2,7 +2,7 @@
 
 import pytest
 
-from hello import Hello, App
+from hello import hello, App
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def app(request, manager, watcher):
 
 
 def test(app, watcher):
-    x = app.fire(Hello())
+    x = app.fire(hello())
     assert watcher.wait("hello")
 
     assert x.value == "Hello World!"
