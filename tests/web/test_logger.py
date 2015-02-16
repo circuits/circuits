@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import re
 
 try:
     from StringIO import StringIO
@@ -61,7 +62,11 @@ def test_file(webapp):
     keys = list(d.keys())
 
     for k in keys:
-        assert d[k] in s
+        if d[k] and d[k].startswith("127."):
+            # loopback network: 127.0.0.0/8
+            assert re.search("127(\.[0-9]{1,3}){3}", s)
+        else:
+            assert d[k] in s
 
     logfile.close()
     logger.unregister()
@@ -96,7 +101,11 @@ def test_logger(webapp):
     keys = list(d.keys())
 
     for k in keys:
-        assert d[k] in s
+        if d[k] and d[k].startswith("127."):
+            # loopback network: 127.0.0.0/8
+            assert re.search("127(\.[0-9]{1,3}){3}", s)
+        else:
+            assert d[k] in s
 
     logger.unregister()
 
@@ -133,7 +142,11 @@ def test_filename(webapp, tmpdir):
     keys = list(d.keys())
 
     for k in keys:
-        assert d[k] in s
+        if d[k] and d[k].startswith("127."):
+            # loopback network: 127.0.0.0/8
+            assert re.search("127(\.[0-9]{1,3}){3}", s)
+        else:
+            assert d[k] in s
 
     logfile.close()
     logger.unregister()
