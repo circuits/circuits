@@ -41,8 +41,7 @@ class Node(BaseComponent):
             self.server = None
 
     def add(self, name, host, port, **kwargs):
-        channel = kwargs['channel'] if 'channel' in kwargs else \
-            '%s_client_%s' % (self.channel, name)
+        channel = kwargs.pop('channel', '%s_client_%s' % (self.channel, name))
         node = Client(host, port, channel=channel, **kwargs)
         node.register(self)
 
