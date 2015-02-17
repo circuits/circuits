@@ -4,8 +4,8 @@
 from pytest import fixture, skip, PLATFORM
 
 
-if PLATFORM == "win32":
-    skip("Broken on Windows")
+if PLATFORM == 'win32':
+    skip('Broken on Windows')
 
 
 from circuits import Component, Event
@@ -21,7 +21,7 @@ class App(Component):
     disconnected = False
 
     def foo(self):
-        return "Hello World!"
+        return 'Hello World!'
 
     def ready(self, *args):
         self.ready = True
@@ -36,15 +36,15 @@ class App(Component):
 @fixture()
 def bind(request, manager, watcher):
     server = UDPServer(0).register(manager)
-    assert watcher.wait("ready")
+    assert watcher.wait('ready')
 
     host, port = server.host, server.port
 
     server.fire(close())
-    assert watcher.wait("closed")
+    assert watcher.wait('closed')
 
     server.unregister()
-    assert watcher.wait("unregistered")
+    assert watcher.wait('unregistered')
 
     return host, port
 
@@ -53,13 +53,13 @@ def bind(request, manager, watcher):
 def app(request, manager, watcher, bind):
     app = App().register(manager)
     node = Node().register(app)
-    watcher.wait("ready")
+    watcher.wait('ready')
 
     child = (App() + Node(bind))
     child.start(process=True)
 
-    node.add("child", *bind)
-    watcher.wait("connected")
+    node.add('child', *bind)
+    watcher.wait('connected')
 
     def finalizer():
         child.stop()
@@ -70,13 +70,12 @@ def app(request, manager, watcher, bind):
 
 
 def test_return_value(app, watcher):
-    e = Event.create("foo")
-    e.notify = True
+    event = Event.create('foo')
+    event.notify = True
 
-    r = remote(e, "child")
-    r.notify = True
+    remote_event = remote(event, 'child')
+    remote_event.notify = True
 
-    value = app.fire(r)
-    assert watcher.wait("remote_value_changed")
-
-    assert value.value == "Hello World!"
+    value = app.fire(remote_event)
+    assert watcher.wait('remote_value_changed')
+    assert value.value == 'Hello World!'
