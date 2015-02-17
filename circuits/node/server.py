@@ -39,6 +39,10 @@ class Server(BaseComponent):
     def send(self, event, sock):
         return self.__protocol[sock].send(event)
 
+    def send_to(self, event, socks):
+        for sock in socks:
+            self.send(event, sock)
+
     def send_all(self, event):
         for sock in self.__protocol:
             self.__protocol[sock].send(event)
