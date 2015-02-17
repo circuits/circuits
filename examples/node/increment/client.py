@@ -2,8 +2,8 @@
 
 from optparse import OptionParser
 
-from circuits.node import Node, remote
-from circuits import Component, Debugger, handler, Event
+from circuits.node import Node, remote, protocol
+from circuits import Component, Debugger, Event
 
 
 __version__ = "0.0.1"
@@ -40,7 +40,6 @@ def parse_options():
 
 
 class NodeClient(Component):
-
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)
