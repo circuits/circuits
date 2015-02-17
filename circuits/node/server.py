@@ -35,13 +35,16 @@ class Server(BaseComponent):
     def send(self, event, sock):
         return self.__protocols[sock].send(event)
 
-    def send_all(self, event):
+    def send_to(self, event, socks):
         event.node_without_result = True
-        for sock in self.__protocols:
+        for sock in socks:
             try:
                 next(self.__protocols[sock].send(event))
             except StopIteration:
                 pass
+
+    def send_all(self, event):
+        self.send_to(event, list(self.__protocols))
 
     @handler('read')
     def _on_read(self, sock, data):
