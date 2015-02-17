@@ -50,15 +50,16 @@ class Protocol(Component):
             id = self.__nid
             self.__nid += 1
 
-            self.__events[id] = event
             packet = dump_event(event, id).encode('utf-8') + DELIMITER
             self.__send(packet)
 
-            while not hasattr(self.__events[id], 'remote_finish'):
-                yield
+            if not getattr(event, 'node_without_result', False):
+                self.__events[id] = event
+                while not hasattr(self.__events[id], 'remote_finish'):
+                    yield
 
-            del(self.__events[id])
-            yield event.value
+                del(self.__events[id])
+                yield event.value
 
     def send_result(self, id, value):
         value.node_call_id = id
