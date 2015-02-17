@@ -58,7 +58,7 @@ def dump_event(e, id):
 
 def dump_value(v):
     data = {
-        "id": v.node_trn,
+        "id": v.node_call_id,
         "errors": v.errors,
         "value": v._value,
     }

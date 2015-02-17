@@ -7,15 +7,10 @@
 ...
 """
 
-from circuits.core import Value
-
-from circuits.net.events import write
 from circuits.net.sockets import TCPServer
-from circuits import handler, BaseComponent, Event
+from circuits import handler, BaseComponent
 
-from .utils import load_event, dump_value
-
-DELIMITER = b"\r\n\r\n"
+from .protocol import Protocol
 
 
 class Server(BaseComponent):
@@ -24,58 +19,57 @@ class Server(BaseComponent):
     ...
     """
 
-    channel = "node"
+    channel = 'node'
+    __protocol = {}
 
     def __init__(self, bind, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel, **kwargs)
 
-        self._buffers = {}
-        self.__server_event_firewall = kwargs.get(
-            'server_event_firewall',
+        self.server = TCPServer(bind, channel=self.channel, **kwargs)
+        self.server.register(self)
+        self.__receive_event_firewall = kwargs.get(
+            'receive_event_firewall',
+            None
+        )
+        self.__send_event_firewall = kwargs.get(
+            'send_event_firewall',
             None
         )
 
-        self.transport = TCPServer(bind, channel=self.channel, **kwargs).register(self)
+    def send(self, event, sock):
+        return self.__protocol[sock].send(event)
 
-    @handler('_process_packet')
-    def _process_packet(self, sock, packet):
-        event, id = load_event(packet)
+    def send_all(self, event):
+        for sock in self.__protocol:
+            self.__protocol[sock].send(event)
 
-        if self.__server_event_firewall and \
-                not self.__server_event_firewall(event, sock):
-            value = Value(event, self)
-
-        else:
-            value = yield self.call(event, *event.channels)
-
-        value.notify = True
-        value.node_trn = id
-        value.node_sock = sock
-        self.send(value)
-
-    def send(self, v):
-        data = dump_value(v)
-        packet = data.encode("utf-8") + DELIMITER
-        self.fire(write(v.node_sock, packet))
-
-    @handler("read")
+    @handler('read')
     def _on_read(self, sock, data):
-        buffer = self._buffers.get(sock, b"")
-
-        buffer += data
-
-        delimiter = buffer.find(DELIMITER)
-        if delimiter > 0:
-            packet = buffer[:delimiter].decode("utf-8")
-            self._buffers[sock] = buffer[(delimiter + len(DELIMITER)):]
-            self.fire(Event.create('_process_packet', sock, packet))
+        self.__protocol[sock].add_buffer(data)
 
     @property
     def host(self):
-        if hasattr(self, "transport"):
-            return self.transport.host
+        if hasattr(self, 'server'):
+            return self.server.host
 
     @property
     def port(self):
-        if hasattr(self, "transport"):
-            return self.transport.port
+        if hasattr(self, 'server'):
+            return self.server.port
+
+    @handler('connect')
+    def __connect_peer(self, sock, host, port):
+         self.__protocol[sock] = Protocol(
+            sock=sock,
+            server=self.server,
+            receive_event_firewall=self.__receive_event_firewall,
+            send_event_firewall=self.__send_event_firewall
+        ).register(self)
+
+    @handler('disconnect')
+    def __disconnect_peer(self, sock):
+        for s in self.__protocol.copy():
+            try:
+                s.getpeername()
+            except:
+                del(self.__protocol[s])
