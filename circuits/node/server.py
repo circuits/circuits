@@ -27,7 +27,7 @@ class Server(BaseComponent):
                  send_event_firewall=None, **kwargs):
         super(Server, self).__init__(channel=channel, **kwargs)
 
-        self.server = TCPServer(bind, channel=self.channel, **kwargs)
+        self.server = TCPServer(bind, channel=channel, **kwargs)
         self.server.register(self)
         self.__receive_event_firewall = receive_event_firewall
         self.__send_event_firewall = send_event_firewall
