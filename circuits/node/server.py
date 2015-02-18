@@ -6,6 +6,7 @@
 
 ...
 """
+import itertools
 
 from circuits.net.sockets import TCPServer
 from circuits import handler, BaseComponent
@@ -44,8 +45,9 @@ class Server(BaseComponent):
             self.send(event, sock)
 
     def send_all(self, event):
-        for sock in self.__protocol:
-            self.__protocol[sock].send(event)
+        sock = list(self.__protocol)[0]
+        for item in self.__protocol[sock].send(event):
+            pass
 
     @handler('read')
     def _on_read(self, sock, data):
@@ -63,11 +65,12 @@ class Server(BaseComponent):
 
     @handler('connect')
     def __connect_peer(self, sock, host, port):
-         self.__protocol[sock] = Protocol(
+        self.__protocol[sock] = Protocol(
             sock=sock,
             server=self.server,
             receive_event_firewall=self.__receive_event_firewall,
-            send_event_firewall=self.__send_event_firewall
+            send_event_firewall=self.__send_event_firewall,
+            channel=self.channel
         ).register(self)
 
     @handler('disconnect')

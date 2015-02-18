@@ -27,9 +27,9 @@ class Client(BaseComponent):
 
         self._host = host
         self._port = port
-        self._protocol = Protocol().register(self)
+        self._protocol = Protocol(channel=channel).register(self)
 
-        TCPClient(channel=self.channel, **kwargs).register(self)
+        TCPClient(channel=channel, **kwargs).register(self)
 
     @handler("ready")
     def _on_ready(self, component):
