@@ -157,7 +157,7 @@ class Node(BaseComponent):
         """Get connections name
 
         :return: The list of connections name
-        :rtype: list
+        :rtype: list of str
         """
         return list(self.__peers)
 

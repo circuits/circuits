@@ -58,7 +58,7 @@ class Server(BaseComponent):
         self.__receive_event_firewall = receive_event_firewall
         self.__send_event_firewall = send_event_firewall
 
-    def send(self, event, sock):
+    def send(self, event, sock, no_result=False):
         """Send event to peer
 
         :param event:    Event to execute remotely.
@@ -67,10 +67,22 @@ class Server(BaseComponent):
         :param sock:    Client's socket (peer selection).
         :type sock:     :class:`socket.socket`
 
+        :param no_result:   An optional keyword argument which if True the 
+                            remote server don't return the event result.
+                            **Default:** ``False`` (wait the result)
+        :type no_result:     bool
+
         :return: The result of remote event
         :rtype: generator
         """
-        return self.__protocols[sock].send(event)
+        iterator = self.__protocols[sock].send(event)
+        if no_result:
+            event.node_without_result = True
+            try:
+                next(iterator)
+            except StopIteration:
+                pass
+        return iterator
 
     def send_to(self, event, socks):
         """Send event to multiple peer
@@ -81,12 +93,8 @@ class Server(BaseComponent):
         :param socks:    Client's socket list (peer selection).
         :type socks:     list of :class:`socket.socket`
         """
-        event.node_without_result = True
         for sock in socks:
-            try:
-                next(self.send(event, sock))
-            except StopIteration:
-                pass
+            self.send(event, sock, noresult=True)
 
     def send_all(self, event):
         """Send event to all peer
@@ -110,13 +118,22 @@ class Server(BaseComponent):
         if hasattr(self, 'server'):
             return self.server.port
 
+    def get_socks(self):
+        """Get clients socks list
+
+        :return: The list of client socket
+        :rtype: list of :class:`socket.socket`
+        """
+        return list(self.__protocols)
+
     @handler('connect')
     def __connect_peer(self, sock, host, port):
         self.__protocols[sock] = Protocol(
             sock=sock,
             server=self.server,
             receive_event_firewall=self.__receive_event_firewall,
-            send_event_firewall=self.__send_event_firewall
+            send_event_firewall=self.__send_event_firewall,
+            channel=self.channel
         ).register(self)
 
     @handler('disconnect')
