@@ -94,7 +94,7 @@ class Server(BaseComponent):
         :type socks:     list of :class:`socket.socket`
         """
         for sock in socks:
-            self.send(event, sock, noresult=True)
+            self.send(event, sock, no_result=True)
 
     def send_all(self, event):
         """Send event to all peer
