@@ -38,9 +38,10 @@ def bind(request, manager, watcher):
 
 @fixture()
 def app(request, manager, watcher, bind):
-    server = Node(bind)
+    server = Node(port=bind[1], server_ip=bind[0])
     server.register(manager)
-    assert watcher.wait('ready', channel='node')
+    server.bind = bind
+    assert watcher.wait('registered', channel='node')
 
     return server
 
@@ -77,7 +78,7 @@ def test_server_send(app, watcher, manager):
     assert watcher.wait('connected', channel=chan2)
 
     event = return_value()
-    app.server.send(event, app.server.get_socks()[0], noresult=True)
+    app.server.send(event, app.server.get_socks()[0], no_result=True)
     assert watcher.wait('return_value')
     watcher.clear()
     assert not watcher.wait('return_value')
