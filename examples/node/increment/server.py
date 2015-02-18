@@ -46,9 +46,7 @@ class NodeServer(Component):
         else:
             address, port = opts.bind, 8000
 
-        bind = (address, port)
-
-        Node(bind).register(self)
+        Node(port=port, server_ip=address).register(self)
 
     def connect(self, sock, host, port):
         print('Peer connected: %s:%d' % (host, port))

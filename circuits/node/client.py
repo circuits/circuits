@@ -1,10 +1,10 @@
-# Module:   client
-# Date:     ...
-# Author:   ...
+# Module:   events
+# Date:     February 17, 2015
+# Authors:  Matthieu Chevrier <treemo@hotmail.fr>
+#           Yoann Ono Dit Biot <yoann.onoditbiot@gmail.com>
 
-"""Client
-
-...
+"""
+This module defines the node client class.
 """
 
 from circuits.net.sockets import TCPClient
@@ -15,21 +15,44 @@ from .protocol import Protocol
 
 
 class Client(BaseComponent):
-    """Client
-
-    ...
-    """
-
-    channel = "node"
+    """Node Client (peer)"""
+    channel = "node_client"
 
     def __init__(self, host, port, channel=channel,
                  receive_event_firewall=None, send_event_firewall=None,
                  **kwargs):
+        """Add connection to new peer.
+
+        :param hostname:    hostname to connect.
+        :type hostname:     str
+
+        :param port:    port to connect.
+        :type port:     int
+
+        :param channel: An optional keyword argument which if defined,
+                        set channel used for node event.
+                        **Default:** ``node_client``
+        :type channel:  str
+
+        :param receive_event_firewall:  An optional keyword argument which if
+                                        defined, function or method to call for
+                                        check if event is allowed for sending.
+                                        **Default:** ``None`` (no firewall)
+        :type receive_event_firewall:   function
+        :type receive_event_firewall:   method
+
+        :param send_event_firewall:  An optional keyword argument which if
+                                    defined, function or method to call for
+                                    check if event is allowed for executing
+                                    **Default:** ``None`` (no firewall)
+        :type send_event_firewall:   function
+        :type send_event_firewall:   method
+        """
         super(Client, self).__init__(channel=channel, **kwargs)
 
-        self._host = host
-        self._port = port
-        self._protocol = Protocol(
+        self.__host = host
+        self.__port = port
+        self.__protocol = Protocol(
             receive_event_firewall=receive_event_firewall,
             send_event_firewall=send_event_firewall,
         ).register(self)
@@ -38,17 +61,27 @@ class Client(BaseComponent):
 
     @handler("ready")
     def _on_ready(self, component):
-        self.fire(connect(self._host, self._port))
+        self.connect()
 
     def close(self):
+        """Close this connection"""
         self.fire(close())
 
-    def connect(self, host, port):
-        self.fire(connect(host, port))
+    def connect(self):
+        """Connect to peer"""
+        self.fire(connect(self.__host, self.__port))
 
-    def send(self, event, e):
-        return self._protocol.send(e)
+    def send(self, event):
+        """Send event to peer
+
+        :param event:    Event to execute remotely.
+        :type event:     :class:`circuits.core.events.Event`
+
+        :return: The result of remote event
+        :rtype: generator
+        """
+        return self.__protocol.send(event)
 
     @handler("read")
     def _on_read(self, data):
-        self._protocol.add_buffer(data)
+        self.__protocol.add_buffer(data)

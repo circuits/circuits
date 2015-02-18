@@ -71,9 +71,7 @@ class NodeServer(Component):
         else:
             address, port = opts.bind, 8000
 
-        bind = (address, port)
-
-        Node(bind).register(self)
+        Node(port=port, server_ip=address).register(self)
 
     def connect(self, sock, host, port):
         """Connect Event -- Triggered for new connecting clients"""

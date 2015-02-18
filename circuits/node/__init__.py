@@ -1,6 +1,7 @@
-# Module:   node
-# Date:     ...
-# Author:   ...
+# Module:   events
+# Date:     February 17, 2015
+# Authors:  Matthieu Chevrier <treemo@hotmail.fr>
+#           Yoann Ono Dit Biot <yoann.onoditbiot@gmail.com>
 
 """Node
 
