@@ -39,7 +39,7 @@ class Server(BaseComponent):
         event.node_without_result = True
         for sock in socks:
             try:
-                next(self.__protocols[sock].send(event))
+                next(self.send(event, sock))
             except StopIteration:
                 pass
 
