@@ -21,37 +21,34 @@ class Server(BaseComponent):
     """
 
     channel = 'node'
-    __protocol = {}
+    __protocols = {}
 
-    def __init__(self, bind, channel=channel, **kwargs):
+    def __init__(self, bind, channel=channel, receive_event_firewall=None,
+                 send_event_firewall=None, **kwargs):
         super(Server, self).__init__(channel=channel, **kwargs)
 
         self.server = TCPServer(bind, channel=self.channel, **kwargs)
         self.server.register(self)
-        self.__receive_event_firewall = kwargs.get(
-            'receive_event_firewall',
-            None
-        )
-        self.__send_event_firewall = kwargs.get(
-            'send_event_firewall',
-            None
-        )
+        self.__receive_event_firewall = receive_event_firewall
+        self.__send_event_firewall = send_event_firewall
 
     def send(self, event, sock):
-        return self.__protocol[sock].send(event)
+        return self.__protocols[sock].send(event)
 
     def send_to(self, event, socks):
+        event.node_without_result = True
         for sock in socks:
-            self.send(event, sock)
+            try:
+                next(self.send(event, sock))
+            except StopIteration:
+                pass
 
     def send_all(self, event):
-        sock = list(self.__protocol)[0]
-        for item in self.__protocol[sock].send(event):
-            pass
+        self.send_to(event, list(self.__protocols))
 
     @handler('read')
     def _on_read(self, sock, data):
-        self.__protocol[sock].add_buffer(data)
+        self.__protocols[sock].add_buffer(data)
 
     @property
     def host(self):
@@ -65,7 +62,7 @@ class Server(BaseComponent):
 
     @handler('connect')
     def __connect_peer(self, sock, host, port):
-        self.__protocol[sock] = Protocol(
+        self.__protocols[sock] = Protocol(
             sock=sock,
             server=self.server,
             receive_event_firewall=self.__receive_event_firewall,
@@ -75,8 +72,8 @@ class Server(BaseComponent):
 
     @handler('disconnect')
     def __disconnect_peer(self, sock):
-        for s in self.__protocol.copy():
+        for s in self.__protocols.copy():
             try:
                 s.getpeername()
             except:
-                del(self.__protocol[s])
+                del(self.__protocols[s])

@@ -22,12 +22,18 @@ class Client(BaseComponent):
 
     channel = "node"
 
-    def __init__(self, host, port, channel=channel, **kwargs):
+    def __init__(self, host, port, channel=channel,
+                 receive_event_firewall=None, send_event_firewall=None,
+                 **kwargs):
         super(Client, self).__init__(channel=channel, **kwargs)
 
         self._host = host
         self._port = port
-        self._protocol = Protocol(channel=channel).register(self)
+        self._protocol = Protocol(
+            receive_event_firewall=receive_event_firewall,
+            send_event_firewall=send_event_firewall,
+            channel=channel
+        ).register(self)
 
         TCPClient(channel=channel, **kwargs).register(self)
 
@@ -47,4 +53,3 @@ class Client(BaseComponent):
     @handler("read")
     def _on_read(self, data):
         self._protocol.add_buffer(data)
-

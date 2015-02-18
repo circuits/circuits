@@ -26,10 +26,6 @@ class Node(BaseComponent):
 
         self.bind = bind
         self.nodes = {}
-        self.__client_event_firewall = kwargs.get(
-            'client_event_firewall',
-            None
-        )
 
         if self.bind is not None:
             self.server = Server(
@@ -50,10 +46,6 @@ class Node(BaseComponent):
 
     @handler("remote")
     def _on_remote(self, event, e, client_name, channel=None):
-        if self.__client_event_firewall and \
-                not self.__client_event_firewall(event, client_name, channel):
-                return
-
         node = self.nodes[client_name]
         if channel is not None:
             e.channels = (channel,)
