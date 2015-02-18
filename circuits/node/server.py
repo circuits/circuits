@@ -32,16 +32,19 @@ class Server(BaseComponent):
         self.__receive_event_firewall = receive_event_firewall
         self.__send_event_firewall = send_event_firewall
 
-    def send(self, event, sock):
-        return self.__protocols[sock].send(event)
-
-    def send_to(self, event, socks):
-        event.node_without_result = True
-        for sock in socks:
+    def send(self, event, sock, noresult=False):
+        iterator = self.__protocols[sock].send(event)
+        if noresult:
+            event.node_without_result = True
             try:
-                next(self.send(event, sock))
+                next(iterator)
             except StopIteration:
                 pass
+        return iterator
+
+    def send_to(self, event, socks):
+        for sock in socks:
+            self.send(event, sock, noresult=True)
 
     def send_all(self, event):
         self.send_to(event, list(self.__protocols))
@@ -59,6 +62,9 @@ class Server(BaseComponent):
     def port(self):
         if hasattr(self, 'server'):
             return self.server.port
+
+    def get_socks(self):
+        return list(self.__protocols)
 
     @handler('connect')
     def __connect_peer(self, sock, host, port):
