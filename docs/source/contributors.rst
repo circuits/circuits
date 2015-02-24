@@ -15,6 +15,8 @@ The following users and developers have contributed to circuits:
 - Alex Mayfield
 - Toni Alatalo
 - Michael Lipp
+- Matthieu Chevrier
+- Yoann Ono Dit Biot
 
 Anyone not listed here (*apologies as this list is taken directly from
 Mercurial's churn command and output*). We appreciate any and all
