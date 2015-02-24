@@ -6,6 +6,7 @@ from circuits import Event, Component, handler
 from circuits.net.events import close
 from circuits.net.sockets import UDPServer
 from circuits.node import Node
+from circuits.node.server import Server
 
 if PLATFORM == 'win32':
     skip('Broken on Windows')
@@ -21,7 +22,7 @@ class App(Component):
 
 
 @fixture()
-def bind(request, manager, watcher):
+def bind(manager, watcher):
     server = UDPServer(0).register(manager)
     assert watcher.wait('ready', channel='server')
 
@@ -37,7 +38,7 @@ def bind(request, manager, watcher):
 
 
 @fixture()
-def app(request, manager, watcher, bind):
+def app(manager, watcher, bind):
     server = Node(port=bind[1], server_ip=bind[0])
     server.register(manager)
     server.bind = bind
@@ -45,6 +46,32 @@ def app(request, manager, watcher, bind):
 
     return server
 
+
+def test_auto_reconnect(app, watcher, manager):
+    # add client
+    client = App().register(manager)
+    node = Node().register(client)
+    chan = node.add('client1', *app.bind, reconnect_delay=1)
+    assert watcher.wait('connected', channel=chan)
+
+    # close server
+    app.fire(close())
+    assert watcher.wait('closed', channel=app.channel)
+
+    app.unregister()
+    assert watcher.wait('unregistered', channel=app.channel)
+
+    for i in range(5):
+        assert watcher.wait('connect', channel=chan)
+
+    # open server
+    app = Node(port=app.bind[1], server_ip=app.bind[0])
+    app.register(manager)
+
+    assert watcher.wait('registered', channel=app.channel)
+    assert watcher.wait('connect_to', channel=app.channel)
+
+    client.unregister()
 
 def test_server_send_all(app, watcher, manager):
     client1 = App().register(manager)

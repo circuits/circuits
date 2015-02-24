@@ -20,7 +20,8 @@ class Protocol(Component):
     def init(self, sock=None, server=None, **kwargs):
         self.__server = server
         self.__sock = sock
-        self.__receive_event_firewall = kwargs.get('receive_event_firewall', None)
+        self.__receive_event_firewall = kwargs.get('receive_event_firewall',
+                                                   None)
         self.__send_event_firewall = kwargs.get('send_event_firewall', None)
 
     def add_buffer(self, data=''):
@@ -61,7 +62,7 @@ class Protocol(Component):
                 while not hasattr(self.__events[id], 'remote_finish'):
                     yield
 
-                del(self.__events[id])
+                del (self.__events[id])
                 yield event.value
 
     def send_result(self, id, value):
@@ -96,12 +97,30 @@ class Protocol(Component):
             event.success_channels = ('node_result',)
             event.node_call_id = id
             event.node_sock = self.__sock
+
+            # convert byte to str
+            event.args = [arg.decode('utf-8') if isinstance(arg, bytes) else
+                          arg for arg in event.args]
+
+            for i in event.kwargs:
+                v = event.kwargs[i]
+                index = i.decode('utf-8') if isinstance(i, bytes) else i
+                value = v.decode('utf-8') if isinstance(v, bytes) else v
+
+                del (event.kwargs[i])
+                event.kwargs[index] = value
+
             self.fire(event, *event.channels)
 
     def __process_packet_value(self, packet):
-        value, id, errors = load_value(packet)
+        value, id, error = load_value(packet)
 
         if id in self.__events:
+            # convert byte to str
+            value = value.decode('utf-8') if isinstance(value, bytes) else value
+            error = error.decode('utf-8') if isinstance(error, bytes) else error
+
+            # save result
             self.__events[id].value = value
-            self.__events[id].errors = errors
+            self.__events[id].errors = error
             self.__events[id].remote_finish = True
