@@ -9,17 +9,17 @@ from circuits import Event
 
 
 class connect_to(Event):
-    """Connected to peer"""
+    """Connected to a peer"""
     def __init__(self, connection_name, hostname, port, client_channel,
                  client_obj):
         """
         :param connection_name:    Connection name.
         :type connection_name:     str
 
-        :param hostname:    hostname to connect.
+        :param hostname:    hostname of the remote system.
         :type hostname:     str
 
-        :param port:    port to connect.
+        :param port:    connection port of the remote system.
         :type port:     int
 
         :param client_channel:    Channel used for client event.
@@ -34,15 +34,15 @@ class connect_to(Event):
 
 
 class disconnect_to(connect_to):
-    """Disconnected to peer"""
+    """Disconnected from a peer"""
 
 
 class remote(Event):
-    """send event to peer"""
+    """send event to a peer"""
 
     def __init__(self, event, connection_name, channel=None):
         """
-        :param event:    Event to remote execute.
+        :param event:    Event to execute remotely.
         :type event:     :class:`circuits.core.events.Event`
 
         :param connection_name:    Connection name.

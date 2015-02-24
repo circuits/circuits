@@ -21,7 +21,7 @@ class Client(BaseComponent):
     def __init__(self, host, port, channel=channel,
                  receive_event_firewall=None, send_event_firewall=None,
                  **kwargs):
-        """Add connection to new peer.
+        """Create new connection for a node.
 
         :param hostname:    hostname to connect.
         :type hostname:     str
@@ -65,20 +65,20 @@ class Client(BaseComponent):
         self.connect()
 
     def close(self):
-        """Close this connection"""
+        """Close the connection"""
         self.fire(close())
 
     def connect(self):
-        """Connect to peer"""
+        """Create the connection"""
         self.fire(connect(self.__host, self.__port))
 
     def send(self, event):
-        """Send event to peer
+        """Send event through the connection
 
-        :param event:    Event to execute remotely.
+        :param event:    Event to send.
         :type event:     :class:`circuits.core.events.Event`
 
-        :return: The result of remote event
+        :return: The result object of the sended event
         :rtype: generator
         """
         return self.__protocol.send(event)

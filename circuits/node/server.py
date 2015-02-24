@@ -22,13 +22,13 @@ class Server(BaseComponent):
     def __init__(self, port, server_ip='0.0.0.0', channel=channel,
                  receive_event_firewall=None, send_event_firewall=None,
                  **kwargs):
-        """Start node system.
+        """Create server on node system.
 
         :param port:    start server on this port.
         :type port:     int
 
-        :param server_ip:   An optional keyword argument which if defined,
-                            ip allowed to connect to server.
+        :param server_ip:   An optional keyword argument which which define
+                            ip where the socket has listen to.
                             **Default:** ``0.0.0.0`` (all ip is allowed)
         :type server_ip:     str
 
@@ -36,15 +36,15 @@ class Server(BaseComponent):
                         set channel used for node event. **Default:** ``node``
         :type channel:  str
 
-        :param receive_event_firewall:  An optional keyword argument which if
-                                        defined, function or method to call for
-                                        check if event is allowed for sending.
-                                        **Default:** ``None`` (no firewall)
-        :type receive_event_firewall:   function
-        :type receive_event_firewall:   method
+        :param receive_event_firewall: An optional keyword argument which if
+                                       defined, set function or method to call
+                                       to check if event is allowed for sending
+                                       **Default:** ``None`` (no firewall)
+        :type receive_event_firewall:  function
+        :type receive_event_firewall:  method
 
         :param send_event_firewall:  An optional keyword argument which if
-                                    defined, function or method to call for
+                                    defined, set function or method to call to
                                     check if event is allowed for executing
                                     **Default:** ``None`` (no firewall)
         :type send_event_firewall:   function
@@ -67,8 +67,8 @@ class Server(BaseComponent):
         :param sock:    Client's socket (peer selection).
         :type sock:     :class:`socket.socket`
 
-        :param no_result:   An optional keyword argument which if True the 
-                            remote server don't return the event result.
+        :param no_result:   An optional keyword argument which if True
+                            don't return the event result.
                             **Default:** ``False`` (wait the result)
         :type no_result:     bool
 
@@ -119,7 +119,7 @@ class Server(BaseComponent):
             return self.server.port
 
     def get_socks(self):
-        """Get clients socks list
+        """Get clients sockets list
 
         :return: The list of client socket
         :rtype: list of :class:`socket.socket`

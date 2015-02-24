@@ -34,8 +34,8 @@ class Node(BaseComponent):
                         **Default:** ``None`` (don't start the server)
         :type port:     int
 
-        :param server_ip:   An optional keyword argument which if defined,
-                            ip allowed to connect to server.
+        :param server_ip:   An optional keyword argument which define
+                            ip where the socket has listen to.
                             **Default:** ``0.0.0.0`` (all ip is allowed)
         :type server_ip:     str
 
@@ -44,14 +44,14 @@ class Node(BaseComponent):
         :type channel:  str
 
         :param receive_event_firewall:  An optional keyword argument which if
-                                        defined, function or method to call for
-                                        check if event is allowed for sending.
+                                        defined, set function or method to call
+                                        to check if event is allowed for sending.
                                         **Default:** ``None`` (no firewall)
         :type receive_event_firewall:   function
         :type receive_event_firewall:   method
 
         :param send_event_firewall:  An optional keyword argument which if
-                                    defined, function or method to call for
+                                    defined, set function or method to call to
                                     check if event is allowed for executing
                                     **Default:** ``None`` (no firewall)
         :type send_event_firewall:   function
@@ -65,19 +65,19 @@ class Node(BaseComponent):
             self.server = None
 
     def add(self, connection_name, hostname, port, **kwargs):
-        """Add connection to new peer.
+        """Add new peer to the node.
 
-        :param connection_name:    Connection name (peer selection).
+        :param connection_name:    Connection name.
         :type connection_name:     str
 
-        :param hostname:    hostname to connect.
+        :param hostname:    hostname of the remote node.
         :type hostname:     str
 
-        :param port:    port to connect.
+        :param port:    port of the remote node.
         :type port:     int
 
         :param auto_remote_event:   An optional keyword argument which if
-                                    defined, bind event automatically to remote
+                                    defined, bind events automatically to remote
                                     execution. **Default:** ``{}`` (no events)
         :type auto_remote_event:    dict
 
@@ -88,7 +88,7 @@ class Node(BaseComponent):
         :type channel:  str
 
         :param reconnect_delay: An optional keyword argument which if defined,
-                                set channel used for client event.
+                                set auto reconnect delay.
                                 **Default:** ``10`` (seconde)
         :type reconnect_delay:  int
 
@@ -100,7 +100,7 @@ class Node(BaseComponent):
         :type receive_event_firewall:   method
 
         :param send_event_firewall:  An optional keyword argument which if
-                                    defined, function or method to call for
+                                    defined, setfunction or method to call to
                                     check if event is allowed for executing
                                     **Default:** ``None`` (no firewall)
         :type send_event_firewall:   function
@@ -154,15 +154,15 @@ class Node(BaseComponent):
         return client_channel
 
     def get_connection_names(self):
-        """Get connections name
+        """Get connections names
 
-        :return: The list of connections name
+        :return: The list of connections names
         :rtype: list of str
         """
         return list(self.__peers)
 
     def get_peer(self, connection_name):
-        """Get connections name
+        """Get a client object by name
 
         :param connection_name:    Connection name.
         :type connection_name:     str
@@ -177,7 +177,7 @@ class Node(BaseComponent):
     def __on_remote(self, event, remote_event, connection_name, channel=None):
         """Send event to peer
 
-        Event handler for run an event on peer (the event definition is
+        Event handler to run an event on peer (the event definition is
         :class:`circuits.node.events.remote`)
 
         :param event:    The event triggered (by the handler)

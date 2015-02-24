@@ -5,7 +5,7 @@
 
 """Node
 
-Distributed and Inter-Processing support for circuits
+Distributed processing support for circuits.
 """
 
 from .node import Node
