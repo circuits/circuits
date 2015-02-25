@@ -133,11 +133,12 @@ class Node(BaseComponent):
         self.addHandler(connected)
 
         # disconnected event binding
-        @handler('disconnected', channel=client_channel)
-        def disconnected(self):
-            self.fire(disconnect_to(
-                connection_name, hostname, port, client_channel, client
-            ))
+        @handler('disconnected', 'unreachable', channel=client_channel)
+        def disconnected(self, event, *args, **kwargs):
+            if event.name == 'disconnected':
+                self.fire(disconnect_to(
+                    connection_name, hostname, port, client_channel, client
+                ))
 
             # auto reconnect
             if reconnect_delay > 0:

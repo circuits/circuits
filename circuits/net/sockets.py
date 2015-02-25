@@ -23,6 +23,7 @@ from socket import getfqdn, gethostbyname, socket, getaddrinfo, gethostname
 
 from socket import AF_INET, AF_INET6, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
 from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
+from time import time
 
 try:
     from ssl import wrap_socket as ssl_socket
@@ -41,7 +42,8 @@ from circuits.core.utils import findcmp
 from circuits.core import handler, BaseComponent
 from circuits.core.pollers import BasePoller, Poller
 
-from .events import close, closed, connect, connected, disconnect, disconnected, error, read, ready, write
+from .events import close, closed, connect, connected, disconnect, \
+    disconnected, error, read, ready, write, unreachable
 
 
 BUFSIZE = 4096  # 4KB Buffer
@@ -52,8 +54,8 @@ class Client(BaseComponent):
 
     channel = "client"
 
-    def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel):
-        super(Client, self).__init__(channel=channel)
+    def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel, **kwargs):
+        super(Client, self).__init__(channel=channel, **kwargs)
 
         if isinstance(bind, SocketType):
             self._bind = bind.getsockname()
@@ -222,6 +224,9 @@ class TCPClient(Client):
 
     socket_family = AF_INET
 
+    def init(self, connect_timeout=5, *args, **kwargs):
+        self.connect_timeout = connect_timeout
+
     def _create_socket(self):
         sock = socket(self.socket_family, SOCK_STREAM, IPPROTO_TCP)
         if self._bind is not None:
@@ -251,23 +256,31 @@ class TCPClient(Client):
             else:
                 r = e.args[0]
 
-            if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
-                self._connected = True
-            else:
-                self.fire(error(e))
+            if r not in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
+                self.fire(unreachable(host, port, e))
                 self._close()
-                return
+                raise StopIteration
 
-        self._connected = True
+        stop_time = time() + self.connect_timeout
+        while time() < stop_time:
+            try:
+                self._sock.getpeername()
+                self._connected = True
+                break
+            except Exception as e:
+                yield
+
+        if not self._connected:
+            self.fire(unreachable(host, port))
+            raise StopIteration
 
         self._poller.addReader(self, self._sock)
-
         if self.secure:
-            self._ssock = ssl_socket(
+            self._sock = ssl_socket(
                 self._sock, self.keyfile, self.certfile,
                 do_handshake_on_connect=False
             )
-            _do_handshake_for_non_blocking(self._ssock)
+            _do_handshake_for_non_blocking(self._sock)
 
         self.fire(connected(host, port))
 

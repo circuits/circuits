@@ -7,13 +7,14 @@ from socket import error as SocketError
 from socket import EAI_NODATA, EAI_NONAME
 from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
 
-from circuits import Manager
+from circuits import Manager, Debugger
 from circuits.net.events import close, connect, write
 from circuits.core.pollers import Select, Poll, EPoll, KQueue
 from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
 
 from .client import Client
 from .server import Server
+from tests.conftest import WaitEvent
 
 
 def wait_host(server):
@@ -144,22 +145,18 @@ def test_tcp_reconnect(Poller, ipv6):
 
 
 def test_tcp_connect_closed_port(Poller, ipv6):
-    ### FIXME: This test is wrong.
-    ### We need to figure out the sequence of events on Windows
-    ### for this scenario. I think if you attempt to connect to
-    ### a shutdown listening socket (tcp server) you should get
-    ### an error event as response.
 
     if pytest.PLATFORM == "win32":
         pytest.skip("Broken on Windows")
 
-    m = Manager() + Poller()
+    m = Manager() + Poller() + Debugger()
+
     if ipv6:
         tcp_server = TCP6Server(("::1", 0))
-        tcp_client = TCP6Client()
+        tcp_client = TCP6Client(connect_timeout=1)
     else:
         tcp_server = TCPServer(0)
-        tcp_client = TCPClient()
+        tcp_client = TCPClient(connect_timeout=1)
     server = Server() + tcp_server
     client = Client() + tcp_client
 
@@ -178,16 +175,11 @@ def test_tcp_connect_closed_port(Poller, ipv6):
 
         # 1st connect
         client.fire(connect(host, port))
-        assert pytest.wait_for(client, "connected")
-        assert isinstance(client.error, SocketError)
-
-        client.fire(write(b"foo"))
-        assert pytest.wait_for(client, "disconnected")
-
-        client.disconnected = False
-        client.fire(write(b"foo"))
-        assert pytest.wait_for(client, "disconnected", timeout=1.0) is None
+        waiter = WaitEvent(m, "unreachable", channel='client')
+        assert waiter.wait()
     finally:
+        server.unregister()
+        client.unregister()
         m.stop()
 
 

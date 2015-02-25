@@ -124,6 +124,23 @@ class error(Event):
         super(error, self).__init__(*args)
 
 
+class unreachable(Event):
+    """unreachable Event
+
+    This Event is sent when a server is unreachable for a client
+
+    :param host: Server hostname or IP
+    :type str: str
+
+    :param port: Server port
+    :type int: int
+    """
+    def __init__(self, host, port, reason=None):
+        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+
+        super(unreachable, self).__init__(host, port, reason)
+
+
 class broadcast(Event):
     """broadcast Event
 
