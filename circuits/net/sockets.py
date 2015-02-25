@@ -258,6 +258,7 @@ class TCPClient(Client):
 
             if r not in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
                 self.fire(unreachable(host, port, e))
+                self.fire(error(e))
                 self._close()
                 raise StopIteration
 
