@@ -10,7 +10,7 @@ this module manage node (start server, add peer, ...)
 """
 
 from .client import Client
-from .events import connect_to, disconnect_to, remote
+from .events import connected_to, disconnected_from, remote
 from .server import Server
 
 from circuits import BaseComponent, handler, Timer
@@ -127,7 +127,7 @@ class Node(BaseComponent):
         # connected event binding
         @handler('connected', channel=client_channel)
         def connected(self, hostname, port):
-            self.fire(connect_to(
+            self.fire(connected_to(
                 connection_name, hostname, port, client_channel, client
             ))
         self.addHandler(connected)
@@ -136,7 +136,7 @@ class Node(BaseComponent):
         @handler('disconnected', 'unreachable', channel=client_channel)
         def disconnected(self, event, *args, **kwargs):
             if event.name == 'disconnected':
-                self.fire(disconnect_to(
+                self.fire(disconnected_from(
                     connection_name, hostname, port, client_channel, client
                 ))
 

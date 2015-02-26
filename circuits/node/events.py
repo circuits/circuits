@@ -8,7 +8,7 @@
 from circuits import Event
 
 
-class connect_to(Event):
+class connected_to(Event):
     """Connected to a peer"""
     def __init__(self, connection_name, hostname, port, client_channel,
                  client_obj):
@@ -28,12 +28,12 @@ class connect_to(Event):
         :param client_obj:    Client object.
         :type client_obj:     :class:`circuits.net.sockets.Client`
         """
-        super(connect_to, self).__init__(
+        super(connected_to, self).__init__(
             connection_name, hostname, port, client_channel, client_obj
         )
 
 
-class disconnect_to(connect_to):
+class disconnected_from(connected_to):
     """Disconnected from a peer"""
 
 
