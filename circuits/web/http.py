@@ -442,8 +442,10 @@ class HTTP(BaseComponent):
             req = res.request
         elif isinstance(fevent.value.parent.event, request):
             req, res = fevent.value.parent.event.args[:2]
-        else:
+        elif len(fevent.args[2:]) == 4:
             req, res = fevent.args[2:]
+        else:
+            return
 
         if isinstance(evalue, HTTPException):
             code = evalue.code
