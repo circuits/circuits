@@ -1,4 +1,4 @@
-.. note:: We've moved to Github at: https://github.com/circuits/circuits
+**NOTE**: We've moved to Github at: https://github.com/circuits/circuits
 
 circuits is a **Lightweight** **Event** driven and **Asynchronous** **Application Framework** for the [Python Programming Language](http://www.python.org/) with a strong **Component** Architecture.
 
