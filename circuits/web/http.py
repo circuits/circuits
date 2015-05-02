@@ -22,11 +22,11 @@ except ImportError:
 
 from circuits.six import text_type
 from circuits.net.events import close, write
+from circuits.net.utils import is_ssl_handshake
 from circuits.core import handler, BaseComponent, Value
 
 from . import wrappers
 from .url import parse_url
-from .utils import is_ssl_handshake
 from .exceptions import HTTPException
 from .events import request, response, stream
 from .parsers import HttpParser, BAD_FIRST_LINE
