@@ -13,23 +13,19 @@ import datetime
 from io import IOBase
 from email._parseaddr import _monthnames
 
-from circuits.six import string_types
+from circuits.six import string_types, text_type
 from circuits.core import handler, BaseComponent
 
 
 def formattime():
-    now = datetime.datetime.now()
-    month = _monthnames[now.month - 1].capitalize()
-    return ("[%02d/%s/%04d:%02d:%02d:%02d]" %
-            (now.day, month, now.year, now.hour, now.minute, now.second))
+    return datetime.datetime.now().strftime('[%d/%b/%Y:%H:%M:%S]')
 
 
 class Logger(BaseComponent):
 
     channel = "web"
 
-    format = "%(h)s %(l)s %(u)s %(t)s " \
-             "\"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\""
+    format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 
     def __init__(self, file=None, logger=None, **kwargs):
         super(Logger, self).__init__(**kwargs)
@@ -69,7 +65,7 @@ class Logger(BaseComponent):
                  "a": inheaders.get("User-Agent", ""),
                  }
         for k, v in list(atoms.items()):
-            if isinstance(v, str):
+            if isinstance(v, text_type):
                 v = v.encode("utf8")
             elif not isinstance(v, str):
                 v = str(v)
@@ -77,7 +73,7 @@ class Logger(BaseComponent):
             # and backslash for us. All we have to do is strip the quotes.
             v = repr(v)[1:-1]
             # Escape double-quote.
-            atoms[k] = v.replace("\"", "\\\"")
+            atoms[k] = v.replace('"', '\\"')
 
         if self.logger is not None:
             self.logger.info(self.format % atoms)
