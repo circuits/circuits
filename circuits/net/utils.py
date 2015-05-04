@@ -1,5 +1,8 @@
 """Utilities"""
 
+from circuits.six import iterbytes
+
+
 def is_ssl_handshake(buf):
     """Detect an SSLv2 or SSLv3 handshake"""
 
