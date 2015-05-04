@@ -21,6 +21,7 @@ def test_events():
     event = test(1, 2, 3, foo='bar')
     event.success = True
     event.failure = False
+    event.test_meta = 1
 
     id = 1
     s = dump_event(event, id)
@@ -32,6 +33,7 @@ def test_events():
     assert hasattr(event, 'failure')
     assert hasattr(event, 'channels')
     assert hasattr(event, 'notify')
+    assert hasattr(event, 'test_meta')
 
 
 def test_values():

@@ -14,6 +14,10 @@ from circuits.core import Event
 from circuits.six import bytes_to_str, text_type
 
 
+META_EXCLUDE = set(dir(Event()))
+META_EXCLUDE.add("node_without_result")
+
+
 def load_event(s):
     data = json.loads(s)
 
@@ -38,10 +42,17 @@ def load_event(s):
     e.notify = bool(data["notify"])
     e.channels = tuple(data["channels"])
 
+    for k, v in dict(data["meta"]).items():
+        setattr(e, k, v)
+
     return e, data["id"]
 
 
 def dump_event(e, id):
+    meta = {}
+    for name in list(set(dir(e)) - META_EXCLUDE):
+        meta[name] = getattr(e, name)
+
     data = {
         "id": id,
         "name": e.name,
@@ -50,7 +61,8 @@ def dump_event(e, id):
         "success": e.success,
         "failure": e.failure,
         "channels": e.channels,
-        "notify": e.notify
+        "notify": e.notify,
+        "meta": meta
     }
 
     return json.dumps(data)
