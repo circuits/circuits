@@ -76,7 +76,7 @@ def parsemsg(s, encoding="utf-8"):
     :returns tuple: parsed message in the form of (prefix, command, args)
     """
 
-    s = s.decode(encoding)
+    s = s.decode(encoding, 'replace')
 
     prefix = ""
     trailing = []
