@@ -112,9 +112,11 @@ class Node(BaseComponent):
         # automatic send event to peer
         auto_remote_event = kwargs.pop('auto_remote_event', {})
         for event_name in auto_remote_event:
-            @handler(event_name, channel=auto_remote_event[event_name])
-            def event_handle(self, event, *args, **kwargs):
-                yield(yield self.call(remote(event, connection_name)))
+            for channel in auto_remote_event[event_name]:
+                @handler(event_name, channel=channel)
+                def event_handle(self, event, *args, **kwargs):
+                    event.node_without_result = True
+                    self.fire(remote(event, connection_name))
             self.addHandler(event_handle)
 
         client_channel = kwargs.pop(
