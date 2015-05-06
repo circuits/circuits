@@ -37,13 +37,17 @@ def test_events():
 
 
 def test_values():
-    value = Value()
+    event = Event()
+    event.test_meta = 1
+
+    value = Value(event=event)
     value.value = 'foo'
     value.errors = False
     value.node_call_id = 1
 
-    x, id, errors = load_value(dump_value(value))
+    x, id, errors, meta = load_value(dump_value(value))
 
     assert value.value == x
     assert id == 1
     assert not errors
+    assert meta['test_meta'] == event.test_meta

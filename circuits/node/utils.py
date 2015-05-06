@@ -15,7 +15,10 @@ from circuits.six import bytes_to_str, text_type
 
 
 META_EXCLUDE = set(dir(Event()))
+META_EXCLUDE.add("node_call_id")
+META_EXCLUDE.add("node_sock")
 META_EXCLUDE.add("node_without_result")
+META_EXCLUDE.add("success_channels")
 
 
 def load_event(s):
@@ -69,14 +72,21 @@ def dump_event(e, id):
 
 
 def dump_value(v):
+    meta = {}
+    e = v.event
+    if e:
+        for name in list(set(dir(e)) - META_EXCLUDE):
+            meta[name] = getattr(e, name)
+
     data = {
         "id": v.node_call_id,
         "errors": v.errors,
         "value": v._value,
+        "meta": meta
     }
     return json.dumps(data)
 
 
 def load_value(v):
     data = json.loads(v)
-    return data['value'], data['id'], data['errors']
+    return data['value'], data['id'], data['errors'], data['meta']
