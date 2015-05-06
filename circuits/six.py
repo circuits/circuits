@@ -171,7 +171,7 @@ for attr in _moved_attributes:
     setattr(_MovedItems, attr.name, attr)
 del attr
 
-moves = sys.modules["six.moves"] = _MovedItems("moves")
+moves = sys.modules["circuits.six.moves"] = _MovedItems("moves")
 
 
 def add_move(move):
