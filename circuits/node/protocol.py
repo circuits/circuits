@@ -113,7 +113,7 @@ class Protocol(Component):
             self.fire(event, *event.channels)
 
     def __process_packet_value(self, packet):
-        value, id, error = load_value(packet)
+        value, id, error, meta = load_value(packet)
 
         if id in self.__events:
             # convert byte to str
@@ -124,3 +124,6 @@ class Protocol(Component):
             self.__events[id].value = value
             self.__events[id].errors = error
             self.__events[id].remote_finish = True
+
+            for k, v in dict(meta).items():
+                setattr(self.__events[id], k, v)
