@@ -202,7 +202,7 @@ def test_send(app_client, watcher):
     value.node_call_id = 0
     app_client.protocol.add_buffer(str.encode(dump_value(value) + '~~~'))
 
-    assert next(generator) == value.value
+    assert next(generator).getValue() == value.value
 
 
 def test_send_server(app_server, watcher):
@@ -220,4 +220,4 @@ def test_send_server(app_server, watcher):
     value.node_call_id = 0
     app_server.protocol.add_buffer(str.encode(dump_value(value) + '~~~'))
 
-    assert next(generator) == value.value
+    assert next(generator).getValue() == value.value

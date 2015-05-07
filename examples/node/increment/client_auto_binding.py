@@ -2,7 +2,7 @@
 
 from optparse import OptionParser
 
-from circuits.node import Node, remote, protocol
+from circuits.node import Node
 from circuits import Component, Debugger, Event
 
 
@@ -50,14 +50,18 @@ class NodeClient(Component):
         else:
             address, port = opts.bind, 8000
 
+        auto_remote_event = {
+            'increment': '*'
+        }
+
         node = Node().register(self)
-        node.add('peer_name', address, port)
+        node.add('peer_name', address, port, auto_remote_event=auto_remote_event)
 
     def connected_to(self, *args, **kwargs):
         i = 0
         while True:
             print(i)
-            i = (yield self.call(remote(increment(i), 'peer_name'))).value
+            i = (yield self.call(increment(i))).value
 
 
 def main():

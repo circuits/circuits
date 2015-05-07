@@ -115,8 +115,7 @@ class Node(BaseComponent):
             for channel in auto_remote_event[event_name]:
                 @handler(event_name, channel=channel)
                 def event_handle(self, event, *args, **kwargs):
-                    event.node_without_result = True
-                    self.fire(remote(event, connection_name))
+                    yield self.call(remote(event, connection_name))
             self.addHandler(event_handle)
 
         client_channel = kwargs.pop(
