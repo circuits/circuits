@@ -53,7 +53,7 @@ class NodeClient(Component):
         node = Node().register(self)
         node.add('peer_name', address, port)
 
-    def ready(self, client):
+    def connected_to(self, *args, **kwargs):
         i = 0
         while True:
             print(i)
