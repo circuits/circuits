@@ -120,8 +120,12 @@ class Protocol(Component):
             value = value.decode('utf-8') if isinstance(value, bytes) else value
             error = error.decode('utf-8') if isinstance(error, bytes) else error
 
+            if not hasattr(self.__events[id], 'value') \
+                    or not self.__events[id].value:
+                self.__events[id].value = Value(self.__events[id], self)
+
             # save result
-            self.__events[id].value = value
+            self.__events[id].value.setValue(value)
             self.__events[id].errors = error
             self.__events[id].remote_finish = True
 
