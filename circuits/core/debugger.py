@@ -11,7 +11,7 @@ each event to sys.stderr or to a Logger Component instance.
 
 import os
 import sys
-from traceback import format_exc
+from traceback import format_exc, format_exception_only
 from signal import SIGINT, SIGTERM
 
 
@@ -82,7 +82,9 @@ class Debugger(BaseComponent):
         )
 
         s.append(msg)
+        s.append('Traceback (most recent call last):\n')
         s.extend(traceback)
+        s.extend(format_exception_only(error_type, value))
         s.append("\n")
 
         if self.logger is not None:
