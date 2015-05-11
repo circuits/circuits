@@ -56,10 +56,12 @@ class BaseServer(BaseComponent):
     channel = "web"
 
     def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
-                 channel=channel):
+                 channel=channel, expose_circuits=True):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(BaseServer, self).__init__(channel=channel)
+
+        self.__expose_circuits = expose_circuits
 
         if isinstance(bind, (int, list, tuple,)):
             SocketType = TCPServer
@@ -86,6 +88,10 @@ class BaseServer(BaseComponent):
     def port(self):
         if hasattr(self, "server"):
             return self.server.port
+
+    @property
+    def expose_circuits(self):
+        return self.__expose_circuits
 
     @property
     def secure(self):

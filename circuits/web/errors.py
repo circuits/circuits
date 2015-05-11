@@ -7,7 +7,11 @@
 This module implements a set of standard HTTP Errors.
 """
 
-from cgi import escape
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape  # Deprecated since version 3.2
+
 
 try:
     from urllib.parse import urljoin as _urljoin
@@ -17,7 +21,7 @@ except ImportError:
 from circuits import Event
 
 from ..six import string_types
-from .constants import SERVER_URL, SERVER_VERSION
+from .constants import SERVER_URL, SERVER_VERSION, POWERED_BY
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 
@@ -62,13 +66,17 @@ class httperror(Event):
 
         self.response.headers["Content-Type"] = self.contenttype
 
+        powered_by = POWERED_BY % ({
+            "url": SERVER_URL,
+            "version": SERVER_VERSION
+        }) if getattr(request.server, 'expose_circuits', False) else ''
+
         self.data = {
             "code": self.code,
             "name": HTTP_STATUS_CODES.get(self.code, "???"),
             "description": self.description,
             "traceback": escape(self.traceback),
-            "url": SERVER_URL,
-            "version": SERVER_VERSION
+            "powered_by": powered_by
         }
 
     def sanitize(self):
