@@ -86,6 +86,10 @@ class httperror(Event):
 
     def __str__(self):
         self.sanitize()
+
+        if not self.request.print_debug:
+            self.data['traceback'] = ''
+
         return DEFAULT_ERROR_MESSAGE % self.data
 
     def __repr__(self):

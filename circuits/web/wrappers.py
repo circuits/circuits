@@ -169,6 +169,7 @@ class Request(object):
         self.path = path
         self.protocol = protocol
         self.qs = qs
+        self.print_debug = getattr(server, "display_banner", False)
 
         self.headers = headers or Headers()
         self.server = server
