@@ -4,6 +4,7 @@ import pytest
 
 from os import path
 from socket import gaierror
+import ssl
 
 from circuits.web import Controller
 from circuits import handler, Component
@@ -12,6 +13,7 @@ from circuits.web import BaseServer, Server
 from .helpers import urlopen, URLError
 
 CERTFILE = path.join(path.dirname(__file__), "cert.pem")
+SSL_CONTEXT = ssl._create_unverified_context()  # self signed cert
 
 
 class BaseRoot(Component):
@@ -90,7 +92,7 @@ def test_secure_server(manager, watcher):
     Root().register(server)
 
     try:
-        f = urlopen(server.http.base)
+        f = urlopen(server.http.base, context=SSL_CONTEXT)
     except URLError as e:
         if isinstance(e.reason, gaierror):
             f = urlopen("http://127.0.0.1:9000")
@@ -142,7 +144,7 @@ def test_multi_servers(manager, watcher):
     s = f.read()
     assert s == b"Hello World!"
 
-    f = urlopen(secure_server.http.base)
+    f = urlopen(secure_server.http.base, context=SSL_CONTEXT)
     s = f.read()
     assert s == b"Hello World!"
 
