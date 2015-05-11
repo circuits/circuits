@@ -36,11 +36,15 @@ DEFAULT_ERROR_MESSAGE = """\
   <h1>%(name)s</h1>
   %(description)s
   <pre id="traceback">%(traceback)s</pre>
-  <div id="powered_by">
-   <span>Powered by <a href="%(url)s">%(version)s</a></span>
-  </div>
+  %(powered_by)s
  </body>
 </html>
+"""
+
+POWERED_BY = """
+<div id="powered_by">
+    <span>Powered by <a href="%(url)s">%(version)s</a></span>
+</div>
 """
 
 HTTP_STATUS_CODES = {
