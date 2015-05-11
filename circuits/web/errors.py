@@ -7,7 +7,11 @@
 This module implements a set of standard HTTP Errors.
 """
 
-from cgi import escape
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape  # Deprecated since version 3.2
+
 
 try:
     from urllib.parse import urljoin as _urljoin
