@@ -1,5 +1,3 @@
-**NOTE**: We've moved to Github at: https://github.com/circuits/circuits
-
 circuits is a **Lightweight** **Event** driven and **Asynchronous** **Application Framework** for the [Python Programming Language](http://www.python.org/) with a strong **Component** Architecture.
 
 circuits also includes a lightweight, high performance and scalable HTTP/WSGI compliant web server as well as various I/O and Networking components.
@@ -24,6 +22,8 @@ circuits also includes a lightweight, high performance and scalable HTTP/WSGI co
 [![License](https://pypip.in/license/circuits/badge.svg)](https://pypi.python.org/pypi/circuits)
 
 [![Requirements Status](https://requires.io/bitbucket/circuits/circuits/requirements.png?branch=default)](https://requires.io/bitbucket/circuits/circuits/requirements?branch=default)
+
+[![Build Status](https://travis-ci.org/circuits/circuits.svg?branch=master)](https://travis-ci.org/circuits/circuits)
 
 Examples
 ========

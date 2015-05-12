@@ -57,6 +57,10 @@ components.
    :target: https://requires.io/bitbucket/circuits/circuits/requirements?branch=default
    :alt: Requirements Status
 
+.. image:: https://travis-ci.org/circuits/circuits.svg?branch=master
+   :target: https://travis-ci.org/circuits/circuits
+   :alt: Build Status
+
 
 Examples
 --------
