@@ -13,7 +13,10 @@ from circuits.web import BaseServer, Server
 from .helpers import urlopen, URLError
 
 CERTFILE = path.join(path.dirname(__file__), "cert.pem")
-SSL_CONTEXT = ssl._create_unverified_context()  # self signed cert
+
+# self signed cert
+SSL_CONTEXT = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 
 class BaseRoot(Component):
@@ -51,7 +54,7 @@ def test_baseserver(manager, watcher):
         if isinstance(e.reason, gaierror):
             f = urlopen("http://127.0.0.1:9000")
         else:
-            raise e
+            raise
 
     s = f.read()
     assert s == b"Hello World!"
@@ -73,7 +76,7 @@ def test_server(manager, watcher):
         if isinstance(e.reason, gaierror):
             f = urlopen("http://127.0.0.1:9000")
         else:
-            raise e
+            raise
 
     s = f.read()
     assert s == b"Hello World!"
@@ -97,7 +100,7 @@ def test_secure_server(manager, watcher):
         if isinstance(e.reason, gaierror):
             f = urlopen("http://127.0.0.1:9000")
         else:
-            raise e
+            raise
 
     s = f.read()
     assert s == b"Hello World!"
