@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 
 from circuits.web import Controller
 from circuits.web.exceptions import Forbidden, NotFound, Redirect
@@ -21,7 +22,15 @@ class Root(Controller):
         raise NotFound()
 
     def test_contenttype(self):
+        raise Exception()
+
+    def test_contenttype_json(self):
         self.response.headers["Content-Type"] = "application/json"
+        raise Exception()
+
+    def test_contenttype_json_no_debug(self):
+        self.response.headers["Content-Type"] = "application/json"
+        self.request.print_debug = False
         raise Exception()
 
 
@@ -57,6 +66,32 @@ def test_contenttype(webapp):
     except HTTPError as e:
         assert e.code == 500
         assert e.msg == "Internal Server Error"
-        assert e.headers.get("Content-Type") == "text/html"
+        assert "text/html" in e.headers.get("Content-Type")
+    else:
+        assert False
+
+def test_contenttype_json(webapp):
+    try:
+        f = urlopen("%s/test_contenttype_json" % webapp.server.http.base)
+    except HTTPError as e:
+        assert "json" in e.headers.get("Content-Type")
+        result = json.loads(e.read().decode("utf-8"))
+        assert result["code"] == 500
+        assert result["name"] == "Internal Server Error"
+        assert result["description"] == ""
+        assert "raise Exception" in result["traceback"]
+    else:
+        assert False
+
+def test_contenttype_json_no_debug(webapp):
+    try:
+        f = urlopen("%s/test_contenttype_json_no_debug" % webapp.server.http.base)
+    except HTTPError as e:
+        assert "json" in e.headers.get("Content-Type")
+        result = json.loads(e.read().decode("utf-8"))
+        assert result["code"] == 500
+        assert result["name"] == "Internal Server Error"
+        assert result["description"] == ""
+        assert "traceback" not in result
     else:
         assert False

@@ -143,14 +143,12 @@ def exposeJSON(*channels, **config):
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
+                self.response.headers["Content-Type"] = "application/json"
                 result = f(self, *args, **kwargs)
                 if (isinstance(result, httperror)
                         or isinstance(result, Response)):
                     return result
                 else:
-                    self.response.headers["Content-Type"] = (
-                        "application/json"
-                    )
                     return json.dumps(result)
             finally:
                 if hasattr(self, "request"):
