@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import pytest
+if pytest.PYVER < (2, 7):
+    pytest.skip("This test requires Python=>2.7")
 
 from os import path
 from socket import gaierror
