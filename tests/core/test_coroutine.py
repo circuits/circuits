@@ -1,6 +1,10 @@
-#!/usr/bin/python -i
+#!/usr/bin/env python
+
+from __future__ import print_function
+
 
 import pytest
+
 
 from circuits import Event, Component
 
@@ -26,15 +30,15 @@ class App(Component):
         return "Hello World!"
 
     def coroutine1(self):
-        print('coroutine1')
+        print("coroutine1")
         yield self.call(test())
-        print 'returned'
+        print("returned")
         self.returned = True
 
     def coroutine2(self):
-        print('coroutine2')
+        print("coroutine2")
         yield self.wait(self.fire(test()))
-        print 'returned'
+        print("returned")
         self.returned = True
 
 
@@ -53,9 +57,9 @@ def app(request, manager, watcher):
 
 def test_coroutine(manager, watcher, app):
     manager.fire(coroutine1())
-    assert watcher.wait('coroutine1')
-    assert app.returned, 'coroutine1'
+    assert watcher.wait("coroutine1")
+    assert app.returned, "coroutine1"
     app.returned = False
     manager.fire(coroutine2())
-    assert watcher.wait('coroutine2')
-    assert app.returned, 'coroutine2'
+    assert watcher.wait("coroutine2")
+    assert app.returned, "coroutine2"
