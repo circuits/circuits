@@ -45,19 +45,23 @@ TIMEOUT = 0.1  # 100ms timeout when idle
 
 
 class UnregistrableError(Exception):
+
     """Raised if a component cannot be registered as child."""
 
 
 class TimeoutError(Exception):
+
     """Raised if wait event timeout occurred"""
 
 
 class CallValue(object):
+
     def __init__(self, value):
         self.value = value
 
 
 class ExceptionWrapper(object):
+
     def __init__(self, exception):
         self.exception = exception
 
@@ -75,6 +79,7 @@ del Dummy
 
 
 class Manager(object):
+
     """
     The manager class has two roles. As a base class for component
     implementation, it provides methods for event and handler management.
@@ -350,8 +355,8 @@ class Manager(object):
 
     def _fire(self, event, channel, priority=0):
         # check if event is fired while handling an event
-        if thread.get_ident() == (self._executing_thread or \
-                self._flushing_thread) and not isinstance(event, signal):
+        if thread.get_ident() == (self._executing_thread or
+                                  self._flushing_thread) and not isinstance(event, signal):
             if self._currently_handling is not None and \
                     getattr(self._currently_handling, "cause", None):
                 # if the currently handled event wants to track the
@@ -439,7 +444,10 @@ class Manager(object):
         if g in self.root._tasks:
             self.root._tasks.remove(g)
 
-    def waitEvent(self, event, *channels, **kwargs):
+    def waitEvent(self, event, *channels, **kwargs):  # noqa
+        # XXX: C901: This has a high McCabe complexity score of 16.
+        # TODO: Refactor this method.
+
         if isinstance(event, Event):
             event_object = event
             event_name = event.name
@@ -457,7 +465,7 @@ class Manager(object):
         def _on_event(self, event, *args, **kwargs):
             if not state['run'] and (
                     event_object is None or event is event_object
-                    ):
+            ):
                 self.removeHandler(_on_event_handler, event_name)
                 event.alert_done = True
                 state['run'] = True
@@ -554,7 +562,10 @@ class Manager(object):
 
     flush = flushEvents
 
-    def _dispatcher(self, event, channels, remaining):
+    def _dispatcher(self, event, channels, remaining):  # noqa
+        # XXX: C901: This has a high McCabe complexity score of 22.
+        # TODO: Refactor this method.
+
         if event.cancelled:
             return
 
@@ -571,11 +582,11 @@ class Manager(object):
             self._cache.clear()
             self._cache_needs_refresh = False
         try:  # try/except is fastest if successful in most cases
-            handlers = self._cache[(event.name, channels)]
+            event_handlers = self._cache[(event.name, channels)]
         except KeyError:
             h = (self.getHandlers(event, channel) for channel in channels)
 
-            handlers = sorted(
+            event_handlers = sorted(
                 chain(*h),
                 key=attrgetter("priority"),
                 reverse=True
@@ -583,15 +594,15 @@ class Manager(object):
 
             if isinstance(event, generate_events):
                 from .helpers import FallBackGenerator
-                handlers.append(FallBackGenerator()._on_generate_events)
-            elif isinstance(event, exception) and len(handlers) == 0:
+                event_handlers.append(FallBackGenerator()._on_generate_events)
+            elif isinstance(event, exception) and len(event_handlers) == 0:
                 from .helpers import FallBackExceptionHandler
-                handlers.append(FallBackExceptionHandler()._on_exception)
-            elif isinstance(event, signal) and len(handlers) == 0:
+                event_handlers.append(FallBackExceptionHandler()._on_exception)
+            elif isinstance(event, signal) and len(event_handlers) == 0:
                 from .helpers import FallBackSignalHandler
-                handlers.append(FallBackSignalHandler()._on_signal)
+                event_handlers.append(FallBackSignalHandler()._on_signal)
 
-            self._cache[(event.name, channels)] = handlers
+            self._cache[(event.name, channels)] = event_handlers
 
         if isinstance(event, generate_events):
             with self._lock:
@@ -601,7 +612,7 @@ class Manager(object):
                 elif self._tasks:
                     event.reduce_time_left(TIMEOUT)
                 # From now on, firing an event will reduce time left
-                # to 0, which prevents handlers from waiting (or wakes
+                # to 0, which prevents event handlers from waiting (or wakes
                 # them up with resume if they should be waiting already)
         else:
             self._currently_handling = event
@@ -609,13 +620,13 @@ class Manager(object):
         value = None
         err = None
 
-        for handler in handlers:
-            event.handler = handler
+        for event_handler in event_handlers:
+            event.handler = event_handler
             try:
-                if handler.event:
-                    value = handler(event, *eargs, **ekwargs)
+                if event_handler.event:
+                    value = event_handler(event, *eargs, **ekwargs)
                 else:
-                    value = handler(*eargs, **ekwargs)
+                    value = event_handler(*eargs, **ekwargs)
             except (KeyboardInterrupt, SystemExit):
                 self.stop()
             except:
@@ -636,7 +647,7 @@ class Manager(object):
                 self.fire(
                     exception(
                         etype, evalue, traceback,
-                        handler=handler, fevent=event
+                        handler=event_handler, fevent=event
                     )
                 )
 
@@ -649,7 +660,7 @@ class Manager(object):
                     event.value.value = value
 
             # it is kind of a temporal hack to allow processing
-            # of tasks, added in one of handlers here
+            # of tasks, added in one of event handlers here
             if isinstance(event, generate_events) and self._tasks:
                 event.reduce_time_left(TIMEOUT)
 
@@ -752,7 +763,7 @@ class Manager(object):
         if self.__process is not None and self.__process.is_alive():
             self.__process.terminate()
             self.__process.join(TIMEOUT)
-            
+
             if self.__process.is_alive():
                 kill(self.__process.pid, SIGKILL)
 
@@ -767,7 +778,10 @@ class Manager(object):
             for _ in range(3):
                 self.tick()
 
-    def processTask(self, event, task, parent=None):
+    def processTask(self, event, task, parent=None):  # noqa
+        # XXX: C901: This has a high McCabe complexity score of 16.
+        # TODO: Refactor this method.
+
         value = None
         try:
             value = next(task)
