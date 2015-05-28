@@ -627,8 +627,10 @@ class Manager(object):
                     value = event_handler(event, *eargs, **ekwargs)
                 else:
                     value = event_handler(*eargs, **ekwargs)
-            except (KeyboardInterrupt, SystemExit):
+            except KeyboardInterrupt:
                 self.stop()
+            except SystemExit as e:
+                self.stop(e.code)
             except:
                 etype, evalue, etraceback = _exc_info()
                 traceback = format_tb(etraceback)
@@ -754,7 +756,7 @@ class Manager(object):
         if getattr(self, "_process", None) is not None:
             return self.__process.join()
 
-    def stop(self):
+    def stop(self, code=0):
         """
         Stop this manager. Invoking this method causes
         an invocation of ``run()`` to return.
@@ -777,6 +779,8 @@ class Manager(object):
         if self.root._executing_thread is None:
             for _ in range(3):
                 self.tick()
+
+        raise SystemExit(code)
 
     def processTask(self, event, task, parent=None):  # noqa
         # XXX: C901: This has a high McCabe complexity score of 16.
@@ -837,8 +841,10 @@ class Manager(object):
             elif event.waitingHandlers == 0:
                 event.value.inform(True)
                 self._eventDone(event)
-        except (KeyboardInterrupt, SystemExit):
+        except KeyboardInterrupt:
             self.stop()
+        except SystemExit as e:
+            self.stop(e.code)
         except:
             self.unregisterTask((event, task, parent))
 
