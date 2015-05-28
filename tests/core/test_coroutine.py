@@ -16,9 +16,13 @@ class test(Event):
 class coroutine1(Event):
     """coroutine Event"""
 
+    complete = True
+
 
 class coroutine2(Event):
     """coroutine Event"""
+
+    complete = True
 
 
 class App(Component):
@@ -37,7 +41,8 @@ class App(Component):
 
     def coroutine2(self):
         print("coroutine2")
-        yield self.wait(self.fire(test()))
+        self.fire(test())
+        yield self.wait("test")
         print("returned")
         self.returned = True
 
@@ -57,9 +62,10 @@ def app(request, manager, watcher):
 
 def test_coroutine(manager, watcher, app):
     manager.fire(coroutine1())
-    assert watcher.wait("coroutine1")
+    assert watcher.wait("coroutine1_complete")
     assert app.returned, "coroutine1"
+
     app.returned = False
     manager.fire(coroutine2())
-    assert watcher.wait("coroutine2")
+    assert watcher.wait("coroutine2_complete")
     assert app.returned, "coroutine2"
