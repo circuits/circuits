@@ -18,8 +18,9 @@ from .helpers import urlopen, URLError
 CERTFILE = path.join(path.dirname(__file__), "cert.pem")
 
 # self signed cert
-SSL_CONTEXT = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+if pytest.PYVER >= (2, 7, 9):
+    SSL_CONTEXT = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 
 class BaseRoot(Component):
@@ -88,8 +89,10 @@ def test_server(manager, watcher):
     watcher.wait("unregistered")
 
 
-@pytest.mark.xfail( (2,) < sys.version_info < (3, 4, 3),
+@pytest.mark.skipif( (2,) < sys.version_info < (3, 4, 3),
                    reason="Context not implemented under python 3.4.3")
+@pytest.mark.skipif(sys.version_info < (2, 7, 9),
+                   reason="Context not implemented under python 2.7.9")
 def test_secure_server(manager, watcher):
     pytest.importorskip("ssl")
 
@@ -133,6 +136,10 @@ def test_unixserver(manager, watcher, tmpdir):
     watcher.wait("unregistered")
 
 
+@pytest.mark.skipif( (2, 7, 9) < sys.version_info < (3, 4, 3),
+                   reason="Context not implemented under python 3.4.3")
+@pytest.mark.skipif(sys.version_info < (2, 7, 9),
+                   reason="Context not implemented under python 2.7.9")
 def test_multi_servers(manager, watcher):
     pytest.importorskip("ssl")
 
