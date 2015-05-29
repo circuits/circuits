@@ -35,7 +35,7 @@ except ImportError:
 from .values import Value
 from ..tools import tryimport
 from .handlers import handler
-from ..six import create_bound_method, next
+from ..six import create_bound_method, next, Iterator
 from .events import exception, generate_events, signal, started, stopped, Event
 
 
@@ -70,7 +70,7 @@ class ExceptionWrapper(object):
         return self.exception
 
 
-class Sleep(object):
+class Sleep(Iterator):
 
     def __init__(self, seconds):
         self._task = None
@@ -86,7 +86,7 @@ class Sleep(object):
     def __repr__(self):
         return "sleep({0:s})".format(repr(self.expiry - time()))
 
-    def next(self):
+    def __next__(self):
         if time() >= self.expiry:
             raise StopIteration()
         return self
