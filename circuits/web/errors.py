@@ -6,6 +6,7 @@
 
 This module implements a set of standard HTTP Errors.
 """
+import json
 
 try:
     from html import escape
@@ -30,7 +31,6 @@ class httperror(Event):
 
     code = 500
     description = ""
-    contenttype = "text/html"
 
     def __init__(self, request, response, code=None, **kwargs):
         """
@@ -64,8 +64,6 @@ class httperror(Event):
         self.response.close = True
         self.response.status = self.code
 
-        self.response.headers["Content-Type"] = self.contenttype
-
         powered_by = POWERED_BY % ({
             "url": SERVER_URL,
             "version": SERVER_VERSION
@@ -86,6 +84,16 @@ class httperror(Event):
 
     def __str__(self):
         self.sanitize()
+
+        if "json" in self.response.headers.get("Content-Type", ""):
+            index = ["code", "name", "description"]
+            if self.request.print_debug:
+                index.append("traceback")
+            return json.dumps(dict((key, self.data[key]) for key in index))
+
+        if not self.request.print_debug:
+            self.data["traceback"] = ''
+
         return DEFAULT_ERROR_MESSAGE % self.data
 
     def __repr__(self):
