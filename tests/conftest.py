@@ -114,7 +114,10 @@ def manager(request):
     manager = Manager()
 
     def finalizer():
-        manager.stop()
+        try:
+            manager.stop()
+        except SystemExit:
+            pass  # Ignore SystemExit()
 
     request.addfinalizer(finalizer)
 
