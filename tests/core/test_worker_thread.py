@@ -9,7 +9,7 @@ import pytest
 from circuits import task, Worker
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def worker(request):
     worker = Worker()
 

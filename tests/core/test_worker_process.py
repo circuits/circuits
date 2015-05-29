@@ -11,7 +11,7 @@ from os import getpid
 from circuits import task, Worker
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def worker(request, manager):
     worker = Worker().register(manager)
 

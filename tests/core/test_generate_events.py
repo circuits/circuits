@@ -36,7 +36,7 @@ class App(Component):
         self._ready = True
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def app(request, manager, watcher):
     app = App().register(manager)
 

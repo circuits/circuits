@@ -45,7 +45,7 @@ class WebClient(Client):
         self.closed = True
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def webapp(request):
     webapp = WebApp()
 
