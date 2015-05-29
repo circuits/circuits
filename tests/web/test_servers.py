@@ -7,6 +7,7 @@ if pytest.PYVER < (2, 7):
 from os import path
 from socket import gaierror
 import ssl
+import sys
 
 from circuits.web import Controller
 from circuits import handler, Component
@@ -87,6 +88,8 @@ def test_server(manager, watcher):
     watcher.wait("unregistered")
 
 
+@pytest.mark.xfail( (2,) < sys.version_info < (3, 4, 3),
+                   reason="Context not implemented under python 3.4.3")
 def test_secure_server(manager, watcher):
     pytest.importorskip("ssl")
 
