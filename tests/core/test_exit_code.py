@@ -3,7 +3,7 @@
 
 import sys
 from subprocess import Popen, PIPE
-
+from circuits.six import b
 
 from . import exitcodeapp
 
@@ -23,4 +23,4 @@ def test_string(tmpdir):
     status = p.wait()
 
     assert status == 1
-    assert p.stderr.read() == "foobar\n"
+    assert p.stderr.read() == b("foobar\n")
