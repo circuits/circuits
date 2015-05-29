@@ -32,7 +32,7 @@ class App(Component):
         yield (yield self.call(e1))
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def app(request, manager, watcher):
     seed(time())
 

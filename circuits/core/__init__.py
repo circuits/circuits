@@ -11,9 +11,9 @@ This package contains the essential core parts of the circuits framework.
 from .events import Event
 from .bridge import Bridge
 from .loader import Loader
-from .manager import Manager, TimeoutError
 from .handlers import handler, reprhandler
 from .components import BaseComponent, Component
+from .manager import sleep, Manager, TimeoutError
 
 from .values import Value
 

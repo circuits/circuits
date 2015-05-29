@@ -67,7 +67,7 @@ class httperror(Event):
         powered_by = POWERED_BY % ({
             "url": SERVER_URL,
             "version": SERVER_VERSION
-        }) if getattr(request.server, 'expose_circuits', False) else ''
+        }) if getattr(request.server, 'display_banner', False) else ""
 
         self.data = {
             "code": self.code,

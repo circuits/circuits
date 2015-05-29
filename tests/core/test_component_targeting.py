@@ -20,7 +20,7 @@ class App(Component):
         return "Hello World!"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait("registered")

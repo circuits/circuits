@@ -302,11 +302,11 @@ class Response(object):
         self.headers = Headers()
         self.headers["Date"] = formatdate()
 
-        if self.request.server is not None:
-            if getattr(self.request.server, 'expose_circuits', False):
-                self.headers.add_header("Server", request.server.http.version)
-        else:
-            self.headers.add_header("X-Powered-By", SERVER_VERSION)
+        if getattr(self.request.server, "display_banner", False):
+            if self.request.server is not None:
+                    self.headers.add_header("Server", request.server.http.version)
+            else:
+                self.headers.add_header("X-Powered-By", SERVER_VERSION)
 
         self.cookie = self.request.cookie
 

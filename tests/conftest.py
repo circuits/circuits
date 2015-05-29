@@ -48,7 +48,6 @@ class Watcher(BaseComponent):
                 sleep(TIMEOUT)
         finally:
             pass
-            #self.events.clear()
 
 
 class Flag(object):
