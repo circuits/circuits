@@ -11,10 +11,11 @@ import pytest
 
 from time import time
 from operator import sub
+from itertools import starmap
 from datetime import datetime, timedelta
-from itertools import imap, starmap, izip
 
 
+from circuits.six.moves import map, zip
 from circuits import sleep, Event, Component, Timer
 
 
@@ -77,7 +78,7 @@ def test_persistent(app, watcher):
     app.fire(persistent(interval))
     assert watcher.wait("persistent_complete")
 
-    xs = list(imap(abs, starmap(sub, izip(app.timestamps, app.timestamps[1:]))))
+    xs = list(map(abs, starmap(sub, zip(app.timestamps, app.timestamps[1:]))))
     avg = sum(xs) / len(xs)
 
     assert round(avg, abs(exponent)) == interval
