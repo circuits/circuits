@@ -90,10 +90,10 @@ Example Session:
     >>> app.tick()
     <hello[*] ( )>
     >>> app.tick()
-    <test_value_changed[<App/* 27798:MainThread (queued=0) [S]>] (<Value ('Hello World!') result: True errors: False for <test[*] ( )> )>
+    <test_value_changed[<App/* 27798:MainThread (queued=0) [S]>] (<Value ('Hello World!') result=True; errors=False; for <test[*] ( )> )>
     >>> app.tick()
     >>> x
-    <Value ('Hello World!') result: True errors: False for <test[*] ( )>
+    <Value ('Hello World!') result=True; errors=False; for <test[*] ( )>
     >>> x.value
     'Hello World!'
     >>> 
