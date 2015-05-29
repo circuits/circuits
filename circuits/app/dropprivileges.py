@@ -36,7 +36,7 @@ class DropPrivileges(BaseComponent):
             setuid(uid)
 
             # Ensure a very conservative umask
-            umask(077)
+            umask(0o077)
         except Exception as error:
             print("ERROR: Could not drop privileges {0:s}".format(error))
             print(format_exc())
