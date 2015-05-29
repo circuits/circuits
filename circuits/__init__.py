@@ -20,7 +20,7 @@ __date__ = "24th February 2013"
 from .version import version as __version__
 
 from .core import Event
-from .core import task, Worker
+from .core import sleep, task, Worker
 from .core import handler, reprhandler, BaseComponent, Component
 from .core import Debugger, Bridge, Loader, Manager, Timer, TimeoutError
 

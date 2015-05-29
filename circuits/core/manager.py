@@ -9,6 +9,7 @@ This module defines the Manager class.
 
 
 import atexit
+from time import time
 from os import getpid, kill
 from inspect import isfunction
 from uuid import uuid4 as uuid
@@ -67,6 +68,49 @@ class ExceptionWrapper(object):
 
     def extract(self):
         return self.exception
+
+
+class Sleep(object):
+
+    def __init__(self, seconds):
+        self._task = None
+
+        try:
+            self.expiry = time() + float(seconds)
+        except ValueError:
+            raise TypeError("a float is required")
+
+    def __iter__(self):
+        return self
+
+    def __repr__(self):
+        return "sleep({0:s})".format(repr(self.expiry - time()))
+
+    def next(self):
+        if time() >= self.expiry:
+            raise StopIteration()
+        return self
+
+    @property
+    def expired(self):
+        return time() >= self.expiry
+
+    @property
+    def task(self):
+        return self._task
+
+    @task.setter
+    def task(self, task):
+        self._task = task
+
+
+def sleep(seconds):
+    """
+    Delay execution of a coroutine for a given number of seconds.
+    The argument may be a floating point number for subsecond precision.
+    """
+
+    return Sleep(seconds)
 
 
 class Dummy(object):
@@ -832,13 +876,23 @@ class Manager(object):
                         self.registerTask((event, value_generator, parent))
                 else:
                     raise value.extract()
+            elif isinstance(value, Sleep):
+                if value is not task:
+                    value.task = (event, task, parent)
+                    self.registerTask((event, value, parent))
+                    self.unregisterTask((event, task, parent))
             elif value is not None:
                 event.value.value = value
         except StopIteration:
             event.waitingHandlers -= 1
             self.unregisterTask((event, task, parent))
+
             if parent:
                 self.registerTask((event, parent, None))
+            elif hasattr(task, "task"):
+                # XXX: The subtask is considered a "waiting handler"
+                event.waitingHandlers += 1
+                self.registerTask(task.task)
             elif event.waitingHandlers == 0:
                 event.value.inform(True)
                 self._eventDone(event)
