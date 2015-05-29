@@ -14,13 +14,13 @@ At the python prompt:
     >>> <Hello[*.hello] ( )>
 
     >>> x
-    <Value ('Hello World! (16030)') result: True errors: False for <Hello[*.hello] ( )>
+    <Value ('Hello World! (16030)') result=True; errors=False; for <Hello[*.hello] ( )>
     >>> y = app.fire(remote(hello(), "test"))
     .
     .
     .
     >>> y
-    <Value (u'Hello World! (16035)') result: True errors: False for <Remote[*.remote] (<Hello[.hello] ( )>, 'app2' channel=None)>
+    <Value (u'Hello World! (16035)') result=True; errors=False; for <Remote[*.remote] (<Hello[.hello] ( )>, 'app2' channel=None)>
 """  # noqa
 
 

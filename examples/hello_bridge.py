@@ -14,7 +14,7 @@ At the python prompt:
     .
     .
     >>> x
-    <Value ('Hello World! (15969)') result: True errors: False for <Hello[*.hello] ( )>
+    <Value ('Hello World! (15969)') result=True; errors=False; for <Hello[*.hello] ( )>
 """  # noqa
 
 
