@@ -756,7 +756,7 @@ class Manager(object):
         if getattr(self, "_process", None) is not None:
             return self.__process.join()
 
-    def stop(self, code=0):
+    def stop(self, code=None):
         """
         Stop this manager. Invoking this method causes
         an invocation of ``run()`` to return.
@@ -780,7 +780,8 @@ class Manager(object):
             for _ in range(3):
                 self.tick()
 
-        raise SystemExit(code)
+        if code is not None:
+            raise SystemExit(code)
 
     def processTask(self, event, task, parent=None):  # noqa
         # XXX: C901: This has a high McCabe complexity score of 16.

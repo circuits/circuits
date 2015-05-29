@@ -48,7 +48,6 @@ class Watcher(BaseComponent):
                 sleep(TIMEOUT)
         finally:
             pass
-            #self.events.clear()
 
 
 class Flag(object):
@@ -114,10 +113,7 @@ def manager(request):
     manager = Manager()
 
     def finalizer():
-        try:
-            manager.stop()
-        except SystemExit:
-            pass  # Ignore SystemExit()
+        manager.stop()
 
     request.addfinalizer(finalizer)
 

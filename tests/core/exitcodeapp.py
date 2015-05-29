@@ -8,7 +8,12 @@ from circuits import Component
 class App(Component):
 
     def started(self, *args):
-        raise SystemExit(int(sys.argv[1]))
+        try:
+            code = int(sys.argv[1])
+        except ValueError:
+            code = sys.argv[1]
+
+        raise SystemExit(code)
 
 
 def main():
