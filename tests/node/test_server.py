@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
 
+from __future__ import print_function
+
 from pytest import PLATFORM, skip, fixture
-from circuits import Event, Component, handler
-from circuits.net.events import close
-from circuits.net.sockets import UDPServer
-from circuits.node import Node
-from circuits.node.server import Server
 
 if PLATFORM == 'win32':
     skip('Broken on Windows')
+
+
+from circuits import Event, Component
+from circuits.net.events import close
+from circuits.net.sockets import UDPServer
+from circuits.node import Node
 
 
 class return_value(Event):
@@ -17,6 +20,7 @@ class return_value(Event):
 
 
 class App(Component):
+
     def return_value(self, event):
         print('Hello client!', event.channels)
 
@@ -61,8 +65,7 @@ def test_auto_reconnect(app, watcher, manager):
     app.unregister()
     assert watcher.wait('unregistered', channel=app.channel)
 
-
-    for i in range(5):
+    for _ in range(5):
         watcher.clear()
         assert watcher.wait('connect', channel=chan)
         assert watcher.wait('unreachable', channel=chan)
@@ -75,6 +78,7 @@ def test_auto_reconnect(app, watcher, manager):
     assert watcher.wait('connected_to', channel=app.channel)
 
     client.unregister()
+
 
 def test_server_send_all(app, watcher, manager):
     client1 = App().register(manager)
@@ -101,7 +105,6 @@ def test_server_send(app, watcher, manager):
     chan1 = node1.add('client1', *app.bind)
     assert watcher.wait('connected', channel=chan1)
 
-
     client2 = App().register(manager)
     node2 = Node().register(client2)
     chan2 = node2.add('client2', *app.bind)
@@ -122,7 +125,6 @@ def test_server_send_multicast(app, watcher, manager):
     node1 = Node().register(client1)
     chan1 = node1.add('client1', *app.bind)
     assert watcher.wait('connected', channel=chan1)
-
 
     client2 = App().register(manager)
     node2 = Node().register(client2)
