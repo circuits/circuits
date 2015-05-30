@@ -6,7 +6,4 @@
 
 This package contains components that implement network sockets and
 protocols for implementing client and server network applications.
-
-:copyright: CopyRight (C) 2004-2013 by James Mills
-:license: MIT (See: LICENSE)
 """

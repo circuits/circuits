@@ -6,9 +6,6 @@
 
 Contains various components useful for application development and tasks
 common to applications.
-
-:copyright: CopyRight (C) 2004-2013 by James Mills
-:license: MIT (See: LICENSE)
 """
 
 from .daemon import Daemon
