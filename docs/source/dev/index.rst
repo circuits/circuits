@@ -14,5 +14,6 @@ Excellent.  Here's what you need to know.
 
    introduction
    contributing
+   environment
    processes
    standards
