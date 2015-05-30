@@ -60,11 +60,11 @@ class App(Component):
 @pytest.fixture
 def app(request, manager, watcher):
     app = App().register(manager)
-    watcher.wait("registered")
+    assert watcher.wait("registered")
 
     def finalizer():
         app.unregister()
-        watcher.wait("unregistered")
+        assert watcher.wait("unregistered")
 
     request.addfinalizer(finalizer)
 
@@ -73,7 +73,7 @@ def app(request, manager, watcher):
 
 def test_value(app, watcher):
     x = app.fire(hello())
-    watcher.wait("hello")
+    assert watcher.wait("hello")
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
@@ -81,7 +81,7 @@ def test_value(app, watcher):
 
 def test_nested_value(app, watcher):
     x = app.fire(test())
-    watcher.wait("test")
+    assert watcher.wait("test")
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
@@ -91,7 +91,7 @@ def test_value_notify(app, watcher):
     x = app.fire(hello())
     x.notify = True
 
-    watcher.wait("hello_value_changed")
+    assert watcher.wait("hello_value_changed")
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
@@ -102,7 +102,7 @@ def test_nested_value_notify(app, watcher):
     x = app.fire(test())
     x.notify = True
 
-    watcher.wait("hello_value_changed")
+    assert watcher.wait("test_value_changed")
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
@@ -111,7 +111,7 @@ def test_nested_value_notify(app, watcher):
 
 def test_error_value(app, watcher):
     x = app.fire(foo())
-    watcher.wait("foo")
+    assert watcher.wait("foo")
 
     etype, evalue, etraceback = x
     assert etype is Exception
@@ -121,7 +121,7 @@ def test_error_value(app, watcher):
 
 def test_multiple_values(app, watcher):
     v = app.fire(values())
-    watcher.wait("values_complete")
+    assert watcher.wait("values_complete")
 
     assert isinstance(v.value, list)
 
