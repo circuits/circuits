@@ -2,29 +2,29 @@
 # Date:     7th October 2008
 # Author:   James Mills, prologic at shortcircuit dot net dot au
 
+
 """Workers Tests"""
 
+
 import pytest
+
 
 from circuits import task, Worker
 
 
+task.complete = True
+
+
 @pytest.fixture
-def worker(request):
-    worker = Worker()
+def worker(request, manager, watcher):
+    worker = Worker().register(manager)
+    assert watcher.wait("registered")
 
     def finalizer():
-        worker.stop()
+        worker.unregister()
+        assert watcher.wait("unregistered")
 
     request.addfinalizer(finalizer)
-
-    if request.config.option.verbose:
-        from circuits import Debugger
-        Debugger().register(worker)
-
-    waiter = pytest.WaitEvent(worker, "started")
-    worker.start()
-    assert waiter.wait()
 
     return worker
 
@@ -42,19 +42,17 @@ def add(a, b):
     return a + b
 
 
-def test(worker):
-    x = worker.fire(task(f))
-
-    assert pytest.wait_for(x, "result")
+def test(manager, watcher, worker):
+    x = manager.fire(task(f))
+    assert watcher.wait("task_complete")
 
     assert x.result
     assert x.value == 1000000
 
 
-def test_args(worker):
-    x = worker.fire(task(add, 1, 2))
-
-    assert pytest.wait_for(x, "result")
+def test_args(manager, watcher, worker):
+    x = manager.fire(task(add, 1, 2))
+    assert watcher.wait("task_complete")
 
     assert x.result
     assert x.value == 3
