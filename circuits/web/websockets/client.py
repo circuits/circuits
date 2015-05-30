@@ -46,7 +46,7 @@ class WebSocketClient(BaseComponent):
 
     channel = "wsclient"
 
-    def __init__(self, url, channel=channel, wschannel="ws", headers={}):
+    def __init__(self, url, channel=channel, wschannel="ws", headers=None):
         """
         :param url: the URL to connect to.
         :param channel: the channel used by this component
@@ -58,7 +58,7 @@ class WebSocketClient(BaseComponent):
         super(WebSocketClient, self).__init__(channel=channel)
 
         self._url = url
-        self._headers = headers
+        self._headers = headers or {}
         self._response = None
         self._pending = 0
         self._wschannel = wschannel

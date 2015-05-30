@@ -56,7 +56,7 @@ class request(Event):
     :type  url: str
     """
 
-    def __init__(self, method, path, body=None, headers={}):
+    def __init__(self, method, path, body=None, headers=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(request, self).__init__(method, path, body, headers)
@@ -92,14 +92,14 @@ class Client(BaseComponent):
         event.stop()
 
     @handler("request")
-    def request(self, method, url, body=None, headers={}):
+    def request(self, method, url, body=None, headers=None):
         host, port, path, secure = parse_url(url)
 
         if not self._transport.connected:
             self.fire(connect(host, port, secure))
             yield self.wait("connected", self._transport.channel)
 
-        headers = Headers([(k, v) for k, v in headers.items()])
+        headers = Headers([(k, v) for k, v in (headers or {}).items()])
 
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if "Host" not in headers:

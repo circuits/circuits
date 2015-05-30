@@ -261,7 +261,7 @@ class HttpParser(object):
         # status
         matchs = STATUS_RE.match(bits[1])
         if matchs is None:
-            raise InvalidRequestLine("Invalid status %" % bits[1])
+            raise InvalidRequestLine("Invalid status: {0;s}".format(bits[1]))
 
         self._status = bits[1]
         self._status_code = int(matchs.group(1))

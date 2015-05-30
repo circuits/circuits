@@ -74,9 +74,10 @@ try:
 except ImportError:
     from urllib2 import parse_http_list, parse_keqv_list  # NOQA
 
-from hashlib import md5
+from hashlib import md5, sha1
 
 MD5 = "MD5"
+SHA1 = "SHA1"
 MD5_SESS = "MD5-sess"
 AUTH = "auth"
 AUTH_INT = "auth-int"
@@ -90,7 +91,7 @@ SUPPORTED_QOP = (AUTH, AUTH_INT)
 DIGEST_AUTH_ENCODERS = {
     MD5: lambda val: md5(val).hexdigest(),
     MD5_SESS: lambda val: md5(val).hexdigest(),
-#    SHA: lambda val: sha.new (val).hexdigest (),
+    SHA1: lambda val: sha1.new(val).hexdigest(),
 }
 
 
@@ -98,7 +99,6 @@ def calculateNonce(realm, algorithm=MD5):
     """This is an auxaliary function that calculates 'nonce' value. It is used
     to handle sessions."""
 
-    global SUPPORTED_ALGORITHM, DIGEST_AUTH_ENCODERS
     assert algorithm in SUPPORTED_ALGORITHM
 
     try:
@@ -115,7 +115,7 @@ def calculateNonce(realm, algorithm=MD5):
 
 def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH):
     """Challenges the client for a Digest authentication."""
-    global SUPPORTED_ALGORITHM, DIGEST_AUTH_ENCODERS, SUPPORTED_QOP
+
     assert algorithm in SUPPORTED_ALGORITHM
     assert qop in SUPPORTED_QOP
 
@@ -188,8 +188,6 @@ def parseAuthorization(credentials):
     """parseAuthorization will convert the value of the 'Authorization' key in
     the HTTP header to a map itself. If the parsing fails 'None' is returned.
     """
-
-    global AUTH_SCHEMES
 
     auth_scheme, auth_params = credentials.split(" ", 1)
     auth_scheme = auth_scheme.lower()
@@ -384,7 +382,7 @@ def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
     The 'A1' argument is only used in MD5_SESS algorithm based responses.
     Check md5SessionKey() for more info.
     """
-    global AUTH_RESPONSES
+
     checker = AUTH_RESPONSES[auth_map["auth_scheme"]]
     return checker(
         auth_map, password, method=method, encrypt=encrypt, **kwargs

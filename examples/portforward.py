@@ -19,7 +19,7 @@ from optparse import OptionParser
 
 from circuits.app import Daemon
 from circuits import handler, Component, Debugger
-from circuits.net.events import close, Connect, write
+from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCPClient, TCPServer
 
 __version__ = "0.2"

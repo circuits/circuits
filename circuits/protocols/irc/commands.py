@@ -38,8 +38,8 @@ def JOIN(channels, keys=None):
     return request(Message("JOIN", channels, keys))
 
 
-def PART(channels):
-    return request(Message("PART", channels))
+def PART(channels, message=None):
+    return request(Message("PART", channels, message))
 
 
 def PRIVMSG(receivers, message):
