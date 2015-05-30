@@ -31,23 +31,15 @@ class Watcher(BaseComponent):
         self.events.clear()
 
     def wait(self, name, channel=None, timeout=6.0):
-        try:
-            for i in range(int(timeout / TIMEOUT)):
-                if channel is None:
-                    with self._lock:
-                        for event in self.events:
-                            if event.name == name:
-                                return True
-                else:
-                    with self._lock:
-                        for event in self.events:
-                            if event.name == name and \
-                                    channel in event.channels:
-                                return True
-
-                sleep(TIMEOUT)
-        finally:
-            pass
+        for i in range(int(timeout / TIMEOUT)):
+            with self._lock:
+                for event in self.events:
+                    if event.name == name and event.waitingHandlers == 0:
+                        if (channel is None) or (channel in event.channels):
+                            return True
+            sleep(TIMEOUT)
+        else:
+            return False
 
 
 class Flag(object):
