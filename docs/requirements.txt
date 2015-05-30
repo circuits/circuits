@@ -1,3 +1,2 @@
 Sphinx
-#releases
--e git+https://github.com/bitprophet/releases.git#egg=releases
+releases
