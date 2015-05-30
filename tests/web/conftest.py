@@ -46,44 +46,32 @@ class WebClient(Client):
 
 
 @pytest.fixture
-def webapp(request):
-    webapp = WebApp()
+def webapp(request, manager, watcher):
+    webapp = WebApp().register(manager)
+    assert watcher.wait("ready")
 
     if hasattr(request.module, "application"):
         from circuits.web.wsgi import Gateway
         application = getattr(request.module, "application")
         Gateway({"/": application}).register(webapp)
+        assert watcher.wait("registered")
 
     Root = getattr(request.module, "Root", None)
     if Root is not None:
         Root().register(webapp)
+        assert watcher.wait("registered")
 
     if request.config.option.verbose:
         Debugger().register(webapp)
-
-    waiter = pytest.WaitEvent(webapp, "ready")
-    webapp.start()
-    assert waiter.wait()
+        assert watcher.wait("registered")
 
     def finalizer():
-        webapp.fire(close(), webapp.server)
-        webapp.stop()
+        webapp.fire(close())
+        assert watcher.wait("closed")
+
+        webapp.unregister()
+        assert watcher.wait("unregistered")
 
     request.addfinalizer(finalizer)
 
     return webapp
-
-
-@pytest.fixture(scope="module")
-def webclient(request, webapp):
-    webclient = WebClient()
-    waiter = pytest.WaitEvent(webclient, "ready", channel=webclient.channel)
-    webclient.register(webapp)
-    assert waiter.wait()
-
-    def finalizer():
-        webclient.unregister()
-
-    request.addfinalizer(finalizer)
-
-    return webclient

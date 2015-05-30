@@ -108,7 +108,7 @@ def wait_for(obj, attr, value=True, timeout=3.0):
         sleep(TIMEOUT)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def manager(request):
     manager = Manager()
 

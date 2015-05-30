@@ -3,7 +3,6 @@
 import os
 from tempfile import mkstemp
 
-from circuits import handler
 from circuits.web import Controller
 
 from .helpers import urlopen
@@ -11,14 +10,14 @@ from .helpers import urlopen
 
 class Root(Controller):
 
-    @handler("started", priority=1.0, channel="*")
-    def _on_started(self, component):
+    def __init__(self, *args, **kwargs):
+        super(Root, self).__init__(self, *args, **kwargs)
+
         fd, self.filename = mkstemp()
         os.write(fd, b"Hello World!")
         os.close(fd)
 
-    @handler("stopped", channel="(")
-    def _on_stopped(self, component):
+    def __del__(self):
         os.remove(self.filename)
 
     def index(self):

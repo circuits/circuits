@@ -5,7 +5,6 @@ from __future__ import print_function
 
 
 from circuits import Component
-from circuits.web.servers import Server
 from circuits.web.controllers import Controller
 from circuits.net.sockets import close, write
 from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
@@ -51,11 +50,7 @@ class Client(Component):
 
 
 def test(manager, watcher, webapp):
-    server = Server(0).register(manager)
-    watcher.wait("ready")
-
-    echo = Echo().register(server)
-    Root().register(server)
+    echo = Echo().register(webapp)
     watcher.wait("registered", channel="wsserver")
 
     f = urlopen(webapp.server.http.base)
@@ -64,10 +59,10 @@ def test(manager, watcher, webapp):
 
     watcher.clear()
 
-    WebSocketsDispatcher("/websocket").register(server)
+    WebSocketsDispatcher("/websocket").register(webapp)
     watcher.wait("registered", channel="web")
 
-    uri = "ws://{0:s}:{1:d}/websocket".format(server.host, server.port)
+    uri = "ws://{0:s}:{1:d}/websocket".format(webapp.server.host, webapp.server.port)
 
     WebSocketClient(uri).register(manager)
     client = Client().register(manager)
@@ -97,6 +92,3 @@ def test(manager, watcher, webapp):
     client.unregister()
     watcher.wait("unregistered")
     watcher.clear()
-
-    server.unregister()
-    watcher.wait("unregistered")
