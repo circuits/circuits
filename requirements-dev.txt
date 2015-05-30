@@ -4,6 +4,9 @@ Fabric
 # Debugging
 pudb
 
+# Packaging
+wheel
+
 # Running Tests
 tox
 pytest
@@ -12,4 +15,5 @@ pytest-cov
 
 # Generating Documentation
 Sphinx
+releases
 Sphinx-PyPI-upload

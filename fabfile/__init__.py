@@ -83,10 +83,6 @@ def release():
         with msg("Creating env"):
             run("mkvirtualenv test")
 
-        with msg("Bootstrapping"):
-            with prefix("workon test"):
-                run("./bootstrap.sh")
-
         with msg("Building"):
             with prefix("workon test"):
                 run("fab develop")
@@ -107,32 +103,9 @@ def release():
         print("Release version: {0:s}".format(version))
 
         if prompt("Is this ok?", default="Y", validate=r"^[YyNn]?$") in "yY":
-            run("hg tag {0:s}".format(version))
-            run("python setup.py egg_info sdist bdist_egg register upload")
+            run("git tag {0:s}".format(version))
+            run("python setup.py egg_info sdist bdist_egg bdist_wheel register upload")
             run("python setup.py build_sphinx upload_sphinx")
 
         with msg("Destroying env"):
             run("rmvirtualenv test")
-
-
-@task()
-def sync(*args):
-    """Synchronouse Local Repository with Remote(s)"""
-
-    status = local("hg status", capture=True)
-    if status:
-        abort(
-            (
-                "Repository is not in a clean state! "
-                "Please commit, revert or shelve!"
-            )
-        )
-
-    with settings(warn_only=True):
-        local("hg pull --update")
-        local("hg pull --update github")
-        local("hg pull --update upstream")
-        local("hg bookmark -r tip master")
-        local("hg push")
-        local("hg push github")
-        local("hg push upstream")
