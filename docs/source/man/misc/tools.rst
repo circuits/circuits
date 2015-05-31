@@ -37,11 +37,11 @@ Example:
 
      Event Handlers: 3
       unregister; 1
-       <handler[*.unregister] (App._on_unregister)>
+       <handler[*][unregister] (App._on_unregister)>
       foo; 1
-       <handler[*.foo] (App.foo)>
+       <handler[*][foo] (App.foo)>
       prepare_unregister_complete; 1
-       <handler[<instance of App>.prepare_unregister_complete] (App._on_prepare_unregister_complete)>
+       <handler[<instance of App>][prepare_unregister_complete] (App._on_prepare_unregister_complete)>
    
 
 Displaying a Visual Representation of your Application

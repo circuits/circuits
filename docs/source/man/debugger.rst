@@ -88,6 +88,6 @@ Logged Exceptions::
     <Value () result=False; errors=False; for <foo[*] ( )>
     >>> <foo[*] ( )>
     <exception[*] (<type 'exceptions.TypeError'>, TypeError('foo() takes exactly 3 arguments (1 given)',), ['  File "/home/prologic/work/circuits/circuits/core/manager.py", line 561, in _dispatcher\n    value = handler(*eargs, **ekwargs)\n'] handler=<bound method App.foo of <App/* 27098:App (queued=1) [R]>>, fevent=<foo[*] ( )>)>
-    ERROR <handler[*.foo] (App.foo)> (<foo[*] ( )>) {<type 'exceptions.TypeError'>}: foo() takes exactly 3 arguments (1 given)
+    ERROR <handler[*][foo] (App.foo)> (<foo[*] ( )>) {<type 'exceptions.TypeError'>}: foo() takes exactly 3 arguments (1 given)
       File "/home/prologic/work/circuits/circuits/core/manager.py", line 561, in _dispatcher
           value = handler(*eargs, **ekwargs)

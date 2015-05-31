@@ -300,4 +300,4 @@ def test_Logger_error():
     while app:
         app.flush()
 
-    assert logger.error_msg.startswith("ERROR <handler[*.test] (App.test)> (")
+    assert logger.error_msg.startswith("ERROR <handler[*][test] (App.test)> (")

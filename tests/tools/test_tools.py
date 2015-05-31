@@ -118,9 +118,9 @@ def test_inspect():
     assert "Components: 0" in s
     assert "Event Handlers: 2" in s
     assert "foo; 1" in s
-    assert "<handler[*.foo] (A.foo)>" in s
+    assert "<handler[*][foo] (A.foo)>" in s
     assert "prepare_unregister_complete; 1" in s
-    assert "<handler[<instance of A>.prepare_unregister_complete] (A._on_prepare_unregister_complete)>" in s
+    assert "<handler[<instance of A>][prepare_unregister_complete] (A._on_prepare_unregister_complete)>" in s
 
 
 def test_findroot():
@@ -144,7 +144,7 @@ def test_findroot():
 def test_reprhandler():
     a = A()
     s = reprhandler(a.foo)
-    assert s == "<handler[*.foo] (A.foo)>"
+    assert s == "<handler[*][foo] (A.foo)>"
 
     f = lambda: None
     pytest.raises(AttributeError, reprhandler, f)

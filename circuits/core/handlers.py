@@ -94,7 +94,7 @@ class Unknown(object):
 
 
 def reprhandler(handler):
-    format = "<handler[%s.%s] (%s.%s)>"
+    format = "<handler[%s][%s]%s (%s.%s)>"
 
     channel = getattr(handler, "channel", "*")
     if channel is None:
@@ -104,7 +104,7 @@ def reprhandler(handler):
     if isinstance(channel, Manager):
         channel = "<instance of " + channel.__class__.__name__ + ">"
 
-    names = ".".join(handler.names)
+    names = ",".join(handler.names)
 
     instance = getattr(
         handler, "im_self", getattr(
@@ -114,7 +114,9 @@ def reprhandler(handler):
 
     method = handler.__name__
 
-    return format % (channel, names, instance, method)
+    priority = "[%0.2f]" % (handler.priority,) if handler.priority else ""
+
+    return format % (channel, names, priority, instance, method)
 
 
 class HandlerMetaClass(type):
