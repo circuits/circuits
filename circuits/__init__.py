@@ -35,7 +35,7 @@ except ImportError:
 	import os
 	for _path in __path__:
 		_path = os.path.join(_path, '__init__.py')
-		if _path != __file__ and os.path.exists(_path):
+		if os.path.realpath(_path) != os.path.realpath(__file__) and os.path.exists(_path):
 			from .six import exec_
 			with open(_path) as fd:
 				exec_(fd, globals())
