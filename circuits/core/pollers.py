@@ -26,18 +26,22 @@ from .components import BaseComponent
 
 
 class _read(Event):
+
     """_read Event"""
 
 
 class _write(Event):
+
     """_write Event"""
 
 
 class _error(Event):
+
     """_error Event"""
 
 
 class _disconnect(Event):
+
     """_disconnect Event"""
 
 
@@ -141,6 +145,7 @@ class BasePoller(BaseComponent):
 
 
 class Select(BasePoller):
+
     """Select(...) -> new Select Poller Component
 
     Creates a new Select Poller Component that uses the select poller
@@ -209,6 +214,7 @@ class Select(BasePoller):
 
 
 class Poll(BasePoller):
+
     """Poll(...) -> new Poll Poller Component
 
     Creates a new Poll Poller Component that uses the poll poller
@@ -322,6 +328,7 @@ class Poll(BasePoller):
 
 
 class EPoll(BasePoller):
+
     """EPoll(...) -> new EPoll Poller Component
 
     Creates a new EPoll Poller Component that uses the epoll poller
@@ -432,6 +439,7 @@ class EPoll(BasePoller):
 
 
 class KQueue(BasePoller):
+
     """KQueue(...) -> new KQueue Poller Component
 
     Creates a new KQueue Poller Component that uses the kqueue poller

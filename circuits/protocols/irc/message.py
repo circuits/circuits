@@ -10,6 +10,7 @@ from .utils import parsemsg
 
 
 class Error(Exception):
+
     """Error Exception"""
 
 

@@ -39,7 +39,7 @@ def test_nocache(webapp):
     cacheControl = f.headers["Cache-Control"]
 
     now = datetime.utcnow()
-    lastyear = now.replace(year=now.year-1)
+    lastyear = now.replace(year=now.year - 1)
 
     diff = (mktime(parsedate(expires)) - mktime(lastyear.utctimetuple()))
     assert diff < 1.0

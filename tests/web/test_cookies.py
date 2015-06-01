@@ -7,6 +7,7 @@ from .helpers import CookieJar
 
 
 class Root(Controller):
+
     def index(self):
         visited = self.cookie.get("visited")
         if visited and visited.value:

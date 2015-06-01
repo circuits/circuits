@@ -68,7 +68,9 @@ def _gen_id():
 # Base class for all kinds of client-side errors.
 
 class Error(Exception):
+
     """Base class for client errors."""
+
     def __str__(self):
         return repr(self)
 
@@ -84,6 +86,7 @@ class Error(Exception):
 
 
 class ProtocolError(Error):
+
     """Indicates an HTTP protocol error."""
 
     def __init__(self, url, errcode, errmsg, headers, response):
@@ -130,7 +133,7 @@ class Unmarshaller(object):
             self.data = self.data + data
 
     def close(self):
-        #try to convert string to json
+        # try to convert string to json
         return json.loads(self.data.decode(self.encoding))
 
 
@@ -172,6 +175,7 @@ class _Method(object):
 
 
 class Transport:
+
     """Handles an HTTP transaction to an JSON-RPC server."""
 
     # client identifier (may be overridden)
@@ -367,6 +371,7 @@ class Transport:
 
 
 class SafeTransport(Transport):
+
     """Handles an HTTPS transaction to an JSON-RPC server."""
 
     # FIXME: mostly untested
@@ -435,7 +440,7 @@ class ServerProxy(object):
     __str__ = __repr__
 
     def __getattr__(self, name):
-        #dispatch
+        # dispatch
         return _Method(self.__request, name)
 
     # note: to call a remote object with an non-standard name, use

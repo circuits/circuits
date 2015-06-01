@@ -8,18 +8,22 @@ from circuits import handler, Event, Component
 
 
 class hello(Event):
+
     "Hhllo Event"
 
 
 class test(Event):
+
     "test Event"
 
 
 class foo(Event):
+
     "foo Event"
 
 
 class values(Event):
+
     "values Event"
 
     complete = True

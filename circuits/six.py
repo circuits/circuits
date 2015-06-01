@@ -33,6 +33,7 @@ else:
     else:
         # It's possible to have sizeof(long) != sizeof(Py_ssize_t).
         class X(object):
+
             def __len__(self):
                 return 1 << 31
         try:
@@ -49,7 +50,7 @@ else:
         return ord(data[index])
 
     def iterbytes(data):
-        return (ord (char) for char in data)
+        return (ord(char) for char in data)
 
 
 def _add_doc(func, doc):
@@ -116,8 +117,8 @@ class MovedAttribute(_LazyDescr):
         return getattr(module, self.attr)
 
 
-
 class _MovedItems(types.ModuleType):
+
     """Lazy loading of moved objects"""
 
 
@@ -150,8 +151,10 @@ _moved_attributes = [
     MovedModule("tkinter", "Tkinter"),
     MovedModule("tkinter_dialog", "Dialog", "tkinter.dialog"),
     MovedModule("tkinter_filedialog", "FileDialog", "tkinter.filedialog"),
-    MovedModule("tkinter_scrolledtext", "ScrolledText", "tkinter.scrolledtext"),
-    MovedModule("tkinter_simpledialog", "SimpleDialog", "tkinter.simpledialog"),
+    MovedModule(
+        "tkinter_scrolledtext", "ScrolledText", "tkinter.scrolledtext"),
+    MovedModule(
+        "tkinter_simpledialog", "SimpleDialog", "tkinter.simpledialog"),
     MovedModule("tkinter_tix", "Tix", "tkinter.tix"),
     MovedModule("tkinter_constants", "Tkconstants", "tkinter.constants"),
     MovedModule("tkinter_dnd", "Tkdnd", "tkinter.dnd"),
@@ -257,9 +260,11 @@ def iterkeys(d):
     """Return an iterator over the keys of a dictionary."""
     return iter(getattr(d, _iterkeys)())
 
+
 def itervalues(d):
     """Return an iterator over the values of a dictionary."""
     return iter(getattr(d, _itervalues)())
+
 
 def iteritems(d):
     """Return an iterator over the (key, value) pairs of a dictionary."""
@@ -269,8 +274,10 @@ def iteritems(d):
 if PY3:
     def b(s, encoding='utf-8'):
         return s.encode(encoding)
+
     def u(s, encoding='utf-8'):
         return s
+
     def bytes_to_str(b):
         return str(b, "unicode_escape")
     if sys.version_info[1] <= 1:
@@ -285,8 +292,10 @@ if PY3:
 else:
     def b(s, encoding='utf-8'):
         return s
+
     def u(s, encoding='utf-8'):
         return unicode(s, encoding)
+
     def bytes_to_str(s):
         return s
     int2byte = chr
@@ -300,12 +309,10 @@ if PY3:
     import builtins
     exec_ = getattr(builtins, "exec")
 
-
     def reraise(tp, value, tb=None):
         if value.__traceback__ is not tb:
             raise value.with_traceback(tb)
         raise value
-
 
     print_ = getattr(builtins, "print")
     del builtins
@@ -323,17 +330,16 @@ else:
             locs = globs
         exec("""exec code in globs, locs""")
 
-
     exec_("""def reraise(tp, value, tb=None):
     raise tp, value, tb
 """)
-
 
     def print_(*args, **kwargs):
         """The new-style print function."""
         fp = kwargs.pop("file", sys.stdout)
         if fp is None:
             return
+
         def write(data):
             if not isinstance(data, basestring):
                 data = str(data)

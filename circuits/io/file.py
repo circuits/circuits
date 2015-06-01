@@ -35,6 +35,7 @@ BUFSIZE = 4096
 
 
 class _open(Event):
+
     """_open Event"""
 
 

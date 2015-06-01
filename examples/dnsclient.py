@@ -34,10 +34,12 @@ from circuits import Event, Component, Debugger
 
 
 class reply(Event):
+
     """reply Event"""
 
 
 class DNS(Component):
+
     """DNS Protocol Handling"""
 
     def read(self, peer, data):
@@ -45,6 +47,7 @@ class DNS(Component):
 
 
 class Dummy(Component):
+
     """A Dummy DNS Handler
 
     This just parses the reply packet and
@@ -69,6 +72,7 @@ class Dummy(Component):
 
 
 class DNSClient(Component):
+
     """DNS Client
 
     This ties everything together in a nice

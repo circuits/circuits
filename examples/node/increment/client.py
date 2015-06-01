@@ -13,6 +13,7 @@ VERSION = "%prog v" + __version__
 
 
 class increment(Event):
+
     def __init__(self, value):
         Event.__init__(self, value)
 
@@ -40,6 +41,7 @@ def parse_options():
 
 
 class NodeClient(Component):
+
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)

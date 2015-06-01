@@ -12,6 +12,7 @@ from ..six import string_types
 
 
 class Value(object):
+
     """Create a new future Value Object
 
     Creates a new future Value Object which is used by Event Objects and the
@@ -63,7 +64,7 @@ class Value(object):
 
     def __iter__(self):
         return iter(map(lambda v: v.value if isinstance(v, Value) else v,
-                    self.value))
+                        self.value))
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"

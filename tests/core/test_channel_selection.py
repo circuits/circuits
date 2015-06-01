@@ -4,12 +4,14 @@ from circuits import Event, Component, Manager
 
 
 class foo(Event):
+
     """foo Event"""
 
     channels = ("a",)
 
 
 class bar(Event):
+
     """bar Event"""
 
 

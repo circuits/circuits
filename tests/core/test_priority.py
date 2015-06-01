@@ -4,6 +4,7 @@ from circuits import handler, Event, Component, Manager
 
 
 class test(Event):
+
     """test Event"""
 
 

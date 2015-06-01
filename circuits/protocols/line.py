@@ -33,10 +33,12 @@ def splitLines(s, buffer):
 
 
 class line(Event):
+
     """line Event"""
 
 
 class Line(BaseComponent):
+
     """Line Protocol
 
     Implements the Line Protocol.

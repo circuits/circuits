@@ -35,7 +35,7 @@ exec(
     version_module.__dict__
 )
 
-# -- General configuration -----------------------------------------------------
+# -- General configuration -----------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
@@ -99,7 +99,7 @@ todo_include_todos = devel
 
 # -- track statistics with google analytics
 
-#extensions.append("sphinxcontrib.googleanalytics")
+# extensions.append("sphinxcontrib.googleanalytics")
 
 #googleanalytics_id = "UA-38618352-3"
 
@@ -151,7 +151,7 @@ pygments_style = 'sphinx'
 #modindex_common_prefix = []
 
 
-# -- Options for HTML output ---------------------------------------------------
+# -- Options for HTML output ---------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
@@ -227,7 +227,7 @@ html_static_path = ['_static']
 htmlhelp_basename = 'circuitsdoc'
 
 
-# -- Options for LaTeX output --------------------------------------------------
+# -- Options for LaTeX output --------------------------------------------
 
 # The paper size ('letter' or 'a4').
 #latex_paper_size = 'letter'

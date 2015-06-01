@@ -13,6 +13,7 @@ from .components import BaseComponent
 
 
 class Timer(BaseComponent):
+
     """Timer Component
 
     A timer is a component that fires an event once after a certain

@@ -15,6 +15,7 @@ from .protocol import Protocol
 
 
 class Client(BaseComponent):
+
     """Node Client (peer)"""
     channel = "node_client"
 

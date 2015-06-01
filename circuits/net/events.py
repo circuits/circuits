@@ -11,6 +11,7 @@ from circuits.core import Event
 
 
 class connect(Event):
+
     """connect Event
 
     This Event is sent when a new client connection has arrived on a server.
@@ -34,6 +35,7 @@ class connect(Event):
 
 
 class disconnect(Event):
+
     """disconnect Event
 
     This Event is sent when a client connection has closed on a server.
@@ -53,6 +55,7 @@ class disconnect(Event):
 
 
 class connected(Event):
+
     """connected Event
 
     This Event is sent when a client has successfully connected.
@@ -74,6 +77,7 @@ class connected(Event):
 
 
 class disconnected(Event):
+
     """disconnected Event
 
     This Event is sent when a client has disconnected
@@ -89,6 +93,7 @@ class disconnected(Event):
 
 
 class read(Event):
+
     """read Event
 
     This Event is sent when a client or server connection has read any data.
@@ -107,6 +112,7 @@ class read(Event):
 
 
 class error(Event):
+
     """error Event
 
     This Event is sent when a client or server connection has an error.
@@ -125,6 +131,7 @@ class error(Event):
 
 
 class unreachable(Event):
+
     """unreachable Event
 
     This Event is sent when a server is unreachable for a client
@@ -135,6 +142,7 @@ class unreachable(Event):
     :param port: Server port
     :type int: int
     """
+
     def __init__(self, host, port, reason=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
@@ -142,6 +150,7 @@ class unreachable(Event):
 
 
 class broadcast(Event):
+
     """broadcast Event
 
     This Event is used by the UDPServer/UDPClient sockets to send a message on the ``<broadcast>``
@@ -162,6 +171,7 @@ class broadcast(Event):
 
 
 class write(Event):
+
     """write Event
 
     This Event is used to notify a client, client connection or server that
@@ -182,6 +192,7 @@ class write(Event):
 
 
 class close(Event):
+
     """close Event
 
     This Event is used to notify a client, client connection or server that
@@ -202,6 +213,7 @@ class close(Event):
 
 
 class ready(Event):
+
     """ready Event
 
     This Event is used to notify the rest of the system that the underlying
@@ -228,6 +240,7 @@ class ready(Event):
 
 
 class closed(Event):
+
     """closed Event
 
     This Event is sent when a server has closed its listening socket.

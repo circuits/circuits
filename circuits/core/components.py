@@ -17,6 +17,7 @@ from .events import Event, registered, unregistered
 
 
 class prepare_unregister(Event):
+
     """
     This event is fired when a component is about to be unregistered
     from the component tree. Unregistering a component actually
@@ -50,6 +51,7 @@ class prepare_unregister(Event):
 
 
 class BaseComponent(Manager):
+
     """
     This is the base class for all components in a circuits based application.
     Components can (and should, except for root components) be registered

@@ -6,6 +6,7 @@ from circuits import handler, Event, Manager
 
 
 class foo(Event):
+
     """foo Event"""
 
 

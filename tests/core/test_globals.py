@@ -4,10 +4,12 @@ from circuits import handler, Event, Component
 
 
 class foo(Event):
+
     """foo Event"""
 
 
 class test(Event):
+
     """test Event"""
 
 

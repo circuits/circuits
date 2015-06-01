@@ -139,7 +139,7 @@ def _create_sec_websocket_key():
         pos = random.randint(0, len(key_n))
         key_n = key_n[0:pos] + chr(c) + key_n[pos:]
     for i in range(spaces_n):
-        pos = random.randint(1, len(key_n)-1)
+        pos = random.randint(1, len(key_n) - 1)
         key_n = key_n[0:pos] + " " + key_n[pos:]
 
     return number_n, key_n
@@ -177,6 +177,7 @@ class _SSLSocketWrapper(object):
 
 
 class WebSocket(object):
+
     """
     Low level WebSocket interface.
     This class is based on
@@ -194,6 +195,7 @@ class WebSocket(object):
     'Hello, Server'
     >>> ws.close()
     """
+
     def __init__(self):
         """
         Initalize WebSocket object.
@@ -293,7 +295,7 @@ class WebSocket(object):
         return result
 
     def _validate_header(self, headers):
-        #TODO: check other headers
+        # TODO: check other headers
         for key, value in HEADERS_TO_CHECK.items():
             v = headers.get(key, None)
             if value != v:
@@ -452,10 +454,12 @@ class WebSocket(object):
 
 
 class WebSocketApp(object):
+
     """
     Higher level of APIs are provided.
     The interface is like JavaScript WebSocket object.
     """
+
     def __init__(self, url,
                  on_open=None, on_message=None, on_error=None,
                  on_close=None):

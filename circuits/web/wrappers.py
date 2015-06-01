@@ -45,6 +45,7 @@ def file_generator(input, chunkSize=BUFSIZE):
 
 
 class Host(object):
+
     """An internet address.
 
     name should be the client's host name. If not available (because no DNS
@@ -123,6 +124,7 @@ class HTTPStatus(object):
 
 
 class Request(object):
+
     """Creates a new Request object to hold information about a request.
 
     :param sock: The socket object of the request.
@@ -229,6 +231,7 @@ class Request(object):
 
 
 class Body(object):
+
     """Response Body"""
 
     def __get__(self, response, cls=None):
@@ -258,6 +261,7 @@ class Body(object):
 
 
 class Status(object):
+
     """Response Status"""
 
     def __get__(self, response, cls=None):
@@ -273,6 +277,7 @@ class Status(object):
 
 
 class Response(object):
+
     """Response(sock, request) -> new Response object
 
     A Response object that holds the response to
@@ -304,7 +309,7 @@ class Response(object):
 
         if getattr(self.request.server, "display_banner", False):
             if self.request.server is not None:
-                    self.headers.add_header("Server", request.server.http.version)
+                self.headers.add_header("Server", request.server.http.version)
             else:
                 self.headers.add_header("X-Powered-By", SERVER_VERSION)
 

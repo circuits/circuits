@@ -9,7 +9,9 @@ from circuits import Event
 
 
 class connected_to(Event):
+
     """Connected to a peer"""
+
     def __init__(self, connection_name, hostname, port, client_channel,
                  client_obj):
         """
@@ -34,10 +36,12 @@ class connected_to(Event):
 
 
 class disconnected_from(connected_to):
+
     """Disconnected from a peer"""
 
 
 class remote(Event):
+
     """send event to a peer"""
 
     def __init__(self, event, connection_name, channel=None):

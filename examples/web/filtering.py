@@ -14,7 +14,7 @@ from circuits.web import Server, Controller
 class Upper(Component):
 
     channel = "web"  # By default all web related events
-                     # go to the "web" channel.
+    # go to the "web" channel.
 
     @handler("response", priority=1.0)
     def _on_response(self, response):

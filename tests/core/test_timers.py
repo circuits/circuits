@@ -34,12 +34,14 @@ def app(request, manager, watcher):
 
 
 class single(Event):
+
     """single Event"""
 
     complete = True
 
 
 class persistent(Event):
+
     """persistent Event"""
 
     complete = True

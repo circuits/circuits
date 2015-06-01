@@ -10,6 +10,7 @@ from circuits import Event, Component
 
 
 class test(Event):
+
     """test Event"""
 
 

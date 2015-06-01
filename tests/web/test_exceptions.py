@@ -70,6 +70,7 @@ def test_contenttype(webapp):
     else:
         assert False
 
+
 def test_contenttype_json(webapp):
     try:
         f = urlopen("%s/test_contenttype_json" % webapp.server.http.base)
@@ -83,9 +84,11 @@ def test_contenttype_json(webapp):
     else:
         assert False
 
+
 def test_contenttype_json_no_debug(webapp):
     try:
-        f = urlopen("%s/test_contenttype_json_no_debug" % webapp.server.http.base)
+        f = urlopen("%s/test_contenttype_json_no_debug" %
+                    webapp.server.http.base)
     except HTTPError as e:
         assert "json" in e.headers.get("Content-Type")
         result = json.loads(e.read().decode("utf-8"))

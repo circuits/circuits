@@ -18,7 +18,8 @@ def api():
 
     if PACKAGE is not None:
         pip(requirements="docs/requirements.txt")
-        local("sphinx-apidoc -f -e -T -o docs/source/api {0:s}".format(PACKAGE))
+        local(
+            "sphinx-apidoc -f -e -T -o docs/source/api {0:s}".format(PACKAGE))
 
 
 @task()

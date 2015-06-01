@@ -54,6 +54,7 @@ def header_elements(fieldname, fieldvalue):
 
 
 class HeaderElement(object):
+
     """An element (with parameters) from an HTTP header's element list."""
 
     def __init__(self, value, params=None):
@@ -107,6 +108,7 @@ class HeaderElement(object):
 
 
 class AcceptElement(HeaderElement):
+
     """An element (with parameters) from an Accept* header's element list.
 
     AcceptElement objects are comparable; the more-preferred object will be
@@ -151,6 +153,7 @@ class AcceptElement(HeaderElement):
 
 
 class CaseInsensitiveDict(dict):
+
     """A case-insensitive dict subclass.
 
     Each key is changed on entry to str(key).title().

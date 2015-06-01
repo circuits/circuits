@@ -44,6 +44,7 @@ except NameError:
 
 
 class HTTP(BaseComponent):
+
     """HTTP Protocol Component
 
     Implements the HTTP server protocol and parses and processes incoming

@@ -54,6 +54,7 @@ def parse_url(url, encoding='utf-8'):
 
 
 class URL(object):
+
     '''
     For more information on how and what we parse / sanitize:
         http://tools.ietf.org/html/rfc1808.html

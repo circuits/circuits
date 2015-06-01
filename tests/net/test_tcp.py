@@ -84,9 +84,9 @@ def test_tcp_basic(Poller, ipv6):
 
 
 def test_tcp_reconnect(Poller, ipv6):
-    ### XXX: Apparently this doesn't work on Windows either?
-    ### XXX: UPDATE: Apparently Broken on Windows + Python 3.2
-    ### TODO: Need to look into this. Find out why...
+    # XXX: Apparently this doesn't work on Windows either?
+    # XXX: UPDATE: Apparently Broken on Windows + Python 3.2
+    # TODO: Need to look into this. Find out why...
 
     if pytest.PLATFORM == "win32" and pytest.PYVER[:2] >= (3, 2):
         pytest.skip("Broken on Windows on Python 3.2")
@@ -250,7 +250,8 @@ def test_tcp_lookup_failure(Poller, ipv6):
         assert pytest.wait_for(client, "ready")
 
         client.fire(connect("foo", 1234))
-        assert pytest.wait_for(client, "error", lambda obj, attr: isinstance(getattr(obj, attr), SocketError))
+        assert pytest.wait_for(
+            client, "error", lambda obj, attr: isinstance(getattr(obj, attr), SocketError))
         if pytest.PLATFORM == "win32":
             assert client.error.errno == 11004
         else:

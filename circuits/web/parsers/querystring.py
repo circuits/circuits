@@ -54,7 +54,7 @@ class QueryStringParser(object):
         key = pair[0]
         value = pair[1]
 
-        #faster than invoking a regex
+        # faster than invoking a regex
         try:
             key.index("[")
             self.parse(key, value)

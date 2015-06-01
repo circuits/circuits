@@ -13,6 +13,7 @@ from circuits.net.events import write, read, close
 
 
 class WebSocketCodec(BaseComponent):
+
     """WebSocket Protocol
 
     Implements the Data Framing protocol for WebSocket.

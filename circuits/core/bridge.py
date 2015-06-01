@@ -64,7 +64,6 @@ class Bridge(BaseComponent):
             event.remote = True
             self.fire(event, self.channel)
 
-
     @handler("value_changed", channel="*")
     def _on_value_changed(self, value):
         try:
@@ -91,7 +90,7 @@ class Bridge(BaseComponent):
             pass
 
     def __write(self, eid, data):
-        self._socket.write(dumps((eid, data))+_sentinel)
+        self._socket.write(dumps((eid, data)) + _sentinel)
 
     @handler(channel="*", priority=100.0)
     def _on_event(self, event, *args, **kwargs):

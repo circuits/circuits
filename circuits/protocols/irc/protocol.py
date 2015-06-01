@@ -25,6 +25,7 @@ NUMERIC = compile_regex("[0-9]+")
 
 
 class IRC(Component):
+
     """IRC Protocol Component
 
     Creates a new IRC Component instance that implements the IRC Protocol.

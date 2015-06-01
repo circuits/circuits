@@ -10,6 +10,7 @@ from circuits import handler, Event, Component
 
 
 class test(Event):
+
     """test Event"""
 
     success = True

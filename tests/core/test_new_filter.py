@@ -6,6 +6,7 @@ from circuits import Component, Event
 
 
 class hello(Event):
+
     """hello Event"""
 
     success = True

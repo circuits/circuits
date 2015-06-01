@@ -4,6 +4,7 @@ from circuits import Component, Event
 
 
 class bark(Event):
+
     """bark Event"""
 
 
@@ -26,12 +27,14 @@ class Dog(Component):
 
 
 class Bob(Dog):
+
     """Bob"""
 
     channel = "bob"
 
 
 class Fred(Dog):
+
     """Fred"""
 
     channel = "fred"

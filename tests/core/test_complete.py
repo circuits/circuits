@@ -8,6 +8,7 @@ class simple_event(Event):
 
 
 class test(Event):
+
     """test Event"""
 
     success = True

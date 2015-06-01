@@ -17,6 +17,7 @@ from circuits import handler, Event, BaseComponent
 
 
 class rpc(Event):
+
     """RPC Event"""
 
 

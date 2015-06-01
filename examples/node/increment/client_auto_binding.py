@@ -13,6 +13,7 @@ VERSION = "%prog v" + __version__
 
 
 class increment(Event):
+
     def __init__(self, value):
         Event.__init__(self, value)
 
@@ -40,6 +41,7 @@ def parse_options():
 
 
 class NodeClient(Component):
+
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)
@@ -55,7 +57,8 @@ class NodeClient(Component):
         }
 
         node = Node().register(self)
-        node.add('peer_name', address, port, auto_remote_event=auto_remote_event)
+        node.add(
+            'peer_name', address, port, auto_remote_event=auto_remote_event)
 
     def connected_to(self, *args, **kwargs):
         i = 0

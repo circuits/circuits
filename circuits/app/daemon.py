@@ -20,18 +20,22 @@ from circuits.core import handler, Component, Event
 
 
 class daemonize(Event):
+
     """daemonize Event"""
 
 
 class deletepid(Event):
+
     """"deletepid Event"""
 
 
 class writepid(Event):
+
     """"writepid Event"""
 
 
 class Daemon(Component):
+
     """Daemon Component
 
     :param pidfile: .pid filename

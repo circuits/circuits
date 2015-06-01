@@ -24,6 +24,7 @@ from circuits.protocols.websocket import WebSocketCodec
 
 
 class WebSocketClient(BaseComponent):
+
     """
     An RFC 6455 compliant WebSocket client component. Upon receiving a
     :class:`circuits.web.client.Connect` event, the component tries to
@@ -99,7 +100,8 @@ class WebSocketClient(BaseComponent):
             sec_key = os.urandom(16)
         except NotImplementedError:
             sec_key = "".join([chr(random.randint(0, 255)) for i in range(16)])
-        headers["Sec-WebSocket-Key"] = base64.b64encode(sec_key).decode("latin1")
+        headers[
+            "Sec-WebSocket-Key"] = base64.b64encode(sec_key).decode("latin1")
         headers["Sec-WebSocket-Version"] = "13"
         command = "GET %s HTTP/1.1" % self._resource
         message = "%s\r\n%s" % (command, headers)
@@ -115,7 +117,8 @@ class WebSocketClient(BaseComponent):
                 or response.status != 101:
             self.fire(close(), self._transport)
             raise NotConnected()
-        WebSocketCodec(data=response.body.read(), channel=self._wschannel).register(self)
+        WebSocketCodec(
+            data=response.body.read(), channel=self._wschannel).register(self)
 
     @handler("error", priority=10)
     def _on_error(self, event, error, *args, **kwargs):

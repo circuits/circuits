@@ -14,6 +14,7 @@ from circuits.node.utils import dump_event, load_event, dump_value, load_value
 
 
 class test(Event):
+
     '''test Event'''
 
 

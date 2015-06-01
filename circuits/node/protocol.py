@@ -117,8 +117,10 @@ class Protocol(Component):
 
         if id in self.__events:
             # convert byte to str
-            value = value.decode('utf-8') if isinstance(value, bytes) else value
-            error = error.decode('utf-8') if isinstance(error, bytes) else error
+            value = value.decode(
+                'utf-8') if isinstance(value, bytes) else value
+            error = error.decode(
+                'utf-8') if isinstance(error, bytes) else error
 
             if not hasattr(self.__events[id], 'value') \
                     or not self.__events[id].value:

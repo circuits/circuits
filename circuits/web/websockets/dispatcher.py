@@ -15,6 +15,7 @@ from circuits.protocols.websocket import WebSocketCodec
 
 
 class WebSocketsDispatcher(BaseComponent):
+
     """
     This class implements an RFC 6455 compliant WebSockets dispatcher
     that handles the WebSockets handshake and upgrades the connection.
@@ -71,7 +72,7 @@ class WebSocketsDispatcher(BaseComponent):
                 or "upgrade" not in connection_tokens
                 or sec_key is None
                     or len(base64.b64decode(sec_key)) != 16):
-                    return httperror(request, response, code=400)
+                return httperror(request, response, code=400)
             if headers.get("Sec-WebSocket-Version", "") != "13":
                 response.headers["Sec-WebSocket-Version"] = "13"
                 return httperror(request, response, code=400)

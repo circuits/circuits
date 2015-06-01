@@ -10,16 +10,19 @@ from circuits import Event, Component
 
 
 class test(Event):
+
     """test Event"""
 
 
 class coroutine1(Event):
+
     """coroutine Event"""
 
     complete = True
 
 
 class coroutine2(Event):
+
     """coroutine Event"""
 
     complete = True

@@ -3,7 +3,8 @@
 # This file is part of http-parser released under the MIT license.
 # See the NOTICE for more information.
 #
-# This module is liberally borrowed (with modifications) from: https://raw.githubusercontent.com/benoitc/http-parser/master/http_parser/pyparser.py
+# This module is liberally borrowed (with modifications) from:
+# https://raw.githubusercontent.com/benoitc/http-parser/master/http_parser/pyparser.py
 
 
 import re
@@ -36,14 +37,17 @@ INVALID_CHUNK = 2
 
 
 class InvalidRequestLine(Exception):
+
     """ error raised when first line is invalid """
 
 
 class InvalidHeader(Exception):
+
     """ error raised on invalid header """
 
 
 class InvalidChunkSize(Exception):
+
     """ error raised when we parse an invalid chunk size """
 
 
@@ -186,7 +190,7 @@ class HttpParser(object):
                     first_line = bytes_to_str(b("").join(self._buf))
                     nb_parsed = nb_parsed + idx + 2
 
-                    rest = data[idx+2:]
+                    rest = data[idx + 2:]
                     data = b("")
                     if self._parse_firstline(first_line):
                         self._buf = [rest]
@@ -355,11 +359,11 @@ class HttpParser(object):
         encoding = self._headers.get('content-encoding')
         if self.decompress:
             if encoding == "gzip":
-                self.__decompress_obj = zlib.decompressobj(16+zlib.MAX_WBITS)
+                self.__decompress_obj = zlib.decompressobj(16 + zlib.MAX_WBITS)
             elif encoding == "deflate":
                 self.__decompress_obj = zlib.decompressobj()
 
-        rest = data[idx+4:]
+        rest = data[idx + 4:]
         self._buf = [rest]
         self.__on_headers_complete = True
         return len(rest)
@@ -416,7 +420,7 @@ class HttpParser(object):
         idx = data.find(b("\r\n"))
         if idx < 0:
             return None, None
-        line, rest_chunk = data[:idx], data[idx+2:]
+        line, rest_chunk = data[:idx], data[idx + 2:]
         chunk_size = line.split(b(";"), 1)[0].strip()
         try:
             chunk_size = int(chunk_size, 16)

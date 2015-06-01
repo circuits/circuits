@@ -17,6 +17,7 @@ from .components import BaseComponent
 
 
 class Loader(BaseComponent):
+
     """Create a new Loader Component
 
     Creates a new Loader Component that enables dynamic loading of

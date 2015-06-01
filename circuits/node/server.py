@@ -14,6 +14,7 @@ from .protocol import Protocol
 
 
 class Server(BaseComponent):
+
     """Node server."""
 
     channel = 'node'

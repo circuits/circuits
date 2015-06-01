@@ -7,6 +7,7 @@ from .helpers import urlopen
 
 
 class Root(Controller):
+
     def __init__(self, *args, **kwargs):
         super(Root, self).__init__(*args, **kwargs)
         self += Hello()

@@ -45,6 +45,7 @@ class NotConnected(HTTPException):
 
 
 class request(Event):
+
     """request Event
 
     This Event is used to initiate a new request.

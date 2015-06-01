@@ -36,11 +36,13 @@ def parse_options():
 
 
 class send_all_event(Event):
+
     def __init__(self, infos):
         super(send_all_event, self).__init__(infos)
 
 
 class NodeServer(Component):
+
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)

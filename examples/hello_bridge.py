@@ -25,6 +25,7 @@ from circuits import Component, Debugger, Event, Manager
 
 
 class hello(Event):
+
     """hello Event"""
 
 

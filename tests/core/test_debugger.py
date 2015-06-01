@@ -18,6 +18,7 @@ from circuits.core import Event, Component
 
 
 class test(Event):
+
     """test Event"""
 
 

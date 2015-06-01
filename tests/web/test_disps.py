@@ -11,6 +11,7 @@ from .helpers import urlopen, urljoin
 
 
 class PrefixingDispatcher(BaseComponent):
+
     """Forward to another Dispatcher based on the channel."""
 
     def __init__(self, channel):

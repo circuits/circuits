@@ -27,6 +27,7 @@ DEFAULT_WORKERS = 10
 
 
 class task(Event):
+
     """task Event
 
     This Event is used to initiate a new task to be performed by a Worker
@@ -52,6 +53,7 @@ class task(Event):
 
 
 class Worker(BaseComponent):
+
     """A thread/process Worker Component
 
     This Component creates a Worker (either a thread or process) which

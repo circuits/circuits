@@ -35,6 +35,7 @@ def parse_options():
 
 
 class NodeClient(Component):
+
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)

@@ -12,6 +12,7 @@ from circuits.core import handler, Component, Event
 
 
 class hello(Event):
+
     """hello Event"""
 
     success = True

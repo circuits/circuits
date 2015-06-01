@@ -20,6 +20,7 @@ from .handlers import handler, reprhandler
 
 
 class Debugger(BaseComponent):
+
     """Create a new Debugger Component
 
     Creates a new Debugger Component that listens to all events in the system

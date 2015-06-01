@@ -26,6 +26,7 @@ BUFSIZE = 4096
 
 
 class _open(Event):
+
     """_open Event"""
 
 
@@ -59,7 +60,8 @@ class Serial(Component):
         self._baudrate = baudrate or self._baudrate
         self._bufsize = bufsize or self._bufsize
 
-        self._serial = serial.Serial(port=self._port, baudrate=self._baudrate, timeout=0)
+        self._serial = serial.Serial(
+            port=self._port, baudrate=self._baudrate, timeout=0)
         self._fd = self._serial.fileno()  # not portable!
 
         self._poller.addReader(self, self._fd)

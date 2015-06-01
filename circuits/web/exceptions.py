@@ -15,6 +15,7 @@ from .constants import HTTP_STATUS_CODES
 
 
 class HTTPException(Exception):
+
     """
     Baseclass for all HTTP exceptions.  This exception can be called by WSGI
     applications to render a default error page or you can catch the subclasses
@@ -42,6 +43,7 @@ class HTTPException(Exception):
 
 
 class BadRequest(HTTPException):
+
     """*400* `Bad Request`
 
     Raise if the browser sends something to the application the application
@@ -55,6 +57,7 @@ class BadRequest(HTTPException):
 
 
 class UnicodeError(HTTPException):
+
     """
     raised by the request functions if they were unable to decode the
     incoming data properly.
@@ -62,6 +65,7 @@ class UnicodeError(HTTPException):
 
 
 class Unauthorized(HTTPException):
+
     """*401* `Unauthorized`
 
     Raise if the user is not authorized.  Also used if you want to use HTTP
@@ -79,6 +83,7 @@ class Unauthorized(HTTPException):
 
 
 class Forbidden(HTTPException):
+
     """*403* `Forbidden`
 
     Raise if the user doesn't have the permission for the requested resource
@@ -92,6 +97,7 @@ class Forbidden(HTTPException):
 
 
 class NotFound(HTTPException):
+
     """*404* `Not Found`
 
     Raise if a resource does not exist and never existed.
@@ -105,6 +111,7 @@ class NotFound(HTTPException):
 
 
 class MethodNotAllowed(HTTPException):
+
     """*405* `Method Not Allowed`
 
     Raise if the server used a method the resource does not handle.  For
@@ -126,6 +133,7 @@ class MethodNotAllowed(HTTPException):
 
 
 class NotAcceptable(HTTPException):
+
     """*406* `Not Acceptable`
 
     Raise if the server can't return any content conforming to the
@@ -142,6 +150,7 @@ class NotAcceptable(HTTPException):
 
 
 class RequestTimeout(HTTPException):
+
     """*408* `Request Timeout`
 
     Raise to signalize a timeout.
@@ -154,6 +163,7 @@ class RequestTimeout(HTTPException):
 
 
 class Gone(HTTPException):
+
     """*410* `Gone`
 
     Raise if a resource existed previously and went away without new location.
@@ -167,6 +177,7 @@ class Gone(HTTPException):
 
 
 class LengthRequired(HTTPException):
+
     """*411* `Length Required`
 
     Raise if the browser submitted data but no ``Content-Length`` header which
@@ -180,6 +191,7 @@ class LengthRequired(HTTPException):
 
 
 class PreconditionFailed(HTTPException):
+
     """*412* `Precondition Failed`
 
     Status code used in combination with ``If-Match``, ``If-None-Match``, or
@@ -193,6 +205,7 @@ class PreconditionFailed(HTTPException):
 
 
 class RequestEntityTooLarge(HTTPException):
+
     """*413* `Request Entity Too Large`
 
     The status code one should return if the data submitted exceeded a given
@@ -205,6 +218,7 @@ class RequestEntityTooLarge(HTTPException):
 
 
 class RequestURITooLarge(HTTPException):
+
     """*414* `Request URI Too Large`
 
     Like *413* but for too long URLs.
@@ -217,6 +231,7 @@ class RequestURITooLarge(HTTPException):
 
 
 class UnsupportedMediaType(HTTPException):
+
     """*415* `Unsupported Media Type`
 
     The status code returned if the server is unable to handle the media type
@@ -230,6 +245,7 @@ class UnsupportedMediaType(HTTPException):
 
 
 class RangeUnsatisfiable(HTTPException):
+
     """*416* `Range Unsatisfiable`
 
     The status code returned if the server is unable to satisfy the request range
@@ -242,6 +258,7 @@ class RangeUnsatisfiable(HTTPException):
 
 
 class InternalServerError(HTTPException):
+
     """*500* `Internal Server Error`
 
     Raise if an internal server error occurred.  This is a good fallback if an
@@ -256,6 +273,7 @@ class InternalServerError(HTTPException):
 
 
 class NotImplemented(HTTPException):
+
     """*501* `Not Implemented`
 
     Raise if the application does not support the action requested by the
@@ -269,6 +287,7 @@ class NotImplemented(HTTPException):
 
 
 class BadGateway(HTTPException):
+
     """*502* `Bad Gateway`
 
     If you do proxying in your application you should return this status code
@@ -283,6 +302,7 @@ class BadGateway(HTTPException):
 
 
 class ServiceUnavailable(HTTPException):
+
     """*503* `Service Unavailable`
 
     Status code you should return if a service is temporarily unavailable.

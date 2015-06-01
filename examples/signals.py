@@ -15,6 +15,7 @@ from circuits import Component, Debugger, Event, Timer
 
 
 class hello(Event):
+
     """hello Event"""
 
 

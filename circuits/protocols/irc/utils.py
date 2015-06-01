@@ -13,6 +13,7 @@ PREFIX = compile_regex("([^!].*)!(.*)@(.*)")
 
 
 class Error(Exception):
+
     """Error Exception"""
 
 

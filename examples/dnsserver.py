@@ -39,10 +39,12 @@ from circuits import Event, Component, Debugger
 
 
 class query(Event):
+
     """query Event"""
 
 
 class DNS(Component):
+
     """DNS Protocol Handling"""
 
     def read(self, peer, data):
@@ -50,6 +52,7 @@ class DNS(Component):
 
 
 class Dummy(Component):
+
     """A Dummy DNS Handler
 
     This just returns an A record response
@@ -78,6 +81,7 @@ class Dummy(Component):
 
 
 class DNSServer(Component):
+
     """DNS Server
 
     This ties everything together in a nice

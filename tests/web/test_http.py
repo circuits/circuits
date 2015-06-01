@@ -10,6 +10,7 @@ from circuits.net.events import connect, write
 
 
 class Client(Component):
+
     def __init__(self, *args, **kwargs):
         super(Client, self).__init__(*args, **kwargs)
         self._buffer = []

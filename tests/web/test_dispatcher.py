@@ -5,6 +5,7 @@ from circuits.web.client import Client, request
 
 
 class Root(Controller):
+
     def __init__(self, *args, **kwargs):
         super(Root, self).__init__(*args, **kwargs)
         self += Leaf()
@@ -57,14 +58,16 @@ def test_root_name(webapp):
 
 
 def test_leaf(webapp):
-    status, content = make_request(webapp, "%s/world/country/region" % webapp.server.http.base)
+    status, content = make_request(
+        webapp, "%s/world/country/region" % webapp.server.http.base)
 
     assert status == 200
     assert content == b"Hello cities!"
 
 
 def test_city(webapp):
-    status, content = make_request(webapp, "%s/world/country/region/city" % webapp.server.http.base)
+    status, content = make_request(
+        webapp, "%s/world/country/region/city" % webapp.server.http.base)
 
     assert status == 200
     assert content == b"Hello City!"

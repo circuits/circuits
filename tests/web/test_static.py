@@ -68,7 +68,8 @@ def test_directory(webapp):
 
 
 def test_file_quoating(webapp):
-    url = "{0:s}{1:s}".format(webapp.server.http.base, quote("/static/#foobar.txt"))
+    url = "{0:s}{1:s}".format(
+        webapp.server.http.base, quote("/static/#foobar.txt"))
     f = urlopen(url)
     s = f.read().strip()
     assert s == b"Hello World!"
@@ -77,7 +78,8 @@ def test_file_quoating(webapp):
 def test_range(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
-    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-100"})
+    connection.request("GET", "%s/static/largefile.txt" %
+                       webapp.server.http.base, headers={"Range": "bytes=0-100"})
     response = connection.getresponse()
     assert response.status == 206
     s = response.read()
@@ -87,7 +89,8 @@ def test_range(webapp):
 def test_ranges(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
-    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-50,51-100"})
+    connection.request("GET", "%s/static/largefile.txt" %
+                       webapp.server.http.base, headers={"Range": "bytes=0-50,51-100"})
     response = connection.getresponse()
     assert response.status == 206
 
@@ -101,14 +104,15 @@ def test_ranges(webapp):
 def test_unsatisfiable_range1(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
-    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-100,100-10000,0-1"})
+    connection.request("GET", "%s/static/largefile.txt" %
+                       webapp.server.http.base, headers={"Range": "bytes=0-100,100-10000,0-1"})
     response = connection.getresponse()
     assert response.status == 416
 
 
 # TODO: Implement this test and condition
 # e.g: For a 10 byte file; Range: bytes=0-1,2-3,4-5,6-7,8-9
-#def test_unsatisfiable_range2(webapp):
+# def test_unsatisfiable_range2(webapp):
 #    connection = HTTPConnection(webapp.server.host, webapp.server.port)
 #
 #    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-100,100-10000,0-1"})

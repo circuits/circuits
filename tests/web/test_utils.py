@@ -5,7 +5,7 @@ try:
     from gzip import decompress
 except ImportError:
     import zlib
-    decompress = zlib.decompressobj(16+zlib.MAX_WBITS).decompress  # NOQA
+    decompress = zlib.decompressobj(16 + zlib.MAX_WBITS).decompress  # NOQA
 
 from circuits.web.utils import compress
 from circuits.web.utils import get_ranges

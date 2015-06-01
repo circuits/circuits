@@ -18,10 +18,12 @@ STREAMING = 2
 
 
 class kill(Event):
+
     """kill Event"""
 
 
 class input(Event):
+
     """input Event"""
 
 

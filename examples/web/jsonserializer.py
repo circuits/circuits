@@ -10,7 +10,8 @@ class JSONSerializer(Component):
 
     channel = "web"
 
-    @handler("response", priority=1.0)  # 1 higher than the default response handler
+    # 1 higher than the default response handler
+    @handler("response", priority=1.0)
     def serialize_response_body(self, response):
         response.headers["Content-Type"] = "application/json"
         response.body = dumps(response.body)

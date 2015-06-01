@@ -17,6 +17,7 @@ from circuits import handler, BaseComponent
 
 
 class VirtualHosts(BaseComponent):
+
     """Forward to anotehr Dispatcher based on the Host header.
 
     This can be useful when running multiple sites within one server.

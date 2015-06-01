@@ -376,7 +376,8 @@ class Server(BaseComponent):
             try:
                 self.certfile = kwargs["certfile"]
             except KeyError:
-                raise RuntimeError("certfile must be specified for server-side operations")
+                raise RuntimeError(
+                    "certfile must be specified for server-side operations")
             self.keyfile = kwargs.get("keyfile", None)
             self.cert_reqs = kwargs.get("cert_reqs", CERT_NONE)
             self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)

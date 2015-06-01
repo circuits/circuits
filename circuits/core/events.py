@@ -192,6 +192,7 @@ class Event(object):
 
 
 class exception(Event):
+
     """exception Event
 
     This event is sent for any exceptions that occur during the execution
@@ -219,6 +220,7 @@ class exception(Event):
 
 
 class started(Event):
+
     """started Event
 
     This Event is sent when a Component or Manager has started running.
@@ -232,6 +234,7 @@ class started(Event):
 
 
 class stopped(Event):
+
     """stopped Event
 
     This Event is sent when a Component or Manager has stopped running.
@@ -245,6 +248,7 @@ class stopped(Event):
 
 
 class signal(Event):
+
     """signal Event
 
     This Event is sent when a Component receives a signal.
@@ -261,6 +265,7 @@ class signal(Event):
 
 
 class registered(Event):
+
     """registered Event
 
     This Event is sent when a Component has registered with another Component
@@ -279,6 +284,7 @@ class registered(Event):
 
 
 class unregistered(Event):
+
     """unregistered Event
 
     This Event is sent when a Component has been unregistered from its
@@ -287,6 +293,7 @@ class unregistered(Event):
 
 
 class generate_events(Event):
+
     """generate_events Event
 
     This Event is sent by the circuits core. All components that generate

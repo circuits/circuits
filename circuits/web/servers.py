@@ -23,6 +23,7 @@ from .dispatchers import Dispatcher
 
 
 class BaseServer(BaseComponent):
+
     """Create a Base Web Server
 
     Create a Base Web Server (HTTP) bound to the IP Address / Port or
@@ -127,6 +128,7 @@ class BaseServer(BaseComponent):
 
 
 class Server(BaseServer):
+
     """Create a Web Server
 
     Create a Web Server (HTTP) complete with the default Dispatcher to
@@ -145,6 +147,7 @@ class Server(BaseServer):
 
 
 class FakeSock():
+
     def getpeername(self):
         return (None, None)
 

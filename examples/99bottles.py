@@ -18,6 +18,7 @@ from circuits.protocols import Line
 
 
 class Tail(Component):
+
     """A complex component which combines the ``File`` and ``LP``
     (Line Protoco) components together to implement similar functionality to
     the UNIX ``tail`` command.
@@ -33,6 +34,7 @@ class Tail(Component):
 
 
 class Grep(Component):
+
     """A simple component that simply listens for ``line`` events from the
     ``Tail`` component and performs a regular expression match against each
     line. If the line matches it is printed to standard output.
