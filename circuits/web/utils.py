@@ -10,7 +10,6 @@ import struct
 from math import sqrt
 from io import TextIOWrapper
 from cgi import FieldStorage
-from collections import MutableMapping
 
 try:
     from urllib.parse import urljoin as _urljoin
@@ -22,7 +21,6 @@ try:
 except ImportError:
     from cgi import parse_qs as _parse_qs  # NOQA
 
-from circuits.six import iterbytes
 from circuits.net.utils import is_ssl_handshake  # backwards compatibility
 
 from .exceptions import RangeUnsatisfiable, RequestEntityTooLarge

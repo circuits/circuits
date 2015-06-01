@@ -2,8 +2,9 @@
 
 from optparse import OptionParser
 
-from circuits.node import Node, remote, protocol
-from circuits import Component, Debugger, Event
+from circuits.node import Node
+from circuits import Component
+from circuits import Debugger
 
 
 __version__ = "0.0.1"

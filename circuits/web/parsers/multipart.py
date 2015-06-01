@@ -40,7 +40,6 @@ __license__ = 'MIT'
 from tempfile import TemporaryFile
 from wsgiref.headers import Headers
 import re
-import sys
 try:
     from urlparse import parse_qs
 except ImportError:  # pragma: no cover (fallback for Python 2.5)
@@ -363,7 +362,7 @@ class MultipartPart(object):
         self.headers = Headers(self.headerlist)
         cdis = self.headers.get('Content-Disposition', '')
         ctype = self.headers.get('Content-Type', '')
-        clen = self.headers.get('Content-Length', '-1')
+        self.headers.get('Content-Length', '-1')
         if not cdis:
             raise MultipartError('Content-Disposition header is missing.')
         self.disposition, self.options = parse_options_header(cdis)

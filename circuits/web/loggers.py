@@ -7,7 +7,6 @@ import os
 import sys
 import datetime
 from io import IOBase
-from email._parseaddr import _monthnames
 
 from circuits.six import string_types, text_type
 from circuits.core import handler, BaseComponent

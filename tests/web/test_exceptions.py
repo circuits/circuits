@@ -62,7 +62,7 @@ def test_notfound(webapp):
 
 def test_contenttype(webapp):
     try:
-        f = urlopen("%s/test_contenttype" % webapp.server.http.base)
+        urlopen("%s/test_contenttype" % webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 500
         assert e.msg == "Internal Server Error"
@@ -73,7 +73,7 @@ def test_contenttype(webapp):
 
 def test_contenttype_json(webapp):
     try:
-        f = urlopen("%s/test_contenttype_json" % webapp.server.http.base)
+        urlopen("%s/test_contenttype_json" % webapp.server.http.base)
     except HTTPError as e:
         assert "json" in e.headers.get("Content-Type")
         result = json.loads(e.read().decode("utf-8"))

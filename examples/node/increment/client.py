@@ -2,7 +2,8 @@
 
 from optparse import OptionParser
 
-from circuits.node import Node, remote, protocol
+from circuits.node import Node
+from circuits.node import remote
 from circuits import Component, Debugger, Event
 
 

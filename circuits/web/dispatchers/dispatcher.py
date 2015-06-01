@@ -15,7 +15,6 @@ from circuits import handler, BaseComponent, Event
 
 from circuits.web.utils import parse_qs
 from circuits.web.events import response
-from circuits.web.errors import httperror
 from circuits.web.processors import process
 from circuits.web.controllers import BaseController
 
