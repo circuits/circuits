@@ -23,7 +23,7 @@ FROM crux/python:onbuild
 MAINTAINER James Mills <prologic@shortcircuitnet.au>
 
 #  Services
-EXPOSE 80 443
+EXPOSE 80 8000 443
 
 # Volumes
 VOLUME /var/www
