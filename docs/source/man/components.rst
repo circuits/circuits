@@ -153,5 +153,5 @@ Example:
     set([<Foo/* 28599:MainThread (queued=0) [S]>])
     >>> 
 
-The `telnet Example <https://bitbucket.org/circuits/circuits/src/tip/examples/telnet.py>`_
+The `telnet Example <https://github.com/circuits/circuits/tree/master/examples/telnet.py>`_
 does this for example.

@@ -155,7 +155,7 @@ trivial example:
     WebSockets("/websocket").register(app)
     app.run()
 
-See the `circuits.web examples <https://bitbucket.org/circuits/circuits/src/tip/examples/web>`_.
+See the `circuits.web examples <https://github.com/circuits/circuits/tree/master/examples/web>`_.
 
 
 How do I: Build a Simple Form

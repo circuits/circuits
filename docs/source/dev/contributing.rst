@@ -1,3 +1,7 @@
+.. _Fork circuits: https://github.com/circuits/circuits/issues/new#fork-destination-box
+.. _Create an Issue: https://github.com/circuits/circuits/issues/new
+.. _Pull Request: https://github.com/circuits/circuits/compare/
+
 Contributing to circuits
 ========================
 
@@ -25,8 +29,7 @@ and concise form with repeatable steps. One of the best ways you can report
 a bug to us is by writing a unit test (//similar to the ones in our tests//)
 so that we can verify the bug, fix it and commit the fix along with the test.
 
-To submit a bug report, please use:
- http://bitbucket.org/circuits/circuits/issues
+To submit a bug report, please `Create an Issue`_
 
 
 Writing new tests
@@ -34,8 +37,8 @@ Writing new tests
 
 
 We're not perfect, and we're still writing more tests to ensure quality code.
-If you'd like to help, please `Fork circuits <https://bitbucket.org/circuits/circuits/fork>`_, write more tests that cover more of our code base and
-submit a `Pull Request <https://bitbucket.org/circuits/circuits/pull-request/new>`_. Many Thanks!
+If you'd like to help, please `Fork circuits`_, write more tests that cover more
+of our code base and submit a `Pull Request`_. Many Thanks!
 
 
 Adding New Features
@@ -50,4 +53,4 @@ as valid use-cases. To start the discussions off, please either:
 
   or
 
-- `Submit a **New** Issue <http://bitbucket.org/circuits/circuits/issues>`_
+- `Create an Issue`_

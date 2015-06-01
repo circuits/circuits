@@ -5,11 +5,13 @@
 .. _MIT License: http://www.opensource.org/licenses/mit-license.php
 .. _Create an Issue: https://github.com/circuits/circuits/issues/new
 .. _Mailing List: http://groups.google.com/group/circuits-users
-.. _Project Website: http://circuitsframework.com/
-.. _PyPi Page: http://pypi.python.org/pypi/circuits
-.. _Read the Docs: http://circuits.readthedocs.org/en/latest/
-.. _View the ChangeLog: http://circuits.readthedocs.org/en/latest/changes.html
-.. _Downloads Page: https://github.com/circuits/circuits/releases
+.. _Website: http://circuitsframework.com/
+.. _PyPi: http://pypi.python.org/pypi/circuits
+.. _Documentation: http://circuits.readthedocs.org/en/latest/
+.. _Downloads: https://github.com/circuits/circuits/releases
+.. _Ask a Question: http://stackoverflow.com/questions/ask
+.. _Stackoverflow: http://stackoverflow.com/
+.. _Google+ Group: https://plus.google.com/communities/107775112577294599973
 
 .. image:: https://travis-ci.org/circuits/circuits.svg
    :target: https://travis-ci.org/circuits/circuits
@@ -39,10 +41,13 @@ circuits also includes a lightweight, high performance and scalable
 HTTP/WSGI compliant web server as well as various I/O and Networking
 components.
 
-- Visit the `Project Website`_
-- `Read the Docs`_
-- Download it from the `Downloads Page`_
-- `View the ChangeLog`_
+- `Website`_
+- `Downloads`_
+- `Documentation`_
+
+Got questions? 
+
+- `Ask a Question`_ (Tag it: ``circuits-framework``)
 
 
 Examples
@@ -90,7 +95,7 @@ If you do not have pip, you may use easy_install::
     $ easy_install circuits
 
 Alternatively, you may download the source package from the
-`PyPi Page`_ or the `Downloads Page`_ extract it and install using::
+`PyPi`_ or the `Downloads`_ extract it and install using::
 
     $ python setup.py install
 
@@ -123,6 +128,9 @@ work with you to either incorporate the idea or find a better solution.
 Community
 ---------
 
-There is also a small community of circuits enthusiasts that you may
-find on the `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
-and the `Mailing List`_.
+There are also several places you can reach out to the circuits community:
+
+- `Mailing List`_
+- `Google+ Group`_
+- `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
+- `Ask a Question`_ on `Stackoverflow`_ (Tag it: ``circuits-framework``)

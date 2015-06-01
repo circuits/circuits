@@ -1,5 +1,5 @@
 .. _Developer Mailing List: http://groups.google.com/group/circuits-dev
-.. _Issue Tracker: https://bitbucket.org/circuits/circuits/issues
+.. _Issue Tracker: https://github.com/circuits/circuits/issues
 .. _FreeNode IRC Network: http://freenode.net
 .. _IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
 
@@ -28,7 +28,7 @@ Standards
 
 We use the following coding standard:
 
-- `pep8 <http://www.python.org/dev/peps/pep-0008/>`_
+- `PEP-008 <http://www.python.org/dev/peps/pep-0008/>`_
 
 We also lint our codebase with the following tools:
 
@@ -50,15 +50,16 @@ Tools
 We use the following tools to develop circuits and share code:
 
 - **Code Sharing:**
-  `Mercurial <http://mercurial.selenic.com/>`_
+  `Git <https://git-scm.com/>`_
 - **Code Hosting and Bug Reporting:**
-  `BitBucket <https://bitbucket.org/circuits/circuits>`_
-  `GitHub <https://github.com/circuits/circuits>`_ (*Mirror Only*)
+  `GitHub <https://github.com/circuits/circuits>`_
 - **Issue Tracker:**
-  `Issue Tracker <https://bitbucket.org/circuits/circuits/issues>`_
+  `Issue Tracker <https://github.com/circuits/circuits/issues>`_
 - **Documentation Hosting:**
   `Read the Docs <http://circuits.readthedocs.org>`_
 - **Package Hosting:**
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
 - **Continuous Integration:**
-  `Drone <https://drone.io/bitbucket.org/circuits/circuits>`_
+  `Travis CI <https://travis-ci.org/circuits/circuits>`_
+- **Code Quality:**
+  `Landscape <https://landscape.io/github/circuits/circuits/>`_

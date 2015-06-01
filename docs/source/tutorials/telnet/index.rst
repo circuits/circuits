@@ -9,7 +9,7 @@ Overview
 --------
 
 Welcome to our 2nd circuits tutorial. This tutorial is going to walk you
-through the `telnet Example <https://bitbucket.org/circuits/circuits/src/tip/examples/telnet.py>`_
+through the `telnet Example <https://github.com/circuits/circuits/tree/master/examples/telnet.py>`_
 showing you how to various parts of the circuits component library for
 building a simple TCP client that also accepts user input.
 
@@ -166,7 +166,7 @@ Testing
 -------
 
 To try this example out, download a copy of the
-`echoserver Example <https://bitbucket.org/circuits/circuits/src/tip/echoserver.py>`_
+`echoserver Example <https://github.com/circuits/circuits/tree/master/echoserver.py>`_
 and copy and paste the full source code of the
 ``Telnet`` example above into a file called ``telnet.py``.
 
@@ -180,7 +180,7 @@ In a second terminal run::
 
 Have fun!
 
-For more examples see `examples <https://bitbucket.org/circuits/circuits/src/tip/examples>`_.
+For more examples see `examples <https://github.com/circuits/circuits/tree/master/examples>`_.
 
 .. seealso::
     - :doc:`../../faq`

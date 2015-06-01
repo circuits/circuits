@@ -92,7 +92,7 @@ and by called ``<name>.png`` where **<name>** is the name of
 the top-level component in your application of the value you pass
 to the ``name=`` keyword argument of ``~circuits.tools.graph``.
 
-Example output of `telnet Example <https://bitbucket.org/circuits/circuits/src/tip/examples/telnet.py>`_:
+Example output of `telnet Example <https://github.com/circuits/circuits/tree/master/examples/telnet.py>`_:
 
 .. image:: ../examples/Telnet.png
 
