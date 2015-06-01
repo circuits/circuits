@@ -51,7 +51,7 @@ class Client(Component):
 
 def test(manager, watcher, webapp):
     echo = Echo().register(webapp)
-    watcher.wait("registered", channel="wsserver")
+    assert watcher.wait("registered", channel="wsserver")
 
     f = urlopen(webapp.server.http.base)
     s = f.read()
@@ -60,23 +60,24 @@ def test(manager, watcher, webapp):
     watcher.clear()
 
     WebSocketsDispatcher("/websocket").register(webapp)
-    watcher.wait("registered", channel="web")
+    assert watcher.wait("registered", channel="web")
 
     uri = "ws://{0:s}:{1:d}/websocket".format(webapp.server.host, webapp.server.port)
 
     WebSocketClient(uri).register(manager)
     client = Client().register(manager)
-    watcher.wait("registered", channel="wsclient")
-    watcher.wait("connected", channel="wsclient")
+    assert watcher.wait("registered", channel="wsclient")
+    assert watcher.wait("connected", channel="wsclient")
 
+    assert watcher.wait("connect", channel="wsserver")
     assert len(echo.clients) == 1
 
-    watcher.wait("read", channel="ws")
+    assert watcher.wait("read", channel="ws")
     assert client.response.startswith("Welcome")
     watcher.clear()
 
     client.fire(write("Hello!"), "ws")
-    watcher.wait("read", channel="ws")
+    assert watcher.wait("read", channel="ws")
     assert client.response == "Received: Hello!"
 
     f = urlopen(webapp.server.http.base)
@@ -86,9 +87,8 @@ def test(manager, watcher, webapp):
     assert len(echo.clients) == 1
 
     client.fire(close(), "ws")
-    watcher.wait("disconnect", channel="wsserver")
+    assert watcher.wait("disconnect", channel="wsserver")
     assert len(echo.clients) == 0
 
     client.unregister()
-    watcher.wait("unregistered")
-    watcher.clear()
+    assert watcher.wait("unregistered")
