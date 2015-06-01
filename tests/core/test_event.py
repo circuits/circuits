@@ -1,7 +1,3 @@
-# Module:   test_event
-# Date:     12th April 2010
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Event Tests"""
 
 import py

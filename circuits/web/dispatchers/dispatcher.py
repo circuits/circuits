@@ -1,7 +1,3 @@
-# Module:   dispatcher
-# Date:     13th September 2007
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Dispatcher
 
 This module implements a basic URL to Channel dispatcher.

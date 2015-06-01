@@ -1,7 +1,3 @@
-# Module:   client
-# Date:     4th January 2013
-# Author:   mnl
-
 import os
 import random
 import base64

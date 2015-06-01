@@ -1,8 +1,3 @@
-# Module:   utils
-# Date:     03rd April 2013
-# Author:   James Mills, j dot mills at griffith dot edu dot au
-
-
 """Utilities"""
 
 

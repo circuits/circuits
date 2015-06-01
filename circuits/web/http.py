@@ -1,8 +1,3 @@
-# Module:   http
-# Date:     13th September 2007
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
-
 """Hyper Text Transfer Protocol
 
 This module implements the server side Hyper Text Transfer Protocol

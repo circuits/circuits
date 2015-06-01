@@ -1,7 +1,3 @@
-# Module:   test_tools
-# Date:     13th March 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Tools Test Suite
 
 Test all functionality of the tools package.

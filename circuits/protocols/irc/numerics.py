@@ -1,8 +1,3 @@
-# Module:   numerics
-# Date:     11 August 2014
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
-
 """Internet Relay Chat Protocol numerics"""
 
 

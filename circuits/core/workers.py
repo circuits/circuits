@@ -1,7 +1,3 @@
-# Module:   workers
-# Date:     6th February 2011
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Workers
 
 Worker components used to perform "work" in independent threads or

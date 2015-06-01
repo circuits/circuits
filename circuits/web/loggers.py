@@ -1,7 +1,3 @@
-# Module:   loggers
-# Date:     6th November 2008
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Logger Component
 
 This module implements Logger Components.

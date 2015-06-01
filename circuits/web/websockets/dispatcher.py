@@ -1,8 +1,3 @@
-# Module:   dispatcher
-# Date:     26th February 2011
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
-
 import base64
 import hashlib
 

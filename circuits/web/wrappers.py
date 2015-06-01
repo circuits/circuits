@@ -1,7 +1,3 @@
-# Module:   wrappers
-# Date:     13th September 2007
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Request/Response Wrappers
 
 This module implements the Request and Response objects.

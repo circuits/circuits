@@ -1,4 +1,3 @@
-
 import itertools
 from mimetypes import guess_type
 from email.generator import _make_boundary

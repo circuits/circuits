@@ -1,7 +1,3 @@
-# Package:  core
-# Date:     2nd April 2006
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Core
 
 This package contains the essential core parts of the circuits framework.
@@ -29,3 +25,4 @@ __all__ = (
 )
 
 # flake8: noqa
+# pylama: skip=1

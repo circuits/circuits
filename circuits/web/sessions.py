@@ -1,8 +1,3 @@
-# Module:   sessions
-# Date:     22nd February 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
-
 """Session Components
 
 This module implements Session Components that can be used to store

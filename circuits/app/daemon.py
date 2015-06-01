@@ -1,8 +1,3 @@
-# Module:   daemon
-# Date:     20th June 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
-
 """Daemon Component
 
 Component to daemonize a system into the background and detach it from its

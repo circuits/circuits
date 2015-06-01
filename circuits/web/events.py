@@ -1,8 +1,3 @@
-# Module:   events
-# Date:     3rd February 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
-
 """Events
 
 This module implements the necessary Events needed.

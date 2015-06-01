@@ -1,7 +1,3 @@
-# Module:   errors
-# Date:     11th February 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Errors
 
 This module implements a set of standard HTTP Errors.

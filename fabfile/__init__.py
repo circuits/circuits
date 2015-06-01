@@ -1,8 +1,3 @@
-# Package:  fabfile
-# Date:     18th June 2013
-# Author:   James Mills, j dot mills at griffith dot edu dot au
-
-
 """Development Task"""
 
 

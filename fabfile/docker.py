@@ -1,8 +1,3 @@
-# Module:   docker
-# Date:     24th May 2014
-# Author:   James Mills, j dot mills at griffith dot edu dot au
-
-
 """Docker Tasks"""
 
 

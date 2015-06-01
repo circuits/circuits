@@ -1,7 +1,3 @@
-# Module:   timers
-# Date:     04th August 2004
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """Timer component to facilitate timed events."""
 
 from circuits.core.handlers import handler

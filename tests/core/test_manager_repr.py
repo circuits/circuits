@@ -1,7 +1,3 @@
-# Module:   test_manager_repr
-# Date:     23rd February 2010
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Manager Repr Tests
 
 Test Manager's representation string.

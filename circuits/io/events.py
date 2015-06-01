@@ -1,7 +1,3 @@
-# Module:   events
-# Date:     10th June 2011
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """I/O Events
 
 This module implements commonly used I/O events used by other I/O modules.

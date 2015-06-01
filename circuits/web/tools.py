@@ -1,7 +1,3 @@
-# Module:   tools
-# Date:     16th February 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Tools
 
 This module implements tools used throughout circuits.web.

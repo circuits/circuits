@@ -1,7 +1,3 @@
-# Module:   bridge
-# Date:     2nd April 2006
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Bridge
 
 The Bridge Component is used for inter-process communications between

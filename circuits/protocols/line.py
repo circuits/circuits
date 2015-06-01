@@ -1,7 +1,3 @@
-# Module:   line
-# Date:     04th February 2010
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """Line Protocol
 
 This module implements the basic Line protocol.

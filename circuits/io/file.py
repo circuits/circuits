@@ -1,7 +1,3 @@
-# Module:   file
-# Date:     4th August 2004
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """File I/O
 
 This module implements a wrapper for basic File I/O.

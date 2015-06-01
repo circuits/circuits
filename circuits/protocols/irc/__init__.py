@@ -1,8 +1,3 @@
-# Package:  irc
-# Date:     04th August 2004
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
-
 """Internet Relay Chat Protocol
 
 This package implements the Internet Relay Chat Protocol

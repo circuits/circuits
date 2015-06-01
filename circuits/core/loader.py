@@ -1,7 +1,3 @@
-# Package:  loader
-# Date:     16th March 2011
-# Author:   James Mills, jamesmills at comops dot com dot au
-
 """
 This module implements a generic Loader suitable for dynamically loading
 components from other modules. This supports loading from local paths,

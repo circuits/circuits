@@ -1,7 +1,3 @@
-# Module:   constants
-# Date:     4th February 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Global Constants
 
 This module implements required shared global constants.

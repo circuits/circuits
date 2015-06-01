@@ -1,7 +1,3 @@
-# Module:   headers
-# Date:     1st February 2009 November 2008
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Headers Support
 
 This module implements support for parsing and handling headers.

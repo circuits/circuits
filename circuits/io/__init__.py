@@ -1,7 +1,3 @@
-# Module:   io
-# Date:     4th August 2004
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """I/O Support
 
 This package contains various I/O Components. Provided are a generic File
@@ -33,3 +29,4 @@ except:
     pass
 
 # flake8: noqa
+# pylama: skip=1

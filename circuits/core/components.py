@@ -1,7 +1,3 @@
-# Package:  components
-# Date:     11th April 2010
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """
 This module defines the BaseComponent and its subclass Component.
 """

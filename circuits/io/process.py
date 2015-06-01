@@ -1,7 +1,3 @@
-# Module:   process
-# Date:     4th January 2013
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """Process
 
 This module implements a wrapper for basic ``subprocess.Popen`` functionality.

@@ -1,7 +1,3 @@
-# Module:   pollers
-# Date:     15th September 2008
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """Poller Components for asynchronous file and socket I/O.
 
 This module contains Poller components that enable polling of file or socket

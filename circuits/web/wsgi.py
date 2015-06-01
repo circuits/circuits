@@ -1,7 +1,3 @@
-# Module:   wsgi
-# Date:     6th November 2008
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """WSGI Components
 
 This module implements WSGI Components.

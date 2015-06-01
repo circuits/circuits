@@ -1,7 +1,3 @@
-# Module:   jsonrpc
-# Date:     13th September 2007
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """JSON RPC
 
 This module implements a JSON RPC dispatcher that translates incoming

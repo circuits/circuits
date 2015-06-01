@@ -1,8 +1,3 @@
-# Module:   message
-# Date:     11th August 2014
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
-
 """Internet Relay Chat message"""
 
 

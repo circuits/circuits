@@ -1,7 +1,3 @@
-# Module:   virtualhost
-# Date:     13th September 2007
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """VirtualHost
 
 This module implements a virtual host dispatcher that sends requests

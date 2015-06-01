@@ -1,8 +1,3 @@
-# Module:   test_timers
-# Date:     10th February 2010
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
-
 """Timers Tests"""
 
 

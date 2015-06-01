@@ -1,7 +1,3 @@
-# Module:   help
-# Date:     28th November 2013
-# Author:   James Mills, j dot mills at griffith dot edu dot au
-
 """Help Tasks"""
 
 

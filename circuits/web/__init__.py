@@ -1,7 +1,3 @@
-# Module:   __init__
-# Date:     3rd October 2008
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Circuits Library - Web
 
 circuits.web contains the circuits full stack web server that is HTTP
@@ -28,3 +24,4 @@ except ImportError:
     pass
 
 # flake8: noqa
+# pylama: skip=1

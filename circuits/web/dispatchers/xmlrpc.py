@@ -1,7 +1,3 @@
-# Module:   xmlrpc
-# Date:     13th September 2007
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """XML RPC
 
 This module implements a XML RPC dispatcher that translates incoming

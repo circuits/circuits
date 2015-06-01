@@ -1,7 +1,3 @@
-# Package:  circuits
-# Date:     3rd October 2008
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Lightweight Event driven and Asynchronous Application Framework
 
 circuits is a **Lightweight** **Event** driven and **Asynchronous**

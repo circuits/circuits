@@ -1,7 +1,3 @@
-# Module:   sockets
-# Date:     04th August 2004
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """Socket Components
 
 This module contains various Socket Components for use with Networking.

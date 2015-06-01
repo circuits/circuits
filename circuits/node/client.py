@@ -1,12 +1,3 @@
-# Module:   events
-# Date:     February 17, 2015
-# Authors:  Matthieu Chevrier <treemo@hotmail.fr>
-#           Yoann Ono Dit Biot <yoann.onoditbiot@gmail.com>
-
-"""
-This module defines the node client class.
-"""
-
 from circuits.net.sockets import TCPClient
 from circuits import handler, BaseComponent
 from circuits.net.events import close, connect

@@ -1,7 +1,3 @@
-# Module:   docs
-# Date:     03rd April 2013
-# Author:   James Mills, j dot mills at griffith dot edu dot au
-
 """Documentation Tasks"""
 
 from fabric.api import lcd, local, task

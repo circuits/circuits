@@ -1,7 +1,3 @@
-# Module:   test_component_repr
-# Date:     23rd February 2010
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Component Repr Tests
 
 Test Component's representation string.

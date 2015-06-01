@@ -1,7 +1,3 @@
-# Module:   static
-# Date:     13th September 2007
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Static
 
 This modStatic implements a Static dispatcher used to serve up static

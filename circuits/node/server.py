@@ -1,12 +1,3 @@
-# Module:   events
-# Date:     February 17, 2015
-# Authors:  Matthieu Chevrier <treemo@hotmail.fr>
-#           Yoann Ono Dit Biot <yoann.onoditbiot@gmail.com>
-
-"""
-This module defines the node server class.
-"""
-
 from circuits.net.sockets import TCPServer
 from circuits import handler, BaseComponent
 

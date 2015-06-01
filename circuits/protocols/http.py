@@ -1,4 +1,3 @@
-
 from io import BytesIO
 
 from circuits.core import handler, BaseComponent, Event

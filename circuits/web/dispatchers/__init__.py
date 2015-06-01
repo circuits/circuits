@@ -1,7 +1,3 @@
-# Package:  dispatchers
-# Date:     26th February 2011
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Dispatchers
 
 This package contains various circuits.web dispatchers
@@ -17,3 +13,4 @@ from .virtualhosts import VirtualHosts
 from ..websockets.dispatcher import WebSocketsDispatcher
 
 # flake8: noqa
+# pylama: skip=1

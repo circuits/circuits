@@ -1,8 +1,3 @@
-# Module:   events
-# Date:     February 17, 2015
-# Authors:  Matthieu Chevrier <treemo@hotmail.fr>
-#           Yoann Ono Dit Biot <yoann.onoditbiot@gmail.com>
-
 from circuits import Component, handler
 from circuits.core import Value
 from circuits.net.events import write

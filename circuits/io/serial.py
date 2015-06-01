@@ -1,7 +1,3 @@
-# Module:   serial
-# Date:     4th August 2004
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """Serial I/O
 
 This module implements basic Serial (RS232) I/O.

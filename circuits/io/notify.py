@@ -1,7 +1,3 @@
-# Module:   notify
-# Date:     2nd March 2009
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """File Notification Support
 
 A Component wrapping the inotify API using the pyinotify library.

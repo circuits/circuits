@@ -1,7 +1,3 @@
-# Module:   events
-# Date:     21st September 2013
-# Author:   James Mills <prologic@shortcircuit.net.au>
-
 """Networking Events
 
 This module implements commonly used Networking events used by socket components.

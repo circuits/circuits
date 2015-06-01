@@ -1,7 +1,3 @@
-# Module:   test_workers
-# Date:     7th October 2008
-# Author:   James Mills, prologic at shortcircuit dot net dot au
-
 """Workers Tests"""
 
 import pytest
