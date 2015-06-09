@@ -175,11 +175,19 @@ class Request(object):
         self.cookie = SimpleCookie()
 
         if sock is not None:
-            name = sock.getpeername()
+            try:
+                name = sock.getpeername()
+            except OSError:
+                name = None
+
             if name is not None:
                 self.remote = Host(*name)
             else:
-                name = sock.getsockname()
+                try:
+                    name = sock.getsockname()
+                except OSError:
+                    name = 'unknown'
+
                 self.remote = Host(name, "", name)
 
         cookie = self.headers.get("Cookie")
