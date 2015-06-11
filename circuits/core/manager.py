@@ -490,6 +490,7 @@ class Manager(object):
         if isinstance(event, Event):
             event_object = event
             event_name = event.name
+            channels = event.channels or channels
         else:
             event_object = None
             event_name = event
