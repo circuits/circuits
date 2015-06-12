@@ -181,8 +181,6 @@ class BaseComponent(Manager):
         evt.complete_channels = (self,)
         self.fire(evt)
 
-        self.parent = self
-
         return self
 
     @property
