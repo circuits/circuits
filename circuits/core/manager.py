@@ -271,7 +271,7 @@ class Manager(object):
         @rtype Component or Manager
         """
 
-        if y.manager is not y:
+        if y.parent is not y:
             y.unregister()
         return self
 
@@ -285,7 +285,7 @@ class Manager(object):
         @rtype Component or Manager
         """
 
-        if y.manager is not y:
+        if y.parent is not y:
             y.unregister()
         return self
 
@@ -716,8 +716,8 @@ class Manager(object):
         if event.waitingHandlers:
             return
 
-        # The "%s_Done" event is for internal use by waitEvent only.
-        # Use the "%s_Success" event in you application if you are
+        # The "%s_done" event is for internal use by waitEvent only.
+        # Use the "%s_success" event in your application if you are
         # interested in being notified about the last handler for
         # an event having been invoked.
         if event.alert_done:

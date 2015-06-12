@@ -169,7 +169,7 @@ class BaseComponent(Manager):
         :class:`~.events.unregistered` event is fired.
         """
 
-        if self.unregister_pending or self.parent == self:
+        if self.unregister_pending or self.parent is self:
             return self
 
         # tick shouldn't be called anymore, although component is still in tree
@@ -180,6 +180,8 @@ class BaseComponent(Manager):
         evt = prepare_unregister(self)
         evt.complete_channels = (self,)
         self.fire(evt)
+
+        self.parent = self
 
         return self
 
