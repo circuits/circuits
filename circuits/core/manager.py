@@ -264,7 +264,7 @@ class Manager(object):
     def __sub__(self, y):
         """x.__sub__(y) <==> x-y
 
-        (Optional) Convenience operator to unregister y from x.manager
+        (Optional) Convenience operator to unregister y from x.parent
         Equivalent to: y.unregister()
 
         @return: x
