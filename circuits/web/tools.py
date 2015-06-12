@@ -455,13 +455,15 @@ def gzip(response, level=4, mime_types=("text/html", "text/plain",)):
 
 
 class ReverseProxy(BaseComponent):
+
     headers = ('X-Real-IP', 'X-Forwarded-For')
 
     def init(self, headers=None):
-        """ Component for have the original client IP when a reverse proxy is used
+        """Web Component for identifying the original client IP when a reverse proxy is used
 
         :param headers: List of HTTP headers to read the original client IP
         """
+
         if headers:
             self.headers = headers
 
