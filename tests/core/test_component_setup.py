@@ -48,7 +48,7 @@ def test_basic():
     assert app.test in app._handlers.get("test", set())
 
     app.unregister()
-    while m:
+    while len(m):
         m.flush()
 
     assert not m._handlers
@@ -71,7 +71,7 @@ def test_complex():
     assert b.parent == a
 
     a.unregister()
-    while m:
+    while len(m):
         m.flush()
 
     assert b.informed

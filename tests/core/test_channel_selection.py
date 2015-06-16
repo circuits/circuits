@@ -45,7 +45,7 @@ class C(Component):
 def test():
     m = Manager() + A() + B() + C()
 
-    while m:
+    while len(m):
         m.flush()
 
     # Rely on Event.channels

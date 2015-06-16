@@ -18,7 +18,7 @@ class App(Component):
 
 def test_repr():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     e = test()
@@ -34,7 +34,7 @@ def test_repr():
 
 def test_create():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     e = Event.create("test")
@@ -50,7 +50,7 @@ def test_create():
 
 def test_getitem():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     e = test(1, 2, 3, foo="bar")
@@ -66,7 +66,7 @@ def test_getitem():
 
 def test_setitem():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     e = test(1, 2, 3, foo="bar")

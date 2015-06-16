@@ -24,7 +24,7 @@ m = Manager()
 app = App()
 app.register(m)
 
-while app:
+while len(app):
     app.flush()
 
 

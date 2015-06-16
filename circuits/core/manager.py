@@ -198,6 +198,13 @@ class Manager(object):
         self.root = self.parent = self
         self.components = set()
 
+    def __nonzero__(self):
+        "x.__nonzero__() <==> bool(x)"
+
+        return True
+
+    __bool__ = __nonzero__
+
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 

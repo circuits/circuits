@@ -42,7 +42,7 @@ def test_main():
     stderr = StringIO()
     debugger = Debugger(file=stderr)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
     stderr.seek(0)
     stderr.truncate()
@@ -78,7 +78,7 @@ def test_file(tmpdir):
     app = App()
     debugger = Debugger(file=stderr)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
     stderr.seek(0)
     stderr.truncate()
@@ -118,7 +118,7 @@ def test_filename(tmpdir):
     app = App()
     debugger = Debugger(file=logfile)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
     stderr.seek(0)
     stderr.truncate()
@@ -153,7 +153,7 @@ def test_exceptions():
     stderr = StringIO()
     debugger = Debugger(file=stderr)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
     stderr.seek(0)
     stderr.truncate()
@@ -205,7 +205,7 @@ def test_IgnoreEvents():
     stderr = StringIO()
     debugger = Debugger(file=stderr)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
     stderr.seek(0)
     stderr.truncate()
@@ -240,7 +240,7 @@ def test_IgnoreChannels():
     stderr = StringIO()
     debugger = Debugger(file=stderr)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
     stderr.seek(0)
     stderr.truncate()
@@ -274,7 +274,7 @@ def test_Logger_debug():
     logger = Logger()
     debugger = Debugger(logger=logger)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
 
     e = Event()
@@ -289,12 +289,12 @@ def test_Logger_error():
     logger = Logger()
     debugger = Debugger(logger=logger)
     debugger.register(app)
-    while app:
+    while len(app):
         app.flush()
 
     e = test(raiseException=True)
     app.fire(e)
-    while app:
+    while len(app):
         app.flush()
 
     assert logger.error_msg.startswith("ERROR <handler[*][test] (App.test)> (")

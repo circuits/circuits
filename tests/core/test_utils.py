@@ -73,7 +73,7 @@ def test_findroot():
     b.register(a)
     a.register(app)
 
-    while app:
+    while len(app):
         app.flush()
 
     root = findroot(b)
@@ -85,7 +85,7 @@ def test_findchannel():
     app = App()
     (A() + B()).register(app)
 
-    while app:
+    while len(app):
         app.flush()
 
     a = findchannel(app, "a")
@@ -97,7 +97,7 @@ def test_findtype():
     app = App()
     (A() + B()).register(app)
 
-    while app:
+    while len(app):
         app.flush()
 
     a = findtype(app, A)

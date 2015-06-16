@@ -49,7 +49,7 @@ class App(Component):
 def app(request):
     app = App()
 
-    while app:
+    while len(app):
         app.flush()
 
     return app
@@ -132,7 +132,7 @@ def test_commands(event, data):
 def test_responses(app, data, event):
     app.reset()
     app.fire(read(data))
-    while app:
+    while len(app):
         app.flush()
 
     e = app.events[-1]

@@ -34,11 +34,11 @@ class B(Component):
 
 def test_main():
     app = A() + B()
-    while app:
+    while len(app):
         app.flush()
 
     x = app.fire(test(), "a")
-    while app:
+    while len(app):
         app.flush()
 
     assert x.value[0] == "Bar"
@@ -48,12 +48,12 @@ def test_main():
 
 def test_event():
     app = A() + B()
-    while app:
+    while len(app):
         app.flush()
 
     e = test()
     x = app.fire(e)
-    while app:
+    while len(app):
         app.flush()
 
     assert x.value[0] == "Bar"
@@ -63,12 +63,12 @@ def test_event():
 
 def test_channel():
     app = A() + B()
-    while app:
+    while len(app):
         app.flush()
 
     e = foo()
     x = app.fire(e, "b")
-    while app:
+    while len(app):
         app.flush()
 
     assert x.value == "Bar"

@@ -126,7 +126,7 @@ class Application(BaseComponent):
         self.fire(request(self.request, self.response))
 
         self._finished = False
-        while self or not self._finished:
+        while self._queue or not self._finished:
             self.tick()
 
         self.response.prepare()

@@ -23,7 +23,7 @@ class App(BaseComponent):
 
 def test_main():
     app = App()
-    while app:
+    while len(app):
         app.flush()
     x = app.fire(test())
     app.flush()

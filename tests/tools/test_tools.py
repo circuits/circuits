@@ -82,7 +82,7 @@ def test_kill():
     assert not f.components
 
     assert kill(d) is None
-    while a:
+    while len(a):
         a.flush()
 
     assert a.parent == a

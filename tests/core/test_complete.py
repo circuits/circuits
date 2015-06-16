@@ -76,7 +76,7 @@ Nested1().register(app)
 Nested2().register(app)
 Nested3().register(app)
 
-while app:
+while len(app):
     app.flush()
 
 
@@ -85,7 +85,7 @@ def test_complete_simple():
     Test if complete works for an event without further effects
     """
     app.fire(simple_event())
-    while app:
+    while len(app):
         app.flush()
 
     assert app._simple_event_completed
@@ -93,7 +93,7 @@ def test_complete_simple():
 
 def test_complete_nested():
     app.fire(test())
-    while app:
+    while len(app):
         app.flush()
 
     assert app._state_when_success == "Old state"

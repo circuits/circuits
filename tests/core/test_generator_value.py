@@ -28,7 +28,7 @@ class App(Component):
 
 def test_return_generator():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     v = app.fire(test())
@@ -41,7 +41,7 @@ def test_return_generator():
 
 def test_yield():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     v = app.fire(hello())

@@ -33,12 +33,12 @@ def test():
     app = App()
     Line().register(app)
 
-    while app:
+    while len(app):
         app.flush()
 
     app.fire(read(b"1\n2\r\n3\n4"))
 
-    while app:
+    while len(app):
         app.flush()
 
     assert app.lines[0] == b"1"
@@ -54,13 +54,13 @@ def test_server():
         updateBuffer=buffers.__setitem__
     ).register(app)
 
-    while app:
+    while len(app):
         app.flush()
 
     app.fire(read(1, b"1\n2\r\n3\n4"))
     app.fire(read(2, b"1\n2\r\n3\n4"))
 
-    while app:
+    while len(app):
         app.flush()
 
     assert app.lines[0] == (1, b"1")

@@ -52,20 +52,20 @@ def reraise(e):
 
 def test_success():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     e = test()
     value = app.fire(e)
 
-    while app:
+    while len(app):
         app.flush()
 
     # The Event
     s = value.value
     assert s == "Hello World!"
 
-    while app:
+    while len(app):
         app.flush()
 
     assert app.e == e
@@ -76,19 +76,19 @@ def test_success():
 
 def test_failure():
     app = App()
-    while app:
+    while len(app):
         app.flush()
 
     e = test(error=True)
     x = app.fire(e)
 
-    while app:
+    while len(app):
         app.flush()
 
     # The Event
     py.test.raises(Exception, lambda x: reraise(x[1]), x.value)
 
-    while app:
+    while len(app):
         app.flush()
 
     assert app.e == e

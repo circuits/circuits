@@ -26,13 +26,13 @@ m = Manager()
 app = App()
 app.register(m)
 
-while m:
+while len(m):
     m.flush()
 
 
 def test_main():
     v = m.fire(test())
-    while m:
+    while len(m):
         m.flush()
     x = list(v)
     assert x == [3, 2, 0]
