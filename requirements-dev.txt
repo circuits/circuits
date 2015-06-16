@@ -10,6 +10,7 @@ wheel
 # Running Tests
 tox
 pytest
+resource
 coveralls
 pytest-cov
 
