@@ -985,9 +985,6 @@ class Manager(object):
 
         if socket is not None:
             from circuits.core.bridge import Bridge
-            from circuits.core.debugger import Debugger
-
-            Debugger().register(self)
             Bridge(socket, channel=socket.channel).register(self)
 
         self.fire(started(self))

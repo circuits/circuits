@@ -5,8 +5,9 @@ processes. Bridge is used internally when a Component is started in
 "process mode" via :meth:`circuits.core.manager.start`. Typically a
 Pipe is used as the socket transport between two sides of a Bridge
 (*there must be a :class:`~Bridge` instnace on both sides*).
-
 """
+
+
 import traceback
 
 try:
@@ -14,26 +15,38 @@ try:
 except ImportError:
     from pickle import dumps, loads  # NOQA
 
-from .values import Value
-from .events import Event, exception
-from .handlers import handler
-from .components import BaseComponent
+
 from ..six import b
+from .values import Value
+from .handlers import handler
+from .events import Event, exception
+from .components import BaseComponent
 
 
 _sentinel = b('~~~')
 
 
+class child(Event):
+    """child Event
+
+    Send an event to a child process
+    """
+
+    def __init__(self, event, channel=None):
+        """
+        :param event:    Event to execute remotely.
+        :type event:     :class:`circuits.core.events.Event`
+
+        :param channel:    Remote channel (channel to use on peer).
+        :type channel:     str
+        """
+
+        super(child, self).__init__(event, channel=channel)
+
+
 class Bridge(BaseComponent):
 
     channel = "bridge"
-
-    ignore = [
-        "registered", "unregistered", "started", "stopped", "error",
-        "value_changed", "generate_events", "read", "write", "close",
-        "connected", "connect", "disconnect", "disconnected", "_read",
-        "_write", "ready", "read_value_changed", "prepare_unregister"
-    ]
 
     def init(self, socket, channel=channel):
         self._socket = socket
@@ -76,7 +89,7 @@ class Bridge(BaseComponent):
         for item in data[:-1]:
             self._process_packet(*loads(item))
 
-    def send(self, eid, event):
+    def __send(self, eid, event):
         try:
             if isinstance(event, exception):
                 Bridge.__adapt_exception(event)
@@ -88,16 +101,36 @@ class Bridge(BaseComponent):
     def __write(self, eid, data):
         self._socket.write(dumps((eid, data)) + _sentinel)
 
-    @handler(channel="*", priority=100.0)
-    def _on_event(self, event, *args, **kwargs):
-        if event.name in self.ignore or getattr(event, "remote", False) \
-                or event.name.endswith('_done') \
-                or event.name.endswith('_success') \
-                or event.name.endswith('_complete'):
-            return
+    @handler("child")
+    def _on_child(self, event, child_event, channel=None):
+        """Send event to a child process
 
-        eid = hash(event)
-        self.send(eid, event)
+        Event handler to run an event on a child process
+        (the event definition is :class:`circuits.core.bridge.child`)
+
+        :param event:    The event triggered (by the handler)
+        :type event:     :class:`circuits.node.events.remote`
+
+        :param child_event:    Event to execute in child process.
+        :type child_event:     :class:`circuits.core.events.Event`
+
+        :param channel:    Remote channel (channel to use on peer).
+        :type channel:     str
+
+        :return: The result of remote event
+        :rtype: generator
+
+        :Example:
+        ``# hello is your event to execute in the child process
+        result = yield self.fire(child(hello()))
+        print(result.value)``
+        """
+
+        child_event.channels = (channel,) if channel is not None else event.channels
+        event.value.value = child_event.value = Value(child_event, self)
+
+        eid = hash(child_event)
+        self.__send(eid, child_event)
         yield self.wait(Bridge.__waiting_event(eid))
 
     @staticmethod

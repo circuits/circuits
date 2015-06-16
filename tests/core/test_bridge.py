@@ -8,13 +8,14 @@ if pytest.PLATFORM == "win32":
 
 pytest.importorskip("multiprocessing")
 
+
 from os import getpid
 
-from circuits import Component, Event
+
+from circuits import child, Component, Event
 
 
 class hello(Event):
-
     """hello Event"""
 
 
@@ -27,9 +28,9 @@ class App(Component):
 def test(manager, watcher):
     app = App()
     process, bridge = app.start(process=True, link=manager)
-    assert watcher.wait("ready", timeout=30)
+    assert watcher.wait("ready")
 
-    x = manager.fire(hello())
+    x = manager.fire(child(hello()))
 
     assert pytest.wait_for(x, "result")
 

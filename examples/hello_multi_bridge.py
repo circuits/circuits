@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-"""Bridge Example
+"""Multi Bridge Example
 
-This example is quite similar to the Hello example
-but displays a hello form both the parent and child
-processing demonstrating how IPC works using the Bridge.
+Identical to the Hello Bridge Example but with a 2nd child.
 """
 
 
@@ -14,6 +12,10 @@ from os import getpid
 
 
 from circuits import child, Event, Component
+
+
+class go(Event):
+    """go Event"""
 
 
 class hello(Event):
@@ -29,14 +31,25 @@ class Child(Component):
 class App(Component):
 
     def init(self):
-        Child().start(process=True, link=self)
+        self.counter = 0
+        self.child1 = Child().start(process=True, link=self)
+        self.child2 = Child().start(process=True, link=self)
 
     def ready(self, *args):
+        self.counter += 1
+        if self.counter < 2:
+            return
+        self.fire(go())
+
+    def go(self):
         x = yield self.call(hello())
         yield print(x)
 
-        y = yield self.call(child(hello()))
+        y = yield self.call(child(hello()), self.child1[1].channel)
         yield print(y)
+
+        z = yield self.call(child(hello()), self.child2[1].channel)
+        yield print(z)
 
         raise SystemExit(0)
 
