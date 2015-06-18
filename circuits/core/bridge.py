@@ -49,6 +49,7 @@ class Bridge(BaseComponent):
     channel = "bridge"
 
     def init(self, socket, channel=channel):
+        self._buffer = ""
         self._socket = socket
         self._values = dict()
 
@@ -85,8 +86,13 @@ class Bridge(BaseComponent):
 
     @handler("read")
     def _on_read(self, data):
-        data = data.split(_sentinel)
-        for item in data[:-1]:
+        self._buffer += data
+        items = self._buffer.split(_sentinel)
+
+        if items[-1] != "":
+            self._buffer = items.pop()
+
+        for item in filter(None, items):
             self._process_packet(*loads(item))
 
     def __send(self, eid, event):
