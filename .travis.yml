@@ -14,3 +14,5 @@ install:
 script: python setup.py test
 after_success:
   - coveralls
+notifications:
+  irc: "chat.freenode.net#circuits"

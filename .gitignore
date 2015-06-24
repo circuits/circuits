@@ -2,6 +2,7 @@
 tmp
 .git
 .tox
+.env
 dist
 *.pyc
 *.pyo
