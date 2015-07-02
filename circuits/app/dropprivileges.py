@@ -9,9 +9,10 @@ from circuits.core import handler, BaseComponent
 
 class DropPrivileges(BaseComponent):
 
-    def init(self, user="nobody", group="nobody", **kwargs):
+    def init(self, user="nobody", group="nobody", umask=0o077, **kwargs):
         self.user = user
         self.group = group
+        self.umask = umask
 
     def drop_privileges(self):
         if getuid() > 0:
@@ -35,8 +36,8 @@ class DropPrivileges(BaseComponent):
             setgid(gid)
             setuid(uid)
 
-            # Ensure a very conservative umask
-            umask(0o077)
+            if self.umask is not None:
+	            umask(self.umask)
         except Exception as error:
             print("ERROR: Could not drop privileges {0:s}".format(error))
             print(format_exc())
