@@ -117,6 +117,21 @@ _dummy = Dummy()
 del Dummy
 
 
+class _State(object):
+
+    __slots__ = ('task', 'run', 'flag', 'event', 'timeout', 'parent', 'task_event', 'tick_handler')
+
+    def __init__(self, timeout):
+        self.task = None
+        self.run = False
+        self.flag = False
+        self.event = None
+        self.timeout = timeout
+        self.parent = None
+        self.task_event = None
+        self.tick_handler = None
+
+
 class Manager(object):
 
     """
@@ -502,47 +517,37 @@ class Manager(object):
             event_object = None
             event_name = event
 
-        state = {
-            'run': False,
-            'flag': False,
-            'event': None,
-            'timeout': kwargs.get("timeout", -1)
-        }
+        state = _State(timeout=kwargs.get("timeout", -1))
 
         def _on_event(self, event, *args, **kwargs):
-            if not state['run'] and (
+            if not state.run and (
                     event_object is None or event is event_object
             ):
                 self.removeHandler(_on_event_handler, event_name)
                 event.alert_done = True
-                state['run'] = True
-                state['event'] = event
+                state.run = True
+                state.event = event
 
         def _on_done(self, event, *args, **kwargs):
-            if state['event'] == event.parent:
-                state['flag'] = True
-                self.registerTask((state['task_event'],
-                                   state['task'],
-                                   state['parent']))
-                if state['timeout'] > 0:
-                    self.removeHandler(
-                        state['tick_handler'],
-                        "generate_events"
-                    )
+            if state.event == event.parent:
+                state.flag = True
+                self.registerTask((state.task_event, state.task, state.parent))
+                if state.timeout > 0:
+                    self.removeHandler(state.tick_handler, "generate_events")
 
         def _on_tick(self):
-            if state['timeout'] == 0:
+            if state.timeout == 0:
                 self.registerTask(
                     (
-                        state['task_event'],
+                        state.task_event,
                         (e for e in (ExceptionWrapper(TimeoutError()),)),
-                        state['parent']
+                        state.parent
                     )
                 )
                 self.removeHandler(_on_done_handler, "%s_done" % event_name)
                 self.removeHandler(_on_tick_handler, "generate_events")
-            elif state['timeout'] > 0:
-                state['timeout'] -= 1
+            elif state.timeout > 0:
+                state.timeout -= 1
 
         if not channels:
             channels = (None,)
@@ -552,17 +557,17 @@ class Manager(object):
                 handler(event_name, channel=channel)(_on_event))
             _on_done_handler = self.addHandler(
                 handler("%s_done" % event_name, channel=channel)(_on_done))
-            if state['timeout'] >= 0:
-                _on_tick_handler = state['tick_handler'] = self.addHandler(
+            if state.timeout >= 0:
+                _on_tick_handler = state.tick_handler = self.addHandler(
                     handler("generate_events", channel=channel)(_on_tick))
 
         yield state
 
-        if not state['timeout']:
+        if not state.timeout:
             self.removeHandler(_on_done_handler, "%s_done" % event_name)
 
-        if state["event"] is not None:
-            yield CallValue(state["event"].value)
+        if state.event is not None:
+            yield CallValue(state.event.value)
 
     wait = waitEvent
 
@@ -850,9 +855,9 @@ class Manager(object):
                     # in the waitEvent generator
                     # self.registerTask((event, value, parent))
                     task_state = next(value)
-                    task_state['task_event'] = event
-                    task_state['task'] = value
-                    task_state['parent'] = parent
+                    task_state.task_event = event
+                    task_state.task = value
+                    task_state.parent = parent
                 else:
                     event.waitingHandlers -= 1
                     if value is not None:
@@ -863,9 +868,9 @@ class Manager(object):
                 self.unregisterTask((event, task, None))
                 # First yielded value is always the task state
                 task_state = next(value)
-                task_state['task_event'] = event
-                task_state['task'] = value
-                task_state['parent'] = task
+                task_state.task_event = event
+                task_state.task = value
+                task_state.parent = task
                 # The below code is delegated to handlers
                 # in the waitEvent generator
                 # self.registerTask((event, value, task))
