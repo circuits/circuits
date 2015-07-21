@@ -2,3 +2,4 @@ recursive-include docs *
 recursive-include tests *
 recursive-include examples *
 include LICENSE Makefile *.rst *.txt *.ini
+prune docs/build
