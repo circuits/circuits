@@ -62,7 +62,18 @@ setup(
     license="MIT",
     keywords="event framework distributed concurrent component asynchronous",
     platforms="POSIX",
-    packages=find_packages("."),
+    packages=find_packages(
+        exclude=[
+            "*.tests",
+            "*.tests.*",
+            "tests.*",
+            "tests",
+            "*.fabfile",
+            "*.fabfile.*",
+            "fabfile.*",
+            "fabfile",
+        ]
+    ),
     scripts=glob("bin/*"),
     install_requires=[],
     entry_points={
