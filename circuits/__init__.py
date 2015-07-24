@@ -16,12 +16,10 @@ __date__ = "24th February 2013"
 from .version import version as __version__
 
 from .core import Event
-from .core import child, Bridge
+from .core import ipc, Bridge
 from .core import sleep, task, Worker
 from .core import handler, reprhandler, BaseComponent, Component
 from .core import Debugger, Loader, Manager, Timer, TimeoutError
-
-# flake8: noqa
 
 # See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
 try:
@@ -37,3 +35,6 @@ except ImportError:
             with open(_path) as fd:
                 exec_(fd, globals())
     del os, extend_path, _path, fd, exec_
+
+# flake8: noqa
+# pylama:skip=1

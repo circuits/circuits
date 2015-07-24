@@ -16,7 +16,7 @@ from traceback import format_exc
 from signal import SIGINT, SIGTERM
 
 
-from circuits import child, handler, Event, Component, Timer
+from circuits import ipc, handler, Event, Component
 
 
 def log(msg, *args, **kwargs):
@@ -41,40 +41,35 @@ class pong(Event):
     """pong Event"""
 
 
-class display(Event):
-    """display Event"""
-
-
 class Child(Component):
 
     def ping(self, ts):
-        self.fire(child(pong(ts, time())))
+        self.fire(ipc(pong(ts, time())))
 
 
 class App(Component):
 
     def init(self):
         self.events = 0
-        self.latency = 0
         self.stime = time()
 
+        from circuits import Debugger
+        Debugger(events=False).register(self)
+
         Child().start(process=True, link=self)
-        Timer(0.5, display(), persist=True).register(self)
 
     def ready(self, *args):
-        self.fire(child(ping(time())))
+        self.fire(ipc(ping(time())))
 
     def pong(self, ts1, ts2):
-        self.latency = (ts2 - ts1) * 1000.0
-        self.fire(child(ping(time())))
-
-    def display(self):
+        latency = (ts2 - ts1) * 1000.0
         status(
             "{0:d} event/s @ {1:0.2f}ms latency".format(
                 int(self.events / (time() - self.stime)),
-                self.latency
+                latency
             )
         )
+        self.fire(ipc(ping(time())))
 
     def signal(self, signo, stack):
         if signo in [SIGINT, SIGTERM]:

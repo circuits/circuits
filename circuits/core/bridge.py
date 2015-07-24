@@ -26,22 +26,22 @@ from .components import BaseComponent
 _sentinel = b('~~~')
 
 
-class child(Event):
-    """child Event
+class ipc(Event):
+    """ipc Event
 
-    Send an event to a child process
+    Send an event to a child/parent process
     """
 
     def __init__(self, event, channel=None):
         """
-        :param event:    Event to execute remotely.
-        :type event:     :class:`circuits.core.events.Event`
+        :param event:   Event to execute remotely.
+        :type event:    :class:`circuits.core.events.Event`
 
-        :param channel:    Remote channel (channel to use on peer).
-        :type channel:     str
+        :param channel: IPC Channel (channel to use on child/parent).
+        :type channel:  str
         """
 
-        super(child, self).__init__(event, channel=channel)
+        super(ipc, self).__init__(event, channel=channel)
 
 
 class Bridge(BaseComponent):
@@ -107,18 +107,18 @@ class Bridge(BaseComponent):
     def __write(self, eid, data):
         self._socket.write(dumps((eid, data)) + _sentinel)
 
-    @handler("child")
-    def _on_child(self, event, child_event, channel=None):
-        """Send event to a child process
+    @handler("ipc")
+    def _on_ipc(self, event, ipc_event, channel=None):
+        """Send event to a child/parentprocess
 
-        Event handler to run an event on a child process
-        (the event definition is :class:`circuits.core.bridge.child`)
+        Event handler to run an event on a child/parent process
+        (the event definition is :class:`circuits.core.bridge.ipc`)
 
         :param event:    The event triggered (by the handler)
         :type event:     :class:`circuits.node.events.remote`
 
-        :param child_event:    Event to execute in child process.
-        :type child_event:     :class:`circuits.core.events.Event`
+        :param ipc_event:    Event to execute in child/parent process.
+        :type ipc_event:     :class:`circuits.core.events.Event`
 
         :param channel:    Remote channel (channel to use on peer).
         :type channel:     str
@@ -128,15 +128,15 @@ class Bridge(BaseComponent):
 
         :Example:
         ``# hello is your event to execute in the child process
-        result = yield self.fire(child(hello()))
+        result = yield self.fire(ipc(hello()))
         print(result.value)``
         """
 
-        child_event.channels = (channel,) if channel is not None else event.channels
-        event.value.value = child_event.value = Value(child_event, self)
+        ipc_event.channels = (channel,) if channel is not None else event.channels
+        event.value.value = ipc_event.value = Value(ipc_event, self)
 
-        eid = hash(child_event)
-        self.__send(eid, child_event)
+        eid = hash(ipc_event)
+        self.__send(eid, ipc_event)
         yield self.wait(Bridge.__waiting_event(eid))
 
     @staticmethod

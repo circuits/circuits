@@ -13,7 +13,7 @@ from __future__ import print_function
 from os import getpid
 
 
-from circuits import child, Event, Component
+from circuits import ipc, Event, Component
 
 
 class hello(Event):
@@ -35,7 +35,7 @@ class App(Component):
         x = yield self.call(hello())
         yield print(x)
 
-        y = yield self.call(child(hello()))
+        y = yield self.call(ipc(hello()))
         yield print(y)
 
         raise SystemExit(0)

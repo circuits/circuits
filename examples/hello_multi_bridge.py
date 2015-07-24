@@ -11,7 +11,7 @@ from __future__ import print_function
 from os import getpid
 
 
-from circuits import child, Event, Component
+from circuits import ipc, Event, Component
 
 
 class go(Event):
@@ -45,10 +45,10 @@ class App(Component):
         x = yield self.call(hello())
         yield print(x)
 
-        y = yield self.call(child(hello()), self.child1[1].channel)
+        y = yield self.call(ipc(hello()), self.child1[1].channel)
         yield print(y)
 
-        z = yield self.call(child(hello()), self.child2[1].channel)
+        z = yield self.call(ipc(hello()), self.child2[1].channel)
         yield print(z)
 
         raise SystemExit(0)

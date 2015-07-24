@@ -12,7 +12,7 @@ pytest.importorskip("multiprocessing")
 from os import getpid
 
 
-from circuits import child, Component, Event
+from circuits import ipc, Component, Event
 
 
 class hello(Event):
@@ -30,7 +30,7 @@ def test(manager, watcher):
     process, bridge = app.start(process=True, link=manager)
     assert watcher.wait("ready")
 
-    x = manager.fire(child(hello()))
+    x = manager.fire(ipc(hello()))
 
     assert pytest.wait_for(x, "result")
 
