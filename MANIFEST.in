@@ -1,8 +1,9 @@
-recursive-include docs *
-recursive-include examples *
 recursive-include man *
 recursive-include tests *
 
-include LICENSE Makefile *.rst *.txt *.ini
+include LICENSE README.rst CHANGES.rst
 
-prune docs/build
+prune docs
+prune fabfile
+prune examples
+prune setup.cfg
