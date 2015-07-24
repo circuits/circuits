@@ -53,9 +53,6 @@ class App(Component):
         self.events = 0
         self.stime = time()
 
-        from circuits import Debugger
-        Debugger(events=False).register(self)
-
         Child().start(process=True, link=self)
 
     def ready(self, *args):
