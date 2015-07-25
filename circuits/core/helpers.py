@@ -2,11 +2,10 @@
 .. codeauthor: mnl
 """
 
-
 from sys import stderr
 from threading import Event
 from signal import SIGINT, SIGTERM
-
+from traceback import format_exception_only
 
 from .handlers import handler
 from .components import BaseComponent
@@ -92,7 +91,9 @@ class FallBackExceptionHandler(BaseComponent):
         )
 
         s.append(msg)
+        s.append('Traceback (most recent call last):\n')
         s.extend(traceback)
+        s.extend(format_exception_only(error_type, value))
         s.append("\n")
         stderr.write("".join(s))
 
