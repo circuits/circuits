@@ -49,7 +49,7 @@ class Bridge(BaseComponent):
     channel = "bridge"
 
     def init(self, socket, channel=channel):
-        self._buffer = ""
+        self._buffer = b("")
         self._socket = socket
         self._values = dict()
 
