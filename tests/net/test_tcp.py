@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+
 import pytest
 
+
 import select
+import os.path
 from socket import error as SocketError
 from socket import EAI_NODATA, EAI_NONAME
 from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
@@ -15,6 +18,9 @@ from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
 from .client import Client
 from .server import Server
 from tests.conftest import WaitEvent
+
+
+CERT_FILE = os.path.join(os.path.dirname(__file__), "cert.pem")
 
 
 def wait_host(server):
@@ -65,6 +71,48 @@ def test_tcp_basic(Poller, ipv6):
         wait_host(server)
 
         client.fire(connect(server.host, server.port))
+        assert pytest.wait_for(client, "connected")
+        assert pytest.wait_for(server, "connected")
+        assert pytest.wait_for(client, "data", b"Ready")
+
+        client.fire(write(b"foo"))
+        assert pytest.wait_for(server, "data", b"foo")
+        assert pytest.wait_for(client, "data", b"foo")
+
+        client.fire(close())
+        assert pytest.wait_for(client, "disconnected")
+        assert pytest.wait_for(server, "disconnected")
+
+        server.fire(close())
+        assert pytest.wait_for(server, "closed")
+    finally:
+        m.stop()
+
+
+def test_tcps_basic(manager, watcher, Poller, ipv6):
+    from circuits import Debugger
+    m = Manager() + Debugger() + Poller()
+
+    if ipv6:
+        tcp_server = TCP6Server(("::1", 0), secure=True, certfile=CERT_FILE)
+        tcp_client = TCP6Client()
+    else:
+        tcp_server = TCPServer(0, secure=True, certfile=CERT_FILE)
+        tcp_client = TCPClient()
+    server = Server() + tcp_server
+    client = Client() + tcp_client
+
+    server.register(m)
+    client.register(m)
+
+    m.start()
+
+    try:
+        assert pytest.wait_for(client, "ready")
+        assert pytest.wait_for(server, "ready")
+        wait_host(server)
+
+        client.fire(connect(server.host, server.port, ssl=True))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
@@ -218,7 +266,7 @@ def test_tcp_bind(Poller, ipv6):
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
 
-        #assert server.client[1] == bind_port
+        # assert server.client[1] == bind_port
 
         client.fire(write(b"foo"))
         assert pytest.wait_for(server, "data", b"foo")
