@@ -89,7 +89,7 @@ def test_tcp_basic(Poller, ipv6):
         m.stop()
 
 
-def test_tcps_basic(manager, watcher, Poller, ipv6):
+def test_tcps_basic(Poller, ipv6):
     from circuits import Debugger
     m = Manager() + Debugger() + Poller()
 
@@ -112,7 +112,7 @@ def test_tcps_basic(manager, watcher, Poller, ipv6):
         assert pytest.wait_for(server, "ready")
         wait_host(server)
 
-        client.fire(connect(server.host, server.port, ssl=True))
+        client.fire(connect(server.host, server.port, secure=True))
         assert pytest.wait_for(client, "connected")
         assert pytest.wait_for(server, "connected")
         assert pytest.wait_for(client, "data", b"Ready")
