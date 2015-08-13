@@ -46,15 +46,17 @@ BUFSIZE = 4096  # 4KB Buffer
 BACKLOG = 5000  # 5K Concurrent Connections
 
 
-def do_handshake(sock, done=None, error=None):
+def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
     """SSL Async Handshake
 
-    :param done: Function called when handshake is complete
-    :type done: :function:
+    :param on_done: Function called when handshake is complete
+    :type on_done: :function:
 
-    :param error: Function called when handshake errored
-    :type error: :function:
+    :param on_error: Function called when handshake errored
+    :type on_error: :function:
     """
+
+    extra_args = extra_args or ()
 
     while True:
         try:
@@ -66,11 +68,11 @@ def do_handshake(sock, done=None, error=None):
             elif err.args[0] == SSL_ERROR_WANT_WRITE:
                 select.select([], [sock], [])
             else:
-                callable(error) and error(sock, err)
+                callable(on_error) and on_error(sock, err)
 
         yield
 
-    callable(done) and done(sock)
+    callable(on_done) and on_done(sock, *extra_args)
 
 
 class Client(BaseComponent):
@@ -283,12 +285,12 @@ class TCPClient(Client):
             self.fire(unreachable(host, port))
             raise StopIteration()
 
-        def done(sock):
+        def on_done(sock):
             self._poller.addReader(self, sock)
             self.fire(connected(host, port))
 
         if self.secure:
-            def error(sock, err):
+            def on_error(sock, err):
                 self.fire(error(sock, err))
                 self._close()
 
@@ -296,10 +298,10 @@ class TCPClient(Client):
                 self._sock, self.keyfile, self.certfile,
                 do_handshake_on_connect=False
             )
-            for _ in do_handshake(self._sock, done, error):
+            for _ in do_handshake(self._sock, on_done, on_error):
                 yield
         else:
-            done(self.sock)
+            on_done(self._sock)
 
 
 class TCP6Client(TCPClient):
@@ -357,17 +359,17 @@ class UNIXClient(Client):
         self._poller.addReader(self, self._sock)
 
         if self.secure:
-            def done(sock):
+            def on_done(sock):
                 self.fire(connected(gethostname(), path))
 
-            def error(sock, err):
+            def on_error(sock, err):
                 self.fire(error(err))
 
             self._ssock = ssl_socket(
                 self._sock, self.keyfile, self.certfile,
                 do_handshake_on_connect=False
             )
-            for _ in do_handshake(self._ssock):
+            for _ in do_handshake(self._ssock, on_done, on_error):
                 yield
         else:
             self.fire(connected(gethostname(), path))
@@ -471,6 +473,7 @@ class Server(BaseComponent):
     def _close(self, sock):
         if sock is None:
             return
+
         if sock != self._sock and sock not in self._clients:
             return
 
@@ -553,20 +556,18 @@ class Server(BaseComponent):
         # XXX: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
 
+        def on_done(sock, host):
+            sock.setblocking(False)
+            self._poller.addReader(self, sock)
+            self._clients.append(sock)
+            self.fire(connect(sock, *host))
+
+        def on_error(sock, err):
+            self.fire(error(sock, err))
+            self._close(sock)
+
         try:
             newsock, host = self._sock.accept()
-
-            if self.secure and HAS_SSL:
-                newsock = ssl_socket(
-                    newsock,
-                    server_side=True,
-                    keyfile=self.keyfile,
-                    ca_certs=self.ca_certs,
-                    certfile=self.certfile,
-                    cert_reqs=self.cert_reqs,
-                    ssl_version=self.ssl_version,
-                    do_handshake_on_connect=False
-                )
         except SocketError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
@@ -593,21 +594,22 @@ class Server(BaseComponent):
             else:
                 raise
 
-        def done(sock):
-            sock.setblocking(False)
-            self._poller.addReader(self, sock)
-            self._clients.append(sock)
-            self.fire(connect(sock, *host))
-
-        def error(sock, err):
-            self.fire(error(sock, err))
-            self._close(sock)
-
         if self.secure and HAS_SSL:
-            for _ in do_handshake(newsock, done, error):
+            sslsock = ssl_socket(
+                newsock,
+                server_side=True,
+                keyfile=self.keyfile,
+                ca_certs=self.ca_certs,
+                certfile=self.certfile,
+                cert_reqs=self.cert_reqs,
+                ssl_version=self.ssl_version,
+                do_handshake_on_connect=False
+            )
+
+            for _ in do_handshake(sslsock, on_done, on_error, extra_args=(host,)):
                 yield
         else:
-            done(newsock)
+            on_done(newsock)
 
     @handler("_disconnect", priority=1)
     def _on_disconnect(self, sock):
@@ -616,7 +618,7 @@ class Server(BaseComponent):
     @handler("_read", priority=1)
     def _on_read(self, sock):
         if sock == self._sock:
-            self._accept()
+            return self._accept()
         else:
             self._read(sock)
 
