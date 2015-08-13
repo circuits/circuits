@@ -5,6 +5,7 @@ This module contains various Socket Components for use with Networking.
 
 import os
 import select
+from time import time
 from collections import defaultdict, deque
 
 from errno import EAGAIN, EALREADY, EBADF
@@ -19,7 +20,6 @@ from socket import getfqdn, gethostbyname, socket, getaddrinfo, gethostname
 
 from socket import AF_INET, AF_INET6, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
 from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
-from time import time
 
 try:
     from ssl import wrap_socket as ssl_socket
@@ -44,6 +44,33 @@ from .events import close, closed, connect, connected, disconnect, \
 
 BUFSIZE = 4096  # 4KB Buffer
 BACKLOG = 5000  # 5K Concurrent Connections
+
+
+def do_handshake(sock, done=None, error=None):
+    """SSL Async Handshake
+
+    :param done: Function called when handshake is complete
+    :type done: :function:
+
+    :param error: Function called when handshake errored
+    :type error: :function:
+    """
+
+    while True:
+        try:
+            sock.do_handshake()
+            break
+        except SSLError as err:
+            if err.args[0] == SSL_ERROR_WANT_READ:
+                select.select([sock], [], [])
+            elif err.args[0] == SSL_ERROR_WANT_WRITE:
+                select.select([], [sock], [])
+            else:
+                callable(error) and error(sock, err)
+
+        yield
+
+    callable(done) and done(sock)
 
 
 class Client(BaseComponent):
@@ -198,24 +225,6 @@ class Client(BaseComponent):
                 self._poller.removeWriter(self._sock)
 
 
-def _do_handshake_for_non_blocking(ssock):
-    """
-    This is how to do handshake for an ssl socket with underlying
-    non-blocking socket (according to the Python doc).
-    """
-    while True:
-        try:
-            ssock.do_handshake()
-            break
-        except SSLError as err:
-            if err.args[0] == SSL_ERROR_WANT_READ:
-                select.select([ssock], [], [])
-            elif err.args[0] == SSL_ERROR_WANT_WRITE:
-                select.select([], [ssock], [])
-            else:
-                raise
-
-
 class TCPClient(Client):
 
     socket_family = AF_INET
@@ -233,8 +242,11 @@ class TCPClient(Client):
 
         return sock
 
-    @handler("connect")
+    @handler("connect")  # noqa
     def connect(self, host, port, secure=False, **kwargs):
+        # XXX: C901: This has a high McCacbe complexity score of 10.
+        # TODO: Refactor this!
+
         self.host = host
         self.port = port
         self.secure = secure
@@ -256,7 +268,7 @@ class TCPClient(Client):
                 self.fire(unreachable(host, port, e))
                 self.fire(error(e))
                 self._close()
-                raise StopIteration
+                raise StopIteration()
 
         stop_time = time() + self.connect_timeout
         while time() < stop_time:
@@ -269,17 +281,25 @@ class TCPClient(Client):
 
         if not self._connected:
             self.fire(unreachable(host, port))
-            raise StopIteration
+            raise StopIteration()
 
-        self._poller.addReader(self, self._sock)
+        def done(sock):
+            self._poller.addReader(self, sock)
+            self.fire(connected(host, port))
+
         if self.secure:
+            def error(sock, err):
+                self.fire(error(sock, err))
+                self._close()
+
             self._sock = ssl_socket(
                 self._sock, self.keyfile, self.certfile,
                 do_handshake_on_connect=False
             )
-            _do_handshake_for_non_blocking(self._sock)
-
-        self.fire(connected(host, port))
+            for _ in do_handshake(self._sock, done, error):
+                yield
+        else:
+            done(self.sock)
 
 
 class TCP6Client(TCPClient):
@@ -308,8 +328,11 @@ class UNIXClient(Client):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
-    @handler("connect")
+    @handler("connect")  # noqa
     def connect(self, path, secure=False, **kwargs):
+        # XXX: C901: This has a high McCacbe complexity score of 10.
+        # TODO: Refactor this!
+
         self.path = path
         self.secure = secure
 
@@ -334,13 +357,20 @@ class UNIXClient(Client):
         self._poller.addReader(self, self._sock)
 
         if self.secure:
+            def done(sock):
+                self.fire(connected(gethostname(), path))
+
+            def error(sock, err):
+                self.fire(error(err))
+
             self._ssock = ssl_socket(
                 self._sock, self.keyfile, self.certfile,
                 do_handshake_on_connect=False
             )
-            _do_handshake_for_non_blocking(self._ssock)
-
-        self.fire(connected(gethostname(), path))
+            for _ in do_handshake(self._ssock):
+                yield
+        else:
+            self.fire(connected(gethostname(), path))
 
 
 class Server(BaseComponent):
@@ -519,11 +549,15 @@ class Server(BaseComponent):
             self._poller.addWriter(self, sock)
         self._buffers[sock].append(data)
 
-    def _accept(self):
+    def _accept(self):  # noqa
+        # XXX: C901: This has a high McCacbe complexity score of 10.
+        # TODO: Refactor this!
+
         try:
             newsock, host = self._sock.accept()
+
             if self.secure and HAS_SSL:
-                sslsock = ssl_socket(
+                newsock = ssl_socket(
                     newsock,
                     server_side=True,
                     keyfile=self.keyfile,
@@ -533,16 +567,6 @@ class Server(BaseComponent):
                     ssl_version=self.ssl_version,
                     do_handshake_on_connect=False
                 )
-                try:
-                    _do_handshake_for_non_blocking(sslsock)
-                    newsock = sslsock
-                except SSLError as e:
-                    self.fire(error(self._sock, e))
-                    newsock.shutdown(2)
-                    newsock.close()
-                    return
-                else:
-                    newsock = sslsock
         except SocketError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
@@ -569,10 +593,21 @@ class Server(BaseComponent):
             else:
                 raise
 
-        newsock.setblocking(False)
-        self._poller.addReader(self, newsock)
-        self._clients.append(newsock)
-        self.fire(connect(newsock, *host))
+        def done(sock):
+            sock.setblocking(False)
+            self._poller.addReader(self, sock)
+            self._clients.append(sock)
+            self.fire(connect(sock, *host))
+
+        def error(sock, err):
+            self.fire(error(sock, err))
+            self._close(sock)
+
+        if self.secure and HAS_SSL:
+            for _ in do_handshake(newsock, done, error):
+                yield
+        else:
+            done(newsock)
 
     @handler("_disconnect", priority=1)
     def _on_disconnect(self, sock):
