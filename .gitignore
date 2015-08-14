@@ -4,6 +4,7 @@ tmp
 .tox
 .env
 dist
+.eggs
 *.pyc
 *.pyo
 *.bak
@@ -15,3 +16,4 @@ coverage
 .coverage*
 docs/build
 *.egg-info
+*/version.py

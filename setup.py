@@ -7,12 +7,8 @@ from glob import glob
 from setuptools import setup, find_packages
 
 
-from circuits.version import version
-
-
 setup(
     name="circuits",
-    version=version,
     description="Asynchronous Component based Event Application Framework",
     long_description=open("README.rst").read().replace(
         ".. include:: examples/index.rst",
@@ -82,5 +78,11 @@ setup(
         ]
     },
     test_suite="tests.main.main",
-    zip_safe=True
+    zip_safe=True,
+    use_scm_version={
+        "write_to": "circuits/version.py",
+    },
+    setup_requires=[
+        "setuptools_scm"
+    ],
 )
