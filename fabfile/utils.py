@@ -1,8 +1,11 @@
 """Utilities"""
 
 
-from functools import wraps
+import sys
 from imp import find_module
+from functools import wraps
+from collections import deque
+from itertools import count, izip
 from contextlib import contextmanager
 
 
@@ -83,3 +86,42 @@ def requires(*names, **kwargs):
                 abort("requires({0:s}) failed".format(repr(names)))
         return wrapper
     return decorator
+
+
+def ilen(seq):
+    """Consume an iterable not reading it into memory; return the number of items.
+
+    Borrowed from: https://github.com/Suor/funcy/blob/master/funcy/seqs.py
+    """
+
+    # NOTE: implementation borrowed from http://stackoverflow.com/a/15112059/753382
+    counter = count()
+    deque(izip(seq, counter), maxlen=0)  # (consume at C speed)
+    return next(counter)
+
+
+def progressbar(it, prefix="", size=60):
+    """Simple Progress Bar
+
+    Borrowed from: http://code.activestate.com/recipes/576986-progress-bar-for-console-programs-as-iterator/
+    """
+
+    count = ilen(it)
+
+    def update(i):
+        x = int(float(i) / float(count) * float(size))
+        # x = int(ceil(float(size) * float(i) / float(count)))
+        sys.stdout.write(
+            "{0}: [{1}{2}] {3}/{4}\r".format(
+                prefix, "#" * x, "." * (size - x), i, count
+            )
+        )
+        sys.stdout.flush()
+
+    update(0)
+    for i, item in enumerate(it):
+        yield item
+        update(i + 1)
+
+    sys.stdout.write("\n")
+    sys.stdout.flush()
