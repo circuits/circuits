@@ -45,17 +45,12 @@ class JSONRPC(BaseComponent):
             if isinstance(params, dict):
                 params = dict([(str(k), v) for k, v in params.iteritems()])
 
-            if "." in method:
-                channel, name = method.split(".", 1)
-            else:
-                channel, name = self.rpc_channel, method
-
-            name = str(name) if not isinstance(name, binary_type) else name
+            method = str(method) if not isinstance(method, binary_type) else method
 
             if isinstance(params, dict):
-                value = yield self.call(rpc.create(name, **params), channel)
+                value = yield self.call(rpc.create(method, **params), self.rpc_channel)
             else:
-                value = yield self.call(rpc.create(name, *params), channel)
+                value = yield self.call(rpc.create(method, *params), self.rpc_channel)
 
             yield self._response(id, value.value)
         except Exception as e:

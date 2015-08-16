@@ -40,14 +40,9 @@ class XMLRPC(BaseComponent):
             data = req.body.read()
             params, method = loads(data)
 
-            if "." in method:
-                channel, name = method.split(".", 1)
-            else:
-                channel, name = self.rpc_channel, method
+            method = str(method) if not isinstance(method, binary_type) else method
 
-            name = str(name) if not isinstance(name, binary_type) else name
-
-            value = yield self.call(rpc.create(name, *params), channel)
+            value = yield self.call(rpc.create(method, *params), self.rpc_channel)
             yield self._response(value.value)
         except Exception as e:
             yield self._error(1, "%s: %s" % (type(e), e))
