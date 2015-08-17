@@ -69,6 +69,7 @@ def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
                 select.select([], [sock], [])
             else:
                 callable(on_error) and on_error(sock, err)
+                return
 
         yield
 
