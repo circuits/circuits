@@ -173,7 +173,12 @@ class Client(BaseComponent):
             if self.secure and self._ssock:
                 data = self._ssock.read(self._bufsize)
             else:
-                data = self._sock.recv(self._bufsize)
+                try:
+                    data = self._sock.recv(self._bufsize)
+                except SSLError as exc:
+                    if exc.errno in (SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE):
+                        return
+                    raise
 
             if data:
                 self.fire(read(data)).notify = True
@@ -257,6 +262,7 @@ class TCPClient(Client):
         if self.secure:
             self.certfile = kwargs.get("certfile", None)
             self.keyfile = kwargs.get("keyfile", None)
+            self.ca_certs = kwargs.get("ca_certs", None)
 
         try:
             r = self._sock.connect((host, port))
@@ -296,7 +302,7 @@ class TCPClient(Client):
                 self._close()
 
             self._sock = ssl_socket(
-                self._sock, self.keyfile, self.certfile,
+                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs,
                 do_handshake_on_connect=False
             )
             for _ in do_handshake(self._sock, on_done, on_error):
@@ -342,6 +348,7 @@ class UNIXClient(Client):
         if self.secure:
             self.certfile = kwargs.get("certfile", None)
             self.keyfile = kwargs.get("keyfile", None)
+            self.ca_certs = kwargs.get("ca_certs", None)
 
         try:
             r = self._sock.connect_ex(path)
@@ -367,7 +374,7 @@ class UNIXClient(Client):
                 self.fire(error(err))
 
             self._ssock = ssl_socket(
-                self._sock, self.keyfile, self.certfile,
+                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs,
                 do_handshake_on_connect=False
             )
             for _ in do_handshake(self._ssock, on_done, on_error):
