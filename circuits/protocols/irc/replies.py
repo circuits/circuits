@@ -1,9 +1,6 @@
 """Internet Relay Chat Protocol replies"""
 
 
-from operator import attrgetter
-
-
 from .message import Message
 
 
@@ -56,10 +53,8 @@ def RPL_NOTOPIC(channel):
     return _M("331", channel, "No topic is set")
 
 
-def RPL_NAMEREPLY(channel):
-    prefix = "="
-    nicks = " ".join(map(attrgetter("nick"), channel.users))
-    return _M("353", prefix, channel.name, nicks)
+def RPL_NAMEREPLY(channel, names):
+    return _M("353", "=", channel, " ".join(names))
 
 
 def RPL_ENDOFNAMES():
