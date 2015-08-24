@@ -3,7 +3,12 @@ This module defines the basic event class and common events.
 """
 
 
+import sys
 from inspect import ismethod
+from traceback import format_exc
+
+
+from .utils import saferepr
 
 
 class EventType(type):
@@ -127,19 +132,24 @@ class Event(object):
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
 
-        if len(self.channels) > 1:
-            channels = repr(self.channels)
-        elif len(self.channels) == 1:
-            channels = str(self.channels[0])
-        else:
-            channels = ""
+        try:
+            if len(self.channels) > 1:
+                channels = repr(self.channels)
+            elif len(self.channels) == 1:
+                channels = str(self.channels[0])
+            else:
+                channels = ""
 
-        data = "%s %s" % (
-            ", ".join(repr(arg) for arg in self.args),
-            ", ".join("%s=%s" % (k, repr(v)) for k, v in self.kwargs.items())
-        )
+            data = "{0} {1}".format(
+                ", ".join(saferepr(arg) for arg in self.args),
+                ", ".join("{0}={1}".format(k, saferepr(v)) for k, v in self.kwargs.items())
+            )
 
-        return "<%s[%s] (%s)>" % (self.name, channels, data)
+            return "<{0}[{1}] ({2})>".format(self.name, channels, data)
+        except Exception as e:
+            sys.stderr.write("ERROR (Event): {}".format(e))
+            sys.stderr.write("{}".format(format_exc()))
+            return ""
 
     def __getitem__(self, x):
         """x.__getitem__(y) <==> x[y]
