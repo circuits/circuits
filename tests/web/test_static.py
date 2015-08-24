@@ -67,7 +67,7 @@ def test_directory(webapp):
     assert b"helloworld.txt" in s
 
 
-def test_file_quoating(webapp):
+def test_file_quooting(webapp):
     url = "{0:s}{1:s}".format(
         webapp.server.http.base, quote("/static/#foobar.txt"))
     f = urlopen(url)
