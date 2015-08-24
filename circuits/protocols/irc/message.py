@@ -61,7 +61,7 @@ class Message(object):
         )
 
     def __repr__(self):
-        return "\"{0:s}\"".format(str(self)[:-2])
+        return repr(unicode(self)[:-2])
 
     def __eq__(self, other):
         return isinstance(other, Message) \
