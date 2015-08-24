@@ -1,6 +1,9 @@
 """Internet Relay Chat message"""
 
 
+from circuits.six import PY3
+
+
 from .utils import parsemsg
 
 
@@ -32,10 +35,13 @@ class Message(object):
 
         return Message(command, *args, prefix=prefix)
 
-    def __bytes__(self):
-        return str(self).encode(self.encoding)
-
     def __str__(self):
+        return self.__unicode__() if PY3 else self.__bytes__()
+
+    def __bytes__(self):
+        return unicode(self).encode(self.encoding)
+
+    def __unicode__(self):
         args = self.args[:]
         for arg in args[:-1]:
             if arg is not None and " " in arg:
@@ -44,14 +50,14 @@ class Message(object):
         if len(args) > 0 and " " in args[-1]:
             args[-1] = ":{0:s}".format(args[-1])
 
-        return "{prefix:s}{command:s} {args:s}\r\n".format(
+        return u"{prefix:s}{command:s} {args:s}\r\n".format(
             prefix=(
-                ":{0:s} ".format(self.prefix)
+                u":{0:s} ".format(self.prefix)
                 if self.prefix is not None
-                else ""
+                else u""
             ),
-            command=str(self.command),
-            args=" ".join(args)
+            command=unicode(self.command),
+            args=u" ".join(args)
         )
 
     def __repr__(self):
