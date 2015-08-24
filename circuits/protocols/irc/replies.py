@@ -10,23 +10,23 @@ def _M(*args, **kwargs):
 
 
 def RPL_WELCOME(network):
-    return _M("001", "Welcome to the {0:s} IRC Network".format(network))
+    return _M(u"001", u"Welcome to the {0} IRC Network".format(network))
 
 
 def RPL_YOURHOST(host, version):
-    return _M("002", "Your host is {0:s} running {1:s}".format(host, version))
+    return _M(u"002", u"Your host is {0} running {1}".format(host, version))
 
 
 def ERR_NOMOTD():
-    return _M("422", "MOTD file is missing")
+    return _M(u"422", u"MOTD file is missing")
 
 
 def ERR_NOSUCHNICK(nick):
-    return _M("401", nick, "No such nick")
+    return _M(u"401", nick, u"No such nick")
 
 
 def ERR_NOSUCHCHANNEL(channel):
-    return _M("403", channel, "No such channel")
+    return _M(u"403", channel, u"No such channel")
 
 
 def RPL_WHOREPLY(user, mask, server):
@@ -37,33 +37,33 @@ def RPL_WHOREPLY(user, mask, server):
     # + = Voiced
 
     return _M(
-        "352", mask,
+        u"352", mask,
         user.userinfo.user, user.userinfo.host,
         server, user.nick,
-        "G" if user.away else "H",
-        "0 " + user.userinfo.name
+        u"G" if user.away else u"H",
+        u"0 " + user.userinfo.name
     )
 
 
 def RPL_ENDOFWHO(mask):
-    return _M("315", mask, "End of WHO list")
+    return _M(u"315", mask, u"End of WHO list")
 
 
 def RPL_NOTOPIC(channel):
-    return _M("331", channel, "No topic is set")
+    return _M(u"331", channel, u"No topic is set")
 
 
 def RPL_NAMEREPLY(channel, names):
-    return _M("353", "=", channel, " ".join(names))
+    return _M(u"353", u"=", channel, u" ".join(names))
 
 
 def RPL_ENDOFNAMES():
-    return _M("366", "End of NAMES list")
+    return _M(u"366", u"End of NAMES list")
 
 
 def ERR_UNKNOWNCOMMAND(command):
-    return _M("421", command, "Unknown command")
+    return _M(u"421", command, u"Unknown command")
 
 
 def ERR_NICKNAMEINUSE(nick):
-    return _M("433", nick, "Nickname is already in use")
+    return _M(u"433", nick, u"Nickname is already in use")

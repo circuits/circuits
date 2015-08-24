@@ -1,7 +1,7 @@
 """Internet Relay Chat message"""
 
 
-from circuits.six import PY3
+from circuits.six import text_type, PY3
 
 
 from .utils import parsemsg
@@ -21,7 +21,7 @@ class Message(object):
 
         self.command = command
         self.args = list(filter(lambda x: x is not None, list(args)))
-        self.prefix = str(kwargs["prefix"]) if "prefix" in kwargs else None
+        self.prefix = text_type(kwargs["prefix"]) if "prefix" in kwargs else None
 
         self.encoding = kwargs.get("encoding", "utf-8")
         self.add_nick = kwargs.get("add_nick", False)
@@ -39,7 +39,7 @@ class Message(object):
         return self.__unicode__() if PY3 else self.__bytes__()
 
     def __bytes__(self):
-        return unicode(self).encode(self.encoding)
+        return text_type(self).encode(self.encoding)
 
     def __unicode__(self):
         args = self.args[:]
@@ -56,12 +56,12 @@ class Message(object):
                 if self.prefix is not None
                 else u""
             ),
-            command=unicode(self.command),
+            command=text_type(self.command),
             args=u" ".join(args)
         )
 
     def __repr__(self):
-        return repr(unicode(self)[:-2])
+        return repr(text_type(self)[:-2])
 
     def __eq__(self, other):
         return isinstance(other, Message) \
