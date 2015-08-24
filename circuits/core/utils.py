@@ -3,8 +3,8 @@
 This module defines utilities used by circuits.
 """
 
-
 import sys
+
 from imp import reload
 
 
@@ -59,14 +59,5 @@ def safeimport(name):
             return __import__(name, globals(), locals(), [""])
     except:
         for name in sys.modules.copy():
-            if name not in modules:
+            if not name in modules:
                 del sys.modules[name]
-
-
-def saferepr(x, e="???"):
-    """A safe repr() that will return ??? if repr() fails (e.g: UnicodeEncodeError)"""
-
-    try:
-        return repr(x)
-    except:
-        return e
