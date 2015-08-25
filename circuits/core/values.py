@@ -69,7 +69,7 @@ class Value(object):
         if self.result:
             value = repr(self.value)
 
-        format = "<Value (%s) result=%r; errors=%r; for %r"
+        format = "<Value (%s) result=%r; errors=%r; for %r>"
         return format % (value, self.result, self.errors, self.event)
 
     def __str__(self):
