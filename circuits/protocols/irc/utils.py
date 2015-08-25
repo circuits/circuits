@@ -4,11 +4,13 @@
 from re import compile as compile_regex
 
 
+from circuits.six import u
+
+
 PREFIX = compile_regex("([^!].*)!(.*)@(.*)")
 
 
 class Error(Exception):
-
     """Error Exception"""
 
 
@@ -26,11 +28,11 @@ def strip(s, color=False):
     """
 
     if len(s) > 0:
-        if s[0] == ":":
+        if s[0] == u(":"):
             s = s[1:]
     if color:
-        s = s.replace("\x01", "")
-        s = s.replace("\x02", "")
+        s = s.replace(u("\x01"), u(""))
+        s = s.replace(u("\x02"), u(""))
     return s
 
 
@@ -44,7 +46,7 @@ def joinprefix(nick, user, host):
     :returns str: a string in the form of <nick>!<user>@<host>
     """
 
-    return u"{0}!{1}@{2}".format(nick or u"", user or u"", host or u"")
+    return u("{0}!{1}@{2}").format(nick or u(""), user or u(""), host or u(""))
 
 
 def parseprefix(prefix):
@@ -74,16 +76,16 @@ def parsemsg(s, encoding="utf-8"):
 
     s = s.decode(encoding, 'replace')
 
-    prefix = ""
+    prefix = u("")
     trailing = []
 
-    if s[0] == ":":
-        prefix, s = s[1:].split(" ", 1)
+    if s[0] == u(":"):
+        prefix, s = s[1:].split(u(" "), 1)
 
     prefix = parseprefix(prefix)
 
-    if s.find(" :") != -1:
-        s, trailing = s.split(" :", 1)
+    if s.find(u(" :")) != -1:
+        s, trailing = s.split(u(" :"), 1)
         args = s.split()
         args.append(trailing)
     else:

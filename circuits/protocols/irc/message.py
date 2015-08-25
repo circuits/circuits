@@ -1,14 +1,13 @@
 """Internet Relay Chat message"""
 
 
-from circuits.six import text_type, PY3
+from circuits.six import text_type, u, PY3
 
 
 from .utils import parsemsg
 
 
 class Error(Exception):
-
     """Error Exception"""
 
 
@@ -16,7 +15,7 @@ class Message(object):
 
     def __init__(self, command, *args, **kwargs):
         for arg in args[:-1]:
-            if " " in arg:
+            if u(" ") in arg:
                 raise Error("Space can only appear in the very last arg")
 
         self.command = command
@@ -50,14 +49,14 @@ class Message(object):
         if len(args) > 0 and " " in args[-1]:
             args[-1] = ":{0:s}".format(args[-1])
 
-        return u"{prefix:s}{command:s} {args:s}\r\n".format(
+        return u("{prefix:s}{command:s} {args:s}\r\n").format(
             prefix=(
-                u":{0:s} ".format(self.prefix)
+                u(":{0:s} ").format(self.prefix)
                 if self.prefix is not None
-                else u""
+                else u("")
             ),
             command=text_type(self.command),
-            args=u" ".join(args)
+            args=u(" ").join(args)
         )
 
     def __repr__(self):
