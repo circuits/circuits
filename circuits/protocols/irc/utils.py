@@ -79,7 +79,7 @@ def parsemsg(s, encoding="utf-8"):
     prefix = u("")
     trailing = []
 
-    if s[0] == u(":"):
+    if s and s[0] == u(":"):
         prefix, s = s[1:].split(u(" "), 1)
 
     prefix = parseprefix(prefix)
