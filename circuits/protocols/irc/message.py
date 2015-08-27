@@ -46,7 +46,7 @@ class Message(object):
             if arg is not None and u(" ") in arg:
                 raise Error("Space can only appear in the very last arg")
 
-        if len(args) > 0 and u(" ") in args[-1]:
+        if len(args) > 0 and u(" ") in args[-1] and args[-1][0] != u(":"):
             args[-1] = u(":{0:s}").format(args[-1])
 
         return u("{prefix:s}{command:s} {args:s}\r\n").format(
