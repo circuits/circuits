@@ -43,11 +43,11 @@ class Message(object):
     def __unicode__(self):
         args = self.args[:]
         for arg in args[:-1]:
-            if arg is not None and " " in arg:
+            if arg is not None and u(" ") in arg:
                 raise Error("Space can only appear in the very last arg")
 
-        if len(args) > 0 and " " in args[-1]:
-            args[-1] = ":{0:s}".format(args[-1])
+        if len(args) > 0 and u(" ") in args[-1]:
+            args[-1] = u(":{0:s}").format(args[-1])
 
         return u("{prefix:s}{command:s} {args:s}\r\n").format(
             prefix=(
