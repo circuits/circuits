@@ -20,7 +20,7 @@ from socket import gethostname
 from optparse import OptionParser
 
 
-from circuits import handler, Component
+from circuits import handler, Component, Debugger
 from circuits import __version__ as systemVersion
 
 from circuits.io import stdin
@@ -42,6 +42,12 @@ def parse_options():
         "-n", "--nick",
         action="store", default=os.environ["USER"], dest="nick",
         help="Nickname to use"
+    )
+
+    parser.add_option(
+        "-d", "--debug",
+        action="store_true", default="False", dest="debug",
+        help="Enable debug verbose logging",
     )
 
     parser.add_option(
@@ -77,6 +83,10 @@ class Client(Component):
         TCPClient(channel=self.channel).register(self)
         IRC(channel=self.channel).register(self)
 
+        # Enable Debugging?
+        if opts.debug:
+            Debugger().register(self)
+
     def ready(self, component):
         """ready Event
 
@@ -101,6 +111,17 @@ class Client(Component):
 
         self.fire(NICK(nick))
         self.fire(USER(nick, nick, self.hostname, name))
+
+    def disconnected(self):
+        """disconnected Event
+
+        This event is triggered by the underlying ``TCPClient`` Component
+        when the connection has been disconnected.
+        """
+
+        print("Disconnecetd from %s:%d" % (self.host, self.port))
+
+        raise SystemExit(0)
 
     def numeric(self, source, numeric, *args):
         """numeric Event
