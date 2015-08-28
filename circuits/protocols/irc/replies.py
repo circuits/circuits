@@ -231,3 +231,7 @@ def ERR_NOTREGISTERED():
 
 def ERROR(reason=None):
     return Message(u("ERROR"), u(":Closing link ({0})".format(reason or u(""))))
+
+
+def RPL_TOPICWHO(channel, setter, timestamp):
+    return _M(u("333"), channel, setter, u("{0}".format(timestamp)))
