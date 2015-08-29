@@ -119,6 +119,14 @@ def RPL_ENDOFWHO(mask):
     return _M(u("315"), mask, u("End of WHO list"))
 
 
+def RPL_WHOISIDLE(nick, idle, signon):
+    return _M(
+        u("317"), nick,
+        u("{0}").format(idle), u("{0}").format(signon),
+        u("seconds idle, signon time")
+    )
+
+
 def RPL_ENDOFWHOIS(nick):
     return _M(u("318"), nick, u("End of WHOIS list"))
 
