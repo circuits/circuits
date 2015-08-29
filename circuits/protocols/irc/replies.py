@@ -108,7 +108,7 @@ def RPL_ENDOFWHOIS(nick):
 
 
 def RPL_WHOISCHANNELS(nick, channels):
-    return _M(u("319"), nick, u(" ").join(channels))
+    return _M(u("319"), nick, u(":{0}".format(u(" ").join(channels))))
 
 
 def RPL_LIST(channel, nvisible, topic):
