@@ -12,8 +12,7 @@ from circuits.protocols.line import Line
 
 from .commands import PONG
 from .utils import parsemsg
-from .message import Message
-from .events import reply, response
+from .events import response
 
 
 NUMERIC = compile_regex("[0-9]+")
@@ -94,8 +93,4 @@ class IRC(Component):
         if len(args) == 2:
             # Client read
             self.fire(PONG(args[1]))
-        else:
-            # Server read
-            self.fire(reply(args[0], Message("PONG", args[2])))
-
-        event.stop()
+            event.stop()
