@@ -21,7 +21,7 @@ def JOIN(name, prefix=None):
 
 
 def KICK(channel, nick, reason=None, prefix=None):
-    return _M(u("KICK"), channel, nick, reason, prefix=prefix)
+    return Message(u("KICK"), channel, nick, reason, prefix=prefix)
 
 
 def MODE(target, modes, params=None, prefix=None):
@@ -31,11 +31,11 @@ def MODE(target, modes, params=None, prefix=None):
 
 
 def PART(channel, nick, reason=None, prefix=None):
-    return _M(u("PART"), channel, nick, reason, prefix=prefix)
+    return Message(u("PART"), channel, nick, reason, prefix=prefix)
 
 
-def PONG(server, *args):
-    return _M(u("PONG"), server, u(" ").join(args))
+def PONG(server, text):
+    return Message(u("PONG"), server, u(":{0}").format(text))
 
 
 def TOPIC(channel, topic, prefix=None):
