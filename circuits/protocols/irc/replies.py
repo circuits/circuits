@@ -34,6 +34,10 @@ def PART(channel, nick, reason=None, prefix=None):
     return _M(u("PART"), channel, nick, reason, prefix=prefix)
 
 
+def PONG(server, *args):
+    return _M(u("PONG"), server, u(" ").join(args))
+
+
 def TOPIC(channel, topic, prefix=None):
     return Message(u("TOPIC"), channel, topic, prefix=prefix)
 
