@@ -22,6 +22,10 @@ def JOIN(name, prefix=None):
     return Message(u("JOIN"), name, prefix=prefix)
 
 
+def KICK(channel, nick, reason=None, prefix=None):
+    return _M(u("KICK"), channel, nick, reason, prefix=prefix)
+
+
 def TOPIC(channel, topic, prefix=None):
     return Message(u("TOPIC"), channel, topic, prefix=prefix)
 
