@@ -12,30 +12,30 @@ def _M(*args, **kwargs):
     return Message(*args, **kwargs)
 
 
-def MODE(target, modes, params=None, prefix=None):
-    if params is None:
-        return Message(u("MODE"), target, modes, prefix=prefix)
-    return Message(u("MODE"), target, modes, u(" ").join(params), prefix=prefix)
+def ERROR(reason=None):
+    return Message(u("ERROR"), u(":Closing link ({0})".format(reason or u(""))))
 
 
 def JOIN(name, prefix=None):
     return Message(u("JOIN"), name, prefix=prefix)
 
 
-def PART(channel, nick, reason=None, prefix=None):
-    return _M(u("PART"), channel, nick, reason, prefix=prefix)
-
-
 def KICK(channel, nick, reason=None, prefix=None):
     return _M(u("KICK"), channel, nick, reason, prefix=prefix)
 
 
+def MODE(target, modes, params=None, prefix=None):
+    if params is None:
+        return Message(u("MODE"), target, modes, prefix=prefix)
+    return Message(u("MODE"), target, modes, u(" ").join(params), prefix=prefix)
+
+
+def PART(channel, nick, reason=None, prefix=None):
+    return _M(u("PART"), channel, nick, reason, prefix=prefix)
+
+
 def TOPIC(channel, topic, prefix=None):
     return Message(u("TOPIC"), channel, topic, prefix=prefix)
-
-
-def ERROR(reason=None):
-    return Message(u("ERROR"), u(":Closing link ({0})".format(reason or u(""))))
 
 
 def RPL_WELCOME(network):
