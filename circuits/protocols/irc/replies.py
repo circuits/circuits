@@ -12,8 +12,8 @@ def _M(*args, **kwargs):
     return Message(*args, **kwargs)
 
 
-def ERROR(reason=None):
-    return Message(u("ERROR"), u(":Closing link ({0})".format(reason or u(""))))
+def ERROR(host, reason=None):
+    return Message(u("ERROR"), u(":Closing link: {0} ({1})".format(host, reason or u(""))))
 
 
 def JOIN(name, prefix=None):
@@ -32,6 +32,10 @@ def MODE(target, modes, params=None, prefix=None):
 
 def PART(channel, nick, reason=None, prefix=None):
     return Message(u("PART"), channel, nick, reason, prefix=prefix)
+
+
+def PING(server):
+    return Message(u("PING"), u(":{0}").format(server))
 
 
 def PONG(server, text):
