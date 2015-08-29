@@ -91,6 +91,18 @@ def RPL_LUSERME(nclients, nservers):
     return _M(u("255"), u("I have {0} clients and {1} servers".format(nclients, nservers)))
 
 
+def RPL_AWAY(nick, message):
+    return _M(u("301"), nick, u(":{0}").format(message))
+
+
+def RPL_UNAWAY():
+    return _M(u("305"), u("You are no longer marked as being away"))
+
+
+def RPL_NOWAWAY():
+    return _M(u("306"), u("You have been marked as being away"))
+
+
 def RPL_WHOISUSER(nick, user, host, realname):
     return _M(u("311"), nick, user, host, u("*"), u(":{0}").format(realname))
 
