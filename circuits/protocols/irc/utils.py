@@ -62,7 +62,7 @@ def parseprefix(prefix):
     if m is not None:
         return m.groups()
     else:
-        return prefix, None, None
+        return prefix or None, None, None
 
 
 def parsemsg(s, encoding="utf-8"):
@@ -91,6 +91,8 @@ def parsemsg(s, encoding="utf-8"):
     else:
         args = s.split()
 
-    command = str(args.pop(0))
+    args = iter(args)
+    command = next(args, None)
+    command = command and str(command)
 
-    return prefix, command, args
+    return prefix, command, list(args)

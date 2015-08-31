@@ -5,20 +5,20 @@ import pytest
 from pytest import fixture
 
 
+from circuits.six import u
+
 from circuits import handler, Event, Component
 
 from circuits.net.events import read, write
 
 from circuits.protocols.irc import IRC
-from circuits.protocols.irc import strip, joinprefix, parseprefix
+from circuits.protocols.irc import strip, joinprefix, parsemsg, parseprefix
 
 from circuits.protocols.irc import (
     PASS, USER, NICK, PONG, QUIT,
     JOIN, PART, PRIVMSG, NOTICE, AWAY,
     KICK, TOPIC, MODE, INVITE, NAMES, WHOIS
 )
-
-from circuits.six import u
 
 
 class App(Component):
@@ -69,6 +69,20 @@ def test_joinprefix():
     nick, ident, host = "test", "foo", "localhost"
     s = joinprefix(nick, ident, host)
     assert s == "test!foo@localhost"
+
+
+def test_parsemsg():
+    s = ":foo!bar@localhost NICK foobar"
+    source, command, args = parsemsg(s)
+    assert source == (u("foo"), u("bar"), u("localhost"))
+    assert command == "NICK"
+    assert args == [u("foobar")]
+
+    s = ""
+    source, command, args = parsemsg(s)
+    assert source == (None, None, None)
+    assert command is None
+    assert args == []
 
 
 def test_parseprefix():
