@@ -13,27 +13,18 @@
 
 import sys
 from os import path
-from imp import new_module
+
+
+from pkg_resources import parse_version
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use path.abspath to make it absolute, like shown here.
 sys.path.insert(0, path.abspath('../..'))
 
-version_module = new_module("version")
-exec(
-    compile(
-        open(
-            path.abspath(path.join(
-                path.dirname(__file__),
-                "../../circuits/version.py"
-            )),
-            "r"
-        ).read(),
-        "../../circuits/version.py", "exec"
-    ),
-    version_module.__dict__
-)
+
+from circuits import __version__
 
 # -- General configuration -----------------------------------------------
 
@@ -48,7 +39,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-#source_encoding = 'utf-8'
+# source_encoding = 'utf-8'
 
 # The master toctree document.
 master_doc = 'index'
@@ -63,13 +54,13 @@ url = "http://circuitsframework.com/"
 # built documents.
 #
 # The short X.Y version.
-version = ".".join(map(str, version_module.version_info[:2]))
+version = parse_version(__version__).base_version
 # The full version, including alpha/beta/rc tags.
-release = version_module.version
+release = __version__
 
 # Devel or Release mode for the documentation (if devel, include TODOs,
 # can also be used in conditionals: .. ifconfig :: devel)
-devel = version_module.version_info[-1] == "dev"
+devel = "dev" in __version__
 
 # -- Autodoc
 
