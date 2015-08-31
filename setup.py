@@ -7,12 +7,19 @@ from glob import glob
 from setuptools import setup, find_packages
 
 
+def read_file(filename):
+    try:
+        return open(filename, "r").read()
+    except IOError:
+        return ""
+
+
 setup(
     name="circuits",
     description="Asynchronous Component based Event Application Framework",
     long_description=open("README.rst").read().replace(
         ".. include:: examples/index.rst",
-        open("examples/index.rst", "r").read()
+        read_file("examples/index.rst")
     ),
     author="James Mills",
     author_email="prologic@shortcircuit.net.au",

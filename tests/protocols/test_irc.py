@@ -5,7 +5,7 @@ import pytest
 from pytest import fixture
 
 
-from circuits.six import u
+from circuits.six import b, u
 
 from circuits import handler, Event, Component
 
@@ -72,13 +72,13 @@ def test_joinprefix():
 
 
 def test_parsemsg():
-    s = ":foo!bar@localhost NICK foobar"
+    s = b(":foo!bar@localhost NICK foobar")
     source, command, args = parsemsg(s)
     assert source == (u("foo"), u("bar"), u("localhost"))
     assert command == "NICK"
     assert args == [u("foobar")]
 
-    s = ""
+    s = b("")
     source, command, args = parsemsg(s)
     assert source == (None, None, None)
     assert command is None
