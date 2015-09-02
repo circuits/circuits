@@ -41,7 +41,7 @@ class JSONRPC(BaseComponent):
         try:
             data = req.body.read().decode(self.encoding)
             o = json.loads(data)
-            id, method, params = o["id"], o["method"], o["params"]
+            id, method, params = o["id"], o["method"], o.get("params", {})
             if isinstance(params, dict):
                 params = dict([(str(k), v) for k, v in params.iteritems()])
 
