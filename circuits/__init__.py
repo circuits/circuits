@@ -13,7 +13,10 @@ with a strong **Component** Architecture.
 __author__ = "James Mills"
 __date__ = "24th February 2013"
 
-from .version import version as __version__
+try:
+    from .version import version as __version__
+except ImportError:
+    __version__ = "unknown"
 
 from .core import Event
 from .core import ipc, Bridge
