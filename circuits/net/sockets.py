@@ -617,7 +617,7 @@ class Server(BaseComponent):
             for _ in do_handshake(sslsock, on_done, on_error, extra_args=(host,)):
                 yield
         else:
-            on_done(newsock)
+            on_done(newsock, host)
 
     @handler("_disconnect", priority=1)
     def _on_disconnect(self, sock):
