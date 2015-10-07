@@ -202,19 +202,31 @@ class CaseInsensitiveDict(dict):
 
 class Headers(CaseInsensitiveDict):
 
+    def __init__(self, *args, **kwargs):
+        super(Headers, self).__init__(*args, **kwargs)
+        self["Set-Cookie"] = []
+        
     def elements(self, key):
         """Return a sorted list of HeaderElements for the given header."""
         return header_elements(key, self.get(key))
 
     def get_all(self, name):
         """Return a list of all the values for the named field."""
-        return [val.strip() for val in self.get(name, '').split(',')]
+        value = self.get(name, '')
+        if isinstance(value, list):
+            return value
+        return [val.strip() for val in value.split(',')]
 
     def __repr__(self):
         return "Headers(%s)" % repr(list(self.items()))
 
     def __str__(self):
-        headers = ["%s: %s\r\n" % (k, v) for k, v in self.items()]
+        headers = []
+        for k, v in self.items():
+            if not isinstance(v, list):
+                headers.append("%s: %s\r\n" % (k, v))
+            else:
+                headers.extend(["%s: %s\r\n" % (k, vv) for vv in v ])
         return "".join(headers) + '\r\n'
 
     def __bytes__(self):
@@ -224,7 +236,10 @@ class Headers(CaseInsensitiveDict):
         if not key in self:
             self[key] = value
         else:
-            self[key] = ", ".join([self[key], value])
+            if isinstance(self[key], list):
+                self[key].append(value)
+            else:
+                self[key] = ", ".join([self[key], value])
 
     def add_header(self, _name, _value, **_params):
         """Extended header setting.
