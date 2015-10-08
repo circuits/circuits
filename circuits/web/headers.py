@@ -201,11 +201,27 @@ class CaseInsensitiveDict(dict):
 
 
 class Headers(CaseInsensitiveDict):
+    """
+    This class implements a storage for headers as key value pairs.
+    The underlying model of a case insensitive dict matches the requirements
+    for headers quite well, because usually header keys are unique. If
+    several values may be associated with a header key, most HTTP headers
+    represent the values as an enumeration using a comma as item separator.
+    
+    There is, however one exception (currently) to this rule. In order to
+    set several cookies, there should be multiple headers with the same
+    key, each setting one cookie ("Set-Cookie: some_cookie").
 
-    def __init__(self, *args, **kwargs):
-        super(Headers, self).__init__(*args, **kwargs)
-        self["Set-Cookie"] = []
-        
+    This is modeled by having either a string (common case) or a list 
+    (cookie case) as value in the underlying dict. In order to allow
+    easy iteration over all headers as they appear in the HTTP request,
+    the items() method expands associated lists of values. So if you have 
+    { "Set-Cookie": [ "cookie1", "cookie2" ] }, the items() method returns 
+    the two pairs ("Set-Cookie", "cookie1") and ("Set-Cookie", "cookie2"). 
+    This is convenient for most use cases. The only drawback is that 
+    len(keys()) is not equal to len(items()) for this specialized dict.  
+    """
+
     def elements(self, key):
         """Return a sorted list of HeaderElements for the given header."""
         return header_elements(key, self.get(key))
@@ -221,20 +237,35 @@ class Headers(CaseInsensitiveDict):
         return "Headers(%s)" % repr(list(self.items()))
 
     def __str__(self):
-        headers = []
-        for k, v in self.items():
-            if not isinstance(v, list):
-                headers.append("%s: %s\r\n" % (k, v))
-            else:
-                headers.extend(["%s: %s\r\n" % (k, vv) for vv in v ])
+        headers = ["%s: %s\r\n" % (k, v) for k, v in self.items()]
         return "".join(headers) + '\r\n'
+
+    def items(self):
+        for k, v in super(Headers, self).items():
+            if isinstance(v, list):
+                for vv in v:
+                    yield (k, vv)
+            else:
+                yield (k, v)
+                
 
     def __bytes__(self):
         return str(self).encode("latin1")
 
     def append(self, key, value):
+        """
+        If a header with the given name already exists, the value is 
+        normally appended to the existing value separated by a comma.
+        
+        If, however, the already existing entry associated key with a 
+        value of type list (as is the case for "Set-Cookie"),
+        the new value is appended to that list. 
+        """
         if not key in self:
-            self[key] = value
+            if key.lower() == "set-cookie":
+                self[key] = [value]
+            else:
+                self[key] = value
         else:
             if isinstance(self[key], list):
                 self[key].append(value)
