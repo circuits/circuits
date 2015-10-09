@@ -21,8 +21,8 @@ from .constants import SERVER_URL, SERVER_VERSION
 from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 
-class httperror(Event):
-    """An event for signaling an HTTP error"""
+class httpevent(Event):
+    """An event for signaling an HTTP special condition"""
 
     code = 500
     description = ""
@@ -33,7 +33,7 @@ class httperror(Event):
         The constructor creates a new instance and modifies the *response*
         argument to reflect the error.
         """
-        super(httperror, self).__init__(request, response, code, **kwargs)
+        super(httpevent, self).__init__(request, response, code, **kwargs)
 
         # Override HTTPError subclasses
         self.name = "httperror"
@@ -88,6 +88,10 @@ class httperror(Event):
         )
 
 
+class httperror(httpevent):
+    """An event for signaling an HTTP error"""
+
+
 class forbidden(httperror):
     """An event for signaling the HTTP Forbidden error"""
 
@@ -106,7 +110,7 @@ class notfound(httperror):
     code = 404
 
 
-class redirect(httperror):
+class redirect(httpevent):
     """An event for signaling the HTTP Redirect response"""
 
     def __init__(self, request, response, urls, code=None):

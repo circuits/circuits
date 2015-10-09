@@ -30,7 +30,7 @@ from .utils import is_ssl_handshake
 from .exceptions import HTTPException
 from .events import request, response, stream
 from .parsers import HttpParser, BAD_FIRST_LINE
-from .errors import httperror, notfound, redirect
+from .errors import httpevent, httperror, notfound, redirect
 from .exceptions import Redirect as RedirectException
 from .constants import SERVER_VERSION, SERVER_PROTOCOL
 
@@ -361,8 +361,9 @@ class HTTP(BaseComponent):
 
         if value is None:
             self.fire(notfound(req, res))
-        elif isinstance(value, httperror):
-            res.body = str(value)
+        elif isinstance(value, httpevent):
+            if isinstance(value, httperror):
+                res.body = str(value)
             self.fire(response(res))
         elif isinstance(value, wrappers.Response):
             self.fire(response(value))
