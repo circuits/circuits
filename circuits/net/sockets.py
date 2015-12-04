@@ -483,6 +483,11 @@ class Server(BaseComponent):
             return
 
         if sock != self._sock and sock not in self._clients:
+            try:
+                sock.shutdown(2)
+                sock.close()
+            except IOError:
+                pass
             return
 
         self._poller.discard(sock)
@@ -602,7 +607,11 @@ class Server(BaseComponent):
             else:
                 raise
 
-        if self.secure and HAS_SSL:
+        if not self.secure or not HAS_SSL:
+            on_done(newsock, host)
+            return
+
+        try:
             sslsock = ssl_socket(
                 newsock,
                 server_side=True,
@@ -613,11 +622,12 @@ class Server(BaseComponent):
                 ssl_version=self.ssl_version,
                 do_handshake_on_connect=False
             )
+        except SocketError as err:
+            on_error(newsock, err)
+            return
 
-            for _ in do_handshake(sslsock, on_done, on_error, extra_args=(host,)):
-                yield
-        else:
-            on_done(newsock, host)
+        for _ in do_handshake(sslsock, on_done, on_error, extra_args=(host,)):
+            yield
 
     @handler("_disconnect", priority=1)
     def _on_disconnect(self, sock):
