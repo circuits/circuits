@@ -82,6 +82,9 @@ class httperror(Event):
     def __str__(self):
         self.sanitize()
 
+        if self.code < 200 or self.code in (204, 205, 304):
+            return ''
+
         if "json" in self.response.headers.get("Content-Type", ""):
             index = ["code", "name", "description"]
             if self.request.print_debug:
