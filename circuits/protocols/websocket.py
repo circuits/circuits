@@ -59,7 +59,7 @@ class WebSocketCodec(BaseComponent):
 
     @handler("registered")
     def _on_registered(self, component, parent):
-        if component == self:
+        if component is self:
             @handler("read", priority=10, channel=parent.channel)
             def _on_read_raw(self, event, *args):
                 if self._sock is not None:

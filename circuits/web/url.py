@@ -191,21 +191,24 @@ class URL(object):
         path = re.sub(b('\/{2,}'), b('/'), self._path)
         # With that done, go through and remove all the relative references
         unsplit = []
+        directory = False
         for part in path.split(b('/')):
             # If we encounter the parent directory, and there's
             # a segment to pop off, then we should pop it off.
             if part == b('..') and (not unsplit or unsplit.pop() is not None):
-                pass
+                directory = True
             elif part != b('.'):
+                directory = False
                 unsplit.append(part)
+            else:
+                directory = True
 
         # With all these pieces, assemble!
-        if self._path.endswith(b('.')):
+        if directory:
             # If the path ends with a period, then it refers to a directory,
             # not a file path
-            self._path = b('/').join(unsplit) + b('/')
-        else:
-            self._path = b('/').join(unsplit)
+            unsplit.append(b('/'))
+        self._path = b('/').join(unsplit)
         return self
 
     def lower(self):
