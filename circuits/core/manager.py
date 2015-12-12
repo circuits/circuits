@@ -451,25 +451,10 @@ class Manager(object):
                 # operations that assume its value to remain unchanged.
                 handling = self._currently_handling
 
+                heappush(self._queue,
+                        (priority, next(self._counter), (event, channel)))
                 if isinstance(handling, generate_events):
-                    heappush(
-                        self._queue,
-                        (
-                            priority,
-                            next(self._counter),
-                            (event, channel)
-                        )
-                    )
                     handling.reduce_time_left(0)
-                else:
-                    heappush(
-                        self._queue,
-                        (
-                            priority,
-                            next(self._counter),
-                            (event, channel)
-                        )
-                    )
 
     def fireEvent(self, event, *channels, **kwargs):
         """Fire an event into the system.
