@@ -13,8 +13,7 @@ from types import GeneratorType
 from itertools import chain, count
 from signal import SIGINT, SIGTERM
 from heapq import heappush, heappop
-from weakref import WeakValueDictionary
-from traceback import format_exc, format_tb
+from traceback import format_exc
 from sys import exc_info as _exc_info, stderr
 from signal import signal as set_signal_handler
 from threading import current_thread, Thread, RLock
@@ -200,8 +199,6 @@ class Manager(object):
 
         self._flush_batch = 0
         self._cache_needs_refresh = False
-
-        self._values = WeakValueDictionary()
 
         self._executing_thread = None
         self._flushing_thread = None
@@ -470,9 +467,7 @@ class Manager(object):
         """
 
         if not channels:
-            channels = event.channels \
-                or (getattr(self, "channel", "*"),) \
-                or ("*",)
+            channels = event.channels or (getattr(self, "channel", "*"),) or ("*",)
 
         event.channels = channels
 
@@ -669,13 +664,8 @@ class Manager(object):
             except SystemExit as e:
                 self.stop(e.code)
             except:
-                etype, evalue, etraceback = _exc_info()
-                traceback = format_tb(etraceback)
-                err = (etype, evalue, traceback)
-
+                value = err = _exc_info()
                 event.value.errors = True
-
-                value = err
 
                 if event.failure:
                     self.fire(
@@ -683,12 +673,7 @@ class Manager(object):
                         *event.channels
                     )
 
-                self.fire(
-                    exception(
-                        etype, evalue, traceback,
-                        handler=event_handler, fevent=event
-                    )
-                )
+                self.fire(exception(*err, handler=event_handler, fevent=event))
 
             if value is not None:
                 if isinstance(value, GeneratorType):
@@ -896,9 +881,7 @@ class Manager(object):
         except:
             self.unregisterTask((event, task, parent))
 
-            etype, evalue, etraceback = _exc_info()
-            traceback = format_tb(etraceback)
-            err = (etype, evalue, etraceback)
+            err = _exc_info()
 
             event.value.value = err
             event.value.errors = True
@@ -907,12 +890,7 @@ class Manager(object):
             if event.failure:
                 self.fire(event.child("failure", event, err), *event.channels)
 
-            self.fire(
-                exception(
-                    etype, evalue, traceback,
-                    handler=None, fevent=event
-                )
-            )
+            self.fire(exception(*err, handler=None, fevent=event))
 
     def tick(self, timeout=-1):
         """
@@ -975,13 +953,13 @@ class Manager(object):
         self.fire(started(self))
 
         try:
-            while self.running or len(self._queue):
+            while self.running or self._queue:
                 self.tick()
             # Fading out, handle remaining work from stop event
             for _ in range(3):
                 self.tick()
-        except Exception as e:
-            stderr.write("Unhandled ERROR: {0:s}\n".format(str(e)))
+        except Exception as exc:
+            stderr.write("Unhandled ERROR: {0:s}\n".format(exc))
             stderr.write(format_exc())
         finally:
             try:

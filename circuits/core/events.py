@@ -4,6 +4,7 @@ This module defines the basic event class and common events.
 
 
 from inspect import ismethod
+from traceback import format_tb
 
 
 class EventType(type):
@@ -197,7 +198,7 @@ class exception(Event):
     :type  type: type
 
     :param value: exception object
-    :type  value: exceptions.TypeError
+    :type  value: exceptions.Exceptions
 
     :param traceback: traceback of exception
     :type  traceback: traceback
@@ -210,8 +211,11 @@ class exception(Event):
     """
 
     def __init__(self, type, value, traceback, handler=None, fevent=None):
-        super(exception, self).__init__(type, value, traceback,
+        super(exception, self).__init__(type, value,
+                                        self.format_traceback(traceback),
                                         handler=handler, fevent=fevent)
+    def format_traceback(self, traceback):
+        return format_tb(traceback)
 
 
 class started(Event):
