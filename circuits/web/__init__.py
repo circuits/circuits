@@ -8,8 +8,8 @@ from .loggers import Logger
 from .sessions import Sessions
 from .url import parse_url, URL
 from .servers import BaseServer, Server
-from .controllers import expose, Controller
 from .events import request, response, stream
+from .controllers import expose, BaseController, Controller
 from .errors import httperror, forbidden, notfound, redirect
 from .dispatchers import Static, Dispatcher, VirtualHosts, XMLRPC
 
