@@ -40,8 +40,8 @@ class Event(object):
     waitingHandlers = 0
 
     @classmethod
-    def create(cls, name, *args, **kwargs):
-        return type(cls)(name, (cls,), {})(*args, **kwargs)
+    def create(cls, _name, *args, **kwargs):
+        return type(cls)(_name, (cls,), {})(*args, **kwargs)
 
     def child(self, name, *args, **kwargs):
         e = Event.create(
