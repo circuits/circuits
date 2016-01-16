@@ -4,6 +4,9 @@
 import pytest
 
 
+from types import TracebackType
+
+
 from circuits import handler, Event, Component
 
 
@@ -120,7 +123,7 @@ def test_error_value(app, watcher):
     etype, evalue, etraceback = x
     assert etype is Exception
     assert str(evalue) == "ERROR"
-    assert isinstance(etraceback, list)
+    assert isinstance(etraceback, TracebackType)
 
 
 def test_multiple_values(app, watcher):
