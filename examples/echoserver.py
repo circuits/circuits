@@ -32,6 +32,6 @@ class EchoServer(TCPServer):
 
 # Start and "run" the system.
 # Bind to port 0.0.0.0:8000
-app = EchoServer(("0.0.0.0", 8000))
+app = EchoServer(("0.0.0.0", 8000), secure=True, certfile="cert.pem")
 Debugger().register(app)
 app.run()
