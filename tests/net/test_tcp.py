@@ -7,13 +7,16 @@ import pytest
 import select
 import os.path
 from socket import error as SocketError
+from ssl import wrap_socket as sslsocket
 from socket import EAI_NODATA, EAI_NONAME
 from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
+
 
 from circuits import Manager, Debugger
 from circuits.net.events import close, connect, write
 from circuits.core.pollers import Select, Poll, EPoll, KQueue
 from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
+
 
 from .client import Client
 from .server import Server
@@ -21,6 +24,57 @@ from tests.conftest import WaitEvent
 
 
 CERT_FILE = os.path.join(os.path.dirname(__file__), "cert.pem")
+
+
+class TestClient(object):
+
+    def __init__(self, ipv6=False):
+        self._sockname = None
+
+        self.sock = socket(
+            AF_INET6 if ipv6
+            else AF_INET,
+            SOCK_STREAM
+        )
+
+        self.ssock = sslsocket(self.sock)
+
+    @property
+    def sockname(self):
+        return self._sockname
+
+    def connect(self, host, port):
+        self.ssock.connect_ex((host, port))
+        self._sockname = self.ssock.getsockname()
+
+    def send(self, data):
+        self.ssock.send(data)
+
+    def recv(self, buflen=4069):
+        return self.ssock.recv(buflen)
+
+    def disconnect(self):
+        try:
+            self.ssock.shutdown(2)
+        except SocketError:
+            pass
+
+        try:
+            self.ssock.close()
+        except SockerError:
+            pass
+
+
+@pytest.fixture
+def client(request, ipv6):
+    client = TestClient(ipv6=ipv6)
+
+    def finalizer():
+        client.disconnect()
+
+    request.addfinalizer(finalizer)
+
+    return client
 
 
 def wait_host(server):
@@ -89,46 +143,37 @@ def test_tcp_basic(Poller, ipv6):
         m.stop()
 
 
-def test_tcps_basic(Poller, ipv6):
-    from circuits import Debugger
-    m = Manager() + Debugger() + Poller()
+def test_tcps_basic(manager, watcher, client, Poller, ipv6):
+    poller = Poller().register(manager)
 
     if ipv6:
         tcp_server = TCP6Server(("::1", 0), secure=True, certfile=CERT_FILE)
-        tcp_client = TCP6Client()
     else:
         tcp_server = TCPServer(0, secure=True, certfile=CERT_FILE)
-        tcp_client = TCPClient()
+
     server = Server() + tcp_server
-    client = Client() + tcp_client
 
-    server.register(m)
-    client.register(m)
-
-    m.start()
+    server.register(manager)
 
     try:
-        assert pytest.wait_for(client, "ready")
-        assert pytest.wait_for(server, "ready")
-        wait_host(server)
+        watcher.wait("ready", "server")
 
-        client.fire(connect(server.host, server.port, secure=True))
-        assert pytest.wait_for(client, "connected")
-        assert pytest.wait_for(server, "connected")
-        assert pytest.wait_for(client, "data", b"Ready")
+        client.connect(server.host, server.port)
+        assert watcher.wait("connect", "server")
+        assert client.recv() == b"Ready"
 
-        client.fire(write(b"foo"))
-        assert pytest.wait_for(server, "data", b"foo")
-        assert pytest.wait_for(client, "data", b"foo")
+        client.send(b"foo")
+        assert watcher.wait("read", "server")
+        assert client.recv() == b"foo"
 
-        client.fire(close())
-        assert pytest.wait_for(client, "disconnected")
-        assert pytest.wait_for(server, "disconnected")
+        client.disconnect()
+        assert watcher.wait("disconnect", "server")
 
         server.fire(close())
-        assert pytest.wait_for(server, "closed")
+        assert watcher.wait("closed", "server")
     finally:
-        m.stop()
+        poller.unregister()
+        server.unregister()
 
 
 def test_tcp_reconnect(Poller, ipv6):
@@ -281,28 +326,27 @@ def test_tcp_bind(Poller, ipv6):
         m.stop()
 
 
-def test_tcp_lookup_failure(Poller, ipv6):
-    m = Manager() + Poller()
+def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
+    poller = Poller().register(manager)
 
     if ipv6:
         tcp_client = TCP6Client()
     else:
         tcp_client = TCPClient()
+
     client = Client() + tcp_client
-
-    client.register(m)
-
-    m.start()
+    client.register(manager)
 
     try:
-        assert pytest.wait_for(client, "ready")
+        assert watcher.wait("ready", "client")
 
         client.fire(connect("foo", 1234))
-        assert pytest.wait_for(
-            client, "error", lambda obj, attr: isinstance(getattr(obj, attr), SocketError))
+        assert watcher.wait("error", "client")
+
         if pytest.PLATFORM == "win32":
             assert client.error.errno == 11004
         else:
             assert client.error.errno in (EAI_NODATA, EAI_NONAME,)
     finally:
-        m.stop()
+        poller.unregister()
+        client.unregister()
