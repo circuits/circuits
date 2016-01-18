@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-from sys import argv
+import sys
 from os.path import abspath
 
 
@@ -18,8 +18,11 @@ from circuits.app import Daemon
 
 class App(Component):
 
-    def init(self, pidfile, **kwargs):
-        Daemon(pidfile, **kwargs).register(self)
+    def init(self, pidfile):
+        self.pidfile = pidfile
+
+    def started(self, *args):
+        Daemon(self.pidfile).register(self)
 
     def prepare_unregister(self, *args):
         return
@@ -30,11 +33,14 @@ def main():
         _coverage = coverage(data_suffix=True)
         _coverage.start()
 
-    pidfile = abspath(argv[1])
+    args = iter(sys.argv)
+    next(args)  # executable
 
-    app = App(pidfile)
+    pidfile = next(args)  # pidfile
 
-    app.run()
+    pidfile = abspath(pidfile)
+
+    App(pidfile).run()
 
     if HAS_COVERAGE:
         _coverage.stop()

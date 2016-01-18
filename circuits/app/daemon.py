@@ -6,8 +6,10 @@ and changing the current working directory.
 """
 
 
+from os import closerange
 from os.path import isabs
 from sys import stderr, stdin, stdout
+from resource import getrlimit, RLIM_INFINITY, RLIMIT_NOFILE
 from os import _exit, chdir, dup2, setsid, fork, getpid, remove, umask
 
 
@@ -15,22 +17,22 @@ from circuits.core import handler, Component, Event
 
 
 class daemonize(Event):
-
     """daemonize Event"""
 
 
-class deletepid(Event):
+class daemonized(Event):
+    """daemonized Event"""
 
+
+class deletepid(Event):
     """"deletepid Event"""
 
 
 class writepid(Event):
-
     """"writepid Event"""
 
 
 class Daemon(Component):
-
     """Daemon Component
 
     :param pidfile: .pid filename
@@ -114,6 +116,12 @@ class Daemon(Component):
         stdout.flush()
         stderr.flush()
 
+        maxfd = getrlimit(RLIMIT_NOFILE)[1]
+        if maxfd == RLIM_INFINITY:
+            maxfd = 2048
+
+        closerange(0, maxfd)
+
         si = open(self.stdin, "r")
         so = open(self.stdout, "a+")
         se = open(self.stderr, "a+")
@@ -123,6 +131,7 @@ class Daemon(Component):
         dup2(se.fileno(), stderr.fileno())
 
         self.fire(writepid())
+        self.fire(daemonized(self))
 
     def registered(self, component, manager):
         if component == self and manager.root.running:
