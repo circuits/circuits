@@ -7,3 +7,6 @@ prune docs
 prune fabfile
 prune examples
 prune setup.cfg
+
+global-exclude __pycache__
+global-exclude *.py[co]
