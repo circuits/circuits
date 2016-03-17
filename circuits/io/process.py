@@ -7,10 +7,23 @@ from io import BytesIO
 from subprocess import Popen, PIPE
 
 from circuits.core.manager import TIMEOUT
-from circuits import handler, BaseComponent
+from circuits import handler, BaseComponent, Event
 
 from .file import File
-from .events import started, stopped, write
+from .events import started, write, close
+
+
+class terminated(Event):
+    """terminated Event
+
+    This Event is sent when a process is completed
+
+    :param args:  (process)
+    :type  tuple: tuple
+    """
+
+    def __init__(self, *args):
+        super(terminated, self).__init__(*args)
 
 
 class Process(BaseComponent):
@@ -73,38 +86,30 @@ class Process(BaseComponent):
         ).register(self)
 
         self._stderr_read_handler = self.addHandler(
-            handler("read", channel="{0:d}.stderr".format(self.p.pid))(
-                self.__class__._on_stderr_read
+            handler("read", channel=self._stderr.channel)(
+                lambda self, data: self.stderr.write(data)
             )
         )
 
         self._stdout_read_handler = self.addHandler(
-            handler("read", channel="{0:d}.stdout".format(self.p.pid))(
-                self.__class__._on_stdout_read
+            handler("read", channel=self._stdout.channel)(
+                lambda self, data: self.stdout.write(data)
             )
         )
 
         self._stderr_closed_handler = self.addHandler(
-            handler("closed", channel="{0:d}.stderr".format(self.p.pid))(
-                self.__class__._on_stderr_closed
+            handler("closed", channel=self._stderr.channel)(
+                lambda self: setattr(self, '_stderr_closed', True)
             )
         )
 
         self._stdout_closed_handler = self.addHandler(
-            handler("closed", channel="{0:d}.stdout".format(self.p.pid))(
-                self.__class__._on_stdout_closed
+            handler("closed", channel=self._stdout.channel)(
+                lambda self: setattr(self, '_stdout_closed', True)
             )
         )
 
         self.fire(started(self))
-
-    @staticmethod
-    def _on_stdout_closed(self):
-        self._stdout_closed = True
-
-    @staticmethod
-    def _on_stderr_closed(self):
-        self._stderr_closed = True
 
     def stop(self):
         if self.p is not None:
@@ -127,14 +132,6 @@ class Process(BaseComponent):
         if getattr(self, "p", None) is not None:
             return self.p.poll()
 
-    @staticmethod
-    def _on_stderr_read(self, data):
-        self.stderr.write(data)
-
-    @staticmethod
-    def _on_stdout_read(self, data):
-        self.stdout.write(data)
-
     @handler("generate_events")
     def _on_generate_events(self, event):
         if self.p is not None and self._status is None:
@@ -147,7 +144,12 @@ class Process(BaseComponent):
             self.removeHandler(self._stdout_read_handler)
             self.removeHandler(self._stderr_closed_handler)
             self.removeHandler(self._stdout_closed_handler)
-            self.fire(stopped(self))
+
+            self.fire(terminated(self))
+            self.fire(close(), self._stdin.channel,
+                               self._stdout.channel,
+                               self._stderr.channel)
+
             event.reduce_time_left(0)
             event.stop()
         else:
