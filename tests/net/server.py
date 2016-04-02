@@ -6,9 +6,7 @@ class Server(Component):
 
     channel = "server"
 
-    def __init__(self):
-        super(Server, self).__init__()
-
+    def init(self):
         self.data = ""
         self.host = None
         self.port = None

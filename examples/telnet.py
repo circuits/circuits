@@ -43,6 +43,12 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
+        "-s", "--secure",
+        action="store_true", default=False, dest="secure",
+        help="Enable secure mode"
+    )
+
+    parser.add_option(
         "-u", "--udp",
         action="store_true", default=False, dest="udp",
         help="Use UDP transport",
@@ -98,7 +104,7 @@ class Telnet(Component):
         print("Trying %s ..." % host)
 
         if not opts["udp"]:
-            self.fire(connect(*dest))
+            self.fire(connect(*dest, secure=opts["secure"]))
         else:
             self.fire(write((host, port), b"\x00"))
 
