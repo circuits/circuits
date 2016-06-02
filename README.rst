@@ -134,3 +134,13 @@ There are also several places you can reach out to the circuits community:
 - `Google+ Group`_
 - `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
 - `Ask a Question`_ on `Stackoverflow`_ (Tag it: ``circuits-framework``)
+
+----
+
+Disclaimer
+----------
+
+Whilst I (James Mills) continue to contribute and maintain the circuits project
+I do not represent the interests or business of my employer Facebook Inc. The
+contributions I make are of my own free time and have no bearing or relevance
+o Facebook Inc.

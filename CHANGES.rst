@@ -5,7 +5,7 @@
 Change Log
 ==========
 
-
+- :release:`3.2 <2016-06-02>`
 - :bug:`119` Fixed bug in ``circuits.web.url.parse_url()`` that caused a
   display issue with port bindings on ports 80 and 443.
 - :release:`3.1 <2014-11-01>`

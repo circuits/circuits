@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'circuits'
-copyright = u'2004-2015, James Mills'
+copyright = u'2004-2016, James Mills'
 url = "http://circuitsframework.com/"
 
 # The version info for the project you're documenting, acts as replacement for
