@@ -1,26 +1,43 @@
 #!/usr/bin/env python
 
-import pytest
-if pytest.PYVER < (2, 7):
-    pytest.skip("This test requires Python=>2.7")
 
-from os import path
-from socket import gaierror
+import pytest
+from pytest import fixture
+
+import os
 import ssl
 import sys
+import tempfile
+from os import path
+from socket import gaierror
 
 from circuits.web import Controller
 from circuits import handler, Component
 from circuits.web import BaseServer, Server
 
+
 from .helpers import urlopen, URLError
 
+
+if pytest.PYVER < (2, 7):
+    pytest.skip("This test requires Python=>2.7")
+
+
 CERTFILE = path.join(path.dirname(__file__), "cert.pem")
+
 
 # self signed cert
 if pytest.PYVER >= (2, 7, 9):
     SSL_CONTEXT = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+
+
+@fixture
+def tmpfile(request):
+    tmpdir = tempfile.mkdtemp()
+    filename = os.path.join(tmpdir, "test.sock")
+
+    return filename
 
 
 class BaseRoot(Component):
@@ -117,14 +134,11 @@ def test_secure_server(manager, watcher):
     watcher.wait("unregistered")
 
 
-def test_unixserver(manager, watcher, tmpdir):
+def test_unixserver(manager, watcher, tmpfile):
     if pytest.PLATFORM == "win32":
         pytest.skip("Unsupported Platform")
 
-    sockpath = tmpdir.ensure("test.sock")
-    socket = str(sockpath)
-
-    server = Server(socket).register(manager)
+    server = Server(tmpfile).register(manager)
     MakeQuiet().register(server)
     watcher.wait("ready")
 
