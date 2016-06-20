@@ -213,7 +213,8 @@ class URL(object):
 
     def lower(self):
         '''Lowercase the hostname'''
-        self._host = self._host.lower()
+        if self._host is not None:
+            self._host = self._host.lower()
         return self
 
     def sanitize(self):

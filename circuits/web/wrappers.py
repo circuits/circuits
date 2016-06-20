@@ -13,23 +13,27 @@ try:
 except ImportError:
     from http.cookies import SimpleCookie  # NOQA
 
-from .url import parse_url
-from .headers import Headers
-from ..six import binary_type
-from .errors import httperror
-from circuits.net.sockets import BUFSIZE
-from .constants import HTTP_STATUS_CODES, SERVER_VERSION
-
-try:
-    unicode
-except NameError:
-    unicode = str
-
 try:
     from email.utils import formatdate
     formatdate = partial(formatdate, usegmt=True)
 except ImportError:
     from rfc822 import formatdate as HTTPDate  # NOQA
+
+
+from circuits.six import binary_type
+from circuits.net.sockets import BUFSIZE
+
+
+from .url import parse_url
+from .headers import Headers
+from .errors import httperror
+from .constants import HTTP_STATUS_CODES, SERVER_VERSION
+
+
+try:
+    unicode
+except NameError:
+    unicode = str
 
 
 def file_generator(input, chunkSize=BUFSIZE):
@@ -176,11 +180,12 @@ class Request(object):
 
         if sock is not None:
             name = sock.getpeername()
-            if name is not None:
-                self.remote = Host(*name)
-            else:
-                name = sock.getsockname()
-                self.remote = Host(name, "", name)
+            try:
+                ip, port = name
+                name = None
+            except ValueError:  # AF_UNIX
+                ip, port = None, None
+            self.remote = Host(ip, port, name)
 
         cookie = self.headers.get("Cookie")
         if cookie is not None:
@@ -209,8 +214,11 @@ class Request(object):
         base = "{0:s}://{1:s}{2:s}/".format(
             self.scheme,
             self.host,
-            ":{0:d}".format(self.port) if self.port not in (80, 443) else ""
+            ":{0:d}".format(self.port)
+            if self.port not in (80, 443)
+            else ""
         )
+
         self.base = parse_url(base)
 
         url = "{0:s}{1:s}{2:s}".format(

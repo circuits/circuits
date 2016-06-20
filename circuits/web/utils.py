@@ -4,8 +4,10 @@ This module implements utility functions.
 """
 
 import re
+import os
 import zlib
 import time
+import stat
 import struct
 from math import sqrt
 from io import TextIOWrapper
@@ -27,6 +29,15 @@ from .exceptions import RangeUnsatisfiable, RequestEntityTooLarge
 
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile("^[0-9]+,[0-9]+$")
+
+
+def is_unix_socket(path):
+    if not os.path.exists(path):
+        return False
+
+    mode = os.stat(path).st_mode
+
+    return stat.S_ISSOCK(mode)
 
 
 def average(xs):
