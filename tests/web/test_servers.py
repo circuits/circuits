@@ -56,8 +56,9 @@ class Root(Controller):
 
 class MakeQuiet(Component):
 
-    @handler("ready", channel="*", priority=1.0)
-    def _on_ready(self, event, *args):
+    channel = "web"
+
+    def ready(self, event, *args):
         event.stop()
 
 
@@ -140,11 +141,23 @@ def test_unixserver(manager, watcher, tmpfile):
 
     server = Server(tmpfile).register(manager)
     MakeQuiet().register(server)
-    watcher.wait("ready")
+    assert watcher.wait("ready")
 
     Root().register(server)
 
     assert path.basename(server.host) == "test.sock"
+
+    try:
+        from uhttplib import UnixHTTPConnection
+
+        client = UnixHTTPConnection(server.http.base)
+        client.request("GET", "/")
+        response = client.getresponse()
+        s = response.read()
+
+        assert s == b"Hello World!"
+    except ImportError:
+        pass
 
     server.unregister()
     watcher.wait("unregistered")

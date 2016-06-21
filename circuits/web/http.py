@@ -6,6 +6,7 @@ or commonly known as HTTP.
 
 
 from io import BytesIO
+from socket import socket
 
 try:
     from urllib.parse import quote
@@ -22,6 +23,7 @@ from circuits.core import handler, BaseComponent, Value
 
 from . import wrappers
 from .url import parse_url
+from .utils import is_unix_socket
 from .exceptions import HTTPException
 from .events import request, response, stream
 from .parsers import HttpParser, BAD_FIRST_LINE
@@ -39,7 +41,6 @@ except NameError:
 
 
 class HTTP(BaseComponent):
-
     """HTTP Protocol Component
 
     Implements the HTTP server protocol and parses and processes incoming
@@ -65,15 +66,7 @@ class HTTP(BaseComponent):
         self._server = server
         self._encoding = encoding
 
-        url = "{0:s}://{1:s}{2:s}".format(
-            (server.secure and "https") or "http",
-            server.host or "0.0.0.0",
-            ":{0:d}".format(server.port or 80)
-            if server.port not in (80, 443)
-            else ""
-        )
-        self.uri = parse_url(url)
-
+        self._uri = None
         self._clients = {}
         self._buffers = {}
 
@@ -93,9 +86,30 @@ class HTTP(BaseComponent):
 
     @property
     def base(self):
-        if not hasattr(self, "uri"):
+        if getattr(self, "uri", None) is None:
             return
         return self.uri.utf8().rstrip(b"/").decode(self._encoding)
+
+    @property
+    def uri(self):
+        if getattr(self, "_uri", None) is None:
+            return
+        return self._uri
+
+    @handler("ready", priority=1.0)
+    def _on_ready(self, server, bind):
+        if is_unix_socket(server.host):
+            url = server.host
+        else:
+            url = "{0:s}://{1:s}{2:s}".format(
+                (server.secure and "https") or "http",
+                server.host or "0.0.0.0",
+                ":{0:d}".format(server.port or 80)
+                if server.port not in (80, 443)
+                else ""
+            )
+
+        self._uri = parse_url(url)
 
     @handler("stream")  # noqa
     def _on_stream(self, res, data):
@@ -440,6 +454,9 @@ class HTTP(BaseComponent):
             req, res = fevent.value.parent.event.args[:2]
         elif len(fevent.args[2:]) == 4:
             req, res = fevent.args[2:]
+        elif len(fevent.args) == 2 and isinstance(fevent.args[0], socket):
+            req = wrappers.Request(fevent.args[0], server=self._server)
+            res = wrappers.Response(req, self._encoding, 500)
         else:
             return
 

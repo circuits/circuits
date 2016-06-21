@@ -1,21 +1,17 @@
 #!/usr/bin/env python
 
-from circuits.core.manager import Manager
-from circuits.core.handlers import handler
-from circuits.core.components import BaseComponent
 
+from circuits.core.handlers import handler
 from circuits.web import BaseServer, Controller
+from circuits.core.components import BaseComponent
 from circuits.web.dispatchers.dispatcher import Dispatcher
+
 
 from .helpers import urlopen, urljoin
 
 
 class PrefixingDispatcher(BaseComponent):
-
     """Forward to another Dispatcher based on the channel."""
-
-    def __init__(self, channel):
-        super(PrefixingDispatcher, self).__init__(channel=channel)
 
     @handler("request", priority=1.0)
     def _on_request(self, event, request, response):
@@ -49,24 +45,20 @@ class Root2(Controller):
         return "Hello from site 2!"
 
 
-def test_disps():
-
-    manager = Manager()
-
-    server1 = BaseServer(0, channel="site1")
-    server1.register(manager)
-    PrefixingDispatcher(channel="site1").register(server1)
-    Dispatcher(channel="site1").register(server1)
+def test_disps(manager, watcher):
+    server1 = BaseServer(0, channel="site1").register(manager)
+    PrefixingDispatcher(channel="site1").register(manager)
+    Dispatcher(channel="site1").register(manager)
     Root1().register(manager)
+    assert watcher.wait("ready", channel=server1.channel)
 
-    server2 = BaseServer(("localhost", 0), channel="site2")
-    server2.register(manager)
-    PrefixingDispatcher(channel="site2").register(server2)
-    Dispatcher(channel="site2").register(server2)
+    server2 = BaseServer(("localhost", 0), channel="site2").register(manager)
+    PrefixingDispatcher(channel="site2").register(manager)
+    Dispatcher(channel="site2").register(manager)
     Root2().register(manager)
+    assert watcher.wait("ready", channel=server2.channel)
 
     DummyRoot().register(manager)
-    manager.start()
 
     f = urlopen(server1.http.base, timeout=3)
     s = f.read()

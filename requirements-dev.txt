@@ -10,6 +10,7 @@ wheel
 # Running Tests
 tox
 pytest
+uhttplib
 coveralls
 pytest-cov
 
