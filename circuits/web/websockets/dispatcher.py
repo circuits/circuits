@@ -57,6 +57,7 @@ class WebSocketsDispatcher(BaseComponent):
         self._protocol_version = 13
         headers = request.headers
         sec_key = headers.get("Sec-WebSocket-Key", "").encode("utf-8")
+        subprotocols = headers.elements("Sec-WebSocket-Protocol")
 
         connection_tokens = [s.strip() for s in
                              headers.get("Connection", "").lower().split(",")]
@@ -88,12 +89,17 @@ class WebSocketsDispatcher(BaseComponent):
             response.headers["Upgrade"] = "WebSocket"
             response.headers["Connection"] = "Upgrade"
             response.headers["Sec-WebSocket-Accept"] = accept.decode()
+            if subprotocols:
+                response.headers["Sec-WebSocket-Protocol"] = self.select_subprotocol(subprotocols)
             codec = WebSocketCodec(request.sock, channel=self._wschannel)
             self._codecs[request.sock] = codec
             codec.register(self)
             return response
         finally:
             event.stop()
+
+    def select_subprotocol(self, subprotocols):
+        return subprotocols[0]
 
     @handler("response_complete")
     def _on_response_complete(self, e, value):
