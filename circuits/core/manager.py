@@ -413,8 +413,9 @@ class Manager(object):
 
     def _fire(self, event, channel, priority=0):
         # check if event is fired while handling an event
-        if thread.get_ident() == (self._executing_thread or
-                                  self._flushing_thread) and not isinstance(event, signal):
+        th = (self._executing_thread or self._flushing_thread)
+        if thread.get_ident() == (th.ident if th else None) and \
+                not isinstance(event, signal):
             if self._currently_handling is not None and \
                     getattr(self._currently_handling, "cause", None):
                 # if the currently handled event wants to track the
