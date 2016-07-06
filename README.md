@@ -43,7 +43,7 @@ Supported Platforms
 ===================
 
 -   Linux, FreeBSD, Mac OS X, Windows
--   Python 2.6, 2.7, 3.2, 3.3, 3.4
+-   Python 2.7, 3.3, 3.4, 3.5
 -   pypy 2.0, 2.1, 2.2
 
 Installation

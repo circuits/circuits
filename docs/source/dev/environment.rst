@@ -13,7 +13,7 @@ This is the recommended way to setup a development enviornment
 for developing with or on circuits.
 
 .. note:: This document *assumes* you already have a working `Python`_
-          environment with a minimum `Python`_ version of 2.6 as well
+          environment with a minimum `Python`_ version of 2.7 or 3.3 as well
           as `pip`_ already installed.
 
 
