@@ -574,7 +574,7 @@ class Manager(object):
         # events. Note that _flush can be called recursively.
         old_flushing = self._flushing_thread
         try:
-            self._flushing_thread = thread.get_ident()
+            self._flushing_thread = current_thread()
             if self._flush_batch == 0:
                 self._flush_batch = len(self._queue)
             while self._flush_batch > 0:
