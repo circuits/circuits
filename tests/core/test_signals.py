@@ -59,11 +59,10 @@ def test(tmpdir):
     kill(pid, SIGTERM)
     wait(pid)
 
-    f = open(signalfile, "r")
-    signal = f.read().strip()
-    f.close()
+    with open(signalfile, "r") as fd:
+        signal = fd.read().strip()
 
-    assert signal == str(SIGTERM)
+    assert int(signal) == int(SIGTERM)
 
     remove(pidfile)
     remove(signalfile)
