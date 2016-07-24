@@ -36,7 +36,7 @@ Example:
         """Your Application"""
     
     
-    app = Appp()
+    app = App()
     Debugger().register(app)
     app.run()
 
