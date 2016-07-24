@@ -340,7 +340,7 @@ def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
     try:
         assert watcher.wait("ready", "client")
 
-        client.fire(connect("foo", 1234))
+        client.fire(connect("foo.bar.baz", 1234))
         assert watcher.wait("error", "client")
 
         if pytest.PLATFORM == "win32":
