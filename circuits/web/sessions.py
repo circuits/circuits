@@ -64,6 +64,10 @@ class Sessions(Component):
     def load(self, sid):
         return self._data[sid]
 
+    def expire(self, sid):
+        """Expire session for sid."""
+        del self._data[sid]
+
     def save(self, sid, data):
         """Save User Session Data for sid"""
 
