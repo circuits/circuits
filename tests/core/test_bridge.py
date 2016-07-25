@@ -3,16 +3,19 @@
 
 import pytest
 
-if pytest.PLATFORM == "win32":
-    pytest.skip("Unsupported Platform")
-
-pytest.importorskip("multiprocessing")
-
 
 from os import getpid
+from time import sleep
 
 
 from circuits import ipc, Component, Event
+
+
+if pytest.PLATFORM == "win32":
+    pytest.skip("Unsupported Platform")
+
+
+pytest.importorskip("multiprocessing")
 
 
 class hello(Event):

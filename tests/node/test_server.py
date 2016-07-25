@@ -3,16 +3,20 @@
 
 from __future__ import print_function
 
-from pytest import PLATFORM, skip, fixture
+from time import sleep
 
-if PLATFORM == 'win32':
-    skip('Broken on Windows')
+
+from pytest import PLATFORM, skip, fixture
 
 
 from circuits import Event, Component
 from circuits.net.events import close
 from circuits.net.sockets import UDPServer
 from circuits.node import Node
+
+
+if PLATFORM == 'win32':
+    skip('Broken on Windows')
 
 
 class return_value(Event):
@@ -113,28 +117,29 @@ def test_server_send_multicast(app, watcher, manager):
     node1 = Node().register(client1)
     chan1 = node1.add('client1', *app.bind)
     assert watcher.wait('connected', channel=chan1)
+    watcher.clear()
 
     client2 = App().register(manager)
     node2 = Node().register(client2)
     chan2 = node2.add('client2', *app.bind)
     assert watcher.wait('connected', channel=chan2)
+    watcher.clear()
 
     client3 = App().register(manager)
     node3 = Node().register(client3)
     chan3 = node3.add('client3', *app.bind)
     assert watcher.wait('connected', channel=chan3)
+    watcher.clear()
 
     event = return_value()
-    app.server.send_to(event, app.server.get_socks()[:2])
+    app.server.send_to(event, app.server.get_socks())
     assert watcher.wait('return_value')
 
-    event_cnt = 0
-    with watcher._lock:
-        for event in watcher.events:
-            if event.name == 'return_value':
-                event_cnt += 1
-
-    assert event_cnt == 2
+    for _ in range(3):
+        if watcher.count("return_value") == 3:
+            break
+        sleep(1)
+    assert watcher.count("return_value") == 3
 
     client1.unregister()
     client2.unregister()

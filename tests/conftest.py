@@ -37,6 +37,15 @@ class Watcher(BaseComponent):
         else:
             return False
 
+    def count(self, name, channel=None, n=1, timeout=6.0):
+        n = 0
+        with self._lock:
+            for event in self.events:
+                if event.name == name and event.waitingHandlers == 0:
+                    if (channel is None) or (channel in event.channels):
+                        n += 1
+        return n
+
 
 class Flag(object):
     status = False
