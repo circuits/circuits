@@ -10,8 +10,11 @@ from circuits import Component, Event
 
 
 class hello(Event):
-
     """hello Event"""
+
+
+class terminate(Event):
+    """terminate Event"""
 
 
 class App(Component):
@@ -21,7 +24,7 @@ class App(Component):
 
         print("Hello World!")
 
-    def started(self, component):
+    def started(self, *args):
         """Started Event Handler
 
         This is fired internally when your application starts up
@@ -30,7 +33,9 @@ class App(Component):
         """
 
         self.fire(hello())  # Fire hello Event
+        self.fire(terminate())
 
+    def terminate(self):
         raise SystemExit(0)  # Terminate the Application
 
 
