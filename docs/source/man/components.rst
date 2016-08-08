@@ -35,6 +35,9 @@ detached by unregistering itself. See methods:
 - :meth:`~BaseComponent.register`
 - :meth:`~BaseComponent.unregister`
 
+The hierarchy of components facilitates addition and removal of complex components at runtime. 
+
+All registered components in the hierarchy receive all applicable events regardless of lineage.  
 
 Component Registration
 ----------------------
