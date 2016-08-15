@@ -30,7 +30,9 @@ class Timer(BaseComponent):
         :param persist:  An optional keyword argument which if ``True``
                          will cause the event to be fired repeatedly
                          once per configured interval until the timer
-                         is unregistered. **Default:** ``False``
+                         is unregistered.  If ``False``, the event fires
+                         exactly once after the specified interval, and
+                         the timer is unregistered. **Default:** ``False``
         :type persist:   ``bool``
         """
 
