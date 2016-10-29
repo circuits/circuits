@@ -17,7 +17,7 @@ from traceback import format_exc
 from types import GeneratorType
 from uuid import uuid4 as uuid
 
-from ..six import Iterator, create_bound_method, next
+from ..six import Iterator, create_bound_method, next, string_types
 from ..tools import tryimport
 from .events import Event, exception, generate_events, signal, started, stopped
 from .handlers import handler
@@ -517,9 +517,15 @@ class Manager(object):
             event_object = event
             event_name = event.name
             channels = event.channels or channels
-        else:
+        elif isinstance(event, string_types):
             event_object = None
             event_name = event
+        else:
+            events = event
+            for event in events:
+                for value in self.wait(event, *channels, **kwargs):
+                    yield value
+            return
 
         state = _State(timeout=kwargs.get("timeout", -1))
 
