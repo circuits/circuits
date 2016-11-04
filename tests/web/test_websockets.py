@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from circuits import Component
 from circuits.web.controllers import Controller
-from circuits.net.sockets import close, write
+from circuits.net.sockets import close, write, BUFSIZE
 from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
 
 
@@ -80,6 +80,12 @@ def test(manager, watcher, webapp):
     client.fire(write("Hello!"), "ws")
     assert watcher.wait("read", channel="ws")
     assert client.response == "Received: Hello!"
+
+    for size in (BUFSIZE, BUFSIZE + 1, BUFSZIE * 2):
+        data = "A" * (size + 1)
+        client.fire(write(data), "ws")
+        assert watcher.wait("read", channel="ws")
+        assert client.response == "Received: %s" % (data,)
 
     f = urlopen(webapp.server.http.base)
     s = f.read()
