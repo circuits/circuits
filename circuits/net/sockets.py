@@ -155,6 +155,9 @@ class Client(BaseComponent):
 
         try:
             self._sock.shutdown(2)
+        except SocketError:
+            pass
+        try:
             self._sock.close()
         except SocketError:
             pass
@@ -497,6 +500,9 @@ class Server(BaseComponent):
 
         try:
             sock.shutdown(2)
+        except SocketError:
+            pass
+        try:
             sock.close()
         except SocketError:
             pass
