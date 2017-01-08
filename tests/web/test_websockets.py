@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 
+import pytest
 
 from circuits import Component
 from circuits.web.controllers import Controller
@@ -49,7 +50,8 @@ class Client(Component):
         self.response = data
 
 
-def test(manager, watcher, webapp):
+@pytest.mark.parametrize('chunksize', [BUFSIZE, BUFSIZE + 1, BUFSIZE * 2])
+def test(manager, watcher, webapp, chunksize):
     echo = Echo().register(webapp)
     assert watcher.wait("registered", channel="wsserver")
 
@@ -81,11 +83,10 @@ def test(manager, watcher, webapp):
     assert watcher.wait("read", channel="ws")
     assert client.response == "Received: Hello!"
 
-    for size in (BUFSIZE, BUFSIZE + 1, BUFSZIE * 2):
-        data = "A" * (size + 1)
-        client.fire(write(data), "ws")
-        assert watcher.wait("read", channel="ws")
-        assert client.response == "Received: %s" % (data,)
+    data = "A" * (chunksize + 1)
+    client.fire(write(data), "ws")
+    assert watcher.wait("read", channel="ws")
+    assert client.response == "Received: %s" % (data,)
 
     f = urlopen(webapp.server.http.base)
     s = f.read()
