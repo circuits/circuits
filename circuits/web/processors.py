@@ -36,8 +36,20 @@ def process_multipart(request, params):
 
 def process_urlencoded(request, params, encoding="utf-8"):
     params.update(QueryStringParser(request.qs).result)
-    body = request.body.getvalue().decode(encoding)
-    params.update(QueryStringParser(body).result)
+    body = request.body.getvalue()
+    result = QueryStringParser(body).result
+    for key, value in result.items():
+        params[key.decode(encoding)] = _decode_value(value, encoding)
+
+
+def _decode_value(value, encoding):
+    if isinstance(value, bytes):
+        value = value.decode(encoding)
+    elif isinstance(value, list):
+        value = [_decode_value(val, encoding) for val in value]
+    elif isinstance(value, dict):
+        value = dict((key.decode(encoding), _decode_value(val, encoding)) for key, val in value.iteritems())
+    return value
 
 
 def process(request, params):
