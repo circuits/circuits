@@ -83,6 +83,14 @@ def test(manager, watcher, webapp, chunksize):
     assert watcher.wait("read", channel="ws")
     assert client.response == "Received: Hello!"
 
+    watcher.clear()
+
+    client.fire(write("World!"), "ws")
+    assert watcher.wait("read", channel="ws")
+    assert client.response == "Received: World!"
+
+    watcher.clear()
+
     data = "A" * (chunksize + 1)
     client.fire(write(data), "ws")
     assert watcher.wait("read", channel="ws")
