@@ -31,6 +31,9 @@ class Root(Controller):
         self.response.headers["A"] = "ä"
         return "ä"
 
+    def argument(self, arg):
+        return arg
+
 
 def test_index(webapp):
     f = urlopen(webapp.server.http.base)
@@ -103,3 +106,18 @@ def test_response_headers(webapp):
     a = client.response.headers.get('A')
     assert a == "ä"
     assert s == b("ä")
+
+
+def test_argument(webapp):
+    connection = HTTPConnection(webapp.server.host, webapp.server.port)
+    connection.connect()
+
+    data = 'arg=%E2%86%92'
+    connection.request("POST", "/argument", data, {"Content-type": "application/x-www-form-urlencoded"})
+    response = connection.getresponse()
+    assert response.status == 200
+    assert response.reason == "OK"
+    s = response.read()
+    assert s.decode('utf-8') == u'\u2192'
+
+    connection.close()
