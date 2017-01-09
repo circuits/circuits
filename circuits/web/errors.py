@@ -3,6 +3,7 @@
 This module implements a set of standard HTTP Errors.
 """
 import json
+import traceback
 
 try:
     from html import escape
@@ -52,8 +53,9 @@ class httperror(Event):
         )
 
         if self.error is not None:
+            stack = self.error[2] if isinstance(self.error[2], (list, tuple)) else traceback.format_tb(self.error[2])
             self.traceback = "ERROR: (%s) %s\n%s" % (
-                self.error[0], self.error[1], "".join(self.error[2])
+                self.error[0], self.error[1], "".join(stack)
             )
         else:
             self.traceback = ""
