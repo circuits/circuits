@@ -34,8 +34,8 @@ matrix:
 before_install:
   - ./.travis/install.sh
 install:
-  - pip install -r requirements-test.txt
-  - pip install -e .
+  - pip install -Ur requirements-test.txt
+  - pip install -Ue .
 script: python setup.py test
 after_success:
   - coveralls

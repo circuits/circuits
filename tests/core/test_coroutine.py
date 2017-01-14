@@ -4,7 +4,7 @@ from __future__ import print_function
 
 
 import pytest
-pytest.skip("XXX: This test fails intermittently")
+pytest.mark.skip("XXX: This test fails intermittently")
 
 from circuits import Event, Component
 
