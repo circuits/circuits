@@ -2,42 +2,41 @@ sudo: false
 
 language: python
 
+python:
+  - 2.6
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - pypy
+
 matrix:
   include:
-    - os: linux
-      python: 2.6
-      env: TOXENV=py26
-    - os: linux
-      python: 2.7
-      env: TOXENV=py27
-    - os: linux
-      python: 3.3
-      env: TOXENV=py33
-    - os: linux
-      python: 3.4
-      env: TOXENV=py34
-    - os: linux
-      python: 3.5
-      env: TOXENV=py35
-    - os: linux
-      python: pypy
-      env: TOXENV=pypy
-    - os: osx
+    - python: 2.7
+      os: osx
       language: generic
-      env: TOXENV=py27
-    - os: osx
+      env: TOXENV=2.7
+      before_install: ./.travis/install.sh
+    - python: 3.5
+      os: osx
       language: generic
-      env: TOXENV=py35
-    - os: osx
+      env: TOXENV=3.5
+      before_install: ./.travis/install.sh
+    - python: pypy
+      os: osx
       language: generic
       env: TOXENV=pypy
-before_install:
-  - ./.travis/install.sh
+      before_install: ./.travis/install.sh
+
 install:
+  - pip install tox-travis
   - pip install -Ur requirements-test.txt
   - pip install -Ue .
-script: python setup.py test
+
+script: tox
+
 after_success:
   - coveralls
+
 notifications:
   irc: "chat.freenode.net#circuits"
