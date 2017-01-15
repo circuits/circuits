@@ -8,6 +8,7 @@ python:
   - 3.3
   - 3.4
   - 3.5
+  - 3.6
   - pypy
 
 matrix:
@@ -15,12 +16,12 @@ matrix:
     - python: 2.7
       os: osx
       language: generic
-      env: TOXENV=2.7
+      env: TOXENV=py27
       before_install: ./.travis/install.sh
-    - python: 3.5
+    - python: 3.6
       os: osx
       language: generic
-      env: TOXENV=3.5
+      env: TOXENV=py36
       before_install: ./.travis/install.sh
     - python: pypy
       os: osx
