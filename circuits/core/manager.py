@@ -544,8 +544,7 @@ class Manager(object):
 
         yield state
 
-        if not state.timeout:
-            self.removeHandler(_on_done_handler, "%s_done" % event_name)
+        self.removeHandler(_on_done_handler, "%s_done" % event_name)
 
         if state.event is not None:
             yield CallValue(state.event.value)
