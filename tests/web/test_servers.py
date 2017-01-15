@@ -20,7 +20,7 @@ from .helpers import urlopen, URLError
 
 
 if pytest.PYVER < (2, 7):
-    pytest.skip("This test requires Python=>2.7")
+    pytest.mark.skip("This test requires Python=>2.7")
 
 
 CERTFILE = path.join(path.dirname(__file__), "cert.pem")
