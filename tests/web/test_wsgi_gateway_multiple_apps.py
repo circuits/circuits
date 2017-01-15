@@ -2,7 +2,7 @@
 
 import pytest
 if pytest.PYVER[:2] == (3, 3):
-    pytest.skip("Broken on Python 3.3")
+    pytest.mark.skip("Broken on Python 3.3")
 
 from circuits.web import Server
 from circuits.web.wsgi import Gateway
