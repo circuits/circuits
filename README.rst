@@ -29,10 +29,6 @@
    :target: https://waffle.io/circuits/circuits
    :alt: Stories Ready
 
-.. image:: https://requires.io/bitbucket/circuits/circuits/requirements.png?branch=default
-   :target: https://requires.io/bitbucket/circuits/circuits/requirements?branch=default
-   :alt: Requirements Status
-
 circuits is a **Lightweight** **Event** driven and **Asynchronous**
 **Application Framework** for the `Python Programming Language`_
 with a strong **Component** Architecture.
