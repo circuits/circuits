@@ -12,8 +12,7 @@ from circuits import ipc, Component, Event
 
 
 if pytest.PLATFORM == "win32":
-    pytest.mark.skip("Unsupported Platform")
-
+    pytestmark = pytest.mark.skip("Unsupported Platform")
 
 pytest.importorskip("multiprocessing")
 

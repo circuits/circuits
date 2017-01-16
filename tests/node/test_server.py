@@ -17,7 +17,7 @@ from circuits.node import Node
 
 
 if PLATFORM == 'win32':
-    pytest.mark.skip('Broken on Windows')
+    pytestmark = pytest.mark.skip('Broken on Windows')
 
 
 class return_value(Event):
