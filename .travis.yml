@@ -10,6 +10,9 @@ python:
   - pypy
 
 matrix:
+  allow_failures:
+    # Till https://travis-ci.org/circuits/circuits/jobs/192188096#L391 is solved.
+    - python: pypy
   include:
     - python: 2.7
       os: osx
