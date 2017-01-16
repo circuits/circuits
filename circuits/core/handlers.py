@@ -2,7 +2,7 @@
 This module define the @handler decorator/function and the HandlesType type.
 """
 
-from inspect import getargspec
+from inspect import signature
 from collections import Callable
 
 
@@ -74,7 +74,7 @@ def handler(*names, **kwargs):
         f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
 
-        args = getargspec(f)[0]
+        args = signature(f)[0]
 
         if args and args[0] == "self":
             del args[0]
