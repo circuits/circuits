@@ -93,15 +93,13 @@ class Node(BaseComponent):
                                         defined, function or method to call for
                                         check if event is allowed for sending.
                                         **Default:** ``None`` (no firewall)
-        :type receive_event_firewall:   function
         :type receive_event_firewall:   method
 
-        :param send_event_firewall:  An optional keyword argument which if
+        :param send_event_firewall: An optional keyword argument which if
                                     defined, setfunction or method to call to
                                     check if event is allowed for executing
                                     **Default:** ``None`` (no firewall)
-        :type send_event_firewall:   function
-        :type send_event_firewall:   method
+        :type send_event_firewall:  method
 
         :return: Channel used on client event.
         :rtype: str

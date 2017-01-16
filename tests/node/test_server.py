@@ -67,9 +67,23 @@ def test_auto_reconnect(app, watcher, manager):
     # close server
     app.fire(close(), app.channel)
     assert watcher.wait('closed', channel=app.channel)
+    watcher.clear()
+
+    # client gets an unreachable
+    assert watcher.wait('connect', channel=chan)
+    assert watcher.wait('unreachable', channel=chan)
+    watcher.clear()
+
+    # start a new server
+    app = Node(port=app.bind[1], server_ip=app.bind[0])
+    app.register(manager)
+    assert watcher.wait('ready', channel=app.channel)
+    watcher.clear()
+
     assert watcher.wait('connected', channel=chan)
 
     client.unregister()
+    app.unregister()
 
 
 def test_server_send_all(app, watcher, manager):
