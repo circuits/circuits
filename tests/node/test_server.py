@@ -75,19 +75,14 @@ def test_auto_reconnect(app, watcher, manager):
     watcher.clear()
 
     # start a new server
-    app = Node(port=app.bind[1], server_ip=app.bind[0])
-    app.register(manager)
-    assert watcher.wait('ready', channel=app.channel)
+    node2= Node(port=app.bind[1], server_ip=app.bind[0])
+    node2.register(manager)
+    assert watcher.wait('ready', channel=node2.channel)
     watcher.clear()
 
     assert watcher.wait('connected', channel=chan)
 
-    # close the server again
-    app.fire(close(), app.channel)
-    assert watcher.wait('closed', channel=app.channel)
-
     client.unregister()
-    app.unregister()
 
 
 def test_server_send_all(app, watcher, manager):
@@ -123,8 +118,6 @@ def test_server_send(app, watcher, manager):
     event = return_value()
     app.server.send(event, app.server.get_socks()[0], no_result=True)
     assert watcher.wait('return_value')
-    watcher.clear()
-    assert not watcher.wait('return_value')
 
     client1.unregister()
     client2.unregister()
