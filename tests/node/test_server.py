@@ -5,7 +5,7 @@ from __future__ import print_function
 
 from time import sleep
 
-
+import sys
 import pytest
 from pytest import PLATFORM, fixture
 
@@ -117,8 +117,11 @@ def test_server_send(app, watcher, manager):
     assert watcher.wait('connected', channel=chan2)
 
     event = return_value()
+    watcher.clear()
     app.server.send(event, app.server.get_socks()[0], no_result=True)
+    print(event.value, file=sys.stderr)
     assert watcher.wait('return_value')
+    print(event.value, file=sys.stderr)
 
     client1.unregister()
     client2.unregister()
