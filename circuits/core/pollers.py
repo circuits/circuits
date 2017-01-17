@@ -57,20 +57,29 @@ class BasePoller(BaseComponent):
     def _create_control_con(self):
         if platform.system() == "Linux":
             return os.pipe()
+
         server = create_socket(AF_INET, SOCK_STREAM)
         server.bind(("localhost", 0))
         server.listen(1)
-        res_list = []
+
+        server_sock = None
 
         def accept():
-            sock, _ = server.accept()
-            sock.setblocking(False)
-            res_list.append(sock)
-        at = Thread(target=accept)
-        at.start()
-        clnt_sock = create_connection(server.getsockname())
-        at.join()
-        return (res_list[0], clnt_sock)
+            global server_sock
+
+            try:
+                server_sock, _ = server.accept()
+                server_sock.setblocking(False)
+            except (OSError, SocketError):
+                server_sock = None
+
+        t = Thread(target=accept)
+        t.start()
+
+        client_sock = create_connection(server.getsockname())
+        t.join()
+
+        return server_sock, client_sock
 
     @handler("generate_events", priority=-9)
     def _on_generate_events(self, event):
