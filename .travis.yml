@@ -34,7 +34,7 @@ install:
   - pip install -Ur requirements-test.txt
   - pip install -Ue .
 
-script: tox
+script: tox -- -v -k test_server_send
 
 after_success: coveralls
 

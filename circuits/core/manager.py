@@ -1,7 +1,7 @@
 """
 This module defines the Manager class.
 """
-
+from __future__ import print_function
 
 import atexit
 from time import time
@@ -416,6 +416,7 @@ class Manager(object):
         th = (self._executing_thread or self._flushing_thread)
         if thread.get_ident() == (th.ident if th else None) and \
                 not isinstance(event, signal):
+            print("XXX", file=stderr)
             if self._currently_handling is not None and \
                     getattr(self._currently_handling, "cause", None):
                 # if the currently handled event wants to track the
@@ -439,7 +440,9 @@ class Manager(object):
             # If the component is running, we must make sure that
             # any pending generate event waits no longer, as there
             # is something to do now.
+            print("TRY LOCKING", file=stderr)
             with self._lock:
+                print("GOT LOCK", file=stderr)
                 # Modifications of attribute self._currently_handling
                 # (in _dispatch()), calling reduce_time_left(0). and adding an
                 # event to the (empty) event queue must be atomic, so we have
