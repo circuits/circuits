@@ -11,8 +11,10 @@ python:
 
 matrix:
   allow_failures:
-    # Till https://travis-ci.org/circuits/circuits/jobs/192188096#L391 is solved.
+    # Till https://travis-ci.org/circuits/circuits/jobs/192188096 is solved.
     - python: pypy
+    # Till https://travis-ci.org/circuits/circuits/jobs/192669838 is solved.
+    - os: osx
   include:
     - python: 2.7
       os: osx
