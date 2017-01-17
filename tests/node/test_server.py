@@ -82,6 +82,10 @@ def test_auto_reconnect(app, watcher, manager):
 
     assert watcher.wait('connected', channel=chan)
 
+    # close the server again
+    app.fire(close(), app.channel)
+    assert watcher.wait('closed', channel=app.channel)
+
     client.unregister()
     app.unregister()
 
