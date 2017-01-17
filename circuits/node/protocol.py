@@ -1,3 +1,6 @@
+from __future__ import print_function
+import sys
+
 from circuits import Component, handler
 from circuits.core import Value
 from circuits.net.events import write
@@ -67,10 +70,12 @@ class Protocol(Component):
         self.__send(packet)
 
     def __send(self, packet):
+        print("FIRING event", file=sys.stderr)
         if self.__server is not None:
             self.fire(write(self.__sock, packet))
         else:
             self.fire(write(packet))
+        print("FIRING event done", file=sys.stderr)
 
     def __process_packet(self, packet):
         packet = packet.decode('utf-8')
