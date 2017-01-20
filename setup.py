@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 from glob import glob
 
 from setuptools import find_packages, setup
@@ -76,13 +74,11 @@ setup(
         ]
     ),
     scripts=glob("bin/*"),
-    install_requires=[],
     entry_points={
         "console_scripts": [
             "circuits.web=circuits.web.main:main",
         ]
     },
-    test_suite="tests.main.main",
     zip_safe=True,
     use_scm_version={
         "write_to": "circuits/version.py",

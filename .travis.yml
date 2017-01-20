@@ -31,16 +31,19 @@ matrix:
       env: TOXENV=pypy
       before_install: brew install pypy
     - python: 3.6
+      install: pip install -U flake8
       script: flake8
+      after_success:
     - python: 3.6
+      install: pip install -U isort
       script: isort -c --diff
+      after_success:
 
 install:
-  - pip install tox-travis
   - pip install -Ur requirements-test.txt
   - pip install -Ue .
 
-script: tox
+script: tox -- --cov=./circuits --no-cov-on-fail --cov-report=
 
 after_success: coveralls
 

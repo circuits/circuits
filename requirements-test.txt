@@ -1,5 +1,7 @@
-pytest
 coveralls
+pytest
 pytest-cov
 flake8
 isort
+tox
+tox-travis
