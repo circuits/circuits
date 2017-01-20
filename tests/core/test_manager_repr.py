@@ -4,8 +4,8 @@ Test Manager's representation string.
 """
 
 import os
-from time import sleep
 from threading import current_thread
+from time import sleep
 
 import pytest
 

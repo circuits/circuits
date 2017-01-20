@@ -4,7 +4,7 @@ import json
 from circuits.web import Controller
 from circuits.web.exceptions import Forbidden, NotFound, Redirect
 
-from .helpers import urlopen, HTTPError
+from .helpers import HTTPError, urlopen
 
 
 class Root(Controller):
@@ -87,8 +87,8 @@ def test_contenttype_json(webapp):
 
 def test_contenttype_json_no_debug(webapp):
     try:
-        f = urlopen("%s/test_contenttype_json_no_debug" %
-                    webapp.server.http.base)
+        urlopen("%s/test_contenttype_json_no_debug" %
+                webapp.server.http.base)
     except HTTPError as e:
         assert "json" in e.headers.get("Content-Type")
         result = json.loads(e.read().decode("utf-8"))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from circuits.web import Server, Controller
-from circuits.web.tools import check_auth, basic_auth
+from circuits.web import Controller, Server
+from circuits.web.tools import basic_auth, check_auth
 
 
 class Root(Controller):
@@ -15,6 +15,7 @@ class Root(Controller):
             return "Hello %s" % self.request.login
 
         return basic_auth(self.request, self.response, realm, users, encrypt)
+
 
 app = Server(("0.0.0.0", 8000))
 Root().register(app)

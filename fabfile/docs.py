@@ -4,7 +4,6 @@ from fabric.api import lcd, local, task
 
 from .utils import pip, requires
 
-
 PACKAGE = "circuits"
 
 

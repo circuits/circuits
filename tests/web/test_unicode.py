@@ -65,7 +65,7 @@ def test_response_body(webapp):
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == b("ä")
+    assert s == u"ä".encode('utf-8')
 
     connection.close()
 
@@ -81,7 +81,7 @@ def test_request_headers(webapp):
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == b("ä")
+    assert s == u"ä".encode('utf-8')
 
     connection.close()
 
@@ -105,7 +105,7 @@ def test_response_headers(webapp):
     s = client.response.read()
     a = client.response.headers.get('A')
     assert a == "ä"
-    assert s == b("ä")
+    assert s == u"ä".encode('utf-8')
 
 
 def test_argument(webapp):

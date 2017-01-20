@@ -3,9 +3,7 @@
 
 import pytest
 
-
-from circuits import task, Worker
-
+from circuits import Worker, task
 
 task.complete = True
 

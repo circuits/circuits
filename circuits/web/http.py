@@ -8,36 +8,23 @@ or commonly known as HTTP.
 from io import BytesIO
 from socket import socket
 
-try:
-    from urllib.parse import quote
-    from urllib.parse import urlparse, urlunparse
-except ImportError:
-    from urllib import quote  # NOQA
-    from urlparse import urlparse, urlunparse  # NOQA
-
-
-from circuits.six import text_type
+from circuits.core import BaseComponent, Value, handler
 from circuits.net.events import close, write
 from circuits.net.utils import is_ssl_handshake
-from circuits.core import handler, BaseComponent, Value
+from circuits.six import text_type
+from circuits.six.moves.urllib_parse import quote
 
 from . import wrappers
+from .constants import SERVER_PROTOCOL, SERVER_VERSION
+from .errors import httperror, notfound, redirect
+from .events import request, response, stream
+from .exceptions import HTTPException, Redirect as RedirectException
+from .parsers import BAD_FIRST_LINE, HttpParser
 from .url import parse_url
 from .utils import is_unix_socket
-from .exceptions import HTTPException
-from .events import request, response, stream
-from .parsers import HttpParser, BAD_FIRST_LINE
-from .errors import httperror, notfound, redirect
-from .exceptions import Redirect as RedirectException
-from .constants import SERVER_VERSION, SERVER_PROTOCOL
 
 MAX_HEADER_FRAGENTS = 20
 HTTP_ENCODING = 'utf-8'
-
-try:
-    unicode
-except NameError:
-    unicode = str
 
 
 class HTTP(BaseComponent):

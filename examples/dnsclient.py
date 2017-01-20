@@ -21,16 +21,13 @@ To run this example::
 
 from __future__ import print_function
 
-
 import sys
-
 
 from dnslib import DNSQuestion, DNSRecord
 
-
+from circuits import Component, Debugger, Event
 from circuits.net.events import write
 from circuits.net.sockets import UDPClient
-from circuits import Event, Component, Debugger
 
 
 class reply(Event):

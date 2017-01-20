@@ -1,17 +1,15 @@
 """Timers Tests"""
 
 
+from datetime import datetime, timedelta
+from itertools import starmap
+from operator import sub
+from time import time
+
 import pytest
 
-
-from time import time
-from operator import sub
-from itertools import starmap
-from datetime import datetime, timedelta
-
-
+from circuits import Component, Event, Timer, sleep
 from circuits.six.moves import map, zip
-from circuits import sleep, Event, Component, Timer
 
 
 @pytest.fixture

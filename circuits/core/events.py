@@ -214,6 +214,7 @@ class exception(Event):
         super(exception, self).__init__(type, value,
                                         self.format_traceback(traceback),
                                         handler=handler, fevent=fevent)
+
     def format_traceback(self, traceback):
         return format_tb(traceback)
 
@@ -346,8 +347,7 @@ class generate_events(Event):
         """
 
         with self._lock:
-            if time_left >= 0 and (self._time_left < 0
-                                   or self._time_left > time_left):
+            if time_left >= 0 and (self._time_left < 0 or self._time_left > time_left):
                 self._time_left = time_left
                 if self._time_left == 0 and self.handler is not None:
                     m = getattr(

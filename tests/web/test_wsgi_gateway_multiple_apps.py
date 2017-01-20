@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-
 import pytest
-if pytest.PYVER[:2] == (3, 3):
-    pytestmark = pytest.mark.skip("Broken on Python 3.3")
 
 from circuits.web import Server
 from circuits.web.wsgi import Gateway

@@ -6,10 +6,9 @@ from __future__ import print_function
 import pytest
 
 from circuits import Component
+from circuits.net.sockets import BUFSIZE, close, write
 from circuits.web.controllers import Controller
-from circuits.net.sockets import close, write, BUFSIZE
 from circuits.web.websockets import WebSocketClient, WebSocketsDispatcher
-
 
 from .helpers import urlopen
 

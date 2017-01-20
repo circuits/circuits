@@ -5,9 +5,9 @@ Macros for generating snippets of HTML.
 
 import genshi
 import pygments
-import pygments.util
-import pygments.lexers
 import pygments.formatters
+import pygments.lexers
+import pygments.util
 from genshi import builder
 from genshi.filters import HTMLSanitizer
 

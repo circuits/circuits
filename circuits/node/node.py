@@ -4,12 +4,12 @@ this module manage node (start server, add peer, ...)
 .. seealso:: Examples in :dir:`examples.node`
 """
 
+from circuits import BaseComponent, Timer, handler
+from circuits.net.events import connect
+
 from .client import Client
 from .events import connected_to, disconnected_from, remote
 from .server import Server
-
-from circuits import BaseComponent, handler, Timer
-from circuits.net.events import connect
 
 
 class Node(BaseComponent):

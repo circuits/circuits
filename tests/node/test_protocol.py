@@ -1,17 +1,12 @@
 #!/usr/bin/env python
-
-
-from pytest import fixture, skip, PLATFORM
-from circuits.core import Value
-from circuits.node.utils import dump_event, dump_value
-
-
-if PLATFORM == 'win32':
-    skip('Broken on Windows')
-
+import pytest
 
 from circuits import Component, Event
+from circuits.core import Value
 from circuits.node.protocol import Protocol
+from circuits.node.utils import dump_event, dump_value
+
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Broken on Windows')
 
 
 class return_value(Event):
@@ -66,7 +61,7 @@ class AppServer(Component):
         self.write_data = data
 
 
-@fixture()
+@pytest.fixture()
 def app_client(request, manager, watcher):
     app = AppClient()
     app.register(manager)
@@ -83,7 +78,7 @@ def app_client(request, manager, watcher):
     return app
 
 
-@fixture()
+@pytest.fixture()
 def app_firewall(request, manager, watcher):
     app = AppFirewall()
     app.register(manager)
@@ -104,7 +99,7 @@ def app_firewall(request, manager, watcher):
     return app
 
 
-@fixture()
+@pytest.fixture()
 def app_server(request, manager, watcher):
     app = AppServer()
     app.register(manager)

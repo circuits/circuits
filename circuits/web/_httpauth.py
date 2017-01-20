@@ -21,6 +21,19 @@ Usage:
 SUPPORTED_ALGORITHM - list of supported 'Digest' algorithms
 SUPPORTED_QOP - list of supported 'Digest' 'qop'.
 """
+import time
+from hashlib import md5, sha1
+
+try:
+    from base64 import decodebytes as base64_decodebytes
+except ImportError:
+    from base64 import b64decode as base64_decodebytes  # NOQA
+
+try:
+    from urllib.request import parse_http_list, parse_keqv_list
+except ImportError:
+    from urllib2 import parse_http_list, parse_keqv_list  # NOQA
+
 __version__ = 1, 0, 1
 __author__ = "Tiago Cogumbreiro <cogumbreiro@users.sf.net>"
 __credits__ = """
@@ -62,19 +75,6 @@ __all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse",
            "calculateNonce", "SUPPORTED_QOP")
 
 ###############################################################################
-import time
-
-try:
-    from base64 import decodebytes as base64_decodebytes
-except ImportError:
-    from base64 import b64decode as base64_decodebytes  # NOQA
-
-try:
-    from urllib.request import parse_http_list, parse_keqv_list
-except ImportError:
-    from urllib2 import parse_http_list, parse_keqv_list  # NOQA
-
-from hashlib import md5, sha1
 
 MD5 = "MD5"
 SHA1 = "SHA1"
@@ -177,6 +177,7 @@ def _parseBasicAuthorization(auth_params):
     username = username.decode("utf-8")
     password = password.decode("utf-8")
     return {"username": username, "password": password}
+
 
 AUTH_SCHEMES = {
     "basic": _parseBasicAuthorization,
@@ -358,6 +359,7 @@ def _checkBasicResponse(auth_map, password, method='GET', encrypt=None,
         return encrypt(auth_map["password"], auth_map["username"]) == password
     except TypeError:
         return encrypt(auth_map["password"]) == password
+
 
 AUTH_RESPONSES = {
     "basic": _checkBasicResponse,

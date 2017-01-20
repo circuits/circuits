@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from circuits.core import handler, BaseComponent, Event
+from circuits.core import BaseComponent, Event, handler
 
 
 class request(Event):

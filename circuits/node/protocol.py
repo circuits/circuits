@@ -1,8 +1,8 @@
 from circuits import Component, handler
 from circuits.core import Value
 from circuits.net.events import write
-from .utils import dump_event, load_value, load_event, dump_value
 
+from .utils import dump_event, dump_value, load_event, load_value
 
 DELIMITER = b'~~~'
 

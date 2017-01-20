@@ -18,11 +18,10 @@ try:
 except ImportError:
     __version__ = "unknown"
 
-from .core import Event
-from .core import ipc, Bridge
-from .core import sleep, task, Worker
-from .core import handler, reprhandler, BaseComponent, Component
-from .core import Debugger, Loader, Manager, Timer, TimeoutError
+from .core import (
+    BaseComponent, Bridge, Component, Debugger, Event, Loader, Manager,
+    TimeoutError, Timer, Worker, handler, ipc, reprhandler, sleep, task,
+)
 
 # See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
 try:

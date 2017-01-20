@@ -13,9 +13,8 @@ the process.
 
 import sys
 
-
 from circuits import Component, Debugger
-from circuits.io import stdout, Process, write
+from circuits.io import Process, stdout, write
 
 
 class Ping(Component):

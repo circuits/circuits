@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import sys
-from types import ModuleType
 from os.path import abspath, dirname
-from subprocess import Popen, STDOUT
+from subprocess import STDOUT, Popen
+from types import ModuleType
 
 
 def importable(module):
@@ -25,6 +25,7 @@ def main():
     cmd.append(dirname(abspath(__file__)))
 
     raise SystemExit(Popen(cmd, stdout=sys.stdout, stderr=STDOUT).wait())
+
 
 if __name__ == "__main__":
     main()

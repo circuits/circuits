@@ -4,17 +4,16 @@ import sys
 
 import pytest
 
+from circuits import Debugger
+from circuits.core import Component, Event
+
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO  # NOQA
 
-from circuits import Debugger
-from circuits.core import Event, Component
-
 
 class test(Event):
-
     """test Event"""
 
 

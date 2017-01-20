@@ -4,15 +4,15 @@ This module implements ...
 """
 
 import json
-from inspect import getargspec
 from collections import Callable
 from functools import update_wrapper
+from inspect import getargspec
 
-from circuits.core import handler, BaseComponent
+from circuits.core import BaseComponent, handler
 
 from . import tools
-from .wrappers import Response
 from .errors import forbidden, httperror, notfound, redirect
+from .wrappers import Response
 
 
 def expose(*channels, **config):
@@ -141,8 +141,7 @@ def exposeJSON(*channels, **config):
                         self.session = self.request.session
                 self.response.headers["Content-Type"] = "application/json"
                 result = f(self, *args, **kwargs)
-                if (isinstance(result, httperror)
-                        or isinstance(result, Response)):
+                if (isinstance(result, httperror) or isinstance(result, Response)):
                     return result
                 else:
                     return json.dumps(result)

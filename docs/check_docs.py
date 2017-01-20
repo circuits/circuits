@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import PIPE, STDOUT, Popen
 
 
 def test_linkcheck(tmpdir):

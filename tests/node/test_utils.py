@@ -6,7 +6,7 @@
 
 from circuits import Event
 from circuits.core import Value
-from circuits.node.utils import dump_event, load_event, dump_value, load_value
+from circuits.node.utils import dump_event, dump_value, load_event, load_value
 
 
 class test(Event):

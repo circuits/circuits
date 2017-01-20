@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits.web import Server, Controller
+from circuits.web import Controller, Server
 from circuits.web.dispatchers import VirtualHosts
 
 
@@ -25,10 +25,12 @@ class Bar(Controller):
     def index(self):
         return "I am bar."
 
+
 domains = {
     "foo.localdomain:8000": "foo",
     "bar.localdomain:8000": "bar",
 }
+
 
 app = Server(("0.0.0.0", 8000))
 VirtualHosts(domains).register(app)

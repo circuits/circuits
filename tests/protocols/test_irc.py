@@ -4,21 +4,14 @@
 import pytest
 from pytest import fixture
 
-
-from circuits.six import b, u
-
-from circuits import handler, Event, Component
-
+from circuits import Component, Event, handler
 from circuits.net.events import read, write
-
-from circuits.protocols.irc import IRC
-from circuits.protocols.irc import strip, joinprefix, parsemsg, parseprefix
-
 from circuits.protocols.irc import (
-    PASS, USER, NICK, PONG, QUIT,
-    JOIN, PART, PRIVMSG, NOTICE, AWAY,
-    KICK, TOPIC, MODE, INVITE, NAMES, WHOIS
+    AWAY, INVITE, IRC, JOIN, KICK, MODE, NAMES, NICK, NOTICE, PART, PASS, PONG,
+    PRIVMSG, QUIT, TOPIC, USER, WHOIS, joinprefix, parsemsg, parseprefix,
+    strip,
 )
+from circuits.six import b, u
 
 
 class App(Component):

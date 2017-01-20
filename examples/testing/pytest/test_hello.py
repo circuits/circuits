@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import pytest
-
-from hello import hello, App
+from hello import App, hello
 
 
 @pytest.fixture

@@ -1,10 +1,9 @@
-from pwd import getpwnam
 from grp import getgrnam
+from os import getuid, setgid, setgroups, setuid, umask
+from pwd import getpwnam
 from traceback import format_exc
-from os import getuid, setgroups, setgid, setuid, umask
 
-
-from circuits.core import handler, BaseComponent
+from circuits.core import BaseComponent, handler
 
 
 class DropPrivileges(BaseComponent):
@@ -37,7 +36,7 @@ class DropPrivileges(BaseComponent):
             setuid(uid)
 
             if self.umask is not None:
-	            umask(self.umask)
+                umask(self.umask)
         except Exception as error:
             print("ERROR: Could not drop privileges {0:s}".format(error))
             print(format_exc())

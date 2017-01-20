@@ -4,14 +4,14 @@
 import os
 import signal
 from StringIO import StringIO
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
+from circuits import Component, Debugger, Event, handler
 from circuits.io import File
-from circuits.tools import inspect
 from circuits.net.events import write
+from circuits.tools import inspect
+from circuits.web import Controller, Logger, Server, Sessions, Static
 from circuits.web.events import stream
-from circuits import handler, Event, Component
-from circuits.web import Server, Controller, Logger, Static, Sessions
 
 BUFFERING = 1
 STREAMING = 2
@@ -128,8 +128,6 @@ class Root(Controller):
 
         return self.response
 
-
-from circuits import Debugger
 
 app = Server(("0.0.0.0", 8000))
 Debugger().register(app)

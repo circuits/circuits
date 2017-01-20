@@ -2,14 +2,15 @@
 .. codeauthor: mnl
 """
 
+from signal import SIGINT, SIGTERM
 from sys import stderr
 from threading import Event
-from signal import SIGINT, SIGTERM
 from traceback import format_exception_only
 
-from .handlers import handler
-from .components import BaseComponent
 from circuits.core.handlers import reprhandler
+
+from .components import BaseComponent
+from .handlers import handler
 
 
 class FallBackGenerator(BaseComponent):

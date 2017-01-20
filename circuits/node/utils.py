@@ -1,8 +1,7 @@
 import json
 
 from circuits.core import Event
-from circuits.six import bytes_to_str, text_type
-
+from circuits.six import PY3, text_type
 
 META_EXCLUDE = set(dir(Event()))
 META_EXCLUDE.add("node_call_id")
@@ -14,7 +13,7 @@ META_EXCLUDE.add("success_channels")
 def load_event(s):
     data = json.loads(s)
 
-    name = bytes_to_str(data["name"].encode("utf-8"))
+    name = data["name"] if PY3 else data["name"].encode("utf-8")
 
     args = []
     for arg in data["args"]:

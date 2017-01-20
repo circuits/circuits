@@ -1,18 +1,16 @@
 #!/usr/bin/env python
-
-import sys
 import re
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO  # NOQA
-
+import sys
 from socket import gaierror, gethostbyname, gethostname
 
 from circuits.web import Controller, Logger
 
 from .helpers import urlopen
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO  # NOQA
 
 
 class DummyLogger(object):

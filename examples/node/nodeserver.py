@@ -11,13 +11,11 @@ clients forming a cluster of nodes.
 
 from __future__ import print_function
 
-from os import getpid
 from optparse import OptionParser
+from os import getpid
 
-
-from circuits.node import Node
 from circuits import Component, Debugger
-
+from circuits.node import Node
 
 __version__ = "0.0.1"
 

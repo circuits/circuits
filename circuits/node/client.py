@@ -1,6 +1,6 @@
-from circuits.net.sockets import TCPClient
-from circuits import handler, BaseComponent
+from circuits import BaseComponent, handler
 from circuits.net.events import close, connect
+from circuits.net.sockets import TCPClient
 
 from .protocol import Protocol
 

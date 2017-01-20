@@ -11,9 +11,8 @@ from __future__ import print_function
 
 import sys
 
-
-from circuits.io import File
 from circuits import Component
+from circuits.io import File
 from circuits.protocols import Line
 
 

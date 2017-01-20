@@ -5,16 +5,13 @@ from __future__ import print_function
 
 from os import getcwd
 
-
-from fabric.api import (
-    abort, cd, execute, hide, hosts,
-    local, prefix, prompt, run, settings, task
-)
-
-
-import help  # noqa
-import docs  # noqa
 import docker  # noqa
+import docs  # noqa
+import help  # noqa
+from fabric.api import (
+    abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings,
+    task,
+)
 
 from .utils import msg, pip, requires, tobool
 

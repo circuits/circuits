@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits.web import Server, Controller, Sessions
+from circuits.web import Controller, Server, Sessions
 
 
 class Root(Controller):
@@ -10,6 +10,7 @@ class Root(Controller):
             name = self.session["name"]
         self.session["name"] = name
         return "Hello %s!" % name
+
 
 app = Server(("0.0.0.0", 8000))
 Sessions().register(app)

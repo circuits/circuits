@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser
 from datetime import datetime
+from optparse import OptionParser
 
-from circuits.node import Node
 from circuits import Component, Debugger, Event, Timer
-
+from circuits.node import Node
 
 __version__ = "0.0.1"
 

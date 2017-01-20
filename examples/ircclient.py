@@ -16,20 +16,14 @@ For usage type:
 from __future__ import print_function
 
 import os
-from socket import gethostname
 from optparse import OptionParser
+from socket import gethostname
 
-
-from circuits import handler, Component, Debugger
-from circuits import __version__ as systemVersion
-
+from circuits import Component, Debugger, __version__ as systemVersion, handler
 from circuits.io import stdin
-
 from circuits.net.events import connect
 from circuits.net.sockets import TCPClient
-
-from circuits.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
-
+from circuits.protocols.irc import IRC, JOIN, NICK, PRIVMSG, USER
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion

@@ -1,13 +1,9 @@
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse  # NOQA
-
-from circuits.protocols.http import HTTP
-from circuits.web.headers import Headers
-from circuits.net.sockets import TCPClient
+from circuits.core import BaseComponent, Event, handler
 from circuits.net.events import close, connect, write
-from circuits.core import handler, BaseComponent, Event
+from circuits.net.sockets import TCPClient
+from circuits.protocols.http import HTTP
+from circuits.six.moves.urllib_parse import urlparse
+from circuits.web.headers import Headers
 
 
 def parse_url(url):

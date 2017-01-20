@@ -26,7 +26,7 @@ def dispatcher(name, arg_string, body, isblock, environ):
         args, kwargs = parse_args(arg_string)
         try:
             return environ["macros"][name](macro, environ, *args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             return "ERROR: Error while executing macro %r (%s)" % (name, e)
     else:
         return "Macro not found!"
@@ -34,7 +34,9 @@ def dispatcher(name, arg_string, body, isblock, environ):
 
 def loadMacros():
     path = os.path.abspath(os.path.dirname(__file__))
-    p = lambda x: os.path.splitext(x)[1] == ".py"
+
+    def p(x):
+        os.path.splitext(x)[1] == ".py"
     modules = [x for x in os.listdir(path) if p(x) and not x == "__init__.py"]
 
     macros = {}
@@ -45,7 +47,8 @@ def loadMacros():
         moduleName = "%s.%s" % (__package__, name)
         m = __import__(moduleName, globals(), locals(), __package__)
 
-        p = lambda x: isfunction(x) and getmodule(x) is m
+        def p(x):
+            isfunction(x) and getmodule(x) is m
         for name, function in getmembers(m, p):
             name = name.replace("_", "-")
             try:

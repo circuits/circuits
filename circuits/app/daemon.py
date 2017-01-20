@@ -6,14 +6,14 @@ and changing the current working directory.
 """
 
 
-from os import closerange
+from os import (
+    _exit, chdir, closerange, dup2, fork, getpid, remove, setsid, umask,
+)
 from os.path import isabs
+from resource import RLIM_INFINITY, RLIMIT_NOFILE, getrlimit
 from sys import stderr, stdin, stdout
-from resource import getrlimit, RLIM_INFINITY, RLIMIT_NOFILE
-from os import _exit, chdir, dup2, setsid, fork, getpid, remove, umask
 
-
-from circuits.core import handler, Component, Event
+from circuits.core import Component, Event, handler
 
 
 class daemonize(Event):

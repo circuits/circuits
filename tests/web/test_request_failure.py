@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from .helpers import urlopen, HTTPError
-from circuits.core.handlers import handler
 from circuits.core.components import BaseComponent
+from circuits.core.handlers import handler
+
+from .helpers import HTTPError, urlopen
 
 
 class Root(BaseComponent):

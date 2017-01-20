@@ -2,7 +2,8 @@
 
 import webbrowser
 
-from circuits.web import Server, Controller
+from circuits.web import Controller, Server
+
 
 HTML = """\
 <html>
@@ -26,6 +27,7 @@ class Root(Controller):
 
     def exit(self):
         raise SystemExit(0)
+
 
 app = Server(("0.0.0.0", 8000))
 Root().register(app)

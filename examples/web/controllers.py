@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
-from circuits.web import Server, Controller, Static
+from circuits import Debugger
+from circuits.web import Controller, Server, Static
 
 
 class Root(Controller):
@@ -15,8 +15,8 @@ class Root(Controller):
 
         return "Hello World!"
 
+
 app = Server(("0.0.0.0", 9000))
-from circuits import Debugger
 Debugger().register(app)
 Static().register(app)
 Root().register(app)

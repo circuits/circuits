@@ -11,9 +11,9 @@ on the serial port.
 """
 
 
+from circuits import Component, Debugger, handler
 from circuits.io import Serial
 from circuits.io.events import write
-from circuits import handler, Component, Debugger
 
 
 class EchoSerial(Component):

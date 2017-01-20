@@ -1,12 +1,12 @@
+from circuits import Component, Manager
 from circuits.core.handlers import handler
+
 
 """Component Setup Tests
 
 Tests that event handlers of a Component are
 automatically registered as event handlers.
 """
-
-from circuits import Component, Manager
 
 
 class App(Component):

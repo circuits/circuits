@@ -2,28 +2,22 @@
 
 This module implements WSGI Components.
 """
-
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urllib import unquote  # NOQA
-
 from operator import itemgetter
+from sys import exc_info as _exc_info
 from traceback import format_tb
 from types import GeneratorType
-from sys import exc_info as _exc_info
 
+from circuits.core import BaseComponent, handler
 from circuits.tools import tryimport
-from circuits.core import handler, BaseComponent
+from circuits.web import wrappers
 
-StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
-
-from .http import HTTP
+from .dispatchers import Dispatcher
+from .errors import httperror
 from .events import request
 from .headers import Headers
-from .errors import httperror
-from circuits.web import wrappers
-from .dispatchers import Dispatcher
+from .http import HTTP
+
+StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 
 def create_environ(errors, path, req):
@@ -161,6 +155,7 @@ class _Empty(str):
         return True
 
     __nonzero__ = __bool__
+
 
 empty = _Empty()
 del _Empty

@@ -11,16 +11,15 @@ except ImportError:
     pass
 
 from collections import deque
-from os import read as fd_read
-from os import write as fd_write
-from sys import getdefaultencoding
 from errno import EINTR, EWOULDBLOCK
+from os import read as fd_read, write as fd_write
+from sys import getdefaultencoding
 
-from circuits.tools import tryimport
-from circuits.core.utils import findcmp
-from circuits.core import handler, Component, Event
+from circuits.core import Component, Event, handler
 from circuits.core.pollers import BasePoller, Poller
-from circuits.six import binary_type, string_types, PY3
+from circuits.core.utils import findcmp
+from circuits.six import PY3, binary_type, string_types
+from circuits.tools import tryimport
 
 from .events import close, closed, eof, error, opened, read, ready
 

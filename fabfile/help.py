@@ -3,11 +3,10 @@
 
 from __future__ import print_function
 
-
 from fabric import state
 from fabric.api import task
-from fabric.tasks import Task
 from fabric.task_utils import crawl
+from fabric.tasks import Task
 
 
 @task(default=True)

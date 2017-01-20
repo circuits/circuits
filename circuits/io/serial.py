@@ -5,13 +5,13 @@ This module implements basic Serial (RS232) I/O.
 
 from collections import deque
 
-from circuits.core import Component, handler, Event
+from circuits.core import Component, Event, handler
 from circuits.core.pollers import BasePoller, Poller
 from circuits.core.utils import findcmp
-from circuits.tools import tryimport
 from circuits.six import binary_type
+from circuits.tools import tryimport
 
-from .events import closed, error, opened, read, ready, close
+from .events import close, closed, error, opened, read, ready
 
 serial = tryimport("serial")
 

@@ -1,10 +1,9 @@
 """Utilities"""
 
 
+from contextlib import contextmanager
 from functools import wraps
 from imp import find_module
-from contextlib import contextmanager
-
 
 from fabric.api import abort, hide, local, puts, quiet, settings, warn
 

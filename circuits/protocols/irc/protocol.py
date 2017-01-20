@@ -3,17 +3,13 @@
 
 from re import compile as compile_regex
 
-
 from circuits import Component
-
 from circuits.net.events import write
 from circuits.protocols.line import Line
 
-
 from .commands import PONG
-from .utils import parsemsg
 from .events import response
-
+from .utils import parsemsg
 
 NUMERIC = compile_regex("[0-9]+")
 

@@ -10,8 +10,7 @@ in circuits to write a very simple clone of the standard UNIX "cat" command.
 
 import sys
 
-
-from circuits.io import stdout, File, write
+from circuits.io import File, stdout, write
 
 
 class Cat(File):

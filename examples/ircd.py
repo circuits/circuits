@@ -12,30 +12,23 @@ Implements commands::
 
 
 import logging
-from logging import getLogger
-
-from time import time
-from sys import stderr
-from itertools import chain
-from operator import attrgetter
-from collections import defaultdict
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from collections import defaultdict
+from itertools import chain
+from logging import getLogger
+from operator import attrgetter
+from sys import stderr
+from time import time
 
-
-from circuits import handler, Component, Debugger
-
-from circuits.net.sockets import TCPServer
+from circuits import Component, Debugger, handler
 from circuits.net.events import close, write
-
-from circuits.protocols.irc import joinprefix, reply, response, IRC, Message
-
+from circuits.net.sockets import TCPServer
+from circuits.protocols.irc import IRC, Message, joinprefix, reply, response
 from circuits.protocols.irc.replies import (
-    ERR_NOMOTD, ERR_NOSUCHNICK, ERR_NOSUCHCHANNEL, ERR_UNKNOWNCOMMAND,
-    RPL_WELCOME, RPL_YOURHOST, RPL_WHOREPLY, RPL_ENDOFWHO, RPL_NOTOPIC,
-    RPL_NAMEREPLY, RPL_ENDOFNAMES,
-    ERR_NICKNAMEINUSE,
+    ERR_NICKNAMEINUSE, ERR_NOMOTD, ERR_NOSUCHCHANNEL, ERR_NOSUCHNICK,
+    ERR_UNKNOWNCOMMAND, RPL_ENDOFNAMES, RPL_ENDOFWHO, RPL_NAMEREPLY,
+    RPL_NOTOPIC, RPL_WELCOME, RPL_WHOREPLY, RPL_YOURHOST,
 )
-
 
 __version__ = "0.0.1"
 

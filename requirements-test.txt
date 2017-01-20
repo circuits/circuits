@@ -1,3 +1,5 @@
 pytest
 coveralls
 pytest-cov
+flake8
+isort

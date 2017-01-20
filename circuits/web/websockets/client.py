@@ -1,22 +1,18 @@
+import base64
 import os
 import random
-import base64
 from errno import ECONNRESET
 from socket import error as SocketError
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse  # NOQA
-
-from circuits.web.headers import Headers
-from circuits.protocols.http import HTTP
-from circuits.core.handlers import handler
-from circuits.net.sockets import TCPClient
-from circuits.web.client import NotConnected
 from circuits.core.components import BaseComponent
-from circuits.net.events import connect, write, close
+from circuits.core.handlers import handler
+from circuits.net.events import close, connect, write
+from circuits.net.sockets import TCPClient
+from circuits.protocols.http import HTTP
 from circuits.protocols.websocket import WebSocketCodec
+from circuits.six.moves.urllib_parse import urlparse
+from circuits.web.client import NotConnected
+from circuits.web.headers import Headers
 
 
 class WebSocketClient(BaseComponent):
@@ -87,7 +83,7 @@ class WebSocketClient(BaseComponent):
     def _on_connected(self, host, port):
         headers = Headers([(k, v) for k, v in self._headers.items()])
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-        if not "Host" in headers:
+        if "Host" not in headers:
             headers["Host"] = self._host \
                 + (":" + str(self._port)) if self._port else ""
         headers["Upgrade"] = "websocket"

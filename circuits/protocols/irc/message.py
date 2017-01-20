@@ -1,8 +1,7 @@
 """Internet Relay Chat message"""
 
 
-from circuits.six import text_type, u, PY3
-
+from circuits.six import PY3, text_type, u
 
 from .utils import parsemsg
 

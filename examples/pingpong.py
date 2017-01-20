@@ -11,12 +11,11 @@ communications and displays the no. of events per second and latency.
 from __future__ import print_function
 
 import sys
+from signal import SIGINT, SIGTERM
 from time import time
 from traceback import format_exc
-from signal import SIGINT, SIGTERM
 
-
-from circuits import ipc, handler, Event, Component
+from circuits import Component, Event, handler, ipc
 
 
 def log(msg, *args, **kwargs):

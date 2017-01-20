@@ -51,5 +51,5 @@ def include_source(macro, environ, pagename=None, *args, **kwargs):
         environ["page.name"] = pagename
 
         return builder.tag.pre(environ["parser"].render(
-            page,  environ=environ).decode("utf-8")
+            page, environ=environ).decode("utf-8")
         )

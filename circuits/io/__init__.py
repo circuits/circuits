@@ -7,9 +7,9 @@ and StdErr are also created by importing this package.
 
 import sys
 
+from .events import close, open, seek, write
 from .file import File
 from .process import Process
-from .events import close, open, seek, write
 
 try:
     from .notify import Notify

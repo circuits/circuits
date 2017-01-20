@@ -11,13 +11,12 @@ echo anything privately messages to it in response.
 
 import sys
 
-
-from circuits import Component
+from circuits import Component, Debugger
 from circuits.net.sockets import TCPClient, connect
-from circuits.protocols.irc import IRC, PRIVMSG, USER, NICK, JOIN
-
-from circuits.protocols.irc import ERR_NICKNAMEINUSE
-from circuits.protocols.irc import RPL_ENDOFMOTD, ERR_NOMOTD
+from circuits.protocols.irc import (
+    ERR_NICKNAMEINUSE, ERR_NOMOTD, IRC, JOIN, NICK, PRIVMSG, RPL_ENDOFMOTD,
+    USER,
+)
 
 
 class Bot(Component):
@@ -89,7 +88,6 @@ class Bot(Component):
 # Configure and run the system
 bot = Bot(*sys.argv[1:])
 
-from circuits import Debugger
 Debugger().register(bot)
 
 # To register a 2nd ``Bot`` instance. Simply use a separate channel.

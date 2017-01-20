@@ -6,6 +6,7 @@ from types import ModuleType
 from circuits import Component
 from circuits.core.utils import findchannel, findroot, findtype
 
+
 FOO = """\
 def foo():
     return "Hello World!"

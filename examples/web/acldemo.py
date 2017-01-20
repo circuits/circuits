@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from circuits import handler, Component
+from circuits import Component, handler
+from circuits.web import Controller, Server
 from circuits.web.errors import Forbidden
-from circuits.web import Server, Controller
 
 
 class ACL(Component):
@@ -19,7 +19,7 @@ class ACL(Component):
         match the allowed set.
         """
 
-        if not request.remote.ip in self.allowed:
+        if request.remote.ip not in self.allowed:
             event.stop()
             return Forbidden(request, response)
 
@@ -28,6 +28,7 @@ class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 app = Server(("0.0.0.0", 8000))
 ACL().register(app)

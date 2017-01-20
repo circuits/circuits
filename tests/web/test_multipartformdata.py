@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-import pytest
-
-from os import path
 from io import BytesIO
+from os import path
+
+import pytest
 
 from circuits.web import Controller
 
+from .helpers import Request, urlopen
 from .multipartform import MultiPartForm
-from .helpers import urlopen, Request
 
 
 @pytest.fixture()

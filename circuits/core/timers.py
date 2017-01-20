@@ -1,9 +1,9 @@
 """Timer component to facilitate timed events."""
 
-from circuits.core.handlers import handler
-
-from time import time, mktime
 from datetime import datetime
+from time import mktime, time
+
+from circuits.core.handlers import handler
 
 from .components import BaseComponent
 

@@ -2,11 +2,10 @@
 
 import sys
 
-
+from circuits import Component, handler
 from circuits.io import File
-from circuits import handler, Component
-from circuits.net.sockets import TCPClient
 from circuits.net.events import connect, write
+from circuits.net.sockets import TCPClient
 
 
 class Telnet(Component):

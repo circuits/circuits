@@ -10,11 +10,9 @@ server that supports many connecting clients.
 
 from optparse import OptionParser
 
-
-from circuits.net.events import write
 from circuits import Component, Debugger
+from circuits.net.events import write
 from circuits.net.sockets import TCPServer
-
 
 __version__ = "0.0.1"
 

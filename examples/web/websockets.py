@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from circuits.net.events import write
 from circuits import Component, Debugger
-from circuits.web.dispatchers import WebSocketsDispatcher
+from circuits.net.events import write
 from circuits.web import Controller, Logger, Server, Static
+from circuits.web.dispatchers import WebSocketsDispatcher
 
 
 class Echo(Component):
@@ -18,6 +18,7 @@ class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 app = Server(("0.0.0.0", 8000))
 Debugger().register(app)

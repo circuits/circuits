@@ -6,7 +6,7 @@ except ImportError:
     from xmlrpclib import ServerProxy  # NOQA
 
 from circuits import Component
-from circuits.web import Controller, XMLRPC
+from circuits.web import XMLRPC, Controller
 
 from .helpers import urlopen
 

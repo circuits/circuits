@@ -1,5 +1,5 @@
+from circuits import BaseComponent, handler
 from circuits.net.sockets import TCPServer
-from circuits import handler, BaseComponent
 
 from .protocol import Protocol
 

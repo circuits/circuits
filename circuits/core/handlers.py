@@ -2,8 +2,8 @@
 This module define the @handler decorator/function and the HandlesType type.
 """
 
-from inspect import getargspec
 from collections import Callable
+from inspect import getargspec
 
 
 def handler(*names, **kwargs):

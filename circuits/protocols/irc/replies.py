@@ -3,7 +3,6 @@
 
 from circuits.six import u
 
-
 from .message import Message
 
 

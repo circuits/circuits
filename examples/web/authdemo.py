@@ -3,10 +3,9 @@
 
 from hashlib import md5
 
-
-from circuits import handler, Component
-from circuits.web import Server, Controller
-from circuits.web.tools import check_auth, basic_auth
+from circuits import Component, handler
+from circuits.web import Controller, Server
+from circuits.web.tools import basic_auth, check_auth
 
 
 class Auth(Component):
@@ -32,6 +31,7 @@ class Root(Controller):
 
     def index(self):
         return "Hello World!"
+
 
 app = Server(("0.0.0.0", 8000))
 Auth().register(app)

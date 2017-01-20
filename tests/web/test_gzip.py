@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 
 
+from io import BytesIO
+from os import path
+
 from pytest import fixture
 
-
-from os import path
-from io import BytesIO
-
-
+from circuits import Component, handler
 from circuits.web import Controller
 from circuits.web.tools import gzip
-from circuits import handler, Component
-
 
 from .conftest import DOCROOT
-from .helpers import build_opener, Request
+from .helpers import Request, build_opener
 
 
 class Gzip(Component):

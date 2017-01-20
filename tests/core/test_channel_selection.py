@@ -1,6 +1,6 @@
 #!/usr/bin/python -i
 
-from circuits import Event, Component, Manager
+from circuits import Component, Event, Manager
 
 
 class foo(Event):

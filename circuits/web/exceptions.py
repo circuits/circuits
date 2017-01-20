@@ -325,6 +325,7 @@ class Redirect(HTTPException):
 
         self.status = status
 
+
 __all__ = [
     x[0] for x in list(globals().items())
     if isclass(x[1]) and issubclass(x[1], HTTPException)

@@ -4,13 +4,13 @@ This module implements a wrapper for basic ``subprocess.Popen`` functionality.
 """
 
 from io import BytesIO
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
+from circuits import BaseComponent, Event, handler
 from circuits.core.manager import TIMEOUT
-from circuits import handler, BaseComponent, Event
 
+from .events import close, started, write
 from .file import File
-from .events import started, write, close
 
 
 class terminated(Event):
@@ -146,9 +146,7 @@ class Process(BaseComponent):
             self.removeHandler(self._stdout_closed_handler)
 
             self.fire(terminated(self))
-            self.fire(close(), self._stdin.channel,
-                               self._stdout.channel,
-                               self._stderr.channel)
+            self.fire(close(), self._stdin.channel, self._stdout.channel, self._stderr.channel)
 
             event.reduce_time_left(0)
             event.stop()

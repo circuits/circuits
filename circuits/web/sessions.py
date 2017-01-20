@@ -5,12 +5,11 @@ and access persistent information.
 """
 
 
-from uuid import uuid4 as uuid
-from hashlib import sha1 as sha
 from collections import defaultdict
+from hashlib import sha1 as sha
+from uuid import uuid4 as uuid
 
-
-from circuits import handler, Component
+from circuits import Component, handler
 
 
 def who(request, encoding="utf-8"):

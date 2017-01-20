@@ -12,6 +12,7 @@ class Root(Controller):
         yield "Hello "
         yield "World!"
 
+
 application = Application() + Root()
 
 

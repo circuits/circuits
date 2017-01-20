@@ -5,19 +5,14 @@ from __future__ import print_function
 
 from time import sleep
 
-
 import pytest
-from pytest import PLATFORM, fixture
 
-
-from circuits import Event, Component
+from circuits import Component, Event
 from circuits.net.events import close
 from circuits.net.sockets import UDPServer
 from circuits.node import Node
 
-
-if PLATFORM == 'win32':
-    pytestmark = pytest.mark.skip('Broken on Windows')
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Broken on Windows')
 
 
 class return_value(Event):
@@ -30,7 +25,7 @@ class App(Component):
         print('Hello client!', event.channels)
 
 
-@fixture()
+@pytest.fixture()
 def bind(manager, watcher):
     server = UDPServer(0).register(manager)
     assert watcher.wait('ready', channel='server')
@@ -46,7 +41,7 @@ def bind(manager, watcher):
     return host, port
 
 
-@fixture()
+@pytest.fixture()
 def app(manager, watcher, bind):
     server = Node(port=bind[1], server_ip=bind[0])
     server.register(manager)
@@ -75,7 +70,7 @@ def test_auto_reconnect(app, watcher, manager):
     watcher.clear()
 
     # start a new server
-    node2= Node(port=app.bind[1], server_ip=app.bind[0])
+    node2 = Node(port=app.bind[1], server_ip=app.bind[0])
     node2.register(manager)
     assert watcher.wait('ready', channel=node2.channel)
     watcher.clear()

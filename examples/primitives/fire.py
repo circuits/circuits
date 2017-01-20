@@ -35,4 +35,5 @@ class App(Component):
         self.fire(hello())
         self.stop()
 
+
 App().run()

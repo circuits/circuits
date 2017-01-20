@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 
+from circuits.core.components import BaseComponent
 from circuits.core.handlers import handler
 from circuits.web import BaseServer, Controller
-from circuits.core.components import BaseComponent
 from circuits.web.dispatchers.dispatcher import Dispatcher
 
-
-from .helpers import urlopen, urljoin
+from .helpers import urljoin, urlopen
 
 
 class PrefixingDispatcher(BaseComponent):
