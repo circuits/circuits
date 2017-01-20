@@ -29,7 +29,6 @@ from __future__ import print_function
 import sys
 from os import getpid
 
-
 from circuits import Component, Event
 from circuits.node import Node, remote  # noqa
 

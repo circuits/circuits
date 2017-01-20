@@ -2,7 +2,7 @@
 
 from uuid import uuid4 as uuid
 
-from circuits import Component
+from circuits import Component, Debugger
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCPClient, TCPServer
 
@@ -63,7 +63,6 @@ class Proxy(Component):
 
 app = Proxy(("0.0.0.0", 3333), "127.0.0.1", 22)
 
-from circuits import Debugger
 Debugger().register(app)
 
 app.run()

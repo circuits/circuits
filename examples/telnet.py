@@ -26,14 +26,12 @@ from __future__ import print_function
 import os
 from optparse import OptionParser
 
-
 import circuits
+from circuits import Component, handler
 from circuits.io import stdin
-from circuits.tools import graph
-from circuits import handler, Component
 from circuits.net.events import connect, write
-from circuits.net.sockets import TCPClient, UNIXClient, UDPClient
-
+from circuits.net.sockets import TCPClient, UDPClient, UNIXClient
+from circuits.tools import graph
 
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + circuits.__version__

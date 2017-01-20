@@ -3,13 +3,8 @@
 This module implements a virtual host dispatcher that sends requests
 for configured virtual hosts to different dispatchers.
 """
-
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin  # NOQA
-
-from circuits import handler, BaseComponent
+from circuits import BaseComponent, handler
+from circuits.six.moves.urllib_parse import urljoin
 
 
 class VirtualHosts(BaseComponent):

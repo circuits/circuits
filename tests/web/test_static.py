@@ -2,17 +2,15 @@
 
 from os import path
 
+from circuits.web import Controller
+
+from .conftest import DOCROOT
+from .helpers import HTTPError, quote, urlopen
+
 try:
     from httplib import HTTPConnection
 except ImportError:
     from http.client import HTTPConnection  # NOQA
-
-
-from circuits.web import Controller
-
-
-from .conftest import DOCROOT
-from .helpers import quote, urlopen, HTTPError
 
 
 class Root(Controller):
@@ -97,8 +95,8 @@ def test_ranges(webapp):
     # XXX Complete this test.
     # ``response.read()`` is a multipart/bytes-range
     # See: Issue #59
-    #s = response.read()
-    #assert s == open(path.join(DOCROOT, "largefile.txt"), "rb").read(101)
+    # s = response.read()
+    # assert s == open(path.join(DOCROOT, "largefile.txt"), "rb").read(101)
 
 
 def test_unsatisfiable_range1(webapp):
@@ -115,6 +113,7 @@ def test_unsatisfiable_range1(webapp):
 # def test_unsatisfiable_range2(webapp):
 #    connection = HTTPConnection(webapp.server.host, webapp.server.port)
 #
-#    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-100,100-10000,0-1"})
+#    connection.request("GET", "%s/static/largefile.txt" % (webapp.server.http.base,
+#       headers={"Range": "bytes=0-100,100-10000,0-1"}))
 #    response = connection.getresponse()
 #    assert response.status == 416

@@ -3,27 +3,18 @@
 This module implements utility functions.
 """
 
-import re
 import os
-import zlib
-import time
+import re
 import stat
 import struct
-from math import sqrt
-from io import TextIOWrapper
+import time
+import zlib
 from cgi import FieldStorage
+from io import TextIOWrapper
+from math import sqrt
 
-try:
-    from urllib.parse import urljoin as _urljoin
-except ImportError:
-    from urlparse import urljoin as _urljoin  # NOQA
-
-try:
-    from urllib.parse import parse_qs as _parse_qs
-except ImportError:
-    from cgi import parse_qs as _parse_qs  # NOQA
-
-from circuits.net.utils import is_ssl_handshake  # backwards compatibility
+from circuits.net.utils import is_ssl_handshake  # noqa
+from circuits.six.moves.urllib_parse import parse_qs as _parse_qs
 
 from .exceptions import RangeUnsatisfiable, RequestEntityTooLarge
 

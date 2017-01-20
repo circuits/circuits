@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-
-
-import pytest
-from pytest import fixture
-
 import os
 import ssl
 import sys
@@ -11,17 +6,13 @@ import tempfile
 from os import path
 from socket import gaierror
 
-from circuits.web import Controller
-from circuits import handler, Component
-from circuits.web import BaseServer, Server
+import pytest
+from pytest import fixture
 
+from circuits import Component
+from circuits.web import BaseServer, Controller, Server
 
-from .helpers import urlopen, URLError
-
-
-if pytest.PYVER < (2, 7):
-    pytestmark = pytest.mark.skip("This test requires Python=>2.7")
-
+from .helpers import URLError, urlopen
 
 CERTFILE = path.join(path.dirname(__file__), "cert.pem")
 

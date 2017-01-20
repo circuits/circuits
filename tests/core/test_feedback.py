@@ -2,7 +2,7 @@
 
 import py
 
-from circuits import handler, Event, Component
+from circuits import Component, Event, handler
 
 
 class test(Event):

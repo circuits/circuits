@@ -1,4 +1,4 @@
-from .helpers import urlopen, HTTPError
+from .helpers import HTTPError, urlopen
 
 
 def application(environ, start_response):

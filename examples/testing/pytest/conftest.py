@@ -1,14 +1,14 @@
 """py.test config"""
 
-import pytest
-
 import sys
 import threading
-from time import sleep
 from collections import deque
+from time import sleep
 
+import pytest
+
+from circuits import BaseComponent, Debugger, Manager, handler
 from circuits.core.manager import TIMEOUT
-from circuits import handler, BaseComponent, Debugger, Manager
 
 
 class Watcher(BaseComponent):

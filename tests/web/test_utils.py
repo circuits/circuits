@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 from io import BytesIO
+
+from circuits.web.utils import compress, get_ranges
+
 try:
     from gzip import decompress
 except ImportError:
     import zlib
     decompress = zlib.decompressobj(16 + zlib.MAX_WBITS).decompress  # NOQA
-
-from circuits.web.utils import compress
-from circuits.web.utils import get_ranges
 
 
 def test_ranges():

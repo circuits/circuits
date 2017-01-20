@@ -7,8 +7,8 @@ This example demonstrates how you could intercept the response before it goes
 out changing the response's content into ALL UPPER CASE!
 """
 
-from circuits import handler, Component
-from circuits.web import Server, Controller
+from circuits import Component, handler
+from circuits.web import Controller, Server
 
 
 class Upper(Component):
@@ -41,6 +41,7 @@ class Root(Controller):
         """
 
         return "Hello World!"
+
 
 app = Server(("0.0.0.0", 8000))
 Upper().register(app)

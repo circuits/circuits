@@ -5,22 +5,18 @@ This module implements a set of standard HTTP Errors.
 import json
 import traceback
 
+from circuits import Event
+
+from ..six import string_types
+from .constants import (
+    DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL,
+    SERVER_VERSION,
+)
+
 try:
     from html import escape
 except ImportError:
     from cgi import escape  # Deprecated since version 3.2
-
-
-try:
-    from urllib.parse import urljoin as _urljoin
-except ImportError:
-    from urlparse import urljoin as _urljoin  # NOQA
-
-from circuits import Event
-
-from ..six import string_types
-from .constants import SERVER_URL, SERVER_VERSION, POWERED_BY
-from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES
 
 
 class httperror(Event):

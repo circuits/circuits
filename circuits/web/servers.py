@@ -6,15 +6,14 @@ This module implements the several Web Server components.
 
 from sys import stderr
 
-
 from circuits import io
+from circuits.core import BaseComponent, Timer, handler
 from circuits.net.events import close, read, write
 from circuits.net.sockets import TCPServer, UNIXServer
-from circuits.core import handler, BaseComponent, Timer
 
-from .http import HTTP
-from .events import terminate
 from .dispatchers import Dispatcher
+from .events import terminate
+from .http import HTTP
 
 
 class BaseServer(BaseComponent):

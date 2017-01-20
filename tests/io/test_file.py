@@ -1,13 +1,13 @@
 #!/usr/bin/env python
+from io import BytesIO
 
 import pytest
-if pytest.PLATFORM == "win32":
-    pytest.skip("Unsupported Platform")
 
-from io import BytesIO
-from circuits.io import File
 from circuits import Component
-from circuits.io.events import write, close
+from circuits.io import File
+from circuits.io.events import close, write
+
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 
 
 class FileApp(Component):

@@ -2,7 +2,7 @@
 
 import pytest
 
-from circuits.core import handler, Component, Event, TimeoutError
+from circuits.core import Component, Event, TimeoutError, handler
 
 
 class wait(Event):

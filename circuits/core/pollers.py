@@ -8,17 +8,19 @@ descriptors for read/write events. Pollers:
 """
 
 import os
-import select
 import platform
+import select
 from errno import EBADF, EINTR
 from select import error as SelectError
-from socket import error as SocketError, create_connection, \
-    socket as create_socket, AF_INET, SOCK_STREAM, socket
+from socket import (
+    AF_INET, SOCK_STREAM, create_connection, error as SocketError, socket,
+)
 from threading import Thread
+
 from circuits.core.handlers import handler
 
-from .events import Event
 from .components import BaseComponent
+from .events import Event
 
 
 class _read(Event):
@@ -57,7 +59,7 @@ class BasePoller(BaseComponent):
     def _create_control_con(self):
         if platform.system() == "Linux":
             return os.pipe()
-        server = create_socket(AF_INET, SOCK_STREAM)
+        server = socket(AF_INET, SOCK_STREAM)
         server.bind(("localhost", 0))
         server.listen(1)
         res_list = []
@@ -225,11 +227,7 @@ class Poll(BasePoller):
         self._map = {}
         self._poller = select.poll()
 
-        self._disconnected_flag = (
-            select.POLLHUP
-            | select.POLLERR
-            | select.POLLNVAL
-        )
+        self._disconnected_flag = (select.POLLHUP | select.POLLERR | select.POLLNVAL)
 
         self._read.append(self._ctrl_recv)
         self._updateRegistration(self._ctrl_recv)
@@ -547,6 +545,7 @@ class KQueue(BasePoller):
             self.fire(_write(sock), self.getTarget(sock))
         elif event.filter == select.KQ_FILTER_READ:
             self.fire(_read(sock), self.getTarget(sock))
+
 
 Poller = Select
 

@@ -1,19 +1,15 @@
 #!/usr/bin/env python
-
-
 import sys
 from os.path import abspath
 
+from circuits import Component
+from circuits.app import Daemon
 
 try:
     from coverage import coverage
     HAS_COVERAGE = True
 except ImportError:
     HAS_COVERAGE = False
-
-
-from circuits import Component
-from circuits.app import Daemon
 
 
 class App(Component):

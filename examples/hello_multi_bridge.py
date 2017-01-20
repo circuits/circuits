@@ -10,8 +10,7 @@ from __future__ import print_function
 
 from os import getpid
 
-
-from circuits import ipc, Event, Component
+from circuits import Component, Event, ipc
 
 
 class go(Event):

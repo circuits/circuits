@@ -4,33 +4,30 @@ This module defines the Manager class.
 
 
 import atexit
-from time import time
-from os import getpid, kill
+from heapq import heappop, heappush
 from inspect import isfunction
-from uuid import uuid4 as uuid
-from operator import attrgetter
-from types import GeneratorType
 from itertools import chain, count
-from signal import SIGINT, SIGTERM
-from heapq import heappush, heappop
-from traceback import format_exc
+from multiprocessing import Process, current_process
+from operator import attrgetter
+from os import getpid, kill
+from signal import SIGINT, SIGTERM, signal as set_signal_handler
 from sys import exc_info as _exc_info, stderr
-from signal import signal as set_signal_handler
-from threading import current_thread, Thread, RLock
-from multiprocessing import current_process, Process
+from threading import RLock, Thread, current_thread
+from time import time
+from traceback import format_exc
+from types import GeneratorType
+from uuid import uuid4 as uuid
 
+from ..six import Iterator, create_bound_method, next
+from ..tools import tryimport
+from .events import Event, exception, generate_events, signal, started, stopped
+from .handlers import handler
+from .values import Value
 
 try:
     from signal import SIGKILL
 except ImportError:
     SIGKILL = SIGTERM
-
-
-from .values import Value
-from ..tools import tryimport
-from .handlers import handler
-from ..six import create_bound_method, next, Iterator
-from .events import exception, generate_events, signal, started, stopped, Event
 
 
 thread = tryimport(("thread", "_thread"))
@@ -450,7 +447,7 @@ class Manager(object):
                 handling = self._currently_handling
 
                 heappush(self._queue,
-                        (priority, next(self._counter), (event, channel)))
+                         (priority, next(self._counter), (event, channel)))
                 if isinstance(handling, generate_events):
                     handling.reduce_time_left(0)
 

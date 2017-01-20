@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-
 import pytest
-if pytest.PLATFORM == "win32":
-    pytest.skip("Unsupported Platform")
 
 from circuits import Manager
-from circuits.net.sockets import Pipe
 from circuits.core.pollers import Select
 from circuits.net.events import close, write
+from circuits.net.sockets import Pipe
 
 from .client import Client
+
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 
 
 def pytest_generate_tests(metafunc):

@@ -14,11 +14,11 @@ This example also has support for daemonizing the process into the background.
 """
 
 
-from uuid import uuid4 as uuid
 from optparse import OptionParser
+from uuid import uuid4 as uuid
 
+from circuits import Component, Debugger, handler
 from circuits.app import Daemon
-from circuits import handler, Component, Debugger
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCPClient, TCPServer
 
@@ -186,6 +186,7 @@ def main():
         Debugger().register(system)
 
     system.run()
+
 
 if __name__ == "__main__":
     main()

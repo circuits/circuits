@@ -30,6 +30,10 @@ matrix:
       language: generic
       env: TOXENV=pypy
       before_install: brew install pypy
+    - python: 3.6
+      script: flake8
+    - python: 3.6
+      script: isort -c --diff
 
 install:
   - pip install tox-travis

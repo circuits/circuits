@@ -1,27 +1,24 @@
 #!/usr/bin/env python
 
 
-import pytest
-
-
-import select
 import os.path
-from socket import error as SocketError
+import select
+from socket import (
+    AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM,
+    error as SocketError, has_ipv6, socket,
+)
 from ssl import wrap_socket as sslsocket
-from socket import EAI_NODATA, EAI_NONAME
-from socket import socket, AF_INET, AF_INET6, SOCK_STREAM, has_ipv6
 
+import pytest
+from tests.conftest import WaitEvent
 
-from circuits import Manager, Debugger
+from circuits import Debugger, Manager
+from circuits.core.pollers import EPoll, KQueue, Poll, Select
 from circuits.net.events import close, connect, write
-from circuits.core.pollers import Select, Poll, EPoll, KQueue
-from circuits.net.sockets import TCPServer, TCP6Server, TCPClient, TCP6Client
-
+from circuits.net.sockets import TCP6Client, TCP6Server, TCPClient, TCPServer
 
 from .client import Client
 from .server import Server
-from tests.conftest import WaitEvent
-
 
 CERT_FILE = os.path.join(os.path.dirname(__file__), "cert.pem")
 
@@ -61,7 +58,7 @@ class TestClient(object):
 
         try:
             self.ssock.close()
-        except SockerError:
+        except SocketError:
             pass
 
 

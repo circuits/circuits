@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
+from circuits import Component, Event
 from circuits.web import Controller
-from circuits import Event, Component
 
 from .helpers import urlopen
 

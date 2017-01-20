@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from circuits.web.wsgi import Gateway
 from circuits.web import Controller, Server
+from circuits.web.wsgi import Gateway
 
 
 def foo(environ, start_response):

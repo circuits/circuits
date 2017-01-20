@@ -3,12 +3,11 @@
 import os
 import sqlite3
 
-from creoleparser import create_dialect, creole11_base, Parser
+import macros
+from creoleparser import Parser, create_dialect, creole11_base
 
 import circuits
-from circuits.web import Server, Controller, Logger, Static
-
-import macros
+from circuits.web import Controller, Logger, Server, Static
 
 text2html = Parser(
     create_dialect(creole11_base, macro_func=macros.dispatcher),
@@ -82,6 +81,7 @@ class Root(Controller):
     def POST(self, name="FrontPage", **form):
         self.db.save(name, form.get("text", ""))
         return self.redirect(name)
+
 
 app = Server(("0.0.0.0", 9000))
 Static(docroot="static").register(app)

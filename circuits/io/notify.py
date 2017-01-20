@@ -10,30 +10,33 @@ try:
     from pyinotify import IN_CREATE, IN_DELETE, IN_DELETE_SELF, IN_MOVE_SELF
     from pyinotify import IN_CLOSE_NOWRITE, IN_OPEN, IN_MOVED_FROM, IN_MOVED_TO
 except ImportError:
-    raise Exception("No pyinotify support available. Is pyinotify installed?")
+    raise ImportError("No pyinotify support available. Is pyinotify installed?")
 
-from circuits.core.utils import findcmp
-from circuits.core import handler, BaseComponent
+from circuits.core import BaseComponent, handler
 from circuits.core.pollers import BasePoller, Poller
+from circuits.core.utils import findcmp
 
-from .events import accessed, closed, created, deleted, modified, moved, opened, ready, unmounted
+from .events import (
+    accessed, closed, created, deleted, modified, moved, opened, ready,
+    unmounted,
+)
 
 MASK = ALL_EVENTS
 
 EVENT_MAP = {
-    IN_MOVED_TO:        moved,
-    IN_MOVE_SELF:       moved,
-    IN_MOVED_FROM:      moved,
-    IN_CLOSE_WRITE:     closed,
-    IN_CLOSE_NOWRITE:   closed,
-    IN_OPEN:            opened,
-    IN_DELETE_SELF:     deleted,
-    IN_DELETE:          deleted,
-    IN_CREATE:          created,
-    IN_ACCESS:          accessed,
-    IN_MODIFY:          modified,
-    IN_ATTRIB:          modified,
-    IN_UNMOUNT:         unmounted,
+    IN_MOVED_TO: moved,
+    IN_MOVE_SELF: moved,
+    IN_MOVED_FROM: moved,
+    IN_CLOSE_WRITE: closed,
+    IN_CLOSE_NOWRITE: closed,
+    IN_OPEN: opened,
+    IN_DELETE_SELF: deleted,
+    IN_DELETE: deleted,
+    IN_CREATE: created,
+    IN_ACCESS: accessed,
+    IN_MODIFY: modified,
+    IN_ATTRIB: modified,
+    IN_UNMOUNT: unmounted,
 }
 
 

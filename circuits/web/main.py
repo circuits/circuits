@@ -9,11 +9,19 @@ circutis.web Web Server and Testing Tool.
 
 
 import os
-from sys import stderr
 from hashlib import md5
 from optparse import OptionParser
-from wsgiref.validate import validator
+from sys import stderr
 from wsgiref.simple_server import make_server
+from wsgiref.validate import validator
+
+import circuits
+from circuits import Component, Debugger, Manager, handler
+from circuits.core.pollers import Select
+from circuits.tools import graph, inspect
+from circuits.web import BaseServer, Controller, Logger, Server, Static
+from circuits.web.tools import check_auth, digest_auth
+from circuits.web.wsgi import Application
 
 try:
     import hotshot
@@ -21,16 +29,6 @@ try:
 except ImportError:
     hostshot = None
 
-
-import circuits
-from circuits import handler, Component, Manager, Debugger
-
-from circuits.core.pollers import Select
-from circuits.tools import inspect, graph
-
-from circuits.web.wsgi import Application
-from circuits.web.tools import check_auth, digest_auth
-from circuits.web import BaseServer, Controller, Logger, Server, Static
 
 try:
     from circuits.core.pollers import Poll

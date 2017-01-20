@@ -6,9 +6,8 @@ each event to sys.stderr or to a Logger Component instance.
 
 import os
 import sys
-from traceback import format_exc, format_exception_only
 from signal import SIGINT, SIGTERM
-
+from traceback import format_exc, format_exception_only
 
 from .components import BaseComponent
 from .handlers import handler, reprhandler

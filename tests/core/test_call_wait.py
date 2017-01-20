@@ -2,7 +2,7 @@
 
 import pytest
 
-from circuits import handler, Component, Event
+from circuits import Component, Event, handler
 
 
 class wait(Event):

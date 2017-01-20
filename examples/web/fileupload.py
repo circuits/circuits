@@ -6,7 +6,7 @@ A simple example showing how to access an uploaded file.
 """
 
 
-from circuits.web import Server, Controller
+from circuits.web import Controller, Server
 
 
 UPLOAD_FORM = """

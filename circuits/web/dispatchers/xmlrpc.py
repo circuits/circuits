@@ -9,8 +9,8 @@ try:
 except ImportError:
     from xmlrpclib import dumps, loads, Fault  # NOQA
 
+from circuits import BaseComponent, Event, handler
 from circuits.six import binary_type
-from circuits import handler, Event, BaseComponent
 
 
 class rpc(Event):

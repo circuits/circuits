@@ -2,16 +2,15 @@
 
 Test all functionality of the tools package.
 """
-
 import pytest
+
+from circuits import Component, reprhandler
+from circuits.tools import findroot, inspect, kill, tryimport
 
 try:
     from threading import current_thread
 except ImportError:
     from threading import currentThread as current_thread  # NOQA
-
-from circuits import Component, reprhandler
-from circuits.tools import kill, inspect, findroot, tryimport
 
 
 class A(Component):
@@ -91,9 +90,9 @@ def test_kill():
     assert not c.components
 
     assert b in a.components
-    assert not d in a.components
-    assert not e in d.components
-    assert not f in e.components
+    assert d not in a.components
+    assert e not in d.components
+    assert f not in e.components
 
     assert d.parent == d
     assert e.parent == e
@@ -105,9 +104,6 @@ def test_kill():
 
 
 def test_inspect():
-    if pytest.PYVER[:2] == (3, 3):
-        pytest.skip("Broken on Python 3.3")
-
     a = A()
     s = inspect(a)
 
@@ -142,8 +138,7 @@ def test_reprhandler():
     s = reprhandler(a.foo)
     assert s == "<handler[*][foo] (A.foo)>"
 
-    f = lambda: None
-    pytest.raises(AttributeError, reprhandler, f)
+    pytest.raises(AttributeError, reprhandler, lambda: None)
 
 
 def test_tryimport():

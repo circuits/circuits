@@ -25,17 +25,13 @@ Usage (*using dig*)::
 
 from __future__ import print_function
 
-
 import sys
 
+from dnslib import QTYPE, RR, A, DNSHeader, DNSRecord
 
-from dnslib import A, RR
-from dnslib import DNSHeader, DNSRecord, QTYPE
-
-
+from circuits import Component, Debugger, Event
 from circuits.net.events import write
 from circuits.net.sockets import UDPServer
-from circuits import Event, Component, Debugger
 
 
 class query(Event):

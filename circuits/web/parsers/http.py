@@ -10,20 +10,10 @@
 import re
 import zlib
 
-
-try:
-    import urlparse
-    from urllib import unquote
-except ImportError:
-    import urllib.parse as urlparse  # NOQA
-    from urllib.parse import unquote  # NOQA
-
-
-from circuits.six import b, bytes_to_str, MAXSIZE
-
+from circuits.six import MAXSIZE, PY3, b
+from circuits.six.moves.urllib_parse import urlsplit
 
 from ..headers import Headers
-
 
 METHOD_RE = re.compile("^[A-Z0-9$-_.]{1,20}$")
 VERSION_RE = re.compile("^HTTP/(\d+).(\d+)$")
@@ -187,7 +177,9 @@ class HttpParser(object):
                 else:
                     self.__on_firstline = True
                     self._buf.append(data[:idx])
-                    first_line = bytes_to_str(b("").join(self._buf))
+                    first_line = b("").join(self._buf)
+                    if PY3:
+                        first_line = str(first_line, 'unicode_escape')
                     nb_parsed = nb_parsed + idx + 2
 
                     rest = data[idx + 2:]
@@ -283,7 +275,7 @@ class HttpParser(object):
 
         # URI
         self._url = bits[1]
-        parts = urlparse.urlsplit(bits[1])
+        parts = urlsplit(bits[1])
         self._scheme = parts.scheme or None
         self._path = parts.path or ""
         self._query_string = parts.query or ""
@@ -313,7 +305,7 @@ class HttpParser(object):
             return False
 
         # Split lines on \r\n keeping the \r\n on each line
-        lines = [bytes_to_str(line) + "\r\n"
+        lines = [(str(line, 'unicode_escape') if PY3 else line) + "\r\n"
                  for line in data[:idx].split(b("\r\n"))]
 
         # Parse headers into key/value pairs paying attention

@@ -1,8 +1,9 @@
 from circuits.web import Controller
-from circuits.web.tools import check_auth, basic_auth
+from circuits.web.tools import basic_auth, check_auth
 
-from .helpers import HTTPError, HTTPBasicAuthHandler
-from .helpers import urlopen, build_opener, install_opener
+from .helpers import (
+    HTTPBasicAuthHandler, HTTPError, build_opener, install_opener, urlopen,
+)
 
 
 class Root(Controller):

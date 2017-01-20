@@ -5,7 +5,7 @@
 A simple example showing how to deal with data forms.
 """
 
-from circuits.web import Server, Controller
+from circuits.web import Controller, Server
 
 
 FORM = """

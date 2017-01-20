@@ -3,9 +3,7 @@
 
 from re import compile as compile_regex
 
-
 from circuits.six import u
-
 
 PREFIX = compile_regex("([^!].*)!(.*)@(.*)")
 

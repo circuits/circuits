@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 
+from random import random, seed
+from time import sleep, time
+
 import pytest
 
-
-from time import sleep, time
-from random import random, seed
-
-
-from circuits.core import task, Worker
-from circuits.core import handler, Component, Event
+from circuits.core import Component, Event, Worker, handler, task
 
 
 class hello(Event):

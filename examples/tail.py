@@ -7,8 +7,9 @@ in circuits to write a very simple clone of the standard UNIX "tail" command.
 """
 
 import sys
+
 from circuits import Component, Debugger
-from circuits.io import stdout, File, Write
+from circuits.io import File, Write, stdout
 
 
 class Tail(Component):
@@ -37,6 +38,7 @@ class Tail(Component):
         """
 
         self.fire(Write(data), self.stdout)
+
 
 # Setup and run the system.
 (Tail(sys.argv[1]) + Debugger()).run()

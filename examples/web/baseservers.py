@@ -17,6 +17,7 @@ class Root(Component):
 
         return "Hello World!"
 
+
 app = BaseServer(("0.0.0.0", 8000))
 Root().register(app)
 app.run()

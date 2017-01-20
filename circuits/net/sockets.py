@@ -5,21 +5,29 @@ This module contains various Socket Components for use with Networking.
 
 import os
 import select
-from time import time
 from collections import defaultdict, deque
-
-from errno import EAGAIN, EALREADY, EBADF
-from errno import ECONNABORTED, EINPROGRESS, EINTR, EISCONN, EMFILE, ENFILE
-from errno import ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EINVAL, EWOULDBLOCK
+from errno import (
+    EAGAIN, EALREADY, EBADF, ECONNABORTED, EINPROGRESS, EINTR, EINVAL, EISCONN,
+    EMFILE, ENFILE, ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EWOULDBLOCK,
+)
+from socket import (
+    AF_INET, AF_INET6, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR, SOCK_DGRAM,
+    SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, error as SocketError, gaierror,
+    getaddrinfo, getfqdn, gethostbyname, gethostname, socket,
+)
+from time import time
 
 from _socket import socket as SocketType
 
-from socket import gaierror
-from socket import error as SocketError
-from socket import getfqdn, gethostbyname, socket, getaddrinfo, gethostname
+from circuits.core import BaseComponent, handler
+from circuits.core.pollers import BasePoller, Poller
+from circuits.core.utils import findcmp
+from circuits.six import binary_type
 
-from socket import AF_INET, AF_INET6, IPPROTO_TCP, SOCK_STREAM, SOCK_DGRAM
-from socket import SOL_SOCKET, SO_BROADCAST, SO_REUSEADDR, TCP_NODELAY
+from .events import (
+    close, closed, connect, connected, disconnect, disconnected, error, read,
+    ready, unreachable, write,
+)
 
 try:
     from ssl import wrap_socket as ssl_socket
@@ -31,15 +39,6 @@ except ImportError:
     import warnings
     warnings.warn("No SSL support available.")
     HAS_SSL = 0
-
-
-from circuits.six import binary_type
-from circuits.core.utils import findcmp
-from circuits.core import handler, BaseComponent
-from circuits.core.pollers import BasePoller, Poller
-
-from .events import close, closed, connect, connected, disconnect, \
-    disconnected, error, read, ready, write, unreachable
 
 
 BUFSIZE = 4096  # 4KB Buffer

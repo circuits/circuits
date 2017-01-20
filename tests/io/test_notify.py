@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-
-
 import pytest
-pytest.importorskip("pyinotify")
 
-from circuits.io.notify import Notify
 from circuits import Component, handler
+
+try:
+    from circuits.io.notify import Notify
+except ImportError:
+    pytest.importorskip("pyinotify")
 
 
 class App(Component):

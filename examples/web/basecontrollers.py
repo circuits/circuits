@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from circuits.web import Server
-from circuits.web.controllers import expose, BaseController
+from circuits.web.controllers import BaseController, expose
 
 
 class Root(BaseController):
@@ -16,6 +16,7 @@ class Root(BaseController):
         """
 
         return "Hello World!"
+
 
 app = Server(("0.0.0.0", 8000))
 Root().register(app)

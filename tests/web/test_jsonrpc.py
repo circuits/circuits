@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from circuits import Component
-from circuits.web import Controller, JSONRPC
+from circuits.web import JSONRPC, Controller
 
-from .jsonrpclib import ServerProxy
 from .helpers import urlopen
+from .jsonrpclib import ServerProxy
 
 
 class App(Component):

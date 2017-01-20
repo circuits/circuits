@@ -9,5 +9,6 @@ class Root(Controller):
     def index(self):
         return "Hello World!"
 
+
 application = Application()
 Root().register(application)

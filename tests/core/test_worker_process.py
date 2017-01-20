@@ -1,10 +1,10 @@
 """Workers Tests"""
 
-import pytest
-
 from os import getpid
 
-from circuits import task, Worker
+import pytest
+
+from circuits import Worker, task
 
 
 @pytest.fixture

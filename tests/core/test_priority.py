@@ -1,6 +1,6 @@
 #!/usr/bin/python -i
 
-from circuits import handler, Event, Component, Manager
+from circuits import Component, Event, Manager, handler
 
 
 class test(Event):
@@ -21,6 +21,7 @@ class App(Component):
     @handler("test", priority=2)
     def test_2(self):
         return 2
+
 
 m = Manager()
 app = App()

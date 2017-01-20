@@ -3,10 +3,10 @@
 import pytest
 
 from circuits import Component
+from circuits.net.events import connect, write
+from circuits.net.sockets import TCPClient
 from circuits.web import Controller
 from circuits.web.client import parse_url
-from circuits.net.sockets import TCPClient
-from circuits.net.events import connect, write
 
 
 class Client(Component):

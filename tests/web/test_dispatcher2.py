@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from circuits.web import expose, Controller
+from circuits.web import Controller, expose
 
 from .helpers import urlopen
 

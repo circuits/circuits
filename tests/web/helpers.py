@@ -1,24 +1,11 @@
-try:
-    from urllib.error import HTTPError, URLError
-    from urllib.parse import quote, urlencode, urljoin
-    from urllib.request import HTTPBasicAuthHandler, HTTPCookieProcessor
-    from urllib.request import urlopen, build_opener, install_opener
-    from urllib.request import HTTPDigestAuthHandler, Request
-except ImportError:
-    from urlparse import urljoin
-    from urllib import quote, urlencode
-    from urllib2 import HTTPError, URLError, HTTPDigestAuthHandler
-    from urllib2 import HTTPBasicAuthHandler, HTTPCookieProcessor
-    from urllib2 import urlopen, build_opener, install_opener, Request
-
-try:
-    from http.cookiejar import CookieJar
-except ImportError:
-    from cookielib import CookieJar
-
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from circuits.six.moves.http_cookiejar import CookieJar  # noqa
+from circuits.six.moves.urllib_error import HTTPError, URLError  # noqa
+from circuits.six.moves.urllib_parse import (  # noqa
+    quote, urlencode, urljoin, urlparse,
+)
+from circuits.six.moves.urllib_request import (  # noqa
+    HTTPBasicAuthHandler, HTTPCookieProcessor, HTTPDigestAuthHandler, Request,
+    build_opener, install_opener, urlopen,
+)
 
 # pylama:skip=1

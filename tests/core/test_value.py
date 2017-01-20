@@ -1,13 +1,11 @@
 #!/usr/bin/python -i
 
 
-import pytest
-
-
 from types import TracebackType
 
+import pytest
 
-from circuits import handler, Event, Component
+from circuits import Component, Event, handler
 
 
 class hello(Event):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits.web import Server, Controller, Logger
+from circuits.web import Controller, Logger, Server
 
 
 class Root(Controller):

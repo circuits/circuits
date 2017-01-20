@@ -5,7 +5,7 @@
 A trivial simple example of using circuits and timers.
 """
 
-from circuits import Event, Component, Timer
+from circuits import Component, Event, Timer
 
 
 class App(Component):

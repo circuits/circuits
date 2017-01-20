@@ -3,13 +3,13 @@
 This module implements Logger Components.
 """
 
+import datetime
 import os
 import sys
-import datetime
 from io import IOBase
 
+from circuits.core import BaseComponent, handler
 from circuits.six import string_types, text_type
-from circuits.core import handler, BaseComponent
 
 
 def formattime():

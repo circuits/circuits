@@ -2,14 +2,14 @@
 This module defines the BaseComponent and its subclass Component.
 """
 
+from collections import Callable
+from inspect import getmembers
 from itertools import chain
 from types import MethodType
-from inspect import getmembers
-from collections import Callable
 
-from .manager import Manager
-from .handlers import handler, HandlerMetaClass
 from .events import Event, registered, unregistered
+from .handlers import HandlerMetaClass, handler
+from .manager import Manager
 
 
 class prepare_unregister(Event):
@@ -89,7 +89,8 @@ class BaseComponent(Manager):
                 if getattr(v, "handler", False)]
         )
 
-        overridden = lambda x: x in handlers and handlers[x].override
+        def overridden(x):
+            return x in handlers and handlers[x].override
 
         for base in cls.__bases__:
             if issubclass(cls, base):

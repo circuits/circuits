@@ -14,9 +14,9 @@
 import sys
 from os import path
 
-
 from pkg_resources import parse_version
 
+from circuits import __version__
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -24,7 +24,6 @@ from pkg_resources import parse_version
 sys.path.insert(0, path.abspath('../..'))
 
 
-from circuits import __version__
 
 # -- General configuration -----------------------------------------------
 

@@ -4,8 +4,7 @@ from json import loads
 
 from circuits.web import JSONController, Sessions
 
-from .helpers import urlopen, build_opener, HTTPCookieProcessor
-from .helpers import CookieJar
+from .helpers import CookieJar, HTTPCookieProcessor, build_opener, urlopen
 
 
 class Root(JSONController):

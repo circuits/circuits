@@ -4,9 +4,17 @@ This module implements the Request and Response objects.
 """
 
 
-from time import time
-from io import BytesIO
 from functools import partial
+from io import BytesIO
+from time import time
+
+from circuits.net.sockets import BUFSIZE
+from circuits.six import binary_type
+
+from .constants import HTTP_STATUS_CODES, SERVER_VERSION
+from .errors import httperror
+from .headers import Headers
+from .url import parse_url
 
 try:
     from Cookie import SimpleCookie
@@ -18,16 +26,6 @@ try:
     formatdate = partial(formatdate, usegmt=True)
 except ImportError:
     from rfc822 import formatdate as HTTPDate  # NOQA
-
-
-from circuits.six import binary_type
-from circuits.net.sockets import BUFSIZE
-
-
-from .url import parse_url
-from .headers import Headers
-from .errors import httperror
-from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 
 
 try:
@@ -382,8 +380,7 @@ class Response(object):
                 else:
                     self.close = True
 
-        if (self.request.server is not None
-                and "Connection" not in self.headers):
+        if (self.request.server is not None and "Connection" not in self.headers):
             if self.protocol == "HTTP/1.1":
                 if self.close:
                     self.headers.add_header("Connection", "close")

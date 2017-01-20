@@ -4,28 +4,28 @@ This module implements tools used throughout circuits.web.
 These tools can also be used within Controlelrs and request handlers.
 """
 
-import os
-import stat
+import collections
 import hashlib
 import mimetypes
-import collections
-from time import mktime
-from email.utils import formatdate
+import os
+import stat
 from datetime import datetime, timedelta
 from email.generator import _make_boundary
+from email.utils import formatdate
+from time import mktime
 
 from circuits import BaseComponent, handler
 from circuits.web.wrappers import Host
+
+from . import _httpauth
+from .errors import httperror, notfound, redirect, unauthorized
+from .utils import compress, get_ranges
 
 mimetypes.init()
 mimetypes.add_type("image/x-dwg", ".dwg")
 mimetypes.add_type("image/x-icon", ".ico")
 mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("application/xhtml+xml", ".xhtml")
-
-from . import _httpauth
-from .utils import get_ranges, compress
-from .errors import httperror, notfound, redirect, unauthorized
 
 
 def expires(request, response, secs=0, force=False):

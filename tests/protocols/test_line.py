@@ -2,8 +2,8 @@
 
 from collections import defaultdict
 
+from circuits import Component, Event
 from circuits.protocols import Line
-from circuits import Event, Component
 
 
 class read(Event):

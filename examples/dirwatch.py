@@ -10,7 +10,6 @@ stdour every file system event it sees.
 
 import sys
 
-
 from circuits import Component
 from circuits.io import Notify
 

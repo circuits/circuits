@@ -1,17 +1,13 @@
 #!/usr/bin/env python
-
-
-from pytest import fixture, skip, PLATFORM
-
-
-if PLATFORM == 'win32':
-    skip('Broken on Windows')
-
+from pytest import PLATFORM, fixture, skip
 
 from circuits import Component, Event
 from circuits.net.events import close
-from circuits.node import Node, remote
 from circuits.net.sockets import UDPServer
+from circuits.node import Node, remote
+
+if PLATFORM == 'win32':
+    skip('Broken on Windows')
 
 
 class App(Component):

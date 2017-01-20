@@ -1,12 +1,11 @@
 import base64
 import hashlib
 
-
-from circuits.six import b
-from circuits.web.errors import httperror
-from circuits import handler, BaseComponent
+from circuits import BaseComponent, handler
 from circuits.net.events import connect, disconnect
 from circuits.protocols.websocket import WebSocketCodec
+from circuits.six import b
+from circuits.web.errors import httperror
 
 
 class WebSocketsDispatcher(BaseComponent):
@@ -63,11 +62,8 @@ class WebSocketsDispatcher(BaseComponent):
                              headers.get("Connection", "").lower().split(",")]
 
         try:
-            if ("Host" not in headers
-                or headers.get("Upgrade", "").lower() != "websocket"
-                or "upgrade" not in connection_tokens
-                or sec_key is None
-                    or len(base64.b64decode(sec_key)) != 16):
+            if ("Host" not in headers or headers.get("Upgrade", "").lower() != "websocket" or
+                    "upgrade" not in connection_tokens or sec_key is None or len(base64.b64decode(sec_key)) != 16):
                 return httperror(request, response, code=400)
             if headers.get("Sec-WebSocket-Version", "") != "13":
                 response.headers["Sec-WebSocket-Version"] = "13"

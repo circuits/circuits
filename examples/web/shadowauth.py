@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Shadow Auth Demo
 
 An example of a Circuits Component that requires users authenticate
 against /etc/passwd or /etc/shadow before letting them into the web site.
 """
-
-from os import path
 from crypt import crypt
-from socket import gethostname
+from os import path
 from re import compile as compile_regex
+from socket import gethostname
 
-from circuits import handler, Component
-from circuits.web import _httpauth, Server, Controller
+from circuits import Component, handler
+from circuits.web import Controller, Server, _httpauth
 from circuits.web.errors import HTTPError, Unauthorized
 
 
@@ -62,6 +60,7 @@ class Root(Controller):
 
     def index(self):
         return "Hello, {0:s}".format(self.request.login)
+
 
 app = Server(("0.0.0.0", 8000))
 PasswdAuth().register(app)

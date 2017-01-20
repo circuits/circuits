@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 
 
-import pytest
-
-
 import os
 import sys
-from time import sleep
 from errno import ESRCH
-from signal import SIGTERM
 from os import kill, remove
+from signal import SIGTERM
 from subprocess import Popen
+from time import sleep
 
+import pytest
 
 from . import signalapp
 

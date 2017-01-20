@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits import handler, BaseComponent, Debugger
+from circuits import BaseComponent, Debugger, handler
 
 
 class MyComponent(BaseComponent):

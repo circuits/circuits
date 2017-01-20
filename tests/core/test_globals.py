@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from circuits import handler, Event, Component
+from circuits import Component, Event, handler
 
 
 class foo(Event):

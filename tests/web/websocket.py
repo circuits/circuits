@@ -20,14 +20,13 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
 """
 
 
-import socket
+import logging
 import random
+import socket
 import struct
 from hashlib import md5
-import logging
 
 from .helpers import urlparse
-
 
 logger = logging.getLogger()
 
@@ -38,6 +37,7 @@ class WebSocketException(Exception):
 
 class ConnectionClosedException(WebSocketException):
     pass
+
 
 default_timeout = None
 traceEnabled = False
@@ -117,6 +117,7 @@ def create_connection(url, timeout=None, **options):
     websock.connect(url, **options)
     return websock
 
+
 _MAX_INTEGER = (1 << 32) - 1
 _AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)).extend(
     list(range(0x3a, 0x7e + 1))
@@ -147,6 +148,7 @@ def _create_sec_websocket_key():
 
 def _create_key3():
     return "".join([chr(random.randint(0, _MAX_ASCII_BYTE)) for i in range(8)])
+
 
 HEADERS_TO_CHECK = {
     "upgrade": "websocket",
@@ -531,7 +533,7 @@ class WebSocketApp(object):
 
 if __name__ == "__main__":
     enableTrace(True)
-    #ws = create_connection("ws://localhost:8080/echo")
+    # ws = create_connection("ws://localhost:8080/echo")
     ws = create_connection("ws://localhost:5000/chat")
     print("Sending 'Hello, World'...")
     ws.send("Hello, World")

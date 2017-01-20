@@ -1,6 +1,6 @@
 from circuits.web import Controller
 
-from .helpers import urlopen, HTTPError
+from .helpers import HTTPError, urlopen
 
 
 class Root(Controller):

@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
+import select
+import socket
+
 import pytest
 
-import socket
-import select
-
 from circuits import Manager
+from circuits.core.pollers import EPoll, KQueue, Poll, Select
 from circuits.net.events import close, write
-from circuits.core.pollers import Select, Poll, EPoll, KQueue
-from circuits.net.sockets import UDPServer, UDPClient, UDP6Server, UDP6Client
+from circuits.net.sockets import UDP6Client, UDP6Server, UDPClient, UDPServer
 
 from .client import Client
 from .server import Server

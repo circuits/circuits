@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 from circuits import Manager
-from circuits.core.utils import findtype
 from circuits.core.pollers import BasePoller, Poller
-from circuits.net.sockets import TCPServer, TCPClient
+from circuits.core.utils import findtype
+from circuits.net.sockets import TCPClient, TCPServer
 
 
 def test():

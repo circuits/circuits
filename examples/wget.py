@@ -13,7 +13,6 @@ from __future__ import print_function
 
 import sys
 
-
 from circuits import Component
 from circuits.web.client import Client, request
 
