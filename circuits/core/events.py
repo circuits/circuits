@@ -8,20 +8,11 @@ from traceback import format_tb
 
 
 class EventType(type):
-
-    __cache__ = {}
-
     def __new__(cls, name, bases, ns):
-        key = (cls, name, bases)
+        cls = type.__new__(cls, name, bases, ns)
+        setattr(cls, "name", ns.get("name", cls.__name__))
 
-        try:
-            return cls.__cache__[key]
-        except KeyError:
-            cls = type.__new__(cls, name, bases, ns)
-
-            setattr(cls, "name", ns.get("name", cls.__name__))
-
-            return cls
+        return cls
 
 
 class Event(object):
