@@ -43,7 +43,7 @@ install:
   - pip install -Ur requirements-test.txt
   - pip install -Ue .
 
-script: tox -- --cov=./circuits --no-cov-on-fail --cov-report=
+script: tox -- --cov --no-cov-on-fail --cov-report=
 
 after_success: codecov
 
