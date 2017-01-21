@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from optparse import OptionParser
 
 from circuits import Component, Debugger, handler

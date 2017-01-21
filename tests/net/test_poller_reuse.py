@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits import Manager
 from circuits.core.pollers import BasePoller, Poller
 from circuits.core.utils import findtype

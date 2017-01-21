@@ -2,7 +2,6 @@
 
 This module implements support for parsing and handling headers.
 """
-
 import re
 
 from circuits.six import b, iteritems, u

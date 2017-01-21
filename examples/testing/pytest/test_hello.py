@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import pytest
 from hello import App, hello
 

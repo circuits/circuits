@@ -2,7 +2,6 @@
 
 Test Manager's representation string.
 """
-
 import os
 from threading import current_thread
 from time import sleep

@@ -2,7 +2,6 @@
 
 This module implements a wrapper for basic ``subprocess.Popen`` functionality.
 """
-
 from io import BytesIO
 from subprocess import PIPE, Popen
 

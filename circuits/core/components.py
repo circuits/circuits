@@ -1,7 +1,6 @@
 """
 This module defines the BaseComponent and its subclass Component.
 """
-
 from collections import Callable
 from inspect import getmembers
 from itertools import chain

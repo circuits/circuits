@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits import Component, Debugger
 from circuits.net.events import write
 from circuits.web import Controller, Logger, Server, Static

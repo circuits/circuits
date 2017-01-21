@@ -2,7 +2,6 @@
 
 A Component wrapping the inotify API using the pyinotify library.
 """
-
 try:
     from pyinotify import IN_UNMOUNT
     from pyinotify import WatchManager, Notifier, ALL_EVENTS

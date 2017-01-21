@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 try:
     from xmlrpc.client import ServerProxy
 except ImportError:

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 import os.path
 import select
 from socket import (

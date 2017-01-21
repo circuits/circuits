@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 """Clone of the standard UNIX "ping" command.
 
 This example shows how you can utilize some of the buitlin I/O components
@@ -9,8 +7,6 @@ This example merely wraps the standard UNIX "/usr/bin/ping" command in a subproc
 using the ``circuits.io.Process`` Component for Asyncchronous I/O communications with
 the process.
 """
-
-
 import sys
 
 from circuits import Component, Debugger

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from json import dumps
 
 from circuits import Component, handler

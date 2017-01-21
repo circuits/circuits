@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-
 """Bridge Example
 
 This example is quite similar to the Hello example
 but displays a hello form both the parent and child
 processing demonstrating how IPC works using the Bridge.
 """
-
-
 from __future__ import print_function
 
 from os import getpid

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 import pytest
 from pytest import fixture
 

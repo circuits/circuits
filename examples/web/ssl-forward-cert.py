@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # stdlib
 import ssl
 

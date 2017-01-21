@@ -7,7 +7,6 @@ or another Component - instead they are managed by the Pool. If a Worker
 is used independently it should not be registered as it causes its
 main event handler ``_on_task`` to execute in the other thread blocking it.
 """
-
 from multiprocessing import Pool as ProcessPool, cpu_count
 from multiprocessing.pool import ThreadPool
 from threading import current_thread

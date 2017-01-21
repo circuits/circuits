@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 import os
 import signal
 from StringIO import StringIO

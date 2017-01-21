@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from io import BytesIO
 
 from circuits.web.utils import compress, get_ranges

@@ -2,7 +2,6 @@
 
 Test Component's representation string.
 """
-
 import os
 
 from circuits import Component, Event

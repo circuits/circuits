@@ -2,7 +2,6 @@
 
 This module contains various Socket Components for use with Networking.
 """
-
 import os
 import select
 from collections import defaultdict, deque

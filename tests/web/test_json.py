@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from json import loads
 
 from circuits.web import JSONController, Sessions

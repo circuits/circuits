@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-
 """File Upload
 
 A simple example showing how to access an uploaded file.
 """
-
-
 from circuits.web import Controller, Server
 
 

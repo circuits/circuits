@@ -2,7 +2,6 @@
 
 This module implements ...
 """
-
 import json
 from collections import Callable
 from functools import update_wrapper

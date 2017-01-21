@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from io import BytesIO
 from os import path
 

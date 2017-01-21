@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """A Port Forwarding Example
 
 This example demonstrates slightly more complex features and behaviors
@@ -12,8 +11,6 @@ Example:
 
 This example also has support for daemonizing the process into the background.
 """
-
-
 from optparse import OptionParser
 from uuid import uuid4 as uuid
 

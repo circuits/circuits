@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits import Component, handler
 from circuits.web import Controller, Server
 from circuits.web.errors import Forbidden

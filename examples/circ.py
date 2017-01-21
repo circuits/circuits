@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 """Circuits IRC Client
 
 A circuits based IRC Client demonstrating integration with urwid - a curses
@@ -13,8 +11,6 @@ For usage type:
 
    ./circ.py --help
 """
-
-
 import os
 import sys
 from inspect import getargspec

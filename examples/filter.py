@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 """Simple Event Filtering
 
 This example shows how you can filter events by using the ``Event.stop()``
@@ -13,8 +11,6 @@ output "Hello World!".
     $ ./filter.py
     Hello World!
 """
-
-
 from __future__ import print_function
 
 from circuits import Component, Event

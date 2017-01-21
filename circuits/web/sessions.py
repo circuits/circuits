@@ -3,8 +3,6 @@
 This module implements Session Components that can be used to store
 and access persistent information.
 """
-
-
 from collections import defaultdict
 from hashlib import sha1 as sha
 from uuid import uuid4 as uuid

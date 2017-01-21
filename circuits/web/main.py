@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
 """Main
 
 circutis.web Web Server and Testing Tool.
 """
-
-
 import os
 from hashlib import md5
 from optparse import OptionParser

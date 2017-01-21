@@ -6,7 +6,6 @@ descriptors for read/write events. Pollers:
 - Poll
 - EPoll
 """
-
 import os
 import platform
 import select

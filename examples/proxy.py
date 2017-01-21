@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from uuid import uuid4 as uuid
 
 from circuits import Component, Debugger

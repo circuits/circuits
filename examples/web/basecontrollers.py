@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits.web import Server
 from circuits.web.controllers import BaseController, expose
 

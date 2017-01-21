@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 """DNS Client Example
 
 A simple little DNS Client example using
@@ -17,8 +15,6 @@ To run this example::
     pip install dnslib
     ./dnsclient.py 8.8.8.8 53 google.com
 """
-
-
 from __future__ import print_function
 
 import sys

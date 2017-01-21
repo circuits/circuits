@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-
 """Multi Bridge Example
 
 Identical to the Hello Bridge Example but with a 2nd child.
 """
-
-
 from __future__ import print_function
 
 from os import getpid

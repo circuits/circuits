@@ -1,6 +1,4 @@
 #!/usr/bin/python -i
-
-
 """Node Example
 
 To use this example run it interactively through the Python interactive
@@ -22,8 +20,6 @@ At the python prompt:
     >>> y
     <Value (u'Hello World! (16035)') result=True; errors=False; for <Remote[*.remote] (<Hello[.hello] ( )>, 'app2' channel=None)>
 """  # noqa
-
-
 from __future__ import print_function
 
 import sys

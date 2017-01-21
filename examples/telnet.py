@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
 """Telnet Example
 
 A basic telnet-like clone that connects to remote hosts
@@ -19,8 +17,6 @@ This example makes use of:
     * Event
     * net.sockets.TCPClient
 """
-
-
 from __future__ import print_function
 
 import os

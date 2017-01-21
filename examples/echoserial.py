@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 """Simple Serial Example
 
 This example shows how to use the ``circuits.io.Serial`` Component
@@ -9,8 +7,6 @@ on the serial port.
 
 .. warning:: THis example is currently untested.
 """
-
-
 from circuits import Component, Debugger, handler
 from circuits.io import Serial
 from circuits.io.events import write

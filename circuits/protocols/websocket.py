@@ -2,7 +2,6 @@
 
 .. codeauthor: mnl
 """
-
 import os
 import random
 

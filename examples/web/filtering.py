@@ -1,12 +1,10 @@
 #!/usr/bin/env python
-
 """Filtering
 
 A simple example showing how to intercept and potentially filter requests.
 This example demonstrates how you could intercept the response before it goes
 out changing the response's content into ALL UPPER CASE!
 """
-
 from circuits import Component, handler
 from circuits.web import Controller, Server
 

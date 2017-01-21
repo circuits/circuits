@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 from circuits import Component, Event
 
 

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 from os.path import dirname
 
 import pytest

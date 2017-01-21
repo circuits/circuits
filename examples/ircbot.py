@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """IRC Bot Example
 
 This example shows how to use several components in circuits as well
@@ -7,8 +6,6 @@ as one of the builtin networking protocols. This IRC Bot simply connects
 to the FreeNode IRC Network and joins the #circuits channel. It will also
 echo anything privately messages to it in response.
 """
-
-
 import sys
 
 from circuits import Component, Debugger

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """Directory Watch Example
 
 This example demonstrates the inotify I/O Component ``Notify`` which can
@@ -7,7 +6,6 @@ be used for real-time monitoring of file system events. The example simply
 takes a path to watch as the first Command Line Argument and prints to
 stdour every file system event it sees.
 """
-
 import sys
 
 from circuits import Component

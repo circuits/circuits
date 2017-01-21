@@ -1,5 +1,4 @@
 #!/usr/bin/python -i
-
 from circuits import Component, Event, Manager
 
 

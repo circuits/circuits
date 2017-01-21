@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits.web import Controller
 
 from .helpers import urlencode, urlopen

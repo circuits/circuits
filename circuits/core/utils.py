@@ -2,7 +2,6 @@
 
 This module defines utilities used by circuits.
 """
-
 import sys
 from imp import reload
 

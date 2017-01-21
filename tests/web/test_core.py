@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import pytest
 
 from circuits.six import b, u

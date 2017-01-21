@@ -3,7 +3,6 @@
 This module implements a basic URL to Channel dispatcher.
 This is the default dispatcher used by circuits.web
 """
-
 try:
     from urllib import quote, unquote
 except ImportError:
