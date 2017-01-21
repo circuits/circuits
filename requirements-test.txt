@@ -1,4 +1,4 @@
-coveralls
+codecov
 pytest
 pytest-cov
 flake8

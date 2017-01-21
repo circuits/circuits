@@ -45,7 +45,7 @@ install:
 
 script: tox -- --cov=./circuits --no-cov-on-fail --cov-report=
 
-after_success: coveralls
+after_success: codecov
 
 notifications:
   irc: "chat.freenode.net#circuits"

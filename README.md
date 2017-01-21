@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/circuits/circuits.svg)](https://travis-ci.org/circuits/circuits)
 
-[![Coverage](https://coveralls.io/repos/circuits/circuits/badge.png)](https://coveralls.io/r/circuits/circuits)
+[![codecov](https://codecov.io/gh/circuits/circuits/branch/master/graph/badge.svg)](https://codecov.io/gh/circuits/circuits)
 
 [![Quality](https://landscape.io/github/circuits/circuits/master/landscape.png)](https://landscape.io/github/circuits/circuits/master)
 

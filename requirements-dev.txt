@@ -11,7 +11,7 @@ wheel
 tox
 pytest
 uhttplib
-coveralls
+codecov
 pytest-cov
 
 # Generating Documentation
