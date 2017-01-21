@@ -1,11 +1,12 @@
 """Workers
 
-Worker components used to perform "work" in independent threads or
-processes. Worker(s) are typically used by a Pool (circuits.core.pools)
-to create a pool of workers. Worker(s) are not registered with a Manager
-or another Component - instead they are managed by the Pool. If a Worker
-is used independently it should not be registered as it causes its
-main event handler ``_on_task`` to execute in the other thread blocking it.
+Worker is a component used to perform "work" in independent threads or
+processes. Simply create an instance of Worker() with either `process=True`
+to create a pool of workers using sub-processes for CPU-bound work or `False`
+(the default) for a thread pool of workers for I/O bound work.
+
+Then fire `task()` events with a function and *args and **kwargs to pass
+to the function when called from within the workers.
 """
 from multiprocessing import Pool as ProcessPool, cpu_count
 from multiprocessing.pool import ThreadPool
@@ -24,7 +25,6 @@ class task(Event):
     """task Event
 
     This Event is used to initiate a new task to be performed by a Worker
-    or a Pool of Worker(s).
 
     :param f: The function to be executed.
     :type  f: function
@@ -49,9 +49,13 @@ class Worker(BaseComponent):
 
     """A thread/process Worker Component
 
-    This Component creates a Worker (either a thread or process) which
-    when given a ``Task``, will execute the given function in the task
-    in the background in its thread/process.
+    This Component creates a pool of workers (either a thread or process)
+    and executures the supplied function from a `task()` event passing
+    supplied arguments and keyword-arguments to the function.
+
+    A `task_success` event is fired upon successful execution of the function
+    and `task_failure` if it failed and threw an exception. The `task()` event
+    can also be "waited" upon by using the `.call()` and `.wait()` primitives.
 
     :param process: True to start this Worker as a process (Thread otherwise)
     :type process: bool
