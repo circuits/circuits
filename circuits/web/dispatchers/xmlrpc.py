@@ -3,7 +3,6 @@
 This module implements a XML RPC dispatcher that translates incoming
 RPC calls over XML into RPC events.
 """
-
 try:
     from xmlrpc.client import dumps, loads, Fault
 except ImportError:

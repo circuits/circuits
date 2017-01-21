@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-
 """Clone of the standard UNIX "tail" command.
 
 This example shows how you can utilize some of the buitlin I/O components
 in circuits to write a very simple clone of the standard UNIX "tail" command.
 """
-
 import sys
 
 from circuits import Component, Debugger

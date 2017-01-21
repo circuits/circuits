@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 try:
     from httplib import HTTPConnection
 except ImportError:

@@ -2,7 +2,6 @@
 
 This module implements a wrapper for basic File I/O.
 """
-
 try:
     from os import O_NONBLOCK
 except ImportError:

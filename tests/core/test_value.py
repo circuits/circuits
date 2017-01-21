@@ -1,6 +1,4 @@
 #!/usr/bin/python -i
-
-
 from types import TracebackType
 
 import pytest

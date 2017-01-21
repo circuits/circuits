@@ -2,7 +2,6 @@
 
 This module implements Logger Components.
 """
-
 import datetime
 import os
 import sys

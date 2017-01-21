@@ -1,13 +1,9 @@
 #!/usr/bin/env python
-
-
 """Clone of the standard UNIX "cat" command.
 
 This example shows how you can utilize some of the buitlin I/O components
 in circuits to write a very simple clone of the standard UNIX "cat" command.
 """
-
-
 import sys
 
 from circuits.io import File, stdout, write

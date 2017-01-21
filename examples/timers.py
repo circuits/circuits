@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-
 """Simple Timers
 
 A trivial simple example of using circuits and timers.
 """
-
 from circuits import Component, Event, Timer
 
 

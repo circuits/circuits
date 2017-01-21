@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits import Component
 from circuits.web import BaseServer
 

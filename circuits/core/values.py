@@ -1,8 +1,6 @@
 """
 This defines the Value object used by components and events.
 """
-
-
 from ..six import string_types
 from .events import Event
 

@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-
 """Forms
 
 A simple example showing how to deal with data forms.
 """
-
 from circuits.web import Controller, Server
 
 

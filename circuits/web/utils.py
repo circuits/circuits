@@ -2,7 +2,6 @@
 
 This module implements utility functions.
 """
-
 import os
 import re
 import stat

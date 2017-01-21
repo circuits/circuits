@@ -17,7 +17,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 """Utilities for writing code that runs on Python 2 and 3"""
 
 from __future__ import absolute_import
@@ -710,8 +709,6 @@ else:
     finally:
         tb = None
 """)
-
-
 if sys.version_info[:2] == (3, 2):
     exec_("""def raise_from(value, from_value):
     try:

@@ -2,8 +2,6 @@
 
 This module implements the several Web Server components.
 """
-
-
 from sys import stderr
 
 from circuits import io

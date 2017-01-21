@@ -3,7 +3,6 @@
 circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
-
 from functools import wraps
 from warnings import warn, warn_explicit
 

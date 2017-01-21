@@ -1,14 +1,10 @@
 #!/usr/bin/env python
-
-
 """Node Server Example
 
 This example demonstrates how to create a very simple node server
 that supports bi-diractional messaging between server and connected
 clients forming a cluster of nodes.
 """
-
-
 from __future__ import print_function
 
 from optparse import OptionParser

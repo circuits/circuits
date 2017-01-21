@@ -2,7 +2,6 @@
 
 This module implements commonly used Networking events used by socket components.
 """
-
 from circuits.core import Event
 
 

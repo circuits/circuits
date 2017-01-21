@@ -1,7 +1,6 @@
 """
 .. codeauthor: mnl
 """
-
 from signal import SIGINT, SIGTERM
 from sys import stderr
 from threading import Event

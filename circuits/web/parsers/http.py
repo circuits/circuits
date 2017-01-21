@@ -5,8 +5,6 @@
 #
 # This module is liberally borrowed (with modifications) from:
 # https://raw.githubusercontent.com/benoitc/http-parser/master/http_parser/pyparser.py
-
-
 import re
 import zlib
 

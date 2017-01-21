@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from os import path
 
 from circuits.web import Controller

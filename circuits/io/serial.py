@@ -2,7 +2,6 @@
 
 This module implements basic Serial (RS232) I/O.
 """
-
 from collections import deque
 
 from circuits.core import Component, Event, handler

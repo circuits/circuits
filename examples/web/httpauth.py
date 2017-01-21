@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits.web import Controller, Server
 from circuits.web.tools import basic_auth, check_auth
 

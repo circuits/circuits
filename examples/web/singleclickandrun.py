@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import webbrowser
 
 from circuits.web import Controller, Server

@@ -4,8 +4,6 @@ Component to daemonize a system into the background and detach it from its
 controlling PTY. Supports PID file writing, logging stdin, stdout and stderr
 and changing the current working directory.
 """
-
-
 from os import (
     _exit, chdir, closerange, dup2, fork, getpid, remove, setsid, umask,
 )

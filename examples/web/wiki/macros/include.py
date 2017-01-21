@@ -2,7 +2,6 @@
 
 Macros for inclusion of other wiki pages
 """
-
 from genshi import builder
 
 

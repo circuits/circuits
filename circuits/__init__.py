@@ -9,7 +9,6 @@ with a strong **Component** Architecture.
 
 .. _Python Programming Language: http://www.python.org/
 """
-
 __author__ = "James Mills"
 __date__ = "24th February 2013"
 

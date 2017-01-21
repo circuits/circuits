@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 from circuits.core.components import BaseComponent
 from circuits.core.handlers import handler
 from circuits.web import BaseServer, Controller

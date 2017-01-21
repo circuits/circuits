@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
 try:
     from urlparse import parse_qsl
 except ImportError:

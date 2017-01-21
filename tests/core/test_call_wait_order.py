@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from random import random, seed
 from time import sleep, time
 

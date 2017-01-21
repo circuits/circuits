@@ -3,8 +3,6 @@
 This module implements the server side Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
-
-
 from io import BytesIO
 from socket import socket
 

@@ -1,8 +1,6 @@
 """
 This module defines the Manager class.
 """
-
-
 import atexit
 from heapq import heappop, heappush
 from inspect import isfunction

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 """Example IRC Server
 
 .. note:: This is an example only and is feature incomplete.
@@ -9,8 +7,6 @@ Implements commands::
 
     USER NICK JOIN PART NICK WHO QUIT
 """
-
-
 import logging
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from collections import defaultdict

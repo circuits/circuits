@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits import BaseComponent, Event, handler
 
 

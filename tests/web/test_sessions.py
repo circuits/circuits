@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from circuits.web import Controller, Sessions
 
 from .helpers import CookieJar, HTTPCookieProcessor, build_opener

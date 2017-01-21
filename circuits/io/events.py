@@ -2,7 +2,6 @@
 
 This module implements commonly used I/O events used by other I/O modules.
 """
-
 from circuits.core import Event
 
 

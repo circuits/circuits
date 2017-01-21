@@ -2,7 +2,6 @@
 
 Macros for generating snippets of HTML.
 """
-
 import genshi
 import pygments
 import pygments.formatters

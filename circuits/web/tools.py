@@ -3,7 +3,6 @@
 This module implements tools used throughout circuits.web.
 These tools can also be used within Controlelrs and request handlers.
 """
-
 import collections
 import hashlib
 import mimetypes

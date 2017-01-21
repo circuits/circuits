@@ -6,8 +6,6 @@ processes. Bridge is used internally when a Component is started in
 Pipe is used as the socket transport between two sides of a Bridge
 (*there must be a :class:`~Bridge` instnace on both sides*).
 """
-
-
 import traceback
 
 from ..six import b

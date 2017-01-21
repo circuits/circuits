@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 """DNS Server Example
 
 A simple little DNS Server example using
@@ -21,8 +19,6 @@ Usage (*using dig*)::
     dig @localhost -p 1053 test.com
 
 """
-
-
 from __future__ import print_function
 
 import sys

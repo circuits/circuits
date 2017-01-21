@@ -2,7 +2,6 @@
 
 Macro support and dispatcher
 """
-
 import os
 from inspect import getmembers, getmodule, isfunction
 

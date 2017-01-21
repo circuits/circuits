@@ -2,8 +2,6 @@
 
 This module implements the Request and Response objects.
 """
-
-
 from functools import partial
 from io import BytesIO
 from time import time
