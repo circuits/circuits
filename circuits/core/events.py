@@ -1,23 +1,11 @@
 """
 This module defines the basic event class and common events.
 """
-
-
 from inspect import ismethod
 from traceback import format_tb
 
 
-class EventType(type):
-    def __new__(cls, name, bases, ns):
-        cls = type.__new__(cls, name, bases, ns)
-        setattr(cls, "name", ns.get("name", cls.__name__))
-
-        return cls
-
-
 class Event(object):
-
-    __metaclass__ = EventType
 
     channels = ()
     "The channels this message is sent to."
