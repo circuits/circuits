@@ -772,10 +772,10 @@ class Manager(object):
             return self.__thread, None
 
     def join(self):
-        if getattr(self, "_thread", None) is not None:
+        if self.__thread is not None:
             return self.__thread.join()
 
-        if getattr(self, "_process", None) is not None:
+        if self.__process is not None:
             return self.__process.join()
 
     def stop(self, code=None):
