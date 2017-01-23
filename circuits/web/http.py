@@ -65,20 +65,16 @@ class HTTP(BaseComponent):
 
     @property
     def scheme(self):
-        if not hasattr(self, "_server"):
-            return
         return "https" if self._server.secure else "http"
 
     @property
     def base(self):
-        if getattr(self, "uri", None) is None:
-            return
+        if self.uri is None:
+            return ""
         return self.uri.utf8().rstrip(b"/").decode(self._encoding)
 
     @property
     def uri(self):
-        if getattr(self, "_uri", None) is None:
-            return
         return self._uri
 
     @handler("ready", priority=1.0)
