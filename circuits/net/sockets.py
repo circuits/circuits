@@ -10,9 +10,10 @@ from errno import (
     EMFILE, ENFILE, ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EWOULDBLOCK,
 )
 from socket import (
-    AF_INET, AF_INET6, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR, SOCK_DGRAM,
-    SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, error as SocketError, gaierror,
-    getaddrinfo, getfqdn, gethostbyname, gethostname, socket,
+    AF_INET, AF_INET6, AF_UNIX, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST,
+    SO_REUSEADDR, SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY,
+    error as SocketError, gaierror, getaddrinfo, getfqdn, gethostbyname,
+    gethostname, socket,
 )
 from time import time
 
@@ -77,6 +78,11 @@ def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
 class Client(BaseComponent):
 
     channel = "client"
+
+    socket_family = AF_INET
+    socket_type = SOCK_STREAM
+    socket_protocol = IPPROTO_IP
+    socket_options = []
 
     def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel, **kwargs):
         super(Client, self).__init__(channel=channel, **kwargs)
@@ -233,23 +239,28 @@ class Client(BaseComponent):
             elif self._poller.isWriting(self._sock):
                 self._poller.removeWriter(self._sock)
 
+    def _create_socket(self):
+        sock = socket(self.socket_family, self.socket_type, self.socket_protocol)
+
+        for option in self.socket_options:
+            sock.setsockopt(*option)
+        sock.setblocking(False)
+        if self._bind is not None:
+            sock.bind(self._bind)
+        return sock
+
 
 class TCPClient(Client):
 
     socket_family = AF_INET
+    socket_type = SOCK_STREAM
+    socket_protocol = IPPROTO_TCP
+    socket_options = [
+        (IPPROTO_TCP, TCP_NODELAY, 1),
+    ]
 
     def init(self, connect_timeout=5, *args, **kwargs):
         self.connect_timeout = connect_timeout
-
-    def _create_socket(self):
-        sock = socket(self.socket_family, SOCK_STREAM, IPPROTO_TCP)
-        if self._bind is not None:
-            sock.bind(self._bind)
-
-        sock.setblocking(False)
-        sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-
-        return sock
 
     @handler("connect")  # noqa
     def connect(self, host, port, secure=False, **kwargs):
@@ -322,16 +333,9 @@ class TCP6Client(TCPClient):
 
 class UNIXClient(Client):
 
-    def _create_socket(self):
-        from socket import AF_UNIX
-
-        sock = socket(AF_UNIX, SOCK_STREAM)
-        if self._bind is not None:
-            sock.bind(self._bind)
-
-        sock.setblocking(False)
-
-        return sock
+    socket_family = AF_UNIX
+    socket_type = SOCK_STREAM
+    socket_options = []
 
     @handler("ready")
     def ready(self, component):
@@ -387,11 +391,13 @@ class UNIXClient(Client):
 class Server(BaseComponent):
 
     channel = "server"
+    socket_protocol = IPPROTO_IP
 
     def __init__(self, bind, secure=False, backlog=BACKLOG,
                  bufsize=BUFSIZE, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
+        self.socket_options = self.socket_options[:] + kwargs.get('socket_options', [])
         self._bind = self.parse_bind_parameter(bind)
 
         self._backlog = backlog
@@ -647,18 +653,28 @@ class Server(BaseComponent):
             elif self._poller.isWriting(sock):
                 self._poller.removeWriter(sock)
 
+    def _create_socket(self):
+        sock = socket(self.socket_family, self.socket_type, self.socket_protocol)
+
+        for option in self.socket_options:
+            sock.setsockopt(*option)
+        sock.setblocking(False)
+        if self._bind is not None:
+            sock.bind(self._bind)
+        return sock
+
 
 class TCPServer(Server):
 
     socket_family = AF_INET
+    socket_type = SOCK_STREAM
+    socket_options = [
+        (SOL_SOCKET, SO_REUSEADDR, 1),
+        (IPPROTO_TCP, TCP_NODELAY, 1),
+    ]
 
     def _create_socket(self):
-        sock = socket(self.socket_family, SOCK_STREAM)
-
-        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        sock.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-        sock.setblocking(False)
-        sock.bind(self._bind)
+        sock = super(TCPServer, self)._create_socket()
         sock.listen(self._backlog)
 
         return sock
@@ -706,17 +722,17 @@ class TCP6Server(TCPServer):
 
 class UNIXServer(Server):
 
-    def _create_socket(self):
-        from socket import AF_UNIX
+    socket_family = AF_UNIX
+    socket_type = SOCK_STREAM
+    socket_options = [
+        (SOL_SOCKET, SO_REUSEADDR, 1),
+    ]
 
+    def _create_socket(self):
         if os.path.exists(self._bind):
             os.unlink(self._bind)
 
-        sock = socket(AF_UNIX, SOCK_STREAM)
-        sock.bind(self._bind)
-
-        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        sock.setblocking(False)
+        sock = super(UNIXServer, self)._create_socket()
         sock.listen(self._backlog)
 
         return sock
@@ -725,18 +741,11 @@ class UNIXServer(Server):
 class UDPServer(Server):
 
     socket_family = AF_INET
-
-    def _create_socket(self):
-        sock = socket(self.socket_family, SOCK_DGRAM)
-
-        sock.bind(self._bind)
-
-        sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
-        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-
-        sock.setblocking(False)
-
-        return sock
+    socket_type = SOCK_DGRAM
+    socket_options = [
+        (SOL_SOCKET, SO_BROADCAST, 1),
+        (SOL_SOCKET, SO_REUSEADDR, 1)
+    ]
 
     def _close(self, sock):
         self._poller.discard(sock)
