@@ -66,64 +66,107 @@ def kill(x):
         x.unregister()
 
 
-def graph(x, name=None):
-    """Display a directed graph of the Component structure of x
+def _graph(x):
+    """Create a directed graph of the Component structure of x
 
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
-
-    :param name: A name for the graph (defaults to x's name)
-    :type  name: str
-
-    @return: A directed graph representing x's Component structure.
-    @rtype:  str
     """
 
     networkx = tryimport("networkx")
     pygraphviz = tryimport("pygraphviz")
     plt = tryimport("matplotlib.pyplot", "pyplot")
 
-    if networkx is not None and pygraphviz is not None and plt is not None:
-        graph_edges = []
-        for (u, v, d) in edges(x):
-            graph_edges.append((u.name, v.name, float(d)))
+    if not all([networkx, pygraphviz, plt]):
+        return None, None
 
-        g = networkx.DiGraph()
-        g.add_weighted_edges_from(graph_edges)
+    graph_edges = []
+    for (u, v, d) in edges(x):
+        graph_edges.append((u.name, v.name, float(d)))
 
-        elarge = [(u, v) for (u, v, d) in g.edges(data=True)
-                  if d["weight"] > 3.0]
-        esmall = [(u, v) for (u, v, d) in g.edges(data=True)
-                  if d["weight"] <= 3.0]
+    g = networkx.DiGraph()
+    g.add_weighted_edges_from(graph_edges)
 
-        pos = networkx.spring_layout(g)  # positions for all nodes
+    elarge = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] > 3.0]
+    esmall = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] <= 3.0]
 
-        # nodes
-        networkx.draw_networkx_nodes(g, pos, node_size=700)
+    pos = networkx.spring_layout(g)  # positions for all nodes
 
-        # edges
-        networkx.draw_networkx_edges(g, pos, edgelist=elarge, width=1)
-        networkx.draw_networkx_edges(
-            g, pos, edgelist=esmall, width=1,
-            alpha=0.5, edge_color="b", style="dashed"
-        )
+    # nodes
+    networkx.draw_networkx_nodes(g, pos, node_size=700)
 
-        # labels
-        networkx.draw_networkx_labels(
-            g, pos, font_size=10, font_family="sans-serif"
-        )
+    # edges
+    networkx.draw_networkx_edges(g, pos, edgelist=elarge, width=1)
+    networkx.draw_networkx_edges(
+        g, pos, edgelist=esmall, width=1,
+        alpha=0.5, edge_color="b", style="dashed"
+    )
 
-        plt.axis("off")
+    # labels
+    networkx.draw_networkx_labels(
+        g, pos, font_size=10, font_family="sans-serif"
+    )
 
-        plt.savefig("{}.png".format(name or x.name))
-        networkx.drawing.nx_agraph.write_dot(g, "{}.dot".format(name or x.name))
+    plt.axis("off")
 
-        plt.clf()
+    plt.clf()
+    return plt, g
 
+
+def graph_ascii(x):
+    """Display a directed graph of the Component structure of x
+
+    :param x: A Component or Manager to graph
+    :type  x: Component or Manager
+
+    @return: A directed graph representing x's Component structure.
+    @rtype:  str
+    """
     def printer(d, x):
         return "%s* %s" % (" " * d, x)
 
     return "\n".join(walk(x, printer))
+
+
+def graph_dot(x, name=None):
+    """
+    :param x: A Component or Manager to graph
+    :type  x: Component or Manager
+
+    :param name: A name for the graph (defaults to x's name)
+    :type  name: str
+    """
+
+    networkx = tryimport("networkx")
+    plt, g = _graph(x)
+    if g is not None:
+        networkx.drawing.nx_agraph.write_dot(g, "{}.dot".format(name or x.name))
+
+
+def graph_png(x, name=None):
+    """
+    :param x: A Component or Manager to graph
+    :type  x: Component or Manager
+
+    :param name: A name for the graph (defaults to x's name)
+    :type  name: str
+    """
+    plt, g = _graph(x)
+    if plt is not None:
+        plt.savefig("{}.png".format(name or x.name))
+
+
+def graph(x, name=None):
+    """
+    :param x: A Component or Manager to graph
+    :type  x: Component or Manager
+
+    :param name: A name for the graph (defaults to x's name)
+    :type  name: str
+    """
+    graph_dot(x, name)
+    graph_png(x, name)
+    return graph_ascii(x)
 
 
 def inspect(x):
