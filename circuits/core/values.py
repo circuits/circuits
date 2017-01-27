@@ -79,13 +79,17 @@ class Value(object):
         return str(self.value)
 
     def inform(self, force=False):
-        if self.promise and not force:
-            return
+        hello = self.event and self.event.name == "hello"
 
         notify = getattr(self.event, "notify", False) or self.notify
 
-        if self.event and self.event.name == "hello":
-            print(self.manager, notify, file=sys.stderr)
+        if hello:
+            print(self.manager, notify, self.promise, force, file=sys.stderr)
+
+        if self.promise and not force:
+            return
+
+
         if self.manager is not None and notify:
             if isinstance(notify, string_types):
                 e = Event.create(notify, self)
@@ -117,7 +121,11 @@ class Value(object):
         else:
             self._value = value
 
+        hello = self.event and self.event.name == "hello"
+
         def update(o, v):
+            if hello:
+                print(type(v), v, file=sys.stderr)
             if isinstance(v, Value):
                 o.errors = v.errors
                 o.result = v.result
@@ -130,6 +138,9 @@ class Value(object):
                 o.parent.errors = o.errors
                 o.parent.result = o.result
                 update(o.parent, v)
+
+        if hello:
+            print("calling update with", value, file=sys.stderr)
 
         update(self, value)
 
