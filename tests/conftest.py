@@ -105,6 +105,20 @@ def wait_for(obj, attr, value=True, timeout=30.0):
         sleep(TIMEOUT)
 
 
+class SimpleManager(Manager):
+
+    def tick(self, timeout=-1):
+        self._running = False
+        return super(SimpleManager, self).tick(timeout)
+
+
+@pytest.fixture
+def simple_manager(request):
+    manager = SimpleManager()
+    Debugger(events=request.config.option.verbose).register(manager)
+    return manager
+
+
 @pytest.fixture
 def manager(request):
     manager = Manager()
@@ -118,12 +132,7 @@ def manager(request):
     manager.start()
     assert waiter.wait()
 
-    if request.config.option.verbose:
-        verbose = True
-    else:
-        verbose = False
-
-    Debugger(events=verbose).register(manager)
+    Debugger(events=request.config.option.verbose).register(manager)
 
     return manager
 
