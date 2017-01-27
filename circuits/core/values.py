@@ -84,7 +84,7 @@ class Value(object):
 
         notify = getattr(self.event, "notify", False) or self.notify
 
-        if self.event.name == "hello":
+        if self.event and self.event.name == "hello":
             print(self.manager, notify, file=sys.stderr)
         if self.manager is not None and notify:
             if isinstance(notify, string_types):
