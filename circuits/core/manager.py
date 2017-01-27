@@ -1,6 +1,8 @@
 """
 This module defines the Manager class.
 """
+from __future__ import print_function
+
 import atexit
 from collections import deque
 from heapq import heappop, heappush
@@ -615,6 +617,7 @@ class Manager(object):
     def _dispatcher(self, event, channels, remaining):  # noqa
         # XXX: C901: This has a high McCabe complexity score of 22.
         # TODO: Refactor this method.
+        hello = event.name == 'hello'
 
         if event.cancelled:
             return
@@ -670,7 +673,11 @@ class Manager(object):
         value = None
         err = None
 
+        if hello:
+            print(len(event_handlers), event_handlers, file=stderr)
         for event_handler in event_handlers:
+            if hello:
+                print(event_handler, file=stderr)
             event.handler = event_handler
             try:
                 if event_handler.event:
@@ -693,12 +700,17 @@ class Manager(object):
 
                 self.fire(exception(*err, handler=event_handler, fevent=event))
 
+            if hello:
+                print(type(value), file=stderr)
+                print(event.waitingHandlers, file=stderr)
             if value is not None:
                 if isinstance(value, GeneratorType):
                     event.waitingHandlers += 1
                     event.value.promise = True
                     self.registerTask((event, value, None))
                 else:
+                    if hello:
+                        print("setting value to", value, file=stderr)
                     event.value.value = value
 
             # it is kind of a temporal hack to allow processing

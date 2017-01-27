@@ -1,6 +1,9 @@
 """
 This defines the Value object used by components and events.
 """
+from __future__ import print_function
+import sys
+
 from ..six import string_types
 from .events import Event
 
@@ -81,6 +84,8 @@ class Value(object):
 
         notify = getattr(self.event, "notify", False) or self.notify
 
+        if self.name == "hello":
+            print(self.manager, notify, file=sys.stderr)
         if self.manager is not None and notify:
             if isinstance(notify, string_types):
                 e = Event.create(notify, self)
