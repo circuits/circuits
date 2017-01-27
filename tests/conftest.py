@@ -26,7 +26,7 @@ class Watcher(BaseComponent):
     def clear(self):
         self.events.clear()
 
-    def wait(self, name, channel=None, timeout=30.0):
+    def wait(self, name, channel=None, timeout=3):
         for i in range(int(timeout / TIMEOUT)):
             with self._lock:
                 for event in self.events:
@@ -37,7 +37,7 @@ class Watcher(BaseComponent):
         else:
             return False
 
-    def count(self, name, channel=None, n=1, timeout=30.0):
+    def count(self, name, channel=None, n=1, timeout=3):
         n = 0
         with self._lock:
             for event in self.events:
