@@ -91,8 +91,9 @@ def test_nested_value(app, watcher):
 
 
 def test_value_notify(app, watcher):
-    x = app.fire(hello())
-    x.notify = True
+    ev = hello()
+    ev.notify = True
+    x = app.fire(ev)
 
     assert watcher.wait("hello_value_changed")
 
@@ -102,8 +103,9 @@ def test_value_notify(app, watcher):
 
 
 def test_nested_value_notify(app, watcher):
-    x = app.fire(test())
-    x.notify = True
+    ev = test()
+    ev.notify = True
+    x = app.fire(ev)
 
     assert watcher.wait("test_value_changed")
 
