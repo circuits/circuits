@@ -41,7 +41,7 @@ install:
   - pip install -Ur requirements-test.txt
   - pip install -Ue .
 
-script: tox -- -v -k tests/io/test_process.py --cov --no-cov-on-fail --cov-report=
+script: tox -- -v
 
 after_success: codecov
 
