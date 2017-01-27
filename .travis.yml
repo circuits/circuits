@@ -10,6 +10,7 @@ python:
   - pypy
 
 matrix:
+  fast_finish: true
   allow_failures:
     # Till https://travis-ci.org/circuits/circuits/jobs/192669838 is solved.
     - os: osx
