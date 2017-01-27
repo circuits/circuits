@@ -8,7 +8,7 @@ from circuits import Component, Event, handler
 
 class hello(Event):
 
-    "Hhllo Event"
+    "Hello Event"
 
 
 class test(Event):
@@ -61,62 +61,53 @@ class App(Component):
 
 
 @pytest.fixture
-def app(request, manager, watcher):
-    app = App().register(manager)
-    assert watcher.wait("registered")
-
-    def finalizer():
-        app.unregister()
-        assert watcher.wait("unregistered")
-
-    request.addfinalizer(finalizer)
-
-    return app
+def app(request, simple_manager):
+    return App().register(simple_manager)
 
 
-def test_value(app, watcher):
+def test_value(app, simple_manager):
     x = app.fire(hello())
-    assert watcher.wait("hello")
+    simple_manager.run()
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
 
 
-def test_nested_value(app, watcher):
+def test_nested_value(app, simple_manager):
     x = app.fire(test())
-    assert watcher.wait("test")
+    simple_manager.run()
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
 
 
-def test_value_notify(app, watcher):
+def test_value_notify(app, simple_manager):
     ev = hello()
     ev.notify = True
     x = app.fire(ev)
 
-    assert watcher.wait("hello_value_changed")
+    simple_manager.run()
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
     assert app.value is x
 
 
-def test_nested_value_notify(app, watcher):
+def test_nested_value_notify(app, simple_manager):
     ev = test()
     ev.notify = True
     x = app.fire(ev)
 
-    assert watcher.wait("test_value_changed")
+    simple_manager.run()
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
     assert app.value is x
 
 
-def test_error_value(app, watcher):
+def test_error_value(app, simple_manager):
     x = app.fire(foo())
-    assert watcher.wait("foo")
+    simple_manager.run()
 
     etype, evalue, etraceback = x
     assert etype is Exception
@@ -124,9 +115,9 @@ def test_error_value(app, watcher):
     assert isinstance(etraceback, TracebackType)
 
 
-def test_multiple_values(app, watcher):
+def test_multiple_values(app, simple_manager):
     v = app.fire(values())
-    assert watcher.wait("values_complete")
+    simple_manager.run()
 
     assert isinstance(v.value, list)
 
