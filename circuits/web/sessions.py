@@ -10,6 +10,8 @@ from uuid import uuid4 as uuid
 
 from circuits import Component, handler
 
+from six import with_metaclass
+
 
 def who(request, encoding="utf-8"):
     """Create a SHA1 Hash of the User's IP Address and User-Agent"""
@@ -76,9 +78,7 @@ class Session(dict):
             self.store.save(self.sid, self)
 
 
-class Store(object):
-
-    __metaclass__ = ABCMeta
+class Store(with_metaclass(ABCMeta, object)):
 
     @abstractmethod
     def delete(self, sid):
