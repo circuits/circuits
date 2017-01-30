@@ -39,6 +39,8 @@ except ImportError:
     import warnings
     warnings.warn("No SSL support available.")
     HAS_SSL = 0
+    CERT_NONE = None
+    PROTOCOL_SSLv23 = None
 
 
 BUFSIZE = 4096  # 4KB Buffer
@@ -413,18 +415,16 @@ class Server(BaseComponent):
         self._poller = None
         self._buffers = defaultdict(deque)
 
-        self.secure = secure
+        self.__starttls = set()
 
-        if self.secure:
-            try:
-                self.certfile = kwargs["certfile"]
-            except KeyError:
-                raise RuntimeError(
-                    "certfile must be specified for server-side operations")
-            self.keyfile = kwargs.get("keyfile", None)
-            self.cert_reqs = kwargs.get("cert_reqs", CERT_NONE)
-            self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)
-            self.ca_certs = kwargs.get("ca_certs", None)
+        self.secure = secure
+        self.certfile = kwargs.get("certfile")
+        self.keyfile = kwargs.get("keyfile", None)
+        self.cert_reqs = kwargs.get("cert_reqs", CERT_NONE)
+        self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)
+        self.ca_certs = kwargs.get("ca_certs", None)
+        if self.secure and not self.certfile:
+            raise RuntimeError("certfile must be specified for server-side operations")
 
     def parse_bind_parameter(self, bind_parameter):
         return parse_ipv4_parameter(bind_parameter)
@@ -502,6 +502,9 @@ class Server(BaseComponent):
         else:
             self._sock = None
 
+        if sock in self.__starttls:
+            self.__starttls.remove(sock)
+
         try:
             sock.shutdown(2)
         except SocketError:
@@ -570,20 +573,7 @@ class Server(BaseComponent):
             self._poller.addWriter(self, sock)
         self._buffers[sock].append(data)
 
-    def _accept(self):  # noqa
-        # XXX: C901: This has a high McCacbe complexity score of 10.
-        # TODO: Refactor this!
-
-        def on_done(sock, host):
-            sock.setblocking(False)
-            self._poller.addReader(self, sock)
-            self._clients.append(sock)
-            self.fire(connect(sock, *host))
-
-        def on_error(sock, err):
-            self.fire(error(sock, err))
-            self._close(sock)
-
+    def _accept(self):
         try:
             newsock, host = self._sock.accept()
         except SocketError as e:
@@ -613,21 +603,48 @@ class Server(BaseComponent):
                 raise
 
         if self.secure and HAS_SSL:
-            sslsock = ssl_socket(
-                newsock,
-                server_side=True,
-                keyfile=self.keyfile,
-                ca_certs=self.ca_certs,
-                certfile=self.certfile,
-                cert_reqs=self.cert_reqs,
-                ssl_version=self.ssl_version,
-                do_handshake_on_connect=False
-            )
-
-            for _ in do_handshake(sslsock, on_done, on_error, extra_args=(host,)):
+            for _ in self._do_handshake(newsock):
                 yield
         else:
-            on_done(newsock, host)
+            self._on_accept_done(newsock)
+
+    def _do_handshake(self, sock, fire_connect_event=True):
+        sslsock = ssl_socket(
+            sock,
+            server_side=True,
+            keyfile=self.keyfile,
+            ca_certs=self.ca_certs,
+            certfile=self.certfile,
+            cert_reqs=self.cert_reqs,
+            ssl_version=self.ssl_version,
+            do_handshake_on_connect=False
+        )
+
+        for _ in do_handshake(sslsock, self._on_accept_done, self._on_handshake_error, (fire_connect_event,)):
+            yield _
+
+    def _on_accept_done(self, sock, fire_connect_event=True):
+        sock.setblocking(False)
+        self._poller.addReader(self, sock)
+        self._clients.append(sock)
+        if fire_connect_event:
+            self.fire(connect(sock, *sock.getpeername()))
+
+    def _on_handshake_error(self, sock, err):
+        self.fire(error(sock, err))
+        self._close(sock)
+
+    @handler('starttls')
+    def starttls(self, sock):
+        if not HAS_SSL:
+            raise RuntimeError('Cannot start TLS. No TLS support.')
+        if sock in self.__starttls:
+            raise RuntimeError('Cannot reuse socket for already started STARTTLS.')
+        self.__starttls.add(sock)
+        self._poller.removeReader(sock)
+        self._clients.remove(sock)
+        for _ in self._do_handshake(sock, False):
+            yield
 
     @handler("_disconnect", priority=1)
     def _on_disconnect(self, sock):
