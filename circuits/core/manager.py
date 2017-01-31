@@ -706,6 +706,14 @@ class Manager(object):
             if isinstance(event, generate_events) and self._tasks:
                 event.reduce_time_left(TIMEOUT)
 
+            if err is not None:
+                if event.on_error == "abort":
+                    break
+                elif event.on_error == "ignore":
+                    continue
+                else:
+                    continue
+
             if event.stopped:
                 break  # Stop further event processing
 
