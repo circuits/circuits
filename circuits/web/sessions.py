@@ -8,7 +8,7 @@ from collections import defaultdict
 from hashlib import sha1 as sha
 from uuid import uuid4 as uuid
 
-from six import with_metaclass
+from circuits.six import with_metaclass
 
 from circuits import Component, handler
 
