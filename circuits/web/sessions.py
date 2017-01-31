@@ -8,9 +8,8 @@ from collections import defaultdict
 from hashlib import sha1 as sha
 from uuid import uuid4 as uuid
 
-from circuits.six import with_metaclass
-
 from circuits import Component, handler
+from circuits.six import with_metaclass
 
 
 def who(request, encoding="utf-8"):
