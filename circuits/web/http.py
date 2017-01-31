@@ -323,15 +323,15 @@ class HTTP(BaseComponent):
         res.body = str(event)
         self.fire(response(res))
 
-    @handler("request_success")  # noqa
-    def _on_request_success(self, e, value):
+    @handler("request_complete")  # noqa
+    def _on_request_complete(self, e, value):
         """
-        Handler for the ``RequestSuccess`` event that is automatically
-        generated after all handlers for a
+        Handler for the `request_complete`` event that is automatically
+        fired after all handlers for a
         :class:`~circuits.web.events.Request` event have been invoked
-        successfully.
+        completely.
 
-        :param e: the successfully handled ``Request`` event (having
+        :param e: the completed handled ``Request`` event (having
             as attributes the associated
             :class:`~circuits.web.wrappers.Request` and
             :class:`~circuits.web.wrappers.Response` objects).
@@ -344,6 +344,7 @@ class HTTP(BaseComponent):
         :class:`~circuits.web.events.Response` event with the
         ``Response`` object as argument.
         """
+
         # We only want the non-recursive value at this point.
         # If the value is an instance of Value we will set
         # the .notify flag and be notified of changes to the value.
@@ -494,13 +495,6 @@ class HTTP(BaseComponent):
 
         res = wrappers.Response(req, self._encoding, 500)
         self.fire(httperror(req, res, error=error))
-
-    @handler("request_complete")
-    def _on_request_complete(self, *args, **kwargs):
-        """Dummy Event Handler for request events
-
-        - request_complete
-        """
 
     @handler("response_success", "response_complete")
     def _on_response_feedback(self, *args, **kwargs):
