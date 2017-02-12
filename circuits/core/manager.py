@@ -707,9 +707,9 @@ class Manager(object):
                 event.reduce_time_left(TIMEOUT)
 
             if err is not None:
-                if event.on_error == "abort":
+                if event.on_error in ("abort", "throw_first"):
                     break
-                elif event.on_error == "ignore":
+                elif event.on_error in ("ignore", "throw_last"):
                     continue
                 else:
                     continue
@@ -842,7 +842,13 @@ class Manager(object):
                 # Done here, next() will StopIteration anyway
                 self.unregisterTask((event, task, parent))
                 # We are in a callEvent
-                value = parent.send(value.value)
+                if value.value.event.on_error in ('throw_first', 'throw_last') and value.value.errors:
+                    error = value.value.value
+                    if not isinstance(error, list):
+                        error = [error]
+                    parent.throw(*error[-1])
+                else:
+                    value = parent.send(value.value)
                 if isinstance(value, GeneratorType):
                     # We loose a yield but we gain one,
                     # we don't need to change
