@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import pytest
 
-from threading import Timer
 from circuits import Component, Event, handler
 
 
