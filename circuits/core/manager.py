@@ -707,7 +707,11 @@ class Manager(object):
                 event.reduce_time_left(TIMEOUT)
 
             if err is not None:
-                if event.on_error in ("abort", "throw_first"):
+                if event_handler.on_error in ("abort", "throw_first"):
+                    break
+                elif event_handler.on_error in ("ignore",):
+                    continue
+                elif event.on_error in ("abort", "throw_first"):
                     break
                 elif event.on_error in ("ignore", "throw_last"):
                     continue
