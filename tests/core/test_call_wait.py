@@ -5,67 +5,56 @@ from circuits import Component, Event, handler
 
 
 class wait(Event):
-
     """wait Event"""
     success = True
 
 
 class call(Event):
-
     """call Event"""
     success = True
 
 
 class long_call(Event):
-
     """long_call Event"""
     success = True
 
 
 class long_wait(Event):
-
     """long_wait Event"""
     success = True
 
 
 class wait_return(Event):
-
     """wait_return Event"""
     success = True
 
 
 class hello(Event):
-
     """hello Event"""
     success = True
 
 
 class foo(Event):
-
     """foo Event"""
     success = True
 
 
 class get_x(Event):
-
     """get_x Event"""
     success = True
 
 
 class get_y(Event):
-
     """get_y Event"""
     success = True
 
 
 class eval(Event):
-
     """eval Event"""
     success = True
 
 
 class App(Component):
-
     @handler("wait")
     def _on_wait(self):
         x = self.fire(hello())
@@ -168,3 +157,16 @@ def test_eval(manager, watcher, app):
 
     value = x.value
     assert value == 3
+
+
+@pytest.mark.xfail(reason='Issue #226')
+@pytest.mark.timeout(1)
+def test_wait_too_late(manager, watcher, app):
+    event = foo()
+    manager.fire(event)
+    assert watcher.wait("foo_success")
+    manager.tick()
+
+    x = manager.wait(event, timeout=.1)
+    value = next(x)
+    assert value == list(range(1, 10))
