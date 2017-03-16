@@ -21,6 +21,11 @@ class foo(Event):
     "foo Event"
 
 
+class wakemeup(Event):
+
+    "waky waky"
+
+
 class values(Event):
 
     "values Event"
@@ -95,7 +100,10 @@ def test_value_notify(app, watcher):
     ev.notify = True
     x = app.fire(ev)
 
-    assert watcher.wait("hello_value_changed")
+    result = watcher.wait("hello_value_changed")
+    app.fire(wakemeup())
+    watcher.wait("wakemeup")
+    assert result
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"

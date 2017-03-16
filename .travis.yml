@@ -42,7 +42,7 @@ install:
   - pip install -Ur requirements-test.txt
   - pip install -Ue .
 
-script: tox -- --cov --no-cov-on-fail --cov-report=
+script: tox -- -v
 
 after_success: codecov
 
