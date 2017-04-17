@@ -116,7 +116,7 @@ class Event(object):
 
         data = "%s %s" % (
             ", ".join(repr(arg) for arg in self.args),
-            ", ".join("%s=%s" % (k, repr(v)) for k, v in self.kwargs.items())
+            ", ".join("%s=%r" % (k, v) for k, v in self.kwargs.items())
         )
 
         return "<%s[%s] (%s)>" % (self.name, channels, data)
