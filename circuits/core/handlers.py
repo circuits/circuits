@@ -123,4 +123,7 @@ class HandlerMetaClass(type):
         callables = (x for x in ns.items() if isinstance(x[1], Callable))
         for name, callable in callables:
             if not (name.startswith("_") or hasattr(callable, "handler")):
-                setattr(cls, name, handler(name)(callable))
+                try:
+                    setattr(cls, name, handler(name)(callable))
+                except ValueError as e:
+                    raise ValueError('{} - {} {}'.format(str(e), repr(cls), name))
