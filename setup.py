@@ -86,4 +86,5 @@ setup(
     setup_requires=[
         "setuptools_scm"
     ],
+    extras_require={"stomp": ["stompest>=2.3.0", "pysocks>=1.6.7"]},
 )
