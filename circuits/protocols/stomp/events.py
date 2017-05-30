@@ -31,7 +31,7 @@ class StompEvent(Event):
 class Disconnected(StompEvent):
     def __init__(self, reconnect=True, receipt=None):
         super(Disconnected, self).__init__(receipt=receipt)
-        self.reconnect=reconnect
+        self.reconnect = reconnect
 
 
 class Disconnect(StompEvent):
@@ -41,7 +41,7 @@ class Disconnect(StompEvent):
 class Message(StompEvent):
     def __init__(self, frame):
         super(Message, self).__init__(headers=frame.headers,
-                                           message=frame.body)
+                                      message=frame.body)
         self.frame = frame
 
 
@@ -83,6 +83,7 @@ class OnStompError(StompEvent):
                                            error=err)
         self.frame = frame
 
+
 class HeartbeatTimeout(StompEvent):
     pass
 
@@ -90,15 +91,16 @@ class HeartbeatTimeout(StompEvent):
 class Subscribe(StompEvent):
     def __init__(self, destination, **kwargs):
         super(Subscribe, self).__init__(destination=destination, **kwargs)
-        self.destination=destination
+        self.destination = destination
+
 
 class Unsubscribe(StompEvent):
     def __init__(self, destination):
         super(Unsubscribe, self).__init__(destination=destination)
-        self.destination=destination
+        self.destination = destination
 
 
 class Ack(StompEvent):
     def __init__(self, frame):
         super(Ack, self).__init__(frame=frame)
-        self.frame=frame
+        self.frame = frame
