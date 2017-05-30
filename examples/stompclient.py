@@ -79,9 +79,9 @@ def main():
     # You can create an STOMP server to test for free at https://www.cloudamqp.com/
     uri = "orangutan.rmq.cloudamqp.com"
     port = 61614
-    login = "cjferxig"
-    passcode="5fyrCArVx4RY6mAwUiM7Mbd_FEnwYwUU"
-    host = "cjferxig"
+    login = "xxxyyy"
+    passcode="somepassword"
+    host = "xxxyyy"
     queue = "test1"
 
     s = StompClient(uri, port,
