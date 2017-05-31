@@ -162,7 +162,7 @@ class redirect(httperror):
 
         super(redirect, self).__init__(request, response, code)
 
-        if code in (300, 301, 302, 303, 307):
+        if code in (300, 301, 302, 303, 307, 308):
             response.headers["Content-Type"] = "text/html"
             # "The ... URI SHOULD be given by the Location field
             # in the response."
@@ -179,6 +179,8 @@ class redirect(httperror):
                    303: ("This resource can be found at "
                          "<a href='%s'>%s</a>."),
                    307: ("This resource has moved temporarily to "
+                         "<a href='%s'>%s</a>."),
+                   308: ("This resource has permanently moved to "
                          "<a href='%s'>%s</a>."),
                    }[code]
             response.body = "<br />\n".join([msg % (u, u) for u in urls])
