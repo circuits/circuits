@@ -10,6 +10,7 @@ LOG = logging.getLogger(__name__)
 class StompEvent(Event):
     """A Circuits event with less verbose repr"""
     success = True
+
     def _repr(self):
         return ""
 

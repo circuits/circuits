@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 """ Circuits component for handling Stomp Connection """
 
-import json
 import logging
 import ssl
 import time
 import traceback
-from signal import SIGINT, SIGTERM
-from circuits import BaseComponent, Event, Timer
-from circuits.io.events import ready
-from circuits.core.utils import findcmp
+from circuits import BaseComponent, Timer
 from circuits.core.handlers import handler
 try:
     from stompest.config import StompConfig
@@ -27,12 +23,13 @@ StompSpec.DEFAULT_VERSION = '1.2'
 ACK_CLIENT_INDIVIDUAL = StompSpec.ACK_CLIENT_INDIVIDUAL
 ACK_AUTO = StompSpec.ACK_AUTO
 ACK_CLIENT = StompSpec.ACK_CLIENT
-ACK_MODES =(ACK_CLIENT_INDIVIDUAL, ACK_AUTO, ACK_CLIENT)
+ACK_MODES = (ACK_CLIENT_INDIVIDUAL, ACK_AUTO, ACK_CLIENT)
 
 LOG = logging.getLogger(__name__)
 
-class StompClient(BaseComponent):
 
+class StompClient(BaseComponent):
+    """ Send and Receive messages from a STOMP queue """
     channel = "stomp"
     def init(self, host, port, username=None, password=None,
              connect_timeout=3, connected_timeout=3,
@@ -42,7 +39,7 @@ class StompClient(BaseComponent):
              key_file=None,
              cert_file=None,
              ca_certs=None,
-             ssl_version=ssl.PROTOCOL_TLSv1,
+             ssl_version=ssl.PROTOCOL_SSLv23,
              key_file_password=None,
              proxy_host=None,
              proxy_port=None,
@@ -50,7 +47,7 @@ class StompClient(BaseComponent):
              proxy_password=None,
              channel=channel):
         """ Initialize StompClient.  Called after __init__ """
-        self.channel=channel
+        self.channel = channel
         if proxy_host:
             LOG.info("Connect to %s:%s through proxy %s:%d", host, port, proxy_host, proxy_port)
         else:
@@ -72,7 +69,7 @@ class StompClient(BaseComponent):
             uri = "tcp://%s:%s" % (host, port)
 
         # Configure failover options so it only tries to connect once
-        self._stomp_server = "failover:(%s)?maxReconnectAttempts=1,startupMaxReconnectAttempts=1"  % uri
+        self._stomp_server = "failover:(%s)?maxReconnectAttempts=1,startupMaxReconnectAttempts=1" % uri
 
         self._stomp_config = StompConfig(uri=self._stomp_server, sslContext=ssl_context,
                                          version=version,
@@ -92,7 +89,7 @@ class StompClient(BaseComponent):
         self._subscribed = {}
         self.server_heartbeat = None
         self.client_heartbeat = None
-        self.ALLOWANCE = 2 # multiplier for heartbeat timeouts
+        self.ALLOWANCE = 2  # multiplier for heartbeat timeouts
 
     @property
     def connected(self):
@@ -146,7 +143,6 @@ class StompClient(BaseComponent):
         else:
             LOG.info("Expecting no heartbeats from Server")
 
-    #@handler("Connect", "started")
     @handler("Connect")
     def connect(self, event, host=None, *args, **kwargs):
         """ connect to Stomp server """
@@ -264,7 +260,6 @@ class StompClient(BaseComponent):
             LOG.error("Error sending ack")
             event.success = False
             self.fire(OnStompError(frame, err))
-
 
     @handler("Message")
     def on_message(self, event, headers, message):

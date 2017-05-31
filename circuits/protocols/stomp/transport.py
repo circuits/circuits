@@ -11,6 +11,7 @@ except ImportError:
 
 LOG = logging.getLogger(__name__)
 
+
 class EnhancedStompFrameTransport(StompFrameTransport):
     """ add support for older ssl module and http proxy """
 
@@ -65,15 +66,15 @@ class EnhancedStompFrameTransport(StompFrameTransport):
             self._socket.connect((self.host, self.port))
 
             if ssl_params:
-            # For cases where we don't have a modern SSLContext (so no SNI)
+                # For cases where we don't have a modern SSLContext (so no SNI)
                 cert_required = ssl.CERT_REQUIRED if ssl_params["ca_certs"] else ssl.CERT_NONE
                 self._socket = ssl.wrap_socket(
-                self._socket,
-                keyfile=ssl_params['key_file'],
-                certfile=ssl_params['cert_file'],
-                cert_reqs=cert_required,
-                ca_certs=ssl_params['ca_certs'],
-                ssl_version=ssl_params['ssl_version'])
+                    self._socket,
+                    keyfile=ssl_params['key_file'],
+                    certfile=ssl_params['cert_file'],
+                    cert_reqs=cert_required,
+                    ca_certs=ssl_params['ca_certs'],
+                    ssl_version=ssl_params['ssl_version'])
                 if cert_required:
                     LOG.info("Performing manual hostname check")
                     cert = self._socket.getpeercert()
