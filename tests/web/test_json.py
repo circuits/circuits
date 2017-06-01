@@ -13,7 +13,8 @@ class Root(JSONController):
 
     def test_sessions(self, name=None):
         if name:
-            self.session["name"] = name
+            with self.session as data:
+                data["name"] = name
         else:
             name = self.session.get("name", "World!")
 
