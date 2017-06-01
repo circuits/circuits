@@ -3,11 +3,13 @@
 This module implements Session Components that can be used to store
 and access persistent information.
 """
+from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from hashlib import sha1 as sha
 from uuid import uuid4 as uuid
 
 from circuits import Component, handler
+from circuits.six import with_metaclass
 
 
 def who(request, encoding="utf-8"):
@@ -48,30 +50,92 @@ def verify_session(request, sid):
     return sid
 
 
+class Session(dict):
+
+    def __init__(self, sid, data, store):
+        super(Session, self).__init__(data)
+
+        self._sid = sid
+        self._store = store
+
+    @property
+    def sid(self):
+        return self._sid
+
+    @property
+    def store(self):
+        return self._store
+
+    def expire(self):
+        self.store.delete(self.sid)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is None:
+            self.store.save(self.sid, self)
+
+
+class Store(with_metaclass(ABCMeta, object)):
+
+    @abstractmethod
+    def delete(self, sid):
+        """Delete the session data identified by sid"""
+
+    @abstractmethod
+    def load(self, sid):
+        """Load the session data identified by sid"""
+
+    @abstractmethod
+    def save(self, sid):
+        """Save the session data identified by sid"""
+
+
+class MemoryStore(Store):
+
+    def __init__(self):
+        self._data = defaultdict(dict)
+
+    @property
+    def data(self):
+        return self._data
+
+    def delete(self, sid):
+        del self.data[sid]
+
+    def load(self, sid):
+        return Session(sid, self.data[sid], self)
+
+    def save(self, sid, data):
+        self.data[sid] = data
+
+
 class Sessions(Component):
 
     channel = "web"
 
-    def __init__(self, name="circuits.session", channel=channel):
+    def __init__(self, name="circuits", store=MemoryStore, channel=channel):
         super(Sessions, self).__init__(channel=channel)
 
         self._name = name
-        self._data = defaultdict(dict)
+        self._store = store()
 
-    def load(self, sid):
-        return self._data[sid]
+    @property
+    def name(self):
+        return self._name
 
-    def save(self, sid, data):
-        """Save User Session Data for sid"""
+    @property
+    def store(self):
+        return self._store
 
     @handler("request", priority=10)
     def request(self, request, response):
-        if self._name in request.cookie:
+        if self.name in request.cookie:
             sid = request.cookie[self._name].value
             sid = verify_session(request, sid)
         else:
             sid = create_session(request)
 
-        request.sid = sid
-        request.session = self.load(sid)
-        response.cookie[self._name] = sid
+        request.session = self.store.load(sid)
+        response.cookie[self.name] = sid
