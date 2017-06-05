@@ -7,7 +7,8 @@ import ssl
 import pytest
 
 from circuits import Component, handler
-from circuits.protocols.stomp.events import *
+from circuits.protocols.stomp.events import subscribe, connect, send, disconnect
+
 
 try:
     from circuits.protocols.stomp.client import StompClient, ACK_AUTO
@@ -42,18 +43,18 @@ class App(Component):
         self.host=HOST
         self.received = []
 
-    def Connected(self):
-        self.fire(Subscribe(self.queue, ack=ACK_AUTO))
+    def connected(self):
+        self.fire(subscribe(self.queue, ack=ACK_AUTO))
         print("connected")
 
-    def Message(self, event, headers, message):
+    def message(self, event, headers, message):
         self.received.append(message)
         print("received")
 
-    def Subscribe_success(self, *args, **kwargs):
+    def subscribe_success(self, *args, **kwargs):
         print("subscribed")
 
-    def Disconnected(self, *args, **kwargs):
+    def disconnected(self, *args, **kwargs):
         print("disconnected")
 
 
@@ -78,17 +79,17 @@ def test_stomp_ssl(manager, watcher, tmpdir, context):
                          ssl_context=context).register(app)
 
     watcher.wait("registered")
-    client.fire(Connect(host=HOST))
-    watcher.wait("Connected")
+    client.fire(connect(host=HOST))
+    watcher.wait("connected")
 
-    client.fire(Subscribe(QUEUE, ack=ACK_AUTO))
-    watcher.wait("Subscribe_success")
+    client.fire(subscribe(QUEUE, ack=ACK_AUTO))
+    watcher.wait("subscribe_success")
 
-    client.fire(Send(headers=None,
+    client.fire(send(headers=None,
                      body=TEST_MESSAGE,
                      destination=QUEUE))
-    watcher.wait("Message_success")
-    client.fire(Disconnect())
+    watcher.wait("message_success")
+    client.fire(disconnect())
     received = app.received[0].decode()
     assert received == TEST_MESSAGE
 
@@ -108,17 +109,17 @@ def test_stomp_no_ssl(manager, watcher, tmpdir):
                          use_ssl=False).register(app)
 
     watcher.wait("registered")
-    client.fire(Connect(host=HOST))
-    app.wait("Connected")
+    client.fire(connect(host=HOST))
+    app.wait("connected")
 
-    client.fire(Subscribe(QUEUE, ack=ACK_AUTO))
-    watcher.wait("Subscribe_success")
+    client.fire(subscribe(QUEUE, ack=ACK_AUTO))
+    watcher.wait("subscribe_success")
 
-    client.fire(Send(headers=None,
+    client.fire(send(headers=None,
                   body=TEST_MESSAGE,
                   destination=QUEUE))
-    watcher.wait("Message_success")
-    client.fire(Disconnect())
+    watcher.wait("message_success")
+    client.fire(disconnect())
     received = app.received[0].decode()
     assert received == TEST_MESSAGE
 
@@ -150,17 +151,17 @@ def test_stomp_proxy_ssl(manager, watcher, tmpdir, context):
                          ssl_context=context).register(app)
 
     watcher.wait("registered")
-    client.fire(Connect(host=HOST))
-    watcher.wait("Connected")
+    client.fire(connect(host=HOST))
+    watcher.wait("connected")
 
-    client.fire(Subscribe(QUEUE, ack=ACK_AUTO))
-    watcher.wait("Subscribe_success")
+    client.fire(subscribe(QUEUE, ack=ACK_AUTO))
+    watcher.wait("subscribe_success")
 
-    client.fire(Send(headers=None,
+    client.fire(send(headers=None,
                      body=TEST_MESSAGE,
                      destination=QUEUE))
-    watcher.wait("Message_success")
-    client.fire(Disconnect())
+    watcher.wait("message_success")
+    client.fire(disconnect())
     received = app.received[0].decode()
     assert received == TEST_MESSAGE
 
@@ -183,17 +184,17 @@ def test_stomp_proxy_no_ssl(manager, watcher, tmpdir):
                          use_ssl=False).register(app)
 
     watcher.wait("registered")
-    client.fire(Connect(host=HOST))
-    app.wait("Connected")
+    client.fire(connect(host=HOST))
+    app.wait("connected")
 
-    client.fire(Subscribe(QUEUE, ack=ACK_AUTO))
-    watcher.wait("Subscribe_success")
+    client.fire(subscribe(QUEUE, ack=ACK_AUTO))
+    watcher.wait("subscribe_success")
 
-    client.fire(Send(headers=None,
+    client.fire(send(headers=None,
                   body=TEST_MESSAGE,
                   destination=QUEUE))
-    watcher.wait("Message_success")
-    client.fire(Disconnect())
+    watcher.wait("message_success")
+    client.fire(disconnect())
     received = app.received[0].decode()
     assert received == TEST_MESSAGE
 

@@ -7,7 +7,7 @@ from circuits import Event
 LOG = logging.getLogger(__name__)
 
 
-class StompEvent(Event):
+class stomp_event(Event):
     """A Circuits event with less verbose repr"""
     success = True
 
@@ -29,79 +29,79 @@ class StompEvent(Event):
         return u"<%s[%s] (%s)>" % (self.name, channels, data)
 
 
-class Disconnected(StompEvent):
+class disconnected(stomp_event):
     def __init__(self, reconnect=True, receipt=None):
-        super(Disconnected, self).__init__(receipt=receipt)
+        super(disconnected, self).__init__(receipt=receipt)
         self.reconnect = reconnect
 
 
-class Disconnect(StompEvent):
+class disconnect(stomp_event):
     pass
 
 
-class Message(StompEvent):
+class message(stomp_event):
     def __init__(self, frame):
-        super(Message, self).__init__(headers=frame.headers,
+        super(message, self).__init__(headers=frame.headers,
                                       message=frame.body)
         self.frame = frame
 
 
-class Send(StompEvent):
+class send(stomp_event):
     def __init__(self, headers, body, destination):
-        super(Send, self).__init__(headers=headers,
+        super(send, self).__init__(headers=headers,
                                    body=body,
                                    destination=destination)
 
 
-class ClientHeartbeat(StompEvent):
+class client_heartbeat(stomp_event):
     pass
 
 
-class ServerHeartbeat(StompEvent):
+class server_heartbeat(stomp_event):
     pass
 
 
-class Connect(StompEvent):
+class connect(stomp_event):
     def __init__(self, subscribe=False, host=None):
-        super(Connect, self).__init__(host=host)
+        super(connect, self).__init__(host=host)
         self.subscribe = subscribe
 
 
-class Connected(StompEvent):
+class connected(stomp_event):
     pass
 
 
-class ConnectionFailed(StompEvent):
+class connection_failed(stomp_event):
     reconnect = True
 
 
-class OnStompError(StompEvent):
+class on_stomp_error(stomp_event):
     def __init__(self, frame, err):
         headers = frame.headers if frame else {}
         body = frame.body if frame else None
-        super(OnStompError, self).__init__(headers=headers,
+        super(on_stomp_error, self).__init__(headers=headers,
                                            message=body,
                                            error=err)
         self.frame = frame
 
 
-class HeartbeatTimeout(StompEvent):
+class heartbeat_timeout(stomp_event):
     pass
 
 
-class Subscribe(StompEvent):
+class subscribe(stomp_event):
     def __init__(self, destination, **kwargs):
-        super(Subscribe, self).__init__(destination=destination, **kwargs)
+        super(subscribe, self).__init__(destination=destination, **kwargs)
         self.destination = destination
 
 
-class Unsubscribe(StompEvent):
+class unsubscribe(stomp_event):
     def __init__(self, destination):
-        super(Unsubscribe, self).__init__(destination=destination)
+        super(unsubscribe, self).__init__(destination=destination)
         self.destination = destination
 
 
-class Ack(StompEvent):
+class ack(stomp_event):
     def __init__(self, frame):
-        super(Ack, self).__init__(frame=frame)
+        super(ack, self).__init__(frame=frame)
         self.frame = frame

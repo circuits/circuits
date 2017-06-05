@@ -36,7 +36,7 @@ class EnhancedStompFrameTransport(StompFrameTransport):
                         names.append(value)
                         if value == hostname:
                             return
-        raise Exception("{0} does not match the expected value in the certificate {1}".format(hostname, str(names)))
+        raise RuntimeError("{0} does not match the expected value in the certificate {1}".format(hostname, str(names)))
 
     def connect(self, timeout=None):
         """ Allow older versions of ssl module, allow http proxy connections """

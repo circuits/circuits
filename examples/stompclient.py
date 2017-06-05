@@ -12,7 +12,7 @@ import ssl
 from circuits import Component, Timer, Event
 from circuits.core.handlers import handler
 from circuits.protocols.stomp.client import StompClient, ACK_AUTO
-from circuits.protocols.stomp.events import *
+from circuits.protocols.stomp.events import subscribe, send, connect
 
 LOG = logging.getLogger(__name__)
 
@@ -24,47 +24,47 @@ class QueueHandler(Component):
 
     def registered(self, event, component, parent):
         if component.parent is self:
-            self.fire(Event.create("Reconnect"))
+            self.fire(Event.create("reconnect"))
 
-    def Connected(self):
+    def connected(self):
         """Client has connected to the STOMP server"""
         LOG.info("STOMP connected.")
         # Let's subscribe to the message destination
-        self.fire(Subscribe(self.queue, ack=ACK_AUTO))
+        self.fire(subscribe(self.queue, ack=ACK_AUTO))
 
-    def Subscribe_success(self, event, *args, **kwargs):
+    def subscribe_success(self, event, *args, **kwargs):
         """ Subscribed to message destination """
         # Let's fire off some messages
-        self.fire(Send(headers = None,
+        self.fire(send(headers = None,
                        body="Hello World",
                        destination=self.queue))
-        self.fire(Send(headers = None,
+        self.fire(send(headers = None,
                        body="Hello Again World",
                        destination=self.queue))
 
-    def HeartbeatTimeout(self):
+    def heartbeat_timeout(self):
         """Heartbeat timed out from the STOMP server"""
         LOG.error("STOMP heartbeat timeout!")
         # Set a timer to automatically reconnect
         Timer(10, Event.create("Reconnect")).register(self)
 
-    def OnStompError(self, headers, message, error):
+    def on_stomp_error(self, headers, message, error):
         """STOMP produced an error."""
         LOG.error('STOMP listener: Error:\n%s', message or error)
 
-    def Message(self, event, headers, message):
+    def message(self, event, headers, message):
         """STOMP produced a message."""
         LOG.info("Message Received: %s", message)
 
-    def Disconnected(self, event, *args, **kwargs):
+    def disconnected(self, event, *args, **kwargs):
         # Wait a while then try to reconnect
         LOG.info("We got disconnected, reconnect")
-        Timer(10, Event.create("Reconnect")).register(self)
+        Timer(10, Event.create("reconnect")).register(self)
 
-    def Reconnect(self):
+    def reconnect(self):
         """Try (re)connect to the STOMP server"""
         LOG.info("STOMP attempting to connect")
-        self.fire(Connect(host=self.host))
+        self.fire(connect(host=self.host))
 
 
 
