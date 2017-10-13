@@ -113,7 +113,10 @@ class Debugger(BaseComponent):
             s = repr(event)
 
             if self.prefix:
-                s = "%s: %s" % (self.prefix, s)
+                if hasattr(self.prefix, '__call__'):
+                    s = "%s: %s" % (self.prefix(), s)
+                else:
+                    s = "%s: %s" % (self.prefix, s)
 
             if self.trim:
                 s = "%s ...>" % s[:self.trim]
