@@ -1,11 +1,8 @@
 # circuits
 
-[![Build Status](https://travis-ci.org/circuits/circuits.svg)](https://travis-ci.org/circuits/circuits)
-
+[![Build Status](https://travis-ci.org/circuits/circuits.svg)](https://travis-ci.org/circuits/circuits) 
 [![codecov](https://codecov.io/gh/circuits/circuits/branch/master/graph/badge.svg)](https://codecov.io/gh/circuits/circuits)
-
 [![Quality](https://landscape.io/github/circuits/circuits/master/landscape.png)](https://landscape.io/github/circuits/circuits/master)
-
 [![Stories Ready](https://badge.waffle.io/circuits/circuits.png?label=ready&title=Ready)](https://waffle.io/circuits/circuits)
 
 circuits is a **Lightweight** **Event** driven and **Asynchronous** **Application Framework** for the [Python Programming Language](http://www.python.org/) with a strong **Component** Architecture.
@@ -59,8 +56,8 @@ Alternatively, you may download the source package from the [PyPi](http://pypi.p
 > You can install the [development version](https://github.com/circuits/circuits/archive/master.zip#egg=circuits-dev)  
 > via `pip install circuits==dev`.
 >
-License
-=======
+
+## License
 
 circuits is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
