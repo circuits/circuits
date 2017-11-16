@@ -1,3 +1,5 @@
+# circuits
+
 [![Build Status](https://travis-ci.org/circuits/circuits.svg)](https://travis-ci.org/circuits/circuits)
 
 [![codecov](https://codecov.io/gh/circuits/circuits/branch/master/graph/badge.svg)](https://codecov.io/gh/circuits/circuits)
@@ -18,11 +20,7 @@ Got questions?
 
 -   [Ask a Question](http://stackoverflow.com/questions/ask) (Tag it: `circuits-framework`)
 
-Examples
-========
-
-Features
-========
+## Features
 
 -   event driven
 -   concurrency support
@@ -32,20 +30,17 @@ Features
 -   full featured web framework (circuits.web)
 -   coroutine based synchronization primitives
 
-Requirements
-============
+## Requirements
 
 -   circuits has no dependencies beyond the [Python Standard Library](http://docs.python.org/library/).
 
-Supported Platforms
-===================
+## Supported Platforms
 
 -   Linux, FreeBSD, Mac OS X, Windows
 -   Python 2.7, 3.4, 3.5, 3.6
 -   pypy (the newer the better)
 
-Installation
-============
+## Installation
 
 The simplest and recommended way to install circuits is with pip. You may install the latest stable release from PyPI with pip:
 
@@ -69,8 +64,7 @@ License
 
 circuits is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
-Feedback
-========
+## Feedback
 
 We welcome any questions or feedback about bugs and suggestions on how to improve circuits.
 
@@ -78,8 +72,7 @@ Let us know what you think about circuits. [@pythoncircuits](http://twitter.com/
 
 Do you have suggestions for improvement? Then please [Create an Issue](https://github.com/circuits/circuits/issues/new) with details of what you would like to see. I'll take a look at it and work with you to either incorporate the idea or find a better solution.
 
-Community
-=========
+## Community
 
 There are also several places you can reach out to the circuits community:
 
@@ -90,7 +83,6 @@ There are also several places you can reach out to the circuits community:
 
 ------------------------------------------------------------------------
 
-Disclaimer
-==========
+## Disclaimer
 
 Whilst I (James Mills) continue to contribute and maintain the circuits project I do not represent the interests or business of my employer Facebook Inc. The contributions I make are of my own free time and have no bearing or relevance to Facebook Inc.
