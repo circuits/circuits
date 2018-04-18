@@ -48,3 +48,41 @@ def test(webapp):
 
     s = client.buffer().decode('utf-8').split('\r\n')[0]
     assert s == "HTTP/1.1 200 OK"
+
+
+def test_http_1_0(webapp):
+    transport = TCPClient()
+    client = Client()
+    client += transport
+    client.start()
+
+    host, port, resource, secure = parse_url(webapp.server.http.base)
+    client.fire(connect(host, port))
+    assert pytest.wait_for(transport, "connected")
+
+    client.fire(write(b"GET / HTTP/1.0\r\n\r\n"))
+    assert pytest.wait_for(client, "done")
+
+    client.stop()
+
+    s = client.buffer().decode('utf-8').split('\r\n')[0]
+    assert s == "HTTP/1.0 200 OK"
+
+
+def test_http_1_1_no_host_headers(webapp):
+    transport = TCPClient()
+    client = Client()
+    client += transport
+    client.start()
+
+    host, port, resource, secure = parse_url(webapp.server.http.base)
+    client.fire(connect(host, port))
+    assert pytest.wait_for(transport, "connected")
+
+    client.fire(write(b"GET / HTTP/1.1\r\n\r\n"))
+    assert pytest.wait_for(client, "done")
+
+    client.stop()
+
+    s = client.buffer().decode('utf-8').split('\r\n')[0]
+    assert s == "HTTP/1.1 400 Bad Request"
