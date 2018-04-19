@@ -298,9 +298,19 @@ class HttpParser(object):
                 "SERVER_PROTOCOL": bits[2]})
 
     def _parse_headers(self, data):
-        idx = data.find(b("\r\n\r\n"))
+        if self._version == (1, 0):
+            idx = data.find(b("\r\n"))
+            if idx < 0:  # an empty line is required
+                return False
+            if idx == 0:  # we don't have all headers
+                rest = data[2:]
+                self._buf = [rest]
+                self.__on_headers_complete = True
+                return len(rest)
+
+        idx = data.find((b"\r\n\r\n"))
         if idx < 0:  # we don't have all headers
-            return False
+            raise InvalidHeader("No host header defined")
 
         # Split lines on \r\n keeping the \r\n on each line
         lines = [(str(line, 'unicode_escape') if PY3 else line) + "\r\n"
