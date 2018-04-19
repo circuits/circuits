@@ -73,7 +73,8 @@ class Value(object):
 
     def __str__(self):
         "x.__str__() <==> str(x)"
-
+        if PY2:
+            return self.value.encode('utf-8')
         return str(self.value)
 
     def inform(self, force=False):
