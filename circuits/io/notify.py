@@ -61,9 +61,9 @@ class Notify(BaseComponent):
             if mask & k:
                 self.fire(v(name, path, pathname, dir))
 
-    def add_path(self, path, mask=None, recursive=False):
+    def add_path(self, path, mask=None, recursive=False, auto_add=True):
         mask = mask or MASK
-        self._wm.add_watch(path, mask, rec=recursive)
+        self._wm.add_watch(path, mask, rec=recursive, auto_add=auto_add)
 
     def remove_path(self, path, recursive=False):
         wd = self._wm.get_wd(path)
