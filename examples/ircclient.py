@@ -36,7 +36,7 @@ def parse_options():
 
     parser.add_option(
         "-d", "--debug",
-        action="store_true", default="False", dest="debug",
+        action="store_true", default=False, dest="debug",
         help="Enable debug verbose logging",
     )
 
