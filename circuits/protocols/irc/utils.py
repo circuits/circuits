@@ -7,6 +7,7 @@ from circuits.six import u
 
 PREFIX = compile_regex("([^!].*)!(.*)@(.*)")
 COLOR_CODE = compile_regex('(?:(\d\d?)(?:(,)(\d\d?))?)?')
+COLOR = compile_regex("\x03(?:(\d\d?)(?:,(\d\d?))?)?")
 
 
 class Error(Exception):
@@ -31,7 +32,15 @@ def strip(s, color=False):
             s = s[1:]
     if color:
         s = s.replace(u("\x01"), u(""))
-        s = s.replace(u("\x02"), u(""))
+        s = s.replace(u("\x02"), u(""))  # bold
+        s = s.replace(u("\x1d"), u(""))  # italics
+        s = s.replace(u("\x1f"), u(""))  # underline
+        s = s.replace(u("\x1e"), u(""))  # strikethrough
+        s = s.replace(u("\x11"), u(""))  # monospace
+        s = s.replace(u("\x16"), u(""))  # reverse color
+        s = COLOR.sub(u(""), s)  # color codes
+        s = s.replace(u("\x03"), u(""))  # color
+        s = s.replace(u("\x0f"), u(""))  # reset
     return s
 
 
@@ -121,7 +130,7 @@ def irc_color_to_ansi(data, reset=True):
         95: 247, 96: 250, 97: 254, 98: 231, 99: ansi_default_fg
     }
     color_map_bg = {
-        0: 47, 1: 40, 2: 44, 3: 42, 4: 41, 5: 46, 6: 45, 7: 43, 10: 46, 14: 97, 15: 47, 99: ansi_default_bg
+        0: 47, 1: 40, 2: 44, 3: 42, 4: 41, 5: 46, 6: 45, 7: 43, 8: 103, 10: 46, 14: 97, 15: 47, 99: ansi_default_bg
     }
 
     enable_char = {
