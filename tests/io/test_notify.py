@@ -28,9 +28,10 @@ class Creator:
         self.tmpdir = tmpdir
         self.timeout = timeout
 
-    def create(self, *targets, assert_created=True, dir=False):
+    def create(self, *targets, **kwargs):
+        assert_created = kwargs.get('assert_created', True)
         target = os.path.join(*targets)
-        self.tmpdir.ensure(target, dir=dir)
+        self.tmpdir.ensure(target, dir=kwargs.get('dir', False))
         self.watcher.wait("created", timeout=self.timeout)
         assert self.app.created_status == assert_created
         # Reset for next call
@@ -152,5 +153,3 @@ def test_notify_subdir_recursive_no_auto_add(notify, tmpdir, creator):
     creator.create(subdir, "helloworld.txt", assert_created=False)
 
     # Skip notify.remove_path() because pyinotify is broken
-
-
