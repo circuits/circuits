@@ -12,7 +12,7 @@ pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported 
 
 
 def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"Poller": Select})
+    metafunc.parametrize("Poller", [Select])
 
 
 def test_pipe(Poller):

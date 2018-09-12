@@ -19,23 +19,24 @@ def wait_host(server):
     assert pytest.wait_for(server, ("host", "port"), checker)
 
 
-def _pytest_generate_tests(metafunc, ipv6):
-    metafunc.addcall(funcargs={"Poller": Select, "ipv6": ipv6})
-
-    if hasattr(select, "poll"):
-        metafunc.addcall(funcargs={"Poller": Poll, "ipv6": ipv6})
-
-    if hasattr(select, "epoll"):
-        metafunc.addcall(funcargs={"Poller": EPoll, "ipv6": ipv6})
-
-    if hasattr(select, "kqueue"):
-        metafunc.addcall(funcargs={"Poller": KQueue, "ipv6": ipv6})
-
-
 def pytest_generate_tests(metafunc):
-    _pytest_generate_tests(metafunc, ipv6=False)
+    ipv6 = [False]
     if socket.has_ipv6:
-        _pytest_generate_tests(metafunc, ipv6=True)
+        ipv6.append(True)
+
+    for ipv6 in ipv6:
+        poller = [(Select, ipv6)]
+
+        if hasattr(select, "poll"):
+            poller.append((Poll, ipv6))
+
+        if hasattr(select, "epoll"):
+            poller.append((EPoll, ipv6))
+
+        if hasattr(select, "kqueue"):
+            poller.append((KQueue, ipv6))
+
+    metafunc.parametrize('Poller,ipv6', poller)
 
 
 def test_basic(Poller, ipv6):
