@@ -27,16 +27,17 @@ def tmpfile(request):
 
 
 def pytest_generate_tests(metafunc):
-    metafunc.addcall(funcargs={"Poller": Select})
+    poller = [Select]
 
     if hasattr(select, "poll"):
-        metafunc.addcall(funcargs={"Poller": Poll})
+        poller.append(Poll)
 
     if hasattr(select, "epoll"):
-        metafunc.addcall(funcargs={"Poller": EPoll})
+        poller.append(EPoll)
 
     if hasattr(select, "kqueue"):
-        metafunc.addcall(funcargs={"Poller": KQueue})
+        poller.append(KQueue)
+    metafunc.parametrize('Poller', poller)
 
 
 def test_unix(tmpfile, Poller):
