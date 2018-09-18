@@ -9,7 +9,7 @@ from .events import reply, response  # noqa
 from .message import Message  # noqa
 from .numerics import *  # noqa
 from .protocol import IRC  # noqa
-from .utils import joinprefix, parsemsg, parseprefix, strip  # noqa
+from .utils import joinprefix, parsemsg, parseprefix, strip, irc_color_to_ansi  # noqa
 
 sourceJoin = joinprefix
 sourceSplit = parseprefix
