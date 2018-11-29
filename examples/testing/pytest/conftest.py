@@ -104,9 +104,9 @@ def watcher(request, manager):
     return watcher
 
 
-def pytest_namespace():
-    return dict((
-        ("WaitEvent", WaitEvent),
-        ("PLATFORM", sys.platform),
-        ("PYVER", sys.version_info[:3]),
-    ))
+for key, value in dict((
+    ("WaitEvent", WaitEvent),
+    ("PLATFORM", sys.platform),
+    ("PYVER", sys.version_info[:3]),
+)).items():
+    setattr(pytest, key, value)
