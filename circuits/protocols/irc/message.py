@@ -13,17 +13,17 @@ class Error(Exception):
 class Message(object):
 
     def __init__(self, command, *args, **kwargs):
-        if any(u(' ') in arg for arg in args[:-1]):
-            raise Error("Space can only appear in the very last arg")
-        if any(u('\n') in arg for arg in args):
-            raise Error("No newline allowed")
-
         self.command = command
         self.args = [x for x in args if x is not None]
         self.prefix = text_type(kwargs["prefix"]) if "prefix" in kwargs else None
 
         self.encoding = kwargs.get("encoding", "utf-8")
         self.add_nick = kwargs.get("add_nick", False)
+
+        if any(u(' ') in arg for arg in self.args[:-1]):
+            raise Error("Space can only appear in the very last arg")
+        if any(u('\n') in arg for arg in self.args):
+            raise Error("No newline allowed")
 
     @staticmethod
     def from_string(s):
