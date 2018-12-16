@@ -23,7 +23,7 @@ try:
     from email.utils import formatdate
     formatdate = partial(formatdate, usegmt=True)
 except ImportError:
-    from rfc822 import formatdate as HTTPDate  # NOQA
+    from rfc822 import formatdate  # NOQA
 
 
 try:
