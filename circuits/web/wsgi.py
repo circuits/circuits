@@ -107,7 +107,7 @@ class Application(BaseComponent):
         except:
             cl = 0
 
-        req.body.write(env("wsgi.input").read(cl))
+        req.body.write(env("wsgi.input").read(cl))  # FIXME: what about chunked encoding?
         req.body.seek(0)
 
         res = wrappers.Response(req)
@@ -132,7 +132,7 @@ class Application(BaseComponent):
         return body
 
     @handler("response", channel="web")
-    def response(self, event, response):
+    def on_response(self, event, response):
         self._finished = True
         event.stop()
 
@@ -204,7 +204,8 @@ class Gateway(BaseComponent):
         try:
             body = app(environ, start_response)
             if isinstance(body, list):
-                body = "".join(body)
+                _body = type(body[0])() if body else ""
+                body = _body.join(body)
             elif isinstance(body, GeneratorType):
                 res.body = body
                 res.stream = True
