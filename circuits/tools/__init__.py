@@ -3,6 +3,7 @@
 circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
+import inspect as _inspect
 from functools import wraps
 from warnings import warn, warn_explicit
 
@@ -21,6 +22,11 @@ def tryimport(modules, obj=None, message=None):
 
     if message is not None:
         warn(message)
+
+
+def getargspec(func):
+    getargs = _inspect.getfullargspec if hasattr(_inspect, 'getfullargspec') else _inspect.getargspec
+    return getargs(func)[:4]
 
 
 def walk(x, f, d=0, v=None):

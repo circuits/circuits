@@ -5,9 +5,9 @@ This module implements ...
 import json
 from collections import Callable
 from functools import update_wrapper
-from inspect import getargspec
 
 from circuits.core import BaseComponent, handler
+from circuits.tools import getargspec
 
 from . import tools
 from .errors import forbidden, httperror, notfound, redirect

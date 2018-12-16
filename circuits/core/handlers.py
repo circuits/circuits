@@ -2,7 +2,7 @@
 This module define the @handler decorator/function and the HandlesType type.
 """
 from collections import Callable
-from inspect import getargspec
+from circuits.tools import getargspec
 
 
 def handler(*names, **kwargs):
