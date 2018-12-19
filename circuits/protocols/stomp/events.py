@@ -2,6 +2,7 @@
 """ Circuits events for STOMP Client """
 
 import logging
+
 from circuits import Event
 
 LOG = logging.getLogger(__name__)
@@ -80,8 +81,8 @@ class on_stomp_error(stomp_event):
         headers = frame.headers if frame else {}
         body = frame.body if frame else None
         super(on_stomp_error, self).__init__(headers=headers,
-                                           message=body,
-                                           error=err)
+                                             message=body,
+                                             error=err)
         self.frame = frame
 
 

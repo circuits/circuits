@@ -5,8 +5,15 @@ import logging
 import ssl
 import time
 import traceback
+
 from circuits import BaseComponent, Timer
 from circuits.core.handlers import handler
+from circuits.protocols.stomp.events import (
+    client_heartbeat, connected, connection_failed,
+    disconnected, heartbeat_timeout, message, on_stomp_error, server_heartbeat,
+)
+from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
+
 try:
     from stompest.config import StompConfig
     from stompest.protocol import StompSpec, StompSession
@@ -16,10 +23,6 @@ try:
 except ImportError:
     raise ImportError("No stomp support available.  Is stompest installed?")
 
-from circuits.protocols.stomp.events import (connect, connected, on_stomp_error, disconnect, disconnected,
-                                             connection_failed, server_heartbeat, client_heartbeat, send,
-                                             message, subscribe, unsubscribe)
-from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
 
 StompSpec.DEFAULT_VERSION = '1.2'
 ACK_CLIENT_INDIVIDUAL = StompSpec.ACK_CLIENT_INDIVIDUAL
@@ -33,6 +36,7 @@ LOG = logging.getLogger(__name__)
 class StompClient(BaseComponent):
     """ Send and Receive messages from a STOMP queue """
     channel = "stomp"
+
     def init(self, host, port, username=None, password=None,
              connect_timeout=3, connected_timeout=3,
              version=StompSpec.VERSION_1_2, accept_versions=["1.0", "1.1", "1.2"],
@@ -162,7 +166,7 @@ class StompClient(BaseComponent):
                 self.start_heartbeats()
                 return "success"
 
-        except StompConnectionError as err:
+        except StompConnectionError:
             LOG.debug(traceback.format_exc())
             self.fire(connection_failed(self._stomp_server))
             event.success = False
@@ -174,7 +178,7 @@ class StompClient(BaseComponent):
         now = time.time()
         last = self._client.lastReceived or 0
         if last:
-            elapsed = now-last
+            elapsed = now - last
         else:
             elapsed = -1
         LOG.debug("Last received data %d seconds ago", elapsed)
@@ -192,7 +196,7 @@ class StompClient(BaseComponent):
             LOG.debug("Sending heartbeat")
             try:
                 self._client.beat()
-            except StompConnectionError as err:
+            except StompConnectionError:
                 event.success = False
                 self.fire(disconnected())
 
@@ -205,7 +209,7 @@ class StompClient(BaseComponent):
                 frame = self._client.receiveFrame()
                 LOG.debug("Recieved frame %s", frame)
                 self.fire(message(frame))
-        except StompConnectionError as err:
+        except StompConnectionError:
             self.fire(disconnected())
 
     @handler("send")

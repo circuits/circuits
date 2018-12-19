@@ -1,6 +1,8 @@
 from time import sleep
-from circuits import Component, Debugger, Event, Timer, Worker, task
+
 import requests
+
+from circuits import Component, Debugger, Event, Timer, Worker, task
 
 
 def download_web_page(url):
@@ -10,6 +12,7 @@ def download_web_page(url):
     # Only returning portion of web page.
     # You would probably process web page for data before sending back
     return response.text[:200]
+
 
 class App(Component):
 
@@ -33,6 +36,7 @@ class App(Component):
     def task_success(self, function_called, function_result):
         func, url_called = function_called
         print('url {} gave {}'.format(url_called, function_result))
+
 
 if __name__ == '__main__':
     app = App()

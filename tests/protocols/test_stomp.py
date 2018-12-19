@@ -4,11 +4,13 @@ from __future__ import print_function
 
 import os
 import ssl
+
 import pytest
 
-from circuits import Component, handler
-from circuits.protocols.stomp.events import subscribe, connect, send, disconnect
-
+from circuits import Component
+from circuits.protocols.stomp.events import (
+    connect, disconnect, send, subscribe,
+)
 
 try:
     from circuits.protocols.stomp.client import StompClient, ACK_AUTO
@@ -31,16 +33,16 @@ except ValueError:
 
 # Tests can only run if a STOMP server is available
 needstomp = pytest.mark.skipif(not(all((URI, LOGIN, PASSCODE, HOST, QUEUE))),
-                                reason="No STOMP Server Configured")
+                               reason="No STOMP Server Configured")
 needproxy = pytest.mark.skipif(not(PROXY_HOST and PROXY_PORT),
-                                reason="No HTTP Proxy Configured")
+                               reason="No HTTP Proxy Configured")
 
 
 class App(Component):
     def __init__(self, queue, host=None, *args, **kwargs):
         super(App, self).__init__(*args, **kwargs)
         self.queue = QUEUE
-        self.host=HOST
+        self.host = HOST
         self.received = []
 
     def connected(self):
@@ -60,7 +62,7 @@ class App(Component):
 
 @needstomp
 @pytest.mark.parametrize("context",
-                          [ssl.create_default_context(), None])
+                         [ssl.create_default_context(), None])
 def test_stomp_ssl(manager, watcher, tmpdir, context):
     """ test ssl connection """
     port = 61614
@@ -97,6 +99,7 @@ def test_stomp_ssl(manager, watcher, tmpdir, context):
     app.unregister()
     watcher.wait("unregistered")
 
+
 @needstomp
 def test_stomp_no_ssl(manager, watcher, tmpdir):
     """ Test plain tcp connection """
@@ -116,8 +119,8 @@ def test_stomp_no_ssl(manager, watcher, tmpdir):
     watcher.wait("subscribe_success")
 
     client.fire(send(headers=None,
-                  body=TEST_MESSAGE,
-                  destination=QUEUE))
+                body=TEST_MESSAGE,
+                destination=QUEUE))
     watcher.wait("message_success")
     client.fire(disconnect())
     received = app.received[0].decode()
@@ -127,10 +130,11 @@ def test_stomp_no_ssl(manager, watcher, tmpdir):
     app.unregister()
     watcher.wait("unregistered")
 
+
 @needstomp
 @needproxy
 @pytest.mark.parametrize("context",
-                          [ssl.create_default_context(), None])
+                         [ssl.create_default_context(), None])
 def test_stomp_proxy_ssl(manager, watcher, tmpdir, context):
     """ test ssl connection through http proxy"""
     port = 61614
@@ -169,6 +173,7 @@ def test_stomp_proxy_ssl(manager, watcher, tmpdir, context):
     app.unregister()
     watcher.wait("unregistered")
 
+
 @needstomp
 @needproxy
 def test_stomp_proxy_no_ssl(manager, watcher, tmpdir):
@@ -191,8 +196,8 @@ def test_stomp_proxy_no_ssl(manager, watcher, tmpdir):
     watcher.wait("subscribe_success")
 
     client.fire(send(headers=None,
-                  body=TEST_MESSAGE,
-                  destination=QUEUE))
+                body=TEST_MESSAGE,
+                destination=QUEUE))
     watcher.wait("message_success")
     client.fire(disconnect())
     received = app.received[0].decode()

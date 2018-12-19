@@ -1,8 +1,9 @@
 """ stompest StompFrameTransport allowing for ssl.wrap_socket """
 
 import logging
-import ssl
 import socket
+import ssl
+
 try:
     from stompest.sync.transport import StompFrameTransport
     from stompest.error import StompConnectionError
@@ -28,7 +29,7 @@ class EnhancedStompFrameTransport(StompFrameTransport):
         try:
             ssl.match_hostname(cert, hostname)
             return
-        except AttributeError as err:
+        except AttributeError:
             # We don't have the backported python 3 ssl module, do a simplified check
             for sub in cert.get('subject', ()):
                 for key, value in sub:
