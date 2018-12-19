@@ -11,17 +11,18 @@ import logging
 import ssl
 
 from circuits import Component, Event, Timer
-from circuits.core.handlers import handler
 from circuits.protocols.stomp.client import ACK_AUTO, StompClient
 from circuits.protocols.stomp.events import connect, send, subscribe
 
 LOG = logging.getLogger(__name__)
 
+
 class QueueHandler(Component):
+
     def __init__(self, queue, host=None, *args, **kwargs):
         super(QueueHandler, self).__init__(*args, **kwargs)
         self.queue = queue
-        self.host=host
+        self.host = host
 
     def registered(self, event, component, parent):
         if component.parent is self:
@@ -36,10 +37,10 @@ class QueueHandler(Component):
     def subscribe_success(self, event, *args, **kwargs):
         """ Subscribed to message destination """
         # Let's fire off some messages
-        self.fire(send(headers = None,
+        self.fire(send(headers=None,
                        body="Hello World",
                        destination=self.queue))
-        self.fire(send(headers = None,
+        self.fire(send(headers=None,
                        body="Hello Again World",
                        destination=self.queue))
 
@@ -68,7 +69,6 @@ class QueueHandler(Component):
         self.fire(connect(host=self.host))
 
 
-
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
@@ -81,7 +81,7 @@ def main():
     uri = "orangutan.rmq.cloudamqp.com"
     port = 61614
     login = "xxxyyy"
-    passcode="somepassword"
+    passcode = "somepassword"
     host = "xxxyyy"
     queue = "test1"
 
@@ -95,6 +95,7 @@ def main():
     s.register(qr)
 
     qr.run()
+
 
 if __name__ == "__main__":
     main()

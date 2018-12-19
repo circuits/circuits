@@ -29,7 +29,7 @@ class EnhancedStompFrameTransport(StompFrameTransport):
         try:
             ssl.match_hostname(cert, hostname)
             return
-        except AttributeError as err:
+        except AttributeError:
             # We don't have the backported python 3 ssl module, do a simplified check
             for sub in cert.get('subject', ()):
                 for key, value in sub:
