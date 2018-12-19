@@ -4,11 +4,13 @@ from __future__ import print_function
 
 import os
 import ssl
+
 import pytest
 
 from circuits import Component, handler
-from circuits.protocols.stomp.events import subscribe, connect, send, disconnect
-
+from circuits.protocols.stomp.events import (
+    connect, disconnect, send, subscribe,
+)
 
 try:
     from circuits.protocols.stomp.client import StompClient, ACK_AUTO

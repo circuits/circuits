@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import pytest
 import os
+
+import pytest
 
 from circuits import Component, handler
 

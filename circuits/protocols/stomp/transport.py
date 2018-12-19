@@ -1,8 +1,9 @@
 """ stompest StompFrameTransport allowing for ssl.wrap_socket """
 
 import logging
-import ssl
 import socket
+import ssl
+
 try:
     from stompest.sync.transport import StompFrameTransport
     from stompest.error import StompConnectionError

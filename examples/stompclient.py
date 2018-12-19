@@ -9,10 +9,11 @@ Requires a STOMP server to connect to.
 
 import logging
 import ssl
-from circuits import Component, Timer, Event
+
+from circuits import Component, Event, Timer
 from circuits.core.handlers import handler
-from circuits.protocols.stomp.client import StompClient, ACK_AUTO
-from circuits.protocols.stomp.events import subscribe, send, connect
+from circuits.protocols.stomp.client import ACK_AUTO, StompClient
+from circuits.protocols.stomp.events import connect, send, subscribe
 
 LOG = logging.getLogger(__name__)
 

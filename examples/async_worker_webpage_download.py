@@ -1,6 +1,8 @@
 from time import sleep
-from circuits import Component, Debugger, Event, Timer, Worker, task
+
 import requests
+
+from circuits import Component, Debugger, Event, Timer, Worker, task
 
 
 def download_web_page(url):

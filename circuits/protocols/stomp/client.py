@@ -5,8 +5,16 @@ import logging
 import ssl
 import time
 import traceback
+
 from circuits import BaseComponent, Timer
 from circuits.core.handlers import handler
+from circuits.protocols.stomp.events import (
+    client_heartbeat, connect, connected, connection_failed, disconnect,
+    disconnected, message, on_stomp_error, send, server_heartbeat, subscribe,
+    unsubscribe,
+)
+from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
+
 try:
     from stompest.config import StompConfig
     from stompest.protocol import StompSpec, StompSession
@@ -16,10 +24,6 @@ try:
 except ImportError:
     raise ImportError("No stomp support available.  Is stompest installed?")
 
-from circuits.protocols.stomp.events import (connect, connected, on_stomp_error, disconnect, disconnected,
-                                             connection_failed, server_heartbeat, client_heartbeat, send,
-                                             message, subscribe, unsubscribe)
-from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
 
 StompSpec.DEFAULT_VERSION = '1.2'
 ACK_CLIENT_INDIVIDUAL = StompSpec.ACK_CLIENT_INDIVIDUAL

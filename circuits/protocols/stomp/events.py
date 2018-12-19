@@ -2,6 +2,7 @@
 """ Circuits events for STOMP Client """
 
 import logging
+
 from circuits import Event
 
 LOG = logging.getLogger(__name__)

@@ -10,16 +10,10 @@ from errno import (
     EMFILE, ENFILE, ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EWOULDBLOCK,
 )
 from socket import (
-    AF_INET, AF_INET6, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST,
-    SO_REUSEADDR, SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY,
-    error as SocketError, gaierror, getaddrinfo, getfqdn, gethostbyname,
-    gethostname, socket,
+    AF_INET, AF_INET6, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR,
+    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, error as SocketError,
+    gaierror, getaddrinfo, getfqdn, gethostbyname, gethostname, socket,
 )
-try:
-    from socket import AF_UNIX
-except ImportError:
-    AF_UNIX = None
-
 from time import time
 
 from _socket import socket as SocketType
@@ -33,6 +27,12 @@ from .events import (
     close, closed, connect, connected, disconnect, disconnected, error, read,
     ready, unreachable, write,
 )
+
+try:
+    from socket import AF_UNIX
+except ImportError:
+    AF_UNIX = None
+
 
 try:
     from ssl import wrap_socket as ssl_socket
