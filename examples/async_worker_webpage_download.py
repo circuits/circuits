@@ -13,6 +13,7 @@ def download_web_page(url):
     # You would probably process web page for data before sending back
     return response.text[:200]
 
+
 class App(Component):
 
     def init(self, *args, **kwargs):
@@ -35,6 +36,7 @@ class App(Component):
     def task_success(self, function_called, function_result):
         func, url_called = function_called
         print('url {} gave {}'.format(url_called, function_result))
+
 
 if __name__ == '__main__':
     app = App()

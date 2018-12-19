@@ -40,6 +40,7 @@ class App(Component):
         if argument == 14:
             self.stop()
 
+
 if __name__ == '__main__':
     app = App()
     Debugger().register(app)
