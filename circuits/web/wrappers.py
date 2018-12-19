@@ -7,7 +7,7 @@ from io import BytesIO
 from time import time
 
 from circuits.net.sockets import BUFSIZE
-from circuits.six import binary_type
+from circuits.six import binary_type, text_type
 
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 from .errors import httperror
@@ -23,7 +23,7 @@ try:
     from email.utils import formatdate
     formatdate = partial(formatdate, usegmt=True)
 except ImportError:
-    from rfc822 import formatdate as HTTPDate  # NOQA
+    from rfc822 import formatdate  # NOQA
 
 
 try:
@@ -234,6 +234,8 @@ class Body(object):
 
     """Response Body"""
 
+    encode_errors = 'strict'
+
     def __get__(self, response, cls=None):
         if response is None:
             return self
@@ -247,6 +249,11 @@ class Body(object):
         if isinstance(value, binary_type):
             if value:
                 value = [value]
+            else:
+                value = []
+        elif isinstance(value, text_type):
+            if value:
+                value = [value.encode(response.encoding, self.encode_errors)]
             else:
                 value = []
         elif hasattr(value, "read"):
@@ -331,7 +338,7 @@ class Response(object):
         return "{0:s} {1:s}\r\n".format(protocol, status)
 
     def __bytes__(self):
-        return str(self).encode(self.encoding)
+        return str(self).encode(self.encoding)  # FIXME: this is wrong. HTTP headers must be ISO8859-1. This should only encode the body as UTF-8.
 
     def prepare(self):
         # Set a default content-Type if we don't have one.

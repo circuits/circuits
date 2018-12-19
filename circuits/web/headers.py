@@ -243,9 +243,9 @@ class Headers(CaseInsensitiveDict):
         for k, v in super(Headers, self).items():
             if isinstance(v, list):
                 for vv in v:
-                    yield (k, vv)
+                    yield (str(k), str(vv))
             else:
-                yield (k, v)
+                yield (str(k), str(v))
 
     def __bytes__(self):
         return str(self).encode("latin1")

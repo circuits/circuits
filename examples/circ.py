@@ -13,7 +13,6 @@ For usage type:
 """
 import os
 import sys
-from inspect import getargspec
 from optparse import OptionParser
 from re import compile as compile_regex
 from select import select
@@ -24,6 +23,7 @@ from urwid.raw_display import Screen
 
 from circuits import Component, __version__ as systemVersion, handler
 from circuits.net.sockets import TCPClient, connect
+from circuits.tools import getargspec
 from circuits.protocols.irc import (
     ERR_NICKNAMEINUSE, ERR_NOMOTD, IRC, JOIN, NICK, PART, PRIVMSG, QUIT,
     RPL_ENDOFMOTD, USER, Message, request,
