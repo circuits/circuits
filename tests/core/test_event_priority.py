@@ -24,7 +24,7 @@ class App(Component):
         self.stop()
 
 
-def test1():
+def test_priority1():
     app = App()
 
     # Normal Order
@@ -36,7 +36,7 @@ def test1():
     assert app.results == [1, 2]
 
 
-def test2():
+def test_priority2():
     app = App()
 
     # Priority Order

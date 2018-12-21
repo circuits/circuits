@@ -1,5 +1,7 @@
 #!/usr/bin/python -i
-from circuits import Component, Event, Manager, handler
+import pytest
+
+from circuits import BaseComponent, Component, Event, Manager, handler
 
 
 class test(Event):
@@ -22,17 +24,49 @@ class App(Component):
         return 2
 
 
-m = Manager()
-app = App()
-app.register(m)
-
-while len(m):
-    m.flush()
-
-
 def test_main():
+    m = Manager()
+    app = App()
+    app.register(m)
+
+    while len(m):
+        m.flush()
+
     v = m.fire(test())
     while len(m):
         m.flush()
     x = list(v)
     assert x == [3, 2, 0]
+
+
+class App2(BaseComponent):
+
+    @handler('test', priority=3)
+    def _on_test3(self, event):
+        return 3
+
+    @handler('test', priority=2)
+    def _on_test2(self, event):
+        event.stop()
+        yield
+        yield 2
+
+    @handler('test', priority=1)
+    def _on_test1(self, event):
+        return 1
+
+
+@pytest.mark.xfail(reason='')
+def test_coroutine():
+    m = Manager()
+    app = App2()
+    app.register(m)
+
+    while len(m):
+        m.flush()
+
+    v = m.fire(test())
+    while len(m):
+        m.flush()
+    x = list(v)
+    assert x == [3, 2]
