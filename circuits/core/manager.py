@@ -616,6 +616,7 @@ class Manager(object):
         # XXX: C901: This has a high McCabe complexity score of 22.
         # TODO: Refactor this method.
 
+        print 'DISPATCHER'
         if event.cancelled:
             return
 
@@ -673,10 +674,19 @@ class Manager(object):
         for event_handler in event_handlers:
             event.handler = event_handler
             try:
+                print 'HANDLING', repr(event_handler)
                 if event_handler.event:
                     value = event_handler(event, *eargs, **ekwargs)
                 else:
                     value = event_handler(*eargs, **ekwargs)
+                #if isinstance(value, GeneratorType):
+                #    self.processTask(event, value)
+                #    try:
+                #        val = next(value)
+                #        if val is not None:
+                #            event.value.value = val
+                #    except StopIteration:
+                #        pass
             except KeyboardInterrupt:
                 self.stop()
             except SystemExit as e:
@@ -698,6 +708,8 @@ class Manager(object):
                     event.waitingHandlers += 1
                     event.value.promise = True
                     self.registerTask((event, value, None))
+                    self.processTask(event, value, None)
+                    self.unregisterTask((event, value, None))
                 else:
                     event.value.value = value
 
@@ -827,9 +839,11 @@ class Manager(object):
         # XXX: C901: This has a high McCabe complexity score of 16.
         # TODO: Refactor this method.
 
+        print 'PROCESS'
         value = None
         try:
             value = next(task)
+            print 'NEXT= %r' % (value,)
             if isinstance(value, CallValue):
                 # Done here, next() will StopIteration anyway
                 self.unregisterTask((event, task, parent))
@@ -925,6 +939,7 @@ class Manager(object):
         :type timeout: float, measuring seconds
         """
         # process tasks
+        print 'TICK'
         if self._tasks:
             for task in self._tasks.copy():
                 self.processTask(*task)
