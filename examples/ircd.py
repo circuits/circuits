@@ -24,7 +24,7 @@ from circuits.protocols.irc.replies import (
     ERR_NICKNAMEINUSE, ERR_NOMOTD, ERR_NOSUCHCHANNEL, ERR_NOSUCHNICK,
     ERR_UNKNOWNCOMMAND, RPL_ENDOFNAMES, RPL_ENDOFWHO, RPL_NAMEREPLY,
     RPL_NOTOPIC, RPL_TOPIC, RPL_WELCOME, RPL_WHOREPLY, RPL_YOURHOST,
-    RPL_CHANNELMODEIS,
+    RPL_CHANNELMODEIS, RPL_LISTSTART, RPL_LIST, RPL_LISTEND,
 )
 
 __version__ = "0.0.1"
@@ -357,6 +357,12 @@ class Server(Component):
                 self.fire(reply(sock, RPL_CHANNELMODEIS(channel.name, channel.mode)))
         elif mask not in self.users:
             return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
+
+    def list(self, sock, source):
+        self.fire(reply(sock, RPL_LISTSTART()))
+        for channel in self.channels.values():
+            self.fire(reply(sock, RPL_LIST(channel, str(len(channel.users)), channel.topic or '')))
+        self.fire(reply(sock, RPL_LISTEND()))
 
     @property
     def commands(self):
