@@ -636,11 +636,8 @@ class Server(BaseComponent):
             try:
                 self.fire(connect(sock, *sock.getpeername()))
             except SocketError as exc:
-                if exc.args[0] in (ENOTCONN,):
-                    # the client already disconnected
-                    self._close(sock)
-                    return
-                raise
+                # errno 107 (ENOTCONN): the client already disconnected
+                self._on_handshake_error(sock, exc)
 
     def _on_handshake_error(self, sock, err):
         self.fire(error(sock, err))
