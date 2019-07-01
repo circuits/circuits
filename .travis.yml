@@ -14,6 +14,7 @@ matrix:
   allow_failures:
     # Till https://travis-ci.org/circuits/circuits/jobs/192669838 is solved.
     - os: osx
+    - env: ALLOW_FAIL=true
   include:
     - python: 2.7
       os: osx
@@ -33,10 +34,12 @@ matrix:
       install: pip install -U flake8
       script: flake8
       after_success:
+      env: ALLOW_FAIL=true
     - python: 3.6
       install: pip install -U isort
       script: isort -c --diff
       after_success:
+      env: ALLOW_FAIL=true
 
 install:
   - pip install -Ur requirements-test.txt

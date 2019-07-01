@@ -633,7 +633,14 @@ class Server(BaseComponent):
         self._poller.addReader(self, sock)
         self._clients.append(sock)
         if fire_connect_event:
-            self.fire(connect(sock, *sock.getpeername()))
+            try:
+                self.fire(connect(sock, *sock.getpeername()))
+            except SocketError as exc:
+                if exc.args[0] in (ENOTCONN,):
+                    # the client already disconnected
+                    self._close(sock)
+                    return
+                raise
 
     def _on_handshake_error(self, sock, err):
         self.fire(error(sock, err))
