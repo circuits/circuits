@@ -46,8 +46,9 @@ def test(webapp):
 
     client.stop()
 
-    s = client.buffer().decode('utf-8').split('\r\n')[0]
-    assert s == "HTTP/1.1 200 OK"
+    ss = client.buffer().decode('utf-8')
+    s = ss.split('\r\n')[0]
+    assert s == "HTTP/1.1 200 OK", ss
 
 
 def test_http_1_0(webapp):
