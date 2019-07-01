@@ -138,6 +138,10 @@ def RPL_WHOISCHANNELS(nick, channels):
     return _M(u("319"), nick, u(":{0}".format(u(" ").join(channels))))
 
 
+def RPL_LISTSTART(header=None):
+    return _M(u("321"), header or u("Channels :Users Name"))
+
+
 def RPL_LIST(channel, nvisible, topic):
     return _M(u("322"), channel, u("{0}").format(nvisible), topic)
 
