@@ -184,15 +184,15 @@ class Client(BaseComponent):
 
     def _read(self):
         try:
-            if self.secure and self._ssock:
-                data = self._ssock.read(self._bufsize)
-            else:
-                try:
+            try:
+                if self.secure and self._ssock:
+                    data = self._ssock.read(self._bufsize)
+                else:
                     data = self._sock.recv(self._bufsize)
-                except SSLError as exc:
-                    if exc.errno in (SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE):
-                        return
-                    raise
+            except SSLError as exc:
+                if exc.errno in (SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE):
+                    return
+                raise
 
             if data:
                 self.fire(read(data)).notify = True
