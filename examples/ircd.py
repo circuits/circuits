@@ -23,7 +23,8 @@ from circuits.protocols.irc import IRC, Message, joinprefix, reply, response
 from circuits.protocols.irc.replies import (
     ERR_NICKNAMEINUSE, ERR_NOMOTD, ERR_NOSUCHCHANNEL, ERR_NOSUCHNICK,
     ERR_UNKNOWNCOMMAND, RPL_ENDOFNAMES, RPL_ENDOFWHO, RPL_NAMEREPLY,
-    RPL_NOTOPIC, RPL_WELCOME, RPL_WHOREPLY, RPL_YOURHOST,
+    RPL_NOTOPIC, RPL_TOPIC, RPL_WELCOME, RPL_WHOREPLY, RPL_YOURHOST,
+    RPL_CHANNELMODEIS, RPL_LISTSTART, RPL_LIST, RPL_LISTEND,
 )
 
 __version__ = "0.0.1"
@@ -62,6 +63,8 @@ class Channel(object):
 
     def __init__(self, name):
         self.name = name
+        self.topic = None
+        self.mode = '+n'
 
         self.users = []
 
@@ -74,6 +77,7 @@ class User(object):
         self.port = port
 
         self.nick = None
+        self.mode = ''
         self.away = False
         self.channels = []
         self.signon = None
@@ -179,7 +183,7 @@ class Server(Component):
         user, host = user.userinfo.user, user.userinfo.host
 
         yield self.call(
-            response.create("quit", sock, (nick, user, host), "Leavling")
+            response.create("quit", sock, (nick, user, host), "Leaving")
         )
 
         del self.users[sock]
@@ -262,9 +266,12 @@ class Server(Component):
             Message("JOIN", name, prefix=user.prefix)
         )
 
-        self.fire(reply(sock, RPL_NOTOPIC(name)))
-        self.fire(reply(sock, RPL_NAMEREPLY(channel)))
-        self.fire(reply(sock, RPL_ENDOFNAMES()))
+        if channel.topic:
+            self.fire(reply(sock, RPL_TOPIC(channel.topic)))
+        else:
+            self.fire(reply(sock, RPL_NOTOPIC(channel.name)))
+        self.fire(reply(sock, RPL_NAMEREPLY(channel.name, [u.prefix for u in channel.users])))
+        self.fire(reply(sock, RPL_ENDOFNAMES(channel.name)))
 
     def part(self, sock, source, name, reason="Leaving"):
         user = self.users[sock]
@@ -340,6 +347,22 @@ class Server(Component):
             message.prefix = self.host
 
         self.fire(write(target, bytes(message)))
+
+    def mode(self, sock, source, mask, mode=None, params=None):
+        if mask.startswith('#'):
+            if mask not in self.channels:
+                return self.fire(reply(sock, ERR_NOSUCHCHANNEL(mask)))
+            channel = self.channels[mask]
+            if not params:
+                self.fire(reply(sock, RPL_CHANNELMODEIS(channel.name, channel.mode)))
+        elif mask not in self.users:
+            return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
+
+    def list(self, sock, source):
+        self.fire(reply(sock, RPL_LISTSTART()))
+        for channel in self.channels.values():
+            self.fire(reply(sock, RPL_LIST(channel, str(len(channel.users)), channel.topic or '')))
+        self.fire(reply(sock, RPL_LISTEND()))
 
     @property
     def commands(self):
