@@ -8,6 +8,7 @@ from circuits import io
 from circuits.core import BaseComponent, Timer, handler
 from circuits.net.events import close, read, write
 from circuits.net.sockets import TCPServer, UNIXServer
+from circuits.net.sockets import BUFSIZE
 
 from .dispatchers import Dispatcher
 from .events import terminate
@@ -49,7 +50,7 @@ class BaseServer(BaseComponent):
     channel = "web"
 
     def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
-                 channel=channel, display_banner=True):
+                 channel=channel, display_banner=True, bufsize=BUFSIZE):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(BaseServer, self).__init__(channel=channel)
@@ -65,7 +66,8 @@ class BaseServer(BaseComponent):
             bind,
             secure=secure,
             certfile=certfile,
-            channel=channel
+            channel=channel,
+            bufsize=bufsize
         ).register(self)
 
         self.http = HTTP(
