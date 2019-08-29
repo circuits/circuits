@@ -1,7 +1,7 @@
 """Internet Relay Chat message"""
 
 
-from circuits.six import PY3, text_type, u
+from circuits.six import PY3, text_type, u, string_types
 
 from .utils import parsemsg
 
@@ -14,15 +14,17 @@ class Message(object):
 
     def __init__(self, command, *args, **kwargs):
         self.command = command
-        self.args = [x for x in args if x is not None]
         self.prefix = text_type(kwargs["prefix"]) if "prefix" in kwargs else None
 
         self.encoding = kwargs.get("encoding", "utf-8")
         self.add_nick = kwargs.get("add_nick", False)
+        self.args = [arg if isinstance(arg, text_type) else arg.decode(self.encoding) for arg in args if arg is not None]
+        self._check_args()
 
-        if any(u(' ') in arg for arg in self.args[:-1]):
+    def _check_args(self):
+        if any(type(arg)(' ') in arg in arg for arg in self.args[:-1] if isinstance(arg, string_types)):
             raise Error("Space can only appear in the very last arg")
-        if any(u('\n') in arg for arg in self.args):
+        if any(type(arg)('\n') in arg for arg in self.args if isinstance(arg, string_types)):
             raise Error("No newline allowed")
 
     @staticmethod
@@ -41,11 +43,8 @@ class Message(object):
         return text_type(self).encode(self.encoding)
 
     def __unicode__(self):
+        self._check_args()
         args = self.args[:]
-        if any(u(' ') in arg for arg in args[:-1]):
-            raise Error("Space can only appear in the very last arg")
-        if any(u('\n') in arg for arg in args):
-            raise Error("No newline allowed")
 
         if args and u(" ") in args[-1] and not args[-1].startswith(u(":")):
             args[-1] = u(":{0:s}").format(args[-1])

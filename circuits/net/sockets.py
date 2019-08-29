@@ -184,15 +184,15 @@ class Client(BaseComponent):
 
     def _read(self):
         try:
-            if self.secure and self._ssock:
-                data = self._ssock.read(self._bufsize)
-            else:
-                try:
+            try:
+                if self.secure and self._ssock:
+                    data = self._ssock.read(self._bufsize)
+                else:
                     data = self._sock.recv(self._bufsize)
-                except SSLError as exc:
-                    if exc.errno in (SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE):
-                        return
-                    raise
+            except SSLError as exc:
+                if exc.errno in (SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE):
+                    return
+                raise
 
             if data:
                 self.fire(read(data)).notify = True
@@ -633,7 +633,11 @@ class Server(BaseComponent):
         self._poller.addReader(self, sock)
         self._clients.append(sock)
         if fire_connect_event:
-            self.fire(connect(sock, *sock.getpeername()))
+            try:
+                self.fire(connect(sock, *sock.getpeername()))
+            except SocketError as exc:
+                # errno 107 (ENOTCONN): the client already disconnected
+                self._on_handshake_error(sock, exc)
 
     def _on_handshake_error(self, sock, err):
         self.fire(error(sock, err))
