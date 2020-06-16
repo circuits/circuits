@@ -137,5 +137,3 @@ class QueryStringParser(object):
 
         if len(buf) > 0:
             yield QueryStringToken.KEY, buf
-        else:
-            raise StopIteration()

@@ -296,7 +296,7 @@ class TCPClient(Client):
                 self.fire(unreachable(host, port, e))
                 self.fire(error(e))
                 self._close()
-                raise StopIteration()
+                return
 
         stop_time = time() + self.connect_timeout
         while time() < stop_time:
@@ -309,7 +309,7 @@ class TCPClient(Client):
 
         if not self._connected:
             self.fire(unreachable(host, port))
-            raise StopIteration()
+            return
 
         def on_done(sock):
             self._poller.addReader(self, sock)
