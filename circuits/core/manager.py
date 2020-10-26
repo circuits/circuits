@@ -681,7 +681,7 @@ class Manager(object):
                 self.stop()
             except SystemExit as e:
                 self.stop(e.code)
-            except:
+            except BaseException:
                 value = err = _exc_info()
                 event.value.errors = True
 
@@ -896,7 +896,7 @@ class Manager(object):
             self.stop()
         except SystemExit as e:
             self.stop(e.code)
-        except:
+        except BaseException:
             self.unregisterTask((event, task, parent))
 
             err = _exc_info()
@@ -983,7 +983,7 @@ class Manager(object):
         finally:
             try:
                 self.tick()
-            except:
+            except Exception:
                 pass
 
         self.root._executing_thread = None

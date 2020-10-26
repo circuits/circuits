@@ -104,7 +104,7 @@ class Application(BaseComponent):
 
         try:
             cl = int(headers.get("Content-Length", "0"))
-        except:
+        except ValueError:
             cl = 0
 
         req.body.write(env("wsgi.input").read(cl))  # FIXME: what about chunked encoding?

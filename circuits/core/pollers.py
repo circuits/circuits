@@ -98,7 +98,7 @@ class BasePoller(BaseComponent):
                 return self._ctrl_recv.recv(1)
             else:
                 return os.read(self._ctrl_recv, 1)
-        except:
+        except (EnvironmentError, EOFError):
             return b"\0"
 
     def addReader(self, source, fd):
@@ -175,10 +175,10 @@ class Select(BasePoller):
                 r, w, _ = select.select(self._read, self._write, [])
             else:
                 r, w, _ = select.select(self._read, self._write, [], timeout)
-        except ValueError as e:
+        except ValueError:
             # Possibly a file descriptor has gone negative?
             return self._preenDescriptors()
-        except TypeError as e:
+        except TypeError:
             # Something *totally* invalid (object w/o fileno, non-integral
             # result) was passed
             return self._preenDescriptors()

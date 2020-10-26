@@ -133,5 +133,5 @@ class Server(BaseComponent):
         for s in self.__protocols.copy():
             try:
                 s.getpeername()
-            except:
-                del(self.__protocols[s])
+            except Exception:
+                del self.__protocols[s]

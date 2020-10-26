@@ -99,7 +99,7 @@ class Serial(Component):
 
         try:
             self._serial.close()
-        except:
+        except EnvironmentError:
             pass
 
         self.fire(closed())
@@ -118,8 +118,8 @@ class Serial(Component):
 
             if data:
                 self.fire(read(data)).notify = True
-        except (OSError, IOError) as e:
-            self.fire(error(e))
+        except (OSError, IOError) as exc:
+            self.fire(error(exc))
             self._close()
 
     def _write(self, data):
@@ -129,7 +129,7 @@ class Serial(Component):
 
             try:
                 nbytes = self._serial.write(data)
-            except (serial.SerialTimeoutException) as e:
+            except serial.SerialTimeoutException:
                 nbytes = 0
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])

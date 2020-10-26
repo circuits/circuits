@@ -414,11 +414,11 @@ class WebSocket(object):
                     result = self._recv(2)
                     if result != "\xff\x00":
                         logger.error("bad closing Handshake")
-                except:
+                except Exception:
                     pass
                 self.sock.settimeout(timeout)
                 self.sock.shutdown(socket.SHUT_RDWR)
-            except:
+            except Exception:
                 pass
         self._closeInternal()
 
