@@ -110,9 +110,9 @@ class HttpParser(object):
     def recv_body_into(self, barray):
         """ Receive the last chunk of the parsed bodyand store the data
         in a buffer rather than creating a new string. """
-        l = len(barray)
+        length = len(barray)
         body = b("").join(self._body)
-        m = min(len(body), l)
+        m = min(len(body), length)
         data, rest = body[:m], body[m:]
         barray[0:m] = data
         if not rest:
