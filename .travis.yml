@@ -37,7 +37,7 @@ matrix:
       env: ALLOW_FAIL=true
     - python: 3.6
       install: pip install -U isort
-      script: isort -c --diff
+      script: isort . --check --diff
       after_success:
       env: ALLOW_FAIL=true
 
