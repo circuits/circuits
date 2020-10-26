@@ -20,7 +20,7 @@ def render(name, **d):
         d.update(DEFAULTS)
         tpl = templates.get_template(name)
         return tpl.render(**d)
-    except:
+    except Exception:
         return mako.exceptions.html_error_template().render()
 
 

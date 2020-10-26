@@ -223,7 +223,7 @@ class StompClient(BaseComponent):
         try:
             self._client.send(destination, body=body.encode('utf-8'), headers=headers, receipt=receipt)
             LOG.debug("Message sent")
-        except StompConnectionError as err:
+        except StompConnectionError:
             event.success = False
             self.fire(disconnected())
         except StompError as err:
@@ -242,7 +242,7 @@ class StompClient(BaseComponent):
                                                   headers={StompSpec.ACK_HEADER: ack,
                                                            'id': destination})
             self._subscribed[destination] = token
-        except StompConnectionError as err:
+        except StompConnectionError:
             event.success = False
             self.fire(disconnected())
         except StompError as err:
@@ -259,7 +259,7 @@ class StompClient(BaseComponent):
             token = self._subscribed.pop(destination)
             frame = self._client.unsubscribe(token)
             LOG.debug("Unsubscribed: %s", frame)
-        except StompConnectionError as err:
+        except StompConnectionError:
             event.success = False
             self.fire(disconnected())
         except StompError as err:
@@ -277,7 +277,7 @@ class StompClient(BaseComponent):
         try:
             self._client.ack(frame)
             LOG.debug("Ack Sent")
-        except StompConnectionError as err:
+        except StompConnectionError:
             LOG.error("Error sending ack")
             event.success = False
             self.fire(disconnected())

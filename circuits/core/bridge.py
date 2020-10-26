@@ -78,7 +78,7 @@ class Bridge(BaseComponent):
             if value.errors:
                 Bridge.__adapt_error_value(value)
             self.__write(eid, value)
-        except:
+        except Exception:
             pass
 
     @handler("read")
@@ -98,7 +98,7 @@ class Bridge(BaseComponent):
                 Bridge.__adapt_exception(event)
             self._values[eid] = event.value
             self.__write(eid, event)
-        except:
+        except Exception:
             pass
 
     def __write(self, eid, data):

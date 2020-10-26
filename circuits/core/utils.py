@@ -56,7 +56,7 @@ def safeimport(name):
             return reload(sys.modules[name])
         else:
             return __import__(name, globals(), locals(), [""])
-    except:
+    except Exception:
         for name in sys.modules.copy():
             if name not in modules:
                 del sys.modules[name]

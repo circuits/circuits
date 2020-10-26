@@ -130,7 +130,7 @@ class File(Component):
 
         try:
             self._fd.close()
-        except:
+        except EnvironmentError:
             pass
 
         self.fire(closed())
@@ -155,11 +155,11 @@ class File(Component):
                     self.close()
                 else:
                     self._poller.discard(self._fd)
-        except (OSError, IOError) as e:
-            if e.args[0] in (EWOULDBLOCK, EINTR):
+        except (OSError, IOError) as exc:
+            if exc.args[0] in (EWOULDBLOCK, EINTR):
                 return
             else:
-                self.fire(error(e))
+                self.fire(error(exc))
                 self._close()
 
     def seek(self, offset, whence=0):

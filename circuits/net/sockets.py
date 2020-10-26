@@ -304,7 +304,7 @@ class TCPClient(Client):
                 self._sock.getpeername()
                 self._connected = True
                 break
-            except Exception as e:
+            except Exception:
                 yield
 
         if not self._connected:
