@@ -1,5 +1,5 @@
-from circuits.web.servers import BaseServer
 from circuits.net.sockets import BUFSIZE
+from circuits.web.servers import BaseServer
 
 
 class MockClass(BaseServer):

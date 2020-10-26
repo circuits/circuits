@@ -8,10 +8,14 @@ THis tool does some simple benchmaking of the circuits library.
 """
 
 
-import sys
 import math
 import optparse
+import sys
 from time import sleep
+
+from circuits import (
+    Component, Debugger, Event, Manager, __version__ as systemVersion, handler,
+)
 
 if sys.platform == "win32":
     from time import clock as time
@@ -29,10 +33,6 @@ try:
     import psyco
 except ImportError:
     psyco = None  # NOQA
-
-
-from circuits import __version__ as systemVersion
-from circuits import handler, Event, Component, Manager, Debugger
 
 
 USAGE = "%prog [options]"
