@@ -39,7 +39,7 @@ HELP_STRINGS = {
 }
 
 CMD_REGEX = compile_regex(
-    "\/(?P<command>[a-z]+) ?"
+    r"\/(?P<command>[a-z]+) ?"
     "(?P<args>.*)(?iu)"
 )
 

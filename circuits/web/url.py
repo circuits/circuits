@@ -188,7 +188,7 @@ class URL(object):
     def abspath(self):
         '''Clear out any '..' and excessive slashes from the path'''
         # Remove double forward-slashes from the path
-        path = re.sub(b('\/{2,}'), b('/'), self._path)
+        path = re.sub(b(r'\/{2,}'), b('/'), self._path)
         # With that done, go through and remove all the relative references
         unsplit = []
         directory = False

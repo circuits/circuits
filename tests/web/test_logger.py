@@ -62,7 +62,7 @@ def test_file(webapp):
     for k in keys:
         if d[k] and d[k].startswith("127."):
             # loopback network: 127.0.0.0/8
-            assert re.search("127(\.[0-9]{1,3}){3}", s)
+            assert re.search(r"127(\.[0-9]{1,3}){3}", s)
         else:
             assert d[k] in s
 
@@ -101,7 +101,7 @@ def test_logger(webapp):
     for k in keys:
         if d[k] and d[k].startswith("127."):
             # loopback network: 127.0.0.0/8
-            assert re.search("127(\.[0-9]{1,3}){3}", s)
+            assert re.search(r"127(\.[0-9]{1,3}){3}", s)
         else:
             assert d[k] in s
 
@@ -142,7 +142,7 @@ def test_filename(webapp, tmpdir):
     for k in keys:
         if d[k] and d[k].startswith("127."):
             # loopback network: 127.0.0.0/8
-            assert re.search("127(\.[0-9]{1,3}){3}", s)
+            assert re.search(r"127(\.[0-9]{1,3}){3}", s)
         else:
             assert d[k] in s
 
