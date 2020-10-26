@@ -7,8 +7,7 @@ from sys import stderr
 from circuits import io
 from circuits.core import BaseComponent, Timer, handler
 from circuits.net.events import close, read, write
-from circuits.net.sockets import TCPServer, UNIXServer
-from circuits.net.sockets import BUFSIZE
+from circuits.net.sockets import BUFSIZE, TCPServer, UNIXServer
 
 from .dispatchers import Dispatcher
 from .events import terminate
