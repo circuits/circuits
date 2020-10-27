@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-try:
-    from urlparse import parse_qsl
-except ImportError:
-    from urllib.parse import parse_qsl  # NOQA
 
-
+from circuits.six.moves.urllib_parse import parse_qsl
 from circuits.six import iteritems, string_types
 
 
