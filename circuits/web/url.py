@@ -26,13 +26,7 @@ import codecs
 import re
 
 from circuits.six import b, string_types, text_type
-
-try:
-    from urllib.parse import quote, unquote
-    from urllib.parse import urljoin, urlparse, urlunparse
-except ImportError:
-    from urllib import quote, unquote  # NOQA
-    from urlparse import urljoin, urlparse, urlunparse  # NOQA
+from circuits.six.moves.urllib_parse import quote, unquote, urljoin, urlparse, urlunparse
 
 
 # Come codes that we'll need
