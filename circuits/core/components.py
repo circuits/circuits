@@ -116,7 +116,7 @@ class BaseComponent(Manager):
                 self.addHandler(v)
             # TODO: Document this feature. See Issue #88
             if v is not self and isinstance(v, BaseComponent) \
-                    and v not in ('parent', 'root'):
+                    and k not in ('parent', 'root'):
                 v.register(self)
 
         if hasattr(self, "init") and isinstance(self.init, Callable):
