@@ -5,6 +5,47 @@
 Change Log
 ==========
 
+- :release:`3.2.1 <2020-10-30>`
+- :support:`-` Added support for Python 3.6, 3.7, 3.8, 3.9-dev
+- :support:`152` Dropped the support for Python 2.6 and 3.x < 3.4
+- :bug:`176` Generator expressions don't raise StopIteration anymore
+- :feature:`-` The exception handling has been improoved
+- :feature:`273` Added a `bufsize` argument to the `__init__` of BaseServer
+- :bug:`270` fix TLS support for websockets (unhandled SSLWantReadError)
+- :bug:`263` Improove error handling during TLS handshake
+- :bug:`269` Fix error handling when TLS handshake fails
+- :bug:`266` Fix python2 `str(circuits.core.values.Value())`
+- :bug:`264` Improoved robustness of IRC messages
+- :bug:`257` Fix WSGI component for Python 2.7 and Python 3
+- :bug:`254` Fix CRLF injection in IRC protocol
+- :feature:`245` IRC: enhance stripping of colors
+- :feature:`249` Add `irc.utils.irc_color_to_ansi()`
+- :bug:`241` Adjust `circuits.tools.graph()` to API change in `networkx`
+- :feature:`240` Added `auto_add` to `circuits.io.notify`
+- :feature:`231` Add support for `STOMP` protocol
+- :bug:`238` Fix parsing HTTP request without headers
+- :bug:`235` the `prefix` in the `Debugger` might be a `callable` now
+- :feature:`233` `circuits.core.values.Value` is now `__str__` compatible with Python 2
+- :feature:`212` Improves the API for session management and adds expire support
+- :feature:`224` Add new HTTP status code `308 moved permanently` (:rfc:`7538`)
+- :feature:`214` Implement `STARTTLS` for sockets as `event`
+- :feature:`-` Add support to set additional socket options
+- :bug:`198` Made pushing onto the event queue via `fire` threadsafe.
+- :feature:`202` Removed `EventType` metaclass
+- :bug:`-` Fixed `manager.join()`
+- :bug:`202` Removed the (unused) internal cache from `EventType`.
+- :feature:`168`  Add interface for selecting the websocket subprotocol
+- :bug:`54` Fix a memory leak due to `on_done` handlers
+- :bug:`-` Fix python3 compatibility when parsing `HTTP` request body
+- :bug:`-` Fix error handling if error contains traceback instance
+- :bug:`187` Fix parsing and decoding of `application/x-www-urlencoded` payloads
+- :bug:`185` Fix Denial of Service socket/memory leak for not connected clients
+- :bug:`184` Fix websocket data parsing if content is larger than BUFSIZE
+- :bug:`170` Fix crash from deleting undefined variables
+- :bug:`173` Fix the type difference between _current_thread and _flushing_thread
+- :bug:`123` Fixes bug in the `complete` event
+- :bug:`165` Fix `Host` HTTP header parsing when `circuits.web.Server` is bound to a `UNIX` Socket
+
 - :release:`3.2 <2016-06-02>`
 - :bug:`119` Fixed bug in ``circuits.web.url.parse_url()`` that caused a
   display issue with port bindings on ports 80 and 443.
