@@ -28,7 +28,7 @@ class Serial(Component):
     channel = "serial"
 
     def __init__(self, port, baudrate=115200, bufsize=BUFSIZE,
-                 timeout=TIMEOUT, encoding='UTF-8', channel=channel):
+                 timeout=TIMEOUT, encoding='UTF-8', readline=False, channel=channel):
         super(Serial, self).__init__(channel=channel)
 
         if serial is None:
@@ -38,6 +38,7 @@ class Serial(Component):
         self._baudrate = baudrate
         self._bufsize = bufsize
         self._encoding = encoding
+        self._readline = readline
 
         self._serial = None
         self._poller = None
@@ -113,7 +114,10 @@ class Serial(Component):
 
     def _read(self):
         try:
-            data = self._serial.read(self._bufsize)
+            if self._readline:
+                data = self._serial.readline(self._bufsize)
+            else:
+                data = self._serial.read(self._bufsize)
             if not isinstance(data, binary_type):
                 data = data.encode(self._encoding)
 
