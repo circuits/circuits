@@ -28,7 +28,7 @@ class Serial(Component):
     channel = "serial"
 
     def __init__(self, port, baudrate=115200, bufsize=BUFSIZE,
-                 timeout=TIMEOUT, channel=channel):
+                 timeout=TIMEOUT, encoding='UTF-8', channel=channel):
         super(Serial, self).__init__(channel=channel)
 
         if serial is None:
@@ -37,6 +37,7 @@ class Serial(Component):
         self._port = port
         self._baudrate = baudrate
         self._bufsize = bufsize
+        self._encoding = encoding
 
         self._serial = None
         self._poller = None

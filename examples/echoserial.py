@@ -5,7 +5,7 @@ This example shows how to use the ``circuits.io.Serial`` Component
 to access serial data. This example simply echos back what it receives
 on the serial port.
 
-.. warning:: THis example is currently untested.
+.. warning:: This example is currently untested.
 """
 from circuits import Component, Debugger, handler
 from circuits.io import Serial
