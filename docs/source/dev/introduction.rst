@@ -61,5 +61,3 @@ We use the following tools to develop circuits and share code:
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
 - **Continuous Integration:**
   `Travis CI <https://travis-ci.org/circuits/circuits>`_
-- **Code Quality:**
-  `Landscape <https://landscape.io/github/circuits/circuits/>`_

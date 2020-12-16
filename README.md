@@ -2,8 +2,6 @@
 
 [![codecov](https://codecov.io/gh/circuits/circuits/branch/master/graph/badge.svg)](https://codecov.io/gh/circuits/circuits)
 
-[![Quality](https://landscape.io/github/circuits/circuits/master/landscape.png)](https://landscape.io/github/circuits/circuits/master)
-
 [![Stories Ready](https://badge.waffle.io/circuits/circuits.png?label=ready&title=Ready)](https://waffle.io/circuits/circuits)
 
 circuits is a **Lightweight** **Event** driven and **Asynchronous** **Application Framework** for the [Python Programming Language](http://www.python.org/) with a strong **Component** Architecture.

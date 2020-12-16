@@ -21,11 +21,7 @@
   :target: https://codecov.io/gh/circuits/circuits
   :alt: Coverage
 
-.. image:: https://landscape.io/github/circuits/circuits/master/landscape.png
-   :target: https://landscape.io/github/circuits/circuits/master
-   :alt: Quality
- 
-.. image:: https://badge.waffle.io/circuits/circuits.png?label=ready&title=Ready 
+.. image:: https://badge.waffle.io/circuits/circuits.png?label=ready&title=Ready
    :target: https://waffle.io/circuits/circuits
    :alt: Stories Ready
 
@@ -41,7 +37,7 @@ components.
 - `Downloads`_
 - `Documentation`_
 
-Got questions? 
+Got questions?
 
 - `Ask a Question`_ (Tag it: ``circuits-framework``)
 
