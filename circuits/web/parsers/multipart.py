@@ -37,16 +37,18 @@ __author__ = 'Marcel Hellkamp'
 __version__ = '0.1'
 __license__ = 'MIT'
 
+import re
 from tempfile import TemporaryFile
 from wsgiref.headers import Headers
-import re
+
+from circuits.six import text_type
 from circuits.six.moves.urllib_parse import parse_qs
+
 try:
     from io import BytesIO
 except ImportError:  # pragma: no cover (fallback for Python 2.5)
     from StringIO import StringIO as BytesIO
 
-from circuits.six import text_type
 
 ##############################################################################
 ################################ Helper & Misc ################################

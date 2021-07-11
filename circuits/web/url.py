@@ -26,8 +26,9 @@ import codecs
 import re
 
 from circuits.six import b, string_types, text_type
-from circuits.six.moves.urllib_parse import quote, unquote, urljoin, urlparse, urlunparse
-
+from circuits.six.moves.urllib_parse import (
+    quote, unquote, urljoin, urlparse, urlunparse,
+)
 
 # Come codes that we'll need
 IDNA = codecs.lookup('idna')
