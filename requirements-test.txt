@@ -5,4 +5,3 @@ pytest-timeout
 flake8
 isort
 tox
-tox-travis
