@@ -5,6 +5,10 @@ resources and an optional apache-style directory listing.
 """
 import os
 from string import Template
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape
 
 from circuits import BaseComponent, handler
 from circuits.six.moves.urllib_parse import quote, unquote
@@ -107,7 +111,7 @@ class Static(BaseComponent):
                         url_up = os.path.join("/", os.path.split(path)[0])
                     else:
                         url_up = os.path.join(cur_dir, "..")
-                    url_up = '<li><a href="%s">%s</a></li>' % (url_up, "..")
+                    url_up = '<li><a href="%s">%s</a></li>' % (escape(url_up, True), "..")
 
                 listing = []
                 for item in os.listdir(directory):
@@ -118,11 +122,11 @@ class Static(BaseComponent):
                         )
                         if os.path.isdir(location):
                             li = '<li><a href="%s/">%s/</a></li>' % (
-                                quote(url), item
+                                escape(quote(url), True), escape(item)
                             )
                         else:
                             li = '<li><a href="%s">%s</a></li>' % (
-                                quote(url), item
+                                escape(quote(url), True), escape(item)
                             )
                         listing.append(li)
 
