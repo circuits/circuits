@@ -68,7 +68,7 @@ class httperror(Event):
             "code": self.code,
             "name": HTTP_STATUS_CODES.get(self.code, "???"),
             "description": self.description,
-            "traceback": escape(self.traceback),
+            "traceback": self.traceback,
             "powered_by": powered_by
         }
 
@@ -92,7 +92,11 @@ class httperror(Event):
         if not self.request.print_debug:
             self.data["traceback"] = ''
 
-        return DEFAULT_ERROR_MESSAGE % self.data
+        # FIXME: description is a possible XSS attack vector
+        return DEFAULT_ERROR_MESSAGE % {
+            key: (escape(value, True) if key not in ('powered_by', 'description') and not isinstance(value, (int, float)) else value)
+            for key, value in self.data.items()
+        }
 
     def __repr__(self):
         return "<%s %d %s>" % (
