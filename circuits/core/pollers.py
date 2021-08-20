@@ -9,6 +9,7 @@ descriptors for read/write events. Pollers:
 import os
 import platform
 import select
+import sys
 from errno import EBADF, EINTR
 from select import error as SelectError
 from socket import (
@@ -17,6 +18,7 @@ from socket import (
 from threading import Thread
 
 from circuits.core.handlers import handler
+from circuits.six import reraise
 
 from .components import BaseComponent
 from .events import Event
@@ -62,15 +64,21 @@ class BasePoller(BaseComponent):
         server.bind(("localhost", 0))
         server.listen(1)
         res_list = []
+        exc = []
 
         def accept():
-            sock, _ = server.accept()
-            sock.setblocking(False)
-            res_list.append(sock)
+            try:
+                sock, _ = server.accept()
+                sock.setblocking(False)
+                res_list.append(sock)
+            except EnvironmentError:
+                exc.append(sys.exc_info())
         at = Thread(target=accept)
         at.start()
         clnt_sock = create_connection(server.getsockname())
         at.join()
+        if exc:
+            reraise(*exc[0])
         return (res_list[0], clnt_sock)
 
     @handler("generate_events", priority=-9)
