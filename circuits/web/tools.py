@@ -1,7 +1,7 @@
 """Tools
 
 This module implements tools used throughout circuits.web.
-These tools can also be used within Controlelrs and request handlers.
+These tools can also be used within Controllers and request handlers.
 """
 import hashlib
 import mimetypes
