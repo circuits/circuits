@@ -75,6 +75,7 @@ class HttpParser(object):
         self.__on_message_complete = False
 
         self.__decompress_obj = None
+        self.__decompress_first_try = True
 
     def get_version(self):
         return self._version
@@ -108,7 +109,7 @@ class HttpParser(object):
         return body
 
     def recv_body_into(self, barray):
-        """ Receive the last chunk of the parsed bodyand store the data
+        """ Receive the last chunk of the parsed body and store the data
         in a buffer rather than creating a new string. """
         length = len(barray)
         body = b("").join(self._body)
@@ -125,7 +126,9 @@ class HttpParser(object):
     def is_upgrade(self):
         """ Do we get upgrade header in the request. Useful for
         websockets """
-        return self._headers.get('connection', "").lower() == "upgrade"
+        hconn = self._headers.get('connection', "").lower()
+        hconn_parts = [x.strip() for x in hconn.split(',')]
+        return "upgrade" in hconn_parts
 
     def is_headers_complete(self):
         """ return True if all headers have been parsed. """
@@ -161,7 +164,7 @@ class HttpParser(object):
         # end of body can be passed manually by putting a length of 0
 
         if length == 0:
-            self.on_message_complete = True
+            self.__on_message_complete = True
             return length
 
         # start to parse
@@ -194,7 +197,8 @@ class HttpParser(object):
                 try:
                     to_parse = b("").join(self._buf)
                     ret = self._parse_headers(to_parse)
-                    if not ret:
+
+                    if ret is False:
                         return length
                     nb_parsed = nb_parsed + (len(to_parse) - ret)
                 except InvalidHeader as e:
@@ -289,7 +293,7 @@ class HttpParser(object):
         self._version = (int(match.group(1)), int(match.group(2)))
 
         # update environ
-        if hasattr(self, 'environ'):
+        if hasattr(self, '_environ'):
             self._environ.update({
                 "PATH_INFO": self._path,
                 "QUERY_STRING": self._query_string,
@@ -298,9 +302,18 @@ class HttpParser(object):
                 "SERVER_PROTOCOL": bits[2]})
 
     def _parse_headers(self, data):
+        if data == b'\r\n':
+            self.__on_headers_complete = True
+            self._buf = []
+            return 0
         idx = data.find(b("\r\n\r\n"))
         if idx < 0:  # we don't have all headers
-            return False
+            if self._status_code == 204 and data == b("\r\n"):
+                self._buf = []
+                self.__on_headers_complete = True
+                return 0
+            else:
+                return False
 
         # Split lines on \r\n keeping the \r\n on each line
         lines = [(str(line, 'unicode_escape') if PY3 else line) + "\r\n"
@@ -317,11 +330,18 @@ class HttpParser(object):
             name = name.rstrip(" \t").upper()
             if HEADER_RE.search(name):
                 raise InvalidHeader("invalid header name %s" % name)
+
+            if value.endswith("\r\n"):
+                value = value[:-2]
+
             name, value = name.strip(), [value.lstrip()]
 
             # Consume value continuation lines
             while len(lines) and lines[0].startswith((" ", "\t")):
-                value.append(lines.pop(0))
+                curr = lines.pop(0)
+                if curr.endswith("\r\n"):
+                    curr = curr[:-2]
+                value.append(curr)
             value = ''.join(value).rstrip()
 
             # store new header value
@@ -350,6 +370,7 @@ class HttpParser(object):
         if self.decompress:
             if encoding == "gzip":
                 self.__decompress_obj = zlib.decompressobj(16 + zlib.MAX_WBITS)
+                self.__decompress_first_try = False
             elif encoding == "deflate":
                 self.__decompress_obj = zlib.decompressobj()
 
@@ -359,13 +380,28 @@ class HttpParser(object):
         return len(rest)
 
     def _parse_body(self):
-        if not self._chunked:
+        if self._status_code == 204 and len(self._buf) == 0:
+            self.__on_message_complete = True
+            return
+        elif not self._chunked:
             body_part = b("").join(self._buf)
+            if not body_part and self._clen is None:
+                if not self._status:  # message complete only for servers
+                    self.__on_message_complete = True
+                return
             self._clen_rest -= len(body_part)
 
             # maybe decompress
             if self.__decompress_obj is not None:
-                body_part = self.__decompress_obj.decompress(body_part)
+                if not self.__decompress_first_try:
+                    body_part = self.__decompress_obj.decompress(body_part)
+                else:
+                    try:
+                        body_part = self.__decompress_obj.decompress(body_part)
+                    except zlib.error:
+                        self.__decompress_obj.decompressobj = zlib.decompressobj(-zlib.MAX_WBITS)
+                        body_part = self.__decompress_obj.decompress(body_part)
+                    self.__decompress_first_try = False
 
             self._partial_body = True
             self._body.append(body_part)
