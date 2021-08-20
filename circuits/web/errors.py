@@ -59,10 +59,10 @@ class httperror(Event):
         self.response.close = True
         self.response.status = self.code
 
-        powered_by = POWERED_BY % ({
-            "url": SERVER_URL,
-            "version": SERVER_VERSION
-        }) if getattr(request.server, 'display_banner', False) else ""
+        powered_by = POWERED_BY % {
+            "url": escape(SERVER_URL, True),
+            "version": escape(SERVER_VERSION)
+        } if getattr(request.server, 'display_banner', False) else ""
 
         self.data = {
             "code": self.code,
