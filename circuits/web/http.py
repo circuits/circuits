@@ -280,7 +280,7 @@ class HTTP(BaseComponent):
             res.close = not parser.should_keep_alive()
 
         clen = int(req.headers.get("Content-Length", "0"))
-        if clen and not parser.is_message_complete():
+        if (clen or req.headers.get("Transfer-Encoding") == "chunked") and not parser.is_message_complete():
             return
 
         if hasattr(sock, "getpeercert"):
