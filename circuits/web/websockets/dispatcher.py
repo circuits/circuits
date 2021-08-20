@@ -4,7 +4,6 @@ import hashlib
 from circuits import BaseComponent, handler
 from circuits.net.events import connect, disconnect
 from circuits.protocols.websocket import WebSocketCodec
-from circuits.six import b
 from circuits.web.errors import httperror
 
 
@@ -70,7 +69,7 @@ class WebSocketsDispatcher(BaseComponent):
                 return httperror(request, response, code=400)
 
             # Generate accept header information
-            msg = sec_key + b("258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
+            msg = sec_key + b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
             hasher = hashlib.sha1()
             hasher.update(msg)
             accept = base64.b64encode(hasher.digest())
@@ -84,7 +83,7 @@ class WebSocketsDispatcher(BaseComponent):
                 pass
             response.headers["Upgrade"] = "WebSocket"
             response.headers["Connection"] = "Upgrade"
-            response.headers["Sec-WebSocket-Accept"] = accept.decode()
+            response.headers["Sec-WebSocket-Accept"] = accept.decode("ASCII")
             if subprotocols:
                 response.headers["Sec-WebSocket-Protocol"] = self.select_subprotocol(subprotocols)
             codec = WebSocketCodec(request.sock, channel=self._wschannel)
