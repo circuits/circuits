@@ -5,11 +5,10 @@ RPC calls over XML into RPC events.
 """
 try:
     from xmlrpc.client import dumps, loads, Fault
-except ImportError:
-    from xmlrpclib import dumps, loads, Fault  # NOQA
+except ImportError:  # pragma: no cover
+    from xmlrpclib import dumps, loads, Fault
 
 from circuits import BaseComponent, Event, handler
-from circuits.six import binary_type
 
 
 class rpc(Event):
@@ -39,12 +38,15 @@ class XMLRPC(BaseComponent):
             data = req.body.read()
             params, method = loads(data)
 
-            method = str(method) if not isinstance(method, binary_type) else method
+            if not isinstance(method, (str, bytes, type(u''))):
+                method = str(method)
+            if not isinstance(method, bytes) and str is bytes:  # Python 2
+                method = method.encode(self.encoding)
 
             value = yield self.call(rpc.create(method, *params), self.rpc_channel)
             yield self._response(value.value)
-        except Exception as e:
-            yield self._error(1, "%s: %s" % (type(e), e))
+        except Exception as exc:
+            yield self._error(1, "%s: %s" % (type(exc).__name__, exc))
         finally:
             event.stop()
 
