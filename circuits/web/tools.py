@@ -228,7 +228,7 @@ def validate_etags(request, response, autotags=False):
     if (not etag) and autotags:
         if status == 200:
             etag = response.collapse_body()
-            etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
+            etag = '"%s"' % hashlib.new('md5', etag).hexdigest()
             response.headers['ETag'] = etag
 
     response.ETag = etag
