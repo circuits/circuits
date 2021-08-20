@@ -3,7 +3,6 @@
 This module implements tools used throughout circuits.web.
 These tools can also be used within Controlelrs and request handlers.
 """
-import collections
 import hashlib
 import mimetypes
 import os
@@ -12,6 +11,10 @@ from datetime import datetime, timedelta
 from email.generator import _make_boundary
 from email.utils import formatdate
 from time import mktime
+try:
+    from collections import Callable
+except ImportError:
+    from collections.abc import Callable
 
 from circuits import BaseComponent, handler
 from circuits.web.wrappers import Host
@@ -228,7 +231,7 @@ def validate_etags(request, response, autotags=False):
     if (not etag) and autotags:
         if status == 200:
             etag = response.collapse_body()
-            etag = '"%s"' % hashlib.md5.new(etag).hexdigest()
+            etag = '"%s"' % hashlib.new('md5', etag).hexdigest()
             response.headers['ETag'] = etag
 
     response.ETag = etag
@@ -314,7 +317,7 @@ def check_auth(request, response, realm, users, encrypt=None):
         if not encrypt:
             encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
 
-        if isinstance(users, collections.Callable):
+        if isinstance(users, Callable):
             try:
                 # backward compatibility
                 users = users()  # expect it to return a dictionary

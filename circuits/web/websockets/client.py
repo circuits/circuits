@@ -105,7 +105,7 @@ class WebSocketClient(BaseComponent):
     def _on_response(self, response):
         self._response = response
         self._pending -= 1
-        if response.headers.get("Connection") == "Close" \
+        if response.headers.get("Connection", "").lower() == "close" \
                 or response.status != 101:
             self.fire(close(), self._transport)
             raise NotConnected()

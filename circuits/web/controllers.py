@@ -3,8 +3,11 @@
 This module implements ...
 """
 import json
-from collections import Callable
 from functools import update_wrapper
+try:
+    from collections import Callable
+except ImportError:
+    from collections.abc import Callable
 
 from circuits.core import BaseComponent, handler
 from circuits.tools import getargspec

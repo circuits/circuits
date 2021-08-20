@@ -117,7 +117,7 @@ class Client(BaseComponent):
     @handler("response")
     def _on_response(self, response):
         self._response = response
-        if response.headers.get("Connection") == "close":
+        if response.headers.get("Connection", "").lower() == "close":
             self.fire(close(), self._transport)
         return response
 
