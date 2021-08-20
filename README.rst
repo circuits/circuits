@@ -13,8 +13,8 @@
 .. _Stackoverflow: http://stackoverflow.com/
 .. _Google+ Group: https://plus.google.com/communities/107775112577294599973
 
-.. image:: https://travis-ci.org/circuits/circuits.svg
-   :target: https://travis-ci.org/circuits/circuits
+.. image:: https://travis-ci.com/circuits/circuits.svg
+   :target: https://travis-ci.com/circuits/circuits
    :alt: Build Status
 
 .. image:: https://codecov.io/gh/circuits/circuits/branch/master/graph/badge.svg
