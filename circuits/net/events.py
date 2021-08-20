@@ -43,10 +43,10 @@ class disconnect(Event):
     :type  tuple: tuple
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(disconnect, self).__init__(*args)
+        super(disconnect, self).__init__(*args, **kwargs)
 
 
 class connected(Event):
