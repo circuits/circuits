@@ -1,10 +1,13 @@
 """py.test config"""
 
-import collections
 import sys
 import threading
 from collections import deque
 from time import sleep
+try:
+    from collections import Callable
+except ImportError:
+    from collections.abc import Callable
 
 import pytest
 
@@ -97,7 +100,7 @@ class WaitEvent(object):
 def wait_for(obj, attr, value=True, timeout=30.0):
     from circuits.core.manager import TIMEOUT
     for i in range(int(timeout / TIMEOUT)):
-        if isinstance(value, collections.Callable):
+        if isinstance(value, Callable):
             if value(obj, attr):
                 return True
         elif getattr(obj, attr) == value:

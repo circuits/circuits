@@ -56,12 +56,15 @@ except ImportError:  # pragma: no cover (fallback for Python 2.5)
 # Some of these were copied from bottle: http://bottle.paws.de/
 
 try:
-    from collections import MutableMapping as DictMixin
+    from collections.abc import MutableMapping
 except ImportError:  # pragma: no cover (fallback for Python 2.5)
-    from UserDict import DictMixin
+    try:
+        from collections import MutableMapping
+    except ImportError:  # pragma: no cover (fallback for Python 2.5)
+        from UserDict import DictMixin as MutableMapping
 
 
-class MultiDict(DictMixin):
+class MultiDict(MutableMapping):
 
     """ A dict that remembers old values for each key """
 
