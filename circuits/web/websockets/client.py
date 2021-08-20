@@ -1,6 +1,7 @@
 import base64
 import os
 import random
+import re
 from errno import ECONNRESET
 from socket import error as SocketError
 
@@ -95,7 +96,9 @@ class WebSocketClient(BaseComponent):
         headers[
             "Sec-WebSocket-Key"] = base64.b64encode(sec_key).decode("latin1")
         headers["Sec-WebSocket-Version"] = "13"
-        command = "GET %s HTTP/1.1" % self._resource
+        UNSAFE_CHARS = re.compile('[^0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]')
+        escaped_resource = UNSAFE_CHARS.sub('', self._resource.encode('ASCII', 'replace').decode('ASCII'))
+        command = "GET %s HTTP/1.1" % (escaped_resource,)
         message = "%s\r\n%s" % (command, headers)
         self._pending += 1
         self.fire(write(message.encode('utf-8')), self._transport)
