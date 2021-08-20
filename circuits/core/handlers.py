@@ -1,7 +1,10 @@
 """
 This module define the @handler decorator/function and the HandlesType type.
 """
-from collections import Callable
+try:
+    from collections import Callable
+except ImportError:
+    from collections.abc import Callable
 
 from circuits.tools import getargspec
 

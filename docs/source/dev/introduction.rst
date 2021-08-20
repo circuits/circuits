@@ -60,4 +60,4 @@ We use the following tools to develop circuits and share code:
 - **Package Hosting:**
   `Python Package Index (PyPi) <http://pypi.python.org/pypi/circuits>`_
 - **Continuous Integration:**
-  `Travis CI <https://travis-ci.com/circuits/circuits>`_
+  `Github Actions <https://github.com/circuits/circuits/actions>`_
