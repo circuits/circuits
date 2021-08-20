@@ -173,17 +173,17 @@ class redirect(httperror):
             # new URI(s)."
             msg = {300: "This resource can be found at <a href='%s'>%s</a>.",
                    301: ("This resource has permanently moved to "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    302: ("This resource resides temporarily at "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    303: ("This resource can be found at "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    307: ("This resource has moved temporarily to "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    308: ("This resource has permanently moved to "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    }[code]
-            response.body = "<br />\n".join([msg % (u, u) for u in urls])
+            response.body = "<br />\n".join([msg % (escape(u, True), escape(u)) for u in urls])
             # Previous code may have set C-L, so we have to reset it
             # (allow finalize to set it).
             response.headers.pop("Content-Length", None)
