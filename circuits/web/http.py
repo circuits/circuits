@@ -292,6 +292,10 @@ class HTTP(BaseComponent):
         else:
             e = request(req, res)
 
+        if req.protocol != (1, 0) and not req.headers.get("Host"):
+            del self._buffers[sock]
+            return self.fire(httperror(req, res, 400, description="No host header defined"))
+
         # Guard against unwanted request paths (SECURITY).
         path = req.path
         _path = req.uri._path
