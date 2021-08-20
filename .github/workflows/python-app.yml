@@ -26,8 +26,8 @@ jobs:
           - '3.8'
           - '3.9'
           - '3.10-dev'
-          - 'pypy2'
-          - 'pypy3'
+          # - 'pypy2'  # FIXME: flaky
+          # - 'pypy3'  # FIXME: flaky
 
     steps:
     - uses: actions/checkout@v2
