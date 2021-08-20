@@ -476,9 +476,13 @@ class Server(BaseComponent):
                     self._poller.addReader(self, self._sock)
                     self.fire(ready(self, (self.host, self.port)))
                 else:
-                    self._poller = Poller().register(self)
-                    self._poller.addReader(self, self._sock)
-                    self.fire(ready(self, (self.host, self.port)))
+                    try:
+                        self._poller = Poller().register(self)
+                    except EnvironmentError as err:
+                        self.fire(error(err))
+                    else:
+                        self._poller.addReader(self, self._sock)
+                        self.fire(ready(self, (self.host, self.port)))
 
     @handler("stopped", channel="*")
     def _on_stopped(self, component):
