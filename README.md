@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/circuits/circuits.svg)](https://travis-ci.com/circuits/circuits)
+[![Build Status](https://github.com/circuits/circuits/actions/workflows/python-app.yml/badge.svg)](https://github.com/circuits/circuits/actions/workflows/python-app.yml)
 
 [![codecov](https://codecov.io/gh/circuits/circuits/branch/master/graph/badge.svg)](https://codecov.io/gh/circuits/circuits)
 
