@@ -5,7 +5,7 @@ from .helpers import urlencode, urlopen
 
 
 class Root(Controller):
-    def index(self, *args, **kwargs):
+    async def index(self, *args, **kwargs):
         return f'{args!r}\n{kwargs!r}'
 
 

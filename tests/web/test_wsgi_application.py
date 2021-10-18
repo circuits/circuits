@@ -10,10 +10,10 @@ from .helpers import HTTPError, urlencode, urlopen
 
 
 class Root(Controller):
-    def index(self):
+    async def index(self):
         return 'Hello World!'
 
-    def test_args(self, *args, **kwargs):
+    async def test_args(self, *args, **kwargs):
         self.response.headers['Content-Type'] = 'application/json'
         return json.dumps(
             {
@@ -31,13 +31,13 @@ class Root(Controller):
             }
         )
 
-    def test_redirect(self):
+    async def test_redirect(self):
         return self.redirect('/')
 
-    def test_forbidden(self):
+    async def test_forbidden(self):
         return self.forbidden()
 
-    def test_notfound(self):
+    async def test_notfound(self):
         return self.notfound()
 
 

@@ -24,7 +24,7 @@ class hello(Event):
 
 class App(Component):
     @handler('wait')
-    def _on_wait(self, timeout=-1):
+    async def _on_wait(self, timeout=-1):
         result = self.fire(hello())
         try:
             yield self.wait('hello', timeout=timeout)
@@ -34,11 +34,11 @@ class App(Component):
             yield result
 
     @handler('hello')
-    def _on_hello(self):
+    async def _on_hello(self):
         return 'hello'
 
     @handler('call')
-    def _on_call(self, timeout=-1):
+    async def _on_call(self, timeout=-1):
         result = None
         try:
             result = yield self.call(hello(), timeout=timeout)

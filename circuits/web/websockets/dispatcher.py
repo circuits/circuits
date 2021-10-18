@@ -48,14 +48,14 @@ class WebSocketsDispatcher(BaseComponent):
         self._codecs = {}
 
         @handler('read', channel=wschannel, priority=100)
-        def _on_read_handler(self, event, socket, data):
+        async def _on_read_handler(self, event, socket, data):
             if socket in self._requests:
                 event.request = self._requests[socket]
 
         self.addHandler(_on_read_handler)
 
     @handler('request', priority=0.2)
-    def _on_request(self, event, request, response):
+    async def _on_request(self, event, request, response):
         if self._path is not None and not request.path.startswith(self._path):
             return None
 
@@ -106,7 +106,7 @@ class WebSocketsDispatcher(BaseComponent):
         return subprotocols[0]
 
     @handler('response_complete')
-    def _on_response_complete(self, e, value):
+    async def _on_response_complete(self, e, value):
         response = e.args[0]
         request = response.request
         if request.sock in self._codecs:
@@ -119,7 +119,7 @@ class WebSocketsDispatcher(BaseComponent):
             self.fire(cevent, self._wschannel)
 
     @handler('disconnect')
-    def _on_disconnect(self, sock):
+    async def _on_disconnect(self, sock):
         if sock in self._codecs:
             devent = disconnect(sock)
             devent.request = self._requests.get(sock)

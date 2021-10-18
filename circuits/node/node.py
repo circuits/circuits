@@ -113,7 +113,7 @@ class Node(BaseComponent):
             for channel in auto_remote_event[event_name]:
 
                 @handler(event_name, channel=channel)
-                def event_handle(self, event, *args, **kwargs):
+                async def event_handle(self, event, *args, **kwargs):
                     yield self.call(remote(event, connection_name))
 
             self.addHandler(event_handle)
@@ -127,7 +127,7 @@ class Node(BaseComponent):
 
         # connected event binding
         @handler('connected', channel=client_channel)
-        def connected(self, hostname, port):
+        async def connected(self, hostname, port):
             self.fire(
                 connected_to(
                     connection_name,
@@ -142,7 +142,7 @@ class Node(BaseComponent):
 
         # disconnected event binding
         @handler('disconnected', 'unreachable', channel=client_channel)
-        def disconnected(self, event, *args, **kwargs):
+        async def disconnected(self, event, *args, **kwargs):
             if event.name == 'disconnected':
                 self.fire(
                     disconnected_from(
@@ -190,7 +190,7 @@ class Node(BaseComponent):
         return self.__peers.get(connection_name, None)
 
     @handler('remote', channel='*')
-    def __on_remote(self, event, remote_event, connection_name, channel=None):
+    async def __on_remote(self, event, remote_event, connection_name, channel=None):
         """
         Send event to peer
 

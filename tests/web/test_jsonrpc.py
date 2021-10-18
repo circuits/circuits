@@ -7,12 +7,12 @@ from .jsonrpclib import ServerProxy
 
 
 class App(Component):
-    def eval(self, s):
+    async def eval(self, s):
         return eval(s)
 
 
 class Root(Controller):
-    def index(self):
+    async def index(self):
         return 'Hello World!'
 
 

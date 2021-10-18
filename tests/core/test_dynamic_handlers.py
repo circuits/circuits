@@ -9,7 +9,7 @@ class foo(Event):
 
 
 @handler('foo')
-def on_foo(self):
+async def on_foo(self):
     return 'Hello World!'
 
 

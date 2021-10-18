@@ -17,7 +17,7 @@ class App(Component):
         self.created_status = False
 
     @handler('created', channel='notify')
-    def created(self, *args, **kwargs):
+    async def created(self, *args, **kwargs):
         self.created_status = True
 
 

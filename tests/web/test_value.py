@@ -10,12 +10,12 @@ class hello(Event):
 
 
 class App(Component):
-    def hello(self):
+    async def hello(self):
         return 'Hello World!'
 
 
 class Root(Controller):
-    def index(self):
+    async def index(self):
         return self.fire(hello())
 
 

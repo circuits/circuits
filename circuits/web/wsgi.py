@@ -131,7 +131,7 @@ class Application(BaseComponent):
         return body
 
     @handler('response', channel='web')
-    def on_response(self, event, response):
+    async def on_response(self, event, response):
         self._finished = True
         event.stop()
 

@@ -12,7 +12,7 @@ class read(Event):
 class App(Component):
     lines = []
 
-    def line(self, line):
+    async def line(self, line):
         self.lines.append(line)
 
 
@@ -21,7 +21,7 @@ class AppServer(Component):
 
     lines = []
 
-    def line(self, sock, line):
+    async def line(self, sock, line):
         self.lines.append((sock, line))
 
 

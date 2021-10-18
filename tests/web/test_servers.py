@@ -34,19 +34,19 @@ def tmpfile(request):
 class BaseRoot(Component):
     channel = 'web'
 
-    def request(self, request, response):
+    async def request(self, request, response):
         return 'Hello World!'
 
 
 class Root(Controller):
-    def index(self):
+    async def index(self):
         return 'Hello World!'
 
 
 class MakeQuiet(Component):
     channel = 'web'
 
-    def ready(self, event, *args):
+    async def ready(self, event, *args):
         event.stop()
 
 

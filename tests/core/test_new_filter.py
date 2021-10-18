@@ -11,7 +11,7 @@ class hello(Event):
 
 
 class App(Component):
-    def hello(self, event, *args, **kwargs):
+    async def hello(self, event, *args, **kwargs):
         if kwargs.get('stop', False):
             event.stop()
         return 'Hello World!'

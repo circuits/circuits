@@ -34,7 +34,7 @@ class Logger(BaseComponent):
         self.logger = logger
 
     @handler('response_success')
-    def log_response(self, response_event, value):
+    async def log_response(self, response_event, value):
         response = response_event.args[0]
         self.log(response)
 

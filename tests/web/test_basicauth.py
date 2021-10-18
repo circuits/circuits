@@ -5,7 +5,7 @@ from .helpers import HTTPBasicAuthHandler, HTTPError, build_opener, install_open
 
 
 class Root(Controller):
-    def index(self):
+    async def index(self):
         realm = 'Test'
         users = {'admin': 'admin'}
         encrypt = str

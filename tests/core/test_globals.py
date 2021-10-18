@@ -13,17 +13,17 @@ class test(Event):
 class A(Component):
     channel = 'a'
 
-    def test(self):
+    async def test(self):
         return 'Hello World!'
 
     @handler(priority=1.0)
-    def _on_event(self, event, *args, **kwargs):
+    async def _on_event(self, event, *args, **kwargs):
         return 'Foo'
 
 
 class B(Component):
     @handler(priority=10.0, channel='*')
-    def _on_channel(self, event, *args, **kwargs):
+    async def _on_channel(self, event, *args, **kwargs):
         return 'Bar'
 
 

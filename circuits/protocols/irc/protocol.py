@@ -31,7 +31,7 @@ class IRC(Component):
 
         Line(**kwargs).register(self)
 
-    def line(self, *args):
+    async def line(self, *args):
         """
         line Event Handler
 
@@ -61,7 +61,7 @@ class IRC(Component):
         else:
             self.fire(response.create(command, prefix, *args))
 
-    def request(self, event, message):
+    async def request(self, event, message):
         """
         request Event Handler (Default)
 
@@ -76,7 +76,7 @@ class IRC(Component):
         message.encoding = self.encoding
         self.fire(write(bytes(message)))
 
-    def ping(self, event, *args):
+    async def ping(self, event, *args):
         """
         ping Event Handler (Default)
 

@@ -11,7 +11,7 @@ from circuits import Component, Event
 
 
 class App(Component):
-    def test(self, event, *args, **kwargs):
+    async def test(self, event, *args, **kwargs):
         pass
 
 

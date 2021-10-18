@@ -6,7 +6,7 @@ from .helpers import urlopen
 
 class Root(Controller):
     @expose('test.txt')
-    def index(self):
+    async def index(self):
         return 'Hello world!'
 
 
@@ -14,7 +14,7 @@ class Leaf(Controller):
     channel = '/test'
 
     @expose('test.txt')
-    def index(self, vpath=None):
+    async def index(self, vpath=None):
         if vpath is None:
             return 'Hello world!'
         return 'Hello world! ' + vpath

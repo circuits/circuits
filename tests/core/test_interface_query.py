@@ -10,12 +10,12 @@ from circuits import Component
 
 
 class Base(Component):
-    def foo(self):
+    async def foo(self):
         pass
 
 
 class SuperBase(Base):
-    def bar(self):
+    async def bar(self):
         pass
 
 

@@ -17,7 +17,7 @@ class FallBackGenerator(BaseComponent):
         self._continue = Event()
 
     @handler('generate_events', priority=-100)
-    def _on_generate_events(self, event):
+    async def _on_generate_events(self, event):
         """
         Fall back handler for the :class:`~.events.GenerateEvents` event.
 
@@ -73,7 +73,7 @@ class FallBackExceptionHandler(BaseComponent):
     """
 
     @handler('exception', channel='*')
-    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
+    async def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
         s = []
 
         handler = '' if handler is None else reprhandler(handler)
@@ -96,6 +96,6 @@ class FallBackSignalHandler(BaseComponent):
     """
 
     @handler('signal', channel='*')
-    def _on_signal(self, signo, stack):
+    async def _on_signal(self, signo, stack):
         if signo in [SIGINT, SIGTERM]:
             raise SystemExit(0)
