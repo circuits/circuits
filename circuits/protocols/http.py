@@ -27,7 +27,7 @@ class ResponseObject(object):
         self.reason = HTTP_STATUS_CODES[self.status]
 
     def __repr__(self):
-        return "<Response {0:d} {1:s} {2:s} ({3:d})>".format(
+        return "<Response {:d} {} {} ({:d})>".format(
             self.status,
             self.reason,
             self.headers.get("Content-Type"),
