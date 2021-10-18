@@ -18,11 +18,11 @@ class hello(Event):
 
 class App(Component):
     @handler("call")
-    def _on_call(self):
+    async def _on_call(self):
         x = yield self.call(hello())
         yield x.value
 
-    def hello(self):
+    async def hello(self):
         return "Hello World!"
 
 

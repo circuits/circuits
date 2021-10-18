@@ -9,10 +9,10 @@ class Root(Controller):
         super().__init__(*args, **kwargs)
         self += Leaf()
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
-    def name(self):
+    async def name(self):
         return "Earth"
 
 
@@ -20,10 +20,10 @@ class Leaf(Controller):
 
     channel = "/world/country/region"
 
-    def index(self):
+    async def index(self):
         return "Hello cities!"
 
-    def city(self):
+    async def city(self):
         return "Hello City!"
 
 

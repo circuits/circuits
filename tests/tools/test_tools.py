@@ -10,37 +10,37 @@ from circuits.tools import findroot, inspect, kill, tryimport
 
 class A(Component):
 
-    def foo(self):
+    async def foo(self):
         print("A!")
 
 
 class B(Component):
 
-    def foo(self):
+    async def foo(self):
         print("B!")
 
 
 class C(Component):
 
-    def foo(self):
+    async def foo(self):
         print("C!")
 
 
 class D(Component):
 
-    def foo(self):
+    async def foo(self):
         print("D!")
 
 
 class E(Component):
 
-    def foo(self):
+    async def foo(self):
         print("E!")
 
 
 class F(Component):
 
-    def foo(self):
+    async def foo(self):
         print("F!")
 
 

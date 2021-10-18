@@ -132,7 +132,7 @@ class Process(BaseComponent):
             return self.p.poll()
 
     @handler("generate_events")
-    def _on_generate_events(self, event):
+    async def _on_generate_events(self, event):
         if self.p is not None and self._status is None:
             self._status = self.p.poll()
 

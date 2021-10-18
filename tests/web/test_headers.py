@@ -6,14 +6,14 @@ from .helpers import urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
-    def foo(self):
+    async def foo(self):
         self.response.headers["Content-Type"] = "text/plain"
         return "Hello World!"
 
-    def empty(self):
+    async def empty(self):
         return ""
 
 

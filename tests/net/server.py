@@ -16,25 +16,25 @@ class Server(Component):
         self.connected = False
         self.disconnected = False
 
-    def ready(self, server, bind):
+    async def ready(self, server, bind):
         self.ready = True
         self.host, self.port = bind
 
-    def close(self):
+    async def close(self):
         return
 
-    def closed(self):
+    async def closed(self):
         self.closed = True
 
-    def connect(self, sock, *args):
+    async def connect(self, sock, *args):
         self.connected = True
         self.client = args
         self.fire(write(sock, b"Ready"))
 
-    def disconnect(self, sock):
+    async def disconnect(self, sock):
         self.client = None
         self.disconnected = True
 
-    def read(self, sock, data):
+    async def read(self, sock, data):
         self.data = data
         return data

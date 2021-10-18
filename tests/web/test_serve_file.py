@@ -19,7 +19,7 @@ class Root(Controller):
     def __del__(self):
         os.remove(self.filename)
 
-    def index(self):
+    async def index(self):
         return self.serve_file(self.filename)
 
 

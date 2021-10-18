@@ -6,7 +6,7 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener
 
 class Root(Controller):
 
-    def index(self, vpath=None):
+    async def index(self, vpath=None):
         if vpath:
             name = vpath
             with self.session as data:
@@ -16,7 +16,7 @@ class Root(Controller):
 
         return "Hello %s" % name
 
-    def logout(self):
+    async def logout(self):
         self.session.expire()
         return "OK"
 

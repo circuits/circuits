@@ -6,7 +6,7 @@ from .helpers import urlopen
 
 class Root(Controller):
 
-    def index(self, *args, **kwargs):
+    async def index(self, *args, **kwargs):
         return "ERROR"
 
 

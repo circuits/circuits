@@ -20,7 +20,7 @@ class App(Component):
 
         Daemon(self.pidfile).register(self)
 
-    def signal(self, signal, stack):
+    async def signal(self, signal, stack):
         f = open(self.signalfile, "w")
         f.write(str(signal))
         f.close()

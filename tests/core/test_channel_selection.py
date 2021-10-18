@@ -18,7 +18,7 @@ class A(Component):
 
     channel = "a"
 
-    def foo(self):
+    async def foo(self):
         return "Foo"
 
 
@@ -26,7 +26,7 @@ class B(Component):
 
     channel = "b"
 
-    def foo(self):
+    async def foo(self):
         return "Hello World!"
 
 
@@ -34,10 +34,10 @@ class C(Component):
 
     channel = "c"
 
-    def foo(self):
+    async def foo(self):
         return self.fire(bar())
 
-    def bar(self):
+    async def bar(self):
         return "Bar"
 
 

@@ -7,7 +7,7 @@ from .helpers import urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         yield "Hello "
         yield "World!"
 

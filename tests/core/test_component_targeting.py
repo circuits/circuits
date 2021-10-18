@@ -15,7 +15,7 @@ class App(Component):
 
     channel = "app"
 
-    def hello(self):
+    async def hello(self):
         return "Hello World!"
 
 

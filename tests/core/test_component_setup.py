@@ -11,7 +11,7 @@ automatically registered as event handlers.
 
 class App(Component):
 
-    def test(self, event, *args, **kwargs):
+    async def test(self, event, *args, **kwargs):
         pass
 
 
@@ -24,7 +24,7 @@ class B(Component):
     informed = False
 
     @handler("prepare_unregister", channel="*")
-    def _on_prepare_unregister(self, event, c):
+    async def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
             self.informed = True
 

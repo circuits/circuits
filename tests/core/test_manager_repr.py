@@ -13,7 +13,7 @@ from circuits import Component, Manager
 
 class App(Component):
 
-    def test(self, event, *args, **kwargs):
+    async def test(self, event, *args, **kwargs):
         pass
 
 

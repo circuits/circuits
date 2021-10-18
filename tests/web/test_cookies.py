@@ -6,7 +6,7 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         visited = self.cookie.get("visited")
         if visited and visited.value:
             return "Hello again!"

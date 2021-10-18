@@ -5,7 +5,7 @@ from circuits.web.client import Client, request
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
 

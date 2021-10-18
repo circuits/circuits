@@ -12,23 +12,23 @@ from .helpers import urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
-    def request_body(self):
+    async def request_body(self):
         return self.request.body.read()
 
-    def response_body(self):
+    async def response_body(self):
         return "ä"
 
-    def request_headers(self):
+    async def request_headers(self):
         return self.request.headers["A"]
 
-    def response_headers(self):
+    async def response_headers(self):
         self.response.headers["A"] = "ä"
         return "ä"
 
-    def argument(self, arg):
+    async def argument(self, arg):
         return arg
 
 

@@ -25,22 +25,22 @@ class App(Component):
         self.failure = False
 
     @handler("*")
-    def event(self, event, *args, **kwargs):
+    async def event(self, event, *args, **kwargs):
         if kwargs.get("filter", False):
             event.stop()
 
-    def test(self, error=False):
+    async def test(self, error=False):
         if error:
             raise Exception("Hello World!")
 
         return "Hello World!"
 
-    def test_success(self, e, value):
+    async def test_success(self, e, value):
         self.e = e
         self.value = value
         self.success = True
 
-    def test_failure(self, e, error):
+    async def test_failure(self, e, error):
         self.e = e
         self.error = error
         self.failure = True

@@ -8,16 +8,16 @@ from http.client import HTTPConnection
 
 class Root(Controller):
 
-    def GET(self):
+    async def GET(self):
         return "GET"
 
-    def PUT(self):
+    async def PUT(self):
         return "PUT"
 
-    def POST(self):
+    async def POST(self):
         return "POST"
 
-    def DELETE(self):
+    async def DELETE(self):
         return "DELETE"
 
 

@@ -72,7 +72,7 @@ class Worker(BaseComponent):
         self.pool = Pool(self.workers)
 
     @handler("stopped", "unregistered", channel="*")
-    def _on_stopped(self, event, *args):
+    async def _on_stopped(self, event, *args):
         if event.name == "unregistered" and args[0] is not self:
             return
 
@@ -80,8 +80,8 @@ class Worker(BaseComponent):
         self.pool.join()
 
     @handler("task")
-    def _on_task(self, f, *args, **kwargs):
-        result = self.pool.apply_async(f, args, kwargs)
-        while not result.ready():
-            yield
-        yield result.get()
+    async def _on_task(self, f, *args, **kwargs):
+        await self.pool.apply_async(f, args, kwargs)
+        #while not result.ready():
+        #    await
+        return result.get()

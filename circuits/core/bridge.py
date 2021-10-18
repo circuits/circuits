@@ -68,7 +68,7 @@ class Bridge(BaseComponent):
             self.fire(event, self.channel)
 
     @handler("value_changed", channel="*")
-    def _on_value_changed(self, value):
+    async def _on_value_changed(self, value):
         try:
             eid = self._values[value]
             if value.errors:
@@ -78,7 +78,7 @@ class Bridge(BaseComponent):
             pass
 
     @handler("read")
-    def _on_read(self, data):
+    async def _on_read(self, data):
         self._buffer += data
         items = self._buffer.split(_sentinel)
 
@@ -101,7 +101,7 @@ class Bridge(BaseComponent):
         self._socket.write(dumps((eid, data)) + _sentinel)
 
     @handler("ipc")
-    def _on_ipc(self, event, ipc_event, channel=None):
+    async def _on_ipc(self, event, ipc_event, channel=None):
         """Send event to a child/parentprocess
 
         Event handler to run an event on a child/parent process
@@ -121,7 +121,7 @@ class Bridge(BaseComponent):
 
         :Example:
         ``# hello is your event to execute in the child process
-        result = yield self.fire(ipc(hello()))
+        result = await self.fire(ipc(hello()))
         print(result.value)``
         """
 
@@ -130,6 +130,7 @@ class Bridge(BaseComponent):
 
         eid = hash(ipc_event)
         self.__send(eid, ipc_event)
+        #await self.wait(Bridge.__waiting_event(eid))
         yield self.wait(Bridge.__waiting_event(eid))
 
     @staticmethod

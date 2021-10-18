@@ -5,7 +5,7 @@ from .helpers import HTTPError, urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         pass
 
 

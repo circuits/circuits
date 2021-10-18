@@ -35,7 +35,7 @@ class WebClient(Client):
         return self.response
 
     @handler("closed", channel="*", priority=1.0)
-    def _on_closed(self):
+    async def _on_closed(self):
         self.closed = True
 
 

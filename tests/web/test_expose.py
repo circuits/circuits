@@ -5,15 +5,15 @@ from .helpers import urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
     @expose("+test")
-    def test(self):
+    async def test(self):
         return "test"
 
     @expose("foo+bar", "foo_bar")
-    def foobar(self):
+    async def foobar(self):
         return "foobar"
 
 

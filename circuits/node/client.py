@@ -52,7 +52,7 @@ class Client(BaseComponent):
         TCPClient(channel=channel, **kwargs).register(self)
 
     @handler("ready")
-    def _on_ready(self, component):
+    async def _on_ready(self, component):
         self.connect()
 
     def close(self):
@@ -75,5 +75,5 @@ class Client(BaseComponent):
         return self.__protocol.send(event)
 
     @handler("read")
-    def _on_read(self, data):
+    async def _on_read(self, data):
         self.__protocol.add_buffer(data)

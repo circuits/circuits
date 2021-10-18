@@ -23,13 +23,13 @@ def sample_file(request):
 
 class Root(Controller):
 
-    def index(self, file, description=""):
+    async def index(self, file, description=""):
         yield "Filename: %s\n" % file.filename
         yield "Description: %s\n" % description
         yield "Content:\n"
         yield file.value
 
-    def upload(self, file, description=""):
+    async def upload(self, file, description=""):
         return file.value
 
 

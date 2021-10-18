@@ -16,13 +16,13 @@ class DummyLogger:
 
         self.message = None
 
-    def info(self, message):
+    async def info(self, message):
         self.message = message
 
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
 

@@ -94,26 +94,26 @@ class BaseServer(BaseComponent):
             return self.server.secure
 
     @handler("connect")
-    def _on_connect(self, *args, **kwargs):
+    async def _on_connect(self, *args, **kwargs):
         """Dummy Event Handler for connect"""
 
     @handler("closed")
-    def _on_closed(self, *args, **kwargs):
+    async def _on_closed(self, *args, **kwargs):
         """Dummy Event Handler for closed"""
 
     @handler("signal")
-    def _on_signal(self, *args, **kwargs):
+    async def _on_signal(self, *args, **kwargs):
         """signal Event Handler"""
 
         self.fire(close())
         Timer(3, terminate()).register(self)
 
     @handler("terminate")
-    def _on_terminate(self):
+    async def _on_terminate(self):
         raise SystemExit(0)
 
     @handler("ready")
-    def _on_ready(self, server, bind):
+    async def _on_ready(self, server, bind):
         stderr.write(
             "{} ready! Listening on: {}\n".format(
                 self.http.version, self.http.base
@@ -173,9 +173,9 @@ class StdinServer(BaseComponent):
         return False
 
     @handler("read", channel="stdin")
-    def read(self, data):
+    async def read(self, data):
         self.fire(read(FakeSock(), data))
 
     @handler("write")
-    def write(self, sock, data):
+    async def write(self, sock, data):
         self.fire(write(data))

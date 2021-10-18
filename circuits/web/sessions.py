@@ -129,7 +129,7 @@ class Sessions(Component):
         return self._store
 
     @handler("request", priority=10)
-    def request(self, request, response):
+    async def request(self, request, response):
         if self.name in request.cookie:
             sid = request.cookie[self._name].value
             sid = verify_session(request, sid)

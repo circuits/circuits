@@ -35,7 +35,7 @@ class Loader(BaseComponent):
                 sys.path.insert(0, path)
 
     @handler("load")
-    def load(self, name):
+    async def load(self, name):
         module = safeimport(name)
         if module is not None:
 

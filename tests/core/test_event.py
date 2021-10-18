@@ -12,7 +12,7 @@ class test(Event):
 
 class App(Component):
 
-    def test(self):
+    async def test(self):
         return "Hello World!"
 
 

@@ -10,7 +10,7 @@ class Root(BaseComponent):
     channel = "web"
 
     @handler("request", priority=0.2)
-    def request(self, request, response):
+    async def request(self, request, response):
         raise Exception()
 
 

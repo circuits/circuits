@@ -17,13 +17,13 @@ class Gzip(Component):
     channel = "web"
 
     @handler("response", priority=1.0)
-    def _on_response(self, event, *args, **kwargs):
+    async def _on_response(self, event, *args, **kwargs):
         event[0] = gzip(event[0])
 
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
 

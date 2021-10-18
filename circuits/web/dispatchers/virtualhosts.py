@@ -39,7 +39,7 @@ class VirtualHosts(BaseComponent):
         self.domains = domains
 
     @handler("request", priority=1.0)
-    def _on_request(self, event, request, response):
+    async def _on_request(self, event, request, response):
         path = request.path.strip("/")
 
         header = request.headers.get

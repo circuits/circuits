@@ -13,7 +13,7 @@ pytestmark = pytest.mark.skipif(pytest.PYVER[:2] == (3, 3), reason='Broken on Py
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         realm = "Test"
         users = {"admin": "admin"}
 

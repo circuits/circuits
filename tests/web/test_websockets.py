@@ -17,21 +17,21 @@ class Echo(Component):
     def init(self):
         self.clients = []
 
-    def connect(self, sock, host, port):
+    async def connect(self, sock, host, port):
         self.clients.append(sock)
         print("WebSocket Client Connected:", host, port)
         self.fire(write(sock, f"Welcome {host:s}:{port:d}"))
 
-    def disconnect(self, sock):
+    async def disconnect(self, sock):
         self.clients.remove(sock)
 
-    def read(self, sock, data):
+    async def read(self, sock, data):
         self.fire(write(sock, "Received: " + data))
 
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
 
@@ -42,7 +42,7 @@ class Client(Component):
     def init(self, *args, **kwargs):
         self.response = None
 
-    def read(self, data):
+    async def read(self, data):
         self.response = data
 
 

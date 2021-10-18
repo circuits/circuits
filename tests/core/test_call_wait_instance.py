@@ -19,13 +19,13 @@ class hello(Event):
 class App(Component):
 
     @handler("wait")
-    def _on_wait(self):
+    async def _on_wait(self):
         e = hello()
         x = self.fire(e)
         yield self.wait(e)
         yield x.value
 
-    def hello(self):
+    async def hello(self):
         return "Hello World!"
 
 

@@ -72,24 +72,24 @@ class Client(BaseComponent):
         HTTP(channel=channel).register(self._transport)
 
     @handler("write")
-    def write(self, data):
+    async def write(self, data):
         if self._transport.connected:
             self.fire(write(data), self._transport)
 
     @handler("close")
-    def close(self):
+    async def close(self):
         if self._transport.connected:
             self.fire(close(), self._transport)
 
     @handler("connect", priority=1)
-    def connect(self, event, host=None, port=None, secure=None):
+    async def connect(self, event, host=None, port=None, secure=None):
         if not self._transport.connected:
             self.fire(connect(host, port, secure), self._transport)
 
         event.stop()
 
     @handler("request")
-    def request(self, method, url, body=None, headers=None):
+    async def request(self, method, url, body=None, headers=None):
         host, port, path, secure = parse_url(url)
 
         if not self._transport.connected:
@@ -116,7 +116,7 @@ class Client(BaseComponent):
         yield (yield self.wait("response"))
 
     @handler("response")
-    def _on_response(self, response):
+    async def _on_response(self, response):
         self._response = response
         if response.headers.get("Connection", "").lower() == "close":
             self.fire(close(), self._transport)

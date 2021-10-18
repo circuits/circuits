@@ -97,7 +97,7 @@ class Server(BaseComponent):
         self.send_to(event, list(self.__protocols))
 
     @handler('read')
-    def _on_read(self, sock, data):
+    async def _on_read(self, sock, data):
         self.__protocols[sock].add_buffer(data)
 
     @property
@@ -119,7 +119,7 @@ class Server(BaseComponent):
         return list(self.__protocols)
 
     @handler('connect')
-    def __connect_peer(self, sock, host, port):
+    async def __connect_peer(self, sock, host, port):
         self.__protocols[sock] = Protocol(
             sock=sock,
             server=self.server,
@@ -129,7 +129,7 @@ class Server(BaseComponent):
         ).register(self)
 
     @handler('disconnect')
-    def __disconnect_peer(self, sock):
+    async def __disconnect_peer(self, sock):
         for s in self.__protocols.copy():
             try:
                 s.getpeername()

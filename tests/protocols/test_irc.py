@@ -20,18 +20,18 @@ class App(Component):
         self.events = []
 
     @handler(False)
-    def reset(self):
+    async def reset(self):
         self.data = []
         self.events = []
 
     @handler()
-    def _on_event(self, event, *args, **kwargs):
+    async def _on_event(self, event, *args, **kwargs):
         self.events.append(event)
 
-    def request(self, message):
+    async def request(self, message):
         self.fire(write(bytes(message)))
 
-    def write(self, data):
+    async def write(self, data):
         self.data.append(data)
 
 

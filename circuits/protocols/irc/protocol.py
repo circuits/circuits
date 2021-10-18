@@ -31,7 +31,7 @@ class IRC(Component):
 
         Line(**kwargs).register(self)
 
-    def line(self, *args):
+    async def line(self, *args):
         """line Event Handler
 
         Process a line of text and generate the appropriate
@@ -61,7 +61,7 @@ class IRC(Component):
         else:
             self.fire(response.create(command, prefix, *args))
 
-    def request(self, event, message):
+    async def request(self, event, message):
         """request Event Handler (Default)
 
         This is a default event handler to respond to ``request`` events
@@ -76,7 +76,7 @@ class IRC(Component):
         message.encoding = self.encoding
         self.fire(write(bytes(message)))
 
-    def ping(self, event, *args):
+    async def ping(self, event, *args):
         """ping Event Handler (Default)
 
         This is a default event to respond to ``ping`` events

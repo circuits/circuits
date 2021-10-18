@@ -15,18 +15,18 @@ class Client(Component):
         self._buffer = []
         self.done = False
 
-    def read(self, data):
+    async def read(self, data):
         self._buffer.append(data)
         if data.find(b"\r\n") != -1:
             self.done = True
 
-    def buffer(self):
+    async def buffer(self):
         return b''.join(self._buffer)
 
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
 

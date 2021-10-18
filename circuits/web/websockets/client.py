@@ -62,7 +62,7 @@ class WebSocketClient(BaseComponent):
         HTTP(channel=self.channel).register(self._transport)
 
     @handler("ready")
-    def _on_ready(self, event, *args, **kwargs):
+    async def _on_ready(self, event, *args, **kwargs):
         p = urlparse(self._url)
         if not p.hostname:
             raise ValueError("URL must be absolute")
@@ -82,7 +82,7 @@ class WebSocketClient(BaseComponent):
                   self._transport)
 
     @handler("connected")
-    def _on_connected(self, host, port):
+    async def _on_connected(self, host, port):
         headers = Headers([(k, v) for k, v in self._headers.items()])
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if "Host" not in headers:
@@ -106,7 +106,7 @@ class WebSocketClient(BaseComponent):
         return True
 
     @handler("response")
-    def _on_response(self, response):
+    async def _on_response(self, response):
         self._response = response
         self._pending -= 1
         if response.headers.get("Connection", "").lower() == "close" \
@@ -117,7 +117,7 @@ class WebSocketClient(BaseComponent):
             data=response.body.read(), channel=self._wschannel).register(self)
 
     @handler('read')
-    def _on_read(self, event, *args):
+    async def _on_read(self, event, *args):
         # FIXME: every read-event is lost due to a race condition between
         # WebSocketCodec().register() and the registered()-event of that instance.
         if len(args) != 1:
@@ -130,7 +130,7 @@ class WebSocketClient(BaseComponent):
                 self.removeHandler(self._on_read)
 
     @handler("error", priority=10)
-    def _on_error(self, event, error, *args, **kwargs):
+    async def _on_error(self, event, error, *args, **kwargs):
         # For HTTP 1.1 we leave the connection open. If the peer closes
         # it after some time and we have no pending request, that's OK.
         if isinstance(error, SocketError) and error.args[0] == ECONNRESET \

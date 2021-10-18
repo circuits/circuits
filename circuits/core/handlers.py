@@ -1,6 +1,7 @@
 """
 This module define the @handler decorator/function and the HandlesType type.
 """
+import inspect
 from collections.abc import Callable
 
 from circuits.tools import getargspec
@@ -38,7 +39,7 @@ def handler(*names, **kwargs):
     Normally, the results returned by the handlers for an event are simply
     collected in the :class:`circuits.core.events.Event`'s :attr:`value`
     attribute. As a special case, a handler may return a
-    :class:`types.GeneratorType`. This signals to the dispatcher that the
+    :class:`types.AsyncGeneratorType`. This signals to the dispatcher that the
     handler isn't ready to deliver a result yet.
     Rather, it has interrupted it's execution with a ``yield None``
     statement, thus preserving its current execution state.
@@ -63,6 +64,7 @@ def handler(*names, **kwargs):
     """
 
     def wrapper(f):
+        assert f.__name__ == 'init' or inspect.iscoroutinefunction(f) or inspect.isasyncgenfunction(f), f
         if names and isinstance(names[0], bool) and not names[0]:
             f.handler = False
             return f

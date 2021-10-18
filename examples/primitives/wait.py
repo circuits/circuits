@@ -25,7 +25,7 @@ class App(Component):
     def bar(self):
         return 2
 
-    def hello(self):
+    async def hello(self):
         x = self.fire(foo())
         yield self.wait("foo")
 

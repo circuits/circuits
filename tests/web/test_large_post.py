@@ -6,7 +6,7 @@ from .helpers import urlencode, urlopen
 
 class Root(Controller):
 
-    def index(self, *args, **kwargs):
+    async def index(self, *args, **kwargs):
         args = tuple(
             x.encode("utf-8") if type(x) != str else x
             for x in args

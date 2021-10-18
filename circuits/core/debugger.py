@@ -52,13 +52,13 @@ class Debugger(BaseComponent):
         self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
 
     @handler("signal", channel="*")
-    def _on_signal(self, signo, stack):
+    async def _on_signal(self, signo, stack):
         if signo in [SIGINT, SIGTERM]:
             raise SystemExit(0)
 
     @handler("exception", channel="*", priority=100.0)
-    def _on_exception(self, error_type, value, traceback,
-                      handler=None, fevent=None):
+    async def _on_exception(self, error_type, value, traceback,
+                            handler=None, fevent=None):
 
         if not self._errors:
             return
@@ -88,7 +88,7 @@ class Debugger(BaseComponent):
                 pass
 
     @handler(priority=101.0)
-    def _on_event(self, event, *args, **kwargs):
+    async def _on_event(self, event, *args, **kwargs):
         """Global Event Handler
 
         Event handler to listen to all events printing

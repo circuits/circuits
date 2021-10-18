@@ -24,7 +24,7 @@ class Base(Component):
 
 class App(Base):
 
-    def hello(self):
+    async def hello(self):
         return "Hello World!"
 
 

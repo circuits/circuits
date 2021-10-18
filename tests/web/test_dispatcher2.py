@@ -11,40 +11,40 @@ class Root(Controller):
         self += Hello()
         self += World()
 
-    def index(self):
+    async def index(self):
         return "index"
 
-    def hello1(self):
+    async def hello1(self):
         return "hello1"
 
     @expose("hello2")
-    def hello2(self):
+    async def hello2(self):
         return "hello2"
 
-    def query(req, test):
+    async def query(req, test):
         return 'query %s' % test
 
 
 class Hello(Controller):
     channel = "/hello"
 
-    def index(self):
+    async def index(self):
         return 'hello index'
 
-    def test(self):
+    async def test(self):
         return 'hello test'
 
-    def query(req, test):
+    async def query(req, test):
         return 'hello query %s' % test
 
 
 class World(Controller):
     channel = "/world"
 
-    def index(self):
+    async def index(self):
         return 'world index'
 
-    def test(self):
+    async def test(self):
         return 'world test'
 
 

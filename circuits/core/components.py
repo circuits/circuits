@@ -123,7 +123,7 @@ class BaseComponent(Manager):
             self.init(*args, **kwargs)
 
         @handler("prepare_unregister_complete", channel=self)
-        def _on_prepare_unregister_complete(self, event, e, value):
+        async def _on_prepare_unregister_complete(self, event, e, value):
             self._do_prepare_unregister_complete(event.parent, value)
         self.addHandler(_on_prepare_unregister_complete)
 

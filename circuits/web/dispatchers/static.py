@@ -49,7 +49,7 @@ class Static(BaseComponent):
         self.dirlisting = dirlisting
 
     @handler("request", priority=0.9)
-    def _on_request(self, event, request, response):
+    async def _on_request(self, event, request, response):
         if self.path is not None and not request.path.startswith(self.path):
             return
 

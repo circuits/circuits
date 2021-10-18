@@ -57,11 +57,11 @@ class WebSocketCodec(BaseComponent):
                 self.fire(read(message))
 
     @handler("registered")
-    def _on_registered(self, component, parent):
+    async def _on_registered(self, component, parent):
         if component is self:
 
             @handler("read", priority=10, channel=parent.channel)
-            def _on_read_raw(self, event, *args):
+            async def _on_read_raw(self, event, *args):
                 if self._sock is not None:
                     if args[0] != self._sock:
                         return
@@ -79,7 +79,7 @@ class WebSocketCodec(BaseComponent):
             self.addHandler(_on_read_raw)
 
             @handler("disconnect", channel=parent.channel)
-            def _on_disconnect(self, *args):
+            async def _on_disconnect(self, *args):
                 if self._sock is not None:
                     if args[0] != self._sock:
                         return
@@ -157,7 +157,7 @@ class WebSocketCodec(BaseComponent):
         return msgs
 
     @handler("write")
-    def _on_write(self, *args):
+    async def _on_write(self, *args):
         if self._close_sent:
             return
 
@@ -215,7 +215,7 @@ class WebSocketCodec(BaseComponent):
             self.fire(write(data), self.parent.channel)
 
     @handler("close")
-    def _on_close(self, *args):
+    async def _on_close(self, *args):
         if self._sock is not None:
             if args and (args[0] != self._sock):
                 return

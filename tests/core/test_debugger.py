@@ -15,7 +15,7 @@ class test(Event):
 
 class App(Component):
 
-    def test(self, raiseException=False):
+    async def test(self, raiseException=False):
         if raiseException:
             raise Exception()
 

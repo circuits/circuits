@@ -45,11 +45,11 @@ class Serial(Component):
         self._closeflag = False
 
     @handler("ready")
-    def _on_ready(self, component):
+    async def _on_ready(self, component):
         self.fire(_open(), self.channel)
 
     @handler("_open")
-    def _on_open(self, port=None, baudrate=None, bufsize=None):
+    async def _on_open(self, port=None, baudrate=None, bufsize=None):
         self._port = port or self._port
         self._baudrate = baudrate or self._baudrate
         self._bufsize = bufsize or self._bufsize
@@ -62,7 +62,7 @@ class Serial(Component):
         self.fire(opened(self._port, self._baudrate))
 
     @handler("registered", "started", channel="*")
-    def _on_registered_or_started(self, component, manager=None):
+    async def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -79,11 +79,11 @@ class Serial(Component):
                     self.fire(ready(self))
 
     @handler("stopped", channel="*")
-    def _on_stopped(self, component):
+    async def _on_stopped(self, component):
         self.fire(close())
 
     @handler("prepare_unregister", channel="*")
-    def _on_prepare_unregister(self, event, c):
+    async def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
             self._close()
 
@@ -146,15 +146,15 @@ class Serial(Component):
         self._buffer.append(data)
 
     @handler("_disconnect")
-    def __on_disconnect(self, sock):
+    async def __on_disconnect(self, sock):
         self._close()
 
     @handler("_read")
-    def __on_read(self, sock):
+    async def __on_read(self, sock):
         self._read()
 
     @handler("_write")
-    def __on_write(self, sock):
+    async def __on_write(self, sock):
         if self._buffer:
             data = self._buffer.popleft()
             self._write(data)

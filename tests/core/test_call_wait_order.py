@@ -22,7 +22,7 @@ def process(x=None):
 class App(Component):
 
     @handler('hello')
-    def _on_hello(self):
+    async def _on_hello(self):
         e1 = task(process, 1)
         self.fire(task(process, 2))
         self.fire(task(process, 3))

@@ -19,7 +19,7 @@ class Protocol(Component):
                                                    None)
         self.__send_event_firewall = kwargs.get('send_event_firewall', None)
 
-    def add_buffer(self, data=''):
+    async def add_buffer(self, data=''):
         if data:
             self.__buffer += data
 
@@ -33,14 +33,14 @@ class Protocol(Component):
                 self.__buffer = packet
 
     @handler(channel='node_result', priority=100)
-    def result_handler(self, event, *args, **kwargs):
+    async def result_handler(self, event, *args, **kwargs):
         if event.name.endswith('_success'):
             source_event = args[0]
 
             if getattr(args[0], 'node_call_id', False) is not False:
                 self.send_result(source_event.node_call_id, source_event.value)
 
-    def send(self, event):
+    async def send(self, event):
         if self.__send_event_firewall and \
                 not self.__send_event_firewall(event, self.__sock):
             yield Value(event, self)
@@ -60,7 +60,7 @@ class Protocol(Component):
                 del (self.__events[id])
                 yield event.value
 
-    def send_result(self, id, value):
+    async def send_result(self, id, value):
         value.node_call_id = id
         value.node_sock = self.__sock
         packet = dump_value(value).encode('utf-8') + DELIMITER

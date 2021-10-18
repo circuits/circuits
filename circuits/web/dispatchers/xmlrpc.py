@@ -25,7 +25,7 @@ class XMLRPC(BaseComponent):
         self.rpc_channel = rpc_channel
 
     @handler("request", priority=0.2)
-    def _on_request(self, event, req, res):
+    async def _on_request(self, event, req, res):
         if self.path is not None and self.path != req.path.rstrip("/"):
             return
 

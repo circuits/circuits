@@ -46,12 +46,12 @@ class App(Component):
         self.count = 0
         self.timestamps = []
 
-    def single(self):
+    async def single(self):
         self.timestamps.append(time())
         self.count += 1
         self.flag = True
 
-    def persistent(self, interval):
+    async def persistent(self, interval):
         timer = Timer(interval, single(), persist=True)
         timer.register(self)
 

@@ -17,10 +17,10 @@ class App(Component):
     def init(self):
         self.results = []
 
-    def foo(self, value):
+    async def foo(self, value):
         self.results.append(value)
 
-    def done(self):
+    async def done(self):
         self.stop()
 
 

@@ -16,16 +16,16 @@ class App(Component):
     value = False
     disconnected = False
 
-    def foo(self):
+    async def foo(self):
         return 'Hello World!'
 
-    def ready(self, *args):
+    async def ready(self, *args):
         self.ready = True
 
-    def disconnect(self, component):
+    async def disconnect(self, component):
         self.disconnected = True
 
-    def remote_value_changed(self, value):
+    async def remote_value_changed(self, value):
         self.value = True
 
 

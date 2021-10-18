@@ -9,26 +9,26 @@ from .helpers import HTTPError, urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
-    def test_redirect(self):
+    async def test_redirect(self):
         raise Redirect("/")
 
-    def test_forbidden(self):
+    async def test_forbidden(self):
         raise Forbidden()
 
-    def test_notfound(self):
+    async def test_notfound(self):
         raise NotFound()
 
-    def test_contenttype(self):
+    async def test_contenttype(self):
         raise Exception()
 
-    def test_contenttype_json(self):
+    async def test_contenttype_json(self):
         self.response.headers["Content-Type"] = "application/json"
         raise Exception()
 
-    def test_contenttype_json_no_debug(self):
+    async def test_contenttype_json_no_debug(self):
         self.response.headers["Content-Type"] = "application/json"
         self.request.print_debug = False
         raise Exception()

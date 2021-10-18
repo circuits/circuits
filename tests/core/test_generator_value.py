@@ -14,13 +14,13 @@ class hello(Event):
 
 class App(Component):
 
-    def test(self):
+    async def test(self):
         def f():
             while True:
                 yield "Hello"
         return f()
 
-    def hello(self):
+    async def hello(self):
         yield "Hello "
         yield "World!"
 

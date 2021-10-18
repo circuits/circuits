@@ -128,7 +128,7 @@ class Client(BaseComponent):
         return getattr(self, "_connected", None)
 
     @handler("registered", "started", channel="*")
-    def _on_registered_or_started(self, component, manager=None):
+    async def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -145,16 +145,16 @@ class Client(BaseComponent):
                     self.fire(ready(self))
 
     @handler("stopped", channel="*")
-    def _on_stopped(self, component):
+    async def _on_stopped(self, component):
         self.fire(close())
 
     @handler("read_value_changed")
-    def _on_read_value_changed(self, value):
+    async def _on_read_value_changed(self, value):
         if isinstance(value, bytes):
             self.fire(write(value))
 
     @handler("prepare_unregister", channel="*")
-    def _on_prepare_unregister(self, event, c):
+    async def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
             self._close()
 
@@ -180,7 +180,7 @@ class Client(BaseComponent):
         self.fire(disconnected())
 
     @handler("close")
-    def close(self):
+    async def close(self):
         if not self._buffer:
             self._close()
         elif not self._closeflag:
@@ -225,21 +225,21 @@ class Client(BaseComponent):
                 self.fire(error(e))
 
     @handler("write")
-    def write(self, data):
+    async def write(self, data):
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
         self._buffer.append(data)
 
     @handler("_disconnect", priority=1)
-    def __on_disconnect(self, sock):
+    async def __on_disconnect(self, sock):
         self._close()
 
     @handler("_read", priority=1)
-    def __on_read(self, sock):
+    async def __on_read(self, sock):
         self._read()
 
     @handler("_write", priority=1)
-    def __on_write(self, sock):
+    async def __on_write(self, sock):
         if self._buffer:
             data = self._buffer.popleft()
             self._write(data)
@@ -274,7 +274,7 @@ class TCPClient(Client):
         self.connect_timeout = connect_timeout
 
     @handler("connect")  # noqa
-    def connect(self, host, port, secure=False, **kwargs):
+    async def connect(self, host, port, secure=False, **kwargs):
         # XXX: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
 
@@ -349,12 +349,12 @@ class UNIXClient(Client):
     socket_options = []
 
     @handler("ready")
-    def ready(self, component):
+    async def ready(self, component):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
     @handler("connect")  # noqa
-    def connect(self, path, secure=False, **kwargs):
+    async def connect(self, path, secure=False, **kwargs):
         # XXX: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
 
@@ -464,7 +464,7 @@ class Server(BaseComponent):
                 return None
 
     @handler("registered", "started", channel="*")
-    def _on_registered_or_started(self, component, manager=None):
+    async def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -488,11 +488,11 @@ class Server(BaseComponent):
                         self.fire(ready(self, (self.host, self.port)))
 
     @handler("stopped", channel="*")
-    def _on_stopped(self, component):
+    async def _on_stopped(self, component):
         self.fire(close())
 
     @handler("read_value_changed")
-    def _on_read_value_changed(self, value):
+    async def _on_read_value_changed(self, value):
         if isinstance(value.value, bytes):
             sock = value.event.args[0]
             self.fire(write(sock, value.value))
@@ -529,7 +529,7 @@ class Server(BaseComponent):
         self.fire(disconnect(sock))
 
     @handler("close")
-    def close(self, sock=None):
+    async def close(self, sock=None):
         is_closed = sock is None
 
         if sock is None:
@@ -580,7 +580,7 @@ class Server(BaseComponent):
                 self._buffers[sock].appendleft(data)
 
     @handler("write")
-    def write(self, sock, data):
+    async def write(self, sock, data):
         if not self._poller.isWriting(sock):
             self._poller.addWriter(self, sock)
         self._buffers[sock].append(data)
@@ -650,7 +650,7 @@ class Server(BaseComponent):
         self._close(sock)
 
     @handler('starttls')
-    def starttls(self, sock):
+    async def starttls(self, sock):
         if not HAS_SSL:
             raise RuntimeError('Cannot start TLS. No TLS support.')
         if sock in self.__starttls:
@@ -662,18 +662,18 @@ class Server(BaseComponent):
             yield
 
     @handler("_disconnect", priority=1)
-    def _on_disconnect(self, sock):
+    async def _on_disconnect(self, sock):
         self._close(sock)
 
     @handler("_read", priority=1)
-    def _on_read(self, sock):
+    async def _on_read(self, sock):
         if sock == self._sock:
             return self._accept()
         else:
             self._read(sock)
 
     @handler("_write", priority=1)
-    def _on_write(self, sock):
+    async def _on_write(self, sock):
         if self._buffers[sock]:
             data = self._buffers[sock].popleft()
             self._write(sock, data)
@@ -796,7 +796,7 @@ class UDPServer(Server):
         self.fire(disconnect(sock))
 
     @handler("close", override=True)
-    def close(self):
+    async def close(self):
         self.fire(closed())
 
         if self._buffers[self._sock] and self._sock not in self._closeq:
@@ -827,25 +827,25 @@ class UDPServer(Server):
                 self.fire(error(self._sock, e))
 
     @handler("write", override=True)
-    def write(self, address, data):
+    async def write(self, address, data):
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
         self._buffers[self._sock].append((address, data))
 
     @handler("broadcast", override=True)
-    def broadcast(self, data, port):
+    async def broadcast(self, data, port):
         self.write(("<broadcast>", port), data)
 
     @handler("_disconnect", priority=1, override=True)
-    def _on_disconnect(self, sock):
+    async def _on_disconnect(self, sock):
         self._close(sock)
 
     @handler("_read", priority=1, override=True)
-    def _on_read(self, sock):
+    async def _on_read(self, sock):
         self._read()
 
     @handler("_write", priority=1, override=True)
-    def _on_write(self, sock):
+    async def _on_write(self, sock):
         if self._buffers[self._sock]:
             address, data = self._buffers[self._sock].popleft()
             self._write(address, data)

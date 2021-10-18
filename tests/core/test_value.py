@@ -30,33 +30,33 @@ class values(Event):
 
 class App(Component):
 
-    def hello(self):
+    async def hello(self):
         return "Hello World!"
 
-    def test(self):
+    async def test(self):
         return self.fire(hello())
 
-    def foo(self):
+    async def foo(self):
         raise Exception("ERROR")
 
     @handler("hello_value_changed")
-    def _on_hello_value_changed(self, value):
+    async def _on_hello_value_changed(self, value):
         self.value = value
 
     @handler("test_value_changed")
-    def _on_test_value_changed(self, value):
+    async def _on_test_value_changed(self, value):
         self.value = value
 
     @handler("values", priority=2.0)
-    def _value1(self):
+    async def _value1(self):
         return "foo"
 
     @handler("values", priority=1.0)
-    def _value2(self):
+    async def _value2(self):
         return "bar"
 
     @handler("values", priority=0.0)
-    def _value3(self):
+    async def _value3(self):
         return self.fire(hello())
 
 

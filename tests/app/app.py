@@ -17,10 +17,10 @@ class App(Component):
     def init(self, pidfile):
         self.pidfile = pidfile
 
-    def started(self, *args):
+    async def started(self, *args):
         Daemon(self.pidfile).register(self)
 
-    def prepare_unregister(self, *args):
+    async def prepare_unregister(self, *args):
         return
 
 

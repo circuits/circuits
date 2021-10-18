@@ -10,11 +10,11 @@ from .helpers import urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         self.expires(60)
         return "Hello World!"
 
-    def nocache(self):
+    async def nocache(self):
         self.expires(0)
         return "Hello World!"
 

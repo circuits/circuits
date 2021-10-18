@@ -130,7 +130,7 @@ class Application(BaseComponent):
         return body
 
     @handler("response", channel="web")
-    def on_response(self, event, response):
+    async def on_response(self, event, response):
         self._finished = True
         event.stop()
 
@@ -169,7 +169,7 @@ class Gateway(BaseComponent):
         self.errors = {k: StringIO() for k in self.apps.keys()}
 
     @handler("request", priority=0.2)
-    def _on_request(self, event, req, res):
+    async def _on_request(self, event, req, res):
         if not self.apps:
             return
 

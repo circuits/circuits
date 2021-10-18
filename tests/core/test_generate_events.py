@@ -11,11 +11,11 @@ class App(Component):
         self._done = False
         self._counter = 0
 
-    def registered(self, component, manager):
+    async def registered(self, component, manager):
         if component is self:
             self.fire(Event.create("ready"))
 
-    def generate_events(self, event):
+    async def generate_events(self, event):
         if not self._ready or self._done:
             return
 
@@ -25,13 +25,13 @@ class App(Component):
             self.fire(Event.create("done"))
         event.reduce_time_left(0)
 
-    def done(self):
+    async def done(self):
         self._done = True
 
-    def hello(self):
+    async def hello(self):
         self._counter += 1
 
-    def ready(self):
+    async def ready(self):
         self._ready = True
 
 

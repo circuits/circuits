@@ -93,7 +93,7 @@ class Line(BaseComponent):
         self.buffer = b""
 
     @handler("read")
-    def _on_read(self, *args):
+    async def _on_read(self, *args):
         if len(args) == 1:
             # Client read
             data, = args

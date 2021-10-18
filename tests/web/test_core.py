@@ -8,25 +8,25 @@ from .helpers import HTTPError, urlencode, urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
-    def test_args(self, *args, **kwargs):
+    async def test_args(self, *args, **kwargs):
         return f"{repr(args)}\n{repr(kwargs)}"
 
-    def test_default_args(self, a=None, b=None):
+    async def test_default_args(self, a=None, b=None):
         return f"a={a}\nb={b}"
 
-    def test_redirect(self):
+    async def test_redirect(self):
         return self.redirect("/")
 
-    def test_forbidden(self):
+    async def test_forbidden(self):
         return self.forbidden()
 
-    def test_notfound(self):
+    async def test_notfound(self):
         return self.notfound()
 
-    def test_failure(self):
+    async def test_failure(self):
         raise Exception()
 
 

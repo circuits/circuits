@@ -61,14 +61,14 @@ class Daemon(Component):
 
         self.stderr = stderr if stderr is not None and isabs(stderr) else "/dev/null"
 
-    def deletepid(self):
+    async def deletepid(self):
         remove(self.pidfile)
 
-    def writepid(self):
+    async def writepid(self):
         with open(self.pidfile, "w") as fd:
             fd.write(str(getpid()))
 
-    def daemonize(self):
+    async def daemonize(self):
         try:
             pid = fork()
             if pid > 0:
@@ -116,11 +116,11 @@ class Daemon(Component):
         self.fire(writepid())
         self.fire(daemonized(self))
 
-    def registered(self, component, manager):
+    async def registered(self, component, manager):
         if component == self and manager.root.running:
             self.fire(daemonize())
 
     @handler("started", priority=100.0, channel="*")
-    def on_started(self, component):
+    async def on_started(self, component):
         if component is not self:
             self.fire(daemonize())

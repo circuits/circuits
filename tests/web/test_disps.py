@@ -11,7 +11,7 @@ class PrefixingDispatcher(BaseComponent):
     """Forward to another Dispatcher based on the channel."""
 
     @handler("request", priority=1.0)
-    def _on_request(self, event, request, response):
+    async def _on_request(self, event, request, response):
         path = request.path.strip("/")
 
         path = urljoin("/%s/" % self.channel, path)
@@ -22,7 +22,7 @@ class DummyRoot(Controller):
 
     channel = "/"
 
-    def index(self):
+    async def index(self):
         return "Not used"
 
 
@@ -30,7 +30,7 @@ class Root1(Controller):
 
     channel = "/site1"
 
-    def index(self):
+    async def index(self):
         return "Hello from site 1!"
 
 
@@ -38,7 +38,7 @@ class Root2(Controller):
 
     channel = "/site2"
 
-    def index(self):
+    async def index(self):
         return "Hello from site 2!"
 
 

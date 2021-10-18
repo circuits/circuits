@@ -9,13 +9,13 @@ class test(Event):
 
 class App(Component):
 
-    def test(self):
+    async def test(self):
         return "Hello World!"
 
-    def unregistered(self, *args):
+    async def unregistered(self, *args):
         return
 
-    def prepare_unregister(self, *args):
+    async def prepare_unregister(self, *args):
         return
 
 

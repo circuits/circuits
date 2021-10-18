@@ -8,7 +8,7 @@ from .helpers import (
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         realm = "Test"
         users = {"admin": "admin"}
         encrypt = str

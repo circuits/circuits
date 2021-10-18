@@ -52,7 +52,7 @@ class HTTP(BaseComponent):
         self._parser = HttpParser(1, True)
 
     @handler("read")
-    def _on_client_read(self, data):
+    async def _on_client_read(self, data):
         self._parser.execute(data, len(data))
         if self._parser.is_message_complete() or \
                 self._parser.is_upgrade() or \

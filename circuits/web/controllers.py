@@ -17,7 +17,7 @@ from .wrappers import Response
 def expose(*channels, **config):
     def decorate(f):
         @handler(*channels, **config)
-        def wrapper(self, event, *args, **kwargs):
+        async def wrapper(self, event, *args, **kwargs):
             try:
                 if not hasattr(self, "request"):
                     (self.request, self.response), args = args[:2], args[2:]
@@ -130,7 +130,7 @@ Controller = ExposeMetaClass("Controller", (BaseController,), {})
 def exposeJSON(*channels, **config):
     def decorate(f):
         @handler(*channels, **config)
-        def wrapper(self, *args, **kwargs):
+        async def wrapper(self, *args, **kwargs):
             try:
                 if not hasattr(self, "request"):
                     self.request, self.response = args[:2]

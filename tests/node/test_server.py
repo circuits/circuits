@@ -18,7 +18,7 @@ class return_value(Event):
 
 class App(Component):
 
-    def return_value(self, event):
+    async def return_value(self, event):
         print('Hello client!', event.channels)
 
 

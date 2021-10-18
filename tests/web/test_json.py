@@ -8,10 +8,10 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener, urlopen
 
 class Root(JSONController):
 
-    def index(self):
+    async def index(self):
         return {"success": True, "message": "Hello World!"}
 
-    def test_sessions(self, name=None):
+    async def test_sessions(self, name=None):
         if name:
             with self.session as data:
                 data["name"] = name

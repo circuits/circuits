@@ -30,17 +30,17 @@ class App(Component):
 
     returned = False
 
-    def test(self, event):
+    async def test(self, event):
         event.stop()
         return "Hello World!"
 
-    def coroutine1(self):
+    async def coroutine1(self):
         print("coroutine1")
         yield self.call(test())
         print("returned")
         self.returned = True
 
-    def coroutine2(self):
+    async def coroutine2(self):
         print("coroutine2")
         self.fire(test())
         yield self.wait("test")

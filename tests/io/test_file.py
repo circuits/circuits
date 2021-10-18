@@ -19,13 +19,13 @@ class FileApp(Component):
         self.closed = False
         self.buffer = BytesIO()
 
-    def read(self, data):
+    async def read(self, data):
         self.buffer.write(data)
 
-    def eof(self):
+    async def eof(self):
         self.eof = True
 
-    def closed(self):
+    async def closed(self):
         self.closed = True
 
 

@@ -82,7 +82,7 @@ class BasePoller(BaseComponent):
         return (res_list[0], clnt_sock)
 
     @handler("generate_events", priority=-9)
-    def _on_generate_events(self, event):
+    async def _on_generate_events(self, event):
         """
         Pollers have slightly higher priority than the default handler
         from Manager to ensure that they are invoked before the

@@ -16,7 +16,7 @@ class hello(Event):
 
 class App(Component):
 
-    def hello(self):
+    async def hello(self):
         return f"Hello from {getpid():d}"
 
 

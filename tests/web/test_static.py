@@ -10,7 +10,7 @@ from .helpers import HTTPError, quote, urlopen
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         return "Hello World!"
 
 

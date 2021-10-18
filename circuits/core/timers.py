@@ -47,7 +47,7 @@ class Timer(BaseComponent):
         self.reset(interval)
 
     @handler("generate_events")
-    def _on_generate_events(self, event):
+    async def _on_generate_events(self, event):
         if self.expiry is None:
             return
 

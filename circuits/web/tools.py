@@ -464,6 +464,6 @@ class ReverseProxy(BaseComponent):
             self.headers = headers
 
     @handler('request', priority=1)
-    def _on_request(self, req, *_):
+    async def _on_request(self, req, *_):
         ip = [v for v in map(req.headers.get, self.headers) if v]
         req.remote = ip and Host(ip[0], "", ip[0]) or req.remote

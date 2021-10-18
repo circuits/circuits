@@ -19,7 +19,7 @@ class Watcher(BaseComponent):
         self.events = deque()
 
     @handler(channel="*", priority=999.9)
-    def _on_event(self, event, *args, **kwargs):
+    async def _on_event(self, event, *args, **kwargs):
         with self._lock:
             self.events.append(event)
 
@@ -78,7 +78,7 @@ class WaitEvent:
         flag = Flag()
 
         @handler(name, channel=channel)
-        def on_event(self, *args, **kwargs):
+        async def on_event(self, *args, **kwargs):
             flag.status = True
 
         self.handler = self.manager.addHandler(on_event)

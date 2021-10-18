@@ -20,10 +20,10 @@ class App(Component):
         self.handler = None
         self.fevent = None
 
-    def test(self):
+    async def test(self):
         return x  # noqa: F821
 
-    def exception(self, etype, evalue, etraceback, handler=None, fevent=None):
+    async def exception(self, etype, evalue, etraceback, handler=None, fevent=None):
         self.etype = etype
         self.evalue = evalue
         self.etraceback = etraceback

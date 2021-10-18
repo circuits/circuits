@@ -43,7 +43,7 @@ class DropPrivileges(BaseComponent):
             raise SystemExit(-1)
 
     @handler("ready", channel="*")
-    def on_ready(self, server, bind):
+    async def on_ready(self, server, bind):
         try:
             self.drop_privileges()
         finally:

@@ -20,23 +20,23 @@ class firewall_block(Event):
 class AppClient(Component):
     write_data = b''
 
-    def return_value(self):
+    async def return_value(self):
         return 'Hello server!'
 
-    def write(self, data):
+    async def write(self, data):
         self.write_data = data
 
 
 class AppFirewall(Component):
     write_data = b''
 
-    def fw_receive(self, event, sock):
+    async def fw_receive(self, event, sock):
         return self.__event_is_allow(event)
 
-    def fw_send(self, event, sock):
+    async def fw_send(self, event, sock):
         return self.__event_is_allow(event)
 
-    def write(self, data):
+    async def write(self, data):
         self.write_data = data
 
     def __event_is_allow(self, event):
@@ -53,10 +53,10 @@ class AppServer(Component):
     write_data = b''
     write_sock = None
 
-    def return_value(self):
+    async def return_value(self):
         return 'Hello client!'
 
-    def write(self, sock, data):
+    async def write(self, sock, data):
         self.write_sock = sock
         self.write_data = data
 

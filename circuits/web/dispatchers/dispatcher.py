@@ -82,19 +82,19 @@ class Dispatcher(BaseComponent):
         self.paths = dict()
 
     @handler("registered", channel="*")
-    def _on_registered(self, component, manager):
+    async def _on_registered(self, component, manager):
         if (isinstance(component, BaseController) and component.channel not
                 in self.paths):
             self.paths[component.channel] = component
 
     @handler("unregistered", channel="*")
-    def _on_unregistered(self, component, manager):
+    async def _on_unregistered(self, component, manager):
         if (isinstance(component, BaseController) and component.channel in
                 self.paths):
             del self.paths[component.channel]
 
     @handler("request", priority=0.1)
-    def _on_request(self, event, req, res, peer_cert=None):
+    async def _on_request(self, event, req, res, peer_cert=None):
         if peer_cert:
             event.peer_cert = peer_cert
 
@@ -115,7 +115,7 @@ class Dispatcher(BaseComponent):
             )
 
     @handler("request_value_changed")
-    def _on_request_value_changed(self, value):
+    async def _on_request_value_changed(self, value):
         if value.handled:
             return
 

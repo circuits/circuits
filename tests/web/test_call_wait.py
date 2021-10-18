@@ -14,13 +14,13 @@ class App(Component):
 
     channel = "app"
 
-    def foo(self):
+    async def foo(self):
         return "Hello World!"
 
 
 class Root(Controller):
 
-    def index(self):
+    async def index(self):
         value = (yield self.call(foo(), "app"))
         yield value.value
 

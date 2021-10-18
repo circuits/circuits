@@ -56,42 +56,43 @@ class eval(Event):
 
 class App(Component):
     @handler("wait")
-    def _on_wait(self):
+    async def _on_wait(self):
         x = self.fire(hello())
         yield self.wait("hello")
         yield x.value
 
     @handler("call")
-    def _on_call(self):
+    async def _on_call(self):
         x = yield self.call(hello())
         yield x.value
 
-    def hello(self):
+    async def hello(self):
         return "Hello World!"
 
-    def long_wait(self):
+    async def long_wait(self):
         x = self.fire(foo())
         yield self.wait("foo")
         yield x.value
 
-    def wait_return(self):
+    async def wait_return(self):
         self.fire(foo())
         yield (yield self.wait("foo"))
 
-    def long_call(self):
+    async def long_call(self):
         x = yield self.call(foo())
         yield x.value
 
-    def foo(self):
-        yield from range(1, 10)
+    async def foo(self):
+        for i in range(1, 10):
+            yield i
 
-    def get_x(self):
+    async def get_x(self):
         return 1
 
-    def get_y(self):
+    async def get_y(self):
         return 2
 
-    def eval(self):
+    async def eval(self):
         x = yield self.call(get_x())
         y = yield self.call(get_y())
         yield x.value + y.value
