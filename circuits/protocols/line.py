@@ -7,9 +7,8 @@ This module can be used in both server and client implementations.
 import re
 
 from circuits.core import BaseComponent, Event, handler
-from circuits.six import b
 
-LINESEP = re.compile(b("\r?\n"))
+LINESEP = re.compile(b"\r?\n")
 
 
 def splitLines(s, buffer):

@@ -3,8 +3,6 @@
 
 from re import compile as compile_regex
 
-from circuits.six import u
-
 PREFIX = compile_regex("([^!].*)!(.*)@(.*)")
 COLOR_CODE = compile_regex(r'(?:(\d\d?)(?:(,)(\d\d?))?)?')
 COLOR = compile_regex(r"\x03(?:(\d\d?)(?:,(\d\d?))?)?")
@@ -28,19 +26,19 @@ def strip(s, color=False):
     """
 
     if len(s) > 0:
-        if s[0] == u(":"):
+        if s[0] == u":":
             s = s[1:]
     if color:
-        s = s.replace(u("\x01"), u(""))
-        s = s.replace(u("\x02"), u(""))  # bold
-        s = s.replace(u("\x1d"), u(""))  # italics
-        s = s.replace(u("\x1f"), u(""))  # underline
-        s = s.replace(u("\x1e"), u(""))  # strikethrough
-        s = s.replace(u("\x11"), u(""))  # monospace
-        s = s.replace(u("\x16"), u(""))  # reverse color
-        s = COLOR.sub(u(""), s)  # color codes
-        s = s.replace(u("\x03"), u(""))  # color
-        s = s.replace(u("\x0f"), u(""))  # reset
+        s = s.replace(u"\x01", u"")
+        s = s.replace(u"\x02", u"")  # bold
+        s = s.replace(u"\x1d", u"")  # italics
+        s = s.replace(u"\x1f", u"")  # underline
+        s = s.replace(u"\x1e", u"")  # strikethrough
+        s = s.replace(u"\x11", u"")  # monospace
+        s = s.replace(u"\x16", u"")  # reverse color
+        s = COLOR.sub(u"", s)  # color codes
+        s = s.replace(u"\x03", u"")  # color
+        s = s.replace(u"\x0f", u"")  # reset
     return s
 
 
@@ -54,7 +52,7 @@ def joinprefix(nick, user, host):
     :returns str: a string in the form of <nick>!<user>@<host>
     """
 
-    return u("{0}!{1}@{2}").format(nick or u(""), user or u(""), host or u(""))
+    return u"{0}!{1}@{2}".format(nick or u"", user or u"", host or u"")
 
 
 def parseprefix(prefix):
@@ -84,16 +82,16 @@ def parsemsg(s, encoding="utf-8"):
 
     s = s.decode(encoding, 'replace')
 
-    prefix = u("")
+    prefix = u""
     trailing = []
 
-    if s and s[0] == u(":"):
-        prefix, s = s[1:].split(u(" "), 1)
+    if s and s[0] == u":":
+        prefix, s = s[1:].split(u" ", 1)
 
     prefix = parseprefix(prefix)
 
-    if s.find(u(" :")) != -1:
-        s, trailing = s.split(u(" :"), 1)
+    if s.find(u" :") != -1:
+        s, trailing = s.split(u" :", 1)
         args = s.split()
         args.append(trailing)
     else:
@@ -110,7 +108,7 @@ def irc_color_to_ansi(data, reset=True):
     """Maps IRC color codes to ANSI terminal escape sequences"""
 
     def ansi(*seq):
-        return u("\33[{}m").format(u(";").join(u("{:02}").format(x) for x in seq if x))
+        return u"\33[{}m".format(u";".join(u"{:02}".format(x) for x in seq if x))
 
     ansi_default_fg = 39
     ansi_default_bg = 49
@@ -134,10 +132,10 @@ def irc_color_to_ansi(data, reset=True):
     }
 
     enable_char = {
-        u('\x16'): 1, u('\x1d'): 3, u('\x1e'): 9, u('\x1f'): 4, u('\x16'): 7
+        u'\x16': 1, u'\x1d': 3, u'\x1e': 9, u'\x1f': 4, u'\x16': 7
     }
     revert_char = {
-        u('\x02'): 22, u('\x1d'): 23, u('\x1f'): 24, u('\x16'): 27, u('\x1e'): 29
+        u'\x02': 22, u'\x1d': 23, u'\x1f': 24, u'\x16': 27, u'\x1e': 29
     }
 
     def escape(data):
@@ -148,7 +146,7 @@ def irc_color_to_ansi(data, reset=True):
         for i, char in enumerate(data):
             if i in ignore:
                 continue
-            if char == u('\x0f'):  # reset
+            if char == u'\x0f':  # reset
                 start = []
                 yield ansi(0)
             elif char in start and char in revert_char:
@@ -157,7 +155,7 @@ def irc_color_to_ansi(data, reset=True):
             elif char in enable_char:
                 start.append(char)
                 yield ansi(enable_char[char])
-            elif char == u('\x03'):
+            elif char == u'\x03':
                 i += 1
                 m = COLOR_CODE.match(data[i:i + 5])
                 colors = []
@@ -180,14 +178,14 @@ def irc_color_to_ansi(data, reset=True):
                     yield ansi(*colors)
                 else:
                     yield ansi(ansi_default_fg, ansi_default_bg)
-            #elif char == u('\x04'):
+            #elif char == u'\x04':
             #    if char[i + 1:i + 6].isdigit():
             #        ignore.update(range(i, i + 6))
             #    # TODO: parse hex representation
-            #elif char == u('\x11'):  # monospace
+            #elif char == u'\x11':  # monospace
             #    start.append(char)
             else:
                 yield char
         if start and reset:
             yield ansi(0)
-    return u("").join(escape(data))
+    return u"".join(escape(data))

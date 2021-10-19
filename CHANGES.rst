@@ -5,6 +5,26 @@
 Change Log
 ==========
 
+- :release:`3.2.2 ETA <2021-10-XX>`
+- :support:`298` Added support for Python 3.10
+- :feature:`96` `circuits.tools.graph()` has been split into smaller functions (for creating `dot`, `ascii`, `png` separately)
+- :bug:`197` Exceptions during initialization of `Poller`s is now handlded via an `error` Event
+- :bug:`197` Exceptions during `socket.accept()` are now re-raised in the main thread
+- :bug:`261` A workaroung for websocket clients has been added, which prevents that the first websocket is not lost
+- :bug:`307` Various format string syntaxes have been relaxed so that they don't cause exceptions on non string input
+- :doc:`-` typos in docstrings/comments have been fixed
+- :security:`293` HTML escaping of error responses, 3XX redirects and Powered-by texts has been fixed
+- :security:`251` A HTTP header injection vulnerability in `circuits.web.websockets.client` has been fixed
+- :security:`289` potential XSS attacks via crafted files in directory listing is now prevented via HTML escaping in the `circuits.web.dispatchers.static` component.
+- :bug:`291` HTTP `Connection` header values are now correctly evaluated case insensitive in `websocket` components
+- :bug:`292` HTTP `Connection` header values are now correctly evaluated case insensitive in `web.client` components
+- :bug:`-` Fixed Python 3 compatibility for `circuits.web.tools.validate_etag()` with `MD5` hashes
+- :bug:`238` Reverted changes fixed by upstream `http-parser` library
+- :bug:`285` `circuits.web.parsers.http` has been upgraded to latest upstream `http-parser` version
+- :bug:`285` requests with chunked transfer encoding are not dispatched if the message body is not yet received completely
+- :bug:`253` `circuits.io.serial`: add readline argument to only fire read events for full lines
+- :bug:`252` `circuits.io.serial`: missing encoding parameter has been added
+
 - :release:`3.2.1 <2020-10-30>`
 - :support:`-` Added support for Python 3.6, 3.7, 3.8, 3.9-dev
 - :support:`152` Dropped the support for Python 2.6 and 3.x < 3.4
