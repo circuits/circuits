@@ -5,7 +5,7 @@
 Change Log
 ==========
 
-- :release:`3.2.2 ETA <2021-10-19>`
+- :release:`3.2.2 <2021-10-19>`
 - :support:`298` Added support for Python 3.10
 - :feature:`132` The initial `request` containing the `session` has been added to the websocket dispatcher events in `circuits.web.websockets`
 - :feature:`96` `circuits.tools.graph()` has been split into smaller functions (for creating `dot`, `ascii`, `png` separately)
