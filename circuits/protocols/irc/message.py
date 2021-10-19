@@ -1,7 +1,7 @@
 """Internet Relay Chat message"""
 
 
-from circuits.six import PY3, string_types, text_type, u
+from circuits.six import PY3, string_types, text_type
 
 from .utils import parsemsg
 
@@ -46,17 +46,17 @@ class Message(object):
         self._check_args()
         args = self.args[:]
 
-        if args and u(" ") in args[-1] and not args[-1].startswith(u(":")):
-            args[-1] = u(":{}").format(args[-1])
+        if args and u" " in args[-1] and not args[-1].startswith(u":"):
+            args[-1] = u":{}".format(args[-1])
 
-        return u("{prefix}{command} {args}\r\n").format(
+        return u"{prefix}{command} {args}\r\n".format(
             prefix=(
-                u(":{} ").format(self.prefix)
+                u":{} ".format(self.prefix)
                 if self.prefix is not None
-                else u("")
+                else u""
             ),
             command=text_type(self.command),
-            args=u(" ").join(args)
+            args=u" ".join(args)
         )
 
     def __repr__(self):

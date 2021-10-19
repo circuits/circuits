@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import pytest
 
-from circuits.six import b, u
+from circuits.six import b
 from circuits.web import Controller
 
 from .helpers import HTTPError, urlencode, urlopen
@@ -65,10 +65,10 @@ def test_args(webapp):
 ])
 def test_default_args(webapp, data, expected):
     args, kwargs = data
-    url = u("{0:s}/test_default_args/{1:s}".format(
+    url = u"{0:s}/test_default_args/{1:s}".format(
         webapp.server.http.base,
-        u("/").join(args)
-    ))
+        u"/".join(args)
+    )
     data = urlencode(kwargs).encode("utf-8")
     f = urlopen(url, data)
     assert f.read() == expected
