@@ -1,7 +1,7 @@
 .. _Developer Mailing List: http://groups.google.com/group/circuits-dev
 .. _Issue Tracker: https://github.com/circuits/circuits/issues
-.. _FreeNode IRC Network: http://freenode.net
-.. _IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
+.. _Libera.Chat IRC Network: https://libera.chat
+.. _IRC Channel: https://web.libera.chat/#circuits
 
 
 Development Introduction
@@ -14,13 +14,13 @@ Here's how we do things in circuits...
 Communication
 -------------
 
-- `IRC Channel`_ on the `FreeNode IRC Network`_
+- `IRC Channel`_ on the `Libera.Chat IRC Network`_
 - `Developer Mailing List`_
 - `Issue Tracker`_
 
 
 .. note:: If you are familiar with `IRC <http://en.wikipedia.org/wiki/Internet_Relay_Chat>`_
-          and use your own IRC Client then connect to the FreeNode Network and ``/join #circuits``.
+          and use your own IRC Client then connect to the Libera.Chat Network and ``/join #circuits``.
 
 
 Standards

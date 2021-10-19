@@ -1,6 +1,6 @@
 .. _Python Programming Language: http://www.python.org/
-.. _#circuits IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
-.. _FreeNode IRC Network: http://freenode.net
+.. _#circuits IRC Channel: https://web.libera.chat/#circuits
+.. _Libera.Chat IRC Network: https://libera.chat
 .. _Python Standard Library: http://docs.python.org/library/
 .. _MIT License: http://www.opensource.org/licenses/mit-license.php
 .. _Create an Issue: https://github.com/circuits/circuits/issues/new
@@ -124,7 +124,7 @@ There are also several places you can reach out to the circuits community:
 
 - `Mailing List`_
 - `Google+ Group`_
-- `#circuits IRC Channel`_ on the `FreeNode IRC Network`_
+- `#circuits IRC Channel`_ on the `Libera.Chat IRC Network`_
 - `Ask a Question`_ on `Stackoverflow`_ (Tag it: ``circuits-framework``)
 
 ----

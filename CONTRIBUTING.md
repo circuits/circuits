@@ -11,14 +11,14 @@
 ## Learn & listen
 
 * Mailing list: [circuits-dev](https://groups.google.com/forum/#!forum/circuits-dev)
-* IRC channel: [#circuits](http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4)
-	           on the [FreeNode IRC Network](http://freenode.net/) (``irc.freenode.net``).\
+* IRC channel: [#circuits](https://web.libera.chat/#circuits)
+	           on the [Libera.Chat IRC Network](https://libera.chat/) (``irc.libera.chat:6697`` TLS).\
 * Blog: [James Mills circuits Blog](http://shortcircuit.net.au/~prologic/blog/tag/circuits/)
 
 ## Adding new features
 
 Got a great new feature you'd like to add? Great! First let's discuss it either on
-the [#circuits](http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4) IRC Channel
+the [#circuits](https://web.libera.chat/#circuits) IRC Channel
 or create a new [Discussion Issue](https://github.com/circuits/circuits/issues/new).
 
 Once we're all on the same page and we've nutted down the design and requirements together

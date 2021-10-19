@@ -3,7 +3,7 @@
 
 This example shows how to use several components in circuits as well
 as one of the builtin networking protocols. This IRC Bot simply connects
-to the FreeNode IRC Network and joins the #circuits channel. It will also
+to the Libera.Chat IRC Network and joins the #circuits channel. It will also
 echo anything privately messages to it in response.
 """
 import sys
@@ -21,7 +21,7 @@ class Bot(Component):
     # Define a separate channel so we can create many instances of ``Bot``
     channel = "ircbot"
 
-    def init(self, host="irc.freenode.net", port="6667", channel=channel):
+    def init(self, host="irc.libera.chat", port="6667", channel=channel):
         self.host = host
         self.port = int(port)
 

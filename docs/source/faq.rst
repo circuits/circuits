@@ -1,4 +1,4 @@
-.. _#circuits IRC Channel: http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4
+.. _#circuits IRC Channel: https://web.libera.chat/#circuits
 .. _Mailing List: http://groups.google.com/group/circuits-users
 
 .. faq:

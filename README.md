@@ -83,7 +83,7 @@ There are also several places you can reach out to the circuits community:
 
 -   [Mailing List](http://groups.google.com/group/circuits-users)
 -   [Google+ Group](https://plus.google.com/communities/107775112577294599973)
--   [\#circuits IRC Channel](http://webchat.freenode.net/?randomnick=1&channels=circuits&uio=d4) on the [FreeNode IRC Network](http://freenode.net)
+-   [\#circuits IRC Channel](https://web.libera.chat/#circuits) on the [Libera.Chat IRC Network](https://libera.chat)
 -   [Ask a Question](http://stackoverflow.com/questions/ask) on [Stackoverflow](http://stackoverflow.com/) (Tag it: `circuits-framework`)
 
 ------------------------------------------------------------------------

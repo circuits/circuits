@@ -49,7 +49,7 @@ If you'd like to see a new feature added to circuits, then we'd like to hear
 about it~ We would like to see some discussion around any new features as well
 as valid use-cases. To start the discussions off, please either:
 
-- `Chat to us on #circuits on the FreeNode IRC Network <http://freenode.org>`_
+- `Chat to us on #circuits on the Libera.Chat IRC Network <https://libera.chat>`_
 
   or
 
