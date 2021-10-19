@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+import pytest
+
 try:
     from httplib import HTTPConnection
 except ImportError:
-    from http.client import HTTPConnection  # NOQA
+    from http.client import HTTPConnection  # noqa
 
-from circuits.six import b
 from circuits.web import Controller
 from circuits.web.client import Client, request
 
@@ -37,20 +39,23 @@ class Root(Controller):
 def test_index(webapp):
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b("Hello World!")
+    assert s == b"Hello World!"
 
 
-def test_request_body(webapp):
+@pytest.mark.parametrize('body', [
+    u"ä".encode('utf-8'),
+    u"ä".encode('iso8859-1')
+])
+def test_request_body(webapp, body):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
-    body = b("ä")
     connection.request("GET", "/request_body", body)
     response = connection.getresponse()
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == b("ä")
+    assert s == body
 
     connection.close()
 
@@ -73,7 +78,7 @@ def test_request_headers(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
-    body = b("")
+    body = b""
     headers = {"A": "ä"}
     connection.request("GET", "/request_headers", body, headers)
     response = connection.getresponse()
