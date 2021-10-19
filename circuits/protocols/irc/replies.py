@@ -271,7 +271,7 @@ def ERR_PASSWDMISMATCH():
 def ERR_UNKNOWNMODE(mode, channel=None):
     if channel is None:
         return _M(u"472", mode, u"is unknown mode char to me")
-    return _M(u"472", mode, u"is unknown mode char to me for channel {1}".format(channel))
+    return _M(u"472", mode, u"is unknown mode char to me for channel {}".format(channel))
 
 
 def ERR_CHANOPRIVSNEEDED(channel):
