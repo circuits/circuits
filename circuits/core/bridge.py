@@ -4,7 +4,7 @@ The Bridge Component is used for inter-process communications between
 processes. Bridge is used internally when a Component is started in
 "process mode" via :meth:`circuits.core.manager.start`. Typically a
 Pipe is used as the socket transport between two sides of a Bridge
-(*there must be a :class:`~Bridge` instnace on both sides*).
+(*there must be a :class:`~Bridge` instance on both sides*).
 """
 import traceback
 

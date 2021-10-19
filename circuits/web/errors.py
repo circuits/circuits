@@ -59,16 +59,16 @@ class httperror(Event):
         self.response.close = True
         self.response.status = self.code
 
-        powered_by = POWERED_BY % ({
-            "url": SERVER_URL,
-            "version": SERVER_VERSION
-        }) if getattr(request.server, 'display_banner', False) else ""
+        powered_by = POWERED_BY % {
+            "url": escape(SERVER_URL, True),
+            "version": escape(SERVER_VERSION)
+        } if getattr(request.server, 'display_banner', False) else ""
 
         self.data = {
             "code": self.code,
             "name": HTTP_STATUS_CODES.get(self.code, "???"),
             "description": self.description,
-            "traceback": escape(self.traceback),
+            "traceback": self.traceback,
             "powered_by": powered_by
         }
 
@@ -92,7 +92,11 @@ class httperror(Event):
         if not self.request.print_debug:
             self.data["traceback"] = ''
 
-        return DEFAULT_ERROR_MESSAGE % self.data
+        # FIXME: description is a possible XSS attack vector
+        return DEFAULT_ERROR_MESSAGE % {
+            key: (escape(value, True) if key not in ('powered_by', 'description') and not isinstance(value, (int, float)) else value)
+            for key, value in self.data.items()
+        }
 
     def __repr__(self):
         return "<%s %d %s>" % (
@@ -173,17 +177,17 @@ class redirect(httperror):
             # new URI(s)."
             msg = {300: "This resource can be found at <a href='%s'>%s</a>.",
                    301: ("This resource has permanently moved to "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    302: ("This resource resides temporarily at "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    303: ("This resource can be found at "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    307: ("This resource has moved temporarily to "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    308: ("This resource has permanently moved to "
-                         "<a href='%s'>%s</a>."),
+                         '<a href="%s">%s</a>.'),
                    }[code]
-            response.body = "<br />\n".join([msg % (u, u) for u in urls])
+            response.body = "<br />\n".join([msg % (escape(u, True), escape(u)) for u in urls])
             # Previous code may have set C-L, so we have to reset it
             # (allow finalize to set it).
             response.headers.pop("Content-Length", None)

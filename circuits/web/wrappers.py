@@ -100,10 +100,10 @@ class HTTPStatus(object):
         return super(HTTPStatus, self).__eq__(other)
 
     def __str__(self):
-        return "{0:d} {1:s}".format(self._status, self._reason)
+        return "{:d} {}".format(self._status, self._reason)
 
     def __repr__(self):
-        return "<Status (status={0:d} reason={1:s}>".format(
+        return "<Status (status={:d} reason={}>".format(
             self._status, self._reason
         )
 
@@ -207,7 +207,7 @@ class Request(object):
         self.host = host
         self.port = port
 
-        base = "{0:s}://{1:s}{2:s}/".format(
+        base = "{}://{}{}/".format(
             self.scheme,
             self.host,
             ":{0:d}".format(self.port)
@@ -217,10 +217,10 @@ class Request(object):
 
         self.base = parse_url(base)
 
-        url = "{0:s}{1:s}{2:s}".format(
+        url = "{}{}{}".format(
             base,
             self.path,
-            "?{0:s}".format(self.qs) if self.qs else ""
+            "?{}".format(self.qs) if self.qs else ""
         )
         self.uri = parse_url(url)
         self.uri.sanitize()
@@ -334,8 +334,8 @@ class Response(object):
     def __str__(self):
         self.prepare()
         protocol = self.protocol
-        status = "{0:s}".format(self.status)
-        return "{0:s} {1:s}\r\n".format(protocol, status)
+        status = "{}".format(self.status)
+        return "{} {}\r\n".format(protocol, status)
 
     def __bytes__(self):
         return str(self).encode(self.encoding)  # FIXME: this is wrong. HTTP headers must be ISO8859-1. This should only encode the body as UTF-8.
@@ -343,7 +343,7 @@ class Response(object):
     def prepare(self):
         # Set a default content-Type if we don't have one.
         self.headers.setdefault(
-            "Content-Type", "text/html; charset={0:s}".format(self.encoding)
+            "Content-Type", "text/html; charset={}".format(self.encoding)
         )
 
         cLength = None

@@ -21,8 +21,8 @@ class Value(object):
     :type  manager: A Manager/Component instance.
 
     :ivar result: True if this value has been changed.
-    :ivar errors: True if while setting this value an exception occured.
-    :ivar notify: True or an event name  to notify of changes to this value
+    :ivar errors: True if while setting this value an exception occurred.
+    :ivar notify: True or an event name to notify of changes to this value
 
     This is a Future/Promise implementation.
     """

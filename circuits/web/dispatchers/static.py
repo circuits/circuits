@@ -72,7 +72,7 @@ class Static(BaseComponent):
             return
 
         if not location.startswith(os.path.dirname(self.docroot)):
-            return  # hacking attemp e.g. /foo/../../../../../etc/shadow
+            return  # hacking attempt e.g. /foo/../../../../../etc/shadow
 
         # Is it a file we can serve directly?
         if os.path.isfile(location):

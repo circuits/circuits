@@ -82,7 +82,7 @@ class HTTP(BaseComponent):
         if is_unix_socket(server.host):
             url = server.host
         else:
-            url = "{0:s}://{1:s}{2:s}".format(
+            url = "{}://{}{}".format(
                 (server.secure and "https") or "http",
                 server.host or "0.0.0.0",
                 ":{0:d}".format(server.port or 80)
