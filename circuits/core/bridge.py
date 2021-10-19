@@ -8,7 +8,6 @@ Pipe is used as the socket transport between two sides of a Bridge
 """
 import traceback
 
-from ..six import b
 from .components import BaseComponent
 from .events import Event, exception
 from .handlers import handler
@@ -20,7 +19,7 @@ except ImportError:
     from pickle import dumps, loads  # NOQA
 
 
-_sentinel = b('~~~')
+_sentinel = b'~~~'
 
 
 class ipc(Event):
@@ -46,7 +45,7 @@ class Bridge(BaseComponent):
     channel = "bridge"
 
     def init(self, socket, channel=channel):
-        self._buffer = b("")
+        self._buffer = b""
         self._socket = socket
         self._values = dict()
 

@@ -25,7 +25,7 @@
 import codecs
 import re
 
-from circuits.six import b, string_types, text_type
+from circuits.six import string_types, text_type
 from circuits.six.moves.urllib_parse import (
     quote, unquote, urljoin, urlparse, urlunparse,
 )
@@ -87,15 +87,15 @@ class URL(object):
         self._scheme = scheme
         self._host = host
         self._port = port
-        self._path = path or b('/')
-        self._params = re.sub(b('^;+'), b(''), params)
+        self._path = path or b'/'
+        self._params = re.sub(b'^;+', b'', params)
         self._params = re.sub(
-            b('^;|;$'), b(''), re.sub(b(';{2,}'), b(';'), self._params)
+            b'^;|;$', b'', re.sub(b';{2,}', b';', self._params)
         )
         # Strip off extra leading ?'s
-        self._query = query.lstrip(b('?'))
+        self._query = query.lstrip(b'?')
         self._query = re.sub(
-            b('^&|&$'), b(''), re.sub(b('&{2,}'), b('&'), self._query)
+            b'^&|&$', b'', re.sub(b'&{2,}', b'&', self._query)
         )
         self._fragment = fragment
 
@@ -157,11 +157,11 @@ class URL(object):
     def canonical(self):
         '''Canonicalize this url. This includes reordering parameters and args
         to have a consistent ordering'''
-        self._query = b('&').join(
-            sorted([q for q in self._query.split(b('&'))])
+        self._query = b'&'.join(
+            sorted([q for q in self._query.split(b'&')])
         )
-        self._params = b(';').join(
-            sorted([q for q in self._params.split(b(';'))])
+        self._params = b';'.join(
+            sorted([q for q in self._params.split(b';')])
         )
         return self
 
@@ -183,16 +183,16 @@ class URL(object):
     def abspath(self):
         '''Clear out any '..' and excessive slashes from the path'''
         # Remove double forward-slashes from the path
-        path = re.sub(b(r'\/{2,}'), b('/'), self._path)
+        path = re.sub(br'\/{2,}', b'/', self._path)
         # With that done, go through and remove all the relative references
         unsplit = []
         directory = False
-        for part in path.split(b('/')):
+        for part in path.split(b'/'):
             # If we encounter the parent directory, and there's
             # a segment to pop off, then we should pop it off.
-            if part == b('..') and (not unsplit or unsplit.pop() is not None):
+            if part == b'..' and (not unsplit or unsplit.pop() is not None):
                 directory = True
-            elif part != b('.'):
+            elif part != b'.':
                 directory = False
                 unsplit.append(part)
             else:
@@ -202,8 +202,8 @@ class URL(object):
         if directory:
             # If the path ends with a period, then it refers to a directory,
             # not a file path
-            unsplit.append(b('/'))
-        self._path = b('/').join(unsplit)
+            unsplit.append(b'/')
+        self._path = b'/'.join(unsplit)
         return self
 
     def lower(self):
@@ -230,7 +230,7 @@ class URL(object):
         '''Return the url in an arbitrary encoding'''
         netloc = self._host
         if self._port:
-            netloc += (b(':') + bytes(self._port))
+            netloc += (b':' + bytes(self._port))
 
         result = urlunparse((
             self._scheme, netloc, self._path,

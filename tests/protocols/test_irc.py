@@ -9,7 +9,6 @@ from circuits.protocols.irc import (
     PRIVMSG, QUIT, TOPIC, USER, WHOIS, irc_color_to_ansi, joinprefix, parsemsg,
     parseprefix, strip,
 )
-from circuits.six import b
 
 
 class App(Component):
@@ -63,13 +62,13 @@ def test_joinprefix():
 
 
 def test_parsemsg():
-    s = b(":foo!bar@localhost NICK foobar")
+    s = b":foo!bar@localhost NICK foobar"
     source, command, args = parsemsg(s)
     assert source == (u"foo", u"bar", u"localhost")
     assert command == "NICK"
     assert args == [u"foobar"]
 
-    s = b("")
+    s = b""
     source, command, args = parsemsg(s)
     assert source == (None, None, None)
     assert command is None

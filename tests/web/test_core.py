@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import pytest
 
-from circuits.six import b
 from circuits.web import Controller
 
 from .helpers import HTTPError, urlencode, urlopen
@@ -59,9 +58,9 @@ def test_args(webapp):
 
 
 @pytest.mark.parametrize("data,expected", [
-    ((["1"], {}), b("a=1\nb=None")),
-    ((["1", "2"], {}), b("a=1\nb=2")),
-    ((["1"], {"b": "2"}), b("a=1\nb=2")),
+    ((["1"], {}), b"a=1\nb=None"),
+    ((["1", "2"], {}), b"a=1\nb=2"),
+    ((["1"], {"b": "2"}), b"a=1\nb=2"),
 ])
 def test_default_args(webapp, data, expected):
     args, kwargs = data
