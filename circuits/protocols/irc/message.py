@@ -47,11 +47,11 @@ class Message(object):
         args = self.args[:]
 
         if args and u(" ") in args[-1] and not args[-1].startswith(u(":")):
-            args[-1] = u(":{0:s}").format(args[-1])
+            args[-1] = u(":{}").format(args[-1])
 
-        return u("{prefix:s}{command:s} {args:s}\r\n").format(
+        return u("{prefix}{command} {args}\r\n").format(
             prefix=(
-                u(":{0:s} ").format(self.prefix)
+                u(":{} ").format(self.prefix)
                 if self.prefix is not None
                 else u("")
             ),

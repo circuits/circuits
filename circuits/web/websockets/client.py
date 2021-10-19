@@ -56,6 +56,7 @@ class WebSocketClient(BaseComponent):
         self._response = None
         self._pending = 0
         self._wschannel = wschannel
+        self._codec = None
 
         self._transport = TCPClient(channel=self.channel).register(self)
         HTTP(channel=self.channel).register(self._transport)
@@ -112,8 +113,21 @@ class WebSocketClient(BaseComponent):
                 or response.status != 101:
             self.fire(close(), self._transport)
             raise NotConnected()
-        WebSocketCodec(
+        self._codec = WebSocketCodec(
             data=response.body.read(), channel=self._wschannel).register(self)
+
+    @handler('read')
+    def _on_read(self, event, *args):
+        # FIXME: every read-event is lost due to a race condition between
+        # WebSocketCodec().register() and the registered()-event of that instance.
+        if len(args) != 1:
+            return
+        if self._codec is not None and self._codec.parent is self:
+            if 'read' not in self._codec.events():
+                event.stop()
+                self.fire(event.create('read', *args))
+            else:
+                self.removeHandler(self._on_read)
 
     @handler("error", priority=10)
     def _on_error(self, event, error, *args, **kwargs):

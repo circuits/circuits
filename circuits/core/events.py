@@ -24,7 +24,7 @@ class Event(object):
 
     def child(self, name, *args, **kwargs):
         e = Event.create(
-            "{0:s}_{1:s}".format(self.name, name), *args, **kwargs
+            "{:s}_{:s}".format(self.name, name), *args, **kwargs
         )
         e.parent = self
         return e

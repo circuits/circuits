@@ -7,7 +7,7 @@ import re
 from circuits.six import b, iteritems, u
 
 # Regular expression that matches `special' characters in parameters, the
-# existance of which force quoting of the parameter value.
+# existence of which force quoting of the parameter value.
 
 tspecials = re.compile(r'[ \(\)<>@,;:\\"/\[\]\?=]')
 q_separator = re.compile(r'; *q *=')

@@ -18,7 +18,7 @@ def who(request, encoding="utf-8"):
     ip = request.remote.ip
     agent = request.headers.get("User-Agent", "")
 
-    return sha("{0:s}{1:s}".format(ip, agent).encode(encoding)).hexdigest()
+    return sha("{}{}".format(ip, agent).encode(encoding)).hexdigest()
 
 
 def create_session(request):
@@ -28,7 +28,7 @@ def create_session(request):
     of the users IP Address and User Agent in the form of ``sid/who``.
     """
 
-    return "{0:s}/{1:s}".format(uuid().hex, who(request))
+    return "{}/{}".format(uuid().hex, who(request))
 
 
 def verify_session(request, sid):

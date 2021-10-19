@@ -86,8 +86,8 @@ class FallBackExceptionHandler(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR {0:s} ({1:s}) ({2:s}): {3:s}\n".format(
-            handler, repr(fevent), repr(error_type), repr(value)
+        msg = "ERROR {} ({!r}) ({!r}): {!r}\n".format(
+            handler, fevent, error_type, value
         )
 
         s.append(msg)

@@ -74,7 +74,7 @@ class Sleep(Iterator):
         return self
 
     def __repr__(self):
-        return "sleep({0:s})".format(repr(self.expiry - time()))
+        return "sleep({!r})".format(self.expiry - time())
 
     def __next__(self):
         if time() >= self.expiry:
@@ -254,7 +254,7 @@ class Manager(object):
 
         name = self.__class__.__name__
 
-        channel = "/{0:s}".format(str(getattr(self, "channel", "")))
+        channel = "/{}".format(getattr(self, "channel", ""))
 
         q = len(self._queue)
         state = "R" if self.running else "S"
@@ -978,7 +978,7 @@ class Manager(object):
             for _ in range(3):
                 self.tick()
         except Exception as exc:
-            stderr.write("Unhandled ERROR: {0:s}\n".format(exc))
+            stderr.write("Unhandled ERROR: {}\n".format(exc))
             stderr.write(format_exc())
         finally:
             try:

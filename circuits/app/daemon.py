@@ -83,8 +83,8 @@ class Daemon(Component):
                 _exit(0)
         except OSError as e:
             stderr.write(
-                "fork #1 failed: {0:d} ({1:s})\n".format(
-                    e.errno, str(e)
+                "fork #1 failed: {:d} ({})\n".format(
+                    e.errno, e
                 )
             )
 
@@ -103,8 +103,8 @@ class Daemon(Component):
                 _exit(0)
         except OSError as e:
             stderr.write(
-                "fork #2 failed: {0:d} ({1:s})\n".format(
-                    e.errno, str(e)
+                "fork #2 failed: {:d} ({})\n".format(
+                    e.errno, e
                 )
             )
 

@@ -115,8 +115,8 @@ def graph(x, name=None):
 
         plt.axis("off")
 
-        plt.savefig("{0:s}.png".format(name or x.name))
-        networkx.drawing.nx_agraph.write_dot(g, "{0:s}.dot".format(name or x.name))
+        plt.savefig("{}.png".format(name or x.name))
+        networkx.drawing.nx_agraph.write_dot(g, "{}.dot".format(name or x.name))
 
         plt.clf()
 
@@ -159,7 +159,7 @@ def deprecated(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         warn_explicit(
-            "Call to deprecated function {0:s}".format(f.__name__),
+            "Call to deprecated function {}".format(f.__name__),
             category=DeprecationWarning,
             filename=getattr(f, _func_code).co_filename,
             lineno=getattr(f, _func_code).co_firstlineno + 1
