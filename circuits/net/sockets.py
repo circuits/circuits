@@ -33,6 +33,10 @@ try:
 except ImportError:
     AF_UNIX = None
 
+try:
+    from socket import socketpair
+except ImportError:
+    socketpair = None
 
 try:
     from ssl import wrap_socket as ssl_socket
@@ -877,7 +881,8 @@ def Pipe(*channels, **kwargs):
     the pipe.
     """
 
-    from socket import socketpair
+    if socketpair is None:
+        raise RuntimeError('No socketpair support available.')
 
     if not channels:
         channels = ("a", "b")
