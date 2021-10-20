@@ -66,34 +66,26 @@ class BaseServer(BaseComponent):
 
         self._display_banner = display_banner
 
-        SocketType = TCPServer if isinstance(bind, (int, list, tuple)) else TCPServer if ':' in bind else UNIXServer
+        if isinstance(bind, (int, list, tuple)):
+            SocketType = TCPServer
+        else:
+            SocketType = TCPServer if ':' in bind else UNIXServer
 
-        self.server = SocketType(
-            bind,
-            secure=secure,
-            certfile=certfile,
-            channel=channel,
-            bufsize=bufsize,
-            **kwargs,
-        ).register(self)
+        self.server = SocketType(bind, secure=secure, certfile=certfile, channel=channel, bufsize=bufsize, **kwargs).register(
+            self
+        )
 
-        self.http = HTTP(
-            self,
-            encoding=encoding,
-            channel=channel,
-        ).register(self)
+        self.http = HTTP(self, encoding=encoding, channel=channel).register(self)
 
     @property
     def host(self):
         if hasattr(self, 'server'):
             return self.server.host
-        return None
 
     @property
     def port(self):
         if hasattr(self, 'server'):
             return self.server.port
-        return None
 
     @property
     def display_banner(self):
@@ -103,7 +95,10 @@ class BaseServer(BaseComponent):
     def secure(self):
         if hasattr(self, 'server'):
             return self.server.secure
-        return None
+
+    @property
+    def scheme(self):
+        return 'https' if self.secure else 'http'
 
     @handler('connect')
     def _on_connect(self, *args, **kwargs):
@@ -125,9 +120,7 @@ class BaseServer(BaseComponent):
 
     @handler('ready')
     def _on_ready(self, server, bind):
-        stderr.write(
-            f'{self.http.version} ready! Listening on: {self.http.base}\n',
-        )
+        stderr.write('{} ready! Listening on: {}\n'.format(self.http.version, self.http.base))
 
 
 class Server(BaseServer):
@@ -160,11 +153,7 @@ class StdinServer(BaseComponent):
         super().__init__(channel=channel)
 
         self.server = (io.stdin + io.stdout).register(self)
-        self.http = HTTP(
-            self,
-            encoding=encoding,
-            channel=channel,
-        ).register(self)
+        self.http = HTTP(self, encoding=encoding, channel=channel).register(self)
 
         Dispatcher(channel=self.channel).register(self)
 
