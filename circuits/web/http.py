@@ -21,7 +21,6 @@ from .parsers import BAD_FIRST_LINE, HttpParser
 from .url import parse_url
 from .utils import is_unix_socket
 
-MAX_HEADER_FRAGENTS = 20
 HTTP_ENCODING = 'utf-8'
 
 
