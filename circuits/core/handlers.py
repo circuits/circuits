@@ -85,7 +85,8 @@ class handler(object):
         self.decorate(f)
         return f
 
-    def decorate(self, f):
+    @classmethod
+    def decorate(cls, f):
         args = getargspec(f)[0]
 
         if args and args[0] == "self":
