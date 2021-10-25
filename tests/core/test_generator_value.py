@@ -32,7 +32,6 @@ def test_return_generator():
 
     v = app.fire(test())
     app.tick()
-    app.tick()
 
     x = v.value
     assert x == "Hello"
@@ -44,7 +43,6 @@ def test_yield():
         app.flush()
 
     v = app.fire(hello())
-    app.tick()
     app.tick()
     app.tick()
 

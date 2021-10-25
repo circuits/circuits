@@ -696,8 +696,10 @@ class Manager(object):
             if value is not None:
                 if isinstance(value, GeneratorType):
                     event.waitingHandlers += 1
-                    event.value.promise = True
-                    self.registerTask((event, value, None))
+                    task = (event, value, None)
+                    self.registerTask(task)
+                    # Process the task immediately
+                    self.processTask(*task)
                 else:
                     event.value.value = value
 

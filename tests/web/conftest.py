@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from circuits import Component, Debugger, handler
+from circuits import Component, handler
 from circuits.net.sockets import close
 from circuits.web import Server, Static
 from circuits.web.client import Client, request
@@ -53,10 +53,6 @@ def webapp(request, manager, watcher):
     Root = getattr(request.module, "Root", None)
     if Root is not None:
         Root().register(webapp)
-        assert watcher.wait("registered")
-
-    if request.config.option.verbose:
-        Debugger().register(webapp)
         assert watcher.wait("registered")
 
     def finalizer():
