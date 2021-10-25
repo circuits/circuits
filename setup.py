@@ -83,6 +83,7 @@ setup(
     use_scm_version={
         "write_to": "circuits/version.py",
     },
+    install_requires=["httoop"],
     setup_requires=[
         "setuptools_scm"
     ],
