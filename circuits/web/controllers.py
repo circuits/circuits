@@ -29,7 +29,7 @@ def expose(*channels, **config):
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
-                return handler.call(f, self, event, *args, **kwargs)
+                return handler.call(f, event, self, *args, **kwargs)
             finally:
                 if hasattr(self, "request"):
                     del self.request
