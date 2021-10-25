@@ -426,7 +426,7 @@ class HTTP(BaseComponent):
 
     @handler("exception")
     def _on_exception(self, *args, **kwargs):
-        if not len(args) == 3:
+        if len(args) != 3:
             return
 
         etype, evalue, etraceback = args

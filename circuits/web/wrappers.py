@@ -8,16 +8,12 @@ from time import time
 
 from circuits.net.sockets import BUFSIZE
 from circuits.six import binary_type, text_type
+from circuits.six.moves.http_cookies import SimpleCookie
 
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 from .errors import httperror
 from .headers import Headers
 from .url import parse_url
-
-try:
-    from Cookie import SimpleCookie
-except ImportError:
-    from http.cookies import SimpleCookie  # NOQA
 
 try:
     from email.utils import formatdate
