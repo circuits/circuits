@@ -47,8 +47,9 @@ def expose(*channels, **config):
 
         handler.decorate(f)
         handler.decorate(wrapper)
+        assert wrapper.event
 
-        return update_wrapper(wrapper, f)
+        return update_wrapper(wrapper, f, updated=())
 
     return decorate
 
