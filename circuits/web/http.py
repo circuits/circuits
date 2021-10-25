@@ -210,6 +210,7 @@ class HTTP(BaseComponent):
         try:
             requests = tuple(http.parse(data))
         except StatusException as httperrorstatus:
+            # req = wrappers.Request.from_httoop(http.request, sock, server=self._server)
             req = wrappers.Request(
                 sock,
                 str(http.request.method),
@@ -229,6 +230,7 @@ class HTTP(BaseComponent):
 
         for client in requests:
             client = collections.namedtuple('Client', 'request,response')(*client)
+            # req = wrappers.Request.from_httoop(client.request, sock, server=self._server)
             req = wrappers.Request(
                 sock,
                 str(client.request.method),
