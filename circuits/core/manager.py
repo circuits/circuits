@@ -673,10 +673,7 @@ class Manager(object):
         for event_handler in event_handlers:
             event.handler = event_handler
             try:
-                if event_handler.event:
-                    value = event_handler(event, *eargs, **ekwargs)
-                else:
-                    value = event_handler(*eargs, **ekwargs)
+                value = handler.call(event_handler, event, *eargs, **ekwargs)
             except KeyboardInterrupt:
                 self.stop()
             except SystemExit as e:

@@ -9,7 +9,7 @@ except ImportError:
 from circuits.tools import getargspec
 
 
-def handler(*names, **kwargs):
+class handler(object):
     """Creates an Event Handler
 
     This decorator can be applied to methods of classes derived from
@@ -65,27 +65,39 @@ def handler(*names, **kwargs):
     firing and waiting.
     """
 
-    def wrapper(f):
-        if names and isinstance(names[0], bool) and not names[0]:
+    __slots__ = ('names', 'kwargs')
+
+    def __init__(self, *names, **kwargs):
+        self.names = names
+        self.kwargs = kwargs
+
+    def __call__(self, f):
+        if self.names and isinstance(self.names[0], bool) and not self.names[0]:
             f.handler = False
             return f
 
         f.handler = True
 
-        f.names = names
-        f.priority = kwargs.get("priority", 0)
-        f.channel = kwargs.get("channel", None)
-        f.override = kwargs.get("override", False)
+        f.names = self.names
+        f.priority = self.kwargs.get("priority", 0)
+        f.channel = self.kwargs.get("channel", None)
+        f.override = self.kwargs.get("override", False)
+        self.decorate(f)
+        return f
 
+    def decorate(self, f):
         args = getargspec(f)[0]
 
         if args and args[0] == "self":
             del args[0]
         f.event = getattr(f, "event", bool(args and args[0] == "event"))
 
-        return f
-
-    return wrapper
+    @classmethod
+    def call(cls, event_handler, event, *args, **kwargs):
+        if event_handler.event:
+            return event_handler(event, *args, **kwargs)
+        else:
+            return event_handler(*args, **kwargs)
 
 
 class Unknown(object):
