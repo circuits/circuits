@@ -9,7 +9,6 @@ from circuits import BaseComponent, Event, handler
 from circuits.web.controllers import BaseController
 from circuits.web.events import response
 from circuits.web.processors import process
-from circuits.web.utils import parse_qs
 
 
 def resolve_path(paths, parts):
@@ -95,7 +94,7 @@ class Dispatcher(BaseComponent):
         _handlers, name, channel, vpath = find_handlers(req, self.paths)
 
         if name is not None and channel is not None:
-            event.kwargs = parse_qs(req.qs)
+            event.kwargs = dict(req.to_httoop().uri.query)
             process(req, event.kwargs)
 
             if vpath:
