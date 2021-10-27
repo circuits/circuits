@@ -12,7 +12,7 @@ from socket import gethostname
 
 from circuits import Component, handler
 from circuits.web import Controller, Server, _httpauth
-from circuits.web.errors import HTTPError, Unauthorized
+from circuits.web.errors import httperror, unauthorized
 
 
 def check_auth(user, password):
@@ -42,7 +42,7 @@ class PasswdAuth(Component):
             ah = _httpauth.parseAuthorization(request.headers["authorization"])
             if ah is None:
                 event.stop()
-                return HTTPError(request, response, 400)
+                return httperror(request, response, 400)
 
             username, password = ah["username"], ah["password"]
 
@@ -53,7 +53,7 @@ class PasswdAuth(Component):
         response.headers["WWW-Authenticate"] = _httpauth.basicAuth(self.realm)
 
         event.stop()
-        return Unauthorized(request, response)
+        return unauthorized(request, response)
 
 
 class Root(Controller):
