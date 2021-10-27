@@ -136,3 +136,7 @@ a:focus, a:hover, a:active {
 #icons img, a:link, a:active, a:focus, a:visited, a:hover {
 	border: none;
 }
+
+#message {
+	color: green;
+}
