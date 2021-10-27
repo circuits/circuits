@@ -1,6 +1,5 @@
 """circuits.web parsers"""
 
-from .multipart import MultipartParser
 from .querystring import QueryStringParser
 
 

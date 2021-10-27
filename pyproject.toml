@@ -2,8 +2,6 @@
 line-length = 127
 target-version = "py37"
 
-extend-exclude = ["circuits/web/parsers/multipart.py"]
-
 [tool.ruff.lint]
 preview = true
 ignore-init-module-imports = true
