@@ -5,18 +5,13 @@ This module implements utility functions.
 """
 
 import os
-import re
 import stat
 import struct
 import time
 import zlib
 from math import sqrt
-from urllib.parse import parse_qs as _parse_qs
 
 from .exceptions import RangeUnsatisfiable
-
-
-image_map_pattern = re.compile('^[0-9]+,[0-9]+$')
 
 
 def is_unix_socket(path):
@@ -39,23 +34,6 @@ def variance(xs):
 
 def stddev(xs):
     return sqrt(average(variance(xs)))
-
-
-def parse_qs(query_string, keep_blank_values=True):
-    """
-    parse_qs(query_string) -> dict
-
-    Build a params dictionary from a query_string.
-    If keep_blank_values is True (the default), keep
-    values that are blank.
-    """
-    if image_map_pattern.match(query_string):
-        # Server-side image map. Map the coords to "x" and "y"
-        # (like CGI::Request does).
-        pm = query_string.split(',')
-        return {'x': int(pm[0]), 'y': int(pm[1])}
-    pm = _parse_qs(query_string, keep_blank_values)
-    return {k: v[0] for k, v in pm.items() if v}
 
 
 def compress(body, compress_level):
