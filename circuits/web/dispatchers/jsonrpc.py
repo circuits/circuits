@@ -41,7 +41,7 @@ class JSONRPC(BaseComponent):
             o = json.loads(data)
             id, method, params = o["id"], o["method"], o.get("params", {})
             if isinstance(params, dict):
-                params = dict([(str(k), v) for k, v in params.iteritems()])
+                params = dict([(str(k), v) for k, v in params.items()])
 
             method = str(method) if not isinstance(method, binary_type) else method
 
