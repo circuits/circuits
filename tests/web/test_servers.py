@@ -65,7 +65,7 @@ def test_baseserver(manager, watcher):
         f = urlopen(server.http.base)
     except URLError as e:
         if isinstance(e.reason, gaierror):
-            f = urlopen("http://127.0.0.1:9000")
+            f = urlopen("http://127.0.0.1:8000")
         else:
             raise
 
@@ -87,7 +87,7 @@ def test_server(manager, watcher):
         f = urlopen(server.http.base)
     except URLError as e:
         if isinstance(e.reason, gaierror):
-            f = urlopen("http://127.0.0.1:9000")
+            f = urlopen("http://127.0.0.1:8000")
         else:
             raise
 
@@ -115,7 +115,7 @@ def test_secure_server(manager, watcher):
         f = urlopen(server.http.base, context=SSL_CONTEXT)
     except URLError as e:
         if isinstance(e.reason, gaierror):
-            f = urlopen("http://127.0.0.1:9000")
+            f = urlopen("http://127.0.0.1:8000")
         else:
             raise
 

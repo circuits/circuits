@@ -72,8 +72,8 @@ Echo Server
             return data
     
     # Start and "run" the system.
-    # Bind to port 0.0.0.0:9000
-    app = EchoServer(9000)
+    # Bind to port 0.0.0.0:8000
+    app = EchoServer(8000)
     Debugger().register(app)
     app.run()
 
@@ -101,7 +101,7 @@ Hello Web
             
             return "Hello World!"
     
-    app = Server(("0.0.0.0", 9000))
+    app = Server(("0.0.0.0", 8000))
     Root().register(app)
     app.run()
 

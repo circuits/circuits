@@ -1,6 +1,6 @@
 FROM crux/python:onbuild
 
-EXPOSE 9000
+EXPOSE 8000
 
 ENTRYPOINT ["./wiki.py"]
 CMD []
