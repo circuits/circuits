@@ -104,8 +104,6 @@ build-dir = "docs/build"
 line-length = 127
 target-version = "py37"
 
-extend-exclude = ["circuits/web/parsers/multipart.py"]
-
 [tool.ruff.lint]
 preview = true
 select = ["E", "W", "F", "I", "D", "TD"]
@@ -189,6 +187,6 @@ known-first-party = ["circuits"]
 #multi-line-output = 5
 #include-trailing-comma = true
 lines-after-imports = 2
-#skip = ".tox,docs,circuits/web/parsers/multipart.py"
+#skip = ".tox,docs"
 #skip-glob = "venv/*"
 split-on-trailing-comma = false
