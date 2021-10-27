@@ -134,7 +134,7 @@ to the ``Telnet`` Component.
 
 .. code-block:: bash
     
-    $ python telnet.py 10.0.0.2 9000
+    $ python telnet.py 10.0.0.2 8000
     <registered[telnet] (<TCPClient/telnet 21995:MainThread (queued=0) [S]>, <Telnet/telnet 21995:MainThread (queued=4) [R]> )>
     <registered[stdin] (<File/stdin 21995:MainThread (queued=0) [S]>, <Telnet/telnet 21995:MainThread (queued=5) [R]> )>
     <registered[*] (<Debugger/* 21995:MainThread (queued=0) [S]>, <Telnet/telnet 21995:MainThread (queued=5) [R]> )>
@@ -142,9 +142,9 @@ to the ``Telnet`` Component.
     <registered[select] (<Select/select 21995:MainThread (queued=0) [S]>, <TCPClient/telnet 21995:MainThread (queued=0) [S]> )>
     <ready[telnet] (<TCPClient/telnet 21995:MainThread (queued=0) [S]> )>
     <ready[stdin] (<File/stdin 21995:MainThread (queued=0) [S]> )>
-    <connect[telnet] ('10.0.0.2', 9000 )>
+    <connect[telnet] ('10.0.0.2', 8000 )>
     <_open[stdin] ( )>
-    <connected[telnet] ('10.0.0.2', 9000 )>
+    <connected[telnet] ('10.0.0.2', 8000 )>
     <opened[stdin] ('<stdin>', 'r' )>
     Hello World!
     <_read[stdin] (<open file '<stdin>', mode 'r' at 0x7f32ff5ab0c0> )>
@@ -176,7 +176,7 @@ In one terminal run::
 
 In a second terminal run::
     
-    $ python telnet.py localhost 9000
+    $ python telnet.py localhost 8000
 
 Have fun!
 

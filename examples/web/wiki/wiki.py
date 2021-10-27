@@ -82,7 +82,7 @@ class Root(Controller):
         return self.redirect(name)
 
 
-app = Server(("0.0.0.0", 9000))
+app = Server(("0.0.0.0", 8000))
 Static(docroot="static").register(app)
 Root().register(app)
 Logger().register(app)

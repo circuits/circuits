@@ -22,7 +22,7 @@ class Root(Controller):
         return {"message": "Hello World!"}
 
 
-app = Server(("0.0.0.0", 9000))
+app = Server(("0.0.0.0", 8000))
 JSONSerializer().register(app)
 Logger().register(app)
 Root().register(app)

@@ -16,7 +16,7 @@ class Root(Controller):
         return "Hello World!"
 
 
-app = Server(("0.0.0.0", 10000))
+app = Server(("0.0.0.0", 8000))
 Root().register(app)
 Gateway({"/foo": foo}).register(app)
 app.run()
