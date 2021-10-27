@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# curl -i http://localhost:8000/getrange?limit=8
 from json import dumps
 
 from circuits.web import Controller, Server
