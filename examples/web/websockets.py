@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# firefox http://127.0.0.1:8000/websocket.html
+
 from circuits import Component, Debugger
 from circuits.net.events import write
 from circuits.web import Controller, Logger, Server, Static
