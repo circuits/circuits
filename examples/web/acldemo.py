@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from circuits import Component, handler
+from circuits import Component, Debugger, handler
 from circuits.web import Controller, Server
-from circuits.web.errors import Forbidden
+from circuits.web.errors import forbidden
 
 
 class ACL(Component):
@@ -20,7 +20,7 @@ class ACL(Component):
 
         if request.remote.ip not in self.allowed:
             event.stop()
-            return Forbidden(request, response)
+            return forbidden(request, response)
 
 
 class Root(Controller):
@@ -32,4 +32,5 @@ class Root(Controller):
 app = Server(("0.0.0.0", 8000))
 ACL().register(app)
 Root().register(app)
+Debugger().register(app)
 app.run()
