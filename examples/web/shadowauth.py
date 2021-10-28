@@ -4,6 +4,9 @@
 
 An example of a Circuits Component that requires users authenticate
 against /etc/passwd or /etc/shadow before letting them into the web site.
+
+curl -i http://test:test@localhost:8000/
+curl -i http://root:test@localhost:8000/
 """
 from crypt import crypt
 from os import path
@@ -17,7 +20,7 @@ from circuits.web.errors import httperror, unauthorized
 
 def check_auth(user, password):
     salt_pattern = compile_regex(r"\$.*\$.*\$")
-    passwd = "/etc/shadow" if path.exists("/etc/shadow") else "/etc/passwd"
+    passwd = "./etc/shadow" if path.exists("./etc/shadow") else "/etc/passwd"
 
     with open(passwd, "r") as f:
         rows = (line.strip().split(":") for line in f)
