@@ -9,7 +9,8 @@ import stat
 import struct
 import time
 import zlib
-from math import sqrt
+
+import httoop
 
 from .exceptions import RangeUnsatisfiable
 
@@ -21,19 +22,6 @@ def is_unix_socket(path):
     mode = os.stat(path).st_mode
 
     return stat.S_ISSOCK(mode)
-
-
-def average(xs):
-    return sum(xs) * 1.0 / len(xs)
-
-
-def variance(xs):
-    avg = average(xs)
-    return [(x - avg) ** 2 for x in xs]
-
-
-def stddev(xs):
-    return sqrt(average(variance(xs)))
 
 
 def compress(body, compress_level):
@@ -75,52 +63,22 @@ def get_ranges(headervalue, content_length):
     If this function returns an empty list, you should return HTTP 416.
     """
     if not headervalue:
-        return None
+        return
 
-    result = []
-    _bytesunit, byteranges = headervalue.split('=', 1)
-    for brange in byteranges.split(','):
-        start, stop = (x.strip() for x in brange.split('-', 1))
-        if start:
-            if not stop:
-                stop = content_length - 1
-            start, stop = list(map(int, (start, stop)))
-            if start >= content_length:
-                # From rfc 2616 sec 14.16:
-                # "If the server receives a request (other than one
-                # including an If-Range request-header field) with an
-                # unsatisfiable Range request-header field (that is,
-                # all of whose byte-range-spec values have a first-byte-pos
-                # value greater than the current length of the selected
-                # resource), it SHOULD return a response code of 416
-                # (Requested range not satisfiable)."
-                continue
-            if stop < start:
-                # From rfc 2616 sec 14.16:
-                # "If the server ignores a byte-range-spec because it
-                # is syntactically invalid, the server SHOULD treat
-                # the request as if the invalid Range header field
-                # did not exist. (Normally, this means return a 200
-                # response containing the full entity)."
-                return None
-            # Prevent duplicate ranges. See Issue #59
-            if (start, stop + 1) not in result:
-                result.append((start, stop + 1))
-        else:
-            if not stop:
-                # See rfc quote above.
-                return None
-            # Negative subscript (last N bytes)
-            # Prevent duplicate ranges. See Issue #59
-            if (content_length - int(stop), content_length) not in result:
-                result.append((content_length - int(stop), content_length))
+    headers = httoop.Headers(
+        {
+            'Range': headervalue,
+        }
+    )
+    try:
+        ranges = headers.element('Range')
+    except httoop.InvalidHeader as exc:
+        raise RangeUnsatisfiable(str(exc))
 
-    # Can we satisfy the requested Range?
-    # If we have an exceedingly high standard deviation
-    # of Range(s) we reject the request.
-    # See Issue #59
-
-    if len(result) > 1 and stddev([x[1] - x[0] for x in result]) > 2.0:
-        raise RangeUnsatisfiable()
-
-    return result
+    return sorted(
+        set(
+            (start, (stop or content_length - 1) + 1) if start else (content_length - int(stop), content_length)
+            for start, stop in ranges.ranges
+            if not start or start < content_length
+        )
+    )
