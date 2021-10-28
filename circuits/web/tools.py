@@ -9,9 +9,10 @@ import os
 import stat
 from collections.abc import Callable
 from datetime import datetime, timedelta
-from email.generator import _make_boundary
 from email.utils import formatdate
 from time import mktime
+
+import httoop
 
 from circuits import BaseComponent, handler
 from circuits.web.wrappers import Host
@@ -105,9 +106,7 @@ def serve_file(request, response, path, type=None, disposition=None,
 
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
-    response.headers['Last-Modified'] = formatdate(
-        st.st_mtime, usegmt=True
-    )
+    response.headers['Last-Modified'] = str(httoop.Date(st.st_mtime))
 
     result = validate_since(request, response)
     if result is not None:
@@ -130,60 +129,29 @@ def serve_file(request, response, path, type=None, disposition=None,
     c_len = st.st_size
     bodyfile = open(path, 'rb')
 
-    # HTTP/1.0 didn't have Range/Accept-Ranges headers, or the 206 code
-    if request.protocol >= (1, 1):
-        response.headers["Accept-Ranges"] = "bytes"
-        r = get_ranges(request.headers.get('Range'), c_len)
-        if r == []:
-            response.headers['Content-Range'] = "bytes */%s" % c_len
+    response.headers["Accept-Ranges"] = "bytes"
+
+    req = request.to_httoop()
+    res = response.to_httoop()
+    res.body = bodyfile
+    from httoop.semantic.response import ComposedResponse
+
+    c = ComposedResponse(res, req)
+    if not c.prepare_ranges():
+        if res.status == 416:
             return httperror(request, response, 416)
-        if r:
-            if len(r) == 1:
-                # Return a single-part response.
-                start, stop = r[0]
-                r_len = stop - start
-                response.status = 206
-                response.headers['Content-Range'] = (
-                    f"bytes {start}-{stop - 1}/{c_len}"
-                )
-                response.headers['Content-Length'] = r_len
-                bodyfile.seek(start)
-                response.body = bodyfile.read(r_len)
-            else:
-                # Return a multipart/byteranges response.
-                response.status = 206
-                boundary = _make_boundary()
-                ct = "multipart/byteranges; boundary=%s" % boundary
-                response.headers['Content-Type'] = ct
-                if "Content-Length" in response.headers:
-                    # Delete Content-Length header so finalize() recalcs it.
-                    del response.headers["Content-Length"]
-
-                def file_ranges():
-                    # Apache compatibility:
-                    yield "\r\n"
-
-                    for start, stop in r:
-                        yield "--" + boundary
-                        yield "\r\nContent-type: %s" % type
-                        yield ("\r\nContent-range: bytes %s-%s/%s\r\n\r\n"
-                               % (start, stop - 1, c_len))
-                        bodyfile.seek(start)
-                        yield bodyfile.read(stop - start)
-                        yield "\r\n"
-                    # Final boundary
-                    yield "--" + boundary + "--"
-
-                    # Apache compatibility:
-                    yield "\r\n"
-                response.body = file_ranges()
-        else:
-            response.headers['Content-Length'] = c_len
-            response.body = bodyfile
-    else:
         response.headers['Content-Length'] = c_len
         response.body = bodyfile
+        return response
 
+    response.status = res.status
+    if 'Content-Range' in res.headers:
+        response.headers['Content-Range'] = res.headers['Content-Range']
+    if 'Content-Type' in res.headers:
+        response.headers['Content-Type'] = res.headers['Content-Type']
+    if 'Content-Length' in res.headers:
+        response.headers['Content-Length'] = res.headers['Content-Length']
+    response.body = res.body.fd
     return response
 
 
