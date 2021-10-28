@@ -9,7 +9,7 @@ from circuits.web.tools import basic_auth, check_auth
 class Auth(Component):
 
     realm = "Test"
-    users = {"admin": md5("admin").hexdigest()}
+    users = {"admin": md5(b"admin").hexdigest()}
 
     @handler("request", priority=1.0)
     def on_request(self, event, request, response):
