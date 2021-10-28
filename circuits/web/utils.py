@@ -7,8 +7,6 @@ import stat
 import struct
 import time
 import zlib
-from cgi import FieldStorage
-from io import TextIOWrapper
 
 import httoop
 
@@ -26,44 +24,6 @@ def is_unix_socket(path):
     mode = os.stat(path).st_mode
 
     return stat.S_ISSOCK(mode)
-
-
-def parse_body(request, response, params):
-    if "Content-Type" not in request.headers:
-        request.headers["Content-Type"] = ""
-
-    form = FieldStorage(
-        environ={"REQUEST_METHOD": "POST"},
-        fp=TextIOWrapper(request.body),
-        headers=request.headers,
-        keep_blank_values=True
-    )
-
-    if form.file:
-        request.body = form.file
-    else:
-        params.update(dictform(form))
-
-
-def dictform(form):
-    d = {}
-    for key in list(form.keys()):
-        values = form[key]
-        if isinstance(values, list):
-            d[key] = []
-            for item in values:
-                if item.filename is not None:
-                    value = item  # It's a file upload
-                else:
-                    value = item.value  # It's a regular field
-                d[key].append(value)
-        else:
-            if values.filename is not None:
-                value = values  # It's a file upload
-            else:
-                value = values.value  # It's a regular field
-            d[key] = value
-    return d
 
 
 def compress(body, compress_level):
