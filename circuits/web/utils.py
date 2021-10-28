@@ -10,8 +10,6 @@ import stat
 import struct
 import time
 import zlib
-from cgi import FieldStorage
-from io import TextIOWrapper
 from math import sqrt
 from urllib.parse import parse_qs as _parse_qs
 
@@ -46,23 +44,6 @@ def stddev(xs):
     return sqrt(average(variance(xs)))
 
 
-def parse_body(request, response, params):
-    if 'Content-Type' not in request.headers:
-        request.headers['Content-Type'] = ''
-
-    form = FieldStorage(
-        environ={'REQUEST_METHOD': 'POST'},
-        fp=TextIOWrapper(request.body),
-        headers=request.headers,
-        keep_blank_values=True,
-    )
-
-    if form.file:
-        request.body = form.file
-    else:
-        params.update(dictform(form))
-
-
 def parse_qs(query_string, keep_blank_values=True):
     """
     parse_qs(query_string) -> dict
@@ -78,27 +59,6 @@ def parse_qs(query_string, keep_blank_values=True):
         return {'x': int(pm[0]), 'y': int(pm[1])}
     pm = _parse_qs(query_string, keep_blank_values)
     return {k: v[0] for k, v in pm.items() if v}
-
-
-def dictform(form):
-    d = {}
-    for key in list(form.keys()):
-        values = form[key]
-        if isinstance(values, list):
-            d[key] = []
-            for item in values:
-                if item.filename is not None:
-                    value = item  # It's a file upload
-                else:
-                    value = item.value  # It's a regular field
-                d[key].append(value)
-        else:
-            if values.filename is not None:
-                value = values  # It's a file upload
-            else:
-                value = values.value  # It's a regular field
-            d[key] = value
-    return d
 
 
 def compress(body, compress_level):
