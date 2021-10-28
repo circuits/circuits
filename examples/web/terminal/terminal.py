@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import signal
-from StringIO import StringIO
+from io import StringIO
 from subprocess import PIPE, Popen
 
 from circuits import Component, Debugger, Event, handler
@@ -108,7 +108,7 @@ class Root(Controller):
 
     def GET(self, *args, **kwargs):
         self.expires(60 * 60 * 24 * 30)
-        return self.serve_file(os.path.abspath("static/index.xhtml"))
+        return self.serve_file(os.path.abspath("static/index.html"))
 
     def POST(self, input=None):
         if not input:
