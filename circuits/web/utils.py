@@ -47,18 +47,12 @@ def parse_body(request, response, params):
     if "Content-Type" not in request.headers:
         request.headers["Content-Type"] = ""
 
-    try:
-        form = FieldStorage(
-            environ={"REQUEST_METHOD": "POST"},
-            fp=TextIOWrapper(request.body),
-            headers=request.headers,
-            keep_blank_values=True
-        )
-    except Exception as e:
-        if e.__class__.__name__ == 'MaxSizeExceeded':
-            # Post data is too big
-            raise RequestEntityTooLarge()
-        raise
+    form = FieldStorage(
+        environ={"REQUEST_METHOD": "POST"},
+        fp=TextIOWrapper(request.body),
+        headers=request.headers,
+        keep_blank_values=True
+    )
 
     if form.file:
         request.body = form.file
