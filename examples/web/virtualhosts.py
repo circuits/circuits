@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# curl -i http://localhost:8000/
+# curl -i http://localhost:8000/ -H 'Host: foo.localdomain:8000'
+# curl -i http://localhost:8000/ -H 'Host: bar.localdomain:8000'
+
 from circuits.web import Controller, Server
 from circuits.web.dispatchers import VirtualHosts
 
