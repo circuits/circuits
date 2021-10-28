@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# curl -i http://localhost:8000/foo/
 from circuits.web import Controller, Server
 from circuits.web.wsgi import Gateway
 
