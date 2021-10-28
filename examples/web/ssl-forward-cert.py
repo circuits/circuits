@@ -2,6 +2,7 @@
 # stdlib
 import ssl
 
+from circuits import Debugger
 from circuits.web import Controller, Server
 
 
@@ -13,8 +14,9 @@ class Root(Controller):
 
 app = Server(
     ("0.0.0.0", 8443),
-    ssl=True, certfile="server-cert.pem", keyfile="server-key.pem",
+    secure=True, certfile="server-cert.pem", keyfile="server-key.pem",
     ca_certs="ca-chain.pem", cert_reqs=ssl.CERT_OPTIONAL
 )
 Root().register(app)
+app += Debugger()
 app.run()
