@@ -49,7 +49,7 @@ class BaseServer(BaseComponent):
     channel = "web"
 
     def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
-                 channel=channel, display_banner=True, bufsize=BUFSIZE):
+                 channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         super(BaseServer, self).__init__(channel=channel)
@@ -66,7 +66,8 @@ class BaseServer(BaseComponent):
             secure=secure,
             certfile=certfile,
             channel=channel,
-            bufsize=bufsize
+            bufsize=bufsize,
+            **kwargs
         ).register(self)
 
         self.http = HTTP(
