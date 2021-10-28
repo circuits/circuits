@@ -23,7 +23,9 @@ def check_auth(user, password):
         rows = (line.strip().split(":") for line in f)
         records = [row for row in rows if row[0] == user]
 
-    hash = records and records[0][1]
+    if not records:
+        return False
+    hash = records[0][1]
     salt = salt_pattern.match(hash).group()
 
     return crypt(password, salt) == hash
