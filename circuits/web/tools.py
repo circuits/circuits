@@ -59,7 +59,7 @@ def expires(request, response, secs=0, force=False):
 
     if not cacheable:
         if isinstance(secs, timedelta):
-            secs = (86400 * secs.days) + secs.seconds
+            secs = secs.total_seconds()
 
         if secs == 0:
             if force or "Pragma" not in headers:
