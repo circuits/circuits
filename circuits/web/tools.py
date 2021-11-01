@@ -118,10 +118,7 @@ def serve_file(request, response, path, type=None, disposition=None,
 
     if type is None:
         # Set content-type based on filename extension
-        ext = ""
-        i = path.rfind('.')
-        if i != -1:
-            ext = path[i:].lower()
+        ext = os.path.splitext(path)[-1].lower()
         type = mimetypes.types_map.get(ext, "text/plain")
     response.headers['Content-Type'] = type
 
