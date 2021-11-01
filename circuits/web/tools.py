@@ -181,14 +181,16 @@ def validate_etags(request, response, autotags=False):
     if hasattr(response, 'ETag'):
         return
 
-    status = response.status
+    res = response.to_httoop()
+    req = response.request.to_httoop()
+    status = res.status
 
     etag = response.headers.get('ETag')
 
     # Automatic ETag generation. See warning in docstring.
-    if (not etag) and autotags:
+    if not etag and autotags:
         if status == 200:
-            etag = response.collapse_body()
+            etag = bytes(response)
             etag = '"%s"' % hashlib.new('md5', etag).hexdigest()
             response.headers['ETag'] = etag
 
@@ -197,22 +199,26 @@ def validate_etags(request, response, autotags=False):
     # "If the request would, without the If-Match header field, result in
     # anything other than a 2xx or 412 status, then the If-Match header
     # MUST be ignored."
-    if status >= 200 and status <= 299:
-        conditions = request.headers.elements('If-Match') or []
-        conditions = [str(x) for x in conditions]
-        if conditions and not (conditions == ['*'] or etag in conditions):
+    if status.successful:
+        if 'If-Match' in req.headers and not any(condition.matches(etag) for condition in req.headers.elements('If-Match')):
             return httperror(
-                request, response, 412, description='If-Match failed: ETag %r did not match %r' % (etag, conditions)
+                request,
+                response,
+                412,
+                description='If-Match failed: ETag %r did not match %r' % (etag, req.headers['If-Match']),
             )
 
-        conditions = request.headers.elements('If-None-Match') or []
-        conditions = [str(x) for x in conditions]
-        if conditions == ['*'] or etag in conditions:
+        if 'If-None-Match' in req.headers and any(
+            condition.matches(etag) for condition in req.headers.elements('If-None-Match')
+        ):
             if request.method in ('GET', 'HEAD'):
                 return redirect(request, response, [], code=304)
             else:
                 return httperror(
-                    request, response, 412, description=('If-None-Match failed: ETag %r matched %r' % (etag, conditions))
+                    request,
+                    response,
+                    412,
+                    description=('If-None-Match failed: ETag %r matched %r' % (etag, req.headers['If-None-Match'])),
                 )
 
 
