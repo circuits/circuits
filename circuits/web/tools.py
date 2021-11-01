@@ -229,19 +229,21 @@ def validate_since(request, response):
     If no code has set the Last-Modified response header, then no validation
     will be performed.
     """
-    lastmod = response.headers.get('Last-Modified')
+    res = response.to_httoop()
+    req = request.to_httoop()
+    lastmod = res.headers.element('Last-Modified')
     if lastmod:
-        status = response.status
+        status = res.status
 
-        since = request.headers.get('If-Unmodified-Since')
+        since = req.headers.element('If-Unmodified-Since')
         if since and since != lastmod:
-            if (status >= 200 and status <= 299) or status == 412:
+            if status.successful or status == 412:
                 return httperror(request, response, 412)
 
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod:
-            if (status >= 200 and status <= 299) or status == 304:
-                if request.method in ('GET', 'HEAD'):
+            if status.successful or status == 304:
+                if req.method.safe:
                     return redirect(request, response, [], code=304)
                 else:
                     return httperror(request, response, 412)
