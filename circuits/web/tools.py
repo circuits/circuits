@@ -21,7 +21,6 @@ from circuits.web.wrappers import Host
 
 from . import _httpauth
 from .errors import httperror, notfound, redirect, unauthorized
-from .utils import compress
 
 
 mimetypes.init()
@@ -378,7 +377,7 @@ def gzip(
     if getattr(response.request, 'cached', False):
         return response
 
-    acceptable = response.request.headers.elements('Accept-Encoding')
+    acceptable = response.request.to_httoop().headers.elements('Accept-Encoding')
     if not acceptable:
         # If no Accept-Encoding field is present in a request,
         # the server MAY assume that the client will accept any
@@ -389,26 +388,28 @@ def gzip(
         # to the client.
         return response
 
-    ct = response.headers.get('Content-Type', 'text/html').split(';')[0]
+    res = response.to_httoop()
+    ct = res.headers.element('Content-Type')
+    ct = ct.value if ct else 'text/html'
+    if ct not in mime_types:
+        return response
+
     for coding in acceptable:
-        if coding.value == 'identity' and coding.qvalue != 0:
+        if not coding.quality:
+            continue
+        if coding.value == 'identity':
             return response
         if coding.value in ('gzip', 'x-gzip'):
-            if coding.qvalue == 0:
-                return response
-            if ct in mime_types:
-                # Return a generator that compresses the page
-                varies = response.headers.get('Vary', '')
-                varies = [x.strip() for x in varies.split(',') if x.strip()]
-                if 'Accept-Encoding' not in varies:
-                    varies.append('Accept-Encoding')
-                response.headers['Vary'] = ', '.join(varies)
+            # Return a generator that compresses the page
+            if 'Accept-Encoding' not in res.headers.elements('Vary'):
+                res.headers.append_element('Vary', 'Accept-Encoding')
+                response.headers['Vary'] = res.headers['Vary']
 
-                response.headers['Content-Encoding'] = 'gzip'
-                response.body = compress(response.body, level)
-                if 'Content-Length' in response.headers:
-                    # Delete Content-Length header so finalize() recalcs it.
-                    del response.headers['Content-Length']
+            response.headers['Content-Encoding'] = coding.value
+            res.body.content_encoding = 'gzip; level=%d' % (level,)
+            response.body = res.body.__iter__()
+            # Delete Content-Length header so finalize() recalcs it.
+            response.headers.pop('Content-Length', None)
             return response
     return httperror(response.request, response, 406, description='identity, gzip')
 
