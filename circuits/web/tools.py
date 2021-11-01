@@ -11,8 +11,6 @@ import os
 import stat
 from collections.abc import Callable
 from datetime import datetime, timedelta
-from email.utils import formatdate
-from time import mktime
 
 import httoop
 
@@ -68,13 +66,13 @@ def expires(request, response, secs=0, force=False):
                 if force or 'Cache-Control' not in headers:
                     headers['Cache-Control'] = 'no-cache, must-revalidate'
             # Set an explicit Expires date in the past.
-            now = datetime.now()
+            now = datetime.utcnow()
             lastyear = now.replace(year=now.year - 1)
-            expiry = formatdate(mktime(lastyear.timetuple()), usegmt=True)
+            expiry = httoop.Date(lastyear)
         else:
-            expiry = formatdate(response.time + secs, usegmt=True)
+            expiry = httoop.Date(response.time + secs)
         if force or 'Expires' not in headers:
-            headers['Expires'] = expiry
+            headers['Expires'] = str(expiry)
 
 
 def serve_file(request, response, path, type=None, disposition=None, name=None):
