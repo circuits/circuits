@@ -4,9 +4,9 @@
 
 circutis.web Web Server and Testing Tool.
 """
+from argparse import ArgumentParser
 import os
 from hashlib import md5
-from optparse import OptionParser
 from sys import stderr
 from wsgiref.simple_server import make_server
 from wsgiref.validate import validator
@@ -37,70 +37,68 @@ except ImportError:
     EPoll = None  # NOQA
 
 
-USAGE = "%prog [options] [docroot]"
-VERSION = "%prog v" + circuits.__version__
-
-
 def parse_options():
-    parser = OptionParser(usage=USAGE, version=VERSION)
+    parser = ArgumentParser()
 
-    parser.add_option(
+    parser.add_argument(
         "-b", "--bind",
-        action="store", type="string", default="0.0.0.0:8000", dest="bind",
+        action="store", default="0.0.0.0:8000",
         help="Bind to address:[port]"
     )
 
-    parser.add_option(
+    parser.add_argument(
         "-l", "--logging",
-        action="store_true", default=False, dest="logging",
+        action="store_true", default=False,
         help="Enable logging of requests"
     )
 
-    parser.add_option(
+    parser.add_argument(
         "-p", "--passwd",
-        action="store", default=None, dest="passwd",
+        action="store", default=None,
         help="Location to passwd file for Digest Auth"
     )
 
-    parser.add_option(
+    parser.add_argument(
         "-j", "--jobs",
-        action="store", type="int", default=0, dest="jobs",
-        help="Specify no. of jobs/processes to start"
+        action="store", type=int, default=0,
+        help="Specify number of jobs/processes to start"
     )
 
-    parser.add_option(
-        "", "--poller",
-        action="store", type="string", default="select", dest="poller",
+    parser.add_argument(
+        "--poller",
+        action="store", default="select",
         help="Specify type of poller to use"
     )
 
-    parser.add_option(
-        "", "--server",
-        action="store", type="string", default="server", dest="server",
+    parser.add_argument(
+        "--server",
+        action="store", default="server",
         help="Specify server to use"
     )
 
-    parser.add_option(
-        "", "--profile",
-        action="store_true", default=False, dest="profile",
+    parser.add_argument(
+        "--profile",
+        action="store_true", default=False,
         help="Enable execution profiling support"
     )
 
-    parser.add_option(
-        "", "--debug",
-        action="store_true", default=False, dest="debug",
+    parser.add_argument(
+        "--debug",
+        action="store_true", default=False,
         help="Enable debug mode"
     )
 
-    parser.add_option(
-        "", "--validate",
-        action="store_true", default=False, dest="validate",
+    parser.add_argument(
+        "--validate",
+        action="store_true", default=False,
         help="Enable WSGI validation mode"
     )
 
-    opts, args = parser.parse_args()
+    parser.add_argument('-v', '--version', action='version', version='%%(prog)s v%s' % (circuits.__version__,))
 
-    return opts, args
+    parser.add_argument('docroot', nargs='?', default=os.getcwd())
+
+    return parser.parse_args()
 
 
 class Authentication(Component):
@@ -176,7 +174,7 @@ def parse_bind(bind):
 
 
 def main():
-    opts, args = parse_options()
+    opts = parse_options()
 
     bind = parse_bind(opts.bind)
 
@@ -203,9 +201,7 @@ def main():
         Server(bind).register(manager)
         Root().register(manager)
 
-    docroot = os.getcwd() if not args else args[0]
-
-    Static(docroot=docroot, dirlisting=True).register(manager)
+    Static(docroot=opts.docroot, dirlisting=True).register(manager)
 
     opts.passwd and Authentication(passwd=opts.passwd).register(manager)
 
