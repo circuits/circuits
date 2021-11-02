@@ -17,7 +17,6 @@ import httoop
 from circuits import BaseComponent, handler
 from circuits.web.wrappers import Host
 
-from . import _httpauth
 from .errors import httperror, notfound, redirect, unauthorized
 
 
@@ -267,13 +266,12 @@ def check_auth(request, response, realm, users, encrypt=None):
     :type  encrypt: callable
     """
     if 'Authorization' in request.headers:
-        # make sure the provided credentials are correctly set
-        ah = _httpauth.parseAuthorization(request.headers.get('Authorization'))
-        if ah is None:
-            return httperror(request, response, 400)
-
+        req = request.to_httoop()
+        ah = req.headers.element('Authorization')
         if not encrypt:
-            encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
+
+            def encrypt(val):
+                return hashlib.md5(val).hexdigest()
 
         if isinstance(users, Callable):
             try:
@@ -284,22 +282,46 @@ def check_auth(request, response, realm, users, encrypt=None):
                     raise ValueError('Authentication users must be a dict')
 
                 # fetch the user password
-                password = users.get(ah['username'], None)
+                password = users.get(ah.username, None)
             except TypeError:
                 # returns a password (encrypted or clear text)
-                password = users(ah['username'])
+                password = users(ah.username)
         else:
             if not isinstance(users, dict):
                 raise ValueError('Authentication users must be a dict')
 
             # fetch the user password
-            password = users.get(ah['username'], None)
+            password = users.get(ah.username, None)
 
         # validate the Authorization by re-computing it here
         # and compare it with what the user-agent provided
-        if _httpauth.checkResponse(ah, password, method=request.method, encrypt=encrypt, realm=realm):
-            request.login = ah['username']
-            return True
+        if ah.scheme == 'basic':
+            try:
+                login = encrypt(ah.password.encode('UTF-8'), ah.username.encode('UTF-8')) == password
+            except TypeError:
+                login = encrypt(ah.password.encode('UTF-8')) == password
+            if login:
+                request.login = ah.username
+                return True
+        elif ah.scheme == 'digest':
+            ah.params['method'] = bytes(req.method)
+            authinfo = {
+                'realm': realm.encode(),
+                'username': ah.username.encode(),
+                'password': password.encode(),
+                'algorithm': b'MD5',
+                # 'nonce': ah.schemes['digest'].generate_nonce({'realm': realm.encode(), 'algorithm': b'MD5'}),
+                'qop': b'auth',
+                'method': bytes(req.method),
+                # 'uri': bytes(req.uri),
+                'uri': ah.params['uri'],
+                'nc': ah.params['nc'],
+                'cnonce': ah.params['cnonce'],
+                'nonce': ah.params['nonce'],
+            }
+            if ah.schemes['digest'].check(authinfo, ah.params):
+                request.login = ah.username
+                return True
 
         request.login = False
     return False
@@ -327,7 +349,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
         return
 
     # inform the user-agent this path is protected
-    response.headers['WWW-Authenticate'] = _httpauth.basicAuth(realm)
+    response.headers['WWW-Authenticate'] = str(httoop.header.WWWAuthenticate('Basic', {'realm': realm}))
 
     return unauthorized(request, response)
 
@@ -349,7 +371,23 @@ def digest_auth(request, response, realm, users):
         return
 
     # inform the user-agent this path is protected
-    response.headers['WWW-Authenticate'] = _httpauth.digestAuth(realm)
+    response.headers['WWW-Authenticate'] = str(
+        httoop.header.WWWAuthenticate(
+            'Digest',
+            {
+                'realm': realm.encode(),
+                'algorithm': b'MD5',
+                # 'domain': None,
+                'nonce': httoop.authentication.digest.DigestAuthScheme.generate_nonce(
+                    {'realm': realm.encode(), 'algorithm': b'MD5'}
+                ),
+                # 'opaque': None,
+                # 'stale': None,
+                'qop': b'auth',
+            },
+        )
+    )
+    print(str(response.headers['WWW-Authenticate']))
 
     return unauthorized(request, response)
 

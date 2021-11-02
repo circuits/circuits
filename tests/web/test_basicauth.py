@@ -8,7 +8,9 @@ class Root(Controller):
     def index(self):
         realm = 'Test'
         users = {'admin': 'admin'}
-        encrypt = str
+
+        def encrypt(password):
+            return password.decode('UTF-8')
 
         if check_auth(self.request, self.response, realm, users, encrypt):
             return 'Hello World!'
