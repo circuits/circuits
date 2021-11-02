@@ -1,35 +1,17 @@
-from urllib.parse import urlparse
+import httoop
 
 from circuits.core import BaseComponent, Event, handler
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCPClient
 from circuits.protocols.http import HTTP
-from circuits.web.headers import Headers
 
 
 def parse_url(url):
-    p = urlparse(url)
-
-    if p.hostname:
-        host = p.hostname
-    else:
-        raise ValueError('URL must be absolute')
-
-    if p.scheme == 'http':
-        secure = False
-        port = p.port or 80
-    elif p.scheme == 'https':
-        secure = True
-        port = p.port or 443
-    else:
-        raise ValueError('Invalid URL scheme')
-
-    path = p.path or '/'
-
-    if p.query:
-        path += '?' + p.query
-
-    return (host, port, path, secure)
+    uri = httoop.URI(url)
+    path = uri.path or '/'
+    if uri.query_string:
+        path = f'{path}?{uri.query_string}'
+    return (uri.host, uri.port, path, uri.scheme == 'https')
 
 
 class HTTPException(Exception):
@@ -88,29 +70,24 @@ class Client(BaseComponent):
 
     @handler('request')
     def request(self, method, url, body=None, headers=None):
-        host, port, path, secure = parse_url(url)
+        req = httoop.Request(method, url, headers, body)
+        if not req.uri.path:
+            req.uri.path = '/'
 
         if not self._transport.connected:
-            self.fire(connect(host, port, secure))
+            self.fire(connect(req.uri.host, req.uri.port, req.uri.scheme == 'https'))
             yield self.wait('connected', self._transport.channel)
 
-        headers = Headers(list((headers or {}).items()))
-
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-        if 'Host' not in headers:
-            headers['Host'] = '{}{}'.format(
-                host,
-                '' if port in (80, 443) else f':{port:d}',
-            )
+        if 'Host' not in req.headers:
+            req.headers['Host'] = '{}{}'.format(req.uri.host, '' if req.uri.port in (80, 443) else f':{req.uri.port:d}')
 
         if body is not None:
-            headers['Content-Length'] = len(body)
+            req.headers['Content-Length'] = str(len(body))
 
-        command = f'{method} {path} HTTP/1.1'
-        message = f'{command}\r\n{headers}'
-        self.fire(write(message.encode('utf-8')), self._transport)
-        if body is not None:
-            self.fire(write(body), self._transport)
+        self.fire(write(b'%s%s' % (req, req.headers)), self._transport)
+        if req.body:
+            self.fire(write(bytes(req.body)), self._transport)
 
         yield (yield self.wait('response'))
 
@@ -125,7 +102,6 @@ class Client(BaseComponent):
     def connected(self):
         if hasattr(self, '_transport'):
             return self._transport.connected
-        return None
 
     @property
     def response(self):
