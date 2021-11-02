@@ -106,7 +106,7 @@ class Authentication(Component):
     channel = "web"
 
     realm = "Secure Area"
-    users = {"admin": md5("admin").hexdigest()}
+    users = {"admin": md5(b"admin").hexdigest()}
 
     def __init__(self, channel=channel, realm=None, passwd=None):
         super(Authentication, self).__init__(self, channel=channel)
