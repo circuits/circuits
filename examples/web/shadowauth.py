@@ -15,8 +15,8 @@ from re import compile as compile_regex
 from socket import gethostname
 
 from circuits import Component, handler
-from circuits.web import Controller, Server, _httpauth
-from circuits.web.errors import httperror, unauthorized
+from circuits.web import Controller, Server, tools
+from circuits.web.errors import httperror
 
 
 def check_auth(user, password):
@@ -44,21 +44,19 @@ class PasswdAuth(Component):
     @handler('request', priority=1.0)
     def _on_request(self, event, request, response):
         if 'authorization' in request.headers:
-            ah = _httpauth.parseAuthorization(request.headers['authorization'])
+            ah = request.to_httoop().headers.element('Authorization')
             if ah is None:
                 event.stop()
                 return httperror(request, response, 400)
 
-            username, password = ah['username'], ah['password']
+            username, password = ah.username, ah.password
 
             if check_auth(username, password):
                 request.login = username
-                return None
-
-        response.headers['WWW-Authenticate'] = _httpauth.basicAuth(self.realm)
+                return
 
         event.stop()
-        return unauthorized(request, response)
+        return tools.basic_auth(request, response, self.realm, {}, encrypt=lambda x: x)
 
 
 class Root(Controller):
