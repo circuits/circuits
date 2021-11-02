@@ -8,9 +8,11 @@ import json
 import traceback
 from html import escape
 
+import httoop
+
 from circuits import Event
 
-from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL, SERVER_VERSION
+from .constants import DEFAULT_ERROR_MESSAGE, POWERED_BY, SERVER_URL, SERVER_VERSION
 
 
 class httperror(Event):
@@ -37,18 +39,11 @@ class httperror(Event):
 
         self.error = kwargs.get('error', None)
 
-        self.description = kwargs.get(
-            'description',
-            getattr(self.__class__, 'description', ''),
-        )
+        self.description = kwargs.get('description', getattr(self.__class__, 'description', ''))
 
         if self.error is not None:
             stack = self.error[2] if isinstance(self.error[2], (list, tuple)) else traceback.format_tb(self.error[2])
-            self.traceback = 'ERROR: (%s) %s\n%s' % (
-                self.error[0],
-                self.error[1],
-                ''.join(stack),
-            )
+            self.traceback = 'ERROR: (%s) %s\n%s' % (self.error[0], self.error[1], ''.join(stack))
         else:
             self.traceback = ''
 
@@ -56,26 +51,23 @@ class httperror(Event):
         self.response.status = self.code
 
         powered_by = (
-            POWERED_BY
-            % {
-                'url': escape(SERVER_URL, True),
-                'version': escape(SERVER_VERSION),
-            }
+            POWERED_BY % {'url': escape(SERVER_URL, True), 'version': escape(SERVER_VERSION)}
             if getattr(request.server, 'display_banner', False)
             else ''
         )
 
         self.data = {
             'code': self.code,
-            'name': HTTP_STATUS_CODES.get(self.code, '???'),
+            'name': httoop.Status(self.code).reason or '???',
             'description': self.description,
             'traceback': self.traceback,
             'powered_by': powered_by,
         }
 
     def sanitize(self):
-        if self.code != 201 and not (299 < self.code < 400) and 'Location' in self.response.headers:
-            del self.response.headers['Location']
+        if self.code != 201 and not (299 < self.code < 400):
+            if 'Location' in self.response.headers:
+                del self.response.headers['Location']
 
     def __str__(self):
         self.sanitize()
@@ -103,14 +95,7 @@ class httperror(Event):
         }
 
     def __repr__(self):
-        return '<%s %d %s>' % (
-            self.__class__.__name__,
-            self.code,
-            HTTP_STATUS_CODES.get(
-                self.code,
-                '???',
-            ),
-        )
+        return '<%s %d %s>' % (self.__class__.__name__, self.code, httoop.Status(self.code).reason or '???')
 
 
 class forbidden(httperror):
@@ -158,7 +143,10 @@ class redirect(httperror):
         # browser support for 301 is quite messy. Do 302/303 instead. See
         # http://ppewww.ph.gla.ac.uk/~flavell/www/post-redirect.html
         if code is None:
-            code = 303 if request.protocol >= (1, 1) else 302
+            if request.protocol >= (1, 1):
+                code = 303
+            else:
+                code = 302
         else:
             if code < 300 or code > 399:
                 raise ValueError('status code must be between 300 and 399.')
@@ -176,11 +164,11 @@ class redirect(httperror):
             # new URI(s)."
             msg = {
                 300: "This resource can be found at <a href='%s'>%s</a>.",
-                301: ('This resource has permanently moved to <a href="%s">%s</a>.'),
-                302: ('This resource resides temporarily at <a href="%s">%s</a>.'),
-                303: ('This resource can be found at <a href="%s">%s</a>.'),
-                307: ('This resource has moved temporarily to <a href="%s">%s</a>.'),
-                308: ('This resource has permanently moved to <a href="%s">%s</a>.'),
+                301: ('This resource has permanently moved to ' '<a href="%s">%s</a>.'),
+                302: ('This resource resides temporarily at ' '<a href="%s">%s</a>.'),
+                303: ('This resource can be found at ' '<a href="%s">%s</a>.'),
+                307: ('This resource has moved temporarily to ' '<a href="%s">%s</a>.'),
+                308: ('This resource has permanently moved to ' '<a href="%s">%s</a>.'),
             }[code]
             response.body = '<br />\n'.join([msg % (escape(u, True), escape(u)) for u in urls])
             # Previous code may have set C-L, so we have to reset it
@@ -229,10 +217,4 @@ class redirect(httperror):
             channels = str(self.channels[0])
         else:
             channels = ''
-        return '<%s %d[%s.%s] %s>' % (
-            self.__class__.__name__,
-            self.code,
-            channels,
-            self.name,
-            ' '.join(self.urls),
-        )
+        return '<%s %d[%s.%s] %s>' % (self.__class__.__name__, self.code, channels, self.name, ' '.join(self.urls))
