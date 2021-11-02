@@ -15,7 +15,7 @@ from math import sqrt
 from circuits.net.utils import is_ssl_handshake  # noqa
 from circuits.six.moves.urllib_parse import parse_qs as _parse_qs
 
-from .exceptions import RangeUnsatisfiable, RequestEntityTooLarge
+from .exceptions import RangeUnsatisfiable
 
 quoted_slash = re.compile("(?i)%2F")
 image_map_pattern = re.compile("^[0-9]+,[0-9]+$")
