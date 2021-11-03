@@ -5,7 +5,6 @@ This is the default dispatcher used by circuits.web
 """
 from circuits import BaseComponent, Event, handler
 from circuits.six import text_type
-from circuits.six.moves.urllib_parse import quote, unquote
 from circuits.web.controllers import BaseController
 from circuits.web.events import response
 from circuits.web.processors import process
