@@ -21,7 +21,7 @@ from .parsers import BAD_FIRST_LINE, HttpParser
 from .url import parse_url
 from .utils import is_unix_socket
 
-HTTP_ENCODING = 'utf-8'
+HTTP_ENCODING = "utf-8"
 
 
 class HTTP(BaseComponent):
@@ -84,9 +84,7 @@ class HTTP(BaseComponent):
             url = "{}://{}{}".format(
                 (server.secure and "https") or "http",
                 server.host or "0.0.0.0",
-                ":{0:d}".format(server.port or 80)
-                if server.port not in (80, 443)
-                else ""
+                ":{0:d}".format(server.port or 80) if server.port not in (80, 443) else "",
             )
 
         self._uri = parse_url(url)
@@ -104,7 +102,7 @@ class HTTP(BaseComponent):
                     hex(len(data))[2:].encode(self._encoding),
                     b"\r\n",
                     data,
-                    b"\r\n"
+                    b"\r\n",
                 ]
                 data = b"".join(buf)
 
@@ -168,11 +166,7 @@ class HTTP(BaseComponent):
             elif isinstance(res.body, text_type):
                 body = res.body.encode(self._encoding)
             else:
-                parts = (
-                    s
-                    if isinstance(s, bytes) else s.encode(self._encoding)
-                    for s in res.body if s is not None
-                )
+                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in res.body if s is not None)
                 body = b"".join(parts)
 
             if body:
@@ -181,7 +175,7 @@ class HTTP(BaseComponent):
                         hex(len(body))[2:].encode(self._encoding),
                         b"\r\n",
                         body,
-                        b"\r\n"
+                        b"\r\n",
                     ]
                     body = b"".join(buf)
 
@@ -242,7 +236,7 @@ class HTTP(BaseComponent):
                         parser.get_path(),
                         parser.get_version(),
                         parser.get_query_string(),
-                        server=self._server
+                        server=self._server,
                     )
                 req.server = self._server
                 res = wrappers.Response(req, encoding=self._encoding)
@@ -260,8 +254,14 @@ class HTTP(BaseComponent):
             query_string = parser.get_query_string()
 
             req = wrappers.Request(
-                sock, method, scheme, path, version, query_string,
-                headers=parser.get_headers(), server=self._server
+                sock,
+                method,
+                scheme,
+                path,
+                version,
+                query_string,
+                headers=parser.get_headers(),
+                server=self._server,
             )
 
             res = wrappers.Response(req, encoding=self._encoding)
@@ -298,11 +298,8 @@ class HTTP(BaseComponent):
         # Guard against unwanted request paths (SECURITY).
         path = req.path
         _path = req.uri._path
-        if (path.encode(self._encoding) != _path) and (
-                quote(path).encode(self._encoding) != _path):
-            return self.fire(
-                redirect(req, res, [req.uri.utf8()], 301)
-            )
+        if (path.encode(self._encoding) != _path) and (quote(path).encode(self._encoding) != _path):
+            return self.fire(redirect(req, res, [req.uri.utf8()], 301))
 
         req.body = BytesIO(parser.recv_body())
         del self._buffers[sock]
@@ -368,25 +365,12 @@ class HTTP(BaseComponent):
                 error = value.value
                 etype, evalue, traceback = error
                 if isinstance(evalue, RedirectException):
-                    self.fire(
-                        redirect(req, res, evalue.urls, evalue.code)
-                    )
+                    self.fire(redirect(req, res, evalue.urls, evalue.code))
                 elif isinstance(evalue, HTTPException):
                     if evalue.traceback:
-                        self.fire(
-                            httperror(
-                                req, res, evalue.code,
-                                description=evalue.description,
-                                error=error
-                            )
-                        )
+                        self.fire(httperror(req, res, evalue.code, description=evalue.description, error=error))
                     else:
-                        self.fire(
-                            httperror(
-                                req, res, evalue.code,
-                                description=evalue.description
-                            )
-                        )
+                        self.fire(httperror(req, res, evalue.code, description=evalue.description))
                 else:
                     self.fire(httperror(req, res, error=error))
             else:
@@ -398,25 +382,12 @@ class HTTP(BaseComponent):
             etype, evalue, traceback = error = value
 
             if isinstance(evalue, RedirectException):
-                self.fire(
-                    redirect(req, res, evalue.urls, evalue.code)
-                )
+                self.fire(redirect(req, res, evalue.urls, evalue.code))
             elif isinstance(evalue, HTTPException):
                 if evalue.traceback:
-                    self.fire(
-                        httperror(
-                            req, res, evalue.code,
-                            description=evalue.description,
-                            error=error
-                        )
-                    )
+                    self.fire(httperror(req, res, evalue.code, description=evalue.description, error=error))
                 else:
-                    self.fire(
-                        httperror(
-                            req, res, evalue.code,
-                            description=evalue.description
-                        )
-                    )
+                    self.fire(httperror(req, res, evalue.code, description=evalue.description))
             else:
                 self.fire(httperror(req, res, error=error))
         elif not isinstance(value, bool):
@@ -449,11 +420,7 @@ class HTTP(BaseComponent):
         else:
             code = None
 
-        self.fire(
-            httperror(
-                req, res, code=code, error=(etype, evalue, etraceback)
-            )
-        )
+        self.fire(httperror(req, res, code=code, error=(etype, evalue, etraceback)))
 
     @handler("request_failure")
     def _on_request_failure(self, erequest, error):
@@ -468,17 +435,9 @@ class HTTP(BaseComponent):
         etype, evalue, traceback = error
 
         if isinstance(evalue, RedirectException):
-            self.fire(
-                redirect(req, res, evalue.urls, evalue.code)
-            )
+            self.fire(redirect(req, res, evalue.urls, evalue.code))
         elif isinstance(evalue, HTTPException):
-            self.fire(
-                httperror(
-                    req, res, evalue.code,
-                    description=evalue.description,
-                    error=error
-                )
-            )
+            self.fire(httperror(req, res, evalue.code, description=evalue.description, error=error))
         else:
             self.fire(httperror(req, res, error=error))
 
