@@ -3,13 +3,9 @@
 This module implements a basic URL to Channel dispatcher.
 This is the default dispatcher used by circuits.web
 """
-try:
-    from urllib import quote, unquote
-except ImportError:
-    from urllib.parse import quote, unquote  # NOQA
-
 from circuits import BaseComponent, Event, handler
 from circuits.six import text_type
+from circuits.six.moves.urllib_parse import quote, unquote
 from circuits.web.controllers import BaseController
 from circuits.web.events import response
 from circuits.web.processors import process
