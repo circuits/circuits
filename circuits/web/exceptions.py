@@ -4,9 +4,18 @@ This module implements a set of standard HTTP Errors as Python Exceptions.
 
 Note: This code is mostly borrowed from werkzeug and adapted for circuits.web
 """
-from inspect import isclass
 
 from .constants import HTTP_STATUS_CODES
+
+
+__all__ = (
+    'HTTPException', 'BadRequest', 'UnicodeError', 'Unauthorized', 'Forbidden',
+    'NotFound', 'MethodNotAllowed', 'NotAcceptable', 'RequestTimeout', 'Gone',
+    'LengthRequired', 'PreconditionFailed', 'RequestEntityTooLarge',
+    'RequestURITooLarge', 'UnsupportedMediaType', 'RangeUnsatisfiable',
+    'InternalServerError', 'NotImplemented', 'BadGateway', 'ServiceUnavailable',
+    'Redirect'
+)
 
 
 class HTTPException(Exception):
@@ -323,9 +332,3 @@ class Redirect(HTTPException):
             self.urls = urls
 
         self.status = status
-
-
-__all__ = [
-    x[0] for x in list(globals().items())
-    if isclass(x[1]) and issubclass(x[1], HTTPException)
-]
