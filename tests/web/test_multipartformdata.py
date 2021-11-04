@@ -12,14 +12,7 @@ from .multipartform import MultiPartForm
 
 @pytest.fixture()
 def sample_file(request):
-    return open(
-        path.join(
-            path.dirname(__file__),
-            'static',
-            'unicode.txt',
-        ),
-        'rb',
-    )
+    return open(path.join(path.dirname(__file__), 'static', 'unicode.txt'), 'rb')
 
 
 class Root(Controller):
@@ -45,7 +38,7 @@ def test(webapp):
     data = form.bytes()
     headers = {
         'Content-Type': form.get_content_type(),
-        'Content-Length': len(data),
+        'Content-Length': str(len(data)),
     }
 
     request = Request(url, data, headers)
@@ -63,19 +56,14 @@ def test(webapp):
 def test_unicode(webapp, sample_file):
     form = MultiPartForm()
     form['description'] = sample_file.name
-    form.add_file(
-        'file',
-        'helloworld.txt',
-        sample_file,
-        'text/plain; charset=utf-8',
-    )
+    form.add_file('file', 'helloworld.txt', sample_file, 'text/plain; charset=utf-8')
 
     # Build the request
     url = f'{webapp.server.http.base:s}/upload'
     data = form.bytes()
     headers = {
         'Content-Type': form.get_content_type(),
-        'Content-Length': len(data),
+        'Content-Length': str(len(data)),
     }
 
     request = Request(url, data, headers)

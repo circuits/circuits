@@ -136,7 +136,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
     if not c.prepare_ranges():
         if res.status == 416:
             return httperror(request, response, 416)
-        response.headers['Content-Length'] = c_len
+        response.headers['Content-Length'] = str(c_len)
         response.body = bodyfile
         return response
 
