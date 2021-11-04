@@ -45,7 +45,7 @@ def test(webapp):
     data = form.bytes()
     headers = {
         "Content-Type": form.get_content_type(),
-        "Content-Length": len(data),
+        "Content-Length": str(len(data)),
     }
 
     request = Request(url, data, headers)
@@ -73,7 +73,7 @@ def test_unicode(webapp, sample_file):
     data = form.bytes()
     headers = {
         "Content-Type": form.get_content_type(),
-        "Content-Length": len(data),
+        "Content-Length": str(len(data)),
     }
 
     request = Request(url, data, headers)
