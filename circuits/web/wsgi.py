@@ -8,7 +8,9 @@ from io import StringIO
 from operator import itemgetter
 from sys import exc_info as _exc_info
 from traceback import format_tb
-from types import GeneratorType
+
+import httoop
+from httoop.gateway.wsgi import WSGI
 
 from circuits.core import BaseComponent, handler
 from circuits.web import wrappers
@@ -16,54 +18,50 @@ from circuits.web import wrappers
 from .dispatchers import Dispatcher
 from .errors import httperror
 from .events import request
-from .headers import Headers
 from .http import HTTP
 
 
-def create_environ(errors, path, req):
-    environ = {}
-    env = environ.__setitem__
+class WSGIGateway(WSGI):
+    def __init__(self, req, res, errors, path):
+        self.req = req
+        self.__errors = errors
+        self.__path = path
+        self.request = req.to_httoop()
+        self.response = res.to_httoop()
+        super().__init__()
 
-    env('REQUEST_METHOD', req.method)
-    env('SERVER_NAME', req.host.split(':', 1)[0])
-    env('SERVER_PORT', '%i' % (req.server.port or 0))
-    env('SERVER_PROTOCOL', 'HTTP/%d.%d' % req.server.http.protocol)
-    env('QUERY_STRING', req.qs)
-    env('SCRIPT_NAME', req.script_name)
-    env('CONTENT_TYPE', req.headers.get('Content-Type', ''))
-    env('CONTENT_LENGTH', req.headers.get('Content-Length', ''))
-    env('REMOTE_ADDR', req.remote.ip)
-    env('REMOTE_PORT', '%i' % (req.remote.port or 0))
-    env('wsgi.version', (1, 0))
-    env('wsgi.input', req.body)
-    env('wsgi.errors', errors)
-    env('wsgi.multithread', False)
-    env('wsgi.multiprocess', False)
-    env('wsgi.run_once', False)
-    env('wsgi.url_scheme', req.scheme)
+    def get_environ(self):
+        environ = super().get_environ()
+        env = environ.__setitem__
+        req = self.req
 
-    if req.path:
-        req.script_name = req.path[: len(path)]
-        req.path = req.path[len(path) :]
+        env('SERVER_NAME', req.host.split(':', 1)[0])
+        env('SERVER_PORT', '%i' % (req.server.port or 0))
+        env('SERVER_PROTOCOL', 'HTTP/%d.%d' % req.server.http.protocol)
         env('SCRIPT_NAME', req.script_name)
-        env('PATH_INFO', req.path)
+        env('REMOTE_ADDR', req.remote.ip)
+        env('REMOTE_PORT', '%i' % (req.remote.port or 0))
+        env('wsgi.errors', self.__errors)
+        env('wsgi.run_once', False)
 
-    for k, v in list(req.headers.items()):
-        env('HTTP_%s' % k.upper().replace('-', '_'), v)
+        if req.path:
+            req.script_name = req.path[: len(self.__path)]
+            req.path = req.path[len(self.__path) :]
+            env('SCRIPT_NAME', req.script_name)
+            env('PATH_INFO', req.path)
 
-    return environ
+        return environ
+
+
+class WSGIClient(WSGI):
+    def __init__(self, *args, **kwargs):
+        self.request = httoop.Request()
+        self.response = httoop.Response()
+        super().__init__(*args, **kwargs)
 
 
 class Application(BaseComponent):
     channel = 'web'
-
-    headerNames = {
-        'HTTP_CGI_AUTHORIZATION': 'Authorization',
-        'CONTENT_LENGTH': 'Content-Length',
-        'CONTENT_TYPE': 'Content-Type',
-        'REMOTE_HOST': 'Remote-Host',
-        'REMOTE_ADDR': 'Remote-Addr',
-    }
 
     def init(self):
         self._finished = False
@@ -71,51 +69,24 @@ class Application(BaseComponent):
         HTTP(self).register(self)
         Dispatcher().register(self)
 
-    def translateHeaders(self, environ):
-        for cgiName in environ:
-            # We assume all incoming header keys are uppercase already.
-            if cgiName in self.headerNames:
-                yield self.headerNames[cgiName], environ[cgiName]
-            elif cgiName[:5] == 'HTTP_':
-                # Hackish attempt at recovering original header names.
-                translatedHeader = cgiName[5:].replace('_', '-')
-                yield translatedHeader, environ[cgiName]
-
-    def getRequestResponse(self, environ):
-        env = environ.get
-
-        headers = Headers(list(self.translateHeaders(environ)))
-
-        protocol = tuple(map(int, env('SERVER_PROTOCOL')[5:].split('.')))
-        req = wrappers.Request(
-            None,
-            env('REQUEST_METHOD'),
-            env('wsgi.url_scheme'),
-            env('PATH_INFO', ''),
-            protocol,
-            env('QUERY_STRING', ''),
-            headers=headers,
-        )
-
-        req.remote = wrappers.Host(env('REMOTE_ADDR'), env('REMTOE_PORT'))
-        req.script_name = env('SCRIPT_NAME')
-        req.wsgi_environ = environ
-
-        try:
-            cl = int(headers.get('Content-Length', '0'))
-        except ValueError:
-            cl = 0
-
-        req.body.write(env('wsgi.input').read(cl))  # FIXME: what about chunked encoding?
-        req.body.seek(0)
-
-        res = wrappers.Response(req)
-        res.gzip = 'gzip' in req.headers.get('Accept-Encoding', '')
-
-        return req, res
-
     def __call__(self, environ, start_response, exc_info=None):
-        self.request, self.response = self.getRequestResponse(environ)
+        wsgi = WSGIClient(environ, use_path_info=False)
+        for key, value in {
+            'HTTP_CGI_AUTHORIZATION': 'Authorization',
+            'REMOTE_HOST': 'Remote-Host',
+            'REMOTE_ADDR': 'Remote-Addr',
+        }.items():
+            if key in environ:
+                wsgi.request.headers.append(value, environ[key])
+
+        self.request = wrappers.Request.from_httoop(wsgi.request, None)
+        self.request.path = wsgi.path_info
+        self.response = wrappers.Response.from_httoop(wsgi.response, self.request)
+        self.response.gzip = 'gzip' in self.request.headers.get('Accept-Encoding', '')
+        self.request.remote = wrappers.Host(wsgi.remote_address, wsgi.remote_port)
+        self.request.script_name = wsgi.script_name
+        self.request.wsgi_environ = environ
+
         self.fire(request(self.request, self.response))
 
         self._finished = False
@@ -149,8 +120,6 @@ class Application(BaseComponent):
 
 
 class _Empty(str):
-    __slots__ = ()
-
     def __bool__(self):
         return True
 
@@ -167,12 +136,12 @@ class Gateway(BaseComponent):
     def init(self, apps):
         self.apps = apps
 
-        self.errors = {k: StringIO() for k in self.apps}
+        self.errors = {k: StringIO() for k in self.apps.keys()}
 
     @handler('request', priority=0.2)
     def _on_request(self, event, req, res):
         if not self.apps:
-            return None
+            return
 
         parts = req.path.split('/')
 
@@ -184,38 +153,29 @@ class Gateway(BaseComponent):
         candidates = sorted(candidates, key=itemgetter(0), reverse=True)
 
         if not candidates:
-            return None
+            return
 
         path, app = candidates[0]
 
-        buffer = StringIO()
-
-        def start_response(status, headers, exc_info=None):
-            res.status = int(status.split(' ', 1)[0])
-            for header in headers:
-                res.headers.add_header(*header)
-            return buffer.write
-
         errors = self.errors[path]
 
-        environ = create_environ(errors, path, req)
+        wsgi = WSGIGateway(req, res, errors, path)
 
         try:
-            body = app(environ, start_response)
-            if isinstance(body, list):
-                _body = type(body[0])() if body else ''
-                body = _body.join(body)
-            elif isinstance(body, GeneratorType):
-                res.body = body
+            result = wsgi(app)
+            res.__dict__.update(res.from_httoop(wsgi.response, req).__dict__)
+            if (not result or result == ['']) and wsgi.response.body.fileable and wsgi.response.body.fd.tell():
+                res.chunked = False
                 res.stream = True
-                return res
 
-            if not body:
-                if not buffer.tell():
-                    return empty
-                buffer.seek(0)
-                return buffer
-            return body
+                def body_func():
+                    yield from wsgi.response.body
+
+                res.body = body_func()
+                return res
+            elif not wsgi.response.body:
+                return empty
+            return res
         except Exception:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))
