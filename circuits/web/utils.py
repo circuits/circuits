@@ -18,7 +18,6 @@ from circuits.net.utils import is_ssl_handshake  # noqa
 from .exceptions import RangeUnsatisfiable
 
 
-quoted_slash = re.compile('(?i)%2F')
 image_map_pattern = re.compile('^[0-9]+,[0-9]+$')
 
 
