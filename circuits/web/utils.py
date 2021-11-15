@@ -10,8 +10,6 @@ import zlib
 
 import httoop
 
-from circuits.net.utils import is_ssl_handshake  # noqa
-
 from .exceptions import RangeUnsatisfiable
 
 
