@@ -13,8 +13,6 @@ import zlib
 from math import sqrt
 from urllib.parse import parse_qs as _parse_qs
 
-from circuits.net.utils import is_ssl_handshake  # noqa
-
 from .exceptions import RangeUnsatisfiable
 
 
