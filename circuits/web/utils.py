@@ -6,9 +6,6 @@ This module implements utility functions.
 
 import os
 import stat
-import struct
-import time
-import zlib
 
 import httoop
 
@@ -26,29 +23,25 @@ def is_unix_socket(path):
 
 def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
-    # Header
-    yield b'\037\213\010\0' + struct.pack('<L', int(time.time())) + b'\002\377'
+    from httoop.codecs.application.gzip import GZip
 
-    size = 0
-    crc = zlib.crc32(b'')
+    class Gzip(GZip):
+        compression_level = compress_level
 
-    zobj = zlib.compressobj(
-        compress_level,
-        zlib.DEFLATED,
-        -zlib.MAX_WBITS,
-        zlib.DEF_MEM_LEVEL,
-        0,
-    )
+    def iterator(body):
+        if isinstance(body, type('')):
+            body = body.encode('utf-8')
+        if isinstance(body, bytes):
+            yield body
+            return
+        for chunk in body:
+            if not isinstance(chunk, bytes):
+                chunk = chunk.encode('utf-8')
+            if chunk:
+                yield chunk
 
-    for chunk in body:
-        if not isinstance(chunk, bytes):
-            chunk = chunk.encode('utf-8')
-
-        size += len(chunk)
-        crc = zlib.crc32(chunk, crc)
-        yield zobj.compress(chunk)
-
-    yield zobj.flush() + struct.pack('<l', crc) + struct.pack('<L', size & 0xFFFFFFFF)
+    for output in Gzip.iterencode(iterator(body)):
+        yield output
 
 
 def get_ranges(headervalue, content_length):
