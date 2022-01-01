@@ -29,10 +29,7 @@ def expose(*channels, **config):
                     self.cookie = self.request.cookie
                     if hasattr(self.request, "session"):
                         self.session = self.request.session
-                if not getattr(f, "event", False):
-                    return f(self, *args, **kwargs)
-                else:
-                    return f(self, event, *args, **kwargs)
+                return handler.call(f, event, self, *args, **kwargs)
             finally:
                 if hasattr(self, "request"):
                     del self.request
@@ -41,17 +38,18 @@ def expose(*channels, **config):
                 if hasattr(self, "session"):
                     del self.session
 
-        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
-            getargspec(f)
+        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
         if wrapper.args and wrapper.args[0] == "self":
             del wrapper.args[0]
 
         if wrapper.args and wrapper.args[0] == "event":
-            f.event = True
             del wrapper.args[0]
-        wrapper.event = True
 
-        return update_wrapper(wrapper, f)
+        handler.decorate(f)
+        handler.decorate(wrapper)
+        assert wrapper.event
+
+        return update_wrapper(wrapper, f, updated=())
 
     return decorate
 
