@@ -50,7 +50,7 @@ class Watcher(BaseComponent):
         return n
 
 
-class Flag(object):
+class Flag:
     status = False
 
 
@@ -69,7 +69,7 @@ def call_event(manager, event, *channels):
     return call_event_from_name(manager, event, event.name, *channels)
 
 
-class WaitEvent(object):
+class WaitEvent:
 
     def __init__(self, manager, name, channel=None, timeout=30.0):
         if channel is None:
@@ -112,7 +112,7 @@ class SimpleManager(Manager):
 
     def tick(self, timeout=-1):
         self._running = False
-        return super(SimpleManager, self).tick(timeout)
+        return super().tick(timeout)
 
 
 @pytest.fixture

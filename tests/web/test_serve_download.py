@@ -10,7 +10,7 @@ from .helpers import urlopen
 class Root(Controller):
 
     def __init__(self, *args, **kwargs):
-        super(Root, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         fd, self.filename = mkstemp()
         os.write(fd, b"Hello World!")

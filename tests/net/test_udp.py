@@ -15,7 +15,7 @@ from .server import Server
 
 def wait_host(server):
     def checker(obj, attr):
-        return all((getattr(obj, a) for a in attr))
+        return all(getattr(obj, a) for a in attr)
     assert pytest.wait_for(server, ("host", "port"), checker)
 
 

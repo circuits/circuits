@@ -30,7 +30,7 @@ class Command(Component):
     channel = "cmd"
 
     def __init__(self, request, response, command, channel=channel):
-        super(Command, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self._request = request
         self._response = response

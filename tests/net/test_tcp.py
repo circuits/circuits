@@ -21,7 +21,7 @@ from .server import Server
 CERT_FILE = os.path.join(os.path.dirname(__file__), "cert.pem")
 
 
-class TestClient(object):
+class TestClient:
 
     def __init__(self, ipv6=False):
         self._sockname = None
@@ -74,7 +74,7 @@ def client(request, ipv6):
 
 def wait_host(server):
     def checker(obj, attr):
-        return all((getattr(obj, a) for a in attr))
+        return all(getattr(obj, a) for a in attr)
     assert pytest.wait_for(server, ("host", "port"), checker)
 
 

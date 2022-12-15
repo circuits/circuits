@@ -12,10 +12,10 @@ class Root(Controller):
         return "Hello World!"
 
     def test_args(self, *args, **kwargs):
-        return "{0}\n{1}".format(repr(args), repr(kwargs))
+        return f"{repr(args)}\n{repr(kwargs)}"
 
     def test_default_args(self, a=None, b=None):
-        return "a={0}\nb={1}".format(a, b)
+        return f"a={a}\nb={b}"
 
     def test_redirect(self):
         return self.redirect("/")
@@ -64,9 +64,9 @@ def test_args(webapp):
 ])
 def test_default_args(webapp, data, expected):
     args, kwargs = data
-    url = u"{0:s}/test_default_args/{1:s}".format(
+    url = "{:s}/test_default_args/{:s}".format(
         webapp.server.http.base,
-        u"/".join(args)
+        "/".join(args)
     )
     data = urlencode(kwargs).encode("utf-8")
     f = urlopen(url, data)

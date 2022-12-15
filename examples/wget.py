@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """wget Example
 
 A basic wget-like clone that asynchronously connections
 a remote web server requesting a given resource.
 """
-from __future__ import print_function
 
 import sys
 
@@ -24,10 +22,10 @@ class WebClient(Component):
         self.fire(request("GET", self.url))
 
     def response(self, response):
-        print("{0:d} {1:s}".format(response.status, response.reason))
+        print(f"{response.status:d} {response.reason:s}")
         print(
             "\n".join(
-                "{0:s}: {1:s}".format(k, v)
+                f"{k:s}: {v:s}"
                 for k, v in response.headers.items()
             )
         )

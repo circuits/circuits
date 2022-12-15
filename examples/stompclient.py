@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Example usage for StompClient component
 
@@ -20,7 +19,7 @@ LOG = logging.getLogger(__name__)
 class QueueHandler(Component):
 
     def __init__(self, queue, host=None, *args, **kwargs):
-        super(QueueHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.queue = queue
         self.host = host
 

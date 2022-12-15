@@ -83,8 +83,7 @@ class App(Component):
         yield x.value
 
     def foo(self):
-        for i in range(1, 10):
-            yield i
+        yield from range(1, 10)
 
     def get_x(self):
         return 1

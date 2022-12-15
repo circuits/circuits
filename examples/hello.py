@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """circuits Hello World"""
 
-from __future__ import print_function
 
 from circuits import Component, Event
 

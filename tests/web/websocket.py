@@ -164,7 +164,7 @@ HEADERS_TO_EXIST_FOR_HIXIE75 = [
 ]
 
 
-class _SSLSocketWrapper(object):
+class _SSLSocketWrapper:
 
     def __init__(self, sock):
         self.ssl = socket.ssl(sock)
@@ -176,7 +176,7 @@ class _SSLSocketWrapper(object):
         return self.ssl.write(payload)
 
 
-class WebSocket(object):
+class WebSocket:
 
     """
     Low level WebSocket interface.
@@ -453,7 +453,7 @@ class WebSocket(object):
         return b"".join(line)
 
 
-class WebSocketApp(object):
+class WebSocketApp:
 
     """
     Higher level of APIs are provided.

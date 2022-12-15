@@ -1,7 +1,6 @@
 """Help Tasks"""
 
 
-from __future__ import print_function
 
 from fabric import state
 from fabric.api import task
@@ -32,11 +31,11 @@ def help(name=None):
     if isinstance(task, Task):
         doc = getattr(task, "__doc__", None)
         if doc is not None:
-            print("Help on {0:s}:".format(name))
+            print(f"Help on {name:s}:")
             print()
             print(doc)
         else:
-            print("No help available for {0:s}".format(name))
+            print(f"No help available for {name:s}")
     else:
-        print("No such task {0:s}".format(name))
+        print(f"No such task {name:s}")
         print("For a list of tasks type: fab -l")

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from circuits.web import Controller, expose
 
 from .helpers import urlopen
@@ -8,7 +7,7 @@ from .helpers import urlopen
 class Root(Controller):
 
     def __init__(self, *args, **kwargs):
-        super(Root, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self += Hello()
         self += World()
 

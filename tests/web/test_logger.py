@@ -13,10 +13,10 @@ except ImportError:
     from io import StringIO  # NOQA
 
 
-class DummyLogger(object):
+class DummyLogger:
 
     def __init__(self):
-        super(DummyLogger, self).__init__()
+        super().__init__()
 
         self.message = None
 
@@ -113,7 +113,7 @@ def test_filename(webapp, tmpdir):
     logger = Logger(file=logfile)
     logger.register(webapp)
 
-    logfile = open(logfile, "r")
+    logfile = open(logfile)
 
     f = urlopen(webapp.server.http.base)
     s = f.read()

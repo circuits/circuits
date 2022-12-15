@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 try:
     from httplib import HTTPConnection
 except ImportError:

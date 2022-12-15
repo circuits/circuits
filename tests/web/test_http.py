@@ -11,7 +11,7 @@ from circuits.web.client import parse_url
 class Client(Component):
 
     def __init__(self, *args, **kwargs):
-        super(Client, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._buffer = []
         self.done = False
 

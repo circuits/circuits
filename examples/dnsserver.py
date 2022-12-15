@@ -19,7 +19,6 @@ Usage (*using dig*)::
     dig @localhost -p 1053 test.com
 
 """
-from __future__ import print_function
 
 import sys
 
@@ -56,7 +55,7 @@ class Dummy(Component):
         qname = request.q.qname
 
         print(
-            "DNS Request for qname({0:s})".format(str(qname)),
+            f"DNS Request for qname({str(qname):s})",
             file=sys.stderr
         )
 
@@ -95,7 +94,7 @@ class DNSServer(Component):
         print("DNS Server Started!", file=sys.stderr)
 
     def ready(self, server, bind):
-        print("Ready! Listening on {0:s}:{1:d}".format(*bind), file=sys.stderr)
+        print("Ready! Listening on {:s}:{:d}".format(*bind), file=sys.stderr)
 
 
 DNSServer(("0.0.0.0", 1053), verbose=True).run()

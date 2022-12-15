@@ -8,7 +8,7 @@ from . import exitcodeapp
 def test_ints(tmpdir):
     for expected_status in range(4):
         args = [sys.executable, exitcodeapp.__file__,
-                "{0:d}".format(expected_status)]
+                f"{expected_status:d}"]
         p = Popen(args, env={"PYTHONPATH": ":".join(sys.path)})
         status = p.wait()
 

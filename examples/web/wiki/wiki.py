@@ -14,10 +14,10 @@ text2html = Parser(
 )
 
 
-class Wiki(object):
+class Wiki:
 
     def __init__(self, database):
-        super(Wiki, self).__init__()
+        super().__init__()
 
         create = not os.path.exists(database)
 
@@ -28,7 +28,7 @@ class Wiki(object):
             self._cu.execute("CREATE TABLE pages (name, text)")
             for defaultpage in os.listdir("defaultpages"):
                 filename = os.path.join("defaultpages", defaultpage)
-                self.save(defaultpage, open(filename, "r").read())
+                self.save(defaultpage, open(filename).read())
 
     def save(self, name, text):
         self._cu.execute("SELECT COUNT() FROM pages WHERE name=?", (name,))
@@ -68,7 +68,7 @@ class Root(Controller):
         d["menu"] = text2html(self.db.get("SiteMenu", ""), environ=environ)
 
         text = self.db.get(name, "")
-        s = open("tpl/%s.html" % action, "r").read()
+        s = open("tpl/%s.html" % action).read()
 
         if action == "view":
             d["text"] = text2html(text, environ=environ)

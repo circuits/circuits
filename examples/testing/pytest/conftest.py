@@ -39,11 +39,11 @@ class Watcher(BaseComponent):
             sleep(TIMEOUT)
 
 
-class Flag(object):
+class Flag:
     status = False
 
 
-class WaitEvent(object):
+class WaitEvent:
 
     def __init__(self, manager, name, channel=None, timeout=6.0):
         if channel is None:

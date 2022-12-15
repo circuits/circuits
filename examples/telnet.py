@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Telnet Example
 
 A basic telnet-like clone that connects to remote hosts
@@ -17,7 +16,6 @@ This example makes use of:
     * Event
     * net.sockets.TCPClient
 """
-from __future__ import print_function
 
 import os
 from optparse import OptionParser
@@ -70,7 +68,7 @@ class Telnet(Component):
     channel = "telnet"
 
     def __init__(self, *args, **opts):
-        super(Telnet, self).__init__()
+        super().__init__()
 
         self.args = args
         self.opts = opts
@@ -112,7 +110,7 @@ class Telnet(Component):
         successful connection.
         """
 
-        print("connected to {0}".format(host))
+        print(f"connected to {host}")
 
     def error(self, *args, **kwargs):
         """error Event Handler
@@ -121,9 +119,9 @@ class Telnet(Component):
         """
 
         if len(args) == 3:
-            print("ERROR: {0}".format(args[1]))
+            print(f"ERROR: {args[1]}")
         else:
-            print("ERROR: {0}".format(args[0]))
+            print(f"ERROR: {args[0]}")
 
     def read(self, *args):
         """read Event Handler

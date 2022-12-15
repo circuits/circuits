@@ -6,7 +6,7 @@ class Client(Component):
     channel = "client"
 
     def __init__(self, channel=channel):
-        super(Client, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self.data = ""
         self.error = None

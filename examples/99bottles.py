@@ -3,7 +3,6 @@
 
 See: http://wiki.python.org/moin/Concurrency/99Bottles
 """
-from __future__ import print_function
 
 import sys
 

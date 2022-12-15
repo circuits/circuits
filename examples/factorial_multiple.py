@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
 from time import sleep
 
@@ -35,7 +34,7 @@ class App(Component):
 
     def task_success(self, function_called, factorial_result):
         func, argument = function_called
-        print("factorial({0}) = {1:d}".format(str(argument), factorial_result))
+        print(f"factorial({str(argument)}) = {factorial_result:d}")
         # Stop after the last and longest running task
         if argument == 14:
             self.stop()

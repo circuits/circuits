@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
 from time import sleep
 
@@ -25,7 +24,7 @@ class App(Component):
     def started(self, component):
         Timer(1, Event.create("foo"), persist=True).register(self)
         x = yield self.call(task(factorial, 10))
-        print("{0:d}".format(x.value))
+        print(f"{x.value:d}")
         self.stop()
 
 

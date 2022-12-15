@@ -3,7 +3,7 @@ from setuptools import setup
 
 
 def parse_requirements(filename):
-    with open(filename, "r") as f:
+    with open(filename) as f:
         for line in f:
             if line and line[0] != "#":
                 yield line.strip()
