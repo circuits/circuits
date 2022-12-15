@@ -71,17 +71,17 @@ class Process(BaseComponent):
 
         self._stdin = File(
             self.p.stdin,
-            channel="{0:d}.stdin".format(self.p.pid)
+            channel="{:d}.stdin".format(self.p.pid)
         ).register(self)
 
         self._stderr = File(
             self.p.stderr,
-            channel="{0:d}.stderr".format(self.p.pid)
+            channel="{:d}.stderr".format(self.p.pid)
         ).register(self)
 
         self._stdout = File(
             self.p.stdout,
-            channel="{0:d}.stdout".format(self.p.pid)
+            channel="{:d}.stdout".format(self.p.pid)
         ).register(self)
 
         self._stderr_read_handler = self.addHandler(
@@ -124,7 +124,7 @@ class Process(BaseComponent):
         return self.p.wait()
 
     def write(self, data):
-        self.fire(write(data), "{0:d}.stdin".format(self.p.pid))
+        self.fire(write(data), "{:d}.stdin".format(self.p.pid))
 
     @property
     def status(self):

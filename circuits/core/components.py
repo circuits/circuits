@@ -87,10 +87,10 @@ class BaseComponent(Manager):
     def __new__(cls, *args, **kwargs):
         self = super(BaseComponent, cls).__new__(cls)
 
-        handlers = dict(
-            [(k, v) for k, v in list(cls.__dict__.items())
-                if getattr(v, "handler", False)]
-        )
+        handlers = {
+            k: v for k, v in list(cls.__dict__.items())
+                if getattr(v, "handler", False)
+        }
 
         def overridden(x):
             return x in handlers and handlers[x].override
@@ -212,10 +212,10 @@ class BaseComponent(Manager):
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
 
-        return list(set(
+        return list({
             getattr(cls, k) for k in dir(cls)
             if getattr(getattr(cls, k), "handler", False)
-        ))
+        })
 
     @classmethod
     def events(cls):
@@ -226,10 +226,10 @@ class BaseComponent(Manager):
             if getattr(getattr(cls, k), "handler", False)
         )
 
-        return list(set(
+        return list({
             name for name in chain(*handlers)
             if not name.startswith("_")
-        ))
+        })
 
     @classmethod
     def handles(cls, *names):

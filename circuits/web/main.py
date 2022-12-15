@@ -117,7 +117,7 @@ class Authentication(Component):
         if passwd is not None:
             with open(passwd, "r") as f:
                 lines = (line.strip() for line in f)
-                self.users = dict((line.split(":", 1) for line in lines))
+                self.users = dict(line.split(":", 1) for line in lines)
 
     @handler("request", priority=10)
     def request(self, event, request, response):

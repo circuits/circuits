@@ -158,10 +158,10 @@ class URL(object):
         '''Canonicalize this url. This includes reordering parameters and args
         to have a consistent ordering'''
         self._query = b'&'.join(
-            sorted([q for q in self._query.split(b'&')])
+            sorted(q for q in self._query.split(b'&'))
         )
         self._params = b';'.join(
-            sorted([q for q in self._params.split(b';')])
+            sorted(q for q in self._params.split(b';'))
         )
         return self
 

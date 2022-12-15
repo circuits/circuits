@@ -52,7 +52,7 @@ def joinprefix(nick, user, host):
     :returns str: a string in the form of <nick>!<user>@<host>
     """
 
-    return u"{0}!{1}@{2}".format(nick or u"", user or u"", host or u"")
+    return u"{}!{}@{}".format(nick or u"", user or u"", host or u"")
 
 
 def parseprefix(prefix):
