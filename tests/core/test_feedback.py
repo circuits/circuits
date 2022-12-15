@@ -1,6 +1,6 @@
 """Feedback Channels Tests"""
 
-import py
+import pytest
 
 from circuits import Component, Event, handler
 
@@ -86,7 +86,7 @@ def test_failure():
         app.flush()
 
     # The Event
-    py.test.raises(Exception, lambda x: reraise(x[1]), x.value)
+    pytest.raises(Exception, lambda x: reraise(x[1]), x.value)
 
     while len(app):
         app.flush()
@@ -94,7 +94,7 @@ def test_failure():
     assert app.e == e
 
     etype, evalue, etraceback = app.error
-    py.test.raises(Exception, lambda x: reraise(x), evalue)
+    pytest.raises(Exception, lambda x: reraise(x), evalue)
     assert etype == Exception
 
     assert app.failure
