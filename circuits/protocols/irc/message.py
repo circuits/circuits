@@ -1,8 +1,6 @@
 """Internet Relay Chat message"""
 
 
-from circuits.six import PY3, string_types, text_type
-
 from .utils import parsemsg
 
 
@@ -14,17 +12,17 @@ class Message:
 
     def __init__(self, command, *args, **kwargs):
         self.command = command
-        self.prefix = text_type(kwargs["prefix"]) if "prefix" in kwargs else None
+        self.prefix = str(kwargs["prefix"]) if "prefix" in kwargs else None
 
         self.encoding = kwargs.get("encoding", "utf-8")
         self.add_nick = kwargs.get("add_nick", False)
-        self.args = [arg if isinstance(arg, text_type) else arg.decode(self.encoding) for arg in args if arg is not None]
+        self.args = [arg if isinstance(arg, str) else arg.decode(self.encoding) for arg in args if arg is not None]
         self._check_args()
 
     def _check_args(self):
-        if any(type(arg)(' ') in arg in arg for arg in self.args[:-1] if isinstance(arg, string_types)):
+        if any(type(arg)(' ') in arg in arg for arg in self.args[:-1] if isinstance(arg, str)):
             raise Error("Space can only appear in the very last arg")
-        if any(type(arg)('\n') in arg for arg in self.args if isinstance(arg, string_types)):
+        if any(type(arg)('\n') in arg for arg in self.args if isinstance(arg, str)):
             raise Error("No newline allowed")
 
     @staticmethod
@@ -36,13 +34,10 @@ class Message:
 
         return Message(command, *args, prefix=prefix)
 
-    def __str__(self):
-        return self.__unicode__() if PY3 else self.__bytes__()
-
     def __bytes__(self):
-        return text_type(self).encode(self.encoding)
+        return str(self).encode(self.encoding)
 
-    def __unicode__(self):
+    def __str__(self):
         self._check_args()
         args = self.args[:]
 
@@ -55,12 +50,12 @@ class Message:
                 if self.prefix is not None
                 else ""
             ),
-            command=text_type(self.command),
+            command=str(self.command),
             args=" ".join(args)
         )
 
     def __repr__(self):
-        return repr(text_type(self)[:-2])
+        return repr(str(self)[:-2])
 
     def __eq__(self, other):
         return isinstance(other, Message) \

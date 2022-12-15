@@ -7,7 +7,6 @@ import traceback
 
 from circuits import Event
 
-from ..six import string_types
 from .constants import (
     DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL,
     SERVER_VERSION,
@@ -138,7 +137,7 @@ class redirect(httperror):
         given *url*.
         """
 
-        if isinstance(urls, string_types):
+        if isinstance(urls, str):
             urls = [urls]
 
         abs_urls = []

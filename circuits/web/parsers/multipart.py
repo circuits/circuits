@@ -4,7 +4,7 @@ Parser for multipart/form-data
 
 This module provides a parser for the multipart/form-data format. It can read
 from a file, a socket or a WSGI environment. The parser can be used to replace
-cgi.FieldStorage (without the bugs) and works with Python 2.5+ and 3.x (2to3).
+cgi.FieldStorage (without the bugs) and works with Python 3.x.
 
 Licence (MIT)
 -------------
@@ -39,14 +39,9 @@ __license__ = 'MIT'
 import re
 from tempfile import TemporaryFile
 from wsgiref.headers import Headers
+from urllib.parse import parse_qs
 
-from circuits.six import text_type
-from circuits.six.moves.urllib_parse import parse_qs
-
-try:
-    from io import BytesIO
-except ImportError:  # pragma: no cover (fallback for Python 2.5)
-    from StringIO import StringIO as BytesIO
+from io import BytesIO
 
 
 ##############################################################################
@@ -54,13 +49,7 @@ except ImportError:  # pragma: no cover (fallback for Python 2.5)
 ##############################################################################
 # Some of these were copied from bottle: http://bottle.paws.de/
 
-try:
-    from collections.abc import MutableMapping
-except ImportError:  # pragma: no cover (fallback for Python 2.5)
-    try:
-        from collections import MutableMapping
-    except ImportError:  # pragma: no cover (fallback for Python 2.5)
-        from UserDict import DictMixin as MutableMapping
+from collections.abc import MutableMapping
 
 
 class MultiDict(MutableMapping):
@@ -114,7 +103,7 @@ class MultiDict(MutableMapping):
 
 
 def tob(data, enc='utf8'):  # Convert strings to bytes (py2 and py3)
-    return data.encode(enc) if isinstance(data, text_type) else data
+    return data.encode(enc) if isinstance(data, str) else data
 
 
 def copy_file(stream, target, maxread=-1, buffer_size=2 * 16):
@@ -404,8 +393,8 @@ class MultipartPart:
 def parse_form_data(environ, charset='utf8', strict=False, **kw):
     ''' Parse form data from an environ dict and return a (forms, files) tuple.
         Both tuple values are dictionaries with the form-field name as a key
-        (text_type) and lists as values (multiple values per key are possible).
-        The forms-dictionary contains form-field values as text_type strings.
+        (str) and lists as values (multiple values per key are possible).
+        The forms-dictionary contains form-field values as str strings.
         The files-dictionary contains :class:`MultipartPart` instances, either
         because the form-field was a file-upload or the value is to big to fit
         into memory limits.

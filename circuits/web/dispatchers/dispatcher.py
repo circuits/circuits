@@ -4,7 +4,6 @@ This module implements a basic URL to Channel dispatcher.
 This is the default dispatcher used by circuits.web
 """
 from circuits import BaseComponent, Event, handler
-from circuits.six import text_type
 from circuits.web.controllers import BaseController
 from circuits.web.events import response
 from circuits.web.processors import process
@@ -107,9 +106,6 @@ class Dispatcher(BaseComponent):
 
             if vpath:
                 event.args += tuple(vpath)
-
-            if isinstance(name, text_type):
-                name = str(name)
 
             return self.fire(
                 Event.create(

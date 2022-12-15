@@ -4,8 +4,6 @@ This module implements support for parsing and handling headers.
 """
 import re
 
-from circuits.six import b, iteritems, u
-
 # Regular expression that matches `special' characters in parameters, the
 # existence of which force quoting of the parameter value.
 
@@ -66,14 +64,11 @@ class HeaderElement:
         return self.value < other.value
 
     def __str__(self):
-        p = [";%s=%s" % (k, v) for k, v in iteritems(self.params)]
+        p = [";%s=%s" % (k, v) for k, v in self.params.items()]
         return "%s%s" % (self.value, "".join(p))
 
     def __bytes__(self):
-        return b(self.__str__())
-
-    def __unicode__(self):
-        return u(self.__str__())
+        return self.__str__().encode('ISO8859-1')
 
     def parse(elementstr):
         """Transform 'token;key=val' to ('token', {'key': 'val'})."""
@@ -157,7 +152,7 @@ class CaseInsensitiveDict(dict):
 
     def __init__(self, *args, **kwargs):
         d = dict(*args, **kwargs)
-        for key, value in iteritems(d):
+        for key, value in d.items():
             dict.__setitem__(self, str(key).title(), value)
         dict.__init__(self)
 

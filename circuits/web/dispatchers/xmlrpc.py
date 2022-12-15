@@ -38,10 +38,8 @@ class XMLRPC(BaseComponent):
             data = req.body.read()
             params, method = loads(data)
 
-            if not isinstance(method, (str, bytes, str)):
+            if not isinstance(method, str):
                 method = str(method)
-            if not isinstance(method, bytes) and str is bytes:  # Python 2
-                method = method.encode(self.encoding)
 
             value = yield self.call(rpc.create(method, *params), self.rpc_channel)
             yield self._response(value.value)

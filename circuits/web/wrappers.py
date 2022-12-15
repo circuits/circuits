@@ -7,8 +7,7 @@ from io import BytesIO
 from time import time
 
 from circuits.net.sockets import BUFSIZE
-from circuits.six import binary_type, text_type
-from circuits.six.moves.http_cookies import SimpleCookie
+from http.cookies import SimpleCookie
 
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 from .errors import httperror
@@ -242,12 +241,12 @@ class Body:
         if response == value:
             return
 
-        if isinstance(value, binary_type):
+        if isinstance(value, bytes):
             if value:
                 value = [value]
             else:
                 value = []
-        elif isinstance(value, text_type):
+        elif isinstance(value, str):
             if value:
                 value = [value.encode(response.encoding, self.encode_errors)]
             else:

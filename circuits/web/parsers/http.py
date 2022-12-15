@@ -6,9 +6,8 @@
 # https://raw.githubusercontent.com/benoitc/http-parser/master/http_parser/pyparser.py
 import re
 import zlib
-
-from circuits.six import MAXSIZE, PY3
-from circuits.six.moves.urllib_parse import urlsplit
+from sys import maxsize
+from urllib.parse import urlsplit
 
 from ..headers import Headers
 
@@ -178,8 +177,7 @@ class HttpParser:
                     self.__on_firstline = True
                     self._buf.append(data[:idx])
                     first_line = b"".join(self._buf)
-                    if PY3:
-                        first_line = str(first_line, 'unicode_escape')
+                    first_line = str(first_line, 'unicode_escape')
                     nb_parsed = nb_parsed + idx + 2
 
                     rest = data[idx + 2:]
@@ -315,7 +313,7 @@ class HttpParser:
                 return False
 
         # Split lines on \r\n keeping the \r\n on each line
-        lines = [(str(line, 'unicode_escape') if PY3 else line) + "\r\n"
+        lines = [str(line, 'unicode_escape') + "\r\n"
                  for line in data[:idx].split(b"\r\n")]
 
         # Parse headers into key/value pairs paying attention
@@ -362,7 +360,7 @@ class HttpParser:
         else:
             self._chunked = (te == 'chunked')
             if not self._chunked:
-                self._clen_rest = MAXSIZE
+                self._clen_rest = maxsize
 
         # detect encoding and set decompress object
         encoding = self._headers.get('content-encoding')

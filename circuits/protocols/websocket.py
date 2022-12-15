@@ -8,7 +8,6 @@ import random
 from circuits.core.components import BaseComponent
 from circuits.core.handlers import handler
 from circuits.net.events import close, read, write
-from circuits.six import string_types
 
 
 class WebSocketCodec(BaseComponent):
@@ -171,7 +170,7 @@ class WebSocketCodec(BaseComponent):
 
         frame = bytearray()
         first = 0x80  # set FIN flag, we never fragment
-        if isinstance(data, string_types):
+        if isinstance(data, str):
             first += 1  # text
             data = bytearray(data, "utf-8")
         else:

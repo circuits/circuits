@@ -9,7 +9,6 @@ from hashlib import sha1 as sha
 from uuid import uuid4 as uuid
 
 from circuits import Component, handler
-from circuits.six import with_metaclass
 
 
 def who(request, encoding="utf-8"):
@@ -77,7 +76,7 @@ class Session(dict):
             self.store.save(self.sid, self)
 
 
-class Store(with_metaclass(ABCMeta, object)):
+class Store(metaclass=ABCMeta):
 
     @abstractmethod
     def delete(self, sid):

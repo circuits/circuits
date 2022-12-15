@@ -20,7 +20,6 @@ Submodules
 
 .. toctree::
 
-   circuits.six
    circuits.version
 
 Module contents

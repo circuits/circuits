@@ -18,7 +18,6 @@ from socket import (
 from threading import Thread
 
 from circuits.core.handlers import handler
-from circuits.six import reraise
 
 from .components import BaseComponent
 from .events import Event
@@ -79,7 +78,7 @@ class BasePoller(BaseComponent):
         clnt_sock = create_connection(server.getsockname())
         at.join()
         if exc:
-            reraise(*exc[0])
+            raise exc[1].with_traceback(exc[2])
         return (res_list[0], clnt_sock)
 
     @handler("generate_events", priority=-9)
