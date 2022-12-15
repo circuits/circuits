@@ -59,7 +59,7 @@ def expose(*channels, **config):
 class ExposeMetaClass(type):
 
     def __init__(cls, name, bases, dct):
-        super(ExposeMetaClass, cls).__init__(name, bases, dct)
+        super().__init__(name, bases, dct)
 
         for k, v in dct.items():
             if isinstance(v, Callable) \
@@ -168,7 +168,7 @@ def exposeJSON(*channels, **config):
 class ExposeJSONMetaClass(type):
 
     def __init__(cls, name, bases, dct):
-        super(ExposeJSONMetaClass, cls).__init__(name, bases, dct)
+        super().__init__(name, bases, dct)
 
         for k, v in dct.items():
             if isinstance(v, Callable) \

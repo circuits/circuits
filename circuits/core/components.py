@@ -34,7 +34,7 @@ class prepare_unregister(Event):
     complete = True
 
     def __init__(self, *args, **kwargs):
-        super(prepare_unregister, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def in_subtree(self, component):
         """
@@ -85,7 +85,7 @@ class BaseComponent(Manager):
     channel = "*"
 
     def __new__(cls, *args, **kwargs):
-        self = super(BaseComponent, cls).__new__(cls)
+        self = super().__new__(cls)
 
         handlers = {
             k: v for k, v in list(cls.__dict__.items())
@@ -111,7 +111,7 @@ class BaseComponent(Manager):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(BaseComponent, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
 

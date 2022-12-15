@@ -40,7 +40,7 @@ class WebSocketCodec(BaseComponent):
         :param sock: the socket used in Read and write events
             (if used in a server, else None)
         """
-        super(WebSocketCodec, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._sock = sock
 

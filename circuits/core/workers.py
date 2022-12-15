@@ -42,7 +42,7 @@ class task(Event):
     def __init__(self, f, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(task, self).__init__(f, *args, **kwargs)
+        super().__init__(f, *args, **kwargs)
 
 
 class Worker(BaseComponent):

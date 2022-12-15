@@ -13,8 +13,7 @@ def flatten(root, visited=None):
     for component in root.components.copy():
         if component not in visited:
             visited.add(component)
-            for child in flatten(component, visited):
-                yield child
+            yield from flatten(component, visited)
 
 
 def findchannel(root, channel, all=False):

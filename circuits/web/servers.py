@@ -52,7 +52,7 @@ class BaseServer(BaseComponent):
                  channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(BaseServer, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self._display_banner = display_banner
 
@@ -135,7 +135,7 @@ class Server(BaseServer):
     def __init__(self, bind, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(Server, self).__init__(bind, **kwargs)
+        super().__init__(bind, **kwargs)
 
         Dispatcher(channel=self.channel).register(self.http)
 
@@ -151,7 +151,7 @@ class StdinServer(BaseComponent):
     channel = "web"
 
     def __init__(self, encoding="utf-8", channel=channel):
-        super(StdinServer, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self.server = (io.stdin + io.stdout).register(self)
         self.http = HTTP(

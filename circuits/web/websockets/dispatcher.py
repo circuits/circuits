@@ -41,7 +41,7 @@ class WebSocketsDispatcher(BaseComponent):
             sent to.
         """
 
-        super(WebSocketsDispatcher, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._requests = {}
         self._path = path

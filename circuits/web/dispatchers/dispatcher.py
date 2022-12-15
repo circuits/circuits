@@ -78,7 +78,7 @@ class Dispatcher(BaseComponent):
     channel = "web"
 
     def __init__(self, **kwargs):
-        super(Dispatcher, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.paths = dict()
 

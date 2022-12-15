@@ -80,7 +80,7 @@ class Line(BaseComponent):
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(Line, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.encoding = kwargs.get('encoding', 'utf-8')
 

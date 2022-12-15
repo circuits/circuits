@@ -43,7 +43,7 @@ class Static(BaseComponent):
 
     def __init__(self, path=None, docroot=None,
                  defaults=("index.html", "index.xhtml",), dirlisting=False, **kwargs):
-        super(Static, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.path = path
         self.docroot = os.path.abspath(

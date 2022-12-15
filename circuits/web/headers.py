@@ -49,7 +49,7 @@ def header_elements(fieldname, fieldvalue):
     return list(reversed(sorted(result)))
 
 
-class HeaderElement(object):
+class HeaderElement:
 
     """An element (with parameters) from an HTTP header's element list."""
 
@@ -240,7 +240,7 @@ class Headers(CaseInsensitiveDict):
         return "".join(headers) + '\r\n'
 
     def items(self):
-        for k, v in super(Headers, self).items():
+        for k, v in super().items():
             if isinstance(v, list):
                 for vv in v:
                     yield (str(k), str(vv))

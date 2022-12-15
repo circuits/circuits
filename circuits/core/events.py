@@ -5,7 +5,7 @@ from inspect import ismethod
 from traceback import format_tb
 
 
-class Event(object):
+class Event:
 
     channels = ()
     "The channels this message is sent to."
@@ -23,7 +23,7 @@ class Event(object):
         return type(cls)(_name, (cls,), {})(*args, **kwargs)
 
     def child(self, name, *args, **kwargs):
-        e = Event.create("{:s}_{:s}".format(self.name, name), *args, **kwargs)
+        e = Event.create(f"{self.name:s}_{name:s}", *args, **kwargs)
         e.parent = self
         return e
 
@@ -188,7 +188,7 @@ class exception(Event):
     """
 
     def __init__(self, type, value, traceback, handler=None, fevent=None):
-        super(exception, self).__init__(type, value,
+        super().__init__(type, value,
                                         self.format_traceback(traceback),
                                         handler=handler, fevent=fevent)
 
@@ -207,7 +207,7 @@ class started(Event):
     """
 
     def __init__(self, manager):
-        super(started, self).__init__(manager)
+        super().__init__(manager)
 
 
 class stopped(Event):
@@ -221,7 +221,7 @@ class stopped(Event):
     """
 
     def __init__(self, manager):
-        super(stopped, self).__init__(manager)
+        super().__init__(manager)
 
 
 class signal(Event):
@@ -238,7 +238,7 @@ class signal(Event):
     """
 
     def __init__(self, signo, stack):
-        super(signal, self).__init__(signo, stack)
+        super().__init__(signo, stack)
 
 
 class registered(Event):
@@ -257,7 +257,7 @@ class registered(Event):
     """
 
     def __init__(self, component, manager):
-        super(registered, self).__init__(component, manager)
+        super().__init__(component, manager)
 
 
 class unregistered(Event):
@@ -291,7 +291,7 @@ class generate_events(Event):
     """
 
     def __init__(self, lock, max_wait):
-        super(generate_events, self).__init__()
+        super().__init__()
 
         self._time_left = max_wait
         self._lock = lock

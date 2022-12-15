@@ -36,8 +36,7 @@ def walk(x, f, d=0, v=None):
     for c in x.components.copy():
         if c not in v:
             v.add(c)
-            for r in walk(c, f, d + 1, v):
-                yield r
+            yield from walk(c, f, d + 1, v)
 
 
 def edges(x, e=None, v=None, d=0):
@@ -141,7 +140,7 @@ def graph_dot(x, name=None):
     networkx = tryimport("networkx")
     plt, g = _graph(x)
     if g is not None:
-        networkx.drawing.nx_agraph.write_dot(g, "{}.dot".format(name or x.name))
+        networkx.drawing.nx_agraph.write_dot(g, f"{name or x.name}.dot")
 
 
 def graph_png(x, name=None):
@@ -154,7 +153,7 @@ def graph_png(x, name=None):
     """
     plt, g = _graph(x)
     if plt is not None:
-        plt.savefig("{}.png".format(name or x.name))
+        plt.savefig(f"{name or x.name}.png")
 
 
 def graph(x, name=None):
@@ -203,7 +202,7 @@ def deprecated(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         warn_explicit(
-            "Call to deprecated function {}".format(f.__name__),
+            f"Call to deprecated function {f.__name__}",
             category=DeprecationWarning,
             filename=getattr(f, _func_code).co_filename,
             lineno=getattr(f, _func_code).co_firstlineno + 1,

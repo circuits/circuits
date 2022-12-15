@@ -32,7 +32,7 @@ class Debugger(BaseComponent):
                  prefix=None, trim=None, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(Debugger, self).__init__()
+        super().__init__()
 
         self._errors = errors
         self._events = events
@@ -70,7 +70,7 @@ class Debugger(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR {} ({!r}) ({!r}): {!r}\n".format(handler, fevent, error_type, value)
+        msg = f"ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n"
 
         s.append(msg)
         s.append('Traceback (most recent call last):\n')
@@ -84,7 +84,7 @@ class Debugger(BaseComponent):
             try:
                 self.file.write("".join(s))
                 self.file.flush()
-            except IOError:
+            except OSError:
                 pass
 
     @handler(priority=101.0)
@@ -126,5 +126,5 @@ class Debugger(BaseComponent):
                 self.file.write("\n")
                 self.file.flush()
         except Exception as e:
-            sys.stderr.write("ERROR (Debugger): {}".format(e))
-            sys.stderr.write("{}".format(format_exc()))
+            sys.stderr.write(f"ERROR (Debugger): {e}")
+            sys.stderr.write(f"{format_exc()}")

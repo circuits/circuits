@@ -31,7 +31,7 @@ class httperror(Event):
         The constructor creates a new instance and modifies the *response*
         argument to reflect the error.
         """
-        super(httperror, self).__init__(request, response, code, **kwargs)
+        super().__init__(request, response, code, **kwargs)
 
         # Override HTTPError subclasses
         self.name = "httperror"
@@ -164,7 +164,7 @@ class redirect(httperror):
             if code < 300 or code > 399:
                 raise ValueError("status code must be between 300 and 399.")
 
-        super(redirect, self).__init__(request, response, code)
+        super().__init__(request, response, code)
 
         if code in (300, 301, 302, 303, 307, 308):
             response.headers["Content-Type"] = "text/html"

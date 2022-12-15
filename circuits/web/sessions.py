@@ -18,7 +18,7 @@ def who(request, encoding="utf-8"):
     ip = request.remote.ip
     agent = request.headers.get("User-Agent", "")
 
-    return sha("{}{}".format(ip, agent).encode(encoding)).hexdigest()
+    return sha(f"{ip}{agent}".encode(encoding)).hexdigest()
 
 
 def create_session(request):
@@ -28,7 +28,7 @@ def create_session(request):
     of the users IP Address and User Agent in the form of ``sid/who``.
     """
 
-    return "{}/{}".format(uuid().hex, who(request))
+    return f"{uuid().hex}/{who(request)}"
 
 
 def verify_session(request, sid):
@@ -53,7 +53,7 @@ def verify_session(request, sid):
 class Session(dict):
 
     def __init__(self, sid, data, store):
-        super(Session, self).__init__(data)
+        super().__init__(data)
 
         self._sid = sid
         self._store = store
@@ -116,7 +116,7 @@ class Sessions(Component):
     channel = "web"
 
     def __init__(self, name="circuits", store=MemoryStore, channel=channel):
-        super(Sessions, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self._name = name
         self._store = store()

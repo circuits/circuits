@@ -29,7 +29,7 @@ class Serial(Component):
 
     def __init__(self, port, baudrate=115200, bufsize=BUFSIZE,
                  timeout=TIMEOUT, encoding='UTF-8', readline=False, channel=channel):
-        super(Serial, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         if serial is None:
             raise RuntimeError("No serial support available")
@@ -100,7 +100,7 @@ class Serial(Component):
 
         try:
             self._serial.close()
-        except EnvironmentError:
+        except OSError:
             pass
 
         self.fire(closed())
@@ -122,7 +122,7 @@ class Serial(Component):
 
             if data:
                 self.fire(read(data)).notify = True
-        except (OSError, IOError) as exc:
+        except OSError as exc:
             self.fire(error(exc))
             self._close()
 
@@ -137,7 +137,7 @@ class Serial(Component):
                 nbytes = 0
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
-        except (OSError, IOError) as e:
+        except OSError as e:
             self.fire(error(e))
             self._close()
 

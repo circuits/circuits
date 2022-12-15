@@ -34,7 +34,7 @@ class VirtualHosts(BaseComponent):
     channel = "web"
 
     def __init__(self, domains):
-        super(VirtualHosts, self).__init__()
+        super().__init__()
 
         self.domains = domains
 

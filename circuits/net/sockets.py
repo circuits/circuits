@@ -97,7 +97,7 @@ class Client(BaseComponent):
     socket_options = []
 
     def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel, **kwargs):
-        super(Client, self).__init__(channel=channel, **kwargs)
+        super().__init__(channel=channel, **kwargs)
 
         if isinstance(bind, SocketType):
             self._bind = bind.getsockname()
@@ -406,7 +406,7 @@ class Server(BaseComponent):
     socket_protocol = IPPROTO_IP
 
     def __init__(self, bind, secure=False, backlog=BACKLOG, bufsize=BUFSIZE, channel=channel, **kwargs):
-        super(Server, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self.socket_options = self.socket_options[:] + kwargs.get('socket_options', [])
         self._bind = self.parse_bind_parameter(bind)
@@ -482,7 +482,7 @@ class Server(BaseComponent):
                 else:
                     try:
                         self._poller = Poller().register(self)
-                    except EnvironmentError as err:
+                    except OSError as err:
                         self.fire(error(err))
                     else:
                         self._poller.addReader(self, self._sock)
@@ -633,8 +633,7 @@ class Server(BaseComponent):
             do_handshake_on_connect=False,
         )
 
-        for _ in do_handshake(sslsock, self._on_accept_done, self._on_handshake_error, (fire_connect_event,)):
-            yield _
+        yield from do_handshake(sslsock, self._on_accept_done, self._on_handshake_error, (fire_connect_event,))
 
     def _on_accept_done(self, sock, fire_connect_event=True):
         sock.setblocking(False)
@@ -708,7 +707,7 @@ class TCPServer(Server):
     ]
 
     def _create_socket(self):
-        sock = super(TCPServer, self)._create_socket()
+        sock = super()._create_socket()
         sock.listen(self._backlog)
 
         return sock
@@ -765,7 +764,7 @@ class UNIXServer(Server):
         if os.path.exists(self._bind):
             os.unlink(self._bind)
 
-        sock = super(UNIXServer, self)._create_socket()
+        sock = super()._create_socket()
         sock.listen(self._backlog)
 
         return sock

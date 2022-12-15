@@ -24,7 +24,7 @@ class Loader(BaseComponent):
     def __init__(self, auto_register=True, init_args=None, init_kwargs=None, paths=None, channel=channel):
         "initializes x; see x.__class__.__doc__ for signature"
 
-        super(Loader, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self._auto_register = auto_register
         self._init_args = init_args or tuple()
