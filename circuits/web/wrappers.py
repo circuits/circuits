@@ -36,7 +36,7 @@ def file_generator(input, chunkSize=BUFSIZE):
     input.close()
 
 
-class Host(object):
+class Host:
 
     """An internet address.
 
@@ -59,7 +59,7 @@ class Host(object):
         return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
 
 
-class HTTPStatus(object):
+class HTTPStatus:
 
     __slots__ = ("_reason", "_status",)
 
@@ -73,30 +73,30 @@ class HTTPStatus(object):
     def __lt__(self, other):
         if isinstance(other, int):
             return self._status < other
-        return super(HTTPStatus, self).__lt__(other)
+        return super().__lt__(other)
 
     def __gt__(self, other):
         if isinstance(other, int):
             return self._status > other
-        return super(HTTPStatus, self).__gt__(other)
+        return super().__gt__(other)
 
     def __le__(self, other):
         if isinstance(other, int):
             return self._status <= other
-        return super(HTTPStatus, self).__le__(other)
+        return super().__le__(other)
 
     def __ge__(self, other):
         if isinstance(other, int):
             return self._status >= other
-        return super(HTTPStatus, self).__ge__(other)
+        return super().__ge__(other)
 
     def __eq__(self, other):
         if isinstance(other, int):
             return self._status == other
-        return super(HTTPStatus, self).__eq__(other)
+        return super().__eq__(other)
 
     def __str__(self):
-        return "{:d} {}".format(self._status, self._reason)
+        return f"{self._status:d} {self._reason}"
 
     def __repr__(self):
         return "<Status (status={:d} reason={}>".format(
@@ -115,7 +115,7 @@ class HTTPStatus(object):
         return self._reason
 
 
-class Request(object):
+class Request:
 
     """Creates a new Request object to hold information about a request.
 
@@ -206,7 +206,7 @@ class Request(object):
         base = "{}://{}{}/".format(
             self.scheme,
             self.host,
-            ":{:d}".format(self.port)
+            f":{self.port:d}"
             if self.port not in (80, 443)
             else ""
         )
@@ -216,7 +216,7 @@ class Request(object):
         url = "{}{}{}".format(
             base,
             self.path,
-            "?{}".format(self.qs) if self.qs else ""
+            f"?{self.qs}" if self.qs else ""
         )
         self.uri = parse_url(url)
         self.uri.sanitize()
@@ -226,7 +226,7 @@ class Request(object):
         return "<Request %s %s %s>" % (self.method, self.path, protocol)
 
 
-class Body(object):
+class Body:
 
     """Response Body"""
 
@@ -263,7 +263,7 @@ class Body(object):
         response._body = value
 
 
-class Status(object):
+class Status:
 
     """Response Status"""
 
@@ -279,7 +279,7 @@ class Status(object):
         response._status = value
 
 
-class Response(object):
+class Response:
 
     """Response(sock, request) -> new Response object
 
@@ -330,8 +330,8 @@ class Response(object):
     def __str__(self):
         self.prepare()
         protocol = self.protocol
-        status = "{}".format(self.status)
-        return "{} {}\r\n".format(protocol, status)
+        status = f"{self.status}"
+        return f"{protocol} {status}\r\n"
 
     def __bytes__(self):
         return str(self).encode(self.encoding)  # FIXME: this is wrong. HTTP headers must be ISO8859-1. This should only encode the body as UTF-8.
@@ -339,7 +339,7 @@ class Response(object):
     def prepare(self):
         # Set a default content-Type if we don't have one.
         self.headers.setdefault(
-            "Content-Type", "text/html; charset={}".format(self.encoding)
+            "Content-Type", f"text/html; charset={self.encoding}"
         )
 
         cLength = None

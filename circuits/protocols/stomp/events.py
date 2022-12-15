@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ Circuits events for STOMP Client """
 
 import logging
@@ -28,12 +27,12 @@ class stomp_event(Event):
 
         data = self._repr()
 
-        return u"<%s[%s] (%s)>" % (self.name, channels, data)
+        return "<%s[%s] (%s)>" % (self.name, channels, data)
 
 
 class disconnected(stomp_event):
     def __init__(self, reconnect=True, receipt=None):
-        super(disconnected, self).__init__(receipt=receipt)
+        super().__init__(receipt=receipt)
         self.reconnect = reconnect
 
 
@@ -43,13 +42,13 @@ class disconnect(stomp_event):
 
 class message(stomp_event):
     def __init__(self, frame):
-        super(message, self).__init__(headers=frame.headers, message=frame.body)
+        super().__init__(headers=frame.headers, message=frame.body)
         self.frame = frame
 
 
 class send(stomp_event):
     def __init__(self, headers, body, destination):
-        super(send, self).__init__(headers=headers, body=body, destination=destination)
+        super().__init__(headers=headers, body=body, destination=destination)
 
 
 class client_heartbeat(stomp_event):
@@ -62,7 +61,7 @@ class server_heartbeat(stomp_event):
 
 class connect(stomp_event):
     def __init__(self, subscribe=False, host=None):
-        super(connect, self).__init__(host=host)
+        super().__init__(host=host)
         self.subscribe = subscribe
 
 
@@ -78,7 +77,7 @@ class on_stomp_error(stomp_event):
     def __init__(self, frame, err):
         headers = frame.headers if frame else {}
         body = frame.body if frame else None
-        super(on_stomp_error, self).__init__(headers=headers, message=body, error=err)
+        super().__init__(headers=headers, message=body, error=err)
         self.frame = frame
 
 
@@ -88,17 +87,17 @@ class heartbeat_timeout(stomp_event):
 
 class subscribe(stomp_event):
     def __init__(self, destination, **kwargs):
-        super(subscribe, self).__init__(destination=destination, **kwargs)
+        super().__init__(destination=destination, **kwargs)
         self.destination = destination
 
 
 class unsubscribe(stomp_event):
     def __init__(self, destination):
-        super(unsubscribe, self).__init__(destination=destination)
+        super().__init__(destination=destination)
         self.destination = destination
 
 
 class ack(stomp_event):
     def __init__(self, frame):
-        super(ack, self).__init__(frame=frame)
+        super().__init__(frame=frame)
         self.frame = frame

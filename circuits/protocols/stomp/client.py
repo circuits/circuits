@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ Circuits component for handling Stomp Connection """
 
 import logging

@@ -37,7 +37,7 @@ class EnhancedStompFrameTransport(StompFrameTransport):
                         names.append(value)
                         if value == hostname:
                             return
-        raise RuntimeError("{} does not match the expected value in the certificate {}".format(hostname, str(names)))
+        raise RuntimeError(f"{hostname} does not match the expected value in the certificate {str(names)}")
 
     def connect(self, timeout=None):
         """Allow older versions of ssl module, allow http proxy connections"""
@@ -84,6 +84,6 @@ class EnhancedStompFrameTransport(StompFrameTransport):
             if self.sslContext:
                 self._socket = self.sslContext.wrap_socket(self._socket, server_hostname=self.host)
 
-        except IOError as e:
+        except OSError as e:
             raise StompConnectionError('Could not establish connection [%s]' % e)
         self._parser.reset()

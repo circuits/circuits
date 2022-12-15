@@ -128,7 +128,7 @@ class File(Component):
 
         try:
             self._fd.close()
-        except EnvironmentError:
+        except OSError:
             pass
 
         self.fire(closed())
@@ -153,7 +153,7 @@ class File(Component):
                     self.close()
                 else:
                     self._poller.discard(self._fd)
-        except (OSError, IOError) as exc:
+        except OSError as exc:
             if exc.args[0] in (EWOULDBLOCK, EINTR):
                 return
             else:
@@ -172,7 +172,7 @@ class File(Component):
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
-        except (OSError, IOError) as e:
+        except OSError as e:
             if e.args[0] in (EWOULDBLOCK, EINTR):
                 return
             else:

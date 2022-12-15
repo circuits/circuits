@@ -6,7 +6,7 @@ from .events import Event
 
 
 @python_2_unicode_compatible
-class Value(object):
+class Value:
 
     """Create a new future Value Object
 

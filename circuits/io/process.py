@@ -22,7 +22,7 @@ class terminated(Event):
     """
 
     def __init__(self, *args):
-        super(terminated, self).__init__(*args)
+        super().__init__(*args)
 
 
 class Process(BaseComponent):
@@ -71,17 +71,17 @@ class Process(BaseComponent):
 
         self._stdin = File(
             self.p.stdin,
-            channel="{:d}.stdin".format(self.p.pid)
+            channel=f"{self.p.pid:d}.stdin"
         ).register(self)
 
         self._stderr = File(
             self.p.stderr,
-            channel="{:d}.stderr".format(self.p.pid)
+            channel=f"{self.p.pid:d}.stderr"
         ).register(self)
 
         self._stdout = File(
             self.p.stdout,
-            channel="{:d}.stdout".format(self.p.pid)
+            channel=f"{self.p.pid:d}.stdout"
         ).register(self)
 
         self._stderr_read_handler = self.addHandler(
@@ -124,7 +124,7 @@ class Process(BaseComponent):
         return self.p.wait()
 
     def write(self, data):
-        self.fire(write(data), "{:d}.stdin".format(self.p.pid))
+        self.fire(write(data), f"{self.p.pid:d}.stdin")
 
     @property
     def status(self):

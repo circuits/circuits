@@ -45,7 +45,7 @@ class HTTP(BaseComponent):
     channel = "web"
 
     def __init__(self, server, encoding=HTTP_ENCODING, channel=channel):
-        super(HTTP, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self._server = server
         self._encoding = encoding
@@ -84,7 +84,7 @@ class HTTP(BaseComponent):
             url = "{}://{}{}".format(
                 (server.secure and "https") or "http",
                 server.host or "0.0.0.0",
-                ":{:d}".format(server.port or 80) if server.port not in (80, 443) else "",
+                f":{server.port or 80:d}" if server.port not in (80, 443) else "",
             )
 
         self._uri = parse_url(url)

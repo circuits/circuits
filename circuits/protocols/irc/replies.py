@@ -10,281 +10,281 @@ def _M(*args, **kwargs):
 
 
 def ERROR(host, reason=None):
-    return Message(u"ERROR", u":Closing link: {} ({})".format(host, reason or u""))
+    return Message("ERROR", ":Closing link: {} ({})".format(host, reason or ""))
 
 
 def JOIN(name, prefix=None):
-    return Message(u"JOIN", name, prefix=prefix)
+    return Message("JOIN", name, prefix=prefix)
 
 
 def KICK(channel, nick, reason=None, prefix=None):
-    return Message(u"KICK", channel, nick, reason, prefix=prefix)
+    return Message("KICK", channel, nick, reason, prefix=prefix)
 
 
 def MODE(target, modes, params=None, prefix=None):
     if params is None:
-        return Message(u"MODE", target, modes, prefix=prefix)
-    return Message(u"MODE", target, modes, u" ".join(params), prefix=prefix)
+        return Message("MODE", target, modes, prefix=prefix)
+    return Message("MODE", target, modes, " ".join(params), prefix=prefix)
 
 
 def PART(channel, nick, reason=None, prefix=None):
-    return Message(u"PART", channel, nick, reason, prefix=prefix)
+    return Message("PART", channel, nick, reason, prefix=prefix)
 
 
 def PING(server):
-    return Message(u"PING", u":{}".format(server))
+    return Message("PING", f":{server}")
 
 
 def PONG(server, text):
-    return Message(u"PONG", server, u":{}".format(text))
+    return Message("PONG", server, f":{text}")
 
 
 def TOPIC(channel, topic, prefix=None):
-    return Message(u"TOPIC", channel, topic, prefix=prefix)
+    return Message("TOPIC", channel, topic, prefix=prefix)
 
 
 def RPL_WELCOME(network):
-    return _M(u"001", u"Welcome to the {} IRC Network".format(network))
+    return _M("001", f"Welcome to the {network} IRC Network")
 
 
 def RPL_YOURHOST(host, version):
-    return _M(u"002", u"Your host is {} running {}".format(host, version))
+    return _M("002", f"Your host is {host} running {version}")
 
 
 def RPL_CREATED(date):
-    return _M(u"003", u"This server was created {}".format(date))
+    return _M("003", f"This server was created {date}")
 
 
 def RPL_MYINFO(server, version, umodes, chmodes):
-    return _M(u"004", server, version, umodes, chmodes)
+    return _M("004", server, version, umodes, chmodes)
 
 
 def RPL_ISUPPORT(features):
-    return _M(u"005", *(features + (u"are supported by this server",)))
+    return _M("005", *(features + ("are supported by this server",)))
 
 
 def RPL_UMODEIS(modes):
-    return _M(u"221", modes)
+    return _M("221", modes)
 
 
 def RPL_LUSERCLIENT(nusers, nservices, nservers):
     return _M(
-        u"251",
-        u"There are {} users and {} services on {} servers".format(
+        "251",
+        "There are {} users and {} services on {} servers".format(
             nusers, nservices, nservers
         )
     )
 
 
 def RPL_LUSEROP(noperators):
-    return _M(u"252", u"{}".format(noperators), u"operator(s) online")
+    return _M("252", f"{noperators}", "operator(s) online")
 
 
 def RPL_LUSERUNKOWN(nunknown):
-    return _M(u"253", u"{}".format(nunknown), u"unknown connection(s)")
+    return _M("253", f"{nunknown}", "unknown connection(s)")
 
 
 def RPL_LUSERCHANNELS(nchannels):
-    return _M(u"254", u"{}".format(nchannels), u"channels formed")
+    return _M("254", f"{nchannels}", "channels formed")
 
 
 def RPL_LUSERME(nclients, nservers):
-    return _M(u"255", u"I have {} clients and {} servers".format(nclients, nservers))
+    return _M("255", f"I have {nclients} clients and {nservers} servers")
 
 
 def RPL_AWAY(nick, message):
-    return _M(u"301", nick, u":{}".format(message))
+    return _M("301", nick, f":{message}")
 
 
 def RPL_UNAWAY():
-    return _M(u"305", u"You are no longer marked as being away")
+    return _M("305", "You are no longer marked as being away")
 
 
 def RPL_NOWAWAY():
-    return _M(u"306", u"You have been marked as being away")
+    return _M("306", "You have been marked as being away")
 
 
 def RPL_WHOISUSER(nick, user, host, realname):
-    return _M(u"311", nick, user, host, u"*", u":{}".format(realname))
+    return _M("311", nick, user, host, "*", f":{realname}")
 
 
 def RPL_WHOISSERVER(nick, server, server_info):
-    return _M(u"312", nick, server, server_info)
+    return _M("312", nick, server, server_info)
 
 
 def RPL_WHOISOPERATOR(nick):
-    return _M(u"313", nick, u"is an IRC operator")
+    return _M("313", nick, "is an IRC operator")
 
 
 def RPL_ENDOFWHO(mask):
-    return _M(u"315", mask, u"End of WHO list")
+    return _M("315", mask, "End of WHO list")
 
 
 def RPL_WHOISIDLE(nick, idle, signon):
     return _M(
-        u"317", nick,
-        u"{}".format(idle), u"{}".format(signon),
-        u"seconds idle, signon time"
+        "317", nick,
+        f"{idle}", f"{signon}",
+        "seconds idle, signon time"
     )
 
 
 def RPL_ENDOFWHOIS(nick):
-    return _M(u"318", nick, u"End of WHOIS list")
+    return _M("318", nick, "End of WHOIS list")
 
 
 def RPL_WHOISCHANNELS(nick, channels):
-    return _M(u"319", nick, u":{}".format(u" ".join(channels)))
+    return _M("319", nick, ":{}".format(" ".join(channels)))
 
 
 def RPL_LISTSTART(header=None):
-    return _M(u"321", header or u"Channels :Users Name")
+    return _M("321", header or "Channels :Users Name")
 
 
 def RPL_LIST(channel, nvisible, topic):
-    return _M(u"322", channel, u"{}".format(nvisible), topic)
+    return _M("322", channel, f"{nvisible}", topic)
 
 
 def RPL_LISTEND():
-    return _M(u"323", u"End of LIST")
+    return _M("323", "End of LIST")
 
 
 def RPL_CHANNELMODEIS(channel, mode, params=None):
     if params is None:
-        return _M(u"324", channel, mode)
-    return _M(u"324", channel, mode, params)
+        return _M("324", channel, mode)
+    return _M("324", channel, mode, params)
 
 
 def RPL_NOTOPIC(channel):
-    return _M(u"331", channel, u"No topic is set")
+    return _M("331", channel, "No topic is set")
 
 
 def RPL_TOPIC(channel, topic):
-    return _M(u"332", channel, topic)
+    return _M("332", channel, topic)
 
 
 def RPL_TOPICWHO(channel, setter, timestamp):
-    return _M(u"333", channel, setter, u"{}".format(timestamp))
+    return _M("333", channel, setter, f"{timestamp}")
 
 
 def RPL_INVITING(channel, nick):
-    return _M(u"341", u"{} {}".format(channel, nick))
+    return _M("341", f"{channel} {nick}")
 
 
 def RPL_SUMMONING(user):
-    return _M(u"342", u"{} :Summoning user to IRC".format(user))
+    return _M("342", f"{user} :Summoning user to IRC")
 
 
 def RPL_INVITELIST(channel, invitemask):
-    return _M(u"346", u"{} {}".format(channel, invitemask))
+    return _M("346", f"{channel} {invitemask}")
 
 
 def RPL_ENDOFINVITELIST(channel):
-    return _M(u"347", u"{} :End of channel invite list".format(channel))
+    return _M("347", f"{channel} :End of channel invite list")
 
 
 def RPL_VERSION(name, version, hostname, url):
-    return _M(u"351", name, version, hostname, url)
+    return _M("351", name, version, hostname, url)
 
 
 def RPL_WHOREPLY(channel, user, host, server, nick, status, hops, name):
     return _M(
-        u"352", channel, user, host, server, nick, status, u":{} {}".format(hops, name)
+        "352", channel, user, host, server, nick, status, f":{hops} {name}"
     )
 
 
 def RPL_NAMEREPLY(channel, names):
-    return _M(u"353", u"=", channel, u" ".join(names))
+    return _M("353", "=", channel, " ".join(names))
 
 
 def RPL_ENDOFNAMES(channel):
-    return _M(u"366", channel, u"End of NAMES list")
+    return _M("366", channel, "End of NAMES list")
 
 
 def RPL_MOTD(text):
-    return _M(u"372", u"- {}".format(text))
+    return _M("372", f"- {text}")
 
 
 def RPL_MOTDSTART(server):
-    return _M(u"375", u"- {} Message of the day -".format(server))
+    return _M("375", f"- {server} Message of the day -")
 
 
 def RPL_ENDOFMOTD():
-    return _M(u"376", u"End of MOTD command")
+    return _M("376", "End of MOTD command")
 
 
 def RPL_YOUREOPER():
-    return _M(u"381", u"You are now an IRC operator")
+    return _M("381", "You are now an IRC operator")
 
 
 def ERR_NOSUCHNICK(nick):
-    return _M(u"401", nick, u"No such nick")
+    return _M("401", nick, "No such nick")
 
 
 def ERR_NOSUCHCHANNEL(channel):
-    return _M(u"403", channel, u"No such channel")
+    return _M("403", channel, "No such channel")
 
 
 def ERR_CANNOTSENDTOCHAN(channel):
-    return _M(u"404", channel, u"Cannot send to channel")
+    return _M("404", channel, "Cannot send to channel")
 
 
 def ERR_TOOMANYCHANNELS(channel):
-    return _M(u"405", channel, u"You have joined too many channels")
+    return _M("405", channel, "You have joined too many channels")
 
 
 def ERR_UNKNOWNCOMMAND(command):
-    return _M(u"421", command, u"Unknown command")
+    return _M("421", command, "Unknown command")
 
 
 def ERR_NOMOTD():
-    return _M(u"422", u"MOTD file is missing")
+    return _M("422", "MOTD file is missing")
 
 
 def ERR_NONICKNAMEGIVEN():
-    return _M(u"431", u"No nickname given")
+    return _M("431", "No nickname given")
 
 
 def ERR_ERRONEUSNICKNAME(nick):
-    return _M(u"432", nick, u"Erroneous nickname")
+    return _M("432", nick, "Erroneous nickname")
 
 
 def ERR_NICKNAMEINUSE(nick):
-    return _M(u"433", nick, u"Nickname is already in use")
+    return _M("433", nick, "Nickname is already in use")
 
 
 def ERR_USERNOTINCHANNEL(nick, channel):
-    return _M(u"441", nick, channel, u"They aren't on that channel")
+    return _M("441", nick, channel, "They aren't on that channel")
 
 
 def ERR_NOTREGISTERED():
-    return _M(u"451", "You have not registered")
+    return _M("451", "You have not registered")
 
 
 def ERR_NEEDMOREPARAMS(command):
-    return _M(u"461", command, u"Need more parameters")
+    return _M("461", command, "Need more parameters")
 
 
 def ERR_PASSWDMISMATCH():
-    return _M(u"464", u"Password incorrect")
+    return _M("464", "Password incorrect")
 
 
 def ERR_UNKNOWNMODE(mode, channel=None):
     if channel is None:
-        return _M(u"472", mode, u"is unknown mode char to me")
-    return _M(u"472", mode, u"is unknown mode char to me for channel {}".format(channel))
+        return _M("472", mode, "is unknown mode char to me")
+    return _M("472", mode, f"is unknown mode char to me for channel {channel}")
 
 
 def ERR_CHANOPRIVSNEEDED(channel):
-    return _M(u"482", channel, u"You're not channel operator")
+    return _M("482", channel, "You're not channel operator")
 
 
 def ERR_NOPRIVILEGES():
-    return _M(u"481", u"Permission Denied- You're not an IRC operator")
+    return _M("481", "Permission Denied- You're not an IRC operator")
 
 
 def ERR_NOOPERHOST():
-    return _M(u"491", u"No O-lines for your host")
+    return _M("491", "No O-lines for your host")
 
 
 def ERR_USERSDONTMATCH():
-    return _M(u"502", u"Cannot change mode for other users")
+    return _M("502", "Cannot change mode for other users")

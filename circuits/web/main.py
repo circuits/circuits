@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Main
 
 circutis.web Web Server and Testing Tool.
@@ -109,13 +108,13 @@ class Authentication(Component):
     users = {"admin": md5(b"admin").hexdigest()}
 
     def __init__(self, channel=channel, realm=None, passwd=None):
-        super(Authentication, self).__init__(self, channel=channel)
+        super().__init__(self, channel=channel)
 
         if realm is not None:
             self.realm = realm
 
         if passwd is not None:
-            with open(passwd, "r") as f:
+            with open(passwd) as f:
                 lines = (line.strip() for line in f)
                 self.users = dict(line.split(":", 1) for line in lines)
 

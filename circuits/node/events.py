@@ -22,7 +22,7 @@ class connected_to(Event):
         :param client_obj:    Client object.
         :type client_obj:     :class:`circuits.net.sockets.Client`
         """
-        super(connected_to, self).__init__(connection_name, hostname, port, client_channel, client_obj)
+        super().__init__(connection_name, hostname, port, client_channel, client_obj)
 
 
 class disconnected_from(connected_to):
@@ -45,4 +45,4 @@ class remote(Event):
         :param channel:    Remote channel (channel to use on peer).
         :type channel:     str
         """
-        super(remote, self).__init__(event, connection_name, channel=channel)
+        super().__init__(event, connection_name, channel=channel)

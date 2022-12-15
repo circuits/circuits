@@ -49,7 +49,7 @@ class WebSocketClient(BaseComponent):
         :param headers: additional headers to be passed with the
             WebSocket setup HTTP request
         """
-        super(WebSocketClient, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self._url = url
         self._headers = headers or {}

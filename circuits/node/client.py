@@ -39,7 +39,7 @@ class Client(BaseComponent):
         :type send_event_firewall:   function
         :type send_event_firewall:   method
         """
-        super(Client, self).__init__(channel=channel, **kwargs)
+        super().__init__(channel=channel, **kwargs)
 
         self.__host = host
         self.__port = port

@@ -23,7 +23,7 @@ class DropPrivileges(BaseComponent):
             uid = getpwnam(self.user).pw_uid
             gid = getgrnam(self.group).gr_gid
         except KeyError as error:
-            print("ERROR: Could not drop privileges {}".format(error))
+            print(f"ERROR: Could not drop privileges {error}")
             print(format_exc())
             raise SystemExit(-1)
 
@@ -38,7 +38,7 @@ class DropPrivileges(BaseComponent):
             if self.umask is not None:
                 umask(self.umask)
         except Exception as error:
-            print("ERROR: Could not drop privileges {}".format(error))
+            print(f"ERROR: Could not drop privileges {error}")
             print(format_exc())
             raise SystemExit(-1)
 

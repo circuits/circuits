@@ -36,7 +36,7 @@ class Timer(BaseComponent):
         :type persist:   ``bool``
         """
 
-        super(Timer, self).__init__()
+        super().__init__()
 
         self.expiry = None
         self.interval = None

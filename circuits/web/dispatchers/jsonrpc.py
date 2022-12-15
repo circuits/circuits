@@ -19,7 +19,7 @@ class JSONRPC(BaseComponent):
     channel = "web"
 
     def __init__(self, path=None, encoding="utf-8", rpc_channel="*"):
-        super(JSONRPC, self).__init__()
+        super().__init__()
 
         if json is None:
             raise RuntimeError("No json support available")

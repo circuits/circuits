@@ -44,7 +44,7 @@ class Notify(BaseComponent):
     channel = "notify"
 
     def __init__(self, channel=channel):
-        super(Notify, self).__init__(channel=channel)
+        super().__init__(channel=channel)
 
         self._poller = None
         self._wm = WatchManager()

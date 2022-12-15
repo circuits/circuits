@@ -26,7 +26,7 @@ class connect(Event):
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(connect, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class disconnect(Event):
@@ -46,7 +46,7 @@ class disconnect(Event):
     def __init__(self, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(disconnect, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class connected(Event):
@@ -68,7 +68,7 @@ class connected(Event):
     def __init__(self, host, port):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(connected, self).__init__(host, port)
+        super().__init__(host, port)
 
 
 class disconnected(Event):
@@ -84,7 +84,7 @@ class disconnected(Event):
     def __init__(self):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(disconnected, self).__init__()
+        super().__init__()
 
 
 class read(Event):
@@ -103,7 +103,7 @@ class read(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(read, self).__init__(*args)
+        super().__init__(*args)
 
 
 class error(Event):
@@ -122,7 +122,7 @@ class error(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(error, self).__init__(*args)
+        super().__init__(*args)
 
 
 class unreachable(Event):
@@ -141,7 +141,7 @@ class unreachable(Event):
     def __init__(self, host, port, reason=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(unreachable, self).__init__(host, port, reason)
+        super().__init__(host, port, reason)
 
 
 class broadcast(Event):
@@ -162,7 +162,7 @@ class broadcast(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(broadcast, self).__init__(*args)
+        super().__init__(*args)
 
 
 class write(Event):
@@ -183,7 +183,7 @@ class write(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(write, self).__init__(*args)
+        super().__init__(*args)
 
 
 class close(Event):
@@ -204,7 +204,7 @@ class close(Event):
     def __init__(self, *args):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(close, self).__init__(*args)
+        super().__init__(*args)
 
 
 class ready(Event):
@@ -231,7 +231,7 @@ class ready(Event):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
         args = (component, bind) if bind is not None else (component,)
-        super(ready, self).__init__(*args)
+        super().__init__(*args)
 
 
 class closed(Event):
@@ -260,4 +260,4 @@ class starttls(Event):
     """
 
     def __init__(self, sock):
-        super(starttls, self).__init__(sock)
+        super().__init__(sock)

@@ -88,7 +88,7 @@ def handler(*names, **kwargs):
     return wrapper
 
 
-class Unknown(object):
+class Unknown:
 
     """Unknown Dummy Component"""
 
@@ -119,7 +119,7 @@ def reprhandler(handler):
 class HandlerMetaClass(type):
 
     def __init__(cls, name, bases, ns):
-        super(HandlerMetaClass, cls).__init__(name, bases, ns)
+        super().__init__(name, bases, ns)
 
         callables = (x for x in ns.items() if isinstance(x[1], Callable))
         for name, callable in callables:
@@ -127,4 +127,4 @@ class HandlerMetaClass(type):
                 try:
                     setattr(cls, name, handler(name)(callable))
                 except ValueError as e:
-                    raise ValueError('{} - {} {}'.format(str(e), repr(cls), name))
+                    raise ValueError(f'{str(e)} - {repr(cls)} {name}')

@@ -55,7 +55,7 @@ class request(Event):
     def __init__(self, method, path, body=None, headers=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
 
-        super(request, self).__init__(method, path, body, headers)
+        super().__init__(method, path, body, headers)
 
 
 class Client(BaseComponent):
@@ -63,7 +63,7 @@ class Client(BaseComponent):
     channel = "client"
 
     def __init__(self, channel=channel):
-        super(Client, self).__init__(channel=channel)
+        super().__init__(channel=channel)
         self._response = None
 
         self._transport = TCPClient(channel=channel).register(self)
@@ -100,7 +100,7 @@ class Client(BaseComponent):
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if "Host" not in headers:
             headers["Host"] = "{}{}".format(
-                host, "" if port in (80, 443) else ":{:d}".format(port)
+                host, "" if port in (80, 443) else f":{port:d}"
             )
 
         if body is not None:

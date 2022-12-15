@@ -48,7 +48,7 @@ def parse_url(url, encoding='utf-8'):
     return URL.parse(url, encoding)
 
 
-class URL(object):
+class URL:
 
     '''
     For more information on how and what we parse / sanitize:

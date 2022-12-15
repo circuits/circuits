@@ -75,7 +75,7 @@ class Daemon(Component):
                 # exit first parent
                 _exit(0)
         except OSError as e:
-            stderr.write("fork #1 failed: {:d} ({})\n".format(e.errno, e))
+            stderr.write(f"fork #1 failed: {e.errno:d} ({e})\n")
 
             raise SystemExit(1)
 
@@ -91,7 +91,7 @@ class Daemon(Component):
                 # exit from second parent
                 _exit(0)
         except OSError as e:
-            stderr.write("fork #2 failed: {:d} ({})\n".format(e.errno, e))
+            stderr.write(f"fork #2 failed: {e.errno:d} ({e})\n")
 
             raise SystemExit(1)
 
@@ -105,7 +105,7 @@ class Daemon(Component):
 
         closerange(0, maxfd)
 
-        si = open(self.stdin, "r")
+        si = open(self.stdin)
         so = open(self.stdout, "a+")
         se = open(self.stderr, "a+")
 

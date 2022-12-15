@@ -42,7 +42,7 @@ class Server(BaseComponent):
         :type send_event_firewall:   function
         :type send_event_firewall:   method
         """
-        super(Server, self).__init__(channel=channel, **kwargs)
+        super().__init__(channel=channel, **kwargs)
 
         bind = (server_ip, port)
         self.server = TCPServer(bind, channel=self.channel, **kwargs)

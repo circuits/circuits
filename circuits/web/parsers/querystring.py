@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
-
 from circuits.six import iteritems, string_types
 from circuits.six.moves.urllib_parse import parse_qsl
 
 
-class QueryStringToken(object):
+class QueryStringToken:
 
     ARRAY = "ARRAY"
     OBJECT = "OBJECT"
     KEY = "KEY"
 
 
-class QueryStringParser(object):
+class QueryStringParser:
 
     def __init__(self, data):
         self.result = {}
