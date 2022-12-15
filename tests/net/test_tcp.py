@@ -21,7 +21,7 @@ from .server import Server
 CERT_FILE = os.path.join(os.path.dirname(__file__), "cert.pem")
 
 
-class TestClient:
+class _TestClient:
 
     def __init__(self, ipv6=False):
         self._sockname = None
@@ -62,7 +62,7 @@ class TestClient:
 
 @pytest.fixture
 def client(request, ipv6):
-    client = TestClient(ipv6=ipv6)
+    client = _TestClient(ipv6=ipv6)
 
     def finalizer():
         client.disconnect()

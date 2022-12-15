@@ -3,7 +3,7 @@
 This module defines utilities used by circuits.
 """
 import sys
-from imp import reload
+from importlib import reload
 
 
 def flatten(root, visited=None):

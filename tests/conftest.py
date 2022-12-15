@@ -4,10 +4,7 @@ import sys
 import threading
 from collections import deque
 from time import sleep
-try:
-    from collections import Callable
-except ImportError:
-    from collections.abc import Callable
+from collections.abc import Callable
 
 import pytest
 
