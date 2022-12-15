@@ -373,12 +373,7 @@ class Manager(object):
                 #      This probably costs us performance for what?
                 #      I've not ever had to rely on this in practice...
                 handler_channel = getattr(
-                    getattr(
-                        _handler, "im_self", getattr(
-                            _handler, "__self__", _dummy
-                        )
-                    ),
-                    "channel", None
+                    getattr(_handler, "im_self", getattr(_handler, "__self__", _dummy)), "channel", None
                 )
 
             if channel == "*" or handler_channel in ("*", channel,) \
@@ -524,9 +519,7 @@ class Manager(object):
         state = _State(timeout=kwargs.get("timeout", -1))
 
         def _on_event(self, event, *args, **kwargs):
-            if not state.run and (
-                    event_object is None or event is event_object
-            ):
+            if not state.run and (event_object is None or event is event_object):
                 self.removeHandler(_on_event_handler, event_name)
                 event.alert_done = True
                 state.run = True
@@ -644,12 +637,15 @@ class Manager(object):
 
             if isinstance(event, generate_events):
                 from .helpers import FallBackGenerator
+
                 event_handlers.append(FallBackGenerator()._on_generate_events)
             elif isinstance(event, exception) and len(event_handlers) == 0:
                 from .helpers import FallBackExceptionHandler
+
                 event_handlers.append(FallBackExceptionHandler()._on_exception)
             elif isinstance(event, signal) and len(event_handlers) == 0:
                 from .helpers import FallBackSignalHandler
+
                 event_handlers.append(FallBackSignalHandler()._on_signal)
 
             self._cache[(event.name, channels)] = event_handlers
@@ -686,10 +682,7 @@ class Manager(object):
                 event.value.errors = True
 
                 if event.failure:
-                    self.fire(
-                        event.child("failure", event, err),
-                        *event.channels
-                    )
+                    self.fire(event.child("failure", event, err), *event.channels)
 
                 self.fire(exception(*err, handler=event_handler, fevent=event))
 
@@ -725,9 +718,7 @@ class Manager(object):
 
         if err is None and event.success:
             channels = getattr(event, "success_channels", event.channels)
-            self.fire(
-                event.child("success", event, event.value.value), *channels
-            )
+            self.fire(event.child("success", event, event.value.value), *channels)
 
         while True:
             # cause attributes indicates interest in completion event
@@ -775,9 +766,7 @@ class Manager(object):
                 args = ()
                 bridge = None
 
-            self.__process = Process(
-                target=self.run, args=args, name=self.name
-            )
+            self.__process = Process(target=self.run, args=args, name=self.name)
             self.__process.daemon = True
             self.__process.start()
 
@@ -967,6 +956,7 @@ class Manager(object):
 
         if socket is not None:
             from circuits.core.bridge import Bridge
+
             Bridge(socket, channel=socket.channel).register(self)
 
         self.fire(started(self))

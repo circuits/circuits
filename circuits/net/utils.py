@@ -13,5 +13,5 @@ def is_ssl_handshake(buf):
 
     # SSLv2
     v = list(iterbytes(buf[:2])) + [0x00, 0x00]
-    if (v[0] & 0x80 == 0x80) and ((v[0] & 0x7f) << 8 | v[1]) > 9:
+    if (v[0] & 0x80 == 0x80) and ((v[0] & 0x7F) << 8 | v[1]) > 9:
         return True

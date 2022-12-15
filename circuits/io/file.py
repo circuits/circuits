@@ -37,8 +37,7 @@ class File(Component):
 
     channel = "file"
 
-    def init(self, filename, mode="r", bufsize=BUFSIZE, encoding=None,
-             channel=channel):
+    def init(self, filename, mode="r", bufsize=BUFSIZE, encoding=None, channel=channel):
         self._mode = mode
         self._bufsize = bufsize
         self._filename = filename
@@ -51,8 +50,7 @@ class File(Component):
 
     @property
     def closed(self):
-        return getattr(self._fd, "closed", True) \
-            if hasattr(self, "_fd") else True
+        return getattr(self._fd, "closed", True) if hasattr(self, "_fd") else True
 
     @property
     def filename(self):

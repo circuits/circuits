@@ -58,8 +58,7 @@ class Value(object):
             return v
 
     def __iter__(self):
-        return iter(map(lambda v: v.value if isinstance(v, Value) else v,
-                        self.value))
+        return iter(map(lambda v: v.value if isinstance(v, Value) else v, self.value))
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"

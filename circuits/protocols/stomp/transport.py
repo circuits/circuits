@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 
 
 class EnhancedStompFrameTransport(StompFrameTransport):
-    """ add support for older ssl module and http proxy """
+    """add support for older ssl module and http proxy"""
 
     proxy_host = None
     proxy_port = None
@@ -23,7 +23,7 @@ class EnhancedStompFrameTransport(StompFrameTransport):
 
     @staticmethod
     def match_hostname(cert, hostname):
-        """ Check that hostname matches cert """
+        """Check that hostname matches cert"""
         names = []
         # Python 3 has an ssl.match_hostname method, which does hostname validation.
         try:
@@ -40,7 +40,7 @@ class EnhancedStompFrameTransport(StompFrameTransport):
         raise RuntimeError("{0} does not match the expected value in the certificate {1}".format(hostname, str(names)))
 
     def connect(self, timeout=None):
-        """ Allow older versions of ssl module, allow http proxy connections """
+        """Allow older versions of ssl module, allow http proxy connections"""
         LOG.debug("stomp_transport.connect()")
         ssl_params = None
         if isinstance(self.sslContext, dict):

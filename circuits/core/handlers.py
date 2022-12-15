@@ -101,16 +101,13 @@ def reprhandler(handler):
         channel = "*"
 
     from circuits.core.manager import Manager
+
     if isinstance(channel, Manager):
         channel = "<instance of " + channel.__class__.__name__ + ">"
 
     names = ",".join(handler.names)
 
-    instance = getattr(
-        handler, "im_self", getattr(
-            handler, "__self__", Unknown()
-        )
-    ).__class__.__name__
+    instance = getattr(handler, "im_self", getattr(handler, "__self__", Unknown())).__class__.__name__
 
     method = handler.__name__
 

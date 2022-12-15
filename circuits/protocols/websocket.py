@@ -60,6 +60,7 @@ class WebSocketCodec(BaseComponent):
     @handler("registered")
     def _on_registered(self, component, parent):
         if component is self:
+
             @handler("read", priority=10, channel=parent.channel)
             def _on_read_raw(self, event, *args):
                 if self._sock is not None:
@@ -84,6 +85,7 @@ class WebSocketCodec(BaseComponent):
                     if args[0] != self._sock:
                         return
                 self.unregister()
+
             self.addHandler(_on_disconnect)
 
     def _parse_messages(self, data):
@@ -94,17 +96,16 @@ class WebSocketCodec(BaseComponent):
         while data:
             # extract final flag, opcode and masking
             final = bool(data[0] & 0x80 != 0)
-            opcode = data[0] & 0xf
+            opcode = data[0] & 0xF
             masking = bool(data[1] & 0x80 != 0)
             # evaluate payload length
-            payload_length = data[1] & 0x7f
+            payload_length = data[1] & 0x7F
             offset = 2
             if payload_length >= 126:
                 payload_bytes = 2 if payload_length == 126 else 8
                 payload_length = 0
                 for _ in range(payload_bytes):
-                    payload_length = payload_length * 256 \
-                        + data[offset]
+                    payload_length = payload_length * 256 + data[offset]
                     offset += 1
             # retrieve optional masking key
             if masking:
@@ -130,8 +131,7 @@ class WebSocketCodec(BaseComponent):
             if final:
                 if opcode < 8:
                     # if text or continuation of text, convert
-                    if opcode == 1 \
-                            or opcode == 0 and self._pending_type == 1:
+                    if opcode == 1 or opcode == 0 and self._pending_type == 1:
                         msg = msg.decode("utf-8", "replace")
                     self._pending_type = None
                     self._pending_payload = bytearray()
@@ -186,7 +186,7 @@ class WebSocketCodec(BaseComponent):
         if data_length <= 125:
             len_byte = data_length
             lbytes = 0
-        elif data_length <= 0xffff:
+        elif data_length <= 0xFFFF:
             len_byte = 126
             lbytes = 2
         else:
@@ -196,13 +196,12 @@ class WebSocketCodec(BaseComponent):
             len_byte = len_byte | 0x80
         tail.append(len_byte)
         for i in range(lbytes - 1, -1, -1):
-            tail.append(data_length >> (i * 8) & 0xff)
+            tail.append(data_length >> (i * 8) & 0xFF)
         if mask:
             try:
                 masking_key = bytearray(list(os.urandom(4)))
             except NotImplementedError:
-                masking_key \
-                    = bytearray([random.randint(0, 255) for i in range(4)])
+                masking_key = bytearray([random.randint(0, 255) for i in range(4)])
             tail += masking_key
             for i, c in enumerate(data):
                 tail.append(c ^ masking_key[i % 4])

@@ -23,11 +23,11 @@ class daemonized(Event):
 
 
 class deletepid(Event):
-    """"deletepid Event"""
+    """deletepid Event"""
 
 
 class writepid(Event):
-    """"writepid Event"""
+    """writepid Event"""
 
 
 class Daemon(Component):
@@ -48,25 +48,18 @@ class Daemon(Component):
 
     channel = "daemon"
 
-    def init(self, pidfile, path="/", stdin=None, stdout=None,
-             stderr=None, channel=channel):
+    def init(self, pidfile, path="/", stdin=None, stdout=None, stderr=None, channel=channel):
 
         assert isabs(path), "path must be absolute"
 
         self.pidfile = pidfile
         self.path = path
 
-        self.stdin = (
-            stdin if stdin is not None and isabs(stdin) else "/dev/null"
-        )
+        self.stdin = stdin if stdin is not None and isabs(stdin) else "/dev/null"
 
-        self.stdout = (
-            stdout if stdout is not None and isabs(stdout) else "/dev/null"
-        )
+        self.stdout = stdout if stdout is not None and isabs(stdout) else "/dev/null"
 
-        self.stderr = (
-            stderr if stderr is not None and isabs(stderr) else "/dev/null"
-        )
+        self.stderr = stderr if stderr is not None and isabs(stderr) else "/dev/null"
 
     def deletepid(self):
         remove(self.pidfile)
@@ -82,11 +75,7 @@ class Daemon(Component):
                 # exit first parent
                 _exit(0)
         except OSError as e:
-            stderr.write(
-                "fork #1 failed: {:d} ({})\n".format(
-                    e.errno, e
-                )
-            )
+            stderr.write("fork #1 failed: {:d} ({})\n".format(e.errno, e))
 
             raise SystemExit(1)
 
@@ -102,11 +91,7 @@ class Daemon(Component):
                 # exit from second parent
                 _exit(0)
         except OSError as e:
-            stderr.write(
-                "fork #2 failed: {:d} ({})\n".format(
-                    e.errno, e
-                )
-            )
+            stderr.write("fork #2 failed: {:d} ({})\n".format(e.errno, e))
 
             raise SystemExit(1)
 
