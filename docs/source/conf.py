@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # circuits documentation build configuration file, created by
 # sphinx-quickstart on Thu Feb  4 09:44:50 2010.
@@ -44,8 +43,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'circuits'
-copyright = u'2004-2016, James Mills'
+project = 'circuits'
+copyright = '2004-2016, James Mills'
 url = "http://circuitsframework.com/"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -227,8 +226,8 @@ htmlhelp_basename = 'circuitsdoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
     (
-        'index', 'circuits.tex', u'circuits Documentation',
-        u'James Mills', 'manual'
+        'index', 'circuits.tex', 'circuits Documentation',
+        'James Mills', 'manual'
     ),
 ]
 

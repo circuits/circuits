@@ -12,7 +12,7 @@ class test(Event):
 class App(Component):
 
     def __init__(self):
-        super(App, self).__init__()
+        super().__init__()
 
         self.etype = None
         self.evalue = None

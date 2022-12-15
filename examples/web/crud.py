@@ -13,19 +13,19 @@ class Root(Controller):
         These can be used to implement RESTful resources with CRUD operations.
         """
 
-        return "GET({0:s}, {1:s})".format(repr(args), repr(kwargs))
+        return f"GET({repr(args):s}, {repr(kwargs):s})"
 
     def POST(self, *args, **kwargs):
-        return "POST({0:s}, {1:s})".format(repr(args), repr(kwargs))
+        return f"POST({repr(args):s}, {repr(kwargs):s})"
 
     def PUT(self, *args, **kwargs):
-        return "PUT({0:s}, {1:s})".format(repr(args), repr(kwargs))
+        return f"PUT({repr(args):s}, {repr(kwargs):s})"
 
     def DELETE(self, *args, **kwargs):
-        return "DELETE({0:s}, {1:s})".format(repr(args), repr(kwargs))
+        return f"DELETE({repr(args):s}, {repr(kwargs):s})"
 
     def HEAD(self, *args, **kwargs):
-        return "HEAD({0:s}, {1:s})".format(repr(args), repr(kwargs))
+        return f"HEAD({repr(args):s}, {repr(kwargs):s})"
 
 
 app = Server(("0.0.0.0", 8000))

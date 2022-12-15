@@ -65,7 +65,7 @@ def test_directory(webapp):
 
 
 def test_file_quooting(webapp):
-    url = "{0:s}{1:s}".format(
+    url = "{:s}{:s}".format(
         webapp.server.http.base, quote("/static/#foobar.txt"))
     f = urlopen(url)
     s = f.read().strip()

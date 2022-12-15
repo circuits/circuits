@@ -27,7 +27,7 @@ def test_default(webapp):
 
 
 def test_explicit(webapp):
-    f = urlopen("{0:s}/foo".format(webapp.server.http.base))
+    f = urlopen(f"{webapp.server.http.base:s}/foo")
     s = f.read()
     assert s == b"Hello World!"
 
@@ -36,7 +36,7 @@ def test_explicit(webapp):
 
 
 def test_static(webapp):
-    f = urlopen("{0:s}/static/test.css".format(webapp.server.http.base))
+    f = urlopen(f"{webapp.server.http.base:s}/static/test.css")
     s = f.read()
     assert s == b"body { }\n"
 
@@ -45,7 +45,7 @@ def test_static(webapp):
 
 
 def test_empty(webapp):
-    f = urlopen("{0:s}/empty".format(webapp.server.http.base))
+    f = urlopen(f"{webapp.server.http.base:s}/empty")
     s = f.read()
     assert s == b""
 

@@ -62,7 +62,7 @@ class Root(Controller):
         tell the user what was saved.
         """
 
-        return "Data Saved. firstName={0:s} lastName={1:s}".format(
+        return "Data Saved. firstName={:s} lastName={:s}".format(
             firstName, lastName
         )
 

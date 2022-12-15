@@ -24,7 +24,7 @@ def test2(manager, watcher, tmpdir):
     foo = tmpdir.ensure("foo.txt")
 
     p = Process(
-        ["cat - > {0:s}".format(str(foo))], shell=True).register(manager)
+        [f"cat - > {str(foo):s}"], shell=True).register(manager)
     assert watcher.wait("registered")
 
     p.start()

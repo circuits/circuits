@@ -4,7 +4,6 @@
 A Bridge example that demonstrates bidirectional parent/child
 communications and displays the no. of events per second and latency.
 """
-from __future__ import print_function
 
 import sys
 from signal import SIGINT, SIGTERM
@@ -15,7 +14,7 @@ from circuits import Component, Event, handler, ipc
 
 
 def log(msg, *args, **kwargs):
-    sys.stderr.write("{0:s}{1:s}".format(msg.format(*args), kwargs.get("n", "\n")))
+    sys.stderr.write("{:s}{:s}".format(msg.format(*args), kwargs.get("n", "\n")))
     sys.stderr.flush()
 
 
@@ -56,7 +55,7 @@ class App(Component):
     def pong(self, ts1, ts2):
         latency = (ts2 - ts1) * 1000.0
         status(
-            "{0:d} event/s @ {1:0.2f}ms latency".format(
+            "{:d} event/s @ {:0.2f}ms latency".format(
                 int(self.events / (time() - self.stime)),
                 latency
             )

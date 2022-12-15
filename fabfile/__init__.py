@@ -1,7 +1,6 @@
 """Development Task"""
 
 
-from __future__ import print_function
 
 from os import getcwd
 
@@ -33,7 +32,7 @@ def build(**options):
         pip(requirements="requirements-dev.txt")
 
     with settings(hide("stdout", "stderr"), warn_only=True):
-        local("python setup.py {0:s}".format("develop" if dev else "install"))
+        local("python setup.py {:s}".format("develop" if dev else "install"))
 
 
 @task()
@@ -42,7 +41,7 @@ def clean():
 
     files = ["build", ".coverage", "coverage", "dist", "docs/build"]
 
-    local("rm -rf {0:s}".format(" ".join(files)))
+    local("rm -rf {:s}".format(" ".join(files)))
 
     local("find . -type f -name '*~' -delete")
     local("find . -type f -name '*.pyo' -delete")
@@ -92,10 +91,10 @@ def release():
         if "dev" in version:
             abort("Detected Development Version!")
 
-        print("Release version: {0:s}".format(version))
+        print(f"Release version: {version:s}")
 
         if prompt("Is this ok?", default="Y", validate=r"^[YyNn]?$") in "yY":
-            run("git tag {0:s}".format(version))
+            run(f"git tag {version:s}")
             run("python setup.py egg_info sdist bdist_egg bdist_wheel register upload")
             run("python setup.py build_sphinx upload_sphinx")
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Example IRC Client
 
 A basic IRC client with a very basic console interface.
@@ -9,7 +8,6 @@ For usage type:
    ./ircclient.py --help
 
 """
-from __future__ import print_function
 
 import os
 from optparse import OptionParser
@@ -174,7 +172,7 @@ class Client(Component):
 
         data = data.strip().decode("utf-8")
 
-        print("<{0:s}> {1:s}".format(self.nick, data))
+        print(f"<{self.nick:s}> {data:s}")
         self.fire(PRIVMSG(self.ircchannel, data))
 
 

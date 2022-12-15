@@ -24,7 +24,7 @@ class App(Component):
             raise Exception()
 
 
-class Logger(object):
+class Logger:
 
     error_msg = None
     debug_msg = None

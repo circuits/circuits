@@ -36,7 +36,7 @@ def parse_options():
 class send_all_event(Event):
 
     def __init__(self, infos):
-        super(send_all_event, self).__init__(infos)
+        super().__init__(infos)
 
 
 class NodeServer(Component):

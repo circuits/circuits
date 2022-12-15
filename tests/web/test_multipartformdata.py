@@ -69,7 +69,7 @@ def test_unicode(webapp, sample_file):
     )
 
     # Build the request
-    url = "{0:s}/upload".format(webapp.server.http.base)
+    url = f"{webapp.server.http.base:s}/upload"
     data = form.bytes()
     headers = {
         "Content-Type": form.get_content_type(),

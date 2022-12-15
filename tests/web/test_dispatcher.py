@@ -6,7 +6,7 @@ from circuits.web.client import Client, request
 class Root(Controller):
 
     def __init__(self, *args, **kwargs):
-        super(Root, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self += Leaf()
 
     def index(self):

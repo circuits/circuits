@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import pytest
 
@@ -43,8 +42,8 @@ def test_index(webapp):
 
 
 @pytest.mark.parametrize('body', [
-    u"ä".encode('utf-8'),
-    u"ä".encode('iso8859-1')
+    "ä".encode(),
+    "ä".encode('iso8859-1')
 ])
 def test_request_body(webapp, body):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
@@ -69,7 +68,7 @@ def test_response_body(webapp):
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == u"ä".encode('utf-8')
+    assert s == "ä".encode()
 
     connection.close()
 
@@ -85,7 +84,7 @@ def test_request_headers(webapp):
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s == u"ä".encode('utf-8')
+    assert s == "ä".encode()
 
     connection.close()
 
@@ -109,7 +108,7 @@ def test_response_headers(webapp):
     s = client.response.read()
     a = client.response.headers.get('A')
     assert a == "ä"
-    assert s == u"ä".encode('utf-8')
+    assert s == "ä".encode()
 
 
 def test_argument(webapp):
@@ -122,6 +121,6 @@ def test_argument(webapp):
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s.decode('utf-8') == u'\u2192'
+    assert s.decode('utf-8') == '\u2192'
 
     connection.close()

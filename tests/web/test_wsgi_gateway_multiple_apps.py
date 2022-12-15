@@ -41,7 +41,7 @@ def test(apps):
     s = f.read()
     assert s == b"Hello World!"
 
-    f = urlopen("{0:s}/foobar/".format(server.http.base))
+    f = urlopen(f"{server.http.base:s}/foobar/")
     s = f.read()
     assert s == b"FooBar!"
 

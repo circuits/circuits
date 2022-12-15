@@ -6,7 +6,7 @@ from circuits import Component, Debugger, Event, Timer, Worker, task
 
 
 def download_web_page(url):
-    print('Downloading {}'.format(url))
+    print(f'Downloading {url}')
     response = requests.get(url)
     sleep(2)  # This website is really slow.
     # Only returning portion of web page.
@@ -35,7 +35,7 @@ class App(Component):
 
     def task_success(self, function_called, function_result):
         func, url_called = function_called
-        print('url {} gave {}'.format(url_called, function_result))
+        print(f'url {url_called} gave {function_result}')
 
 
 if __name__ == '__main__':

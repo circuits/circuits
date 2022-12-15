@@ -8,10 +8,10 @@ from inspect import getmembers, getmodule, isfunction
 from creoleparser import parse_args
 
 
-class Macro(object):
+class Macro:
 
     def __init__(self, name, arg_string, body, isblock):
-        super(Macro, self).__init__()
+        super().__init__()
 
         self.name = name
         self.arg_string = arg_string

@@ -15,7 +15,6 @@ To run this example::
     pip install dnslib
     ./dnsclient.py 8.8.8.8 53 google.com
 """
-from __future__ import print_function
 
 import sys
 
@@ -52,14 +51,14 @@ class Dummy(Component):
         qname = response.q.qname
 
         print(
-            "DNS Response from {0:s}:{1:d} id={2:d} qname={3:s}".format(
+            "DNS Response from {:s}:{:d} id={:d} qname={:s}".format(
                 peer[0], peer[1], id, str(qname)
             ),
             file=sys.stderr
         )
 
         for rr in response.rr:
-            print(" {0:s}".format(str(rr)))
+            print(f" {str(rr):s}")
 
         raise SystemExit(0)
 
@@ -89,7 +88,7 @@ class DNSClient(Component):
         print("DNS Client Started!", file=sys.stderr)
 
     def ready(self, client, bind):
-        print("Ready! Bound to {0:s}:{1:d}".format(*bind), file=sys.stderr)
+        print("Ready! Bound to {:s}:{:d}".format(*bind), file=sys.stderr)
 
         request = DNSRecord(q=DNSQuestion(self.query))
         self.fire(write((self.server, self.port), request.pack()))

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
 import pytest
 
@@ -21,7 +20,7 @@ class Echo(Component):
     def connect(self, sock, host, port):
         self.clients.append(sock)
         print("WebSocket Client Connected:", host, port)
-        self.fire(write(sock, "Welcome {0:s}:{1:d}".format(host, port)))
+        self.fire(write(sock, f"Welcome {host:s}:{port:d}"))
 
     def disconnect(self, sock):
         self.clients.remove(sock)
@@ -61,7 +60,7 @@ def test(manager, watcher, webapp, chunksize):
     WebSocketsDispatcher("/websocket").register(webapp)
     assert watcher.wait("registered", channel="web")
 
-    uri = "ws://{0:s}:{1:d}/websocket".format(
+    uri = "ws://{:s}:{:d}/websocket".format(
         webapp.server.host, webapp.server.port)
 
     WebSocketClient(uri).register(manager)

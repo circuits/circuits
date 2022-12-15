@@ -48,14 +48,14 @@ def test(tmpdir):
     assert os.path.exists(pidfile)
     assert os.path.isfile(pidfile)
 
-    f = open(pidfile, "r")
+    f = open(pidfile)
     pid = int(f.read().strip())
     f.close()
 
     kill(pid, SIGTERM)
     wait(pid)
 
-    with open(signalfile, "r") as fd:
+    with open(signalfile) as fd:
         signal = fd.read().strip()
 
     assert int(signal) == int(SIGTERM)

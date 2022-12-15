@@ -11,7 +11,7 @@ class bark(Event):
 class Pound(Component):
 
     def __init__(self):
-        super(Pound, self).__init__()
+        super().__init__()
 
         self.bob = Bob().register(self)
         self.fred = Fred().register(self)

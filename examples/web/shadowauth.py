@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Shadow Auth Demo
 
 An example of a Circuits Component that requires users authenticate
@@ -22,7 +21,7 @@ def check_auth(user, password):
     salt_pattern = compile_regex(r"\$.*\$.*\$")
     passwd = "./etc/shadow" if path.exists("./etc/shadow") else "/etc/passwd"
 
-    with open(passwd, "r") as f:
+    with open(passwd) as f:
         rows = (line.strip().split(":") for line in f)
         records = [row for row in rows if row[0] == user]
 
@@ -64,7 +63,7 @@ class PasswdAuth(Component):
 class Root(Controller):
 
     def index(self):
-        return "Hello, {0:s}".format(self.request.login)
+        return f"Hello, {self.request.login:s}"
 
 
 app = Server(("0.0.0.0", 8000))

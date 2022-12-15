@@ -6,8 +6,8 @@ from setuptools import find_packages, setup
 
 def read_file(filename):
     try:
-        return open(filename, "r").read()
-    except IOError:
+        return open(filename).read()
+    except OSError:
         return ""
 
 

@@ -96,7 +96,7 @@ class ChatServer(Component):
         nickname = self.clients[sock]["state"]["nickname"]
 
         self.broadcast(
-            "!!! {0:s} has left !!!\n".format(nickname).encode("utf-8"),
+            f"!!! {nickname:s} has left !!!\n".encode("utf-8"),
             exclude=[sock]
         )
 
@@ -113,14 +113,14 @@ class ChatServer(Component):
             self.clients[sock]["state"]["nickname"] = nickname
 
             self.broadcast(
-                "!!! {0:s} has joined !!!\n".format(nickname).encode("utf-8"),
+                f"!!! {nickname:s} has joined !!!\n".encode("utf-8"),
                 exclude=[sock]
             )
         else:
             nickname = self.clients[sock]["state"]["nickname"]
 
             self.broadcast(
-                "<{0:s}> {1:s}\n".format(nickname, data).encode("utf-8"),
+                f"<{nickname:s}> {data:s}\n".encode("utf-8"),
                 exclude=[sock]
             )
 

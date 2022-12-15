@@ -20,7 +20,6 @@ At the python prompt:
     >>> y
     <Value (u'Hello World! (16035)') result=True; errors=False; for <Remote[*.remote] (<Hello[.hello] ( )>, 'app2' channel=None)>
 """  # noqa
-from __future__ import print_function
 
 import sys
 from os import getpid
@@ -40,12 +39,12 @@ class App(Component):
         print("Ready!")
 
     def connected(self, host, port):
-        print("Connected to {}:{}".format(host, port))
+        print(f"Connected to {host}:{port}")
         print("Try: x = app.fire(hello())")
 
     def hello(self):
         print("Now try: y = app.fire(remote(hello(), \"test\"))")
-        return "Hello World! ({0:d})".format(getpid())
+        return f"Hello World! ({getpid():d})"
 
 
 # Setup app1 with a debugger

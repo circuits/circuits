@@ -32,7 +32,7 @@ from circuits.tools import getargspec
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
 
-MAIN_TITLE = "cIRC - {0:s}".format(systemVersion)
+MAIN_TITLE = f"cIRC - {systemVersion:s}"
 
 HELP_STRINGS = {
     "main": "For help, type: /help"
@@ -154,7 +154,7 @@ class Client(Component):
         """
 
         if numeric == ERR_NICKNAMEINUSE:
-            self.fire(NICK("{0:s}_".format(args[0])))
+            self.fire(NICK(f"{args[0]:s}_"))
         elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
             self.fire(JOIN(self.ircchannel))
 
@@ -191,7 +191,7 @@ class Client(Component):
 
     def syntaxError(self, command, args, expected):
         self.lines.append(
-            Text("Syntax error ({0:s}): {1:s} Expected: {2:s}".format(
+            Text("Syntax error ({:s}): {:s} Expected: {:s}".format(
                 command, args, expected)
             )
         )

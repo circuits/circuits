@@ -65,7 +65,7 @@ class Bot(Component):
         """
 
         if numeric == ERR_NICKNAMEINUSE:
-            self.fire(NICK("{0:s}_".format(args[0])))
+            self.fire(NICK(f"{args[0]:s}_"))
         elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
             self.fire(JOIN("#circuits"))
 
