@@ -95,7 +95,7 @@ class Client(Component):
 
         nick = self.nick
         hostname = self.hostname
-        name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
+        name = f"{nick} on {hostname} using circuits/{systemVersion}"
 
         self.fire(NICK(nick))
         self.fire(USER(nick, nick, self.hostname, name))
@@ -147,7 +147,7 @@ class Client(Component):
         notice we receieve from the server.
         """
 
-        print("-%s- %s" % (source[0], message))
+        print(f"-{source[0]}- {message}")
 
     def privmsg(self, source, target, message):
         """privmsg Event
@@ -157,9 +157,9 @@ class Client(Component):
         """
 
         if target[0] == "#":
-            print("<%s> %s" % (source[0], message))
+            print(f"<{source[0]}> {message}")
         else:
-            print("-%s- %s" % (source[0], message))
+            print(f"-{source[0]}- {message}")
 
     @handler("read", channel="stdin")
     def stdin_read(self, data):

@@ -19,9 +19,9 @@ def _formatparam(param, value=None, quote=1):
     if value is not None and len(value) > 0:
         if quote or tspecials.search(value):
             value = value.replace('\\', '\\\\').replace('"', r'\"')
-            return '%s="%s"' % (param, value)
+            return f'{param}="{value}"'
         else:
-            return '%s=%s' % (param, value)
+            return f'{param}={value}'
     else:
         return param
 
@@ -64,7 +64,7 @@ class HeaderElement:
         return self.value < other.value
 
     def __str__(self):
-        p = [";%s=%s" % (k, v) for k, v in self.params.items()]
+        p = [f";{k}={v}" for k, v in self.params.items()]
         return "%s%s" % (self.value, "".join(p))
 
     def __bytes__(self):
@@ -231,7 +231,7 @@ class Headers(CaseInsensitiveDict):
         return "Headers(%s)" % repr(list(self.items()))
 
     def __str__(self):
-        headers = ["%s: %s\r\n" % (k, v) for k, v in self.items()]
+        headers = [f"{k}: {v}\r\n" for k, v in self.items()]
         return "".join(headers) + '\r\n'
 
     def items(self):

@@ -141,7 +141,7 @@ class Client(Component):
 
         nick = self.nick
         hostname = self.hostname
-        name = "%s on %s using circuits/%s" % (nick, hostname, systemVersion)
+        name = f"{nick} on {hostname} using circuits/{systemVersion}"
 
         self.fire(NICK(nick))
         self.fire(USER(nick, hostname, host, name))
@@ -250,7 +250,7 @@ class Client(Component):
                             )
         else:
             if self.ircchannel is not None:
-                self.lines.append(Text("<%s> %s" % (self.nick, s)))
+                self.lines.append(Text(f"<{self.nick}> {s}"))
                 self.fire(PRIVMSG(self.ircchannel, s))
             else:
                 self.lines.append(Text(
@@ -294,9 +294,9 @@ class Client(Component):
         nick, ident, host = source
 
         if event.name == "notice":
-            self.lines.append(Text("-%s- %s" % (nick, message)))
+            self.lines.append(Text(f"-{nick}- {message}"))
         else:
-            self.lines.append(Text("<%s> %s" % (nick, message)))
+            self.lines.append(Text(f"<{nick}> {message}"))
 
 
 def main():

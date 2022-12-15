@@ -27,7 +27,7 @@ class stomp_event(Event):
 
         data = self._repr()
 
-        return "<%s[%s] (%s)>" % (self.name, channels, data)
+        return f"<{self.name}[{channels}] ({data})>"
 
 
 class disconnected(stomp_event):

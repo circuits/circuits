@@ -111,7 +111,7 @@ def reprhandler(handler):
 
     method = handler.__name__
 
-    priority = "[%0.2f]" % (handler.priority,) if handler.priority else ""
+    priority = f"[{handler.priority:0.2f}]" if handler.priority else ""
 
     return format % (channel, names, priority, instance, method)
 

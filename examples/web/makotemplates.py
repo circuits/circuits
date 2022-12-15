@@ -32,7 +32,7 @@ class Root(Controller):
         return render(self.tpl)
 
     def submit(self, firstName, lastName):
-        msg = "Thank you %s %s" % (firstName, lastName)
+        msg = f"Thank you {firstName} {lastName}"
         return render(self.tpl, message=msg)
 
 

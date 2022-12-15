@@ -23,7 +23,7 @@ def process_multipart(request, params):
         ib = ctype.params["boundary"].strip("\"")
 
     if not re.match("^[ -~]{0,200}[!-~]$", ib):
-        raise ValueError("Invalid boundary in multipart form: %r" % (ib,))
+        raise ValueError(f"Invalid boundary in multipart form: {ib!r}")
 
     parser = MultipartParser(request.body, ib)
     for part in parser:

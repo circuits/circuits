@@ -102,7 +102,7 @@ class BaseComponent(Manager):
                     p2 = getattr(v, "handler", False)
                     p3 = overridden(k)
                     if p1 and p2 and not p3:
-                        name = "%s_%s" % (base.__name__, k)
+                        name = f"{base.__name__}_{k}"
                         method = MethodType(v, self)
                         setattr(self, name, method)
 
