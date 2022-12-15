@@ -90,7 +90,7 @@ def test(manager, watcher, webapp, chunksize):
     data = "A" * (chunksize + 1)
     client.fire(write(data), "ws")
     assert watcher.wait("read", channel="ws")
-    assert client.response == "Received: %s" % (data,)
+    assert client.response == f"Received: {data}"
 
     f = urlopen(webapp.server.http.base)
     s = f.read()

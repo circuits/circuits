@@ -93,7 +93,7 @@ def parse_options():
         help="Enable WSGI validation mode"
     )
 
-    parser.add_argument('-v', '--version', action='version', version='%%(prog)s v%s' % (circuits.__version__,))
+    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s v{circuits.__version__}')
 
     parser.add_argument('docroot', nargs='?', default=os.getcwd())
 

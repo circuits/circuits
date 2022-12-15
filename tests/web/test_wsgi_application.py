@@ -12,7 +12,7 @@ class Root(Controller):
 
     def test_args(self, *args, **kwargs):
         args = [arg if isinstance(arg, str) else arg.encode() for arg in args]
-        return "%s\n%s" % (repr(tuple(args)), repr(kwargs))
+        return f"{repr(tuple(args))}\n{repr(kwargs)}"
 
     def test_redirect(self):
         return self.redirect("/")

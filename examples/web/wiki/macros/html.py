@@ -87,7 +87,7 @@ def div(macro, environ, cls=None, float=None, id=None, style=None,
         return None
 
     if float and float in ("left", "right"):
-        style = "float: %s; %s" % (float, style)
+        style = f"float: {float}; {style}"
 
     if style:
         style = ";".join(sanitizer.sanitize_css(style))

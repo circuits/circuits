@@ -44,7 +44,7 @@ class XMLRPC(BaseComponent):
             value = yield self.call(rpc.create(method, *params), self.rpc_channel)
             yield self._response(value.value)
         except Exception as exc:
-            yield self._error(1, "%s: %s" % (type(exc).__name__, exc))
+            yield self._error(1, f"{type(exc).__name__}: {exc}")
         finally:
             event.stop()
 

@@ -43,7 +43,7 @@ class HTTPException(Exception):
         return HTTP_STATUS_CODES.get(self.code, '')
 
     def __repr__(self):
-        return '<%s %r>' % (self.__class__.__name__, str(self))
+        return f'<{self.__class__.__name__} {str(self)!r}>'
 
 
 class BadRequest(HTTPException):

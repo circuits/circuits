@@ -18,7 +18,7 @@ class App(Component):
 
 
 def test_main():
-    id = "%s:%s" % (os.getpid(), current_thread().getName())
+    id = f"{os.getpid()}:{current_thread().getName()}"
 
     m = Manager()
     assert repr(m) == "<Manager/ %s (queued=0) [S]>" % id

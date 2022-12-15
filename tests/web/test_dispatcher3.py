@@ -35,6 +35,6 @@ def test(webapp, method):
     assert response.reason == "OK"
 
     s = response.read()
-    assert s == f"{method:s}".encode("utf-8")
+    assert s == f"{method:s}".encode()
 
     connection.close()

@@ -262,7 +262,7 @@ class Manager:
         pid = current_process().pid
 
         if pid:
-            id = "%s:%s" % (pid, current_thread().getName())
+            id = f"{pid}:{current_thread().getName()}"
         else:
             id = current_thread().getName()
 

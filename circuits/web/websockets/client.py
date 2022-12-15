@@ -99,8 +99,8 @@ class WebSocketClient(BaseComponent):
         headers["Sec-WebSocket-Version"] = "13"
         UNSAFE_CHARS = re.compile('[^0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]')
         escaped_resource = UNSAFE_CHARS.sub('', self._resource.encode('ASCII', 'replace').decode('ASCII'))
-        command = "GET %s HTTP/1.1" % (escaped_resource,)
-        message = "%s\r\n%s" % (command, headers)
+        command = f"GET {escaped_resource} HTTP/1.1"
+        message = f"{command}\r\n{headers}"
         self._pending += 1
         self.fire(write(message.encode('utf-8')), self._transport)
         return True

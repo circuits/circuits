@@ -107,8 +107,8 @@ class Client(BaseComponent):
         if body is not None:
             headers["Content-Length"] = len(body)
 
-        command = "%s %s HTTP/1.1" % (method, path)
-        message = "%s\r\n%s" % (command, headers)
+        command = f"{method} {path} HTTP/1.1"
+        message = f"{command}\r\n{headers}"
         self.fire(write(message.encode('utf-8')), self._transport)
         if body is not None:
             self.fire(write(body), self._transport)

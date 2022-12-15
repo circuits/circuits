@@ -113,7 +113,7 @@ class Node(BaseComponent):
 
         client_channel = kwargs.pop(
             'channel',
-            '%s_client_%s' % (self.channel, connection_name)
+            f'{self.channel}_client_{connection_name}'
         )
         reconnect_delay = kwargs.pop('reconnect_delay', 10)
         client = Client(hostname, port, channel=client_channel, **kwargs)

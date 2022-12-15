@@ -50,7 +50,7 @@ class JSONRPC(BaseComponent):
 
             yield self._response(id, value.value)
         except Exception as e:
-            yield self._error(-1, 100, "%s: %s" % (e.__class__.__name__, e))
+            yield self._error(-1, 100, f"{e.__class__.__name__}: {e}")
         finally:
             event.stop()
 

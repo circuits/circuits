@@ -55,7 +55,7 @@ class Host:
         self.name = name
 
     def __repr__(self):
-        return "Host(%r, %r, %r)" % (self.ip, self.port, self.name)
+        return f"Host({self.ip!r}, {self.port!r}, {self.name!r})"
 
 
 class HTTPStatus:
@@ -222,7 +222,7 @@ class Request:
 
     def __repr__(self):
         protocol = "HTTP/%d.%d" % self.protocol
-        return "<Request %s %s %s>" % (self.method, self.path, protocol)
+        return f"<Request {self.method} {self.path} {protocol}>"
 
 
 class Body:

@@ -161,7 +161,7 @@ class _Method:
         self.__name = name
 
     def __getattr__(self, name):
-        return _Method(self.__send, "%s.%s" % (self.__name, name))
+        return _Method(self.__send, f"{self.__name}.{name}")
 
     def __call__(self, *args):
         return self.__send(self.__name, args)

@@ -26,7 +26,7 @@ def dispatcher(name, arg_string, body, isblock, environ):
         try:
             return environ["macros"][name](macro, environ, *args, **kwargs)
         except Exception as e:
-            return "ERROR: Error while executing macro %r (%s)" % (name, e)
+            return f"ERROR: Error while executing macro {name!r} ({e})"
     else:
         return "Macro not found!"
 
@@ -43,7 +43,7 @@ def loadMacros():
     for module in modules:
         name, _ = os.path.splitext(module)
 
-        moduleName = "%s.%s" % (__package__, name)
+        moduleName = f"{__package__}.{name}"
         m = __import__(moduleName, globals(), locals(), __package__)
 
         def p(x):

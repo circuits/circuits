@@ -125,7 +125,7 @@ def serve_file(request, response, path, type=None, disposition=None,
     if disposition is not None:
         if name is None:
             name = os.path.basename(path)
-        cd = '%s; filename="%s"' % (disposition, name)
+        cd = f'{disposition}; filename="{name}"'
         response.headers["Content-Disposition"] = cd
 
     # Set Content-Length and use an iterable (file object)
@@ -147,7 +147,7 @@ def serve_file(request, response, path, type=None, disposition=None,
                 r_len = stop - start
                 response.status = 206
                 response.headers['Content-Range'] = (
-                    "bytes %s-%s/%s" % (start, stop - 1, c_len)
+                    f"bytes {start}-{stop - 1}/{c_len}"
                 )
                 response.headers['Content-Length'] = r_len
                 bodyfile.seek(start)
