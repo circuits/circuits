@@ -1,6 +1,6 @@
 """Event Tests"""
 
-import py
+import pytest
 
 from circuits import Component, Event
 
@@ -61,7 +61,7 @@ def test_getitem():
     def f(e, k):
         return e[k]
 
-    py.test.raises(TypeError, f, e, None)
+    pytest.raises(TypeError, f, e, None)
 
 
 def test_setitem():
@@ -80,7 +80,7 @@ def test_setitem():
     def f(e, k, v):
         e[k] = v
 
-    py.test.raises(TypeError, f, e, None, None)
+    pytest.raises(TypeError, f, e, None, None)
 
     assert e[0] == 0
     assert e["foo"] == "Hello"

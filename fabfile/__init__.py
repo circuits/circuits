@@ -1,7 +1,5 @@
 """Development Task"""
 
-
-
 from os import getcwd
 
 import docker  # noqa
@@ -58,7 +56,7 @@ def develop():
 
 
 @task()
-@requires("py.test")
+@requires("pytest")
 def test():
     """Run all unit tests and doctests."""
 
