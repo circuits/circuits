@@ -7,6 +7,7 @@ Change Log
 
 - :release:`3.3.0 <TBD>`
 - :support:`281` Dropped support for Python 2.7, 3.5, 3.6
+- :support:`281` Added support for Python 3.11
 
 - :release:`3.2.2 <2021-10-19>`
 - :support:`298` Added support for Python 3.10
