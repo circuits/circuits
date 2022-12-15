@@ -122,6 +122,7 @@ def graph_ascii(x):
     @return: A directed graph representing x's Component structure.
     @rtype:  str
     """
+
     def printer(d, x):
         return "%s* %s" % (" " * d, x)
 
@@ -205,7 +206,8 @@ def deprecated(f):
             "Call to deprecated function {}".format(f.__name__),
             category=DeprecationWarning,
             filename=getattr(f, _func_code).co_filename,
-            lineno=getattr(f, _func_code).co_firstlineno + 1
+            lineno=getattr(f, _func_code).co_firstlineno + 1,
         )
         return f(*args, **kwargs)
+
     return wrapper

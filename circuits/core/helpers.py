@@ -86,9 +86,7 @@ class FallBackExceptionHandler(BaseComponent):
         else:
             handler = reprhandler(handler)
 
-        msg = "ERROR {} ({!r}) ({!r}): {!r}\n".format(
-            handler, fevent, error_type, value
-        )
+        msg = "ERROR {} ({!r}) ({!r}): {!r}\n".format(handler, fevent, error_type, value)
 
         s.append(msg)
         s.append('Traceback (most recent call last):\n')

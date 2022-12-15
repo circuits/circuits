@@ -46,6 +46,7 @@ try:
     HAS_SSL = 1
 except ImportError:
     import warnings
+
     warnings.warn("No SSL support available.")
     HAS_SSL = 0
     CERT_NONE = None
@@ -320,13 +321,13 @@ class TCPClient(Client):
             self.fire(connected(host, port))
 
         if self.secure:
+
             def on_error(sock, err):
                 self.fire(error(sock, err))
                 self._close()
 
             self._sock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs,
-                do_handshake_on_connect=False
+                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False
             )
             for _ in do_handshake(self._sock, on_done, on_error):
                 yield
@@ -383,6 +384,7 @@ class UNIXClient(Client):
         self._poller.addReader(self, self._sock)
 
         if self.secure:
+
             def on_done(sock):
                 self.fire(connected(gethostname(), path))
 
@@ -390,8 +392,7 @@ class UNIXClient(Client):
                 self.fire(error(err))
 
             self._ssock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs,
-                do_handshake_on_connect=False
+                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False
             )
             for _ in do_handshake(self._ssock, on_done, on_error):
                 yield
@@ -404,8 +405,7 @@ class Server(BaseComponent):
     channel = "server"
     socket_protocol = IPPROTO_IP
 
-    def __init__(self, bind, secure=False, backlog=BACKLOG,
-                 bufsize=BUFSIZE, channel=channel, **kwargs):
+    def __init__(self, bind, secure=False, backlog=BACKLOG, bufsize=BUFSIZE, channel=channel, **kwargs):
         super(Server, self).__init__(channel=channel)
 
         self.socket_options = self.socket_options[:] + kwargs.get('socket_options', [])
@@ -630,7 +630,7 @@ class Server(BaseComponent):
             certfile=self.certfile,
             cert_reqs=self.cert_reqs,
             ssl_version=self.ssl_version,
-            do_handshake_on_connect=False
+            do_handshake_on_connect=False,
         )
 
         for _ in do_handshake(sslsock, self._on_accept_done, self._on_handshake_error, (fire_connect_event,)):
@@ -736,8 +736,7 @@ def parse_ipv4_parameter(bind_parameter):
 def parse_ipv6_parameter(bind_parameter):
     if isinstance(bind_parameter, int):
         try:
-            _, _, _, _, bind \
-                = getaddrinfo(getfqdn(), bind_parameter, AF_INET6)[0]
+            _, _, _, _, bind = getaddrinfo(getfqdn(), bind_parameter, AF_INET6)[0]
         except (gaierror, IndexError):
             bind = ("::", bind_parameter)
     else:

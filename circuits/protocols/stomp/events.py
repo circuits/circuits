@@ -10,6 +10,7 @@ LOG = logging.getLogger(__name__)
 
 class stomp_event(Event):
     """A Circuits event with less verbose repr"""
+
     success = True
 
     def _repr(self):
@@ -42,16 +43,13 @@ class disconnect(stomp_event):
 
 class message(stomp_event):
     def __init__(self, frame):
-        super(message, self).__init__(headers=frame.headers,
-                                      message=frame.body)
+        super(message, self).__init__(headers=frame.headers, message=frame.body)
         self.frame = frame
 
 
 class send(stomp_event):
     def __init__(self, headers, body, destination):
-        super(send, self).__init__(headers=headers,
-                                   body=body,
-                                   destination=destination)
+        super(send, self).__init__(headers=headers, body=body, destination=destination)
 
 
 class client_heartbeat(stomp_event):
@@ -80,9 +78,7 @@ class on_stomp_error(stomp_event):
     def __init__(self, frame, err):
         headers = frame.headers if frame else {}
         body = frame.body if frame else None
-        super(on_stomp_error, self).__init__(headers=headers,
-                                             message=body,
-                                             error=err)
+        super(on_stomp_error, self).__init__(headers=headers, message=body, error=err)
         self.frame = frame
 
 

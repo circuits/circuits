@@ -54,7 +54,7 @@ def dump_event(e, id):
         "failure": e.failure,
         "channels": e.channels,
         "notify": e.notify,
-        "meta": meta
+        "meta": meta,
     }
 
     return json.dumps(data)

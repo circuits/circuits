@@ -8,11 +8,10 @@ from .protocol import Protocol
 class Client(BaseComponent):
 
     """Node Client (peer)"""
+
     channel = "node_client"
 
-    def __init__(self, host, port, channel=channel,
-                 receive_event_firewall=None, send_event_firewall=None,
-                 **kwargs):
+    def __init__(self, host, port, channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs):
         """Create new connection for a node.
 
         :param hostname:    hostname to connect.

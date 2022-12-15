@@ -34,7 +34,8 @@ LOG = logging.getLogger(__name__)
 
 
 class StompClient(BaseComponent):
-    """ Send and Receive messages from a STOMP queue """
+    """Send and Receive messages from a STOMP queue"""
+
     channel = "stomp"
 
     def init(self, host, port, username=None, password=None,
@@ -151,14 +152,16 @@ class StompClient(BaseComponent):
 
     @handler("connect")
     def connect(self, event, host=None, *args, **kwargs):
-        """ connect to Stomp server """
+        """connect to Stomp server"""
         LOG.info("Connect to Stomp...")
         try:
-            self._client.connect(heartBeats=self._heartbeats,
-                                 host=host,
-                                 versions=self._accept_versions,
-                                 connectTimeout=self._connect_timeout,
-                                 connectedTimeout=self._connected_timeout)
+            self._client.connect(
+                heartBeats=self._heartbeats,
+                host=host,
+                versions=self._accept_versions,
+                connectTimeout=self._connect_timeout,
+                connectedTimeout=self._connected_timeout,
+            )
             LOG.info("State after Connection Attempt: %s", self._client.session.state)
             if self.connected:
                 LOG.info("Connected to %s", self._stomp_server)
@@ -174,7 +177,7 @@ class StompClient(BaseComponent):
 
     @handler("server_heartbeat")
     def check_server_heartbeat(self, event):
-        """ Confirm that heartbeat from server hasn't timed out """
+        """Confirm that heartbeat from server hasn't timed out"""
         now = time.time()
         last = self._client.lastReceived or 0
         if last:
@@ -287,7 +290,7 @@ class StompClient(BaseComponent):
             self.fire(on_stomp_error(frame, err))
 
     def get_subscription(self, frame):
-        """ Get subscription from frame """
+        """Get subscription from frame"""
         LOG.info(self._subscribed)
         _, token = self._client.message(frame)
         return self._subscribed[token]

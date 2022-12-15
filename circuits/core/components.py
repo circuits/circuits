@@ -4,6 +4,7 @@ This module defines the BaseComponent and its subclass Component.
 from inspect import getmembers
 from itertools import chain
 from types import MethodType
+
 try:
     from collections import Callable
 except ImportError:

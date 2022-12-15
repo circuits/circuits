@@ -5,8 +5,7 @@ class connected_to(Event):
 
     """Connected to a peer"""
 
-    def __init__(self, connection_name, hostname, port, client_channel,
-                 client_obj):
+    def __init__(self, connection_name, hostname, port, client_channel, client_obj):
         """
         :param connection_name:    Connection name.
         :type connection_name:     str
@@ -23,9 +22,7 @@ class connected_to(Event):
         :param client_obj:    Client object.
         :type client_obj:     :class:`circuits.net.sockets.Client`
         """
-        super(connected_to, self).__init__(
-            connection_name, hostname, port, client_channel, client_obj
-        )
+        super(connected_to, self).__init__(connection_name, hostname, port, client_channel, client_obj)
 
 
 class disconnected_from(connected_to):

@@ -55,8 +55,7 @@ class Node(BaseComponent):
         super(Node, self).__init__(channel=channel, **kwargs)
 
         if port is not None:
-            self.server = Server(
-                port, channel=channel, **kwargs).register(self)
+            self.server = Server(port, channel=channel, **kwargs).register(self)
         else:
             self.server = None
 
