@@ -25,10 +25,7 @@
 import codecs
 import re
 
-from circuits.six import string_types, text_type
-from circuits.six.moves.urllib_parse import (
-    quote, unquote, urljoin, urlparse, urlunparse,
-)
+from urllib.parse import quote, unquote, urljoin, urlparse, urlunparse
 
 # Come codes that we'll need
 IDNA = codecs.lookup('idna')
@@ -61,7 +58,7 @@ class URL:
     def parse(cls, url, encoding):
         '''Parse the provided url, and return a URL instance'''
 
-        if isinstance(url, text_type):
+        if isinstance(url, str):
             parsed = urlparse(url.encode('utf-8'))
         else:
             parsed = urlparse(url.decode(encoding).encode('utf-8'))
@@ -104,7 +101,7 @@ class URL:
 
     def equiv(self, other):
         '''Return true if this url is equivalent to another'''
-        if isinstance(other, string_types[0]):
+        if isinstance(other, str):
             _other = self.parse(other, 'utf-8')
         else:
             _other = self.parse(other.utf8(), 'utf-8')
@@ -134,7 +131,7 @@ class URL:
 
     def __eq__(self, other):
         '''Return true if this url is /exactly/ equal to another'''
-        if isinstance(other, string_types):
+        if isinstance(other, str):
             return self.__eq__(self.parse(other, 'utf-8'))
         return (
             self._scheme == other._scheme and
@@ -240,7 +237,7 @@ class URL:
 
     def relative(self, path, encoding='utf-8'):
         '''Evaluate the new path relative to the current url'''
-        if isinstance(path, text_type):
+        if isinstance(path, str):
             newurl = urljoin(self.utf8(), path.encode('utf-8'))
         else:
             newurl = urljoin(

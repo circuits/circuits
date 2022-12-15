@@ -9,7 +9,6 @@ from time import time
 import pytest
 
 from circuits import Component, Event, Timer, sleep
-from circuits.six.moves import map, zip
 
 
 @pytest.fixture

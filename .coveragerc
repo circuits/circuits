@@ -1,7 +1,5 @@
 [run]
 source = circuits
-omit =
-    circuits/six.py
 
 [html]
 directory = coverage

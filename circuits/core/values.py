@@ -1,11 +1,9 @@
 """
 This defines the Value object used by components and events.
 """
-from ..six import PY2, python_2_unicode_compatible, string_types, text_type
 from .events import Event
 
 
-@python_2_unicode_compatible
 class Value:
 
     """Create a new future Value Object
@@ -72,8 +70,6 @@ class Value:
 
     def __str__(self):
         "x.__str__() <==> str(x)"
-        if PY2:
-            return text_type(self.value).encode('utf-8')
         return str(self.value)
 
     def inform(self, force=False):
@@ -83,7 +79,7 @@ class Value:
         notify = getattr(self.event, "notify", False) or self.notify
 
         if self.manager is not None and notify:
-            if isinstance(notify, string_types):
+            if isinstance(notify, str):
                 e = Event.create(notify, self)
             else:
                 e = self.event.child("value_changed", self)

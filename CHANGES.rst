@@ -5,6 +5,9 @@
 Change Log
 ==========
 
+- :release:`3.3.0 <TBD>`
+- :support:`281` Dropped support for Python 2.7, 3.5, 3.6
+
 - :release:`3.2.2 <2021-10-19>`
 - :support:`298` Added support for Python 3.10
 - :feature:`132` The initial `request` containing the `session` has been added to the websocket dispatcher events in `circuits.web.websockets`

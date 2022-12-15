@@ -6,7 +6,6 @@ RPC calls over JSON into RPC events.
 import json
 
 from circuits import BaseComponent, Event, handler
-from circuits.six import binary_type
 
 
 class rpc(Event):
@@ -42,7 +41,7 @@ class JSONRPC(BaseComponent):
             if isinstance(params, dict):
                 params = {str(k): v for k, v in params.items()}
 
-            method = str(method) if not isinstance(method, binary_type) else method
+            method = str(method)
 
             if isinstance(params, dict):
                 value = yield self.call(rpc.create(method, **params), self.rpc_channel)

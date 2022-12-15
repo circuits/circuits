@@ -1,9 +1,9 @@
-from circuits.six.moves.http_cookiejar import CookieJar  # noqa
-from circuits.six.moves.urllib_error import HTTPError, URLError  # noqa
-from circuits.six.moves.urllib_parse import (  # noqa
+from http.cookiejar import CookieJar  # noqa
+from urllib.error import HTTPError, URLError  # noqa
+from urllib.parse import (  # noqa
     quote, urlencode, urljoin, urlparse,
 )
-from circuits.six.moves.urllib_request import (  # noqa
+from urllib.request import (  # noqa
     HTTPBasicAuthHandler, HTTPCookieProcessor, HTTPDigestAuthHandler, Request,
     build_opener, install_opener, urlopen,
 )

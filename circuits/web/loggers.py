@@ -8,7 +8,6 @@ import sys
 from io import IOBase
 
 from circuits.core import BaseComponent, handler
-from circuits.six import string_types, text_type
 
 
 def formattime():
@@ -24,7 +23,7 @@ class Logger(BaseComponent):
     def __init__(self, file=None, logger=None, **kwargs):
         super().__init__(**kwargs)
 
-        if isinstance(file, string_types):
+        if isinstance(file, str):
             self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
         elif isinstance(file, IOBase) or hasattr(file, "write"):
             self.file = file
@@ -59,7 +58,7 @@ class Logger(BaseComponent):
                  "a": inheaders.get("User-Agent", ""),
                  }
         for k, v in list(atoms.items()):
-            if isinstance(v, text_type):
+            if isinstance(v, str):
                 v = v.encode("utf8")
             elif not isinstance(v, str):
                 v = str(v)
