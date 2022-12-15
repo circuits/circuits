@@ -138,7 +138,7 @@ _special = re.escape('()<>@,;:\\"/[]?={} \t')
 _re_special = re.compile('[%s]' % _special)
 _qstr = '"(?:\\\\.|[^"])*"'  # Quoted string
 _value = '(?:[^%s]+|%s)' % (_special, _qstr)  # Save or quoted string
-_option = '(?:;|^)\s*([^%s]+)\s*=\s*(%s)' % (_special, _value)
+_option = r'(?:;|^)\s*([^%s]+)\s*=\s*(%s)' % (_special, _value)
 # key=value part of an Content-Type like header
 _re_option = re.compile(_option)
 

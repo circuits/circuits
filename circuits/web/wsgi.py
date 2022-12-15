@@ -168,7 +168,7 @@ class Gateway(BaseComponent):
     def init(self, apps):
         self.apps = apps
 
-        self.errors = dict((k, StringIO()) for k in self.apps.keys())
+        self.errors = {k: StringIO() for k in self.apps.keys()}
 
     @handler("request", priority=0.2)
     def _on_request(self, event, req, res):

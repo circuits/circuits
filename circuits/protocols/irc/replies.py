@@ -10,7 +10,7 @@ def _M(*args, **kwargs):
 
 
 def ERROR(host, reason=None):
-    return Message(u"ERROR", u":Closing link: {0} ({1})".format(host, reason or u""))
+    return Message(u"ERROR", u":Closing link: {} ({})".format(host, reason or u""))
 
 
 def JOIN(name, prefix=None):
@@ -32,11 +32,11 @@ def PART(channel, nick, reason=None, prefix=None):
 
 
 def PING(server):
-    return Message(u"PING", u":{0}".format(server))
+    return Message(u"PING", u":{}".format(server))
 
 
 def PONG(server, text):
-    return Message(u"PONG", server, u":{0}".format(text))
+    return Message(u"PONG", server, u":{}".format(text))
 
 
 def TOPIC(channel, topic, prefix=None):
@@ -44,15 +44,15 @@ def TOPIC(channel, topic, prefix=None):
 
 
 def RPL_WELCOME(network):
-    return _M(u"001", u"Welcome to the {0} IRC Network".format(network))
+    return _M(u"001", u"Welcome to the {} IRC Network".format(network))
 
 
 def RPL_YOURHOST(host, version):
-    return _M(u"002", u"Your host is {0} running {1}".format(host, version))
+    return _M(u"002", u"Your host is {} running {}".format(host, version))
 
 
 def RPL_CREATED(date):
-    return _M(u"003", u"This server was created {0}".format(date))
+    return _M(u"003", u"This server was created {}".format(date))
 
 
 def RPL_MYINFO(server, version, umodes, chmodes):
@@ -70,30 +70,30 @@ def RPL_UMODEIS(modes):
 def RPL_LUSERCLIENT(nusers, nservices, nservers):
     return _M(
         u"251",
-        u"There are {0} users and {1} services on {2} servers".format(
+        u"There are {} users and {} services on {} servers".format(
             nusers, nservices, nservers
         )
     )
 
 
 def RPL_LUSEROP(noperators):
-    return _M(u"252", u"{0}".format(noperators), u"operator(s) online")
+    return _M(u"252", u"{}".format(noperators), u"operator(s) online")
 
 
 def RPL_LUSERUNKOWN(nunknown):
-    return _M(u"253", u"{0}".format(nunknown), u"unknown connection(s)")
+    return _M(u"253", u"{}".format(nunknown), u"unknown connection(s)")
 
 
 def RPL_LUSERCHANNELS(nchannels):
-    return _M(u"254", u"{0}".format(nchannels), u"channels formed")
+    return _M(u"254", u"{}".format(nchannels), u"channels formed")
 
 
 def RPL_LUSERME(nclients, nservers):
-    return _M(u"255", u"I have {0} clients and {1} servers".format(nclients, nservers))
+    return _M(u"255", u"I have {} clients and {} servers".format(nclients, nservers))
 
 
 def RPL_AWAY(nick, message):
-    return _M(u"301", nick, u":{0}".format(message))
+    return _M(u"301", nick, u":{}".format(message))
 
 
 def RPL_UNAWAY():
@@ -105,7 +105,7 @@ def RPL_NOWAWAY():
 
 
 def RPL_WHOISUSER(nick, user, host, realname):
-    return _M(u"311", nick, user, host, u"*", u":{0}".format(realname))
+    return _M(u"311", nick, user, host, u"*", u":{}".format(realname))
 
 
 def RPL_WHOISSERVER(nick, server, server_info):
@@ -123,7 +123,7 @@ def RPL_ENDOFWHO(mask):
 def RPL_WHOISIDLE(nick, idle, signon):
     return _M(
         u"317", nick,
-        u"{0}".format(idle), u"{0}".format(signon),
+        u"{}".format(idle), u"{}".format(signon),
         u"seconds idle, signon time"
     )
 
@@ -133,7 +133,7 @@ def RPL_ENDOFWHOIS(nick):
 
 
 def RPL_WHOISCHANNELS(nick, channels):
-    return _M(u"319", nick, u":{0}".format(u" ".join(channels)))
+    return _M(u"319", nick, u":{}".format(u" ".join(channels)))
 
 
 def RPL_LISTSTART(header=None):
@@ -141,7 +141,7 @@ def RPL_LISTSTART(header=None):
 
 
 def RPL_LIST(channel, nvisible, topic):
-    return _M(u"322", channel, u"{0}".format(nvisible), topic)
+    return _M(u"322", channel, u"{}".format(nvisible), topic)
 
 
 def RPL_LISTEND():
@@ -163,23 +163,23 @@ def RPL_TOPIC(channel, topic):
 
 
 def RPL_TOPICWHO(channel, setter, timestamp):
-    return _M(u"333", channel, setter, u"{0}".format(timestamp))
+    return _M(u"333", channel, setter, u"{}".format(timestamp))
 
 
 def RPL_INVITING(channel, nick):
-    return _M(u"341", u"{0} {1}".format(channel, nick))
+    return _M(u"341", u"{} {}".format(channel, nick))
 
 
 def RPL_SUMMONING(user):
-    return _M(u"342", u"{0} :Summoning user to IRC".format(user))
+    return _M(u"342", u"{} :Summoning user to IRC".format(user))
 
 
 def RPL_INVITELIST(channel, invitemask):
-    return _M(u"346", u"{0} {1}".format(channel, invitemask))
+    return _M(u"346", u"{} {}".format(channel, invitemask))
 
 
 def RPL_ENDOFINVITELIST(channel):
-    return _M(u"347", u"{0} :End of channel invite list".format(channel))
+    return _M(u"347", u"{} :End of channel invite list".format(channel))
 
 
 def RPL_VERSION(name, version, hostname, url):
@@ -188,7 +188,7 @@ def RPL_VERSION(name, version, hostname, url):
 
 def RPL_WHOREPLY(channel, user, host, server, nick, status, hops, name):
     return _M(
-        u"352", channel, user, host, server, nick, status, u":{0} {1}".format(hops, name)
+        u"352", channel, user, host, server, nick, status, u":{} {}".format(hops, name)
     )
 
 
@@ -201,11 +201,11 @@ def RPL_ENDOFNAMES(channel):
 
 
 def RPL_MOTD(text):
-    return _M(u"372", u"- {0}".format(text))
+    return _M(u"372", u"- {}".format(text))
 
 
 def RPL_MOTDSTART(server):
-    return _M(u"375", u"- {0} Message of the day -".format(server))
+    return _M(u"375", u"- {} Message of the day -".format(server))
 
 
 def RPL_ENDOFMOTD():

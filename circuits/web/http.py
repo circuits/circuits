@@ -84,7 +84,7 @@ class HTTP(BaseComponent):
             url = "{}://{}{}".format(
                 (server.secure and "https") or "http",
                 server.host or "0.0.0.0",
-                ":{0:d}".format(server.port or 80) if server.port not in (80, 443) else "",
+                ":{:d}".format(server.port or 80) if server.port not in (80, 443) else "",
             )
 
         self._uri = parse_url(url)
@@ -275,7 +275,7 @@ class HTTP(BaseComponent):
                 # the major HTTP version differs
                 return self.fire(httperror(req, res, 505))
 
-            res.protocol = "HTTP/{0:d}.{1:d}".format(*min(rp, sp))
+            res.protocol = "HTTP/{:d}.{:d}".format(*min(rp, sp))
             res.close = not parser.should_keep_alive()
 
         clen = int(req.headers.get("Content-Length", "0"))

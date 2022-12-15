@@ -206,7 +206,7 @@ class Request(object):
         base = "{}://{}{}/".format(
             self.scheme,
             self.host,
-            ":{0:d}".format(self.port)
+            ":{:d}".format(self.port)
             if self.port not in (80, 443)
             else ""
         )
@@ -350,12 +350,10 @@ class Response(object):
                 cLength = len(self.body.encode(self.encoding))
             elif isinstance(self.body, list):
                 cLength = sum(
-                    [
-                        len(s.encode(self.encoding))
-                        if not isinstance(s, bytes)
-                        else len(s) for s in self.body
-                        if s is not None
-                    ]
+                    len(s.encode(self.encoding))
+                    if not isinstance(s, bytes)
+                    else len(s) for s in self.body
+                    if s is not None
                 )
 
         if cLength is not None:

@@ -201,7 +201,7 @@ class WebSocketCodec(BaseComponent):
             try:
                 masking_key = bytearray(list(os.urandom(4)))
             except NotImplementedError:
-                masking_key = bytearray([random.randint(0, 255) for i in range(4)])
+                masking_key = bytearray(random.randint(0, 255) for i in range(4))
             tail += masking_key
             for i, c in enumerate(data):
                 tail.append(c ^ masking_key[i % 4])

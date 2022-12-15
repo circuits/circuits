@@ -87,7 +87,7 @@ class httperror(Event):
             index = ["code", "name", "description"]
             if self.request.print_debug:
                 index.append("traceback")
-            return json.dumps(dict((key, self.data[key]) for key in index))
+            return json.dumps({key: self.data[key] for key in index})
 
         if not self.request.print_debug:
             self.data["traceback"] = ''
