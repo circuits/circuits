@@ -20,7 +20,7 @@ def worker(request, manager):
 
 
 def err():
-    return x * 2  # NOQA
+    return x * 2  # noqa: F821
 
 
 def foo():

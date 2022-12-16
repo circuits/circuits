@@ -89,7 +89,11 @@ class httperror(Event):
 
         # FIXME: description is a possible XSS attack vector
         return DEFAULT_ERROR_MESSAGE % {
-            key: (escape(value, True) if key not in ('powered_by', 'description') and not isinstance(value, (int, float)) else value)
+            key: (
+                escape(value, True)
+                if key not in ('powered_by', 'description') and not isinstance(value, (int, float))
+                else value
+            )
             for key, value in self.data.items()
         }
 

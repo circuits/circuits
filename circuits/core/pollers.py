@@ -288,16 +288,16 @@ class Poll(BasePoller):
         try:
             timeout = event.time_left
             if timeout < 0:
-                l = self._poller.poll()
+                ll = self._poller.poll()
             else:
-                l = self._poller.poll(1000 * timeout)
+                ll = self._poller.poll(1000 * timeout)
         except SelectError as e:
             if e.args[0] == EINTR:
                 return
             else:
                 raise
 
-        for fileno, event in l:
+        for fileno, event in ll:
             self._process(fileno, event)
 
     def _process(self, fileno, event):
@@ -396,9 +396,9 @@ class EPoll(BasePoller):
         try:
             timeout = event.time_left
             if timeout < 0:
-                l = self._poller.poll()
+                ll = self._poller.poll()
             else:
-                l = self._poller.poll(timeout)
+                ll = self._poller.poll(timeout)
         except OSError as e:
             if e.args[0] == EINTR:
                 return
@@ -408,7 +408,7 @@ class EPoll(BasePoller):
             else:
                 raise
 
-        for fileno, event in l:
+        for fileno, event in ll:
             self._process(fileno, event)
 
     def _process(self, fileno, event):
@@ -487,16 +487,16 @@ class KQueue(BasePoller):
         try:
             timeout = event.time_left
             if timeout < 0:
-                l = self._poller.control(None, 1000)
+                ll = self._poller.control(None, 1000)
             else:
-                l = self._poller.control(None, 1000, timeout)
+                ll = self._poller.control(None, 1000, timeout)
         except SelectError as e:
             if e[0] == EINTR:
                 return
             else:
                 raise
 
-        for event in l:
+        for event in ll:
             self._process(event)
 
     def _process(self, event):

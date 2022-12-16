@@ -44,8 +44,8 @@ CMD_REGEX = compile_regex(
 )
 
 
-def back_merge(l, n, t=" "):
-    return l[:-n].extend([t.join(l[-n:])])
+def back_merge(line, n, t=" "):
+    return line[:-n].extend([t.join(line[-n:])])
 
 
 def parse_options():

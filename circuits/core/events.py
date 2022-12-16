@@ -188,9 +188,7 @@ class exception(Event):
     """
 
     def __init__(self, type, value, traceback, handler=None, fevent=None):
-        super().__init__(type, value,
-                                        self.format_traceback(traceback),
-                                        handler=handler, fevent=fevent)
+        super().__init__(type, value, self.format_traceback(traceback), handler=handler, fevent=fevent)
 
     def format_traceback(self, traceback):
         return format_tb(traceback)

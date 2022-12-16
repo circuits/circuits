@@ -21,7 +21,7 @@ class App(Component):
         self.fevent = None
 
     def test(self):
-        return x  # NOQA
+        return x  # noqa: F821
 
     def exception(self, etype, evalue, etraceback, handler=None, fevent=None):
         self.etype = etype

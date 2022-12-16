@@ -85,7 +85,7 @@ class BaseComponent(Manager):
 
         handlers = {
             k: v for k, v in list(cls.__dict__.items())
-                if getattr(v, "handler", False)
+            if getattr(v, "handler", False)
         }
 
         def overridden(x):

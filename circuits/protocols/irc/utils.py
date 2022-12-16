@@ -178,12 +178,12 @@ def irc_color_to_ansi(data, reset=True):
                     yield ansi(*colors)
                 else:
                     yield ansi(ansi_default_fg, ansi_default_bg)
-            #elif char == u'\x04':
-            #    if char[i + 1:i + 6].isdigit():
-            #        ignore.update(range(i, i + 6))
-            #    # TODO: parse hex representation
-            #elif char == u'\x11':  # monospace
-            #    start.append(char)
+            # elif char == u'\x04':
+            #     if char[i + 1:i + 6].isdigit():
+            #         ignore.update(range(i, i + 6))
+            #     # TODO: parse hex representation
+            # elif char == u'\x11':  # monospace
+            #     start.append(char)
             else:
                 yield char
         if start and reset:

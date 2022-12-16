@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-# curl -i http://localhost:8000/ -H 'Content-Type: application/json' -d '{"id": "test", "method": "test", "params": {"foo": "bar"}}'
+"""
+curl -i http://localhost:8000/ -H 'Content-Type: application/json' \
+-d '{"id": "test", "method": "test", "params": {"foo": "bar"}}'
+"""
 from circuits import Component
 from circuits.web import JSONRPC, Logger, Server
 
