@@ -1,14 +1,10 @@
 """
 This module defines the BaseComponent and its subclass Component.
 """
+from collections.abc import Callable
 from inspect import getmembers
 from itertools import chain
 from types import MethodType
-
-try:
-    from collections import Callable
-except ImportError:
-    from collections.abc import Callable
 
 from .events import Event, registered, unregistered
 from .handlers import HandlerMetaClass, handler

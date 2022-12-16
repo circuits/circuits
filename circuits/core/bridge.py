@@ -13,10 +13,7 @@ from .events import Event, exception
 from .handlers import handler
 from .values import Value
 
-try:
-    from cPickle import dumps, loads
-except ImportError:
-    from pickle import dumps, loads  # NOQA
+from pickle import dumps, loads
 
 
 _sentinel = b'~~~'

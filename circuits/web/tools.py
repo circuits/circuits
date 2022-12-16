@@ -7,14 +7,11 @@ import hashlib
 import mimetypes
 import os
 import stat
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from email.generator import _make_boundary
 from email.utils import formatdate
 from time import mktime
-try:
-    from collections import Callable
-except ImportError:
-    from collections.abc import Callable
 
 from circuits import BaseComponent, handler
 from circuits.web.wrappers import Host

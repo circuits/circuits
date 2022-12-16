@@ -14,17 +14,8 @@ from .errors import httperror
 from .headers import Headers
 from .url import parse_url
 
-try:
-    from email.utils import formatdate
-    formatdate = partial(formatdate, usegmt=True)
-except ImportError:
-    from rfc822 import formatdate  # NOQA
-
-
-try:
-    unicode
-except NameError:
-    unicode = str
+from email.utils import formatdate
+formatdate = partial(formatdate, usegmt=True)
 
 
 def file_generator(input, chunkSize=BUFSIZE):
@@ -345,7 +336,7 @@ class Response:
         if self.body is not None:
             if isinstance(self.body, bytes):
                 cLength = len(self.body)
-            elif isinstance(self.body, unicode):
+            elif isinstance(self.body, str):
                 cLength = len(self.body.encode(self.encoding))
             elif isinstance(self.body, list):
                 cLength = sum(
