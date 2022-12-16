@@ -4,6 +4,7 @@ This module implements a set of standard HTTP Errors.
 """
 import json
 import traceback
+from html import escape
 
 from circuits import Event
 
@@ -11,11 +12,6 @@ from .constants import (
     DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL,
     SERVER_VERSION,
 )
-
-try:
-    from html import escape
-except ImportError:
-    from cgi import escape  # Deprecated since version 3.2
 
 
 class httperror(Event):
