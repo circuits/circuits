@@ -132,7 +132,7 @@ def irc_color_to_ansi(data, reset=True):
     }
 
     enable_char = {
-        '\x16': 1, '\x1d': 3, '\x1e': 9, '\x1f': 4, '\x16': 7
+        '\x02': 1, '\x1d': 3, '\x1e': 9, '\x1f': 4, '\x16': 7
     }
     revert_char = {
         '\x02': 22, '\x1d': 23, '\x1f': 24, '\x16': 27, '\x1e': 29
