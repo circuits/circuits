@@ -147,7 +147,7 @@ def test_responses(app, data, event):
 
 
 @pytest.mark.parametrize('inp,out', [
-    ('hi \x02bold\x02 \x1ditalic\x1d \x1funderline\x1f \x1estrikethrough\x1e', 'hi \x02bold\x02 \x1b[03mitalic\x1b[23m \x1b[04munderline\x1b[24m \x1b[09mstrikethrough\x1b[29m'),  # noqa: E501
+    ('hi \x02bold\x02 \x1ditalic\x1d \x1funderline\x1f \x1estrikethrough\x1e', 'hi \x1b[01mbold\x1b[22m \x1b[03mitalic\x1b[23m \x1b[04munderline\x1b[24m \x1b[09mstrikethrough\x1b[29m'),  # noqa: E501
     ('\x0300white\x03 \x0301black\x03 \x0302blue\x03 \x0303green\x03 \x0304red\x03 ', '\x1b[37mwhite\x1b[39;49m \x1b[30mblack\x1b[39;49m \x1b[34mblue\x1b[39;49m \x1b[32mgreen\x1b[39;49m \x1b[31mred\x1b[39;49m '),  # noqa: E501
     ('\x0305brown\x03 \x0306magenta\x03 \x0307orange\x03 \x0308yellow\x03 ', '\x1b[36mbrown\x1b[39;49m \x1b[35mmagenta\x1b[39;49m \x1b[33morange\x1b[39;49m \x1b[93myellow\x1b[39;49m '),  # noqa: E501
     ('\x0309lightgreen\x03 \x0310cyan\x03 \x0311lightcyan\x03 \x0312lightblue\x03 ', '\x1b[92mlightgreen\x1b[39;49m \x1b[36mcyan\x1b[39;49m \x1b[96mlightcyan\x1b[39;49m \x1b[94mlightblue\x1b[39;49m '),  # noqa: E501
