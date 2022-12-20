@@ -50,6 +50,7 @@ class httperror(Event):
             self.traceback = "ERROR: (%s) %s\n%s" % (
                 self.error[0], self.error[1], "".join(stack)
             )
+            print(self.traceback)
         else:
             self.traceback = ""
 
