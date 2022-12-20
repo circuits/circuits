@@ -44,6 +44,7 @@ class httperror(Event):
         if self.error is not None:
             stack = self.error[2] if isinstance(self.error[2], (list, tuple)) else traceback.format_tb(self.error[2])
             self.traceback = 'ERROR: (%s) %s\n%s' % (self.error[0], self.error[1], ''.join(stack))
+            print(self.traceback)
         else:
             self.traceback = ''
 
