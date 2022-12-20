@@ -126,17 +126,16 @@ class Request:
         if self.server is not None:
             self.local = Host(self.server.host, self.server.port)
 
+        port = 443 if self.scheme == 'https' else 80
         try:
             host = self.headers['Host']
             if ':' in host:
                 parts = host.split(':', 1)
                 host = parts[0]
                 port = int(parts[1])
-            else:
-                port = 443 if self.scheme == 'https' else 80
         except KeyError:
             host = self.local.name or self.local.ip
-            port = getattr(self.server, 'port')
+            port = getattr(self.server, 'port', port)
 
         self.host = host
         self.port = port
