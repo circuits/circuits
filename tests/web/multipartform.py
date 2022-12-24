@@ -10,7 +10,7 @@ class MultiPartForm(dict):
         self.boundary = _make_boundary()
 
     def get_content_type(self):
-        return "multipart/form-data; boundary=%s" % self.boundary
+        return 'multipart/form-data; boundary="%s"' % self.boundary
 
     def add_file(self, fieldname, filename, fd, mimetype=None):
         body = fd.read()
