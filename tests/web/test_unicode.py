@@ -49,7 +49,7 @@ def test_request_body(webapp, body):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
-    connection.request("GET", "/request_body", body)
+    connection.request("POST", "/request_body", body)
     response = connection.getresponse()
     assert response.status == 200
     assert response.reason == "OK"
