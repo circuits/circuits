@@ -4,6 +4,7 @@ Request/Response Wrappers
 This module implements the Request and Response objects.
 """
 
+import urllib.parse
 from email.utils import formatdate
 from functools import partial
 from http.cookies import SimpleCookie
@@ -144,7 +145,7 @@ class Request:
 
         self.base = parse_url(base)
 
-        url = '{}{}{}'.format(base, self.path, f'?{self.qs}' if self.qs else '')
+        url = '{}{}{}'.format(base, urllib.parse.quote(self.path), f'?{self.qs}' if self.qs else '')
         self.uri = parse_url(url)
         self.uri.sanitize()
 
