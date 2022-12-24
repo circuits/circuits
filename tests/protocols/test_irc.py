@@ -96,8 +96,8 @@ def test_parseprefix():
         b"USER foo localhost localhost :Test Client\r\n"
     ),
     (NICK("test"), b"NICK test\r\n"),
-    (PONG("localhost"), b"PONG :localhost\r\n"),
-    (QUIT(), b"QUIT Leaving\r\n"),
+    pytest.param(PONG("localhost"), b"PONG :localhost\r\n", marks=pytest.mark.xfail),
+    pytest.param(QUIT(), b"QUIT Leaving\r\n", marks=pytest.mark.xfail),
     (QUIT("Test"), b"QUIT Test\r\n"),
     (QUIT("Test Message"), b"QUIT :Test Message\r\n"),
     (JOIN("#test"), b"JOIN #test\r\n"),
@@ -107,21 +107,21 @@ def test_parseprefix():
     (PRIVMSG("test", "Hello World"), b"PRIVMSG test :Hello World\r\n"),
     (NOTICE("test", "Hello"), b"NOTICE test Hello\r\n"),
     (NOTICE("test", "Hello World"), b"NOTICE test :Hello World\r\n"),
-    (KICK("#test", "test"), b"KICK #test test :\r\n"),
+    pytest.param(KICK("#test", "test"), b"KICK #test test :\r\n", marks=pytest.mark.xfail),
     (KICK("#test", "test", "Bye"), b"KICK #test test Bye\r\n"),
     (KICK("#test", "test", "Good Bye!"), b"KICK #test test :Good Bye!\r\n"),
     (TOPIC("#test", "Hello World!"), b"TOPIC #test :Hello World!\r\n"),
     (MODE("+i"), b"MODE +i\r\n"),
     (MODE("#test", "+o", "test"), b"MODE #test +o test\r\n"),
     (INVITE("test", "#test"), b"INVITE test #test\r\n"),
-    (NAMES(), b"NAMES\r\n"),
+    pytest.param(NAMES(), b"NAMES\r\n", marks=pytest.mark.xfail),
     (NAMES("#test"), b"NAMES #test\r\n"),
     (AWAY("I am away."), b"AWAY :I am away.\r\n"),
-    (WHOIS("somenick"), b"WHOIS :somenick\r\n"),
+    pytest.param(WHOIS("somenick"), b"WHOIS :somenick\r\n", marks=pytest.mark.xfail),
 ])
 def test_commands(event, data):
     message = event.args[0]
-    return bytes(message) == data
+    assert bytes(message) == data
 
 
 @pytest.mark.parametrize("data,event", [
