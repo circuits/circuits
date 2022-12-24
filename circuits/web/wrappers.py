@@ -2,6 +2,7 @@
 
 This module implements the Request and Response objects.
 """
+import urllib.parse
 from functools import partial
 from http.cookies import SimpleCookie
 from io import BytesIO
@@ -152,7 +153,7 @@ class Request:
 
         url = "{}{}{}".format(
             base,
-            self.path,
+            urllib.parse.quote(self.path),
             f"?{self.qs}" if self.qs else ""
         )
         self.uri = parse_url(url)
