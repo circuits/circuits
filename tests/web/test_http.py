@@ -42,7 +42,7 @@ def test(webapp):
 
     client.fire(write(b"GET / HTTP/1.1\r\n"))
     client.fire(write(b"Host: localhost\r\n\r\n"))
-    client.fire(write(b"Content-Type: text/plain\r\n\r\n"))
+    client.fire(write(b"Accept: text/plain\r\n\r\n"))
     assert pytest.wait_for(client, "done")
 
     client.stop()
