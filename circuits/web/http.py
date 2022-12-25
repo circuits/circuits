@@ -114,33 +114,17 @@ class HTTP(BaseComponent):
         sock = res.request.sock
 
         if data is not None:
-            if isinstance(data, str):
-                data = data.encode(self._encoding)
-
-            if res.chunked:
-                buf = [
-                    hex(len(data))[2:].encode(self._encoding),
-                    b'\r\n',
-                    data,
-                    b'\r\n',
-                ]
-                data = b''.join(buf)
-
             self.fire(write(sock, data))
 
-            if res.body and not res.done:
+            if not res.done:
                 try:
                     data = next(res.body)
-                    while not data:  # Skip over any null byte sequences
-                        data = next(res.body)
                 except StopIteration:
                     data = None
                 self.fire(stream(res, data))
         else:
             if res.body:
                 res.body.close()
-            if res.chunked:
-                self.fire(write(sock, b'0\r\n\r\n'))
             if res.close:
                 self.fire(close(sock))
             if sock in self._clients:
@@ -161,53 +145,40 @@ class HTTP(BaseComponent):
         the information contained in the *response* object and
         sends it to the client (firing ``write`` events).
         """
-        req = res.request
-        headers = res.headers
-        sock = req.sock
+        sock = res.request.sock
 
         # send HTTP response status line and headers
         res.prepare()
-        self.fire(write(sock, b'%s%s' % (bytes(res), bytes(headers))))
+        response = res.to_httoop()
+        body = response.body
+        self.fire(write(sock, b'%s%s' % (bytes(response), bytes(response.headers))))
 
-        if req.method == 'HEAD':
+        if res.request.method == 'HEAD':
             return
-        elif res.stream and res.body:
+
+        if res.stream and res.body:
+            res._body = body
             try:
-                data = next(res.body)
+                data = next(body)
             except StopIteration:
                 data = None
             self.fire(stream(res, data))
-        else:
-            if isinstance(res.body, bytes):
-                body = res.body
-            elif isinstance(res.body, str):
-                body = res.body.encode(self._encoding)
-            else:
-                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in res.body if s is not None)
-                body = b''.join(parts)
+            return
 
-            if body:
-                if res.chunked:
-                    buf = [
-                        hex(len(body))[2:].encode(self._encoding),
-                        b'\r\n',
-                        body,
-                        b'\r\n',
-                    ]
-                    body = b''.join(buf)
+        while True:
+            try:
+                chunk = next(body)
+            except StopIteration:
+                break
+            self.fire(write(sock, chunk))
 
-                self.fire(write(sock, body))
-
-                if res.chunked:
-                    self.fire(write(sock, b'0\r\n\r\n'))
-
-            if not res.stream:
-                if res.close:
-                    self.fire(close(sock))
-                # Delete the request/response objects if present
-                if sock in self._clients:
-                    del self._clients[sock]
-                res.done = True
+        if not res.stream:
+            if res.close:
+                self.fire(close(sock))
+            # Delete the request/response objects if present
+            if sock in self._clients:
+                del self._clients[sock]
+            res.done = True
 
     @handler('disconnect')
     def _on_disconnect(self, sock):
