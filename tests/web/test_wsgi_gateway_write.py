@@ -14,3 +14,4 @@ def test(webapp):
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b"Hello World!"
+    assert f.headers.get('Transfer-Encoding') == 'chunked'
