@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import pytest
+
 from circuits.web import Controller
 from circuits.web.wsgi import Application
 
@@ -34,13 +36,10 @@ def test(webapp):
 
 
 def test_404(webapp):
-    try:
+    with pytest.raises(HTTPError) as exc:
         urlopen("%s/foo" % webapp.server.http.base)
-    except HTTPError as e:
-        assert e.code == 404
-        assert e.msg == "Not Found"
-    else:
-        assert False
+    assert exc.value.code == 404
+    assert exc.value.msg == "Not Found"
 
 
 def test_args(webapp):
@@ -62,20 +61,14 @@ def test_redirect(webapp):
 
 
 def test_forbidden(webapp):
-    try:
+    with pytest.raises(HTTPError) as exc:
         urlopen("%s/test_forbidden" % webapp.server.http.base)
-    except HTTPError as e:
-        assert e.code == 403
-        assert e.msg == "Forbidden"
-    else:
-        assert False
+    assert exc.value.code == 403
+    assert exc.value.msg == "Forbidden"
 
 
 def test_notfound(webapp):
-    try:
+    with pytest.raises(HTTPError) as exc:
         urlopen("%s/test_notfound" % webapp.server.http.base)
-    except HTTPError as e:
-        assert e.code == 404
-        assert e.msg == "Not Found"
-    else:
-        assert False
+    assert exc.value.code == 404
+    assert exc.value.msg == "Not Found"

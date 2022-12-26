@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import pytest
+
 from circuits.web import Controller
 
 from .helpers import HTTPError, urlopen
@@ -22,13 +24,10 @@ def test_root(webapp):
 
 
 def test_badpath_notfound(webapp):
-    try:
-        url = "%s/../../../../../../etc/passwd" % webapp.server.http.base
+    url = "%s/../../../../../../etc/passwd" % webapp.server.http.base
+    with pytest.raises(HTTPError) as exc:
         urlopen(url)
-    except HTTPError as e:
-        assert e.code == 404
-    else:
-        assert False
+    assert exc.value.code == 404
 
 
 def test_badpath_redirect(webapp):
