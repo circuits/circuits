@@ -28,7 +28,12 @@ class WSGIGateway(WSGI):
         self.__path = path
         self.request = req.to_httoop()
         self.response = res.to_httoop()
-        super().__init__()
+        # super().__init__()
+        # self.set_environ(self.get_environ())
+        # return
+        environ = WSGIClient()
+        environ.request = self.request
+        super().__init__(environ.get_environ())
 
     def get_environ(self):
         environ = super().get_environ()
