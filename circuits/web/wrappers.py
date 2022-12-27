@@ -318,7 +318,6 @@ class Response:
         )
 
     def __str__(self):
-        self.prepare()
         protocol = self.protocol
         status = f"{self.status}"
         return f"{protocol} {status}\r\n"

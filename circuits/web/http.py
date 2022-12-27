@@ -145,6 +145,8 @@ class HTTP(BaseComponent):
         headers = res.headers
         sock = req.sock
 
+        res.prepare()
+
         if req.method == "HEAD":
             self.fire(write(sock, bytes(res)))
             self.fire(write(sock, bytes(headers)))
