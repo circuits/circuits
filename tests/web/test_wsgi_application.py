@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 import pytest
 
 from circuits.web import Controller
@@ -13,8 +14,20 @@ class Root(Controller):
         return "Hello World!"
 
     def test_args(self, *args, **kwargs):
-        args = [arg if isinstance(arg, str) else arg.encode() for arg in args]
-        return f"{repr(tuple(args))}\n{repr(kwargs)}"
+        self.response.headers['Content-Type'] = 'application/json'
+        return json.dumps({
+            'args': args,
+            'kwargs': kwargs,
+            'path': self.request.path,
+            'uri_path': self.request.uri._path.decode(),
+            'base_path': self.request.base._path.decode(),
+            'method': self.request.method,
+            'scheme': self.request.scheme,
+            'protocol': self.request.protocol,
+            'qs': self.request.qs,
+            'script_name': self.request.script_name,
+            'content_type': self.request.headers['Content-Type'],
+        })
 
     def test_redirect(self):
         return self.redirect("/")
@@ -43,15 +56,24 @@ def test_404(webapp):
 
 
 def test_args(webapp):
-    args = ("1", "2", "3")
+    args = ["1", "2", "3"]
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.http.base, "/".join(args))
     data = urlencode(kwargs).encode()
 
     f = urlopen(url, data)
-    data = f.read().split(b"\n")
-    assert eval(data[0]) == args
-    assert eval(data[1]) == kwargs
+    data = json.load(f)
+    assert data['args'] == args
+    assert data['kwargs'] == kwargs
+    assert data['path'] == 'test_args/1/2/3'
+    assert data['uri_path'] == '/test_args/1/2/3'
+    assert data['base_path'] == '/'
+    assert data['method'] == 'POST'
+    assert data['scheme'] == 'http'
+    assert data['protocol'] == [1, 1]
+    assert data['qs'] == ''
+    assert data['script_name'] == '/'
+    assert data['content_type'] == 'application/x-www-form-urlencoded'
 
 
 def test_redirect(webapp):
