@@ -7,11 +7,6 @@ import pytest
 from circuits import Component, reprhandler
 from circuits.tools import findroot, inspect, kill, tryimport
 
-try:
-    from threading import current_thread
-except ImportError:
-    from threading import currentThread as current_thread  # NOQA
-
 
 class A(Component):
 

@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-import pytest
+from http.client import HTTPConnection
 
-try:
-    from httplib import HTTPConnection
-except ImportError:
-    from http.client import HTTPConnection  # noqa
+import pytest
 
 from circuits.web import Controller
 from circuits.web.client import Client, request

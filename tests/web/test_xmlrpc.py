@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-try:
-    from xmlrpc.client import ServerProxy
-except ImportError:
-    from xmlrpclib import ServerProxy  # NOQA
+from xmlrpc.client import ServerProxy
 
 from circuits import Component
 from circuits.web import XMLRPC, Controller

@@ -2,13 +2,13 @@
 
 This module implements WSGI Components.
 """
+from io import StringIO
 from operator import itemgetter
 from sys import exc_info as _exc_info
 from traceback import format_tb
 from types import GeneratorType
 
 from circuits.core import BaseComponent, handler
-from circuits.tools import tryimport
 from circuits.web import wrappers
 
 from .dispatchers import Dispatcher
@@ -16,8 +16,6 @@ from .errors import httperror
 from .events import request
 from .headers import Headers
 from .http import HTTP
-
-StringIO = tryimport(("cStringIO", "StringIO", "io"), "StringIO")
 
 
 def create_environ(errors, path, req):

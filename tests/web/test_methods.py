@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-try:
-    from httplib import HTTPConnection
-except ImportError:
-    from http.client import HTTPConnection  # NOQA
+from http.client import HTTPConnection
 
 from circuits.web import Controller
 

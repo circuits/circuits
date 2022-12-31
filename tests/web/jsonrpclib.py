@@ -31,23 +31,12 @@
 # --------------------------------------------------------------------
 import base64
 import json
-import sys
 
-PY3 = sys.version_info[0] == 3
+from http.client import HTTPConnection
+from http.client import HTTPSConnection
 
-try:
-    from http.client import HTTPConnection
-    from http.client import HTTPSConnection
-except ImportError:
-    from httplib import HTTP as HTTPConnection  # NOQA
-    from httplib import HTTPS as HTTPSConnection  # NOQA
-
-try:
-    from urllib.parse import unquote
-    from urllib.parse import splithost, splittype, splituser
-except ImportError:
-    from urllib import unquote  # NOQA
-    from urllib import splithost, splittype, splituser  # NOQA
+from urllib.parse import unquote
+from urllib.parse import splithost, splittype, splituser
 
 __version__ = "0.0.1"
 
@@ -197,8 +186,6 @@ class Transport:
             h.set_debuglevel(1)
 
         self.send_request(h, handler, request_body)
-        if not PY3:
-            self.send_host(h, host)
         self.send_user_agent(h)
         self.send_content(h, request_body)
 

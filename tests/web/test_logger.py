@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 import re
 import sys
+from io import StringIO
 from socket import gaierror, gethostbyname, gethostname
 
 from circuits.web import Controller, Logger
 
 from .helpers import urlopen
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO  # NOQA
 
 
 class DummyLogger:

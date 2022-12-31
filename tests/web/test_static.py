@@ -1,15 +1,11 @@
 #!/usr/bin/env python
+from http.client import HTTPConnection
 from os import path
 
 from circuits.web import Controller
 
 from .conftest import DOCROOT
 from .helpers import HTTPError, quote, urlopen
-
-try:
-    from httplib import HTTPConnection
-except ImportError:
-    from http.client import HTTPConnection  # NOQA
 
 
 class Root(Controller):

@@ -3,10 +3,7 @@ import pytest
 
 from circuits.web import Controller
 
-try:
-    from httplib import HTTPConnection
-except ImportError:
-    from http.client import HTTPConnection  # NOQA
+from http.client import HTTPConnection
 
 
 class Root(Controller):

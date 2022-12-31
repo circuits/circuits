@@ -1,16 +1,12 @@
 """Debugger Tests"""
 
 import sys
+from io import StringIO
 
 import pytest
 
 from circuits import Debugger
 from circuits.core import Component, Event
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO  # NOQA
 
 
 class test(Event):

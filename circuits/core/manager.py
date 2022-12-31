@@ -3,6 +3,7 @@ This module defines the Manager class.
 """
 import atexit
 import types
+import _thread
 from collections import deque
 from heapq import heappop, heappush
 from inspect import isfunction
@@ -18,7 +19,6 @@ from traceback import format_exc
 from types import GeneratorType
 from uuid import uuid4 as uuid
 
-from ..tools import tryimport
 from .events import Event, exception, generate_events, signal, started, stopped
 from .handlers import handler
 from .values import Value
@@ -27,9 +27,6 @@ try:
     from signal import SIGKILL
 except ImportError:
     SIGKILL = SIGTERM
-
-
-thread = tryimport(("thread", "_thread"))
 
 
 TIMEOUT = 0.1  # 100ms timeout when idle
@@ -440,7 +437,7 @@ class Manager:
     def _fire(self, event, channel, priority=0):
         # check if event is fired while handling an event
         th = (self._executing_thread or self._flushing_thread)
-        if thread.get_ident() == (th.ident if th else None) and \
+        if _thread.get_ident() == (th.ident if th else None) and \
                 not isinstance(event, signal):
             if self._currently_handling is not None and \
                     getattr(self._currently_handling, "cause", None):
