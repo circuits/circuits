@@ -139,29 +139,23 @@ class HTTP(BaseComponent):
         the information contained in the *response* object and
         sends it to the client (firing ``write`` events).
         """
-        # send HTTP response status line and headers
-
         req = res.request
         headers = res.headers
         sock = req.sock
 
+        # send HTTP response status line and headers
         res.prepare()
+        self.fire(write(sock, b'%s%s' % (bytes(res), bytes(headers))))
 
         if req.method == "HEAD":
-            self.fire(write(sock, bytes(res)))
-            self.fire(write(sock, bytes(headers)))
+            return
         elif res.stream and res.body:
             try:
                 data = next(res.body)
             except StopIteration:
                 data = None
-            self.fire(write(sock, bytes(res)))
-            self.fire(write(sock, bytes(headers)))
             self.fire(stream(res, data))
         else:
-            self.fire(write(sock, bytes(res)))
-            self.fire(write(sock, bytes(headers)))
-
             if isinstance(res.body, bytes):
                 body = res.body
             elif isinstance(res.body, str):
