@@ -359,5 +359,5 @@ Hopefully this gives you a feel of what circuits is all about and an easy
 tutorial on some of the basic concepts. As you're no doubt itching to get
 started on your next circuits project, here's some recommended reading:
 
-- :doc:`../faq`
-- :doc:`../api/index`
+- :doc:`../../faq`
+- :doc:`../../api/index`

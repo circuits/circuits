@@ -78,7 +78,7 @@ Example Code:
 
 Example Session:
 
-.. code-block:: python
+.. code-block:: console
     :linenos:
     
     $ python -i ../app.py 

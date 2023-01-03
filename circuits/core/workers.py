@@ -5,7 +5,7 @@ processes. Simply create an instance of Worker() with either `process=True`
 to create a pool of workers using sub-processes for CPU-bound work or `False`
 (the default) for a thread pool of workers for I/O bound work.
 
-Then fire `task()` events with a function and *args and **kwargs to pass
+Then fire `task()` events with a function and `*args` and `**kwargs` to pass
 to the function when called from within the workers.
 """
 from multiprocessing import Pool as ProcessPool, cpu_count

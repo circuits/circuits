@@ -1,2 +1,3 @@
 Sphinx
 releases
+pyinotify

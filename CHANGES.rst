@@ -17,10 +17,10 @@ Change Log
 - :bug:`197` Exceptions during `socket.accept()` are now re-raised in the main thread
 - :bug:`261` A workaroung for websocket clients has been added, which prevents that the first websocket is not lost
 - :bug:`307` Various format string syntaxes have been relaxed so that they don't cause exceptions on non string input
-- :doc:`-` typos in docstrings/comments have been fixed
-- :security:`293` HTML escaping of error responses, 3XX redirects and Powered-by texts has been fixed
-- :security:`251` A HTTP header injection vulnerability in `circuits.web.websockets.client` has been fixed
-- :security:`289` potential XSS attacks via crafted files in directory listing is now prevented via HTML escaping in the `circuits.web.dispatchers.static` component.
+- :bug:`-` typos in docstrings/comments have been fixed
+- :bug:`293` (security) HTML escaping of error responses, 3XX redirects and Powered-by texts has been fixed
+- :bug:`251` (security) A HTTP header injection vulnerability in `circuits.web.websockets.client` has been fixed
+- :bug:`289` (security) potential XSS attacks via crafted files in directory listing is now prevented via HTML escaping in the `circuits.web.dispatchers.static` component.
 - :bug:`291` HTTP `Connection` header values are now correctly evaluated case insensitive in `websocket` components
 - :bug:`292` HTTP `Connection` header values are now correctly evaluated case insensitive in `web.client` components
 - :bug:`-` Fixed Python 3 compatibility for `circuits.web.tools.validate_etag()` with `MD5` hashes

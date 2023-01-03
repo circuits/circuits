@@ -277,7 +277,7 @@ class generate_events(Event):
     handler.
 
     The handler must either call :meth:`~stop` (*preventing other handlers
-    from being called in the same iteration)
+    from being called in the same iteration*)
     or must invoke :meth:`~.reduce_time_left` with parameter 0.
 
     :param max_wait: maximum time available for generating events.

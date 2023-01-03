@@ -1,7 +1,7 @@
 """Node
 
 this module manage node (start server, add peer, ...)
-.. seealso:: Examples in :dir:`examples.node`
+.. seealso:: Examples in :file:`examples/node`
 """
 from circuits import BaseComponent, Timer, handler
 from circuits.net.events import connect
@@ -16,7 +16,7 @@ class Node(BaseComponent):
     """Node
 
     this class manage node (start server, add peer, ...)
-    .. seealso:: Examples in :dir:`examples.node`
+    .. seealso:: Examples in :file:`examples/node`
     """
     channel = 'node'
     __peers = {}
