@@ -19,7 +19,7 @@ class test(Event):
 
 
 def test_main():
-    id = f"{os.getpid()}:{current_thread().getName()}"
+    id = f"{os.getpid()}:{current_thread().name}"
     app = App()
 
     assert repr(app) == "<App/* %s (queued=0) [S]>" % id
@@ -32,7 +32,7 @@ def test_main():
 
 
 def test_non_str_channel():
-    id = f"{os.getpid()}:{current_thread().getName()}"
+    id = f"{os.getpid()}:{current_thread().name}"
     app = App(channel=(1, 1))
 
     assert repr(app) == "<App/(1, 1) %s (queued=0) [S]>" % id

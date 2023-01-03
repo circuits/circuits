@@ -259,9 +259,9 @@ class Manager:
         pid = current_process().pid
 
         if pid:
-            id = f"{pid}:{current_thread().getName()}"
+            id = f"{pid}:{current_thread().name}"
         else:
-            id = current_thread().getName()
+            id = current_thread().name
 
         format = "<%s%s %s (queued=%d) [%s]>"
         return format % (name, channel, id, q, state)
@@ -937,7 +937,7 @@ class Manager:
 
         atexit.register(self.stop)
 
-        if current_thread().getName() == "MainThread":
+        if current_thread().name == "MainThread":
             try:
                 set_signal_handler(SIGINT, self._signal_handler)
                 set_signal_handler(SIGTERM, self._signal_handler)
