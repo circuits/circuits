@@ -318,13 +318,10 @@ class Response:
         )
 
     def __str__(self):
-        protocol = self.protocol
-        status = f"{self.status}"
-        return f"{protocol} {status}\r\n"
+        return f"{self.protocol} {self.status}\r\n"
 
     def __bytes__(self):
-        # FIXME: this is wrong. HTTP headers must be ISO8859-1. This should only encode the body as UTF-8.
-        return str(self).encode(self.encoding)
+        return str(self).encode('ISO8859-1')
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
