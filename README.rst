@@ -11,7 +11,6 @@
 .. _Downloads: https://github.com/circuits/circuits/releases
 .. _Ask a Question: http://stackoverflow.com/questions/ask
 .. _Stackoverflow: http://stackoverflow.com/
-.. _Google+ Group: https://plus.google.com/communities/107775112577294599973
 
 .. image:: https://github.com/circuits/circuits/actions/workflows/python-app.yml/badge.svg
    :target: https://github.com/circuits/circuits/actions/workflows/python-app.yml
@@ -119,7 +118,6 @@ Community
 There are also several places you can reach out to the circuits community:
 
 - `Mailing List`_
-- `Google+ Group`_
 - `#circuits IRC Channel`_ on the `Libera.Chat IRC Network`_
 - `Ask a Question`_ on `Stackoverflow`_ (Tag it: ``circuits-framework``)
 
