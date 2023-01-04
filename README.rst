@@ -21,10 +21,6 @@
   :target: https://codecov.io/gh/circuits/circuits
   :alt: Coverage
 
-.. image:: https://badge.waffle.io/circuits/circuits.png?label=ready&title=Ready
-   :target: https://waffle.io/circuits/circuits
-   :alt: Stories Ready
-
 circuits is a **Lightweight** **Event** driven and **Asynchronous**
 **Application Framework** for the `Python Programming Language`_
 with a strong **Component** Architecture.
