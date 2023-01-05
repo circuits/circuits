@@ -62,65 +62,35 @@ class AppServer(Component):
 
 
 @pytest.fixture()
-def app_client(request, manager, watcher):
-    app = AppClient()
-    app.register(manager)
-    watcher.wait('registered')
-
+def app_client(request, simple_manager):
+    app = AppClient().register(simple_manager)
     app.protocol = Protocol().register(app)
-    watcher.wait('registered')
-
-    def finalizer():
-        app.unregister()
-
-    request.addfinalizer(finalizer)
-
     return app
 
 
 @pytest.fixture()
-def app_firewall(request, manager, watcher):
-    app = AppFirewall()
-    app.register(manager)
-    watcher.wait('registered')
-
+def app_firewall(request, simple_manager):
+    app = AppFirewall().register(simple_manager)
     app.protocol = Protocol(
         sock='sock obj',
         receive_event_firewall=app.fw_receive,
         send_event_firewall=app.fw_send,
     ).register(app)
-    watcher.wait('registered')
-
-    def finalizer():
-        app.unregister()
-
-    request.addfinalizer(finalizer)
-
     return app
 
 
 @pytest.fixture()
-def app_server(request, manager, watcher):
-    app = AppServer()
-    app.register(manager)
-    watcher.wait('registered')
-
+def app_server(request, simple_manager):
+    app = AppServer().register(simple_manager)
     app.protocol = Protocol(sock='sock obj', server=True).register(app)
-    watcher.wait('registered')
-
-    def finalizer():
-        app.unregister()
-
-    request.addfinalizer(finalizer)
-
     return app
 
 
-def test_add_buffer(app_client, watcher):
+def test_add_buffer(app_client, simple_manager):
     packet = str.encode(dump_event(return_value(), 1))
     app_client.protocol.add_buffer(packet)
-    assert watcher.wait('return_value_success')
-    assert watcher.wait('write')
+    assert simple_manager.run_until('return_value_success')
+    assert simple_manager.run_until('write')
 
     value = Value()
     value.value = 'Hello server!'
@@ -129,11 +99,11 @@ def test_add_buffer(app_client, watcher):
     assert app_client.write_data == str.encode(dump_value(value) + '~~~')
 
 
-def test_add_buffer_server(app_server, watcher):
+def test_add_buffer_server(app_server, simple_manager):
     packet = str.encode(dump_event(return_value(), 1))
     app_server.protocol.add_buffer(packet)
-    assert watcher.wait('return_value_success')
-    assert watcher.wait('write')
+    assert simple_manager.run_until('return_value_success')
+    assert simple_manager.run_until('write')
 
     value = Value()
     value.value = 'Hello client!'
@@ -143,52 +113,52 @@ def test_add_buffer_server(app_server, watcher):
     assert app_server.write_sock == 'sock obj'
 
 
-def test_firewall_receive(app_firewall, watcher):
+def test_firewall_receive(app_firewall, simple_manager):
     # good event
     packet = str.encode(dump_event(return_value(), 1))
     app_firewall.protocol.add_buffer(packet)
-    assert watcher.wait('return_value')
+    assert simple_manager.run_until('return_value')
 
     # bad name
     packet = str.encode(dump_event(Event.create('unallow_event'), 1))
     app_firewall.protocol.add_buffer(packet)
-    assert watcher.wait('firewall_block')
+    assert simple_manager.run_until('firewall_block')
 
     # bad channel
     event = return_value()
     event.channels = ('prohibits_channel',)
     packet = str.encode(dump_event(event, 1))
     app_firewall.protocol.add_buffer(packet)
-    assert watcher.wait('firewall_block')
+    assert simple_manager.run_until('firewall_block')
 
 
-def test_firewall_send(app_firewall, watcher):
+def test_firewall_send(app_firewall, simple_manager):
     # good event
     event = return_value()
     generator = app_firewall.protocol.send(event)
     next(generator)  # exec
-    assert watcher.wait('write')
+    assert simple_manager.run_until('write')
     assert app_firewall.write_data == str.encode(dump_event(event, 0) + '~~~')
 
     # bad name
     generator = app_firewall.protocol.send(Event.create('unallow_event'))
     next(generator)  # exec
-    assert watcher.wait('firewall_block')
+    assert simple_manager.run_until('firewall_block')
 
     # bad channel
     event = return_value()
     event.channels = ('prohibits_channel',)
     generator = app_firewall.protocol.send(event)
     next(generator)  # exec
-    assert watcher.wait('firewall_block')
+    assert simple_manager.run_until('firewall_block')
 
 
-def test_send(app_client, watcher):
+def test_send(app_client, simple_manager):
     event = return_value()
     generator = app_client.protocol.send(event)
     next(generator)  # exec
 
-    assert watcher.wait('write')
+    assert simple_manager.run_until('write')
     assert app_client.write_data == str.encode(dump_event(event, 0) + '~~~')
 
     value = Value()
@@ -200,12 +170,12 @@ def test_send(app_client, watcher):
     assert next(generator).getValue() == value.value
 
 
-def test_send_server(app_server, watcher):
+def test_send_server(app_server, simple_manager):
     event = return_value()
     generator = app_server.protocol.send(event)
     next(generator)  # exec
 
-    assert watcher.wait('write')
+    assert simple_manager.run_until('write')
     assert app_server.write_data == str.encode(dump_event(event, 0) + '~~~')
     assert app_server.write_sock == 'sock obj'
 

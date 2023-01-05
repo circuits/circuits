@@ -67,7 +67,7 @@ def app(request, simple_manager):
 
 def test_value(app, simple_manager):
     x = app.fire(hello())
-    simple_manager.run()
+    assert simple_manager.run_until('hello')
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
@@ -75,7 +75,7 @@ def test_value(app, simple_manager):
 
 def test_nested_value(app, simple_manager):
     x = app.fire(test())
-    simple_manager.run()
+    assert simple_manager.run_until('test')
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
@@ -86,7 +86,7 @@ def test_value_notify(app, simple_manager):
     ev.notify = True
     x = app.fire(ev)
 
-    simple_manager.run()
+    assert simple_manager.run_until('hello_value_changed')
 
     assert "Hello World!" in x
     assert x.value == "Hello World!"
@@ -98,7 +98,7 @@ def test_nested_value_notify(app, simple_manager):
     ev.notify = True
     x = app.fire(ev)
 
-    simple_manager.run()
+    assert simple_manager.run_until('test_value_changed')
 
     assert x.value == "Hello World!"
     assert str(x) == "Hello World!"
@@ -107,7 +107,7 @@ def test_nested_value_notify(app, simple_manager):
 
 def test_error_value(app, simple_manager):
     x = app.fire(foo())
-    simple_manager.run()
+    assert simple_manager.run_until('foo')
 
     etype, evalue, etraceback = x
     assert etype is Exception
@@ -117,7 +117,7 @@ def test_error_value(app, simple_manager):
 
 def test_multiple_values(app, simple_manager):
     v = app.fire(values())
-    simple_manager.run()
+    assert simple_manager.run_until('values_complete')
 
     assert isinstance(v.value, list)
 
