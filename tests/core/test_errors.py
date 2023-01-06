@@ -36,22 +36,14 @@ def reraise(e):
 
 
 @pytest.fixture
-def app(request, manager, watcher):
-    app = App().register(manager)
-    watcher.wait("registered")
-
-    def finalizer():
-        app.unregister()
-
-    request.addfinalizer(finalizer)
-
-    return app
+def app(simple_manager):
+    return App().register(simple_manager)
 
 
-def test_main(app, watcher):
+def test_main(app, simple_manager):
     e = test()
     app.fire(e)
-    watcher.wait("exception")
+    assert simple_manager.run_until("exception")
 
     assert app.etype == NameError
     pytest.raises(NameError, lambda e: reraise(e), app.evalue)

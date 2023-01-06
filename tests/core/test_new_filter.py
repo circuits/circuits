@@ -20,26 +20,17 @@ class App(Component):
 
 
 @pytest.fixture
-def app(request, manager, watcher):
-    app = (App() + App()).register(manager)
-    watcher.wait("registered")
-
-    def finalizer():
-        app.unregister()
-        watcher.wait("unregistered")
-
-    request.addfinalizer(finalizer)
-
-    return app
+def app(simple_manager):
+    return (App() + App()).register(simple_manager)
 
 
-def test_normal(app, watcher):
+def test_normal(app, simple_manager):
     x = app.fire(hello())
-    watcher.wait("hello_success")
+    assert simple_manager.run_until("hello_success")
     assert x.value == ["Hello World!", "Hello World!"]
 
 
-def test_filter(app, watcher):
+def test_filter(app, simple_manager):
     x = app.fire(hello(stop=True))
-    watcher.wait("hello_success")
+    assert simple_manager.run_until("hello_success")
     assert x.value == "Hello World!"

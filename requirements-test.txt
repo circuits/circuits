@@ -1,4 +1,5 @@
 codecov
+pyinotify
 pytest
 pytest-cov
 pytest-timeout

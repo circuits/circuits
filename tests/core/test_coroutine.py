@@ -4,8 +4,6 @@ import pytest
 
 from circuits import Component, Event
 
-pytestmark = pytest.mark.skip("XXX: This test fails intermittently")
-
 
 class test(Event):
 
@@ -49,24 +47,17 @@ class App(Component):
 
 
 @pytest.fixture
-def app(request, manager, watcher):
-    app = App().register(manager)
-    assert watcher.wait("registered")
-
-    def finalizer():
-        app.unregister()
-
-    request.addfinalizer(finalizer)
-
-    return app
+def app(simple_manager):
+    return App().register(simple_manager)
 
 
-def test_coroutine(manager, watcher, app):
-    manager.fire(coroutine1())
-    assert watcher.wait("coroutine1_complete")
+@pytest.mark.xfail(reason='This test fails intermittently')
+def test_coroutine(simple_manager, app):
+    simple_manager.fire(coroutine1())
+    assert simple_manager.run_until("coroutine1_complete")
     assert app.returned, "coroutine1"
 
     app.returned = False
-    manager.fire(coroutine2())
-    assert watcher.wait("coroutine2_complete")
+    simple_manager.fire(coroutine2())
+    assert simple_manager.run_until("coroutine2_complete")
     assert app.returned, "coroutine2"

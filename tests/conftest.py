@@ -107,20 +107,44 @@ def wait_for(obj, attr, value=True, timeout=30.0):
 
 class SimpleManager(Manager):
 
+    watcher = None
+
     def tick(self, timeout=-1):
         self._running = False
         return super().tick(timeout)
 
+    def watch(self):
+        if self.watcher is not None:
+            return
+        self.watcher = Watcher().register(self)
+
+    def run_until(self, *args, **kwargs):
+        self.run()
+        return self.watcher.wait(*args, **kwargs)
+
+    def clear(self, *args, **kwargs):
+        return self.watcher.clear(*args, **kwargs)
+
+    def count(self, *args, **kwargs):
+        return self.watcher.count(*args, **kwargs)
+
 
 @pytest.fixture
 def simple_manager(request):
+    """A manager main loop which runs in the MainThread until all events are processed.
+       It leaves out the generate_events event and can therefore not be used to FileIO or socket components.
+    """
     manager = SimpleManager()
     Debugger(events=request.config.option.verbose).register(manager)
+    manager.watch()
+    manager.run()
+    manager.clear()
     return manager
 
 
 @pytest.fixture
 def manager(request):
+    """A manager main loop started in a separate thread"""
     manager = Manager()
 
     def finalizer():

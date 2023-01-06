@@ -30,17 +30,17 @@ class App(Component):
 
 
 @fixture()
-def bind(request, manager, watcher):
-    server = UDPServer(0).register(manager)
-    assert watcher.wait('ready')
+def bind(request, simple_manager):
+    server = UDPServer(0).register(simple_manager)
+    assert simple_manager.run_until("ready")
 
     host, port = server.host, server.port
 
     server.fire(close())
-    assert watcher.wait('closed')
+    assert simple_manager.run_until("closed")
 
     server.unregister()
-    assert watcher.wait('unregistered')
+    assert simple_manager.run_until("unregistered")
 
     return host, port
 
@@ -49,13 +49,13 @@ def bind(request, manager, watcher):
 def app(request, manager, watcher, bind):
     app = App().register(manager)
     node = Node().register(app)
-    watcher.wait('ready')
+    assert watcher.wait('ready')
 
     child = (App() + Node(port=bind[1], server_ip=bind[0]))
     child.start(process=True)
 
     node.add('child', *bind)
-    watcher.wait('connected')
+    assert watcher.wait('connected')
 
     def finalizer():
         child.stop()

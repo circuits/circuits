@@ -30,21 +30,13 @@ class App(Component):
 
 
 @pytest.fixture
-def app(request, manager, watcher):
-    app = App().register(manager)
-    assert watcher.wait("registered")
-
-    def finalizer():
-        app.unregister()
-
-    request.addfinalizer(finalizer)
-
-    return app
+def app(simple_manager):
+    return App().register(simple_manager)
 
 
-def test_wait_instance(manager, watcher, app):
-    x = manager.fire(wait())
-    assert watcher.wait("wait_success")
+def test_wait_instance(simple_manager, app):
+    x = simple_manager.fire(wait())
+    assert simple_manager.run_until("wait_success")
 
     value = x.value
     assert value == "Hello World!"

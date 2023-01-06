@@ -322,8 +322,8 @@ def test_tcp_bind(Poller, ipv6):
         m.stop()
 
 
-def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
-    poller = Poller().register(manager)
+def test_tcp_lookup_failure(simple_manager, Poller, ipv6):
+    poller = Poller().register(simple_manager)
 
     if ipv6:
         tcp_client = TCP6Client()
@@ -331,13 +331,13 @@ def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
         tcp_client = TCPClient()
 
     client = Client() + tcp_client
-    client.register(manager)
+    client.register(simple_manager)
 
     try:
-        assert watcher.wait("ready", "client")
+        assert simple_manager.run_until("ready", "client")
 
         client.fire(connect("foo.bar.baz", 1234))
-        assert watcher.wait("error", "client")
+        assert simple_manager.run_until("error", "client")
 
         if pytest.PLATFORM == "win32":
             assert client.error.errno == 11004
