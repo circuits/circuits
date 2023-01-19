@@ -9,9 +9,11 @@ from html import escape
 from circuits import Event
 
 from .constants import (
-    DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL,
+    DEFAULT_ERROR_MESSAGE, POWERED_BY, SERVER_URL,
     SERVER_VERSION,
 )
+
+import httoop
 
 
 class httperror(Event):
@@ -48,6 +50,7 @@ class httperror(Event):
             self.traceback = "ERROR: (%s) %s\n%s" % (
                 self.error[0], self.error[1], "".join(stack)
             )
+            print(self.traceback)
         else:
             self.traceback = ""
 
@@ -61,7 +64,7 @@ class httperror(Event):
 
         self.data = {
             "code": self.code,
-            "name": HTTP_STATUS_CODES.get(self.code, "???"),
+            "name": httoop.Status(self.code).reason or "???",
             "description": self.description,
             "traceback": self.traceback,
             "powered_by": powered_by
@@ -99,9 +102,7 @@ class httperror(Event):
 
     def __repr__(self):
         return "<%s %d %s>" % (
-            self.__class__.__name__, self.code, HTTP_STATUS_CODES.get(
-                self.code, "???"
-            )
+            self.__class__.__name__, self.code, httoop.Status(self.code).reason or "???"
         )
 
 

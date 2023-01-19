@@ -93,6 +93,10 @@ class BaseServer(BaseComponent):
         if hasattr(self, "server"):
             return self.server.secure
 
+    @property
+    def scheme(self):
+        return "https" if self.secure else "http"
+
     @handler("connect")
     def _on_connect(self, *args, **kwargs):
         """Dummy Event Handler for connect"""
