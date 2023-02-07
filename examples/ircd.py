@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Example IRC Server
+"""
+Example IRC Server
 
 .. note:: This is an example only and is feature incomplete.
 

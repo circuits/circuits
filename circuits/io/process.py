@@ -1,4 +1,5 @@
-"""Process
+"""
+Process
 
 This module implements a wrapper for basic ``subprocess.Popen`` functionality.
 """
@@ -13,7 +14,8 @@ from .file import File
 
 
 class terminated(Event):
-    """terminated Event
+    """
+    terminated Event
 
     This Event is sent when a process is completed
 

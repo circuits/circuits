@@ -1,4 +1,5 @@
-"""File I/O
+"""
+File I/O
 
 This module implements a wrapper for basic File I/O.
 """
@@ -28,7 +29,6 @@ BUFSIZE = 4096
 
 
 class _open(Event):
-
     """_open Event"""
 
 

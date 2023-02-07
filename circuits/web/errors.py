@@ -1,4 +1,5 @@
-"""Errors
+"""
+Errors
 
 This module implements a set of standard HTTP Errors.
 """
@@ -15,7 +16,6 @@ from .constants import (
 
 
 class httperror(Event):
-
     """An event for signaling an HTTP error"""
 
     code = 500
@@ -105,28 +105,24 @@ class httperror(Event):
 
 
 class forbidden(httperror):
-
     """An event for signaling the HTTP Forbidden error"""
 
     code = 403
 
 
 class unauthorized(httperror):
-
     """An event for signaling the HTTP Unauthorized error"""
 
     code = 401
 
 
 class notfound(httperror):
-
     """An event for signaling the HTTP Not Fouond error"""
 
     code = 404
 
 
 class redirect(httperror):
-
     """An event for signaling the HTTP Redirect response"""
 
     def __init__(self, request, response, urls, code=None):
@@ -135,7 +131,6 @@ class redirect(httperror):
         *response* argument to reflect a redirect response to the
         given *url*.
         """
-
         if isinstance(urls, str):
             urls = [urls]
 

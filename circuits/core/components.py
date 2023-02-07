@@ -1,6 +1,4 @@
-"""
-This module defines the BaseComponent and its subclass Component.
-"""
+"""This module defines the BaseComponent and its subclass Component."""
 from collections.abc import Callable
 from inspect import getmembers
 from itertools import chain
@@ -12,7 +10,6 @@ from .manager import Manager
 
 
 class prepare_unregister(Event):
-
     """
     This event is fired when a component is about to be unregistered
     from the component tree. Unregistering a component actually
@@ -46,7 +43,6 @@ class prepare_unregister(Event):
 
 
 class BaseComponent(Manager):
-
     """
     This is the base class for all components in a circuits based application.
     Components can (and should, except for root components) be registered
@@ -106,7 +102,6 @@ class BaseComponent(Manager):
 
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__(*args, **kwargs)
 
         self.channel = kwargs.get("channel", self.channel) or "*"
@@ -138,7 +133,6 @@ class BaseComponent(Manager):
         This method fires a :class:`~.events.Registered` event to inform
         other components in the tree about the new member.
         """
-
         self.parent = parent
         self.root = parent.root
 
@@ -168,7 +162,6 @@ class BaseComponent(Manager):
         the component is removed from the tree and an
         :class:`~.events.unregistered` event is fired.
         """
-
         if self.unregister_pending or self.parent is self:
             return self
 
@@ -207,7 +200,6 @@ class BaseComponent(Manager):
     @classmethod
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
-
         return list({
             getattr(cls, k) for k in dir(cls)
             if getattr(getattr(cls, k), "handler", False)
@@ -216,7 +208,6 @@ class BaseComponent(Manager):
     @classmethod
     def events(cls):
         """Returns a list of all events this Component listens to"""
-
         handlers = (
             getattr(cls, k).names for k in dir(cls)
             if getattr(getattr(cls, k), "handler", False)
@@ -230,7 +221,6 @@ class BaseComponent(Manager):
     @classmethod
     def handles(cls, *names):
         """Returns True if all names are event handlers of this Component"""
-
         return all(name in cls.events() for name in names)
 
 

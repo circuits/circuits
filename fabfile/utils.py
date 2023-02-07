@@ -22,11 +22,11 @@ def toint(s):
 
 @contextmanager
 def msg(s):
-    """Print message given as ``s`` in a context manager
+    """
+    Print message given as ``s`` in a context manager
 
     Prints "{s} ... OK"
     """
-
     puts(f"{s:s} ... ", end="", flush=True)
     with settings(hide("everything")):
         yield
@@ -56,7 +56,8 @@ def has_binary(name):
 
 
 def requires(*names, **kwargs):
-    """Decorator/Wrapper that aborts if not all requirements are met.
+    """
+    Decorator/Wrapper that aborts if not all requirements are met.
 
     Aborts if not all requirements are met given a test function
     (defaulting to :func:`~has_binary`).
@@ -67,7 +68,6 @@ def requires(*names, **kwargs):
     :returns: None or aborts
     :rtype: None
     """
-
     test = kwargs.get("test", has_binary)
 
     def decorator(f):

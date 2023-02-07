@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""wget Example
+"""
+wget Example
 
 A basic wget-like clone that asynchronously connections
 a remote web server requesting a given resource.

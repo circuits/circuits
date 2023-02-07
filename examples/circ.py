@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Circuits IRC Client
+"""
+Circuits IRC Client
 
 A circuits based IRC Client demonstrating integration with urwid - a curses
 application development library and interacting with and processing irc
@@ -124,21 +125,21 @@ class Client(Component):
         self.top = Frame(self.body, self.header, self.footer)
 
     def ready(self, component):
-        """Ready Event
+        """
+        Ready Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when it is ready to start making a new connection.
         """
-
         self.fire(connect(self.host, self.port))
 
     def connected(self, host, port):
-        """connected Event
+        """
+        connected Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
         """
-
         nick = self.nick
         hostname = self.hostname
         name = f"{nick} on {hostname} using circuits/{systemVersion}"
@@ -147,12 +148,12 @@ class Client(Component):
         self.fire(USER(nick, hostname, host, name))
 
     def numeric(self, source, numeric, *args):
-        """Numeric Event
+        """
+        Numeric Event
 
         This event is triggered by the ``IRC`` Protocol Component when we have
         received an IRC Numberic Event from server we are connected to.
         """
-
         if numeric == ERR_NICKNAMEINUSE:
             self.fire(NICK(f"{args[0]:s}_"))
         elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):

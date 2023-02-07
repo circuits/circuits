@@ -1,6 +1,4 @@
-"""
-This module defines the Manager class.
-"""
+"""This module defines the Manager class."""
 import atexit
 import types
 import _thread
@@ -33,12 +31,10 @@ TIMEOUT = 0.1  # 100ms timeout when idle
 
 
 class UnregistrableError(Exception):
-
     """Raised if a component cannot be registered as child."""
 
 
 class TimeoutError(Exception):
-
     """Raised if wait event timeout occurred"""
 
 
@@ -96,7 +92,6 @@ def sleep(seconds):
     Delay execution of a coroutine for a given number of seconds.
     The argument may be a floating point number for subsecond precision.
     """
-
     return Sleep(seconds)
 
 
@@ -162,7 +157,6 @@ class _EventQueue:
 
 
 class Manager:
-
     """
     The manager class has two roles. As a base class for component
     implementation, it provides methods for event and handler management.
@@ -218,7 +212,6 @@ class Manager:
 
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
-
         self._queue = _EventQueue()
 
         self._tasks = set()
@@ -241,14 +234,12 @@ class Manager:
 
     def __nonzero__(self):
         "x.__nonzero__() <==> bool(x)"
-
         return True
 
     __bool__ = __nonzero__
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
-
         name = self.__class__.__name__
 
         channel = "/{}".format(getattr(self, "channel", ""))
@@ -267,24 +258,25 @@ class Manager:
         return format % (name, channel, id, q, state)
 
     def __contains__(self, y):
-        """x.__contains__(y) <==> y in x
+        """
+        x.__contains__(y) <==> y in x
 
         Return True if the Component y is registered.
         """
-
         components = self.components.copy()
         return y in components or y in [c.__class__ for c in components]
 
     def __len__(self):
-        """x.__len__() <==> len(x)
+        """
+        x.__len__() <==> len(x)
 
         Returns the number of events in the Event Queue.
         """
-
         return len(self._queue)
 
     def __add__(self, y):
-        """x.__add__(y) <==> x+y
+        """
+        x.__add__(y) <==> x+y
 
         (Optional) Convenience operator to register y with x
         Equivalent to: y.register(x)
@@ -292,12 +284,12 @@ class Manager:
         @return: x
         @rtype Component or Manager
         """
-
         y.register(self)
         return self
 
     def __iadd__(self, y):
-        """x.__iadd__(y) <==> x += y
+        """
+        x.__iadd__(y) <==> x += y
 
         (Optional) Convenience operator to register y with x
         Equivalent to: y.register(x)
@@ -305,12 +297,12 @@ class Manager:
         @return: x
         @rtype Component or Manager
         """
-
         y.register(self)
         return self
 
     def __sub__(self, y):
-        """x.__sub__(y) <==> x-y
+        """
+        x.__sub__(y) <==> x-y
 
         (Optional) Convenience operator to unregister y from x.parent
         Equivalent to: y.unregister()
@@ -318,13 +310,13 @@ class Manager:
         @return: x
         @rtype Component or Manager
         """
-
         if y.parent is not y:
             y.unregister()
         return self
 
     def __isub__(self, y):
-        """x.__sub__(y) <==> x -= y
+        """
+        x.__sub__(y) <==> x -= y
 
         (Optional) Convenience operator to unregister y from x
         Equivalent to: y.unregister()
@@ -332,7 +324,6 @@ class Manager:
         @return: x
         @rtype Component or Manager
         """
-
         if y.parent is not y:
             y.unregister()
         return self
@@ -340,19 +331,16 @@ class Manager:
     @property
     def name(self):
         """Return the name of this Component/Manager"""
-
         return self.__class__.__name__
 
     @property
     def running(self):
         """Return the running state of this Component/Manager"""
-
         return self._running
 
     @property
     def pid(self):
         """Return the process id of this Component/Manager"""
-
         return getpid() if self.__process is None else self.__process.pid
 
     def getHandlers(self, event, channel, **kwargs):
@@ -470,7 +458,8 @@ class Manager:
                     handling.reduce_time_left(0)
 
     def fireEvent(self, event, *channels, **kwargs):
-        """Fire an event into the system.
+        """
+        Fire an event into the system.
 
         :param event: The event that is to be fired.
         :param channels: The channels that this event is delivered on.
@@ -481,7 +470,6 @@ class Manager:
            when set neither, the event is delivered on all
            channels ("*").
         """
-
         if not channels:
             channels = event.channels or (getattr(self, "channel", "*"),) or ("*",)
 
@@ -596,7 +584,6 @@ class Manager:
         that is not the root of an object hierarchy, the invocation
         is delegated to the root manager.
         """
-
         self.root._flush()
 
     flush = flushEvents
@@ -746,7 +733,6 @@ class Manager:
         ``run()`` method. The invocation of this method returns
         immediately after the task or process has been started.
         """
-
         if process:
             # Parent<->Child Bridge
             if link is not None:
@@ -786,7 +772,6 @@ class Manager:
         Stop this manager. Invoking this method causes
         an invocation of ``run()`` to return.
         """
-
         if self.__process not in (None, current_process()) and self.__process.is_alive():
             self.__process.terminate()
             self.__process.join(TIMEOUT)
@@ -934,7 +919,6 @@ class Manager:
         fires the corresponding :class:`~.events.Signal`
         events and then calls :meth:`~.stop` for the manager.
         """
-
         atexit.register(self.stop)
 
         if current_thread().name == "MainThread":

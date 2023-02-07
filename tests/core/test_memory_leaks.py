@@ -5,14 +5,14 @@ from circuits import Component, Event, handler
 
 
 class call(Event):
-
     """call Event"""
+
     success = True
 
 
 class hello(Event):
-
     """hello Event"""
+
     success = True
 
 

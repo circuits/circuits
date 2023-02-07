@@ -1,4 +1,5 @@
-"""WSGI Components
+"""
+WSGI Components
 
 This module implements WSGI Components.
 """

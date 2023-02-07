@@ -1,4 +1,5 @@
-"""Line Protocol
+"""
+Line Protocol
 
 This module implements the basic Line protocol.
 
@@ -12,26 +13,25 @@ LINESEP = re.compile(b"\r?\n")
 
 
 def splitLines(s, buffer):
-    """splitLines(s, buffer) -> lines, buffer
+    """
+    splitLines(s, buffer) -> lines, buffer
 
     Append s to buffer and find any new lines of text in the
     string splitting at the standard IRC delimiter CRLF. Any
     new lines found, return them as a list and the remaining
     buffer for further processing.
     """
-
     lines = LINESEP.split(buffer + s)
     return lines[:-1], lines[-1]
 
 
 class line(Event):
-
     """line Event"""
 
 
 class Line(BaseComponent):
-
-    """Line Protocol
+    """
+    Line Protocol
 
     Implements the Line Protocol.
 
@@ -79,7 +79,6 @@ class Line(BaseComponent):
 
     def __init__(self, *args, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__(*args, **kwargs)
 
         self.encoding = kwargs.get('encoding', 'utf-8')

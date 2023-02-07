@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Telnet Example
+"""
+Telnet Example
 
 A basic telnet-like clone that connects to remote hosts
 via tcp and allows the user to send data to the remote
@@ -104,32 +105,32 @@ class Telnet(Component):
         graph(self.root)
 
     def connected(self, host, port=None):
-        """connected Event Handler
+        """
+        connected Event Handler
 
         This event is fired by the TCPClient Componentt to indicate a
         successful connection.
         """
-
         print(f"connected to {host}")
 
     def error(self, *args, **kwargs):
-        """error Event Handler
+        """
+        error Event Handler
 
         If any exception/error occurs in the system this event is triggered.
         """
-
         if len(args) == 3:
             print(f"ERROR: {args[1]}")
         else:
             print(f"ERROR: {args[0]}")
 
     def read(self, *args):
-        """read Event Handler
+        """
+        read Event Handler
 
         This event is fired by the underlying TCPClient Component when there
         is data to be read from the connection.
         """
-
         if len(args) == 1:
             data = args[0]
         else:
@@ -142,12 +143,12 @@ class Telnet(Component):
     # Setup an Event Handler for "read" events on the "stdin" channel.
     @handler("read", channel="stdin")
     def _on_stdin_read(self, data):
-        """read Event Handler for stdin
+        """
+        read Event Handler for stdin
 
         This event is triggered by the connected ``stdin`` component when
         there is new data to be read in from standard input.
         """
-
         if not self.opts["udp"]:
             self.fire(write(data))
         else:

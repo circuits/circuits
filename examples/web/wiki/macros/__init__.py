@@ -1,4 +1,5 @@
-"""Macro
+"""
+Macro
 
 Macro support and dispatcher
 """

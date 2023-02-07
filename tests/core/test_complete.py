@@ -7,7 +7,6 @@ class simple_event(Event):
 
 
 class test(Event):
-
     """test Event"""
 
     success = True
@@ -65,9 +64,7 @@ class App(Component):
         self._state_when_success = self._state
 
     def test_complete(self, e, value):
-        """
-        Test event has been completely processed, save the achieved state.
-        """
+        """Test event has been completely processed, save the achieved state."""
         self._state_when_complete = self._state
 
 
@@ -81,9 +78,7 @@ while len(app):
 
 
 def test_complete_simple():
-    """
-    Test if complete works for an event without further effects
-    """
+    """Test if complete works for an event without further effects"""
     app.fire(simple_event())
     while len(app):
         app.flush()

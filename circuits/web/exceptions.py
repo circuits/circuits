@@ -1,4 +1,5 @@
-"""Exceptions
+"""
+Exceptions
 
 This module implements a set of standard HTTP Errors as Python Exceptions.
 
@@ -19,7 +20,6 @@ __all__ = (
 
 
 class HTTPException(Exception):
-
     """
     Baseclass for all HTTP exceptions.  This exception can be called by WSGI
     applications to render a default error page or you can catch the subclasses
@@ -47,12 +47,13 @@ class HTTPException(Exception):
 
 
 class BadRequest(HTTPException):
-
-    """*400* `Bad Request`
+    """
+    *400* `Bad Request`
 
     Raise if the browser sends something to the application the application
     or server cannot handle.
     """
+
     code = 400
     description = (
         '<p>The browser (or proxy) sent a request that this server could '
@@ -61,7 +62,6 @@ class BadRequest(HTTPException):
 
 
 class UnicodeError(HTTPException):
-
     """
     raised by the request functions if they were unable to decode the
     incoming data properly.
@@ -69,12 +69,13 @@ class UnicodeError(HTTPException):
 
 
 class Unauthorized(HTTPException):
-
-    """*401* `Unauthorized`
+    """
+    *401* `Unauthorized`
 
     Raise if the user is not authorized.  Also used if you want to use HTTP
     basic auth.
     """
+
     code = 401
     description = (
         '<p>The server could not verify that you are authorized to access '
@@ -87,12 +88,13 @@ class Unauthorized(HTTPException):
 
 
 class Forbidden(HTTPException):
-
-    """*403* `Forbidden`
+    """
+    *403* `Forbidden`
 
     Raise if the user doesn't have the permission for the requested resource
     but was authenticated.
     """
+
     code = 403
     description = (
         '<p>You don\'t have the permission to access the requested resource. '
@@ -101,11 +103,12 @@ class Forbidden(HTTPException):
 
 
 class NotFound(HTTPException):
-
-    """*404* `Not Found`
+    """
+    *404* `Not Found`
 
     Raise if a resource does not exist and never existed.
     """
+
     code = 404
     description = (
         '<p>The requested URL was not found on the server.</p>'
@@ -115,8 +118,8 @@ class NotFound(HTTPException):
 
 
 class MethodNotAllowed(HTTPException):
-
-    """*405* `Method Not Allowed`
+    """
+    *405* `Method Not Allowed`
 
     Raise if the server used a method the resource does not handle.  For
     example `POST` if the resource is view only.  Especially useful for REST.
@@ -125,6 +128,7 @@ class MethodNotAllowed(HTTPException):
     Strictly speaking the response would be invalid if you don't provide valid
     methods in the header which you can do with that list.
     """
+
     code = 405
 
     def __init__(self, method, description=None):
@@ -137,12 +141,13 @@ class MethodNotAllowed(HTTPException):
 
 
 class NotAcceptable(HTTPException):
-
-    """*406* `Not Acceptable`
+    """
+    *406* `Not Acceptable`
 
     Raise if the server can't return any content conforming to the
     `Accept` headers of the client.
     """
+
     code = 406
 
     description = (
@@ -154,11 +159,12 @@ class NotAcceptable(HTTPException):
 
 
 class RequestTimeout(HTTPException):
-
-    """*408* `Request Timeout`
+    """
+    *408* `Request Timeout`
 
     Raise to signalize a timeout.
     """
+
     code = 408
     description = (
         '<p>The server closed the network connection because the browser '
@@ -167,11 +173,12 @@ class RequestTimeout(HTTPException):
 
 
 class Gone(HTTPException):
-
-    """*410* `Gone`
+    """
+    *410* `Gone`
 
     Raise if a resource existed previously and went away without new location.
     """
+
     code = 410
     description = (
         '<p>The requested URL is no longer available on this server and '
@@ -181,12 +188,13 @@ class Gone(HTTPException):
 
 
 class LengthRequired(HTTPException):
-
-    """*411* `Length Required`
+    """
+    *411* `Length Required`
 
     Raise if the browser submitted data but no ``Content-Length`` header which
     is required for the kind of processing the server does.
     """
+
     code = 411
     description = (
         '<p>A request with this method requires a valid <code>Content-'
@@ -195,12 +203,13 @@ class LengthRequired(HTTPException):
 
 
 class PreconditionFailed(HTTPException):
-
-    """*412* `Precondition Failed`
+    """
+    *412* `Precondition Failed`
 
     Status code used in combination with ``If-Match``, ``If-None-Match``, or
     ``If-Unmodified-Since``.
     """
+
     code = 412
     description = (
         '<p>The precondition on the request for the URL failed positive '
@@ -209,12 +218,13 @@ class PreconditionFailed(HTTPException):
 
 
 class RequestEntityTooLarge(HTTPException):
-
-    """*413* `Request Entity Too Large`
+    """
+    *413* `Request Entity Too Large`
 
     The status code one should return if the data submitted exceeded a given
     limit.
     """
+
     code = 413
     description = (
         '<p>The data value transmitted exceeds the capacity limit.</p>'
@@ -222,11 +232,12 @@ class RequestEntityTooLarge(HTTPException):
 
 
 class RequestURITooLarge(HTTPException):
-
-    """*414* `Request URI Too Large`
+    """
+    *414* `Request URI Too Large`
 
     Like *413* but for too long URLs.
     """
+
     code = 414
     description = (
         '<p>The length of the requested URL exceeds the capacity limit '
@@ -235,12 +246,13 @@ class RequestURITooLarge(HTTPException):
 
 
 class UnsupportedMediaType(HTTPException):
-
-    """*415* `Unsupported Media Type`
+    """
+    *415* `Unsupported Media Type`
 
     The status code returned if the server is unable to handle the media type
     the client transmitted.
     """
+
     code = 415
     description = (
         '<p>The server does not support the media type transmitted in '
@@ -249,8 +261,8 @@ class UnsupportedMediaType(HTTPException):
 
 
 class RangeUnsatisfiable(HTTPException):
-
-    """*416* `Range Unsatisfiable`
+    """
+    *416* `Range Unsatisfiable`
 
     The status code returned if the server is unable to satisfy the request range
     """
@@ -262,12 +274,13 @@ class RangeUnsatisfiable(HTTPException):
 
 
 class InternalServerError(HTTPException):
-
-    """*500* `Internal Server Error`
+    """
+    *500* `Internal Server Error`
 
     Raise if an internal server error occurred.  This is a good fallback if an
     unknown error occurred in the dispatcher.
     """
+
     code = 500
     description = (
         '<p>The server encountered an internal error and was unable to '
@@ -277,12 +290,13 @@ class InternalServerError(HTTPException):
 
 
 class NotImplemented(HTTPException):
-
-    """*501* `Not Implemented`
+    """
+    *501* `Not Implemented`
 
     Raise if the application does not support the action requested by the
     browser.
     """
+
     code = 501
     description = (
         '<p>The server does not support the action requested by the '
@@ -291,13 +305,14 @@ class NotImplemented(HTTPException):
 
 
 class BadGateway(HTTPException):
-
-    """*502* `Bad Gateway`
+    """
+    *502* `Bad Gateway`
 
     If you do proxying in your application you should return this status code
     if you received an invalid response from the upstream server it accessed
     in attempting to fulfill the request.
     """
+
     code = 502
     description = (
         '<p>The proxy server received an invalid response from an upstream '
@@ -306,11 +321,12 @@ class BadGateway(HTTPException):
 
 
 class ServiceUnavailable(HTTPException):
-
-    """*503* `Service Unavailable`
+    """
+    *503* `Service Unavailable`
 
     Status code you should return if a service is temporarily unavailable.
     """
+
     code = 503
     description = (
         '<p>The server is temporarily unable to service your request due to '

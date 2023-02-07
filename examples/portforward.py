@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""A Port Forwarding Example
+"""
+A Port Forwarding Example
 
 This example demonstrates slightly more complex features and behaviors
 implementing a TCP/UDP Port Forwarder of network traffic. This can be used
@@ -50,13 +51,13 @@ def parse_options():
 
 
 def _on_target_disconnected(self, event):
-    """Disconnected Event Handler
+    """
+    Disconnected Event Handler
 
     This unbound function will be later added as an event handler to a
     dynamically created and registered client instance and used to process
     Disconnected events of a connected client.
     """
-
     channel = event.channels[0]
     sock = self._sockets[channel]
 
@@ -67,24 +68,24 @@ def _on_target_disconnected(self, event):
 
 
 def _on_target_ready(self, component):
-    """Ready Event Handler
+    """
+    Ready Event Handler
 
     This unbound function will be later added as an event handler to a
     dynamically created and registered client instance and used to process
     Ready events of a registered client.
     """
-
     self.fire(connect(*self._target, secure=self._secure), component.channel)
 
 
 def _on_target_read(self, event, data):
-    """Read Event Handler
+    """
+    Read Event Handler
 
     This unbound function will be later added as an event handler to a
     dynamically created and registered client instance and used to process
     Read events of a connected client.
     """
-
     sock = self._sockets[event.channels[0]]
     self.fire(write(sock, data), "source")
 
@@ -105,7 +106,8 @@ class PortForwarder(Component):
 
     @handler("connect", channel="source")
     def _on_source_connect(self, sock, host, port):
-        """Explicitly defined connect Event Handler
+        """
+        Explicitly defined connect Event Handler
 
         This evens is triggered by the underlying TCPServer Component when
         a new client connection has been made.
@@ -114,7 +116,6 @@ class PortForwarder(Component):
         custom event handlers to handle the events of the newly created
         client. The client is registered with a unique channel per connection.
         """
-
         bind = 0
         channel = uuid()
 
@@ -138,7 +139,8 @@ class PortForwarder(Component):
 
     @handler("read", channel="source")
     def _on_source_read(self, sock, data):
-        """Explicitly defined Read Event Handler
+        """
+        Explicitly defined Read Event Handler
 
         This evens is triggered by the underlying TCPServer Component when
         a connected client has some data ready to be processed.
@@ -147,7 +149,6 @@ class PortForwarder(Component):
         matching client which we lookup using the socket object as the key
         to determinte the unique id.
         """
-
         client = self._clients[sock]
         self.fire(write(data), client.channel)
 

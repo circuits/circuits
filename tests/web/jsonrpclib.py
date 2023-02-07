@@ -56,7 +56,6 @@ def _gen_id():
 # Base class for all kinds of client-side errors.
 
 class Error(Exception):
-
     """Base class for client errors."""
 
     def __str__(self):
@@ -74,7 +73,6 @@ class Error(Exception):
 
 
 class ProtocolError(Error):
-
     """Indicates an HTTP protocol error."""
 
     def __init__(self, url, errcode, errmsg, headers, response):
@@ -163,7 +161,6 @@ class _Method:
 
 
 class Transport:
-
     """Handles an HTTP transaction to an JSON-RPC server."""
 
     # client identifier (may be overridden)
@@ -357,7 +354,6 @@ class Transport:
 
 
 class SafeTransport(Transport):
-
     """Handles an HTTPS transaction to an JSON-RPC server."""
 
     # FIXME: mostly untested
@@ -399,9 +395,7 @@ class ServerProxy:
         self.__allow_none = allow_none
 
     def __request(self, methodname, params):
-        """call a method on the remote server
-        """
-
+        """call a method on the remote server"""
         request = dumps(params, methodname, encoding=self.__encoding,
                         allow_none=self.__allow_none)
 

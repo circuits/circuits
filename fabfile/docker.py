@@ -11,7 +11,8 @@ TAG = "prologic/circuits"
 @task(default=True)
 @requires("docker")
 def build(**options):
-    """Build Docker Image
+    """
+    Build Docker Image
 
     Options can be provided to customize the build.
     The following options are supported:
@@ -19,7 +20,6 @@ def build(**options):
     - rebuild -> Whether to rebuild without a cache.
     - version -> Specific version to tag the image with (Default: latest)
     """
-
     rebuild = tobool(options.get("rebuild", False))
     version = options.get("version", "latest")
 
@@ -37,7 +37,6 @@ def build(**options):
 @requires("docker")
 def publish():
     """Publish Docker Image"""
-
     args = ["docker", "push", TAG]
 
     with msg("Pushing Image"):
@@ -48,7 +47,6 @@ def publish():
 @requires("docker")
 def run():
     """Run Docker Container"""
-
     args = ["docker", "run", "-i", "-t", "--rm", TAG]
 
     local(" ".join(args))

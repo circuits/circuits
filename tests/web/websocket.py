@@ -42,9 +42,7 @@ traceEnabled = False
 
 
 def enableTrace(tracable):
-    """
-    turn on/off the tracability.
-    """
+    """turn on/off the tracability."""
     global traceEnabled
     traceEnabled = tracable
     if tracable:
@@ -54,17 +52,13 @@ def enableTrace(tracable):
 
 
 def setdefaulttimeout(timeout):
-    """
-    Set the global timeout setting to connect.
-    """
+    """Set the global timeout setting to connect."""
     global default_timeout
     default_timeout = timeout
 
 
 def getdefaulttimeout():
-    """
-    Return the global timeout setting to connect.
-    """
+    """Return the global timeout setting to connect."""
     return default_timeout
 
 
@@ -177,7 +171,6 @@ class _SSLSocketWrapper:
 
 
 class WebSocket:
-
     """
     Low level WebSocket interface.
     This class is based on
@@ -197,22 +190,16 @@ class WebSocket:
     """
 
     def __init__(self):
-        """
-        Initalize WebSocket object.
-        """
+        """Initalize WebSocket object."""
         self.connected = False
         self.io_sock = self.sock = socket.socket()
 
     def settimeout(self, timeout):
-        """
-        Set the timeout to the websocket.
-        """
+        """Set the timeout to the websocket."""
         self.sock.settimeout(timeout)
 
     def gettimeout(self):
-        """
-        Get the websocket timeout.
-        """
+        """Get the websocket timeout."""
         return self.sock.gettimeout()
 
     def connect(self, url, **options):
@@ -350,9 +337,7 @@ class WebSocket:
         return status, headers
 
     def send(self, payload):
-        """
-        Send the data as string. payload must be utf-8 string or unicoce.
-        """
+        """Send the data as string. payload must be utf-8 string or unicoce."""
         if isinstance(payload, str):
             payload = payload.encode("utf-8")
         data = b"".join([b"\x00", payload, b"\xff"])
@@ -361,9 +346,7 @@ class WebSocket:
             logger.debug("send: " + repr(data))
 
     def recv(self):
-        """
-        Reeive utf-8 string data from the server.
-        """
+        """Reeive utf-8 string data from the server."""
         b = self._recv(1)
 
         if enableTrace:
@@ -402,9 +385,7 @@ class WebSocket:
         return length
 
     def close(self):
-        """
-        Close Websocket object
-        """
+        """Close Websocket object"""
         if self.connected:
             try:
                 self.io_sock.send("\xff\x00")
@@ -454,7 +435,6 @@ class WebSocket:
 
 
 class WebSocketApp:
-
     """
     Higher level of APIs are provided.
     The interface is like JavaScript WebSocket object.
@@ -471,11 +451,11 @@ class WebSocketApp:
          on_message has 2 arguments.
          The 1st arugment is this class object.
          The passing 2nd arugment is utf-8 string which we get from the server.
-       on_error: callable object which is called when we get error.
+        on_error: callable object which is called when we get error.
          on_error has 2 arguments.
          The 1st arugment is this class object.
          The passing 2nd arugment is exception object.
-       on_close: callable object which is called when closed the connection.
+        on_close: callable object which is called when closed the connection.
          this function has one argument. The arugment is this class object.
         """
         self.url = url
@@ -486,15 +466,11 @@ class WebSocketApp:
         self.sock = None
 
     def send(self, data):
-        """
-        send message. data must be utf-8 string or unicode.
-        """
+        """send message. data must be utf-8 string or unicode."""
         self.sock.send(data)
 
     def close(self):
-        """
-        close websocket connection.
-        """
+        """close websocket connection."""
         self.sock.close()
 
     def run_forever(self):

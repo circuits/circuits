@@ -1,4 +1,5 @@
-"""Bridge
+"""
+Bridge
 
 The Bridge Component is used for inter-process communications between
 processes. Bridge is used internally when a Component is started in
@@ -20,7 +21,8 @@ _sentinel = b'~~~'
 
 
 class ipc(Event):
-    """ipc Event
+    """
+    ipc Event
 
     Send an event to a child/parent process
     """
@@ -33,7 +35,6 @@ class ipc(Event):
         :param channel: IPC Channel (channel to use on child/parent).
         :type channel:  str
         """
-
         super().__init__(event, channel=channel)
 
 
@@ -102,7 +103,8 @@ class Bridge(BaseComponent):
 
     @handler("ipc")
     def _on_ipc(self, event, ipc_event, channel=None):
-        """Send event to a child/parentprocess
+        """
+        Send event to a child/parentprocess
 
         Event handler to run an event on a child/parent process
         (the event definition is :class:`circuits.core.bridge.ipc`)
@@ -124,7 +126,6 @@ class Bridge(BaseComponent):
         result = yield self.fire(ipc(hello()))
         print(result.value)``
         """
-
         ipc_event.channels = (channel,) if channel is not None else event.channels
         event.value.value = ipc_event.value = Value(ipc_event, self)
 

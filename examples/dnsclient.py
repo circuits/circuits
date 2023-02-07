@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""DNS Client Example
+"""
+DNS Client Example
 
 A simple little DNS Client example using
 `dnslib <https://pypi.python.org/pypi/dnslib>`_
@@ -26,12 +27,10 @@ from circuits.net.sockets import UDPClient
 
 
 class reply(Event):
-
     """reply Event"""
 
 
 class DNS(Component):
-
     """DNS Protocol Handling"""
 
     def read(self, peer, data):
@@ -39,8 +38,8 @@ class DNS(Component):
 
 
 class Dummy(Component):
-
-    """A Dummy DNS Handler
+    """
+    A Dummy DNS Handler
 
     This just parses the reply packet and
     prints any RR records it finds.
@@ -64,8 +63,8 @@ class Dummy(Component):
 
 
 class DNSClient(Component):
-
-    """DNS Client
+    """
+    DNS Client
 
     This ties everything together in a nice
     configurable way with protocol, transport,

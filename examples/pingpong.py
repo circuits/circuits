@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Bridge Example
+"""
+Bridge Example
 
 A Bridge example that demonstrates bidirectional parent/child
 communications and displays the no. of events per second and latency.

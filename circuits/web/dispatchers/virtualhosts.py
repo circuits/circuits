@@ -1,4 +1,5 @@
-"""VirtualHost
+"""
+VirtualHost
 
 This module implements a virtual host dispatcher that sends requests
 for configured virtual hosts to different dispatchers.
@@ -8,8 +9,8 @@ from circuits import BaseComponent, handler
 
 
 class VirtualHosts(BaseComponent):
-
-    """Forward to anotehr Dispatcher based on the Host header.
+    """
+    Forward to anotehr Dispatcher based on the Host header.
 
     This can be useful when running multiple sites within one server.
     It allows several domains to point to different parts of a single

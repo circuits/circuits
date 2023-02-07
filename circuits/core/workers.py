@@ -1,4 +1,5 @@
-"""Workers
+"""
+Workers
 
 Worker is a component used to perform "work" in independent threads or
 processes. Simply create an instance of Worker() with either `process=True`
@@ -21,8 +22,8 @@ DEFAULT_WORKERS = 10
 
 
 class task(Event):
-
-    """task Event
+    """
+    task Event
 
     This Event is used to initiate a new task to be performed by a Worker
 
@@ -41,13 +42,12 @@ class task(Event):
 
     def __init__(self, f, *args, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__(f, *args, **kwargs)
 
 
 class Worker(BaseComponent):
-
-    """A thread/process Worker Component
+    """
+    A thread/process Worker Component
 
     This Component creates a pool of workers (either a thread or process)
     and executures the supplied function from a `task()` event passing

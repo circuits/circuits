@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Shadow Auth Demo
+"""
+Shadow Auth Demo
 
 An example of a Circuits Component that requires users authenticate
 against /etc/passwd or /etc/shadow before letting them into the web site.

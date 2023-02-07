@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Simple Serial Example
+"""
+Simple Serial Example
 
 This example shows how to use the ``circuits.io.Serial`` Component
 to access serial data. This example simply echos back what it receives
@@ -19,12 +20,12 @@ class EchoSerial(Component):
 
     @handler("read")
     def on_read(self, data):
-        """Read Event Handler
+        """
+        Read Event Handler
 
         This is fired by the underlying Serial Component when there has been
         new data read from the serial port.
         """
-
         self.fire(write(data))
 
 

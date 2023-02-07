@@ -1,7 +1,4 @@
-"""
-
-.. codeauthor: mnl
-"""
+""".. codeauthor: mnl"""
 import os
 import random
 
@@ -11,8 +8,8 @@ from circuits.net.events import close, read, write
 
 
 class WebSocketCodec(BaseComponent):
-
-    """WebSocket Protocol
+    """
+    WebSocket Protocol
 
     Implements the Data Framing protocol for WebSocket.
 

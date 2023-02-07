@@ -1,4 +1,5 @@
-"""Include macros
+"""
+Include macros
 
 Macros for inclusion of other wiki pages
 """
@@ -7,7 +8,6 @@ from genshi import builder
 
 def include(macro, environ, pagename=None, *args, **kwargs):
     """Return the parsed content of the page identified by arg_string"""
-
     if pagename is None:
         return None
 
@@ -21,10 +21,10 @@ def include(macro, environ, pagename=None, *args, **kwargs):
 
 
 def include_raw(macro, environ, pagename=None, *args, **kwargs):
-    """Return the raw text of the page identified by arg_string, rendered
+    """
+    Return the raw text of the page identified by arg_string, rendered
     in a <pre> block.
     """
-
     if pagename is None:
         return None
 
@@ -36,10 +36,10 @@ def include_raw(macro, environ, pagename=None, *args, **kwargs):
 
 
 def include_source(macro, environ, pagename=None, *args, **kwargs):
-    """Return the parsed text of the page identified by arg_string, rendered
+    """
+    Return the parsed text of the page identified by arg_string, rendered
     in a <pre> block.
     """
-
     if pagename is None:
         return None
 

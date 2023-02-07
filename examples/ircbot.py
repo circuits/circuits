@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""IRC Bot Example
+"""
+IRC Bot Example
 
 This example shows how to use several components in circuits as well
 as one of the builtin networking protocols. This IRC Bot simply connects
@@ -30,52 +31,52 @@ class Bot(Component):
         IRC(channel=self.channel).register(self)
 
     def ready(self, component):
-        """Ready Event
+        """
+        Ready Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when it is ready to start making a new connection.
         """
-
         self.fire(connect(self.host, self.port))
 
     def connected(self, host, port):
-        """connected Event
+        """
+        connected Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
         """
-
         self.fire(NICK("circuits"))
         self.fire(USER("circuits", "circuits", host, "Test circuits IRC Bot"))
 
     def disconnected(self):
-        """disconnected Event
+        """
+        disconnected Event
 
         This event is triggered by the underlying ``TCPClient`` Component
         when the connection is lost.
         """
-
         raise SystemExit(0)
 
     def numeric(self, source, numeric, *args):
-        """Numeric Event
+        """
+        Numeric Event
 
         This event is triggered by the ``IRC`` Protocol Component when we have
         received an IRC Numberic Event from server we are connected to.
         """
-
         if numeric == ERR_NICKNAMEINUSE:
             self.fire(NICK(f"{args[0]:s}_"))
         elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
             self.fire(JOIN("#circuits"))
 
     def privmsg(self, source, target, message):
-        """Message Event
+        """
+        Message Event
 
         This event is triggered by the ``IRC`` Protocol Component for each
         message we receieve from the server.
         """
-
         if target.startswith("#"):
             self.fire(PRIVMSG(target, message))
         else:

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Multi Bridge Example
+"""
+Multi Bridge Example
 
 Identical to the Hello Bridge Example but with a 2nd child.
 """

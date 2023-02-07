@@ -1,4 +1,5 @@
-"""Session Components
+"""
+Session Components
 
 This module implements Session Components that can be used to store
 and access persistent information.
@@ -13,7 +14,6 @@ from circuits import Component, handler
 
 def who(request, encoding="utf-8"):
     """Create a SHA1 Hash of the User's IP Address and User-Agent"""
-
     ip = request.remote.ip
     agent = request.headers.get("User-Agent", "")
 
@@ -21,23 +21,23 @@ def who(request, encoding="utf-8"):
 
 
 def create_session(request):
-    """Create a unique session id from the request
+    """
+    Create a unique session id from the request
 
     Returns a unique session using ``uuid4()`` and a ``sha1()`` hash
     of the users IP Address and User Agent in the form of ``sid/who``.
     """
-
     return f"{uuid().hex}/{who(request)}"
 
 
 def verify_session(request, sid):
-    """Verify a User's Session
+    """
+    Verify a User's Session
 
     This verifies the User's Session by verifying the SHA1 Hash
     of the User's IP Address and User-Agent match the provided
     Session ID.
     """
-
     if "/" not in sid:
         return create_session(request)
 

@@ -7,7 +7,6 @@ from circuits import Event, Loader, Manager
 
 
 class test(Event):
-
     """test Event"""
 
 

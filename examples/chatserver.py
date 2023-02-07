@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Chat Server Example
+"""
+Chat Server Example
 
 This example demonstrates how to create a very simple telnet-style chat
 server that supports many connecting clients.
@@ -41,13 +42,13 @@ def parse_options():
 class ChatServer(Component):
 
     def init(self, args, opts):
-        """Initialize our ``ChatServer`` Component.
+        """
+        Initialize our ``ChatServer`` Component.
 
         This uses the convenience ``init`` method which is called after the
         component is properly constructed and initialized and passed the
         same args and kwargs that were passed during construction.
         """
-
         self.args = args
         self.opts = opts
 
@@ -74,7 +75,6 @@ class ChatServer(Component):
 
     def connect(self, sock, host, port):
         """Connect Event -- Triggered for new connecting clients"""
-
         self.clients[sock] = {
             "host": sock,
             "port": port,
@@ -89,7 +89,6 @@ class ChatServer(Component):
 
     def disconnect(self, sock):
         """Disconnect Event -- Triggered for disconnecting clients"""
-
         if sock not in self.clients:
             return
 
@@ -104,7 +103,6 @@ class ChatServer(Component):
 
     def read(self, sock, data):
         """Read Event -- Triggered for when client connections have data"""
-
         data = data.strip().decode("utf-8")
 
         if not self.clients[sock]["state"]["registered"]:

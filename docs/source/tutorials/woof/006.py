@@ -4,7 +4,6 @@ from circuits import Component, Event
 
 
 class woof(Event):
-
     """woof Event"""
 
 
@@ -27,12 +26,10 @@ class Dog(Component):
 
 
 class Bob(Dog):
-
     """Bob"""
 
 
 class Fred(Dog):
-
     """Fred"""
 
 Pound().run()

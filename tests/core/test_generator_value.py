@@ -3,12 +3,10 @@ from circuits import Component, Event
 
 
 class test(Event):
-
     """test Event"""
 
 
 class hello(Event):
-
     """hello Event"""
 
 

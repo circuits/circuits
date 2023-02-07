@@ -9,8 +9,8 @@ from .components import BaseComponent
 
 
 class Timer(BaseComponent):
-
-    """Timer Component
+    """
+    Timer Component
 
     A timer is a component that fires an event once after a certain
     delay or periodically at a regular interval.
@@ -35,7 +35,6 @@ class Timer(BaseComponent):
                          the timer is unregistered. **Default:** ``False``
         :type persist:   ``bool``
         """
-
         super().__init__()
 
         self.expiry = None
@@ -71,7 +70,6 @@ class Timer(BaseComponent):
         Reset the timer, i.e. clear the amount of time already waited
         for.
         """
-
         if interval is not None and isinstance(interval, datetime):
             self.interval = mktime(interval.timetuple()) - time()
         elif interval is not None:

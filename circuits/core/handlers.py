@@ -1,13 +1,12 @@
-"""
-This module define the @handler decorator/function and the HandlesType type.
-"""
+"""This module define the @handler decorator/function and the HandlesType type."""
 from collections.abc import Callable
 
 from circuits.tools import getargspec
 
 
 def handler(*names, **kwargs):
-    """Creates an Event Handler
+    """
+    Creates an Event Handler
 
     This decorator can be applied to methods of classes derived from
     :class:`circuits.core.components.BaseComponent`. It marks the method as a
@@ -86,7 +85,6 @@ def handler(*names, **kwargs):
 
 
 class Unknown:
-
     """Unknown Dummy Component"""
 
 

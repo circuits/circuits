@@ -1,4 +1,5 @@
-"""Web Servers
+"""
+Web Servers
 
 This module implements the several Web Server components.
 """
@@ -15,8 +16,8 @@ from .http import HTTP
 
 
 class BaseServer(BaseComponent):
-
-    """Create a Base Web Server
+    """
+    Create a Base Web Server
 
     Create a Base Web Server (HTTP) bound to the IP Address / Port or
     UNIX Socket specified by the 'bind' parameter.
@@ -51,7 +52,6 @@ class BaseServer(BaseComponent):
     def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
                  channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__(channel=channel)
 
         self._display_banner = display_banner
@@ -104,7 +104,6 @@ class BaseServer(BaseComponent):
     @handler("signal")
     def _on_signal(self, *args, **kwargs):
         """signal Event Handler"""
-
         self.fire(close())
         Timer(3, terminate()).register(self)
 
@@ -122,8 +121,8 @@ class BaseServer(BaseComponent):
 
 
 class Server(BaseServer):
-
-    """Create a Web Server
+    """
+    Create a Web Server
 
     Create a Web Server (HTTP) complete with the default Dispatcher to
     parse requests and posted form data dispatching to appropriate
@@ -134,7 +133,6 @@ class Server(BaseServer):
 
     def __init__(self, bind, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__(bind, **kwargs)
 
         Dispatcher(channel=self.channel).register(self.http)

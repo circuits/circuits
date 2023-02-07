@@ -1,4 +1,5 @@
-"""Component Repr Tests
+"""
+Component Repr Tests
 
 Test Component's representation string.
 """

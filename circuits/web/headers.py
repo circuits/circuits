@@ -1,4 +1,5 @@
-"""Headers Support
+"""
+Headers Support
 
 This module implements support for parsing and handling headers.
 """
@@ -12,7 +13,8 @@ q_separator = re.compile(r'; *q *=')
 
 
 def _formatparam(param, value=None, quote=1):
-    """Convenience function to format and return a key=value pair.
+    """
+    Convenience function to format and return a key=value pair.
 
     This will quote the value if needed or if quote is true.
     """
@@ -27,12 +29,12 @@ def _formatparam(param, value=None, quote=1):
 
 
 def header_elements(fieldname, fieldvalue):
-    """Return a sorted HeaderElement list.
+    """
+    Return a sorted HeaderElement list.
 
     Returns a sorted HeaderElement list
     from a comma-separated header string.
     """
-
     if not fieldvalue:
         return []
 
@@ -48,7 +50,6 @@ def header_elements(fieldname, fieldvalue):
 
 
 class HeaderElement:
-
     """An element (with parameters) from an HTTP header's element list."""
 
     def __init__(self, value, params=None):
@@ -99,8 +100,8 @@ class HeaderElement:
 
 
 class AcceptElement(HeaderElement):
-
-    """An element (with parameters) from an Accept* header's element list.
+    """
+    An element (with parameters) from an Accept* header's element list.
 
     AcceptElement objects are comparable; the more-preferred object will be
     "less than" the less-preferred object. They are also therefore sortable;
@@ -144,8 +145,8 @@ class AcceptElement(HeaderElement):
 
 
 class CaseInsensitiveDict(dict):
-
-    """A case-insensitive dict subclass.
+    """
+    A case-insensitive dict subclass.
 
     Each key is changed on entry to str(key).title().
     """
@@ -266,7 +267,8 @@ class Headers(CaseInsensitiveDict):
                 self[key] = ", ".join([self[key], value])
 
     def add_header(self, _name, _value, **_params):
-        """Extended header setting.
+        """
+        Extended header setting.
 
         _name is the header field to add. keyword arguments can be used to set
         additional parameters for the header field, with underscores converted

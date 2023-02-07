@@ -1,4 +1,5 @@
-"""Poller Components for asynchronous file and socket I/O.
+"""
+Poller Components for asynchronous file and socket I/O.
 
 This module contains Poller components that enable polling of file or socket
 descriptors for read/write events. Pollers:
@@ -24,22 +25,18 @@ from .events import Event
 
 
 class _read(Event):
-
     """_read Event"""
 
 
 class _write(Event):
-
     """_write Event"""
 
 
 class _error(Event):
-
     """_error Event"""
 
 
 class _disconnect(Event):
-
     """_disconnect Event"""
 
 
@@ -90,7 +87,6 @@ class BasePoller(BaseComponent):
         invocation of the default handler which would be unnecessary
         overhead.
         """
-
         event.stop()
         self._generate_events(event)
 
@@ -150,8 +146,8 @@ class BasePoller(BaseComponent):
 
 
 class Select(BasePoller):
-
-    """Select(...) -> new Select Poller Component
+    """
+    Select(...) -> new Select Poller Component
 
     Creates a new Select Poller Component that uses the select poller
     implementation. This poller is not recommended but is available for legacy
@@ -219,8 +215,8 @@ class Select(BasePoller):
 
 
 class Poll(BasePoller):
-
-    """Poll(...) -> new Poll Poller Component
+    """
+    Poll(...) -> new Poll Poller Component
 
     Creates a new Poll Poller Component that uses the poll poller
     implementation.
@@ -329,8 +325,8 @@ class Poll(BasePoller):
 
 
 class EPoll(BasePoller):
-
-    """EPoll(...) -> new EPoll Poller Component
+    """
+    EPoll(...) -> new EPoll Poller Component
 
     Creates a new EPoll Poller Component that uses the epoll poller
     implementation.
@@ -440,8 +436,8 @@ class EPoll(BasePoller):
 
 
 class KQueue(BasePoller):
-
-    """KQueue(...) -> new KQueue Poller Component
+    """
+    KQueue(...) -> new KQueue Poller Component
 
     Creates a new KQueue Poller Component that uses the kqueue poller
     implementation.

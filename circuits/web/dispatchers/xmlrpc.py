@@ -1,4 +1,5 @@
-"""XML RPC
+"""
+XML RPC
 
 This module implements a XML RPC dispatcher that translates incoming
 RPC calls over XML into RPC events.
@@ -9,7 +10,6 @@ from circuits import BaseComponent, Event, handler
 
 
 class rpc(Event):
-
     """rpc Event"""
 
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""DNS Server Example
+"""
+DNS Server Example
 
 A simple little DNS Server example using
 `dnslib <https://pypi.python.org/pypi/dnslib>`_
@@ -30,12 +31,10 @@ from circuits.net.sockets import UDPServer
 
 
 class query(Event):
-
     """query Event"""
 
 
 class DNS(Component):
-
     """DNS Protocol Handling"""
 
     def read(self, peer, data):
@@ -43,8 +42,8 @@ class DNS(Component):
 
 
 class Dummy(Component):
-
-    """A Dummy DNS Handler
+    """
+    A Dummy DNS Handler
 
     This just returns an A record response
     of 127.0.0.1 for any query of any type!
@@ -72,8 +71,8 @@ class Dummy(Component):
 
 
 class DNSServer(Component):
-
-    """DNS Server
+    """
+    DNS Server
 
     This ties everything together in a nice
     configurable way with protocol, transport

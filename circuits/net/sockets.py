@@ -1,4 +1,5 @@
-"""Socket Components
+"""
+Socket Components
 
 This module contains various Socket Components for use with Networking.
 """
@@ -56,7 +57,8 @@ BACKLOG = 5000  # 5K Concurrent Connections
 
 
 def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
-    """SSL Async Handshake
+    """
+    SSL Async Handshake
 
     :param on_done: Function called when handshake is complete
     :type on_done: :function:
@@ -64,7 +66,6 @@ def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
     :param on_error: Function called when handshake errored
     :type on_error: :function:
     """
-
     extra_args = extra_args or ()
 
     while True:
@@ -871,12 +872,12 @@ UDP6Client = UDP6Server
 
 
 def Pipe(*channels, **kwargs):
-    """Create a new full duplex Pipe
+    """
+    Create a new full duplex Pipe
 
     Returns a pair of UNIXClient instances connected on either side of
     the pipe.
     """
-
     if socketpair is None:
         raise RuntimeError('No socketpair support available.')
 

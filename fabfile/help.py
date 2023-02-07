@@ -8,7 +8,8 @@ from fabric.tasks import Task
 
 @task(default=True)
 def help(name=None):
-    """Display help for a given task
+    """
+    Display help for a given task
 
     Options:
         name    - The task to display help on.
@@ -21,7 +22,6 @@ def help(name=None):
 
         $ fab help:<name>
     """
-
     if name is None:
         name = "help"
 

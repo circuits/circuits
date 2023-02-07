@@ -1,4 +1,5 @@
-"""Dispatcher
+"""
+Dispatcher
 
 This module implements a basic URL to Channel dispatcher.
 This is the default dispatcher used by circuits.web

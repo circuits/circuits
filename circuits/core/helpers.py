@@ -1,6 +1,4 @@
-"""
-.. codeauthor: mnl
-"""
+""".. codeauthor: mnl"""
 from signal import SIGINT, SIGTERM
 from sys import stderr
 from threading import Event
@@ -30,7 +28,6 @@ class FallBackGenerator(BaseComponent):
         e.g: ``@handler("generate_events", priority=0)``
         and provide a different way to idle when the queue is empty.
         """
-
         with event.lock:
             if event.time_left == 0:
                 event.stop()
@@ -69,7 +66,6 @@ class FallBackGenerator(BaseComponent):
 
 
 class FallBackExceptionHandler(BaseComponent):
-
     """
     If there is no handler for error events in the component hierarchy, this
     component's handler is added automatically. It simply prints
@@ -97,7 +93,6 @@ class FallBackExceptionHandler(BaseComponent):
 
 
 class FallBackSignalHandler(BaseComponent):
-
     """
     If there is no handler for signal events in the component hierarchy, this
     component's handler is added automatically. It simply terminates the

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Node Server Example
+"""
+Node Server Example
 
 This example demonstrates how to create a very simple node server
 that supports bi-diractional messaging between server and connected
@@ -43,13 +44,13 @@ def parse_options():
 class NodeServer(Component):
 
     def init(self, args, opts):
-        """Initialize our ``ChatServer`` Component.
+        """
+        Initialize our ``ChatServer`` Component.
 
         This uses the convenience ``init`` method which is called after the
         component is proeprly constructed and initialized and passed the
         same args and kwargs that were passed during construction.
         """
-
         self.args = args
         self.opts = opts
 
@@ -68,7 +69,6 @@ class NodeServer(Component):
 
     def connect(self, sock, host, port):
         """Connect Event -- Triggered for new connecting clients"""
-
         self.clients[sock] = {
             "host": sock,
             "port": port,
@@ -76,7 +76,6 @@ class NodeServer(Component):
 
     def disconnect(self, sock):
         """Disconnect Event -- Triggered for disconnecting clients"""
-
         if sock not in self.clients:
             return
 

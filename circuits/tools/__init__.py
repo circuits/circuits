@@ -1,4 +1,5 @@
-"""Circuits Tools
+"""
+Circuits Tools
 
 circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
@@ -64,12 +65,12 @@ def kill(x):
 
 
 def _graph(x):
-    """Create a directed graph of the Component structure of x
+    """
+    Create a directed graph of the Component structure of x
 
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
     """
-
     networkx = tryimport("networkx")
     pygraphviz = tryimport("pygraphviz")
     plt = tryimport("matplotlib.pyplot", "pyplot")
@@ -111,7 +112,8 @@ def _graph(x):
 
 
 def graph_ascii(x):
-    """Display a directed graph of the Component structure of x
+    """
+    Display a directed graph of the Component structure of x
 
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
@@ -134,7 +136,6 @@ def graph_dot(x, name=None):
     :param name: A name for the graph (defaults to x's name)
     :type  name: str
     """
-
     networkx = tryimport("networkx")
     plt, g = _graph(x)
     if g is not None:
@@ -168,7 +169,8 @@ def graph(x, name=None):
 
 
 def inspect(x):
-    """Display an inspection report of the Component or Manager x
+    """
+    Display an inspection report of the Component or Manager x
 
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
@@ -176,7 +178,6 @@ def inspect(x):
     @return: A detailed inspection report of x
     @rtype:  str
     """
-
     s = []
     write = s.append
 

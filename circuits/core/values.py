@@ -1,12 +1,10 @@
-"""
-This defines the Value object used by components and events.
-"""
+"""This defines the Value object used by components and events."""
 from .events import Event
 
 
 class Value:
-
-    """Create a new future Value Object
+    """
+    Create a new future Value Object
 
     Creates a new future Value Object which is used by Event Objects and the
     Manager to store the result(s) of an Event Handler's exeuction of some
@@ -60,7 +58,6 @@ class Value:
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
-
         value = ""
         if self.result:
             value = repr(self.value)

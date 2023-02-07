@@ -4,7 +4,6 @@ from circuits import Component, Debugger, Event
 
 
 class Identify(Event):
-
     """Identify Event"""
 
     success = True
@@ -37,12 +36,10 @@ class Dog(Component):
 
 
 class Bob(Dog):
-
     """Bob"""
 
 
 class Fred(Dog):
-
     """Fred"""
 
 

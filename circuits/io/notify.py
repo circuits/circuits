@@ -1,4 +1,5 @@
-"""File Notification Support
+"""
+File Notification Support
 
 A Component wrapping the inotify API using the pyinotify library.
 """

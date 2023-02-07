@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Bridge Example
+"""
+Bridge Example
 
 This example is quite similar to the Hello example
 but displays a hello form both the parent and child

@@ -23,17 +23,14 @@ INVALID_CHUNK = 2
 
 
 class InvalidRequestLine(Exception):
-
     """ error raised when first line is invalid """
 
 
 class InvalidHeader(Exception):
-
     """ error raised on invalid header """
 
 
 class InvalidChunkSize(Exception):
-
     """ error raised when we parse an invalid chunk size """
 
 
@@ -107,8 +104,10 @@ class HttpParser:
         return body
 
     def recv_body_into(self, barray):
-        """ Receive the last chunk of the parsed body and store the data
-        in a buffer rather than creating a new string. """
+        """
+        Receive the last chunk of the parsed body and store the data
+        in a buffer rather than creating a new string.
+        """
         length = len(barray)
         body = b"".join(self._body)
         m = min(len(body), length)
@@ -122,8 +121,10 @@ class HttpParser:
         return m
 
     def is_upgrade(self):
-        """ Do we get upgrade header in the request. Useful for
-        websockets """
+        """
+        Do we get upgrade header in the request. Useful for
+        websockets
+        """
         hconn = self._headers.get('connection', "").lower()
         hconn_parts = [x.strip() for x in hconn.split(',')]
         return "upgrade" in hconn_parts
@@ -149,8 +150,7 @@ class HttpParser:
         return self._chunked
 
     def should_keep_alive(self):
-        """ return True if the connection should be kept alive
-        """
+        """return True if the connection should be kept alive"""
         hconn = self._headers.get('connection', "").lower()
         if hconn == "close":
             return False

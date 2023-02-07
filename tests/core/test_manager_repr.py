@@ -1,4 +1,5 @@
-"""Manager Repr Tests
+"""
+Manager Repr Tests
 
 Test Manager's representation string.
 """

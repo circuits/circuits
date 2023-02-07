@@ -8,7 +8,6 @@ from circuits.core import Component, Event, Worker, handler, task
 
 
 class hello(Event):
-
     """hello Event"""
 
     success = True

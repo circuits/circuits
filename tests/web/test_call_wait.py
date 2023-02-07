@@ -6,7 +6,6 @@ from .helpers import urlopen
 
 
 class foo(Event):
-
     """foo Event"""
 
 

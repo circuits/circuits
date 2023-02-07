@@ -1,4 +1,5 @@
-"""Networking Protocols
+"""
+Networking Protocols
 
 This package contains components that implement various networking protocols.
 """

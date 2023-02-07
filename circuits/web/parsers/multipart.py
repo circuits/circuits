@@ -53,7 +53,6 @@ from collections.abc import MutableMapping
 
 
 class MultiDict(MutableMapping):
-
     """ A dict that remembers old values for each key """
 
     def __init__(self, *a, **k):
@@ -171,7 +170,8 @@ class MultipartParser:
     def __init__(self, stream, boundary, content_length=-1,
                  disk_limit=2 ** 30, mem_limit=2 ** 20, memfile_limit=2 ** 18,
                  buffer_size=2 ** 16, charset='latin1'):
-        ''' Parse a multipart/form-data byte stream. This object is an iterator
+        '''
+        Parse a multipart/form-data byte stream. This object is an iterator
             over the parts of the message.
 
             :param stream: A file-like stream. Must implement ``.read(size)``.
@@ -216,7 +216,8 @@ class MultipartParser:
         return [p for p in self if p.name == name]
 
     def _lineiter(self):
-        ''' Iterate over a binary file-like object line by line. Each line is
+        '''
+        Iterate over a binary file-like object line by line. Each line is
             returned as a (line, line_ending) tuple. If the line does not fit
             into self.buffer_size, line_ending is empty and the rest of the line
             is returned with the next iteration.
@@ -391,7 +392,8 @@ class MultipartPart:
 
 
 def parse_form_data(environ, charset='utf8', strict=False, **kw):
-    ''' Parse form data from an environ dict and return a (forms, files) tuple.
+    '''
+    Parse form data from an environ dict and return a (forms, files) tuple.
         Both tuple values are dictionaries with the form-field name as a key
         (str) and lists as values (multiple values per key are possible).
         The forms-dictionary contains form-field values as str strings.
@@ -404,7 +406,6 @@ def parse_form_data(environ, charset='utf8', strict=False, **kw):
         :param strict: If True, raise :exc:`MultipartError` on any parsing
                        errors. These are silently ignored by default.
     '''
-
     forms, files = MultiDict(), MultiDict()
     try:
         if environ.get('REQUEST_METHOD', 'GET').upper() not in ('POST', 'PUT'):

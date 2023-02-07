@@ -16,14 +16,14 @@ from .utils import msg, pip, requires, tobool
 @task()
 @requires("pip")
 def build(**options):
-    """Build and install required dependencies
+    """
+    Build and install required dependencies
 
     Options can be provided to customize the build.
     The following options are supported:
 
     - dev -> Whether to install in development mode (Default: Fase)
     """
-
     dev = tobool(options.get("dev", False))
 
     if dev:
@@ -36,7 +36,6 @@ def build(**options):
 @task()
 def clean():
     """Clean up build files and directories"""
-
     files = ["build", ".coverage", "coverage", "dist", "docs/build"]
 
     local("rm -rf {:s}".format(" ".join(files)))
@@ -51,7 +50,6 @@ def clean():
 @task()
 def develop():
     """Build and Install in Development Mode"""
-
     return execute(build, dev=True)
 
 
@@ -59,7 +57,6 @@ def develop():
 @requires("pytest")
 def test():
     """Run all unit tests and doctests."""
-
     local("python setup.py test")
 
 
@@ -67,7 +64,6 @@ def test():
 @hosts("localhost")
 def release():
     """Performs a full release"""
-
     with cd(getcwd()):
         with msg("Creating env"):
             run("mkvirtualenv test")

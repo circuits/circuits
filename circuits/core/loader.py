@@ -12,8 +12,8 @@ from .utils import safeimport
 
 
 class Loader(BaseComponent):
-
-    """Create a new Loader Component
+    """
+    Create a new Loader Component
 
     Creates a new Loader Component that enables dynamic loading of
     components from modules either in local paths, eggs or zip archives.
@@ -23,7 +23,6 @@ class Loader(BaseComponent):
 
     def __init__(self, auto_register=True, init_args=None, init_kwargs=None, paths=None, channel=channel):
         "initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__(channel=channel)
 
         self._auto_register = auto_register

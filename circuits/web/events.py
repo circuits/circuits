@@ -1,4 +1,5 @@
-"""Events
+"""
+Events
 
 This module implements the necessary Events needed.
 """
@@ -6,8 +7,8 @@ from circuits import Event
 
 
 class request(Event):
-
-    """request(Event) -> request Event
+    """
+    request(Event) -> request Event
 
     args: request, response
     """
@@ -18,8 +19,8 @@ class request(Event):
 
 
 class response(Event):
-
-    """response(Event) -> response Event
+    """
+    response(Event) -> response Event
 
     args: request, response
     """
@@ -30,8 +31,8 @@ class response(Event):
 
 
 class stream(Event):
-
-    """stream(Event) -> stream Event
+    """
+    stream(Event) -> stream Event
 
     args: request, response
     """
@@ -42,5 +43,4 @@ class stream(Event):
 
 
 class terminate(Event):
-
     """terminate Event"""

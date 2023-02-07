@@ -7,13 +7,13 @@ class Root(BaseController):
 
     @expose("index")
     def index(self):
-        """Index Request Handler
+        """
+        Index Request Handler
 
         BaseController(s) do not expose methods as request handlers.
         Request Handlers _must_ be exposed explicitly using the ``@expose``
         decorator.
         """
-
         return "Hello World!"
 
 

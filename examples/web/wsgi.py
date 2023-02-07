@@ -10,7 +10,6 @@ def foo(environ, start_response):
 
 
 class Root(Controller):
-
     """App Rot"""
 
     def index(self):

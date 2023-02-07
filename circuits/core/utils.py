@@ -1,4 +1,5 @@
-"""Utils
+"""
+Utils
 
 This module defines utilities used by circuits.
 """

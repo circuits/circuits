@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Simple UNIX Echo Server
+"""
+Simple UNIX Echo Server
 
 This example shows how you can create a simple UNIX Server (an Echo Service)
 utilizing the builtin Socket Components that the circuits library ships with.
@@ -12,7 +13,8 @@ class EchoServer(UNIXServer):
 
     @handler("read")
     def on_read(self, sock, data):
-        """Read Event Handler
+        """
+        Read Event Handler
 
         This is fired by the underlying Socket Component when there has been
         new data read from the connected client.
@@ -22,7 +24,6 @@ class EchoServer(UNIXServer):
                   returned some data and fires a subsequent Write event with
                   the value returned.
         """
-
         return data
 
 

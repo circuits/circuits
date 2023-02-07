@@ -6,13 +6,13 @@ from .protocol import Protocol
 
 
 class Client(BaseComponent):
-
     """Node Client (peer)"""
 
     channel = "node_client"
 
     def __init__(self, host, port, channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs):
-        """Create new connection for a node.
+        """
+        Create new connection for a node.
 
         :param hostname:    hostname to connect.
         :type hostname:     str
@@ -64,7 +64,8 @@ class Client(BaseComponent):
         self.fire(connect(self.__host, self.__port))
 
     def send(self, event):
-        """Send event through the connection
+        """
+        Send event through the connection
 
         :param event:    Event to send.
         :type event:     :class:`circuits.core.events.Event`

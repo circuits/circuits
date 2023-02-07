@@ -1,4 +1,5 @@
-"""Request/Response Wrappers
+"""
+Request/Response Wrappers
 
 This module implements the Request and Response objects.
 """
@@ -27,8 +28,8 @@ def file_generator(input, chunkSize=BUFSIZE):
 
 
 class Host:
-
-    """An internet address.
+    """
+    An internet address.
 
     name should be the client's host name. If not available (because no DNS
     lookup is performed), the IP address should be used instead.
@@ -106,8 +107,8 @@ class HTTPStatus:
 
 
 class Request:
-
-    """Creates a new Request object to hold information about a request.
+    """
+    Creates a new Request object to hold information about a request.
 
     :param sock: The socket object of the request.
     :type  sock: socket.socket
@@ -146,7 +147,6 @@ class Request:
     def __init__(self, sock, method="GET", scheme="http", path="/",
                  protocol=(1, 1), qs="", headers=None, server=None):
         "initializes x; see x.__class__.__doc__ for signature"
-
         self.sock = sock
         self.method = method
         self.scheme = scheme or Request.scheme
@@ -217,7 +217,6 @@ class Request:
 
 
 class Body:
-
     """Response Body"""
 
     encode_errors = 'strict'
@@ -254,7 +253,6 @@ class Body:
 
 
 class Status:
-
     """Response Status"""
 
     def __get__(self, response, cls=None):
@@ -270,8 +268,8 @@ class Status:
 
 
 class Response:
-
-    """Response(sock, request) -> new Response object
+    """
+    Response(sock, request) -> new Response object
 
     A Response object that holds the response to
     send back to the client. This ensure that the correct data
@@ -288,7 +286,6 @@ class Response:
 
     def __init__(self, request, encoding='utf-8', status=None):
         "initializes x; see x.__class__.__doc__ for signature"
-
         self.request = request
         self.encoding = encoding
 

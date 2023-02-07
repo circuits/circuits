@@ -3,7 +3,6 @@ from circuits import Component, Event, Manager
 
 
 class test(Event):
-
     """test Event"""
 
 

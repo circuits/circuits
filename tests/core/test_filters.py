@@ -3,7 +3,6 @@ from circuits import BaseComponent, Event, handler
 
 
 class test(Event):
-
     """test Event"""
 
 

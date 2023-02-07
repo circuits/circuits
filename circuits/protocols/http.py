@@ -4,12 +4,10 @@ from circuits.core import BaseComponent, Event, handler
 
 
 class request(Event):
-
     """request Event"""
 
 
 class response(Event):
-
     """response Event"""
 
 

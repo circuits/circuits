@@ -41,8 +41,8 @@ class NotConnected(HTTPException):
 
 
 class request(Event):
-
-    """request Event
+    """
+    request Event
 
     This Event is used to initiate a new request.
 
@@ -55,7 +55,6 @@ class request(Event):
 
     def __init__(self, method, path, body=None, headers=None):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__(method, path, body, headers)
 
 

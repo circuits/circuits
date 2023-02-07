@@ -1,4 +1,5 @@
-"""Node
+"""
+Node
 
 this module manage node (start server, add peer, ...)
 .. seealso:: Examples in :file:`examples/node`
@@ -12,17 +13,19 @@ from .server import Server
 
 
 class Node(BaseComponent):
-
-    """Node
+    """
+    Node
 
     this class manage node (start server, add peer, ...)
     .. seealso:: Examples in :file:`examples/node`
     """
+
     channel = 'node'
     __peers = {}
 
     def __init__(self, port=None, channel=channel, **kwargs):
-        """Start node system.
+        """
+        Start node system.
 
         :param port:    An optional keyword argument which if defined,
                         start server on this port.
@@ -60,7 +63,8 @@ class Node(BaseComponent):
             self.server = None
 
     def add(self, connection_name, hostname, port, **kwargs):
-        """Add new peer to the node.
+        """
+        Add new peer to the node.
 
         :param connection_name:    Connection name.
         :type connection_name:     str
@@ -149,7 +153,8 @@ class Node(BaseComponent):
         return client_channel
 
     def get_connection_names(self):
-        """Get connections names
+        """
+        Get connections names
 
         :return: The list of connections names
         :rtype: list of str
@@ -157,7 +162,8 @@ class Node(BaseComponent):
         return list(self.__peers)
 
     def get_peer(self, connection_name):
-        """Get a client object by name
+        """
+        Get a client object by name
 
         :param connection_name:    Connection name.
         :type connection_name:     str
@@ -170,7 +176,8 @@ class Node(BaseComponent):
 
     @handler('remote', channel='*')
     def __on_remote(self, event, remote_event, connection_name, channel=None):
-        """Send event to peer
+        """
+        Send event to peer
 
         Event handler to run an event on peer (the event definition is
         :class:`circuits.node.events.remote`)

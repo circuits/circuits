@@ -29,7 +29,6 @@ from circuits.node import Node, remote  # noqa
 
 
 class hello(Event):
-
     """hello Event"""
 
 

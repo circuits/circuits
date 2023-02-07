@@ -1,4 +1,5 @@
-"""Tools Test Suite
+"""
+Tools Test Suite
 
 Test all functionality of the tools package.
 """

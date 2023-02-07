@@ -1,4 +1,5 @@
-"""Daemon Component
+"""
+Daemon Component
 
 Component to daemonize a system into the background and detach it from its
 controlling PTY. Supports PID file writing, logging stdin, stdout and stderr
@@ -31,7 +32,8 @@ class writepid(Event):
 
 
 class Daemon(Component):
-    """Daemon Component
+    """
+    Daemon Component
 
     :param pidfile: .pid filename
     :type  pidfile: str or unicode

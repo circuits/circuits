@@ -8,7 +8,6 @@ from circuits.web.errors import httperror
 
 
 class WebSocketsDispatcher(BaseComponent):
-
     """
     This class implements an RFC 6455 compliant WebSockets dispatcher
     that handles the WebSockets handshake and upgrades the connection.
@@ -40,7 +39,6 @@ class WebSocketsDispatcher(BaseComponent):
             :class:`~.net.events.write` events to the client will be
             sent to.
         """
-
         super().__init__(*args, **kwargs)
 
         self._requests = {}

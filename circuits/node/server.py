@@ -5,7 +5,6 @@ from .protocol import Protocol
 
 
 class Server(BaseComponent):
-
     """Node server."""
 
     channel = 'node'
@@ -14,7 +13,8 @@ class Server(BaseComponent):
     def __init__(self, port, server_ip='0.0.0.0', channel=channel,
                  receive_event_firewall=None, send_event_firewall=None,
                  **kwargs):
-        """Create server on node system.
+        """
+        Create server on node system.
 
         :param port:    start server on this port.
         :type port:     int
@@ -51,7 +51,8 @@ class Server(BaseComponent):
         self.__send_event_firewall = send_event_firewall
 
     def send(self, event, sock, no_result=False):
-        """Send event to peer
+        """
+        Send event to peer
 
         :param event:    Event to execute remotely.
         :type event:     :class:`circuits.core.events.Event`
@@ -77,7 +78,8 @@ class Server(BaseComponent):
         return iterator
 
     def send_to(self, event, socks):
-        """Send event to multiple peer
+        """
+        Send event to multiple peer
 
         :param event:    Event to execute remotely.
         :type event:     :class:`circuits.core.events.Event`
@@ -89,7 +91,8 @@ class Server(BaseComponent):
             self.send(event, sock, no_result=True)
 
     def send_all(self, event):
-        """Send event to all peer
+        """
+        Send event to all peer
 
         :param event:    Event to execute remotely.
         :type event:     :class:`circuits.core.events.Event`
@@ -111,7 +114,8 @@ class Server(BaseComponent):
             return self.server.port
 
     def get_socks(self):
-        """Get clients sockets list
+        """
+        Get clients sockets list
 
         :return: The list of client socket
         :rtype: list of :class:`socket.socket`

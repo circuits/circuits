@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Simple Event Filtering
+"""
+Simple Event Filtering
 
 This example shows how you can filter events by using the ``Event.stop()``
 method which prevents other event handlers listening to the event from
@@ -16,7 +17,6 @@ from circuits import Component, Event
 
 
 class hello(Event):
-
     """hello Event"""
 
 
@@ -24,19 +24,18 @@ class App(Component):
 
     def hello(self, event):
         """Hello Event Handler"""
-
         event.stop()  # Stop further event processing
 
         print("Hello World!")
 
     def started(self, event, component):
-        """Started Event Handler
+        """
+        Started Event Handler
 
         This is fired internally when your application starts up
         and can be used to trigger events that only occur once
         during startup.
         """
-
         event.stop()  # Stop further event processing
         self.fire(hello())  # Fire a Hello event
         raise SystemExit(0)  # Terminate the application

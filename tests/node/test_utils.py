@@ -1,4 +1,5 @@
-'''test_utils
+'''
+test_utils
 
 ...
 '''
@@ -10,7 +11,6 @@ from circuits.node.utils import dump_event, dump_value, load_event, load_value
 
 
 class test(Event):
-
     '''test Event'''
 
 

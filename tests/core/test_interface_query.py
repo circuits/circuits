@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Test Interface Query
+"""
+Test Interface Query
 
 Test the capabilities of querying a Component class or instance for it's
 interface. That is it's event handlers it responds to.

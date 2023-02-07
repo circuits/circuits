@@ -17,7 +17,6 @@ from circuits.web.headers import Headers
 
 
 class WebSocketClient(BaseComponent):
-
     """
     An RFC 6455 compliant WebSocket client component. Upon receiving a
     :class:`circuits.web.client.Connect` event, the component tries to

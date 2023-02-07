@@ -1,4 +1,5 @@
-"""Logger Component
+"""
+Logger Component
 
 This module implements Logger Components.
 """

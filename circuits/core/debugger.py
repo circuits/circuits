@@ -12,8 +12,8 @@ from .handlers import handler, reprhandler
 
 
 class Debugger(BaseComponent):
-
-    """Create a new Debugger Component
+    """
+    Create a new Debugger Component
 
     Creates a new Debugger Component that listens to all events in the system
     printing each event to sys.stderr or a Logger Component.
@@ -31,7 +31,6 @@ class Debugger(BaseComponent):
     def __init__(self, errors=True, events=True, file=None, logger=None,
                  prefix=None, trim=None, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
-
         super().__init__()
 
         self._errors = errors
@@ -89,13 +88,13 @@ class Debugger(BaseComponent):
 
     @handler(priority=101.0)
     def _on_event(self, event, *args, **kwargs):
-        """Global Event Handler
+        """
+        Global Event Handler
 
         Event handler to listen to all events printing
         each event to self.file or a Logger Component instance
         by calling self.logger.debug
         """
-
         try:
             if not self._events:
                 return

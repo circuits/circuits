@@ -1,6 +1,4 @@
-"""
-This module defines the basic event class and common events.
-"""
+"""This module defines the basic event class and common events."""
 from inspect import ismethod
 from traceback import format_tb
 
@@ -28,7 +26,8 @@ class Event:
         return e
 
     def __init__(self, *args, **kwargs):
-        """An event is a message send to one or more channels.
+        """
+        An event is a message send to one or more channels.
         It is eventually dispatched to all components
         that have handlers for one of the channels and the event type.
 
@@ -76,7 +75,6 @@ class Event:
             This may be overridden by specifying an alternative list of
             destinations using this attribute.
         """
-
         self.args = list(args)
         self.kwargs = kwargs
 
@@ -104,7 +102,6 @@ class Event:
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
-
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:
@@ -120,7 +117,8 @@ class Event:
         return f"<{self.name}[{channels}] ({data})>"
 
     def __getitem__(self, x):
-        """x.__getitem__(y) <==> x[y]
+        """
+        x.__getitem__(y) <==> x[y]
 
         Get and return data from the event object requested by "x".
         If an int is passed to x, the requested argument from self.args
@@ -128,7 +126,6 @@ class Event:
         keyword argument from self.kwargs is returned keyed by x.
         Otherwise a TypeError is raised as nothing else is valid.
         """
-
         if isinstance(x, int):
             return self.args[x]
         elif isinstance(x, str):
@@ -137,7 +134,8 @@ class Event:
             raise TypeError("Expected int or str, got %r" % type(x))
 
     def __setitem__(self, i, y):
-        """x.__setitem__(i, y) <==> x[i] = y
+        """
+        x.__setitem__(i, y) <==> x[i] = y
 
         Modify the data in the event object requested by "x".
         If i is an int, the ith requested argument from self.args
@@ -145,7 +143,6 @@ class Event:
         keyed by i from self.kwargs, shall by changed to y.
         Otherwise a TypeError is raised as nothing else is valid.
         """
-
         if isinstance(i, int):
             self.args[i] = y
         elif isinstance(i, str):
@@ -155,18 +152,16 @@ class Event:
 
     def cancel(self):
         """Cancel the event from being processed (if not already)"""
-
         self.cancelled = True
 
     def stop(self):
         """Stop further processing of this event"""
-
         self.stopped = True
 
 
 class exception(Event):
-
-    """exception Event
+    """
+    exception Event
 
     This event is sent for any exceptions that occur during the execution
     of an event Handler that is not SystemExit or KeyboardInterrupt.
@@ -195,8 +190,8 @@ class exception(Event):
 
 
 class started(Event):
-
-    """started Event
+    """
+    started Event
 
     This Event is sent when a Component or Manager has started running.
 
@@ -209,8 +204,8 @@ class started(Event):
 
 
 class stopped(Event):
-
-    """stopped Event
+    """
+    stopped Event
 
     This Event is sent when a Component or Manager has stopped running.
 
@@ -223,8 +218,8 @@ class stopped(Event):
 
 
 class signal(Event):
-
-    """signal Event
+    """
+    signal Event
 
     This Event is sent when a Component receives a signal.
 
@@ -240,8 +235,8 @@ class signal(Event):
 
 
 class registered(Event):
-
-    """registered Event
+    """
+    registered Event
 
     This Event is sent when a Component has registered with another Component
     or Manager. This Event is only sent if the Component or Manager being
@@ -259,8 +254,8 @@ class registered(Event):
 
 
 class unregistered(Event):
-
-    """unregistered Event
+    """
+    unregistered Event
 
     This Event is sent when a Component has been unregistered from its
     Component or Manager.
@@ -268,8 +263,8 @@ class unregistered(Event):
 
 
 class generate_events(Event):
-
-    """generate_events Event
+    """
+    generate_events Event
 
     This Event is sent by the circuits core. All components that generate
     timed events or events from external sources (e.g. data becoming
@@ -302,7 +297,6 @@ class generate_events(Event):
         one component in your system (usually a poller component) that
         spends up to "time left" until it generates an event.
         """
-
         return self._time_left
 
     def reduce_time_left(self, time_left):
@@ -320,7 +314,6 @@ class generate_events(Event):
         If the time left is reduced to 0 and the event is currently
         being handled, the handler's *resume* method is invoked.
         """
-
         with self._lock:
             if time_left >= 0 and (self._time_left < 0 or self._time_left > time_left):
                 self._time_left = time_left

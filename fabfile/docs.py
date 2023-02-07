@@ -10,7 +10,6 @@ PACKAGE = "circuits"
 @task()
 def api():
     """Generate the API Documentation"""
-
     if PACKAGE is not None:
         pip(requirements="docs/requirements.txt")
         local(
@@ -21,7 +20,6 @@ def api():
 @requires("make")
 def clean():
     """Delete Generated Documentation"""
-
     with lcd("docs"):
         pip(requirements="requirements.txt")
         local("make clean")
@@ -31,7 +29,6 @@ def clean():
 @requires("make")
 def build(**options):
     """Build the Documentation"""
-
     pip(requirements="docs/requirements.txt")
 
     with lcd("docs"):
@@ -42,7 +39,6 @@ def build(**options):
 @requires("open")
 def view(**options):
     """View the Documentation"""
-
     with lcd("docs"):
         import webbrowser
         webbrowser.open_new_tab("build/html/index.html")

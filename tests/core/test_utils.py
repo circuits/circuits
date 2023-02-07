@@ -18,7 +18,6 @@ def foo();
 
 
 class Base(Component):
-
     """Base"""
 
 

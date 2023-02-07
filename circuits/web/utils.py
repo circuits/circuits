@@ -1,4 +1,5 @@
-"""Utilities
+"""
+Utilities
 
 This module implements utility functions.
 """
@@ -61,13 +62,13 @@ def parse_body(request, response, params):
 
 
 def parse_qs(query_string, keep_blank_values=True):
-    """parse_qs(query_string) -> dict
+    """
+    parse_qs(query_string) -> dict
 
     Build a params dictionary from a query_string.
     If keep_blank_values is True (the default), keep
     values that are blank.
     """
-
     if image_map_pattern.match(query_string):
         # Server-side image map. Map the coords to "x" and "y"
         # (like CGI::Request does).
@@ -101,7 +102,6 @@ def dictform(form):
 
 def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
-
     # Header
     yield b"\037\213\010\0" \
         + struct.pack("<L", int(time.time())) \
@@ -132,7 +132,8 @@ def compress(body, compress_level):
 
 
 def get_ranges(headervalue, content_length):
-    """Return a list of (start, stop) indices from a Range header, or None.
+    """
+    Return a list of (start, stop) indices from a Range header, or None.
 
     Each (start, stop) tuple will be composed of two ints, which are suitable
     for use in a slicing operation. That is, the header "Range: bytes=3-6",
@@ -141,7 +142,6 @@ def get_ranges(headervalue, content_length):
 
     If this function returns an empty list, you should return HTTP 416.
     """
-
     if not headervalue:
         return None
 

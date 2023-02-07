@@ -6,7 +6,6 @@ from circuits.protocols import Line
 
 
 class read(Event):
-
     """read Event"""
 
 

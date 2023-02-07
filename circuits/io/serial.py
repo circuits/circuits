@@ -1,4 +1,5 @@
-"""Serial I/O
+"""
+Serial I/O
 
 This module implements basic Serial (RS232) I/O.
 """
@@ -18,7 +19,6 @@ BUFSIZE = 4096
 
 
 class _open(Event):
-
     """_open Event"""
 
 

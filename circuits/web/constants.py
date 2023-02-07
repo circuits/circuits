@@ -1,4 +1,5 @@
-"""Global Constants
+"""
+Global Constants
 
 This module implements required shared global constants.
 """

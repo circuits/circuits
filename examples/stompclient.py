@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-"""Example usage for StompClient component
+"""
+Example usage for StompClient component
 
 Requires a STOMP server to connect to.
 

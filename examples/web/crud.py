@@ -5,14 +5,14 @@ from circuits.web import Controller, Logger, Server
 class Root(Controller):
 
     def GET(self, *args, **kwargs):
-        """GET Request Handler
+        """
+        GET Request Handler
 
         The default Dispatcher in circuits.web also looks for GET, POST,
         PUT, DELETE and HEAD Request handlers on registered Controller(s).
 
         These can be used to implement RESTful resources with CRUD operations.
         """
-
         return f"GET({repr(args):s}, {repr(kwargs):s})"
 
     def POST(self, *args, **kwargs):

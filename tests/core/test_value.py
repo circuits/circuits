@@ -7,22 +7,18 @@ from circuits import Component, Event, handler
 
 
 class hello(Event):
-
     "Hello Event"
 
 
 class test(Event):
-
     "test Event"
 
 
 class foo(Event):
-
     "foo Event"
 
 
 class values(Event):
-
     "values Event"
 
     complete = True

@@ -1,4 +1,5 @@
-"""Static
+"""
+Static
 
 This modStatic implements a Static dispatcher used to serve up static
 resources and an optional apache-style directory listing.

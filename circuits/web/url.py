@@ -46,7 +46,6 @@ def parse_url(url, encoding='utf-8'):
 
 
 class URL:
-
     '''
     For more information on how and what we parse / sanitize:
         http://tools.ietf.org/html/rfc1808.html
@@ -57,7 +56,6 @@ class URL:
     @classmethod
     def parse(cls, url, encoding):
         '''Parse the provided url, and return a URL instance'''
-
         if isinstance(url, str):
             parsed = urlparse(url.encode('utf-8'))
         else:
@@ -152,8 +150,10 @@ class URL:
         return '<url.URL object "%s" >' % self.utf8()
 
     def canonical(self):
-        '''Canonicalize this url. This includes reordering parameters and args
-        to have a consistent ordering'''
+        '''
+        Canonicalize this url. This includes reordering parameters and args
+        to have a consistent ordering
+        '''
         self._query = b'&'.join(
             sorted(q for q in self._query.split(b'&')),
         )
@@ -264,8 +264,10 @@ class URL:
     # Information about the type of url it is
     ###########################################################################
     def absolute(self):
-        '''Return True if this is a fully-qualified URL with a hostname and
-        everything'''
+        '''
+        Return True if this is a fully-qualified URL with a hostname and
+        everything
+        '''
         return bool(self._host)
 
     ###########################################################################

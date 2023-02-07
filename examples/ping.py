@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Clone of the standard UNIX "ping" command.
+"""
+Clone of the standard UNIX "ping" command.
 
 This example shows how you can utilize some of the buitlin I/O components
 in circuits to write a very simple clone of the standard UNIX "ping" command.
@@ -23,12 +24,12 @@ class Ping(Component):
         self.p.start()
 
     def read(self, data):
-        """read Event Handler
+        """
+        read Event Handler
 
         This is fired by the File Component when there is data to be read
         from the underlying file that was opened.
         """
-
         self.fire(write(data), stdout)
 
 

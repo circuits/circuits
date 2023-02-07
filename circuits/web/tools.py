@@ -1,4 +1,5 @@
-"""Tools
+"""
+Tools
 
 This module implements tools used throughout circuits.web.
 These tools can also be used within Controllers and request handlers.
@@ -28,7 +29,8 @@ mimetypes.add_type("application/xhtml+xml", ".xhtml")
 
 
 def expires(request, response, secs=0, force=False):
-    """Tool for influencing cache mechanisms using the 'Expires' header.
+    """
+    Tool for influencing cache mechanisms using the 'Expires' header.
 
     'secs' must be either an int or a datetime.timedelta, and indicates the
     number of seconds between response.time and when the response should
@@ -43,7 +45,6 @@ def expires(request, response, secs=0, force=False):
     'Etag', 'Last-Modified', 'Age', 'Expires'. If any are already present,
     none of the above response headers are set.
     """
-
     headers = response.headers
 
     cacheable = False
@@ -77,7 +78,8 @@ def expires(request, response, secs=0, force=False):
 
 def serve_file(request, response, path, type=None, disposition=None,
                name=None):
-    """Set status, headers, and body in order to serve the given file.
+    """
+    Set status, headers, and body in order to serve the given file.
 
     The Content-Type header will be set to the type arg, if provided.
     If not provided, the Content-Type will be guessed by the file extension
@@ -88,7 +90,6 @@ def serve_file(request, response, path, type=None, disposition=None,
     to the basename of path. If disposition is None, no Content-Disposition
     header will be written.
     """
-
     if not os.path.isabs(path):
         raise ValueError("'%s' is not an absolute path." % path)
 
@@ -188,7 +189,6 @@ def serve_file(request, response, path, type=None, disposition=None,
 
 def serve_download(request, response, path, name=None):
     """Serve 'path' as an application/x-download attachment."""
-
     type = "application/x-download"
     disposition = "attachment"
 
@@ -196,7 +196,8 @@ def serve_download(request, response, path, name=None):
 
 
 def validate_etags(request, response, autotags=False):
-    """Validate the current ETag against If-Match, If-None-Match headers.
+    """
+    Validate the current ETag against If-Match, If-None-Match headers.
 
     If autotags is True, an ETag response-header value will be provided
     from an MD5 hash of the response body (unless some other code has
@@ -211,7 +212,6 @@ def validate_etags(request, response, autotags=False):
     will be incorrect, and your application will break.
     See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24
     """
-
     # Guard against being run twice.
     if hasattr(response, "ETag"):
         return
@@ -259,12 +259,12 @@ def validate_etags(request, response, autotags=False):
 
 
 def validate_since(request, response):
-    """Validate the current Last-Modified against If-Modified-Since headers.
+    """
+    Validate the current Last-Modified against If-Modified-Since headers.
 
     If no code has set the Last-Modified response header, then no validation
     will be performed.
     """
-
     lastmod = response.headers.get('Last-Modified')
     if lastmod:
         status = response.status
@@ -282,7 +282,8 @@ def validate_since(request, response):
 
 
 def check_auth(request, response, realm, users, encrypt=None):
-    """Check Authentication
+    """
+    Check Authentication
 
     If an Authorization header contains credentials, return True, else False.
 
@@ -297,7 +298,6 @@ def check_auth(request, response, realm, users, encrypt=None):
                     the user-agent. if None it defaults to a md5 encryption.
     :type  encrypt: callable
     """
-
     if "Authorization" in request.headers:
         # make sure the provided credentials are correctly set
         ah = _httpauth.parseAuthorization(request.headers.get("Authorization"))
@@ -339,7 +339,8 @@ def check_auth(request, response, realm, users, encrypt=None):
 
 
 def basic_auth(request, response, realm, users, encrypt=None):
-    """Perform Basic Authentication
+    """
+    Perform Basic Authentication
 
     If auth fails, returns an Unauthorized error  with a
     basic authentication header.
@@ -355,7 +356,6 @@ def basic_auth(request, response, realm, users, encrypt=None):
                     the user-agent. if None it defaults to a md5 encryption.
     :type  encrypt: callable
     """
-
     if check_auth(request, response, realm, users, encrypt):
         return
 
@@ -366,7 +366,8 @@ def basic_auth(request, response, realm, users, encrypt=None):
 
 
 def digest_auth(request, response, realm, users):
-    """Perform Digest Authentication
+    """
+    Perform Digest Authentication
 
     If auth fails, raise 401 with a digest authentication header.
 
@@ -377,7 +378,6 @@ def digest_auth(request, response, realm, users):
                   returning a dict.
     :type  users: dict or callable
     """
-
     if check_auth(request, response, realm, users):
         return
 
@@ -388,7 +388,8 @@ def digest_auth(request, response, realm, users):
 
 
 def gzip(response, level=4, mime_types=("text/html", "text/plain")):
-    """Try to gzip the response body if Content-Type in mime_types.
+    """
+    Try to gzip the response body if Content-Type in mime_types.
 
     response.headers['Content-Type'] must be set to one of the
     values in the mime_types arg before calling this function.
@@ -399,7 +400,6 @@ def gzip(response, level=4, mime_types=("text/html", "text/plain")):
         * No 'gzip' or 'x-gzip' with a qvalue > 0 is present
         * The 'identity' value is given with a qvalue > 0.
     """
-
     if not response.body:
         # Response body is empty (might be a 304 for instance)
         return response
@@ -451,11 +451,11 @@ class ReverseProxy(BaseComponent):
     headers = ('X-Real-IP', 'X-Forwarded-For')
 
     def init(self, headers=None):
-        """Web Component for identifying the original client IP when a reverse proxy is used
+        """
+        Web Component for identifying the original client IP when a reverse proxy is used
 
         :param headers: List of HTTP headers to read the original client IP
         """
-
         if headers:
             self.headers = headers
 

@@ -1,4 +1,5 @@
-"""HTML macros
+"""
+HTML macros
 
 Macros for generating snippets of HTML.
 """
@@ -14,7 +15,8 @@ sanitizer = HTMLSanitizer()
 
 
 def pre(macro, environ, *args, **kwargs):
-    """Return the raw text of body, rendered in a <pre> block.
+    """
+    Return the raw text of body, rendered in a <pre> block.
 
     **Arguments:** //None//
 
@@ -28,7 +30,6 @@ def pre(macro, environ, *args, **kwargs):
     <</pre>>
     }}}
     """
-
     if macro.body is None:
         return None
 
@@ -37,7 +38,6 @@ def pre(macro, environ, *args, **kwargs):
 
 def code(macro, environ, *args, **kwargs):
     """Render syntax highlighted code"""
-
     if not macro.body:
         return None
 
@@ -72,7 +72,6 @@ def code(macro, environ, *args, **kwargs):
 
 def source(macro, environ, *args, **kwargs):
     """Return the parsed text of body, rendered in a <pre> block."""
-
     if macro.body is None:
         return None
 
@@ -106,7 +105,6 @@ def div(macro, environ, cls=None, float=None, id=None, style=None,
 
 def span(macro, environ, class_=None, id=None, style=None, *args, **kwargs):
     """..."""
-
     if macro.body is None:
         return None
 

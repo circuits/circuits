@@ -1,4 +1,5 @@
-"""Hyper Text Transfer Protocol
+"""
+Hyper Text Transfer Protocol
 
 This module implements the server side Hyper Text Transfer Protocol
 or commonly known as HTTP.
@@ -24,7 +25,8 @@ HTTP_ENCODING = "utf-8"
 
 
 class HTTP(BaseComponent):
-    """HTTP Protocol Component
+    """
+    HTTP Protocol Component
 
     Implements the HTTP server protocol and parses and processes incoming
     HTTP messages, creating and sending an appropriate response.
@@ -129,7 +131,8 @@ class HTTP(BaseComponent):
 
     @handler("response")  # noqa
     def _on_response(self, res):
-        """``Response`` Event Handler
+        """
+        ``Response`` Event Handler
 
         :param response: the ``Response`` object created when the
             HTTP request was initially received.
@@ -194,13 +197,13 @@ class HTTP(BaseComponent):
 
     @handler("read")  # noqa
     def _on_read(self, sock, data):
-        """Read Event Handler
+        """
+        Read Event Handler
 
         Process any incoming data appending it to an internal buffer.
         Split the buffer by the standard HTTP delimiter CRLF and create
         Raw Event per line. Any unfinished lines of text, leave in the buffer.
         """
-
         if sock in self._buffers:
             parser = self._buffers[sock]
         else:
@@ -303,14 +306,14 @@ class HTTP(BaseComponent):
 
     @handler("httperror")
     def _on_httperror(self, event, req, res, code, **kwargs):
-        """Default HTTP Error Handler
+        """
+        Default HTTP Error Handler
 
         Default Error Handler that by default just fires a ``Response``
         event with the *response* as argument. The *response* is normally
         modified by a :class:`~circuits.web.errors.HTTPError` instance
         or a subclass thereof.
         """
-
         res.body = str(event)
         self.fire(response(res))
 
@@ -450,14 +453,16 @@ class HTTP(BaseComponent):
 
     @handler("request_complete")
     def _on_request_complete(self, *args, **kwargs):
-        """Dummy Event Handler for request events
+        """
+        Dummy Event Handler for request events
 
         - request_complete
         """
 
     @handler("response_success", "response_complete")
     def _on_response_feedback(self, *args, **kwargs):
-        """Dummy Event Handler for response events
+        """
+        Dummy Event Handler for response events
 
         - response_success
         - response_complete
@@ -465,7 +470,8 @@ class HTTP(BaseComponent):
 
     @handler("stream_success", "stream_failure", "stream_complete")
     def _on_stream_feedback(self, *args, **kwargs):
-        """Dummy Event Handler for stream events
+        """
+        Dummy Event Handler for stream events
 
         - stream_success
         - stream_failure

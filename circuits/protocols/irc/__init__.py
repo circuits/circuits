@@ -1,4 +1,5 @@
-"""Internet Relay Chat Protocol
+"""
+Internet Relay Chat Protocol
 
 This package implements the Internet Relay Chat Protocol
 or commonly known as IRC. Support for both server and client

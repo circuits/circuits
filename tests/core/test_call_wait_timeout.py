@@ -5,20 +5,20 @@ from circuits.core import Component, Event, TimeoutError, handler
 
 
 class wait(Event):
-
     """wait Event"""
+
     success = True
 
 
 class call(Event):
-
     """call Event"""
+
     success = True
 
 
 class hello(Event):
-
     """hello Event"""
+
     success = True
 
 

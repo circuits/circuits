@@ -88,9 +88,10 @@ DIGEST_AUTH_ENCODERS = {
 
 
 def calculateNonce(realm, algorithm=MD5):
-    """This is an auxaliary function that calculates 'nonce' value. It is used
-    to handle sessions."""
-
+    """
+    This is an auxaliary function that calculates 'nonce' value. It is used
+    to handle sessions.
+    """
     assert algorithm in SUPPORTED_ALGORITHM
 
     try:
@@ -107,7 +108,6 @@ def calculateNonce(realm, algorithm=MD5):
 
 def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH):
     """Challenges the client for a Digest authentication."""
-
     assert algorithm in SUPPORTED_ALGORITHM
     assert qop in SUPPORTED_QOP
 
@@ -127,12 +127,13 @@ def basicAuth(realm):
 
 
 def doAuth(realm):
-    """'doAuth' function returns the challenge string b giving priority over
+    """
+    'doAuth' function returns the challenge string b giving priority over
     Digest and fallback to Basic authentication when the browser doesn't
     support the first one.
 
-    This should be set in the HTTP header under the key 'WWW-Authenticate'."""
-
+    This should be set in the HTTP header under the key 'WWW-Authenticate'.
+    """
     return digestAuth(realm) + " " + basicAuth(realm)
 
 
@@ -178,10 +179,10 @@ AUTH_SCHEMES = {
 
 
 def parseAuthorization(credentials):
-    """parseAuthorization will convert the value of the 'Authorization' key in
+    """
+    parseAuthorization will convert the value of the 'Authorization' key in
     the HTTP header to a map itself. If the parsing fails 'None' is returned.
     """
-
     auth_scheme, auth_params = credentials.split(" ", 1)
     auth_scheme = auth_scheme.lower()
 
@@ -216,8 +217,7 @@ def md5SessionKey(params, password):
     that the web server would not need the actual password value.  The
     specification of such a protocol is beyond the scope of this
     specification.
-"""
-
+    """
     keys = ("username", "realm", "nonce", "cnonce")
     params_copy = {}
     for key in keys:
@@ -272,10 +272,7 @@ def _A2(params, method, kwargs):
 
 def _computeDigestResponse(auth_map, password, method="GET", A1=None,
                            **kwargs):
-    """
-    Generates a response respecting the algorithm defined in RFC 2617
-    """
-
+    """Generates a response respecting the algorithm defined in RFC 2617"""
     params = auth_map
 
     algorithm = params.get("algorithm", MD5)
@@ -324,7 +321,8 @@ def _computeDigestResponse(auth_map, password, method="GET", A1=None,
 
 
 def _checkDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
-    """This function is used to verify the response given by the client when
+    """
+    This function is used to verify the response given by the client when
     he tries to authenticate.
     Optional arguments:
      entity_body - when 'qop' is set to 'auth-int' you MUST provide the
@@ -334,7 +332,6 @@ def _checkDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
                    directive of the authorization map. They must represent
                    the same resource (unused at this time).
     """
-
     if auth_map['realm'] != kwargs.get('realm', None):
         return False
 
@@ -360,7 +357,8 @@ AUTH_RESPONSES = {
 
 
 def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
-    """'checkResponse' compares the auth_map with the password and optionally
+    """
+    'checkResponse' compares the auth_map with the password and optionally
     other arguments that each implementation might need.
 
     If the response is of type 'Basic' then the function has the following
@@ -376,7 +374,6 @@ def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
     The 'A1' argument is only used in MD5_SESS algorithm based responses.
     Check md5SessionKey() for more info.
     """
-
     checker = AUTH_RESPONSES[auth_map["auth_scheme"]]
     return checker(
         auth_map, password, method=method, encrypt=encrypt, **kwargs,

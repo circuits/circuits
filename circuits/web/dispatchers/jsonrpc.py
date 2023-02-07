@@ -1,4 +1,5 @@
-"""JSON RPC
+"""
+JSON RPC
 
 This module implements a JSON RPC dispatcher that translates incoming
 RPC calls over JSON into RPC events.
@@ -9,7 +10,6 @@ from circuits import BaseComponent, Event, handler
 
 
 class rpc(Event):
-
     """RPC Event"""
 
 
