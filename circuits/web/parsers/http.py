@@ -58,7 +58,7 @@ class HttpParser:
         self._path = None
         self._query_string = None
         self._headers = Headers([])
-        self._environ = dict()
+        self._environ = {}
         self._chunked = False
         self._body = []
         self._trailers = None

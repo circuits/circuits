@@ -57,7 +57,7 @@ class MultiDict(MutableMapping):
     """ A dict that remembers old values for each key """
 
     def __init__(self, *a, **k):
-        self.dict = dict()
+        self.dict = {}
         for k, v in dict(*a, **k).iteritems():
             self[k] = v
 

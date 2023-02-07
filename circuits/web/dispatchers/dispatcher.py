@@ -79,7 +79,7 @@ class Dispatcher(BaseComponent):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.paths = dict()
+        self.paths = {}
 
     @handler("registered", channel="*")
     def _on_registered(self, component, manager):

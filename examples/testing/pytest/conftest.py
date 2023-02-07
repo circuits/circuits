@@ -104,9 +104,7 @@ def watcher(request, manager):
     return watcher
 
 
-for key, value in dict((
-    ("WaitEvent", WaitEvent),
-    ("PLATFORM", sys.platform),
-    ("PYVER", sys.version_info[:3]),
-)).items():
+for key, value in {"WaitEvent": WaitEvent,
+    "PLATFORM": sys.platform,
+    "PYVER": sys.version_info[:3],}.items():
     setattr(pytest, key, value)

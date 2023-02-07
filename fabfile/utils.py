@@ -38,7 +38,7 @@ def pip(*args, **kwargs):
     if requirements is not None:
         local("pip install -U -r {:s}".format(kwargs["requirements"]))
     else:
-        args = list(arg for arg in args if not has_module(arg))
+        args = [arg for arg in args if not has_module(arg)]
         if args:
             local("pip install {:s}".format(" ".join(args)))
 

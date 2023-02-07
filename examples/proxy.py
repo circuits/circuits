@@ -36,7 +36,7 @@ class Proxy(Component):
         self.host = host
         self.port = port
 
-        self.clients = dict()
+        self.clients = {}
 
         TCPServer(self.bind).register(self)
 

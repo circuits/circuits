@@ -222,9 +222,9 @@ class Manager:
         self._queue = _EventQueue()
 
         self._tasks = set()
-        self._cache = dict()
+        self._cache = {}
         self._globals = set()
-        self._handlers = dict()
+        self._handlers = {}
 
         self._flush_batch = 0
         self._cache_needs_refresh = False

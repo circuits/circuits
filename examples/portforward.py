@@ -96,8 +96,8 @@ class PortForwarder(Component):
         self._target = target
         self._secure = secure
 
-        self._clients = dict()
-        self._sockets = dict()
+        self._clients = {}
+        self._sockets = {}
 
         # Setup our components and register them.
         server = TCPServer(self._source, secure=self._secure, channel="source")

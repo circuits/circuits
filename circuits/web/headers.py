@@ -44,7 +44,7 @@ def header_elements(fieldname, fieldvalue):
             hv = HeaderElement.from_str(element)
         result.append(hv)
 
-    return list(reversed(sorted(result)))
+    return sorted(result, reverse=True)
 
 
 class HeaderElement:

@@ -27,8 +27,8 @@ class Loader(BaseComponent):
         super().__init__(channel=channel)
 
         self._auto_register = auto_register
-        self._init_args = init_args or tuple()
-        self._init_kwargs = init_kwargs or dict()
+        self._init_args = init_args or ()
+        self._init_kwargs = init_kwargs or {}
 
         if paths:
             for path in paths:

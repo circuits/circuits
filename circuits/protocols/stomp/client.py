@@ -61,11 +61,11 @@ class StompClient(BaseComponent):
 
         if use_ssl and not ssl_context:
 
-            ssl_params = dict(key_file=key_file,
-                              cert_file=cert_file,
-                              ca_certs=ca_certs,
-                              ssl_version=ssl_version,
-                              password=key_file_password)
+            ssl_params = {"key_file": key_file,
+                          "cert_file": cert_file,
+                          "ca_certs": ca_certs,
+                          "ssl_version": ssl_version,
+                          "password": key_file_password}
             LOG.info("Request to use old-style socket wrapper: %s", ssl_params)
             ssl_context = ssl_params
 

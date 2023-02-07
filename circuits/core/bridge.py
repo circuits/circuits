@@ -44,7 +44,7 @@ class Bridge(BaseComponent):
     def init(self, socket, channel=channel):
         self._buffer = b""
         self._socket = socket
-        self._values = dict()
+        self._values = {}
 
         if self._socket is not None:
             self._socket.register(self)
