@@ -11,7 +11,7 @@ def test_linkcheck(tmpdir):
         "-d", str(doctrees), "source", str(htmldir)
     ], stdout=PIPE, stderr=STDOUT)
     stdout, _ = p.communicate()
-    if not p.wait() == 0:
+    if p.wait() != 0:
         print(stdout)
 
 
@@ -23,5 +23,5 @@ def test_build_docs(tmpdir):
         "-d", str(doctrees), "source", str(htmldir)
     ], stdout=PIPE, stderr=STDOUT)
     stdout, _ = p.communicate()
-    if not p.wait() == 0:
+    if p.wait() != 0:
         print(stdout)

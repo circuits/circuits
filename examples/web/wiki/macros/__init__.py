@@ -36,7 +36,7 @@ def loadMacros():
 
     def p(x):
         return os.path.splitext(x)[1] == ".py"
-    modules = [x for x in os.listdir(path) if p(x) and not x == "__init__.py"]
+    modules = [x for x in os.listdir(path) if p(x) and x != "__init__.py"]
 
     macros = {}
 

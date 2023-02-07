@@ -28,7 +28,7 @@ def wait(pid, timeout=3):
 
 
 def test(tmpdir):
-    if not os.name == "posix":
+    if os.name != "posix":
         pytest.skip("Cannot run test on a non-POSIX platform.")
 
     tmpdir.ensure(".pid")

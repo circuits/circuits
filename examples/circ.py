@@ -168,8 +168,7 @@ class Client(Component):
 
         size = self.screen.get_cols_rows()
 
-        if not select(
-                self.screen.get_input_descriptors(), [], [], 0.1)[0] == []:
+        if select(self.screen.get_input_descriptors(), [], [], 0.1)[0] != []:
             timeout, keys, raw = self.screen.get_input_nonblocking()
 
             for k in keys:
@@ -202,7 +201,7 @@ class Client(Component):
         if match is not None:
 
             command = match.groupdict()["command"]
-            if not match.groupdict()["args"] == "":
+            if match.groupdict()["args"] != "":
                 tokens = match.groupdict()["args"].split(" ")
             else:
                 tokens = []

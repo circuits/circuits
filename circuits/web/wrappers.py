@@ -360,7 +360,7 @@ class Response:
                 if self.protocol == "HTTP/1.1" \
                         and self.request.method != "HEAD" \
                         and self.request.server is not None \
-                        and not cLength == 0:
+                        and cLength != 0:
                     self.chunked = True
                     self.headers.add_header("Transfer-Encoding", "chunked")
                 else:
