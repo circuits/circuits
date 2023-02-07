@@ -27,7 +27,7 @@ class Root(Controller):
         return "Hello World!"
 
 
-@fixture
+@fixture()
 def gziptool(request, webapp):
     gziptool = Gzip().register(webapp)
 

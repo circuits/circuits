@@ -23,7 +23,7 @@ if pytest.PYVER >= (2, 7, 9):
     SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 
-@fixture
+@fixture()
 def tmpfile(request):
     tmpdir = tempfile.mkdtemp()
     filename = os.path.join(tmpdir, "test.sock")

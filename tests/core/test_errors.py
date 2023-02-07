@@ -35,7 +35,7 @@ def reraise(e):
     raise e
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
     watcher.wait("registered")

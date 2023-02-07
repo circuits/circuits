@@ -48,7 +48,7 @@ class App(Component):
         self.returned = True
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait("registered")

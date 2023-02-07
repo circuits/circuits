@@ -60,7 +60,7 @@ class _TestClient:
             pass
 
 
-@pytest.fixture
+@pytest.fixture()
 def client(request, ipv6):
     client = _TestClient(ipv6=ipv6)
 

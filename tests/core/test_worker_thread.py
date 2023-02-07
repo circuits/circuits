@@ -8,7 +8,7 @@ from circuits import Worker, task
 task.complete = True
 
 
-@pytest.fixture
+@pytest.fixture()
 def worker(request, manager, watcher):
     worker = Worker().register(manager)
     assert watcher.wait("registered")

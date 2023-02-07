@@ -19,7 +19,7 @@ class App(Component):
         return "Hello World!"
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(request, manager, watcher):
     app = (App() + App()).register(manager)
     watcher.wait("registered")

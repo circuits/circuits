@@ -3,7 +3,7 @@ import pytest
 from hello import App, hello
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
     watcher.wait("registered")

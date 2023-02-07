@@ -11,7 +11,7 @@ import pytest
 from circuits import Component, Event, Timer, sleep
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait("registered")

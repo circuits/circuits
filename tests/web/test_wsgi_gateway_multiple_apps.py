@@ -21,7 +21,7 @@ def foobar(environ, start_response):
     return "FooBar!"
 
 
-@pytest.fixture
+@pytest.fixture()
 def apps(request):
     return {
         "/": hello,

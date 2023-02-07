@@ -35,7 +35,7 @@ class App(Component):
         self.data.append(data)
 
 
-@fixture(scope="function")
+@fixture()
 def app(request):
     app = App()
 

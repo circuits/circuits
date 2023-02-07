@@ -18,7 +18,7 @@ if sys.platform in ("win32", "cygwin"):
     pytest.skip("Test Not Applicable on Windows")
 
 
-@fixture
+@fixture()
 def tmpfile(request):
     tmpdir = tempfile.mkdtemp()
     filename = os.path.join(tmpdir, "test.sock")

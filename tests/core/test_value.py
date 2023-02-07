@@ -60,7 +60,7 @@ class App(Component):
         return self.fire(hello())
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(request, simple_manager):
     return App().register(simple_manager)
 

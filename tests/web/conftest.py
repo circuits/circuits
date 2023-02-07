@@ -39,7 +39,7 @@ class WebClient(Client):
         self.closed = True
 
 
-@pytest.fixture
+@pytest.fixture()
 def webapp(request, manager, watcher):
     webapp = WebApp().register(manager)
     assert watcher.wait("ready")

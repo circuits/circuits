@@ -90,7 +90,7 @@ def manager(request):
     return manager
 
 
-@pytest.fixture
+@pytest.fixture()
 def watcher(request, manager):
     watcher = Watcher().register(manager)
 

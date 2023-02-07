@@ -7,7 +7,7 @@ import pytest
 from circuits import Worker, task
 
 
-@pytest.fixture
+@pytest.fixture()
 def worker(request, manager):
     worker = Worker().register(manager)
 

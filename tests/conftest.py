@@ -109,14 +109,14 @@ class SimpleManager(Manager):
         return super().tick(timeout)
 
 
-@pytest.fixture
+@pytest.fixture()
 def simple_manager(request):
     manager = SimpleManager()
     Debugger(events=request.config.option.verbose).register(manager)
     return manager
 
 
-@pytest.fixture
+@pytest.fixture()
 def manager(request):
     manager = Manager()
 
@@ -134,7 +134,7 @@ def manager(request):
     return manager
 
 
-@pytest.fixture
+@pytest.fixture()
 def watcher(request, manager):
     watcher = Watcher().register(manager)
 
