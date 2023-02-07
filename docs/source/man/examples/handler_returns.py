@@ -13,7 +13,7 @@ class Identify(Event):
 class Pound(Component):
 
     def __init__(self):
-        super(Pound, self).__init__()
+        super().__init__()
 
         Debugger().register(self)
         Bob().register(self)

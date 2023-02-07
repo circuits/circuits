@@ -6,7 +6,7 @@ from circuits import BaseComponent, Debugger, handler
 class MyComponent(BaseComponent):
 
     def __init__(self):
-        super(MyComponent, self).__init__()
+        super().__init__()
 
         Debugger().register(self)
 
