@@ -34,8 +34,7 @@ class Watcher(BaseComponent):
                         if (channel is None) or (channel in event.channels):
                             return True
             sleep(TIMEOUT)
-        else:
-            return False
+        return False
 
     def count(self, name, channel=None, n=1, timeout=30.0):
         n = 0
