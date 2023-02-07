@@ -72,18 +72,15 @@ def release():
         with msg("Creating env"):
             run("mkvirtualenv test")
 
-        with msg("Building"):
-            with prefix("workon test"):
-                run("fab develop")
+        with msg("Building"), prefix("workon test"):
+            run("fab develop")
 
-        with msg("Running tests"):
-            with prefix("workon test"):
-                run("fab test")
+        with msg("Running tests"), prefix("workon test"):
+            run("fab test")
 
-        with msg("Building docs"):
-            with prefix("workon test"):
-                run("pip install -r docs/requirements.txt")
-                run("fab docs")
+        with msg("Building docs"), prefix("workon test"):
+            run("pip install -r docs/requirements.txt")
+            run("fab docs")
 
         version = run("python setup.py --version")
         if "dev" in version:
