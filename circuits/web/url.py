@@ -80,7 +80,7 @@ class URL:
 
     def __init__(self, scheme, host, port, path,
                  params=b"", query=b"", fragment=b""):
-        assert not type(port) is int
+        assert type(port) is not int
         self._scheme = scheme
         self._host = host
         self._port = port
