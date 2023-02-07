@@ -140,7 +140,7 @@ def exposeJSON(*channels, **config):
                         self.session = self.request.session
                 self.response.headers["Content-Type"] = "application/json"
                 result = f(self, *args, **kwargs)
-                if (isinstance(result, httperror) or isinstance(result, Response)):
+                if isinstance(result, (httperror, Response)):
                     return result
                 else:
                     return json.dumps(result)
