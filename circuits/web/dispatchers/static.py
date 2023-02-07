@@ -39,7 +39,7 @@ class Static(BaseComponent):
     channel = "web"
 
     def __init__(self, path=None, docroot=None,
-                 defaults=("index.html", "index.xhtml",), dirlisting=False, **kwargs):
+                 defaults=("index.html", "index.xhtml"), dirlisting=False, **kwargs):
         super().__init__(**kwargs)
 
         self.path = path

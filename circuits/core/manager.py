@@ -373,7 +373,7 @@ class Manager:
                     getattr(_handler, "im_self", getattr(_handler, "__self__", _dummy)), "channel", None
                 )
 
-            if channel == "*" or handler_channel in ("*", channel,) \
+            if channel == "*" or handler_channel in ("*", channel) \
                     or channel is self:
                 handlers.add(_handler)
 

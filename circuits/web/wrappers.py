@@ -51,7 +51,7 @@ class Host:
 
 class HTTPStatus:
 
-    __slots__ = ("_reason", "_status",)
+    __slots__ = ("_reason", "_status")
 
     def __init__(self, status=200, reason=None):
         self._status = status

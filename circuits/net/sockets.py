@@ -289,7 +289,7 @@ class TCPClient(Client):
         try:
             r = self._sock.connect((host, port))
         except OSError as e:
-            if e.args[0] in (EBADF, EINVAL,):
+            if e.args[0] in (EBADF, EINVAL):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
             else:

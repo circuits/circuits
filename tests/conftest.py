@@ -153,5 +153,5 @@ for key, value in {"WaitEvent": WaitEvent,
     "call_event": call_event,
     "PLATFORM": sys.platform,
     "PYVER": sys.version_info[:3],
-    "call_event_from_name": call_event_from_name,}.items():
+    "call_event_from_name": call_event_from_name}.items():
     setattr(pytest, key, value)

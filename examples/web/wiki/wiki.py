@@ -36,12 +36,12 @@ class Wiki:
         if row[0]:
             self._cu.execute(
                 "UPDATE pages SET text=? WHERE name=?",
-                (text, name,)
+                (text, name)
             )
         else:
             self._cu.execute(
                 "INSERT INTO pages (name, text) VALUES (?, ?)",
-                (name, text,)
+                (name, text)
             )
         self._cx.commit()
 

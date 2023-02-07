@@ -56,7 +56,7 @@ class BaseServer(BaseComponent):
 
         self._display_banner = display_banner
 
-        if isinstance(bind, (int, list, tuple,)):
+        if isinstance(bind, (int, list, tuple)):
             SocketType = TCPServer
         else:
             SocketType = TCPServer if ":" in bind else UNIXServer
