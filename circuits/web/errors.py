@@ -68,9 +68,8 @@ class httperror(Event):
         }
 
     def sanitize(self):
-        if self.code != 201 and not (299 < self.code < 400):
-            if "Location" in self.response.headers:
-                del self.response.headers["Location"]
+        if self.code != 201 and not (299 < self.code < 400) and "Location" in self.response.headers:
+            del self.response.headers["Location"]
 
     def __str__(self):
         self.sanitize()

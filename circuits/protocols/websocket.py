@@ -80,9 +80,8 @@ class WebSocketCodec(BaseComponent):
 
             @handler("disconnect", channel=parent.channel)
             def _on_disconnect(self, *args):
-                if self._sock is not None:
-                    if args[0] != self._sock:
-                        return
+                if self._sock is not None and args[0] != self._sock:
+                    return
                 self.unregister()
 
             self.addHandler(_on_disconnect)
@@ -216,9 +215,8 @@ class WebSocketCodec(BaseComponent):
 
     @handler("close")
     def _on_close(self, *args):
-        if self._sock is not None:
-            if args and (args[0] != self._sock):
-                return
+        if self._sock is not None and args and (args[0] != self._sock):
+            return
         if not self._close_sent:
             self._write(b"\x88\x00")
             self._close_sent = True

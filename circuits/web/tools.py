@@ -61,9 +61,8 @@ def expires(request, response, secs=0, force=False):
         if secs == 0:
             if force or "Pragma" not in headers:
                 headers["Pragma"] = "no-cache"
-            if request.protocol >= (1, 1):
-                if force or "Cache-Control" not in headers:
-                    headers["Cache-Control"] = "no-cache, must-revalidate"
+            if request.protocol >= (1, 1) and (force or "Cache-Control" not in headers):
+                headers["Cache-Control"] = "no-cache, must-revalidate"
             # Set an explicit Expires date in the past.
             now = datetime.now()
             lastyear = now.replace(year=now.year - 1)
@@ -222,11 +221,10 @@ def validate_etags(request, response, autotags=False):
     etag = response.headers.get('ETag')
 
     # Automatic ETag generation. See warning in docstring.
-    if (not etag) and autotags:
-        if status == 200:
-            etag = response.collapse_body()
-            etag = '"%s"' % hashlib.new('md5', etag).hexdigest()
-            response.headers['ETag'] = etag
+    if (not etag) and autotags and status == 200:
+        etag = response.collapse_body()
+        etag = '"%s"' % hashlib.new('md5', etag).hexdigest()
+        response.headers['ETag'] = etag
 
     response.ETag = etag
 
@@ -272,17 +270,15 @@ def validate_since(request, response):
         status = response.status
 
         since = request.headers.get('If-Unmodified-Since')
-        if since and since != lastmod:
-            if (status >= 200 and status <= 299) or status == 412:
-                return httperror(request, response, 412)
+        if since and since != lastmod and ((status >= 200 and status <= 299) or status == 412):
+            return httperror(request, response, 412)
 
         since = request.headers.get('If-Modified-Since')
-        if since and since == lastmod:
-            if (status >= 200 and status <= 299) or status == 304:
-                if request.method in ("GET", "HEAD"):
-                    return redirect(request, response, [], code=304)
-                else:
-                    return httperror(request, response, 412)
+        if since and since == lastmod and ((status >= 200 and status <= 299) or status == 304):
+            if request.method in ("GET", "HEAD"):
+                return redirect(request, response, [], code=304)
+            else:
+                return httperror(request, response, 412)
 
 
 def check_auth(request, response, realm, users, encrypt=None):

@@ -30,9 +30,8 @@ class Watcher(BaseComponent):
         for _i in range(int(timeout / TIMEOUT)):
             with self._lock:
                 for event in self.events:
-                    if event.name == name and event.waitingHandlers == 0:
-                        if (channel is None) or (channel in event.channels):
-                            return True
+                    if event.name == name and event.waitingHandlers == 0 and ((channel is None) or (channel in event.channels)):
+                        return True
             sleep(TIMEOUT)
         return False
 
@@ -40,9 +39,8 @@ class Watcher(BaseComponent):
         n = 0
         with self._lock:
             for event in self.events:
-                if event.name == name and event.waitingHandlers == 0:
-                    if (channel is None) or (channel in event.channels):
-                        n += 1
+                if event.name == name and event.waitingHandlers == 0 and ((channel is None) or (channel in event.channels)):
+                    n += 1
         return n
 
 

@@ -374,10 +374,9 @@ class Server(Component):
         if event.name.endswith("_done"):
             return
 
-        if isinstance(event, response):
-            if event.name not in self.commands:
-                event.stop()
-                self.fire(reply(args[0], ERR_UNKNOWNCOMMAND(event.name)))
+        if isinstance(event, response) and event.name not in self.commands:
+            event.stop()
+            self.fire(reply(args[0], ERR_UNKNOWNCOMMAND(event.name)))
 
 
 def main():

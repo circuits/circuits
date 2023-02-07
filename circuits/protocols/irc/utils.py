@@ -25,9 +25,8 @@ def strip(s, color=False):
     :returns str: returns processes string
     """
 
-    if len(s) > 0:
-        if s[0] == ":":
-            s = s[1:]
+    if len(s) > 0 and s[0] == ":":
+        s = s[1:]
     if color:
         s = s.replace("\x01", "")
         s = s.replace("\x02", "")  # bold
