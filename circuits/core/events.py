@@ -327,9 +327,7 @@ class generate_events(Event):
                 if self._time_left == 0 and self.handler is not None:
                     m = getattr(
                         getattr(
-                            self.handler, "im_self", getattr(
-                                self.handler, "__self__"
-                            )
+                            self.handler, "im_self", self.handler.__self__
                         ),
                         "resume", None
                     )

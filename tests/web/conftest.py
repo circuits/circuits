@@ -46,7 +46,7 @@ def webapp(request, manager, watcher):
 
     if hasattr(request.module, "application"):
         from circuits.web.wsgi import Gateway
-        application = getattr(request.module, "application")
+        application = request.module.application
         Gateway({"/": application}).register(webapp)
         assert watcher.wait("registered")
 

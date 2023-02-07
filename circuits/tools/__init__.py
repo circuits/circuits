@@ -202,8 +202,8 @@ def deprecated(f):
         warn_explicit(
             f"Call to deprecated function {f.__name__}",
             category=DeprecationWarning,
-            filename=getattr(f, "__code__").co_filename,
-            lineno=getattr(f, "__code__").co_firstlineno + 1,
+            filename=f.__code__.co_filename,
+            lineno=f.__code__.co_firstlineno + 1,
         )
         return f(*args, **kwargs)
 

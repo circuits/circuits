@@ -188,7 +188,7 @@ class Request:
                 port = 443 if self.scheme == "https" else 80
         except KeyError:
             host = self.local.name or self.local.ip
-            port = getattr(self.server, "port")
+            port = self.server.port
 
         self.host = host
         self.port = port
