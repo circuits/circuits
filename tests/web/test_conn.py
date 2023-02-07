@@ -15,7 +15,7 @@ def test(webapp):
     connection.auto_open = False
     connection.connect()
 
-    for i in range(2):
+    for _i in range(2):
         connection.request("GET", "/")
         response = connection.getresponse()
         assert response.status == 200

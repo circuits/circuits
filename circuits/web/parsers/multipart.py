@@ -263,7 +263,7 @@ class MultipartParser:
         separator = tob('--') + tob(self.boundary)
         terminator = tob('--') + tob(self.boundary) + tob('--')
         # Consume first boundary. Ignore leading blank lines
-        for line, nl in lines:
+        for line, _nl in lines:
             if line:
                 break
         if line != separator:

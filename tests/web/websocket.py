@@ -133,11 +133,11 @@ def _create_sec_websocket_key():
     number_n = random.randint(0, int(max_n))
     product_n = number_n * spaces_n
     key_n = str(product_n)
-    for i in range(random.randint(1, 12)):
+    for _i in range(random.randint(1, 12)):
         c = random.choice(_AVAILABLE_KEY_CHARS)
         pos = random.randint(0, len(key_n))
         key_n = key_n[0:pos] + chr(c) + key_n[pos:]
-    for i in range(spaces_n):
+    for _i in range(spaces_n):
         pos = random.randint(1, len(key_n) - 1)
         key_n = key_n[0:pos] + " " + key_n[pos:]
 

@@ -27,7 +27,7 @@ class Watcher(BaseComponent):
         self.events.clear()
 
     def wait(self, name, channel=None, timeout=30.0):
-        for i in range(int(timeout / TIMEOUT)):
+        for _i in range(int(timeout / TIMEOUT)):
             with self._lock:
                 for event in self.events:
                     if event.name == name and event.waitingHandlers == 0:
@@ -53,7 +53,7 @@ class Flag:
 def call_event_from_name(manager, event, event_name, *channels):
     fired = False
     value = None
-    for r in manager.waitEvent(event_name):
+    for _r in manager.waitEvent(event_name):
         if not fired:
             fired = True
             value = manager.fire(event, *channels)
@@ -85,7 +85,7 @@ class WaitEvent:
 
     def wait(self):
         try:
-            for i in range(int(self.timeout / TIMEOUT)):
+            for _i in range(int(self.timeout / TIMEOUT)):
                 if self.flag.status:
                     return True
                 sleep(TIMEOUT)
@@ -95,7 +95,7 @@ class WaitEvent:
 
 def wait_for(obj, attr, value=True, timeout=30.0):
     from circuits.core.manager import TIMEOUT
-    for i in range(int(timeout / TIMEOUT)):
+    for _i in range(int(timeout / TIMEOUT)):
         if isinstance(value, Callable):
             if value(obj, attr):
                 return True

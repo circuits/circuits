@@ -111,7 +111,7 @@ class BaseComponent(Manager):
 
         self.channel = kwargs.get("channel", self.channel) or "*"
 
-        for k, v in getmembers(self):
+        for _k, v in getmembers(self):
             if getattr(v, "handler", False) is True:
                 self.addHandler(v)
             # TODO: Document this feature. See Issue #88

@@ -23,7 +23,7 @@ class Watcher(BaseComponent):
             self.events.append(event)
 
     def wait(self, name, channel=None, timeout=6.0):
-        for i in range(int(timeout / TIMEOUT)):
+        for _i in range(int(timeout / TIMEOUT)):
             if channel is None:
                 with self._lock:
                     for event in self.events:
@@ -63,7 +63,7 @@ class WaitEvent:
 
     def wait(self):
         try:
-            for i in range(int(self.timeout / TIMEOUT)):
+            for _i in range(int(self.timeout / TIMEOUT)):
                 if self.flag.status:
                     return True
                 sleep(TIMEOUT)

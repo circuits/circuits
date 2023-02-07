@@ -215,7 +215,7 @@ def main():
         print()
         print(inspect(manager))
 
-    for i in range(opts.jobs):
+    for _i in range(opts.jobs):
         manager.start(process=True)
 
     manager.run()
