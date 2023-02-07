@@ -172,7 +172,7 @@ class CaseInsensitiveDict(dict):
         return dict.get(self, str(key).title(), default)
 
     def update(self, E):
-        for k in E.keys():
+        for k in E:
             self[str(k).title()] = E[k]
 
     @classmethod

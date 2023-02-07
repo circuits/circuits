@@ -68,7 +68,7 @@ class ChatServer(Component):
 
     def broadcast(self, data, exclude=None):
         exclude = exclude or []
-        targets = (sock for sock in self.clients.keys() if sock not in exclude)
+        targets = (sock for sock in self.clients if sock not in exclude)
         for target in targets:
             self.fire(write(target, data))
 
