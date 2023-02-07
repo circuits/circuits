@@ -35,7 +35,7 @@ def loadMacros():
     path = os.path.abspath(os.path.dirname(__file__))
 
     def p(x):
-        os.path.splitext(x)[1] == ".py"
+        return os.path.splitext(x)[1] == ".py"
     modules = [x for x in os.listdir(path) if p(x) and not x == "__init__.py"]
 
     macros = {}
@@ -47,7 +47,7 @@ def loadMacros():
         m = __import__(moduleName, globals(), locals(), __package__)
 
         def p(x):
-            isfunction(x) and getmodule(x) is m
+            return isfunction(x) and getmodule(x) is m
         for name, function in getmembers(m, p):
             name = name.replace("_", "-")
             try:
