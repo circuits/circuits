@@ -3,7 +3,7 @@ import os.path
 import select
 from socket import (
     AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM,
-    error as SocketError, has_ipv6, socket,
+    has_ipv6, socket,
 )
 from ssl import wrap_socket as sslsocket
 
@@ -51,12 +51,12 @@ class _TestClient:
     def disconnect(self):
         try:
             self.ssock.shutdown(2)
-        except SocketError:
+        except OSError:
             pass
 
         try:
             self.ssock.close()
-        except SocketError:
+        except OSError:
             pass
 
 

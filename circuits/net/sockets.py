@@ -11,8 +11,7 @@ from errno import (
 )
 from socket import (
     AF_INET, AF_INET6, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR,
-    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, error as SocketError,
-    gaierror, getaddrinfo, getfqdn, gethostbyname, gethostname, socket,
+    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, gaierror, getaddrinfo, getfqdn, gethostbyname, gethostname, socket,
 )
 from time import time
 
@@ -170,11 +169,11 @@ class Client(BaseComponent):
 
         try:
             self._sock.shutdown(2)
-        except SocketError:
+        except OSError:
             pass
         try:
             self._sock.close()
-        except SocketError:
+        except OSError:
             pass
 
         self.fire(disconnected())
@@ -202,7 +201,7 @@ class Client(BaseComponent):
                 self.fire(read(data)).notify = True
             else:
                 self.close()
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
@@ -218,7 +217,7 @@ class Client(BaseComponent):
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close()
             else:
@@ -289,7 +288,7 @@ class TCPClient(Client):
 
         try:
             r = self._sock.connect((host, port))
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] in (EBADF, EINVAL,):
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
@@ -368,7 +367,7 @@ class UNIXClient(Client):
 
         try:
             r = self._sock.connect_ex(path)
-        except SocketError as e:
+        except OSError as e:
             r = e.args[0]
 
         if r:
@@ -450,7 +449,7 @@ class Server(BaseComponent):
                     return sockname[0]
                 else:
                     return sockname
-            except SocketError:
+            except OSError:
                 return None
 
     @property
@@ -460,7 +459,7 @@ class Server(BaseComponent):
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
                     return sockname[1]
-            except SocketError:
+            except OSError:
                 return None
 
     @handler("registered", "started", channel="*")
@@ -519,11 +518,11 @@ class Server(BaseComponent):
 
         try:
             sock.shutdown(2)
-        except SocketError:
+        except OSError:
             pass
         try:
             sock.close()
-        except SocketError:
+        except OSError:
             pass
 
         self.fire(disconnect(sock))
@@ -557,7 +556,7 @@ class Server(BaseComponent):
                 self.fire(read(sock, data)).notify = True
             else:
                 self.close(sock)
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
             else:
@@ -572,7 +571,7 @@ class Server(BaseComponent):
             nbytes = sock.send(data)
             if nbytes < len(data):
                 self._buffers[sock].appendleft(data[nbytes:])
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
                 self.fire(error(sock, e))
                 self._close(sock)
@@ -588,7 +587,7 @@ class Server(BaseComponent):
     def _accept(self):
         try:
             newsock, host = self._sock.accept()
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
             elif e.args[0] == EPERM:
@@ -641,7 +640,7 @@ class Server(BaseComponent):
         if fire_connect_event:
             try:
                 self.fire(connect(sock, *sock.getpeername()))
-            except SocketError as exc:
+            except OSError as exc:
                 # errno 107 (ENOTCONN): the client already disconnected
                 self._on_handshake_error(sock, exc)
 
@@ -786,11 +785,11 @@ class UDPServer(Server):
 
         try:
             sock.shutdown(2)
-        except SocketError:
+        except OSError:
             pass
         try:
             sock.close()
-        except SocketError:
+        except OSError:
             pass
 
         self.fire(disconnect(sock))
@@ -809,7 +808,7 @@ class UDPServer(Server):
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.fire(read(address, data)).notify = True
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
             self.fire(error(self._sock, e))
@@ -820,7 +819,7 @@ class UDPServer(Server):
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
-        except SocketError as e:
+        except OSError as e:
             if e.args[0] in (EPIPE, ENOTCONN):
                 self._close(self._sock)
             else:

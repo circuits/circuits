@@ -291,7 +291,7 @@ class Poll(BasePoller):
                 ll = self._poller.poll()
             else:
                 ll = self._poller.poll(1000 * timeout)
-        except SelectError as e:
+        except OSError as e:
             if e.args[0] == EINTR:
                 return
             else:
@@ -402,7 +402,7 @@ class EPoll(BasePoller):
         except OSError as e:
             if e.args[0] == EINTR:
                 return
-        except SelectError as e:
+        except OSError as e:
             if e.args[0] == EINTR:
                 return
             else:
@@ -490,7 +490,7 @@ class KQueue(BasePoller):
                 ll = self._poller.control(None, 1000)
             else:
                 ll = self._poller.control(None, 1000, timeout)
-        except SelectError as e:
+        except OSError as e:
             if e[0] == EINTR:
                 return
             else:
