@@ -12,6 +12,7 @@ class MyComponent(BaseComponent):
 
     @handler("started", channel="*")
     def system_started(self, component):
-        print "Start event detected"
+        print("Start event detected")
+
 
 MyComponent().run()
