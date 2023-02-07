@@ -66,7 +66,7 @@ def test_default_args(webapp, data, expected):
     args, kwargs = data
     url = "{:s}/test_default_args/{:s}".format(
         webapp.server.http.base,
-        "/".join(args)
+        "/".join(args),
     )
     data = urlencode(kwargs).encode("utf-8")
     f = urlopen(url, data)

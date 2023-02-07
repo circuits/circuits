@@ -25,7 +25,7 @@ def foobar(environ, start_response):
 def apps(request):
     return {
         "/": hello,
-        "/foobar": foobar
+        "/foobar": foobar,
     }
 
 

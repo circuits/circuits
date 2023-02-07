@@ -98,7 +98,7 @@ def calculateNonce(realm, algorithm=MD5):
     except KeyError:
         raise NotImplementedError(
             "The chosen algorithm (%s) does not have "
-            "an implementation yet" % algorithm
+            "an implementation yet" % algorithm,
         )
 
     s = "%d:%s" % (time.time(), realm)
@@ -115,7 +115,7 @@ def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH):
         nonce = calculateNonce(realm, algorithm)
 
     return 'Digest realm="%s", nonce="%s", algorithm="%s", qop="%s"' % (
-        realm, nonce, algorithm, qop
+        realm, nonce, algorithm, qop,
     )
 
 
@@ -263,7 +263,7 @@ def _A2(params, method, kwargs):
         return "%s:%s:%s" % (
             method,
             params["uri"],
-            H(entity_body)
+            H(entity_body),
         )
 
     else:
@@ -379,5 +379,5 @@ def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
 
     checker = AUTH_RESPONSES[auth_map["auth_scheme"]]
     return checker(
-        auth_map, password, method=method, encrypt=encrypt, **kwargs
+        auth_map, password, method=method, encrypt=encrypt, **kwargs,
     )

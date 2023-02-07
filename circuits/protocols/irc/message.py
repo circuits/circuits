@@ -51,7 +51,7 @@ class Message:
                 else ""
             ),
             command=str(self.command),
-            args=" ".join(args)
+            args=" ".join(args),
         )
 
     def __repr__(self):

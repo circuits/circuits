@@ -15,7 +15,7 @@ class Root(Controller):
 app = Server(
     ("0.0.0.0", 8443),
     secure=True, certfile="server-cert.pem", keyfile="server-key.pem",
-    ca_certs="ca-chain.pem", cert_reqs=ssl.CERT_OPTIONAL
+    ca_certs="ca-chain.pem", cert_reqs=ssl.CERT_OPTIONAL,
 )
 Root().register(app)
 app += Debugger()

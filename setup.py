@@ -16,7 +16,7 @@ setup(
     description="Asynchronous Component based Event Application Framework",
     long_description=open("README.rst").read().replace(
         ".. include:: examples/index.rst",
-        read_file("examples/index.rst")
+        read_file("examples/index.rst"),
     ),
     author="James Mills",
     author_email="prologic@shortcircuit.net.au",
@@ -71,20 +71,20 @@ setup(
             "*.fabfile.*",
             "fabfile.*",
             "fabfile",
-        ]
+        ],
     ),
     scripts=glob("bin/*"),
     entry_points={
         "console_scripts": [
             "circuits.web=circuits.web.main:main",
-        ]
+        ],
     },
     zip_safe=True,
     use_scm_version={
         "write_to": "circuits/version.py",
     },
     setup_requires=[
-        "setuptools_scm"
+        "setuptools_scm",
     ],
     extras_require={"stomp": ["stompest>=2.3.0", "pysocks>=1.6.7"]},
 )

@@ -86,7 +86,7 @@ class Static(BaseComponent):
             # Try to serve one of default files first..
             for default in self.defaults:
                 location = os.path.abspath(
-                    os.path.join(self.docroot, path, default)
+                    os.path.join(self.docroot, path, default),
                 )
                 if os.path.exists(location):
                     # Don't set cookies for static content
@@ -115,15 +115,15 @@ class Static(BaseComponent):
                     if not item.startswith("."):
                         url = os.path.join("/", path, cur_dir, item)
                         location = os.path.abspath(
-                            os.path.join(self.docroot, path, item)
+                            os.path.join(self.docroot, path, item),
                         )
                         if os.path.isdir(location):
                             li = '<li><a href="%s/">%s/</a></li>' % (
-                                escape(quote(url), True), escape(item)
+                                escape(quote(url), True), escape(item),
                             )
                         else:
                             li = '<li><a href="%s">%s</a></li>' % (
-                                escape(quote(url), True), escape(item)
+                                escape(quote(url), True), escape(item),
                             )
                         listing.append(li)
 

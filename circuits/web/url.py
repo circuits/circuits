@@ -36,7 +36,7 @@ W1252 = codecs.lookup('windows-1252')
 # The default ports associated with each scheme
 PORTS = {
     'http': 80,
-    'https': 443
+    'https': 443,
 }
 
 
@@ -75,7 +75,7 @@ class URL:
         return cls(
             parsed.scheme, parsed.hostname,
             port, parsed.path, parsed.params,
-            parsed.query, parsed.fragment
+            parsed.query, parsed.fragment,
         )
 
     def __init__(self, scheme, host, port, path,
@@ -87,12 +87,12 @@ class URL:
         self._path = path or b'/'
         self._params = re.sub(b'^;+', b'', params)
         self._params = re.sub(
-            b'^;|;$', b'', re.sub(b';{2,}', b';', self._params)
+            b'^;|;$', b'', re.sub(b';{2,}', b';', self._params),
         )
         # Strip off extra leading ?'s
         self._query = query.lstrip(b'?')
         self._query = re.sub(
-            b'^&|&$', b'', re.sub(b'&{2,}', b'&', self._query)
+            b'^&|&$', b'', re.sub(b'&{2,}', b'&', self._query),
         )
         self._fragment = fragment
 
@@ -155,10 +155,10 @@ class URL:
         '''Canonicalize this url. This includes reordering parameters and args
         to have a consistent ordering'''
         self._query = b'&'.join(
-            sorted(q for q in self._query.split(b'&'))
+            sorted(q for q in self._query.split(b'&')),
         )
         self._params = b';'.join(
-            sorted(q for q in self._params.split(b';'))
+            sorted(q for q in self._params.split(b';')),
         )
         return self
 
@@ -231,7 +231,7 @@ class URL:
 
         result = urlunparse((
             self._scheme, netloc, self._path,
-            self._params, self._query, self._fragment
+            self._params, self._query, self._fragment,
         ))
         return result.decode('utf-8').encode(encoding)
 
@@ -241,7 +241,7 @@ class URL:
             newurl = urljoin(self.utf8(), path.encode('utf-8'))
         else:
             newurl = urljoin(
-                self.utf8(), path.decode(encoding).encode('utf-8')
+                self.utf8(), path.decode(encoding).encode('utf-8'),
             )
         return URL.parse(newurl, 'utf-8')
 

@@ -93,5 +93,5 @@ HTTP_STATUS_CODES = {
     504: "Gateway Timeout",
     505: "HTTP Version Not Supported",
     507: "Insufficient Storage",
-    510: "Not Extended"
+    510: "Not Extended",
 }

@@ -29,7 +29,7 @@ class _TestClient:
         self.sock = socket(
             AF_INET6 if ipv6
             else AF_INET,
-            SOCK_STREAM
+            SOCK_STREAM,
         )
 
         self.ssock = sslsocket(self.sock)

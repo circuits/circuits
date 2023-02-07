@@ -61,7 +61,7 @@ class Process(BaseComponent):
             shell=self.shell,
             stdin=PIPE,
             stderr=PIPE,
-            stdout=PIPE
+            stdout=PIPE,
         )
 
         self.stderr = BytesIO()
@@ -71,41 +71,41 @@ class Process(BaseComponent):
 
         self._stdin = File(
             self.p.stdin,
-            channel=f"{self.p.pid:d}.stdin"
+            channel=f"{self.p.pid:d}.stdin",
         ).register(self)
 
         self._stderr = File(
             self.p.stderr,
-            channel=f"{self.p.pid:d}.stderr"
+            channel=f"{self.p.pid:d}.stderr",
         ).register(self)
 
         self._stdout = File(
             self.p.stdout,
-            channel=f"{self.p.pid:d}.stdout"
+            channel=f"{self.p.pid:d}.stdout",
         ).register(self)
 
         self._stderr_read_handler = self.addHandler(
             handler("read", channel=self._stderr.channel)(
-                lambda self, data: self.stderr.write(data)
-            )
+                lambda self, data: self.stderr.write(data),
+            ),
         )
 
         self._stdout_read_handler = self.addHandler(
             handler("read", channel=self._stdout.channel)(
-                lambda self, data: self.stdout.write(data)
-            )
+                lambda self, data: self.stdout.write(data),
+            ),
         )
 
         self._stderr_closed_handler = self.addHandler(
             handler("closed", channel=self._stderr.channel)(
-                lambda self: setattr(self, '_stderr_closed', True)
-            )
+                lambda self: setattr(self, '_stderr_closed', True),
+            ),
         )
 
         self._stdout_closed_handler = self.addHandler(
             handler("closed", channel=self._stdout.channel)(
-                lambda self: setattr(self, '_stdout_closed', True)
-            )
+                lambda self: setattr(self, '_stdout_closed', True),
+            ),
         )
 
         self.fire(started(self))

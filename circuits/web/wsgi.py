@@ -93,7 +93,7 @@ class Application(BaseComponent):
             env("PATH_INFO", ""),
             protocol,
             env("QUERY_STRING", ""),
-            headers=headers
+            headers=headers,
         )
 
         req.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))

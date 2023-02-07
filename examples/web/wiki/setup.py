@@ -17,5 +17,5 @@ setup(
         "wiki.py",
     ),
     install_requires=list(parse_requirements("requirements.txt")),
-    zip_safe=True
+    zip_safe=True,
 )

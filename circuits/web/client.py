@@ -101,7 +101,7 @@ class Client(BaseComponent):
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if "Host" not in headers:
             headers["Host"] = "{}{}".format(
-                host, "" if port in (80, 443) else f":{port:d}"
+                host, "" if port in (80, 443) else f":{port:d}",
             )
 
         if body is not None:

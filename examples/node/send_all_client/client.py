@@ -17,14 +17,14 @@ def parse_options():
         "-i", "--ip",
         action="store", type="string",
         default="127.0.0.1:8000", dest="bind",
-        help="Bind to address:[port]"
+        help="Bind to address:[port]",
     )
 
     parser.add_option(
         "-d", "--debug",
         action="store_true",
         default=False, dest="debug",
-        help="Enable debug mode"
+        help="Enable debug mode",
     )
 
     opts, args = parser.parse_args()

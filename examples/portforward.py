@@ -31,13 +31,13 @@ def parse_options():
     parser.add_option(
         "-d", "--daemon",
         action="store_true", default=False, dest="daemon",
-        help="Enable daemon mode (fork into the background)"
+        help="Enable daemon mode (fork into the background)",
     )
 
     parser.add_option(
         "", "--debug",
         action="store_true", default=False, dest="debug",
-        help="Enable debug mode (verbose event output)"
+        help="Enable debug mode (verbose event output)",
     )
 
     opts, args = parser.parse_args()
@@ -122,15 +122,15 @@ class PortForwarder(Component):
         client.register(self)
 
         self.addHandler(
-            handler("disconnected", channel=channel)(_on_target_disconnected)
+            handler("disconnected", channel=channel)(_on_target_disconnected),
         )
 
         self.addHandler(
-            handler("ready", channel=channel)(_on_target_ready)
+            handler("ready", channel=channel)(_on_target_ready),
         )
 
         self.addHandler(
-            handler("read", channel=channel)(_on_target_read)
+            handler("read", channel=channel)(_on_target_read),
         )
 
         self._clients[sock] = client

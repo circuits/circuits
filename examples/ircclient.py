@@ -29,7 +29,7 @@ def parse_options():
     parser.add_option(
         "-n", "--nick",
         action="store", default=os.environ["USER"], dest="nick",
-        help="Nickname to use"
+        help="Nickname to use",
     )
 
     parser.add_option(
@@ -41,7 +41,7 @@ def parse_options():
     parser.add_option(
         "-c", "--channel",
         action="store", default="#circuits", dest="channel",
-        help="Channel to join"
+        help="Channel to join",
     )
 
     opts, args = parser.parse_args()
@@ -136,8 +136,8 @@ class Client(Component):
         else:
             print(
                 "--> %s (%s) has joined %s" % (
-                    source[0], "@".join(source[1:]), channel
-                )
+                    source[0], "@".join(source[1:]), channel,
+                ),
             )
 
     def notice(self, source, target, message):

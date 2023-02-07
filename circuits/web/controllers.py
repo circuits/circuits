@@ -112,12 +112,12 @@ class BaseController(BaseComponent):
 
     def serve_file(self, path, type=None, disposition=None, name=None):
         return tools.serve_file(
-            self.request, self.response, path, type, disposition, name
+            self.request, self.response, path, type, disposition, name,
         )
 
     def serve_download(self, path, name=None):
         return tools.serve_download(
-            self.request, self.response, path, name
+            self.request, self.response, path, name,
         )
 
     def expires(self, secs=0, force=False):

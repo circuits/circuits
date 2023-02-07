@@ -109,9 +109,9 @@ class Dispatcher(BaseComponent):
 
             return self.fire(
                 Event.create(
-                    name, *event.args, **event.kwargs
+                    name, *event.args, **event.kwargs,
                 ),
-                channel
+                channel,
             )
 
     @handler("request_value_changed")

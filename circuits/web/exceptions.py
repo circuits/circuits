@@ -14,7 +14,7 @@ __all__ = (
     'LengthRequired', 'PreconditionFailed', 'RequestEntityTooLarge',
     'RequestURITooLarge', 'UnsupportedMediaType', 'RangeUnsatisfiable',
     'InternalServerError', 'NotImplemented', 'BadGateway', 'ServiceUnavailable',
-    'Redirect'
+    'Redirect',
 )
 
 

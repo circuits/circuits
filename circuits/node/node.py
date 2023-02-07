@@ -113,7 +113,7 @@ class Node(BaseComponent):
 
         client_channel = kwargs.pop(
             'channel',
-            f'{self.channel}_client_{connection_name}'
+            f'{self.channel}_client_{connection_name}',
         )
         reconnect_delay = kwargs.pop('reconnect_delay', 10)
         client = Client(hostname, port, channel=client_channel, **kwargs)
@@ -122,7 +122,7 @@ class Node(BaseComponent):
         @handler('connected', channel=client_channel)
         def connected(self, hostname, port):
             self.fire(connected_to(
-                connection_name, hostname, port, client_channel, client
+                connection_name, hostname, port, client_channel, client,
             ))
         self.addHandler(connected)
 
@@ -131,7 +131,7 @@ class Node(BaseComponent):
         def disconnected(self, event, *args, **kwargs):
             if event.name == 'disconnected':
                 self.fire(disconnected_from(
-                    connection_name, hostname, port, client_channel, client
+                    connection_name, hostname, port, client_channel, client,
                 ))
 
             # auto reconnect
@@ -139,7 +139,7 @@ class Node(BaseComponent):
                 Timer(
                     reconnect_delay,
                     connect(hostname, port),
-                    client_channel
+                    client_channel,
                 ).register(self)
 
         self.addHandler(disconnected)

@@ -40,7 +40,7 @@ def test_index(webapp):
 
 @pytest.mark.parametrize('body', [
     "ä".encode(),
-    "ä".encode('iso8859-1')
+    "ä".encode('iso8859-1'),
 ])
 def test_request_body(webapp, body):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
@@ -93,9 +93,9 @@ def test_response_headers(webapp):
         request(
             "GET",
             "http://%s:%s/response_headers" % (
-                webapp.server.host, webapp.server.port
-            )
-        )
+                webapp.server.host, webapp.server.port,
+            ),
+        ),
     )
 
     while client.response is None:

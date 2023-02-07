@@ -40,13 +40,13 @@ class httperror(Event):
         self.error = kwargs.get("error", None)
 
         self.description = kwargs.get(
-            "description", getattr(self.__class__, "description", "")
+            "description", getattr(self.__class__, "description", ""),
         )
 
         if self.error is not None:
             stack = self.error[2] if isinstance(self.error[2], (list, tuple)) else traceback.format_tb(self.error[2])
             self.traceback = "ERROR: (%s) %s\n%s" % (
-                self.error[0], self.error[1], "".join(stack)
+                self.error[0], self.error[1], "".join(stack),
             )
         else:
             self.traceback = ""
@@ -56,7 +56,7 @@ class httperror(Event):
 
         powered_by = POWERED_BY % {
             "url": escape(SERVER_URL, True),
-            "version": escape(SERVER_VERSION)
+            "version": escape(SERVER_VERSION),
         } if getattr(request.server, 'display_banner', False) else ""
 
         self.data = {
@@ -64,7 +64,7 @@ class httperror(Event):
             "name": HTTP_STATUS_CODES.get(self.code, "???"),
             "description": self.description,
             "traceback": self.traceback,
-            "powered_by": powered_by
+            "powered_by": powered_by,
         }
 
     def sanitize(self):
@@ -99,8 +99,8 @@ class httperror(Event):
     def __repr__(self):
         return "<%s %d %s>" % (
             self.__class__.__name__, self.code, HTTP_STATUS_CODES.get(
-                self.code, "???"
-            )
+                self.code, "???",
+            ),
         )
 
 
@@ -226,5 +226,5 @@ class redirect(httperror):
             channels = ""
         return "<%s %d[%s.%s] %s>" % (
             self.__class__.__name__, self.code, channels, self.name,
-            " ".join(self.urls)
+            " ".join(self.urls),
         )

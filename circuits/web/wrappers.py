@@ -90,7 +90,7 @@ class HTTPStatus:
 
     def __repr__(self):
         return "<Status (status={:d} reason={}>".format(
-            self._status, self._reason
+            self._status, self._reason,
         )
 
     def __format__(self, format_spec):
@@ -198,7 +198,7 @@ class Request:
             self.host,
             f":{self.port:d}"
             if self.port not in (80, 443)
-            else ""
+            else "",
         )
 
         self.base = parse_url(base)
@@ -206,7 +206,7 @@ class Request:
         url = "{}{}{}".format(
             base,
             self.path,
-            f"?{self.qs}" if self.qs else ""
+            f"?{self.qs}" if self.qs else "",
         )
         self.uri = parse_url(url)
         self.uri.sanitize()
@@ -314,7 +314,7 @@ class Response:
         return "<Response %s %s (%d)>" % (
             self.status,
             self.headers.get("Content-Type"),
-            (len(self.body) if isinstance(self.body, str) else 0)
+            (len(self.body) if isinstance(self.body, str) else 0),
         )
 
     def __str__(self):
@@ -326,7 +326,7 @@ class Response:
     def prepare(self):
         # Set a default content-Type if we don't have one.
         self.headers.setdefault(
-            "Content-Type", f"text/html; charset={self.encoding}"
+            "Content-Type", f"text/html; charset={self.encoding}",
         )
 
         cLength = None

@@ -33,27 +33,27 @@ __version__ = "0.0.1"
 def parse_args():
     parser = ArgumentParser(
         description=__doc__,
-        formatter_class=ArgumentDefaultsHelpFormatter
+        formatter_class=ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version=f"%(prog)s {__version__}"
+        version=f"%(prog)s {__version__}",
     )
 
     parser.add_argument(
         "-b", "--bind",
         action="store", type=str,
         default="0.0.0.0:6667", dest="bind",
-        help="Bind to address:[port]"
+        help="Bind to address:[port]",
     )
 
     parser.add_argument(
         "--debug",
         action="store_true",
         default=False, dest="debug",
-        help="Enable debug mode"
+        help="Enable debug mode",
     )
 
     return parser.parse_args()
@@ -128,13 +128,13 @@ class Server(Component):
 
         self.transport = TCPServer(
             bind,
-            channel=self.channel
+            channel=self.channel,
         ).register(self)
 
         self.protocol = IRC(
             channel=self.channel,
             getBuffer=self.buffers.__getitem__,
-            updateBuffer=self.buffers.__setitem__
+            updateBuffer=self.buffers.__setitem__,
         ).register(self)
 
     def _notify(self, users, message, exclude=None):
@@ -148,7 +148,7 @@ class Server(Component):
         host, port = user.host, user.port
 
         self.logger.info(
-            f"I: [{host:s}:{port:d}] {repr(data):s}"
+            f"I: [{host:s}:{port:d}] {repr(data):s}",
         )
 
     def write(self, sock, data):
@@ -156,14 +156,14 @@ class Server(Component):
         host, port = user.host, user.port
 
         self.logger.info(
-            f"O: [{host:s}:{port:d}] {repr(data):s}"
+            f"O: [{host:s}:{port:d}] {repr(data):s}",
         )
 
     def ready(self, server, bind):
         stderr.write(
             "ircd v{:s} ready! Listening on: {:s}\n".format(
-                __version__, "{:s}:{:d}".format(*bind)
-            )
+                __version__, "{:s}:{:d}".format(*bind),
+            ),
         )
 
     def connect(self, sock, host, port):
@@ -183,7 +183,7 @@ class Server(Component):
         user, host = user.userinfo.user, user.userinfo.host
 
         yield self.call(
-            response.create("quit", sock, (nick, user, host), "Leaving")
+            response.create("quit", sock, (nick, user, host), "Leaving"),
         )
 
         del self.users[sock]
@@ -206,7 +206,7 @@ class Server(Component):
 
         self._notify(
             users,
-            Message("QUIT", reason, prefix=user.prefix), user
+            Message("QUIT", reason, prefix=user.prefix), user,
         )
 
     def nick(self, sock, source, nick):
@@ -263,7 +263,7 @@ class Server(Component):
 
         self._notify(
             channel.users,
-            Message("JOIN", name, prefix=user.prefix)
+            Message("JOIN", name, prefix=user.prefix),
         )
 
         if channel.topic:
@@ -280,7 +280,7 @@ class Server(Component):
 
         self._notify(
             channel.users,
-            Message("PART", name, reason, prefix=user.prefix)
+            Message("PART", name, reason, prefix=user.prefix),
         )
 
         user.channels.remove(name)
@@ -301,7 +301,7 @@ class Server(Component):
             self._notify(
                 channel.users,
                 Message("PRIVMSG", target, message, prefix=user.prefix),
-                user
+                user,
             )
         else:
             if target not in self.nicks:
@@ -310,8 +310,8 @@ class Server(Component):
             self.fire(
                 reply(
                     self.nicks[target].sock,
-                    Message("PRIVMSG", target, message, prefix=user.prefix)
-                )
+                    Message("PRIVMSG", target, message, prefix=user.prefix),
+                ),
             )
 
     def who(self, sock, source, mask):
@@ -385,7 +385,7 @@ def main():
     logging.basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         stream=stderr,
-        level=logging.DEBUG if args.debug else logging.INFO
+        level=logging.DEBUG if args.debug else logging.INFO,
     )
 
     logger = getLogger(__name__)

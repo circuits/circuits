@@ -118,7 +118,7 @@ def create_connection(url, timeout=None, **options):
 
 _MAX_INTEGER = (1 << 32) - 1
 _AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)).extend(
-    list(range(0x3a, 0x7e + 1))
+    list(range(0x3a, 0x7e + 1)),
 )
 _MAX_CHAR_BYTE = (1 << 8) - 1
 _MAX_ASCII_BYTE = (1 << 7) - 1

@@ -35,12 +35,12 @@ VERSION = "%prog v" + systemVersion
 MAIN_TITLE = f"cIRC - {systemVersion:s}"
 
 HELP_STRINGS = {
-    "main": "For help, type: /help"
+    "main": "For help, type: /help",
 }
 
 CMD_REGEX = compile_regex(
     r"\/(?P<command>[a-z]+) ?"
-    "(?P<args>.*)(?iu)"
+    "(?P<args>.*)(?iu)",
 )
 
 
@@ -54,19 +54,19 @@ def parse_options():
     parser.add_option(
         "-c", "--channel",
         action="store", default="#circuits", dest="channel",
-        help="Channel to join"
+        help="Channel to join",
     )
 
     parser.add_option(
         "", "--debug",
         action="store_true", default=False, dest="debug",
-        help="Enable debug mode"
+        help="Enable debug mode",
     )
 
     parser.add_option(
         "-n", "--nick",
         action="store", default=os.environ["USER"], dest="nick",
-        help="Nickname to use"
+        help="Nickname to use",
     )
 
     opts, args = parser.parse_args()
@@ -104,7 +104,7 @@ class Client(Component):
         self.screen.register_palette([
             ("title", "white", "dark blue", "standout"),
             ("line", "light gray", "black"),
-            ("help", "white", "dark blue")]
+            ("help", "white", "dark blue")],
         )
 
         self.body = ListBox(SimpleListWalker([]))
@@ -115,7 +115,7 @@ class Client(Component):
 
         self.help = AttrWrap(
             Text(HELP_STRINGS["main"]),
-            "help"
+            "help",
         )
 
         self.input = Edit(caption="%s> " % self.ircchannel)
@@ -191,8 +191,8 @@ class Client(Component):
     def syntaxError(self, command, args, expected):
         self.lines.append(
             Text("Syntax error ({:s}): {:s} Expected: {:s}".format(
-                command, args, expected)
-            )
+                command, args, expected),
+            ),
         )
 
     def processCommand(self, s):  # noqa
@@ -230,7 +230,7 @@ class Client(Component):
                                         " ".join(
                                             x for x in args + [vargs]
                                             if x is not None
-                                        )
+                                        ),
                                     )
                             else:
                                 f(*tokens)
@@ -245,7 +245,7 @@ class Client(Component):
                                 " ".join(
                                     x for x in args + [vargs]
                                     if x is not None
-                                )
+                                ),
                             )
         else:
             if self.ircchannel is not None:

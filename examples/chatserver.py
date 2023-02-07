@@ -23,14 +23,14 @@ def parse_options():
         "-b", "--bind",
         action="store", type="string",
         default="0.0.0.0:8000", dest="bind",
-        help="Bind to address:[port]"
+        help="Bind to address:[port]",
     )
 
     parser.add_option(
         "-d", "--debug",
         action="store_true",
         default=False, dest="debug",
-        help="Enable debug mode"
+        help="Enable debug mode",
     )
 
     opts, args = parser.parse_args()
@@ -80,8 +80,8 @@ class ChatServer(Component):
             "port": port,
             "state": {
                 "nickname": None,
-                "registered": False
-            }
+                "registered": False,
+            },
         }
 
         self.fire(write(sock, b"Welcome to the circuits Chat Server!\n"))
@@ -97,7 +97,7 @@ class ChatServer(Component):
 
         self.broadcast(
             f"!!! {nickname:s} has left !!!\n".encode(),
-            exclude=[sock]
+            exclude=[sock],
         )
 
         del self.clients[sock]
@@ -114,14 +114,14 @@ class ChatServer(Component):
 
             self.broadcast(
                 f"!!! {nickname:s} has joined !!!\n".encode(),
-                exclude=[sock]
+                exclude=[sock],
             )
         else:
             nickname = self.clients[sock]["state"]["nickname"]
 
             self.broadcast(
                 f"<{nickname:s}> {data:s}\n".encode(),
-                exclude=[sock]
+                exclude=[sock],
             )
 
 

@@ -37,7 +37,7 @@ def parse_options():
     parser.add_option(
         "-s", "--secure",
         action="store_true", default=False, dest="secure",
-        help="Enable secure mode"
+        help="Enable secure mode",
     )
 
     parser.add_option(

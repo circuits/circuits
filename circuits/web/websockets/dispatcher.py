@@ -111,7 +111,7 @@ class WebSocketsDispatcher(BaseComponent):
             self._requests[request.sock] = request
             cevent = connect(
                 request.sock,
-                *request.sock.getpeername()
+                *request.sock.getpeername(),
             )
             cevent.request = request
             self.fire(cevent, self._wschannel)

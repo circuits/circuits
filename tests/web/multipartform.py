@@ -27,10 +27,10 @@ class MultiPartForm(dict):
             part_boundary,
             bytearray(
                 "Content-Disposition: form-data; name=\"%s\"" % k,
-                "ascii"
+                "ascii",
             ),
             bytes(),
-            v if isinstance(v, bytes) else bytearray(v, "ascii")
+            v if isinstance(v, bytes) else bytearray(v, "ascii"),
         ] for k, v in list(self.items()))
 
         # Add the files to upload
@@ -39,7 +39,7 @@ class MultiPartForm(dict):
             bytearray(
                 "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" % (
                     fieldname, filename),
-                "ascii"
+                "ascii",
             ),
             bytearray("Content-Type: %s" % content_type, "ascii"),
             bytearray(),

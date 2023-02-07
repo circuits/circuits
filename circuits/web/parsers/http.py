@@ -280,7 +280,7 @@ class HttpParser:
         self._query_string = parts.query or ""
         if parts.fragment:
             raise InvalidRequestLine(
-                "HTTP requests may not contain fragment(s)"
+                "HTTP requests may not contain fragment(s)",
             )
 
         # Version

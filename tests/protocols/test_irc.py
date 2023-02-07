@@ -93,7 +93,7 @@ def test_parseprefix():
     (PASS("secret"), b"PASS secret\r\n"),
     (
         USER("foo", "localhost", "localhost", "Test Client"),
-        b"USER foo localhost localhost :Test Client\r\n"
+        b"USER foo localhost localhost :Test Client\r\n",
     ),
     (NICK("test"), b"NICK test\r\n"),
     pytest.param(PONG("localhost"), b"PONG :localhost\r\n", marks=pytest.mark.xfail),
@@ -130,7 +130,7 @@ def test_commands(event, data):
         Event.create(
             "notice", ("localhost", None, None), "*",
             "*** Looking up your hostname...",
-        )
+        ),
     ),
 ])
 def test_responses(app, data, event):

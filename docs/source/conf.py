@@ -226,7 +226,7 @@ htmlhelp_basename = 'circuitsdoc'
 latex_documents = [
     (
         'index', 'circuits.tex', 'circuits Documentation',
-        'James Mills', 'manual'
+        'James Mills', 'manual',
     ),
 ]
 

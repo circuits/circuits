@@ -27,7 +27,7 @@ class WebClient(Component):
             "\n".join(
                 f"{k:s}: {v:s}"
                 for k, v in response.headers.items()
-            )
+            ),
         )
         print(response.read())
         raise SystemExit(0)

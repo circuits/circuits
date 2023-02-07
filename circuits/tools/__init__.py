@@ -96,12 +96,12 @@ def _graph(x):
     networkx.draw_networkx_edges(g, pos, edgelist=elarge, width=1)
     networkx.draw_networkx_edges(
         g, pos, edgelist=esmall, width=1,
-        alpha=0.5, edge_color="b", style="dashed"
+        alpha=0.5, edge_color="b", style="dashed",
     )
 
     # labels
     networkx.draw_networkx_labels(
-        g, pos, font_size=10, font_family="sans-serif"
+        g, pos, font_size=10, font_family="sans-serif",
     )
 
     plt.axis("off")

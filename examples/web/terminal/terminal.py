@@ -41,7 +41,7 @@ class Command(Component):
 
         self._p = Popen(
             command, shell=True, stdout=PIPE, stderr=PIPE,
-            close_fds=True, preexec_fn=os.setsid
+            close_fds=True, preexec_fn=os.setsid,
         )
 
         self._stdin = None
@@ -51,12 +51,12 @@ class Command(Component):
 
         self._stdout = File(self._p.stdout, channel="%s.stdout" % channel)
         self.addHandler(
-            handler("eof", channel="%s.stdout" % channel)(self._on_stdout_eof)
+            handler("eof", channel="%s.stdout" % channel)(self._on_stdout_eof),
         )
         self.addHandler(
             handler("read", channel="%s.stdout" % channel)(
-                self._on_stdout_read
-            )
+                self._on_stdout_read,
+            ),
         )
         self._stdout.register(self)
 

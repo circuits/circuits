@@ -46,7 +46,7 @@ class Client(BaseComponent):
         self.__protocol = Protocol(
             receive_event_firewall=receive_event_firewall,
             send_event_firewall=send_event_firewall,
-            channel=channel
+            channel=channel,
         ).register(self)
 
         TCPClient(channel=channel, **kwargs).register(self)

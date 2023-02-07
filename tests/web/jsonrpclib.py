@@ -204,7 +204,7 @@ class Transport:
                 host + handler,
                 errcode, errmsg,
                 headers,
-                response
+                response,
             )
 
         self.verbose = verbose
@@ -247,7 +247,7 @@ class Transport:
             auth = base64.encodestring(unquote(auth))
             auth = "".join(auth.split())  # get rid of whitespace
             extra_headers = [
-                ("Authorization", "Basic " + auth)
+                ("Authorization", "Basic " + auth),
             ]
         else:
             extra_headers = None
@@ -370,7 +370,7 @@ class SafeTransport(Transport):
             HTTPS = HTTPSConnection
         except AttributeError:
             raise NotImplementedError(
-                "your version of httplib doesn't support HTTPS"
+                "your version of httplib doesn't support HTTPS",
             )
         else:
             return HTTPS(host, None, **(x509 or {}))
@@ -410,7 +410,7 @@ class ServerProxy:
             self.__handler,
             request.encode(self.__encoding),
             self.__encoding,
-            verbose=self.__verbose
+            verbose=self.__verbose,
         )
 
         if len(response) == 1:

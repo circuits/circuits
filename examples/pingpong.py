@@ -57,8 +57,8 @@ class App(Component):
         status(
             "{:d} event/s @ {:0.2f}ms latency".format(
                 int(self.events / (time() - self.stime)),
-                latency
-            )
+                latency,
+            ),
         )
         self.fire(ipc(ping(time())))
 

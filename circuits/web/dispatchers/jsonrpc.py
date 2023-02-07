@@ -59,7 +59,7 @@ class JSONRPC(BaseComponent):
             "id": id,
             "version": "1.1",
             "result": result,
-            "error": None
+            "error": None,
         }
         return json.dumps(data).encode(self.encoding)
 
@@ -70,7 +70,7 @@ class JSONRPC(BaseComponent):
             "error": {
                 "name": "JSONRPCError",
                 "code": code,
-                "message": message
-            }
+                "message": message,
+            },
         }
         return json.dumps(data).encode(self.encoding)

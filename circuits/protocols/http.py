@@ -31,7 +31,7 @@ class ResponseObject:
             self.status,
             self.reason,
             self.headers.get("Content-Type"),
-            len(self.body.getvalue())
+            len(self.body.getvalue()),
         )
 
     def read(self):

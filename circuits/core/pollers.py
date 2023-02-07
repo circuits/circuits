@@ -480,7 +480,7 @@ class KQueue(BasePoller):
         super().discard(sock)
         del self._map[sock.fileno()]
         self._poller.control(
-            [select.kevent(sock, select.KQ_FILTER_WRITE | select.KQ_FILTER_READ, select.KQ_EV_DELETE)], 0
+            [select.kevent(sock, select.KQ_FILTER_WRITE | select.KQ_FILTER_READ, select.KQ_EV_DELETE)], 0,
         )
 
     def _generate_events(self, event):

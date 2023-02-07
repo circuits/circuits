@@ -325,7 +325,7 @@ class TCPClient(Client):
                 self._close()
 
             self._sock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False
+                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._sock, on_done, on_error):
                 yield
@@ -390,7 +390,7 @@ class UNIXClient(Client):
                 self.fire(error(err))
 
             self._ssock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False
+                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._ssock, on_done, on_error):
                 yield
@@ -774,7 +774,7 @@ class UDPServer(Server):
     socket_type = SOCK_DGRAM
     socket_options = [
         (SOL_SOCKET, SO_BROADCAST, 1),
-        (SOL_SOCKET, SO_REUSEADDR, 1)
+        (SOL_SOCKET, SO_REUSEADDR, 1),
     ]
 
     def _close(self, sock):

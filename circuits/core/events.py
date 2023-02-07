@@ -114,7 +114,7 @@ class Event:
 
         data = "%s %s" % (
             ", ".join(repr(arg) for arg in self.args),
-            ", ".join(f"{k}={repr(v)}" for k, v in self.kwargs.items())
+            ", ".join(f"{k}={repr(v)}" for k, v in self.kwargs.items()),
         )
 
         return f"<{self.name}[{channels}] ({data})>"
@@ -327,9 +327,9 @@ class generate_events(Event):
                 if self._time_left == 0 and self.handler is not None:
                     m = getattr(
                         getattr(
-                            self.handler, "im_self", self.handler.__self__
+                            self.handler, "im_self", self.handler.__self__,
                         ),
-                        "resume", None
+                        "resume", None,
                     )
                     if m is not None and ismethod(m):
                         m()

@@ -70,7 +70,7 @@ def dump_value(v):
         "id": v.node_call_id,
         "errors": v.errors,
         "value": v._value,
-        "meta": meta
+        "meta": meta,
     }
     return json.dumps(data)
 

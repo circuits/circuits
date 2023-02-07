@@ -370,7 +370,7 @@ class Manager:
                 #      This probably costs us performance for what?
                 #      I've not ever had to rely on this in practice...
                 handler_channel = getattr(
-                    getattr(_handler, "im_self", getattr(_handler, "__self__", _dummy)), "channel", None
+                    getattr(_handler, "im_self", getattr(_handler, "__self__", _dummy)), "channel", None,
                 )
 
             if channel == "*" or handler_channel in ("*", channel) \
@@ -535,8 +535,8 @@ class Manager:
                     (
                         state.task_event,
                         (e for e in (ExceptionWrapper(TimeoutError()),)),
-                        state.parent
-                    )
+                        state.parent,
+                    ),
                 )
                 self.removeHandler(_on_done_handler, "%s_done" % event_name)
                 self.removeHandler(_on_tick_handler, "generate_events")
@@ -628,7 +628,7 @@ class Manager:
             event_handlers = sorted(
                 chain(*h),
                 key=attrgetter("priority"),
-                reverse=True
+                reverse=True,
             )
 
             if isinstance(event, generate_events):
@@ -728,7 +728,7 @@ class Manager:
             if event.complete:  # does this event want signaling?
                 self.fire(
                     event.child("complete", event, event.value.value),
-                    *getattr(event, "complete_channels", event.channels)
+                    *getattr(event, "complete_channels", event.channels),
                 )
 
             # this event and nested events are done now

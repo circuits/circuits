@@ -56,12 +56,12 @@ class Dummy(Component):
 
         print(
             f"DNS Request for qname({str(qname):s})",
-            file=sys.stderr
+            file=sys.stderr,
         )
 
         reply = DNSRecord(
             DNSHeader(id=id, qr=1, aa=1, ra=1),
-            q=request.q
+            q=request.q,
         )
 
         # Add A Record

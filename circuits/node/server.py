@@ -125,7 +125,7 @@ class Server(BaseComponent):
             server=self.server,
             receive_event_firewall=self.__receive_event_firewall,
             send_event_firewall=self.__send_event_firewall,
-            channel=self.channel
+            channel=self.channel,
         ).register(self)
 
     @handler('disconnect')

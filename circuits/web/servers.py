@@ -67,11 +67,11 @@ class BaseServer(BaseComponent):
             certfile=certfile,
             channel=channel,
             bufsize=bufsize,
-            **kwargs
+            **kwargs,
         ).register(self)
 
         self.http = HTTP(
-            self, encoding=encoding, channel=channel
+            self, encoding=encoding, channel=channel,
         ).register(self)
 
     @property
@@ -116,8 +116,8 @@ class BaseServer(BaseComponent):
     def _on_ready(self, server, bind):
         stderr.write(
             "{} ready! Listening on: {}\n".format(
-                self.http.version, self.http.base
-            )
+                self.http.version, self.http.base,
+            ),
         )
 
 
@@ -155,7 +155,7 @@ class StdinServer(BaseComponent):
 
         self.server = (io.stdin + io.stdout).register(self)
         self.http = HTTP(
-            self, encoding=encoding, channel=channel
+            self, encoding=encoding, channel=channel,
         ).register(self)
 
         Dispatcher(channel=self.channel).register(self)

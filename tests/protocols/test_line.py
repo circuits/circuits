@@ -50,7 +50,7 @@ def test_server():
     buffers = defaultdict(bytes)
     Line(
         getBuffer=buffers.__getitem__,
-        updateBuffer=buffers.__setitem__
+        updateBuffer=buffers.__setitem__,
     ).register(app)
 
     while len(app):

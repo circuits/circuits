@@ -67,7 +67,7 @@ def expires(request, response, secs=0, force=False):
             now = datetime.now()
             lastyear = now.replace(year=now.year - 1)
             expiry = formatdate(
-                mktime(lastyear.timetuple()), usegmt=True
+                mktime(lastyear.timetuple()), usegmt=True,
             )
         else:
             expiry = formatdate(response.time + secs, usegmt=True)
@@ -105,7 +105,7 @@ def serve_file(request, response, path, type=None, disposition=None,
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
     response.headers['Last-Modified'] = formatdate(
-        st.st_mtime, usegmt=True
+        st.st_mtime, usegmt=True,
     )
 
     result = validate_since(request, response)
@@ -238,8 +238,8 @@ def validate_etags(request, response, autotags=False):
             return httperror(
                 request, response, 412,
                 description="If-Match failed: ETag %r did not match %r" % (
-                    etag, conditions
-                )
+                    etag, conditions,
+                ),
             )
 
         conditions = request.headers.elements('If-None-Match') or []
@@ -252,9 +252,9 @@ def validate_etags(request, response, autotags=False):
                     request, response, 412,
                     description=(
                         "If-None-Match failed: ETag %r matched %r" % (
-                            etag, conditions
+                            etag, conditions,
                         )
-                    )
+                    ),
                 )
 
 
@@ -442,7 +442,7 @@ def gzip(response, level=4, mime_types=("text/html", "text/plain")):
                     del response.headers["Content-Length"]
             return response
     return httperror(
-        response.request, response, 406, description="identity, gzip"
+        response.request, response, 406, description="identity, gzip",
     )
 
 

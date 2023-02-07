@@ -42,55 +42,55 @@ def parse_options():
     parser.add_argument(
         "-b", "--bind",
         action="store", default="0.0.0.0:8000",
-        help="Bind to address:[port]"
+        help="Bind to address:[port]",
     )
 
     parser.add_argument(
         "-l", "--logging",
         action="store_true", default=False,
-        help="Enable logging of requests"
+        help="Enable logging of requests",
     )
 
     parser.add_argument(
         "-p", "--passwd",
         action="store", default=None,
-        help="Location to passwd file for Digest Auth"
+        help="Location to passwd file for Digest Auth",
     )
 
     parser.add_argument(
         "-j", "--jobs",
         action="store", type=int, default=0,
-        help="Specify number of jobs/processes to start"
+        help="Specify number of jobs/processes to start",
     )
 
     parser.add_argument(
         "--poller",
         action="store", default="select",
-        help="Specify type of poller to use"
+        help="Specify type of poller to use",
     )
 
     parser.add_argument(
         "--server",
         action="store", default="server",
-        help="Specify server to use"
+        help="Specify server to use",
     )
 
     parser.add_argument(
         "--profile",
         action="store_true", default=False,
-        help="Enable execution profiling support"
+        help="Enable execution profiling support",
     )
 
     parser.add_argument(
         "--debug",
         action="store_true", default=False,
-        help="Enable debug mode"
+        help="Enable debug mode",
     )
 
     parser.add_argument(
         "--validate",
         action="store_true", default=False,
-        help="Enable WSGI validation mode"
+        help="Enable WSGI validation mode",
     )
 
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s v{circuits.__version__}')
@@ -143,7 +143,7 @@ def select_poller(poller):
     if poller == "poll":
         if Poll is None:
             stderr.write(
-                "No poll support available - defaulting to Select..."
+                "No poll support available - defaulting to Select...",
             )
             Poller = Select
         else:
@@ -151,7 +151,7 @@ def select_poller(poller):
     elif poller == "epoll":
         if EPoll is None:
             stderr.write(
-                "No epoll support available - defaulting to Select..."
+                "No epoll support available - defaulting to Select...",
             )
             Poller = Select
         else:

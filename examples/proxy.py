@@ -44,7 +44,7 @@ class Proxy(Component):
         channel = uuid()
 
         client = Client(
-            sock, self.host, self.port, channel=channel
+            sock, self.host, self.port, channel=channel,
         ).register(self)
 
         self.clients[sock] = client

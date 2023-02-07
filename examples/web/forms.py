@@ -63,7 +63,7 @@ class Root(Controller):
         """
 
         return "Data Saved. firstName={:s} lastName={:s}".format(
-            firstName, lastName
+            firstName, lastName,
         )
 
 

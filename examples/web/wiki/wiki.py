@@ -10,7 +10,7 @@ from circuits.web import Controller, Logger, Server, Static
 
 text2html = Parser(
     create_dialect(creole11_base, macro_func=macros.dispatcher),
-    method="xhtml"
+    method="xhtml",
 )
 
 
@@ -36,12 +36,12 @@ class Wiki:
         if row[0]:
             self._cu.execute(
                 "UPDATE pages SET text=? WHERE name=?",
-                (text, name)
+                (text, name),
             )
         else:
             self._cu.execute(
                 "INSERT INTO pages (name, text) VALUES (?, ?)",
-                (name, text)
+                (name, text),
             )
         self._cx.commit()
 

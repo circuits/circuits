@@ -15,9 +15,9 @@ def sample_file(request):
     return open(
         path.join(
             path.dirname(__file__),
-            "static", "unicode.txt"
+            "static", "unicode.txt",
         ),
-        "rb"
+        "rb",
     )
 
 
@@ -65,7 +65,7 @@ def test_unicode(webapp, sample_file):
     form["description"] = sample_file.name
     form.add_file(
         "file", "helloworld.txt", sample_file,
-        "text/plain; charset=utf-8"
+        "text/plain; charset=utf-8",
     )
 
     # Build the request

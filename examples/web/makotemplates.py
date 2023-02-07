@@ -11,7 +11,7 @@ DEFAULTS = {}
 templates = TemplateLookup(
     directories=[os.path.join(os.path.dirname(__file__), "tpl")],
     module_directory="/tmp",
-    output_encoding="utf-8"
+    output_encoding="utf-8",
 )
 
 

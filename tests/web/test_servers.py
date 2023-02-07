@@ -164,7 +164,7 @@ def test_multi_servers(manager, watcher):
     insecure_server = Server(0, channel="insecure")
     secure_server = Server(
         0,
-        channel="secure", secure=True, certfile=CERTFILE
+        channel="secure", secure=True, certfile=CERTFILE,
     )
 
     server = (insecure_server + secure_server).register(manager)

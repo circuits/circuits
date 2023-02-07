@@ -8,7 +8,7 @@ def test_linkcheck(tmpdir):
     htmldir = tmpdir.join("html")
     p = Popen([
         "sphinx-build", "-W", "-blinkcheck",
-        "-d", str(doctrees), "source", str(htmldir)
+        "-d", str(doctrees), "source", str(htmldir),
     ], stdout=PIPE, stderr=STDOUT)
     stdout, _ = p.communicate()
     if p.wait() != 0:
@@ -20,7 +20,7 @@ def test_build_docs(tmpdir):
     htmldir = tmpdir.join("html")
     p = Popen([
         "sphinx-build", "-W", "-bhtml",
-        "-d", str(doctrees), "source", str(htmldir)
+        "-d", str(doctrees), "source", str(htmldir),
     ], stdout=PIPE, stderr=STDOUT)
     stdout, _ = p.communicate()
     if p.wait() != 0:
