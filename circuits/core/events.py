@@ -16,6 +16,10 @@ class Event:
     alert_done = False
     waitingHandlers = 0
 
+    # Behaviour for handling errors:
+    # One of "abort", "ignore" (default), "throw_first", "throw_last"
+    on_error = None
+
     @classmethod
     def create(cls, _name, *args, **kwargs):
         return type(cls)(_name, (cls,), {})(*args, **kwargs)

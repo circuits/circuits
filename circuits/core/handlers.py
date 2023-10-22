@@ -72,6 +72,7 @@ def handler(*names, **kwargs):
         f.priority = kwargs.get("priority", 0)
         f.channel = kwargs.get("channel", None)
         f.override = kwargs.get("override", False)
+        f.on_error = kwargs.get("on_error", None)
 
         args = getargspec(f)[0]
 
