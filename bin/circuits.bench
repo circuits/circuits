@@ -6,7 +6,6 @@
 THis tool does some simple benchmaking of the circuits library.
 """
 
-
 import math
 import optparse
 import sys
@@ -17,7 +16,7 @@ from circuits import (
 )
 
 
-if sys.platform == "win32":
+if sys.platform == 'win32':
     from time import clock as time
 else:
     from time import time  # NOQA
@@ -35,8 +34,8 @@ except ImportError:
     psyco = None  # NOQA
 
 
-USAGE = "%prog [options]"
-VERSION = "%prog v" + systemVersion
+USAGE = '%prog [options]'
+VERSION = '%prog v' + systemVersion
 
 
 def duration(seconds):
@@ -53,47 +52,35 @@ def parse_options():
     parser = optparse.OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-t", "--time",
-        action="store", type="int", default=0, dest="time",
-        help="Stop after specified elapsed seconds"
+        '-t', '--time', action='store', type='int', default=0, dest='time', help='Stop after specified elapsed seconds'
     )
 
     parser.add_option(
-        "-e", "--events",
-        action="store", type="int", default=0, dest="events",
-        help="Stop after specified number of events"
+        '-e', '--events', action='store', type='int', default=0, dest='events', help='Stop after specified number of events'
     )
 
     parser.add_option(
-        "-p", "--profile",
-        action="store_true", default=False, dest="profile",
-        help="Enable execution profiling support"
+        '-p', '--profile', action='store_true', default=False, dest='profile', help='Enable execution profiling support'
+    )
+
+    parser.add_option('-d', '--debug', action='store_true', default=False, dest='debug', help='Enable debug mode')
+
+    parser.add_option(
+        '-m',
+        '--mode',
+        action='store',
+        type='choice',
+        default='speed',
+        dest='mode',
+        choices=['sync', 'speed', 'latency'],
+        help='Operation mode',
     )
 
     parser.add_option(
-        "-d", "--debug",
-        action="store_true", default=False, dest="debug",
-        help="Enable debug mode"
+        '-s', '--speed', action='store_true', default=False, dest='speed', help='Enable psyco (circuits on speed!)'
     )
 
-    parser.add_option(
-        "-m", "--mode",
-        action="store", type="choice", default="speed", dest="mode",
-        choices=["sync", "speed", "latency"],
-        help="Operation mode"
-    )
-
-    parser.add_option(
-        "-s", "--speed",
-        action="store_true", default=False, dest="speed",
-        help="Enable psyco (circuits on speed!)"
-    )
-
-    parser.add_option(
-        "-q", "--quiet",
-        action="store_false", default=True, dest="verbose",
-        help="Suppress output"
-    )
+    parser.add_option('-q', '--quiet', action='store_false', default=True, dest='verbose', help='Suppress output')
 
     opts, args = parser.parse_args()
 
@@ -117,7 +104,6 @@ class received(Event):
 
 
 class Base(Component):
-
     def __init__(self, opts, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -125,30 +111,27 @@ class Base(Component):
 
 
 class SpeedTest(Base):
-
-    def received(self, message=""):
-        self.fire(hello("hello"))
+    def received(self, message=''):
+        self.fire(hello('hello'))
 
     def hello(self, message):
         self.fire(received(message))
 
 
 class LatencyTest(Base):
-
     t = None
 
-    def received(self, message=""):
-        print("Latency: %0.9f us" % ((time() - self.t) * 1e6))
+    def received(self, message=''):
+        print('Latency: %0.9f us' % ((time() - self.t) * 1e6))
         sleep(1)
-        self.fire(hello("hello"))
+        self.fire(hello('hello'))
 
-    def hello(self, message=""):
+    def hello(self, message=''):
         self.t = time()
         self.fire(received(message))
 
 
 class State(Base):
-
     done = False
 
     def stop(self):
@@ -159,7 +142,6 @@ class State(Base):
 
 
 class Monitor(Base):
-
     sTime = sys.maxsize
     events = 0
     state = 0
@@ -189,29 +171,29 @@ def main():
     if opts.debug:
         manager += Debugger()
 
-    if opts.mode.lower() == "speed":
+    if opts.mode.lower() == 'speed':
         if opts.verbose:
-            print("Setting up Speed Test...")
+            print('Setting up Speed Test...')
         manager += SpeedTest(opts)
         monitor.sTime = time()
-    elif opts.mode.lower() == "latency":
+    elif opts.mode.lower() == 'latency':
         if opts.verbose:
-            print("Setting up Latency Test...")
+            print('Setting up Latency Test...')
         manager += LatencyTest(opts)
         monitor.sTime = time()
 
     if opts.verbose:
-        print("Setting up Sender...")
-        print("Setting up Receiver...")
+        print('Setting up Sender...')
+        print('Setting up Receiver...')
 
     monitor.sTime = time()
 
     if opts.profile:
         if hotshot:
-            profiler = hotshot.Profile("bench.prof")
+            profiler = hotshot.Profile('bench.prof')
             profiler.start()
 
-    manager.fire(hello("hello"))
+    manager.fire(hello('hello'))
 
     while not state.done:
         try:
@@ -234,17 +216,17 @@ def main():
     events = monitor.events
     speed = int(math.ceil(float(monitor.events) / tTime))
 
-    print("Total Events: %d (%d/s after %0.2fs)" % (events, speed, tTime))
+    print('Total Events: %d (%d/s after %0.2fs)' % (events, speed, tTime))
 
     if opts.profile and hotshot:
         profiler.stop()
         profiler.close()
 
-        stats = hotshot.stats.load("bench.prof")
+        stats = hotshot.stats.load('bench.prof')
         stats.strip_dirs()
-        stats.sort_stats("time", "calls")
+        stats.sort_stats('time', 'calls')
         stats.print_stats(20)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -29,29 +29,38 @@ from circuits.net.sockets import TCPClient, UDPClient, UNIXClient
 from circuits.tools import graph
 
 
-USAGE = "%prog [options] host [port]"
-VERSION = "%prog v" + circuits.__version__
+USAGE = '%prog [options] host [port]'
+VERSION = '%prog v' + circuits.__version__
 
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-s", "--secure",
-        action="store_true", default=False, dest="secure",
-        help="Enable secure mode",
+        '-s',
+        '--secure',
+        action='store_true',
+        default=False,
+        dest='secure',
+        help='Enable secure mode',
     )
 
     parser.add_option(
-        "-u", "--udp",
-        action="store_true", default=False, dest="udp",
-        help="Use UDP transport",
+        '-u',
+        '--udp',
+        action='store_true',
+        default=False,
+        dest='udp',
+        help='Use UDP transport',
     )
 
     parser.add_option(
-        "-v", "--verbose",
-        action="store_true", default=False, dest="verbose",
-        help="Enable verbose debugging",
+        '-v',
+        '--verbose',
+        action='store_true',
+        default=False,
+        dest='verbose',
+        help='Enable verbose debugging',
     )
 
     opts, args = parser.parse_args()
@@ -64,10 +73,9 @@ def parse_options():
 
 
 class Telnet(Component):
-
     # Define a separate channel for this component so we don't clash with
     # the ``read`` event of the ``stdin`` component.
-    channel = "telnet"
+    channel = 'telnet'
 
     def __init__(self, *args, **opts):
         super().__init__()
@@ -81,9 +89,9 @@ class Telnet(Component):
                 host = dest = port = args[0]
                 dest = (dest,)
             else:
-                raise OSError("Path %s not found" % args[0])
+                raise OSError('Path %s not found' % args[0])
         else:
-            if not opts["udp"]:
+            if not opts['udp']:
                 TCPClient(channel=self.channel).register(self)
             else:
                 UDPClient(0, channel=self.channel).register(self)
@@ -95,12 +103,12 @@ class Telnet(Component):
         self.host = host
         self.port = port
 
-        print("Trying %s ..." % host)
+        print('Trying %s ...' % host)
 
-        if not opts["udp"]:
-            self.fire(connect(*dest, secure=opts["secure"]))
+        if not opts['udp']:
+            self.fire(connect(*dest, secure=opts['secure']))
         else:
-            self.fire(write((host, port), b"\x00"))
+            self.fire(write((host, port), b'\x00'))
 
     def ready(self, *args):
         graph(self.root)
@@ -112,7 +120,7 @@ class Telnet(Component):
         This event is fired by the TCPClient Componentt to indicate a
         successful connection.
         """
-        print(f"connected to {host}")
+        print(f'connected to {host}')
 
     def error(self, *args, **kwargs):
         """
@@ -121,9 +129,9 @@ class Telnet(Component):
         If any exception/error occurs in the system this event is triggered.
         """
         if len(args) == 3:
-            print(f"ERROR: {args[1]}")
+            print(f'ERROR: {args[1]}')
         else:
-            print(f"ERROR: {args[0]}")
+            print(f'ERROR: {args[0]}')
 
     def read(self, *args):
         """
@@ -137,12 +145,12 @@ class Telnet(Component):
         else:
             _peer, data = args
 
-        data = data.strip().decode("utf-8")
+        data = data.strip().decode('utf-8')
 
         print(data)
 
     # Setup an Event Handler for "read" events on the "stdin" channel.
-    @handler("read", channel="stdin")
+    @handler('read', channel='stdin')
     def _on_stdin_read(self, data):
         """
         read Event Handler for stdin
@@ -150,7 +158,7 @@ class Telnet(Component):
         This event is triggered by the connected ``stdin`` component when
         there is new data to be read in from standard input.
         """
-        if not self.opts["udp"]:
+        if not self.opts['udp']:
             self.fire(write(data))
         else:
             self.fire(write((self.host, self.port), data))
@@ -163,10 +171,11 @@ def main():
     app = Telnet(*args, **opts.__dict__)
     if opts.verbose:
         from circuits import Debugger
+
         Debugger().register(app)
     stdin.register(app)
     app.run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

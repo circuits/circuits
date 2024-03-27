@@ -3,6 +3,7 @@ File I/O
 
 This module implements a wrapper for basic File I/O.
 """
+
 try:
     from os import O_NONBLOCK
 except ImportError:
@@ -23,7 +24,7 @@ from circuits.tools import tryimport
 from .events import close, closed, eof, error, opened, read, ready
 
 
-fcntl = tryimport("fcntl")
+fcntl = tryimport('fcntl')
 
 TIMEOUT = 0.2
 BUFSIZE = 4096
@@ -34,10 +35,9 @@ class _open(Event):
 
 
 class File(Component):
+    channel = 'file'
 
-    channel = "file"
-
-    def init(self, filename, mode="r", bufsize=BUFSIZE, encoding=None, channel=channel):
+    def init(self, filename, mode='r', bufsize=BUFSIZE, encoding=None, channel=channel):
         self._mode = mode
         self._bufsize = bufsize
         self._filename = filename
@@ -50,34 +50,34 @@ class File(Component):
 
     @property
     def closed(self):
-        return getattr(self._fd, "closed", True) if hasattr(self, "_fd") else True
+        return getattr(self._fd, 'closed', True) if hasattr(self, '_fd') else True
 
     @property
     def filename(self):
-        return getattr(self, "_filename", None)
+        return getattr(self, '_filename', None)
 
     @property
     def mode(self):
-        return getattr(self, "_mode", None)
+        return getattr(self, '_mode', None)
 
-    @handler("ready")
+    @handler('ready')
     def _on_ready(self, component):
         self.fire(_open(), self.channel)
 
-    @handler("_open")
+    @handler('_open')
     def _on_open(self, filename=None, mode=None, bufsize=None):
         self._filename = filename or self._filename
         self._bufsize = bufsize or self._bufsize
         self._mode = mode or self._mode
 
         if isinstance(self._filename, str):
-            kwargs = {"encoding": self._encoding}
+            kwargs = {'encoding': self._encoding}
             self._fd = open(self.filename, self.mode, **kwargs)
         else:
             self._fd = self._filename
             self._mode = self._fd.mode
             self._filename = self._fd.name
-            self._encoding = getattr(self._fd, "encoding", self._encoding)
+            self._encoding = getattr(self._fd, 'encoding', self._encoding)
 
         if fcntl is not None:
             # Set non-blocking file descriptor (non-portable)
@@ -85,12 +85,12 @@ class File(Component):
             flag = flag | O_NONBLOCK
             fcntl.fcntl(self._fd, fcntl.F_SETFL, flag)
 
-        if "r" in self.mode or "+" in self.mode:
+        if 'r' in self.mode or '+' in self.mode:
             self._poller.addReader(self, self._fd)
 
         self.fire(opened(self.filename, self.mode))
 
-    @handler("registered", "started", channel="*")
+    @handler('registered', 'started', channel='*')
     def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
@@ -107,11 +107,11 @@ class File(Component):
                     self._poller = Poller().register(self)
                     self.fire(ready(self))
 
-    @handler("stopped", channel="*")
+    @handler('stopped', channel='*')
     def _on_stopped(self, component):
         self.fire(close())
 
-    @handler("prepare_unregister", channel="*")
+    @handler('prepare_unregister', channel='*')
     def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
             self._close()
@@ -149,7 +149,7 @@ class File(Component):
                 self.fire(read(data)).notify = True
             else:
                 self.fire(eof())
-                if not any(m in self.mode for m in ("a", "+")):
+                if not any(m in self.mode for m in ('a', '+')):
                     self.close()
                 else:
                     self._poller.discard(self._fd)
@@ -184,15 +184,15 @@ class File(Component):
             self._poller.addWriter(self, self._fd)
         self._buffer.append(data)
 
-    @handler("_disconnect")
+    @handler('_disconnect')
     def __on_disconnect(self, sock):
         self._close()
 
-    @handler("_read")
+    @handler('_read')
     def __on_read(self, sock):
         self._read()
 
-    @handler("_write")
+    @handler('_write')
     def __on_write(self, sock):
         if self._buffer:
             data = self._buffer.popleft()

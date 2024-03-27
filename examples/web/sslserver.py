@@ -4,12 +4,11 @@ from circuits.web import Controller, Server
 
 
 class Root(Controller):
-
     def index(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = Server(("0.0.0.0", 8443), secure=True, certfile="cert.pem")
+app = Server(('0.0.0.0', 8443), secure=True, certfile='cert.pem')
 Debugger().register(app)
 Root().register(app)
 app.run()

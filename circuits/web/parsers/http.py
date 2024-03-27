@@ -12,9 +12,9 @@ from urllib.parse import urlsplit
 from ..headers import Headers
 
 
-METHOD_RE = re.compile("^[A-Z0-9$-_.]{1,20}$")
-VERSION_RE = re.compile(r"^HTTP/(\d+).(\d+)$")
-STATUS_RE = re.compile(r"^(\d{3})(?:\s+([\s\w]*))$")
+METHOD_RE = re.compile('^[A-Z0-9$-_.]{1,20}$')
+VERSION_RE = re.compile(r'^HTTP/(\d+).(\d+)$')
+STATUS_RE = re.compile(r'^(\d{3})(?:\s+([\s\w]*))$')
 HEADER_RE = re.compile('[\\x00-\\x1F\\x7F()<>@,;:/\\[\\]={} \\t\\\\"]')
 
 # errors
@@ -24,26 +24,25 @@ INVALID_CHUNK = 2
 
 
 class InvalidRequestLine(Exception):
-    """ error raised when first line is invalid """
+    """error raised when first line is invalid"""
 
 
 class InvalidHeader(Exception):
-    """ error raised on invalid header """
+    """error raised on invalid header"""
 
 
 class InvalidChunkSize(Exception):
-    """ error raised when we parse an invalid chunk size """
+    """error raised when we parse an invalid chunk size"""
 
 
 class HttpParser:
-
     def __init__(self, kind=2, decompress=False):
         self.kind = kind
         self.decompress = decompress
 
         # errors vars
         self.errno = None
-        self.errstr = ""
+        self.errstr = ''
 
         # protected variables
         self._buf = []
@@ -98,8 +97,8 @@ class HttpParser:
         return self._headers
 
     def recv_body(self):
-        """ return last chunk of the parsed body"""
-        body = b"".join(self._body)
+        """return last chunk of the parsed body"""
+        body = b''.join(self._body)
         self._body = []
         self._partial_body = False
         return body
@@ -110,7 +109,7 @@ class HttpParser:
         in a buffer rather than creating a new string.
         """
         length = len(barray)
-        body = b"".join(self._body)
+        body = b''.join(self._body)
         m = min(len(body), length)
         data, rest = body[:m], body[m:]
         barray[0:m] = data
@@ -126,36 +125,36 @@ class HttpParser:
         Do we get upgrade header in the request. Useful for
         websockets
         """
-        hconn = self._headers.get('connection', "").lower()
+        hconn = self._headers.get('connection', '').lower()
         hconn_parts = [x.strip() for x in hconn.split(',')]
-        return "upgrade" in hconn_parts
+        return 'upgrade' in hconn_parts
 
     def is_headers_complete(self):
-        """ return True if all headers have been parsed. """
+        """return True if all headers have been parsed."""
         return self.__on_headers_complete
 
     def is_partial_body(self):
-        """ return True if a chunk of body have been parsed """
+        """return True if a chunk of body have been parsed"""
         return self._partial_body
 
     def is_message_begin(self):
-        """ return True if the parsing start """
+        """return True if the parsing start"""
         return self.__on_message_begin
 
     def is_message_complete(self):
-        """ return True if the parsing is done (we get EOF) """
+        """return True if the parsing is done (we get EOF)"""
         return self.__on_message_complete
 
     def is_chunked(self):
-        """ return True if Transfer-Encoding header value is chunked"""
+        """return True if Transfer-Encoding header value is chunked"""
         return self._chunked
 
     def should_keep_alive(self):
         """return True if the connection should be kept alive"""
-        hconn = self._headers.get('connection', "").lower()
-        if hconn == "close":
+        hconn = self._headers.get('connection', '').lower()
+        if hconn == 'close':
             return False
-        elif hconn == "keep-alive":
+        elif hconn == 'keep-alive':
             return True
         return self._version == (1, 1)
 
@@ -170,19 +169,19 @@ class HttpParser:
         nb_parsed = 0
         while True:
             if not self.__on_firstline:
-                idx = data.find(b"\r\n")
+                idx = data.find(b'\r\n')
                 if idx < 0:
                     self._buf.append(data)
                     return len(data)
                 else:
                     self.__on_firstline = True
                     self._buf.append(data[:idx])
-                    first_line = b"".join(self._buf)
+                    first_line = b''.join(self._buf)
                     first_line = str(first_line, 'unicode_escape')
                     nb_parsed = nb_parsed + idx + 2
 
-                    rest = data[idx + 2:]
-                    data = b""
+                    rest = data[idx + 2 :]
+                    data = b''
                     if self._parse_firstline(first_line):
                         self._buf = [rest]
                     else:
@@ -190,10 +189,10 @@ class HttpParser:
             elif not self.__on_headers_complete:
                 if data:
                     self._buf.append(data)
-                    data = b""
+                    data = b''
 
                 try:
-                    to_parse = b"".join(self._buf)
+                    to_parse = b''.join(self._buf)
                     ret = self._parse_headers(to_parse)
 
                     if ret is False:
@@ -209,7 +208,7 @@ class HttpParser:
 
                 if data:
                     self._buf.append(data)
-                    data = b""
+                    data = b''
 
                 ret = self._parse_body()
                 if ret is None:
@@ -251,13 +250,13 @@ class HttpParser:
         # version
         matchv = VERSION_RE.match(bits[0])
         if matchv is None:
-            raise InvalidRequestLine("Invalid HTTP version: %s" % bits[0])
+            raise InvalidRequestLine('Invalid HTTP version: %s' % bits[0])
         self._version = (int(matchv.group(1)), int(matchv.group(2)))
 
         # status
         matchs = STATUS_RE.match(bits[1])
         if matchs is None:
-            raise InvalidRequestLine(f"Invalid status: {bits[1]!r}")
+            raise InvalidRequestLine(f'Invalid status: {bits[1]!r}')
 
         self._status = bits[1]
         self._status_code = int(matchs.group(1))
@@ -270,43 +269,46 @@ class HttpParser:
 
         # Method
         if not METHOD_RE.match(bits[0]):
-            raise InvalidRequestLine("invalid Method: %s" % bits[0])
+            raise InvalidRequestLine('invalid Method: %s' % bits[0])
         self._method = bits[0].upper()
 
         # URI
         self._url = bits[1]
         parts = urlsplit(bits[1])
         self._scheme = parts.scheme or None
-        self._path = parts.path or ""
-        self._query_string = parts.query or ""
+        self._path = parts.path or ''
+        self._query_string = parts.query or ''
         if parts.fragment:
             raise InvalidRequestLine(
-                "HTTP requests may not contain fragment(s)",
+                'HTTP requests may not contain fragment(s)',
             )
 
         # Version
         match = VERSION_RE.match(bits[2])
         if match is None:
-            raise InvalidRequestLine("Invalid HTTP version: %s" % bits[2])
+            raise InvalidRequestLine('Invalid HTTP version: %s' % bits[2])
         self._version = (int(match.group(1)), int(match.group(2)))
 
         # update environ
         if hasattr(self, '_environ'):
-            self._environ.update({
-                "PATH_INFO": self._path,
-                "QUERY_STRING": self._query_string,
-                "RAW_URI": self._url,
-                "REQUEST_METHOD": self._method,
-                "SERVER_PROTOCOL": bits[2]})
+            self._environ.update(
+                {
+                    'PATH_INFO': self._path,
+                    'QUERY_STRING': self._query_string,
+                    'RAW_URI': self._url,
+                    'REQUEST_METHOD': self._method,
+                    'SERVER_PROTOCOL': bits[2],
+                }
+            )
 
     def _parse_headers(self, data):
         if data == b'\r\n':
             self.__on_headers_complete = True
             self._buf = []
             return 0
-        idx = data.find(b"\r\n\r\n")
+        idx = data.find(b'\r\n\r\n')
         if idx < 0:  # we don't have all headers
-            if self._status_code == 204 and data == b"\r\n":
+            if self._status_code == 204 and data == b'\r\n':
                 self._buf = []
                 self.__on_headers_complete = True
                 return 0
@@ -314,30 +316,29 @@ class HttpParser:
                 return False
 
         # Split lines on \r\n keeping the \r\n on each line
-        lines = [str(line, 'unicode_escape') + "\r\n"
-                 for line in data[:idx].split(b"\r\n")]
+        lines = [str(line, 'unicode_escape') + '\r\n' for line in data[:idx].split(b'\r\n')]
 
         # Parse headers into key/value pairs paying attention
         # to continuation lines.
         while len(lines):
             # Parse initial header name : value pair.
             curr = lines.pop(0)
-            if curr.find(":") < 0:
-                raise InvalidHeader("invalid line %s" % curr.strip())
-            name, value = curr.split(":", 1)
-            name = name.rstrip(" \t").upper()
+            if curr.find(':') < 0:
+                raise InvalidHeader('invalid line %s' % curr.strip())
+            name, value = curr.split(':', 1)
+            name = name.rstrip(' \t').upper()
             if HEADER_RE.search(name):
-                raise InvalidHeader("invalid header name %s" % name)
+                raise InvalidHeader('invalid header name %s' % name)
 
-            if value.endswith("\r\n"):
+            if value.endswith('\r\n'):
                 value = value[:-2]
 
             name, value = name.strip(), [value.lstrip()]
 
             # Consume value continuation lines
-            while len(lines) and lines[0].startswith((" ", "\t")):
+            while len(lines) and lines[0].startswith((' ', '\t')):
                 curr = lines.pop(0)
-                if curr.endswith("\r\n"):
+                if curr.endswith('\r\n'):
                     curr = curr[:-2]
                 value.append(curr)
             value = ''.join(value).rstrip()
@@ -359,20 +360,20 @@ class HttpParser:
             except ValueError:
                 pass
         else:
-            self._chunked = (te == 'chunked')
+            self._chunked = te == 'chunked'
             if not self._chunked:
                 self._clen_rest = maxsize
 
         # detect encoding and set decompress object
         encoding = self._headers.get('content-encoding')
         if self.decompress:
-            if encoding == "gzip":
+            if encoding == 'gzip':
                 self.__decompress_obj = zlib.decompressobj(16 + zlib.MAX_WBITS)
                 self.__decompress_first_try = False
-            elif encoding == "deflate":
+            elif encoding == 'deflate':
                 self.__decompress_obj = zlib.decompressobj()
 
-        rest = data[idx + 4:]
+        rest = data[idx + 4 :]
         self._buf = [rest]
         self.__on_headers_complete = True
         return len(rest)
@@ -382,7 +383,7 @@ class HttpParser:
             self.__on_message_complete = True
             return
         elif not self._chunked:
-            body_part = b"".join(self._buf)
+            body_part = b''.join(self._buf)
             if not body_part and self._clen is None:
                 if not self._status:  # message complete only for servers
                     self.__on_message_complete = True
@@ -409,13 +410,12 @@ class HttpParser:
                 self.__on_message_complete = True
             return
         else:
-            data = b"".join(self._buf)
+            data = b''.join(self._buf)
             try:
-
                 size, rest = self._parse_chunk_size(data)
             except InvalidChunkSize as e:
                 self.errno = INVALID_CHUNK
-                self.errstr = "invalid chunk size [%s]" % str(e)
+                self.errstr = 'invalid chunk size [%s]' % str(e)
                 return -1
 
             if size == 0:
@@ -427,7 +427,7 @@ class HttpParser:
             body_part, rest = rest[:size], rest[size:]
             if len(rest) < 2:
                 self.errno = INVALID_CHUNK
-                self.errstr = "chunk missing terminator [%s]" % data
+                self.errstr = 'chunk missing terminator [%s]' % data
                 return -1
 
             # maybe decompress
@@ -441,11 +441,11 @@ class HttpParser:
             return len(rest)
 
     def _parse_chunk_size(self, data):
-        idx = data.find(b"\r\n")
+        idx = data.find(b'\r\n')
         if idx < 0:
             return None, None
-        line, rest_chunk = data[:idx], data[idx + 2:]
-        chunk_size = line.split(b";", 1)[0].strip()
+        line, rest_chunk = data[:idx], data[idx + 2 :]
+        chunk_size = line.split(b';', 1)[0].strip()
         try:
             chunk_size = int(chunk_size, 16)
         except ValueError:
@@ -457,7 +457,7 @@ class HttpParser:
         return chunk_size, rest_chunk
 
     def _parse_trailers(self, data):
-        idx = data.find(b"\r\n\r\n")
+        idx = data.find(b'\r\n\r\n')
 
-        if data[:2] == b"\r\n":
+        if data[:2] == b'\r\n':
             self._trailers = self._parse_headers(data[:idx])

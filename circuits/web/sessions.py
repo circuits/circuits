@@ -4,6 +4,7 @@ Session Components
 This module implements Session Components that can be used to store
 and access persistent information.
 """
+
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from hashlib import sha1 as sha
@@ -12,12 +13,12 @@ from uuid import uuid4 as uuid
 from circuits import Component, handler
 
 
-def who(request, encoding="utf-8"):
+def who(request, encoding='utf-8'):
     """Create a SHA1 Hash of the User's IP Address and User-Agent"""
     ip = request.remote.ip
-    agent = request.headers.get("User-Agent", "")
+    agent = request.headers.get('User-Agent', '')
 
-    return sha(f"{ip}{agent}".encode(encoding)).hexdigest()
+    return sha(f'{ip}{agent}'.encode(encoding)).hexdigest()
 
 
 def create_session(request):
@@ -27,7 +28,7 @@ def create_session(request):
     Returns a unique session using ``uuid4()`` and a ``sha1()`` hash
     of the users IP Address and User Agent in the form of ``sid/who``.
     """
-    return f"{uuid().hex}/{who(request)}"
+    return f'{uuid().hex}/{who(request)}'
 
 
 def verify_session(request, sid):
@@ -38,10 +39,10 @@ def verify_session(request, sid):
     of the User's IP Address and User-Agent match the provided
     Session ID.
     """
-    if "/" not in sid:
+    if '/' not in sid:
         return create_session(request)
 
-    user = sid.split("/", 1)[1]
+    user = sid.split('/', 1)[1]
 
     if user != who(request):
         return create_session(request)
@@ -50,7 +51,6 @@ def verify_session(request, sid):
 
 
 class Session(dict):
-
     def __init__(self, sid, data, store):
         super().__init__(data)
 
@@ -77,7 +77,6 @@ class Session(dict):
 
 
 class Store(metaclass=ABCMeta):
-
     @abstractmethod
     def delete(self, sid):
         """Delete the session data identified by sid"""
@@ -92,7 +91,6 @@ class Store(metaclass=ABCMeta):
 
 
 class MemoryStore(Store):
-
     def __init__(self):
         self._data = defaultdict(dict)
 
@@ -111,10 +109,9 @@ class MemoryStore(Store):
 
 
 class Sessions(Component):
+    channel = 'web'
 
-    channel = "web"
-
-    def __init__(self, name="circuits", store=MemoryStore, channel=channel):
+    def __init__(self, name='circuits', store=MemoryStore, channel=channel):
         super().__init__(channel=channel)
 
         self._name = name
@@ -128,7 +125,7 @@ class Sessions(Component):
     def store(self):
         return self._store
 
-    @handler("request", priority=10)
+    @handler('request', priority=10)
     def request(self, request, response):
         if self.name in request.cookie:
             sid = request.cookie[self._name].value

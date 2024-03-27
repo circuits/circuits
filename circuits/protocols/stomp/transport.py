@@ -1,4 +1,4 @@
-""" stompest StompFrameTransport allowing for ssl.wrap_socket """
+"""stompest StompFrameTransport allowing for ssl.wrap_socket"""
 
 import logging
 import socket
@@ -9,7 +9,7 @@ try:
     from stompest.error import StompConnectionError
     from stompest.sync.transport import StompFrameTransport
 except ImportError:
-    raise ImportError("No stomp support available.  Is stompest installed?")
+    raise ImportError('No stomp support available.  Is stompest installed?')
 
 LOG = logging.getLogger(__name__)
 
@@ -38,11 +38,11 @@ class EnhancedStompFrameTransport(StompFrameTransport):
                         names.append(value)
                         if value == hostname:
                             return
-        raise RuntimeError(f"{hostname} does not match the expected value in the certificate {str(names)}")
+        raise RuntimeError(f'{hostname} does not match the expected value in the certificate {str(names)}')
 
     def connect(self, timeout=None):
         """Allow older versions of ssl module, allow http proxy connections"""
-        LOG.debug("stomp_transport.connect()")
+        LOG.debug('stomp_transport.connect()')
         ssl_params = None
         if isinstance(self.sslContext, dict):
             # This is actually a dictionary of ssl parameters for wrapping the socket
@@ -55,12 +55,13 @@ class EnhancedStompFrameTransport(StompFrameTransport):
                     # Don't try to import this unless we need it
                     import socks
                 except ImportError:
-                    raise ImportError("No http proxy support available.  Is pysocks installed?")
+                    raise ImportError('No http proxy support available.  Is pysocks installed?')
 
-                LOG.info("Connecting through proxy %s", self.proxy_host)
+                LOG.info('Connecting through proxy %s', self.proxy_host)
                 self._socket = socks.socksocket()
-                self._socket.set_proxy(socks.HTTP, self.proxy_host, self.proxy_port, True,
-                                       username=self.proxy_user, password=self.proxy_password)
+                self._socket.set_proxy(
+                    socks.HTTP, self.proxy_host, self.proxy_port, True, username=self.proxy_user, password=self.proxy_password
+                )
             else:
                 self._socket = socket.socket()
 
@@ -69,16 +70,17 @@ class EnhancedStompFrameTransport(StompFrameTransport):
 
             if ssl_params:
                 # For cases where we don't have a modern SSLContext (so no SNI)
-                cert_required = ssl.CERT_REQUIRED if ssl_params["ca_certs"] else ssl.CERT_NONE
+                cert_required = ssl.CERT_REQUIRED if ssl_params['ca_certs'] else ssl.CERT_NONE
                 self._socket = ssl.wrap_socket(
                     self._socket,
                     keyfile=ssl_params['key_file'],
                     certfile=ssl_params['cert_file'],
                     cert_reqs=cert_required,
                     ca_certs=ssl_params['ca_certs'],
-                    ssl_version=ssl_params['ssl_version'])
+                    ssl_version=ssl_params['ssl_version'],
+                )
                 if cert_required:
-                    LOG.info("Performing manual hostname check")
+                    LOG.info('Performing manual hostname check')
                     cert = self._socket.getpeercert()
                     self.match_hostname(cert, self.host)
 

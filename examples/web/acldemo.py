@@ -5,10 +5,9 @@ from circuits.web.errors import forbidden
 
 
 class ACL(Component):
+    allowed = ['127.0.0.1']
 
-    allowed = ["127.0.0.1"]
-
-    @handler("request", priority=1.0)
+    @handler('request', priority=1.0)
     def on_request(self, event, request, response):
         """
         Filter Requests applying IP based Authorization
@@ -24,12 +23,11 @@ class ACL(Component):
 
 
 class Root(Controller):
-
     def index(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 ACL().register(app)
 Root().register(app)
 Debugger().register(app)

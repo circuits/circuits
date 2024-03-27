@@ -1,4 +1,5 @@
 """.. codeauthor: mnl"""
+
 import os
 import random
 
@@ -27,7 +28,7 @@ class WebSocketCodec(BaseComponent):
     encoded data is then forwarded as write events on the parents channel.
     """
 
-    channel = "ws"
+    channel = 'ws'
 
     def __init__(self, sock=None, data=bytearray(), *args, **kwargs):
         """
@@ -53,11 +54,11 @@ class WebSocketCodec(BaseComponent):
             else:
                 self.fire(read(message))
 
-    @handler("registered")
+    @handler('registered')
     def _on_registered(self, component, parent):
         if component is self:
 
-            @handler("read", priority=10, channel=parent.channel)
+            @handler('read', priority=10, channel=parent.channel)
             def _on_read_raw(self, event, *args):
                 if self._sock is not None:
                     if args[0] != self._sock:
@@ -75,7 +76,7 @@ class WebSocketCodec(BaseComponent):
 
             self.addHandler(_on_read_raw)
 
-            @handler("disconnect", channel=parent.channel)
+            @handler('disconnect', channel=parent.channel)
             def _on_disconnect(self, *args):
                 if self._sock is not None and args[0] != self._sock:
                     return
@@ -104,7 +105,7 @@ class WebSocketCodec(BaseComponent):
                     offset += 1
             # retrieve optional masking key
             if masking:
-                masking_key = data[offset:offset + 4]
+                masking_key = data[offset : offset + 4]
                 offset += 4
             # if not enough bytes available yet, retry after next read
             if len(data) - offset < payload_length:
@@ -112,7 +113,7 @@ class WebSocketCodec(BaseComponent):
                 break
             self._buffer = bytearray()
             # rest of _buffer is payload
-            msg = data[offset:offset + payload_length]
+            msg = data[offset : offset + payload_length]
             if masking:  # unmask
                 msg = list(msg)
                 for i, c in enumerate(msg):
@@ -127,7 +128,7 @@ class WebSocketCodec(BaseComponent):
                 if opcode < 8:
                     # if text or continuation of text, convert
                     if opcode == 1 or opcode == 0 and self._pending_type == 1:
-                        msg = msg.decode("utf-8", "replace")
+                        msg = msg.decode('utf-8', 'replace')
                     self._pending_type = None
                     self._pending_payload = bytearray()
                     msgs.append(msg)
@@ -152,7 +153,7 @@ class WebSocketCodec(BaseComponent):
                     self._pending_type = opcode
         return msgs
 
-    @handler("write")
+    @handler('write')
     def _on_write(self, *args):
         if self._close_sent:
             return
@@ -168,7 +169,7 @@ class WebSocketCodec(BaseComponent):
         first = 0x80  # set FIN flag, we never fragment
         if isinstance(data, str):
             first += 1  # text
-            data = bytearray(data, "utf-8")
+            data = bytearray(data, 'utf-8')
         else:
             first += 2  # binary
         frame.append(first)
@@ -210,12 +211,12 @@ class WebSocketCodec(BaseComponent):
         else:
             self.fire(write(data), self.parent.channel)
 
-    @handler("close")
+    @handler('close')
     def _on_close(self, *args):
         if self._sock is not None and args and (args[0] != self._sock):
             return
         if not self._close_sent:
-            self._write(b"\x88\x00")
+            self._write(b'\x88\x00')
             self._close_sent = True
         if self._close_received and self._close_sent:
             if self._sock:

@@ -13,7 +13,6 @@ class test(Event):
 
 
 class App(Component):
-
     def __init__(self):
         super().__init__()
 
@@ -23,16 +22,16 @@ class App(Component):
         self.success = False
         self.failure = False
 
-    @handler("*")
+    @handler('*')
     def event(self, event, *args, **kwargs):
-        if kwargs.get("filter", False):
+        if kwargs.get('filter', False):
             event.stop()
 
     def test(self, error=False):
         if error:
-            raise Exception("Hello World!")
+            raise Exception('Hello World!')
 
-        return "Hello World!"
+        return 'Hello World!'
 
     def test_success(self, e, value):
         self.e = e
@@ -62,7 +61,7 @@ def test_success():
 
     # The Event
     s = value.value
-    assert s == "Hello World!"
+    assert s == 'Hello World!'
 
     while len(app):
         app.flush()

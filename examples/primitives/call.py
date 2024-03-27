@@ -15,7 +15,6 @@ class bar(Event):
 
 
 class App(Component):
-
     def foo(self):
         return 1
 
@@ -29,7 +28,7 @@ class App(Component):
 
     def started(self, component):
         x = yield self.call(hello())
-        print(f"{x.value:d}")
+        print(f'{x.value:d}')
         self.stop()
 
 

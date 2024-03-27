@@ -4,8 +4,7 @@ from circuits.web.controllers import BaseController, expose
 
 
 class Root(BaseController):
-
-    @expose("index")
+    @expose('index')
     def index(self):
         """
         Index Request Handler
@@ -14,9 +13,9 @@ class Root(BaseController):
         Request Handlers _must_ be exposed explicitly using the ``@expose``
         decorator.
         """
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Root().register(app)
 app.run()

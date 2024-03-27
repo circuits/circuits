@@ -9,13 +9,14 @@ with a strong **Component** Architecture.
 
 .. _Python Programming Language: http://www.python.org/
 """
-__author__ = "James Mills"
-__date__ = "24th February 2013"
+
+__author__ = 'James Mills'
+__date__ = '24th February 2013'
 
 try:
     from .version import version as __version__
 except ImportError:
-    __version__ = "unknown"
+    __version__ = 'unknown'
 
 from .core import (
     BaseComponent, Bridge, Component, Debugger, Event, Loader, Manager,
@@ -28,8 +29,10 @@ try:
     __import__('pkg_resources').declare_namespace(__name__)
 except ImportError:
     from pkgutil import extend_path
+
     __path__ = extend_path(__path__, __name__)
     import os
+
     fd = None
     for _path in __path__:
         _path = os.path.join(_path, '__init__.py')

@@ -2,14 +2,12 @@ from urllib.parse import parse_qsl
 
 
 class QueryStringToken:
-
-    ARRAY = "ARRAY"
-    OBJECT = "OBJECT"
-    KEY = "KEY"
+    ARRAY = 'ARRAY'
+    OBJECT = 'OBJECT'
+    KEY = 'KEY'
 
 
 class QueryStringParser:
-
     def __init__(self, data):
         self.result = {}
 
@@ -47,14 +45,14 @@ class QueryStringParser:
 
         # faster than invoking a regex
         try:
-            key.index("[")
+            key.index('[')
             self.parse(key, value)
             return
         except ValueError:
             pass
 
         try:
-            key.index(".")
+            key.index('.')
             self.parse(key, value)
             return
         except ValueError:
@@ -91,14 +89,12 @@ class QueryStringParser:
                     # there is not a next token
                     # set the value
                     try:
-
                         next_token = next(tokens)
 
                         if next_token[0] == QueryStringToken.ARRAY:
                             ref.append([])
                             ref = ref[key]
                         elif next_token[0] == QueryStringToken.OBJECT:
-
                             try:
                                 ref[key] = {}
                             except IndexError:
@@ -113,20 +109,20 @@ class QueryStringParser:
                         return
 
     def tokens(self, key):
-        buf = ""
+        buf = ''
         for char in key:
-            if char == "[":
+            if char == '[':
                 yield QueryStringToken.ARRAY, buf
-                buf = ""
+                buf = ''
 
-            elif char == ".":
+            elif char == '.':
                 yield QueryStringToken.OBJECT, buf
-                buf = ""
+                buf = ''
 
-            elif char == "]":
+            elif char == ']':
                 try:
                     yield QueryStringToken.KEY, int(buf)
-                    buf = ""
+                    buf = ''
                 except ValueError:
                     yield QueryStringToken.KEY, None
             else:

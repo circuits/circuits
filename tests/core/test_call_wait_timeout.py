@@ -23,7 +23,6 @@ class hello(Event):
 
 
 class App(Component):
-
     @handler('wait')
     def _on_wait(self, timeout=-1):
         result = self.fire(hello())
@@ -52,7 +51,7 @@ class App(Component):
 @pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
-    assert watcher.wait("registered")
+    assert watcher.wait('registered')
 
     def finalizer():
         app.unregister()

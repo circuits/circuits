@@ -35,7 +35,7 @@ from http.client import HTTPConnection, HTTPSConnection
 from urllib.parse import splithost, splittype, splituser, unquote
 
 
-__version__ = "0.0.1"
+__version__ = '0.0.1'
 
 ID = 1
 
@@ -52,11 +52,13 @@ def _gen_id():
 ##
 # Base class for all kinds of client-side errors.
 
+
 class Error(Exception):
     """Base class for client errors."""
 
     def __str__(self):
         return repr(self)
+
 
 ##
 # Indicates an HTTP-level protocol error.  This is raised by the HTTP
@@ -81,10 +83,7 @@ class ProtocolError(Error):
         self.response = response
 
     def __repr__(self):
-        return (
-            "<ProtocolError for %s: %s %s>" %
-            (self.url, self.errcode, self.errmsg)
-        )
+        return '<ProtocolError for %s: %s %s>' % (self.url, self.errcode, self.errmsg)
 
 
 def getparser(encoding):
@@ -93,18 +92,16 @@ def getparser(encoding):
     return par, un
 
 
-def dumps(params, methodname=None, methodresponse=None, encoding=None,
-          allow_none=0):
+def dumps(params, methodname=None, methodresponse=None, encoding=None, allow_none=0):
     if methodname:
         request = {}
-        request["method"] = methodname
-        request["params"] = params
-        request["id"] = _gen_id()
+        request['method'] = methodname
+        request['params'] = params
+        request['id'] = _gen_id()
         return json.dumps(request)
 
 
 class Unmarshaller:
-
     def __init__(self, encoding):
         self.data = None
         self.encoding = encoding
@@ -121,7 +118,6 @@ class Unmarshaller:
 
 
 class Parser:
-
     def __init__(self, unmarshaller):
         self._target = unmarshaller
         self.data = None
@@ -145,10 +141,11 @@ class _Method:
         self.__name = name
 
     def __getattr__(self, name):
-        return _Method(self.__send, f"{self.__name}.{name}")
+        return _Method(self.__send, f'{self.__name}.{name}')
 
     def __call__(self, *args):
         return self.__send(self.__name, args)
+
 
 ##
 # Standard transport class for JSON-RPC over HTTP.
@@ -161,7 +158,7 @@ class Transport:
     """Handles an HTTP transaction to an JSON-RPC server."""
 
     # client identifier (may be overridden)
-    user_agent = "jsonlib.py/%s (by matt harrison)" % __version__
+    user_agent = 'jsonlib.py/%s (by matt harrison)' % __version__
 
     ##
     # Send a complete request, and parse the response.
@@ -196,7 +193,8 @@ class Transport:
             response = r.read()
             raise ProtocolError(
                 host + handler,
-                errcode, errmsg,
+                errcode,
+                errmsg,
                 headers,
                 response,
             )
@@ -230,7 +228,6 @@ class Transport:
     #     x509 info).  The header and x509 fields may be None.
 
     def get_host_info(self, host):
-
         x509 = {}
         if isinstance(host, tuple):
             host, x509 = host
@@ -239,9 +236,9 @@ class Transport:
 
         if auth:
             auth = base64.encodestring(unquote(auth))
-            auth = "".join(auth.split())  # get rid of whitespace
+            auth = ''.join(auth.split())  # get rid of whitespace
             extra_headers = [
-                ("Authorization", "Basic " + auth),
+                ('Authorization', 'Basic ' + auth),
             ]
         else:
             extra_headers = None
@@ -267,7 +264,7 @@ class Transport:
     # @param request_body JSON-RPC body.
 
     def send_request(self, connection, handler, request_body):
-        connection.putrequest("POST", handler)
+        connection.putrequest('POST', handler)
 
     ##
     # Send host name.
@@ -277,7 +274,7 @@ class Transport:
 
     def send_host(self, connection, host):
         host, extra_headers, _x509 = self.get_host_info(host)
-        connection.putheader("Host", host)
+        connection.putheader('Host', host)
         if extra_headers:
             if isinstance(extra_headers, dict):
                 extra_headers = list(extra_headers.items())
@@ -290,7 +287,7 @@ class Transport:
     # @param connection Connection handle.
 
     def send_user_agent(self, connection):
-        connection.putheader("User-Agent", self.user_agent)
+        connection.putheader('User-Agent', self.user_agent)
 
     ##
     # Send request body.
@@ -299,8 +296,8 @@ class Transport:
     # @param request_body JSON-RPC request body.
 
     def send_content(self, connection, request_body):
-        connection.putheader("Content-Type", "text/xml")
-        connection.putheader("Content-Length", str(len(request_body)))
+        connection.putheader('Content-Type', 'text/xml')
+        connection.putheader('Content-Length', str(len(request_body)))
         connection.endheaders()
         if request_body:
             connection.send(request_body)
@@ -338,13 +335,14 @@ class Transport:
             if not response:
                 break
             if self.verbose:
-                print("body:", repr(response))
+                print('body:', repr(response))
             p.feed(response)
 
         file.close()
         p.close()
 
         return u.close()
+
 
 ##
 # Standard transport class for JSON-RPC over HTTPS.
@@ -370,18 +368,16 @@ class SafeTransport(Transport):
 
 
 class ServerProxy:
-
-    def __init__(self, uri, transport=None, encoding=None,
-                 verbose=None, allow_none=0):
+    def __init__(self, uri, transport=None, encoding=None, verbose=None, allow_none=0):
         utype, uri = splittype(uri)
-        if utype not in ("http", "https"):
-            raise OSError("Unsupported JSONRPC protocol")
+        if utype not in ('http', 'https'):
+            raise OSError('Unsupported JSONRPC protocol')
         self.__host, self.__handler = splithost(uri)
         if not self.__handler:
-            self.__handler = "/RPC2"
+            self.__handler = '/RPC2'
 
         if transport is None:
-            if utype == "https":
+            if utype == 'https':
                 transport = SafeTransport()
             else:
                 transport = Transport()
@@ -393,8 +389,7 @@ class ServerProxy:
 
     def __request(self, methodname, params):
         """call a method on the remote server"""
-        request = dumps(params, methodname, encoding=self.__encoding,
-                        allow_none=self.__allow_none)
+        request = dumps(params, methodname, encoding=self.__encoding, allow_none=self.__allow_none)
 
         response = self.__transport.request(
             self.__host,
@@ -410,9 +405,7 @@ class ServerProxy:
         return response
 
     def __repr__(self):
-        return ("<JSONProxy for %s%s>" %
-                (self.__host, self.__handler)
-                )
+        return '<JSONProxy for %s%s>' % (self.__host, self.__handler)
 
     __str__ = __repr__
 
@@ -424,13 +417,13 @@ class ServerProxy:
     # result getattr(server, "strange-python-name")(args)
 
 
-if __name__ == "__main__":
-    s = ServerProxy("http://localhost:8080/foo/", verbose=1)
-    c = s.echo("foo bar")
+if __name__ == '__main__':
+    s = ServerProxy('http://localhost:8080/foo/', verbose=1)
+    c = s.echo('foo bar')
     print(c)
-    d = s.bad("other")
+    d = s.bad('other')
     print(d)
-    e = s.echo("foo bar", "baz")
+    e = s.echo('foo bar', 'baz')
     print(e)
     f = s.echo(5)
     print(f)

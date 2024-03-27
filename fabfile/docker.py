@@ -1,16 +1,15 @@
 """Docker Tasks"""
 
-
 from fabric.api import local, task
 
 from .utils import msg, requires, tobool
 
 
-TAG = "prologic/circuits"
+TAG = 'prologic/circuits'
 
 
 @task(default=True)
-@requires("docker")
+@requires('docker')
 def build(**options):
     """
     Build Docker Image
@@ -21,33 +20,33 @@ def build(**options):
     - rebuild -> Whether to rebuild without a cache.
     - version -> Specific version to tag the image with (Default: latest)
     """
-    rebuild = tobool(options.get("rebuild", False))
-    version = options.get("version", "latest")
+    rebuild = tobool(options.get('rebuild', False))
+    version = options.get('version', 'latest')
 
-    tag = f"{TAG:s}:{version:s}"
-    args = ["docker", "build", "-t", tag, "."]
+    tag = f'{TAG:s}:{version:s}'
+    args = ['docker', 'build', '-t', tag, '.']
 
     if rebuild:
-        args.insert(-1, "--no-cache")
+        args.insert(-1, '--no-cache')
 
-    with msg("Building Image"):
-        local(" ".join(args))
+    with msg('Building Image'):
+        local(' '.join(args))
 
 
 @task()
-@requires("docker")
+@requires('docker')
 def publish():
     """Publish Docker Image"""
-    args = ["docker", "push", TAG]
+    args = ['docker', 'push', TAG]
 
-    with msg("Pushing Image"):
-        local(" ".join(args))
+    with msg('Pushing Image'):
+        local(' '.join(args))
 
 
 @task()
-@requires("docker")
+@requires('docker')
 def run():
     """Run Docker Container"""
-    args = ["docker", "run", "-i", "-t", "--rm", TAG]
+    args = ['docker', 'run', '-i', '-t', '--rm', TAG]
 
-    local(" ".join(args))
+    local(' '.join(args))

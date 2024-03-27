@@ -15,17 +15,17 @@ from circuits import Component, Event, handler, ipc
 
 
 def log(msg, *args, **kwargs):
-    sys.stderr.write("{:s}{:s}".format(msg.format(*args), kwargs.get("n", "\n")))
+    sys.stderr.write('{:s}{:s}'.format(msg.format(*args), kwargs.get('n', '\n')))
     sys.stderr.flush()
 
 
 def error(e):
-    log("ERROR: {0:s}", e)
+    log('ERROR: {0:s}', e)
     log(format_exc())
 
 
 def status(msg, *args):
-    log("\r\x1b[K{0:s}", msg.format(*args), n="")
+    log('\r\x1b[K{0:s}', msg.format(*args), n='')
 
 
 class ping(Event):
@@ -37,13 +37,11 @@ class pong(Event):
 
 
 class Child(Component):
-
     def ping(self, ts):
         self.fire(ipc(pong(ts, time())))
 
 
 class App(Component):
-
     def init(self):
         self.events = 0
         self.stime = time()
@@ -56,7 +54,7 @@ class App(Component):
     def pong(self, ts1, ts2):
         latency = (ts2 - ts1) * 1000.0
         status(
-            "{:d} event/s @ {:0.2f}ms latency".format(
+            '{:d} event/s @ {:0.2f}ms latency'.format(
                 int(self.events / (time() - self.stime)),
                 latency,
             ),

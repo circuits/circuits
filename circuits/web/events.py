@@ -3,6 +3,7 @@ Events
 
 This module implements the necessary Events needed.
 """
+
 from circuits import Event
 
 

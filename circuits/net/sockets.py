@@ -3,6 +3,7 @@ Socket Components
 
 This module contains various Socket Components for use with Networking.
 """
+
 import os
 import select
 from collections import defaultdict, deque
@@ -49,7 +50,7 @@ try:
 except ImportError:
     import warnings
 
-    warnings.warn("No SSL support available.")
+    warnings.warn('No SSL support available.')
     HAS_SSL = 0
     CERT_NONE = None
     PROTOCOL_SSLv23 = None
@@ -90,8 +91,7 @@ def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
 
 
 class Client(BaseComponent):
-
-    channel = "client"
+    channel = 'client'
 
     socket_family = AF_INET
     socket_type = SOCK_STREAM
@@ -128,9 +128,9 @@ class Client(BaseComponent):
 
     @property
     def connected(self):
-        return getattr(self, "_connected", None)
+        return getattr(self, '_connected', None)
 
-    @handler("registered", "started", channel="*")
+    @handler('registered', 'started', channel='*')
     def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
@@ -147,16 +147,16 @@ class Client(BaseComponent):
                     self._poller = Poller().register(self)
                     self.fire(ready(self))
 
-    @handler("stopped", channel="*")
+    @handler('stopped', channel='*')
     def _on_stopped(self, component):
         self.fire(close())
 
-    @handler("read_value_changed")
+    @handler('read_value_changed')
     def _on_read_value_changed(self, value):
         if isinstance(value, bytes):
             self.fire(write(value))
 
-    @handler("prepare_unregister", channel="*")
+    @handler('prepare_unregister', channel='*')
     def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
             self._close()
@@ -182,7 +182,7 @@ class Client(BaseComponent):
 
         self.fire(disconnected())
 
-    @handler("close")
+    @handler('close')
     def close(self):
         if not self._buffer:
             self._close()
@@ -227,21 +227,21 @@ class Client(BaseComponent):
             else:
                 self.fire(error(e))
 
-    @handler("write")
+    @handler('write')
     def write(self, data):
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
         self._buffer.append(data)
 
-    @handler("_disconnect", priority=1)
+    @handler('_disconnect', priority=1)
     def __on_disconnect(self, sock):
         self._close()
 
-    @handler("_read", priority=1)
+    @handler('_read', priority=1)
     def __on_read(self, sock):
         self._read()
 
-    @handler("_write", priority=1)
+    @handler('_write', priority=1)
     def __on_write(self, sock):
         if self._buffer:
             data = self._buffer.popleft()
@@ -265,7 +265,6 @@ class Client(BaseComponent):
 
 
 class TCPClient(Client):
-
     socket_family = AF_INET
     socket_type = SOCK_STREAM
     socket_protocol = IPPROTO_TCP
@@ -276,7 +275,7 @@ class TCPClient(Client):
     def init(self, connect_timeout=5, *args, **kwargs):
         self.connect_timeout = connect_timeout
 
-    @handler("connect")  # noqa
+    @handler('connect')  # noqa
     def connect(self, host, port, secure=False, **kwargs):
         # XXX: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
@@ -286,9 +285,9 @@ class TCPClient(Client):
         self.secure = secure
 
         if self.secure:
-            self.certfile = kwargs.get("certfile", None)
-            self.keyfile = kwargs.get("keyfile", None)
-            self.ca_certs = kwargs.get("ca_certs", None)
+            self.certfile = kwargs.get('certfile', None)
+            self.keyfile = kwargs.get('keyfile', None)
+            self.ca_certs = kwargs.get('ca_certs', None)
 
         try:
             r = self._sock.connect((host, port))
@@ -329,7 +328,11 @@ class TCPClient(Client):
                 self._close()
 
             self._sock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False,
+                self._sock,
+                self.keyfile,
+                self.certfile,
+                ca_certs=self.ca_certs,
+                do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._sock, on_done, on_error):
                 yield
@@ -338,7 +341,6 @@ class TCPClient(Client):
 
 
 class TCP6Client(TCPClient):
-
     socket_family = AF_INET6
 
     def parse_bind_parameter(self, bind_parameter):
@@ -346,17 +348,16 @@ class TCP6Client(TCPClient):
 
 
 class UNIXClient(Client):
-
     socket_family = AF_UNIX
     socket_type = SOCK_STREAM
     socket_options = []
 
-    @handler("ready")
+    @handler('ready')
     def ready(self, component):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
-    @handler("connect")  # noqa
+    @handler('connect')  # noqa
     def connect(self, path, secure=False, **kwargs):
         # XXX: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
@@ -365,9 +366,9 @@ class UNIXClient(Client):
         self.secure = secure
 
         if self.secure:
-            self.certfile = kwargs.get("certfile", None)
-            self.keyfile = kwargs.get("keyfile", None)
-            self.ca_certs = kwargs.get("ca_certs", None)
+            self.certfile = kwargs.get('certfile', None)
+            self.keyfile = kwargs.get('keyfile', None)
+            self.ca_certs = kwargs.get('ca_certs', None)
 
         try:
             r = self._sock.connect_ex(path)
@@ -394,7 +395,11 @@ class UNIXClient(Client):
                 self.fire(error(err))
 
             self._ssock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False,
+                self._sock,
+                self.keyfile,
+                self.certfile,
+                ca_certs=self.ca_certs,
+                do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._ssock, on_done, on_error):
                 yield
@@ -403,8 +408,7 @@ class UNIXClient(Client):
 
 
 class Server(BaseComponent):
-
-    channel = "server"
+    channel = 'server'
     socket_protocol = IPPROTO_IP
 
     def __init__(self, bind, secure=False, backlog=BACKLOG, bufsize=BUFSIZE, channel=channel, **kwargs):
@@ -429,13 +433,13 @@ class Server(BaseComponent):
         self.__starttls = set()
 
         self.secure = secure
-        self.certfile = kwargs.get("certfile")
-        self.keyfile = kwargs.get("keyfile", None)
-        self.cert_reqs = kwargs.get("cert_reqs", CERT_NONE)
-        self.ssl_version = kwargs.get("ssl_version", PROTOCOL_SSLv23)
-        self.ca_certs = kwargs.get("ca_certs", None)
+        self.certfile = kwargs.get('certfile')
+        self.keyfile = kwargs.get('keyfile', None)
+        self.cert_reqs = kwargs.get('cert_reqs', CERT_NONE)
+        self.ssl_version = kwargs.get('ssl_version', PROTOCOL_SSLv23)
+        self.ca_certs = kwargs.get('ca_certs', None)
         if self.secure and not self.certfile:
-            raise RuntimeError("certfile must be specified for server-side operations")
+            raise RuntimeError('certfile must be specified for server-side operations')
 
     def parse_bind_parameter(self, bind_parameter):
         return parse_ipv4_parameter(bind_parameter)
@@ -446,7 +450,7 @@ class Server(BaseComponent):
 
     @property
     def host(self):
-        if getattr(self, "_sock", None) is not None:
+        if getattr(self, '_sock', None) is not None:
             try:
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
@@ -458,7 +462,7 @@ class Server(BaseComponent):
 
     @property
     def port(self):
-        if getattr(self, "_sock", None) is not None:
+        if getattr(self, '_sock', None) is not None:
             try:
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
@@ -466,7 +470,7 @@ class Server(BaseComponent):
             except OSError:
                 return None
 
-    @handler("registered", "started", channel="*")
+    @handler('registered', 'started', channel='*')
     def _on_registered_or_started(self, component, manager=None):
         if self._poller is None:
             if isinstance(component, BasePoller):
@@ -490,11 +494,11 @@ class Server(BaseComponent):
                         self._poller.addReader(self, self._sock)
                         self.fire(ready(self, (self.host, self.port)))
 
-    @handler("stopped", channel="*")
+    @handler('stopped', channel='*')
     def _on_stopped(self, component):
         self.fire(close())
 
-    @handler("read_value_changed")
+    @handler('read_value_changed')
     def _on_read_value_changed(self, value):
         if isinstance(value.value, bytes):
             sock = value.event.args[0]
@@ -531,7 +535,7 @@ class Server(BaseComponent):
 
         self.fire(disconnect(sock))
 
-    @handler("close")
+    @handler('close')
     def close(self, sock=None):
         is_closed = sock is None
 
@@ -582,7 +586,7 @@ class Server(BaseComponent):
             else:
                 self._buffers[sock].appendleft(data)
 
-    @handler("write")
+    @handler('write')
     def write(self, sock, data):
         if not self._poller.isWriting(sock):
             self._poller.addWriter(self, sock)
@@ -664,18 +668,18 @@ class Server(BaseComponent):
         for _ in self._do_handshake(sock, False):
             yield
 
-    @handler("_disconnect", priority=1)
+    @handler('_disconnect', priority=1)
     def _on_disconnect(self, sock):
         self._close(sock)
 
-    @handler("_read", priority=1)
+    @handler('_read', priority=1)
     def _on_read(self, sock):
         if sock == self._sock:
             return self._accept()
         else:
             self._read(sock)
 
-    @handler("_write", priority=1)
+    @handler('_write', priority=1)
     def _on_write(self, sock):
         if self._buffers[sock]:
             data = self._buffers[sock].popleft()
@@ -700,7 +704,6 @@ class Server(BaseComponent):
 
 
 class TCPServer(Server):
-
     socket_family = AF_INET
     socket_type = SOCK_STREAM
     socket_options = [
@@ -723,9 +726,9 @@ def parse_ipv4_parameter(bind_parameter):
         try:
             bind = (gethostbyname(gethostname()), bind_parameter)
         except gaierror:
-            bind = ("0.0.0.0", bind_parameter)
-    elif isinstance(bind_parameter, str) and ":" in bind_parameter:
-        host, port = bind_parameter.split(":")
+            bind = ('0.0.0.0', bind_parameter)
+    elif isinstance(bind_parameter, str) and ':' in bind_parameter:
+        host, port = bind_parameter.split(':')
         port = int(port)
         bind = (host, port)
     else:
@@ -739,7 +742,7 @@ def parse_ipv6_parameter(bind_parameter):
         try:
             _, _, _, _, bind = getaddrinfo(getfqdn(), bind_parameter, AF_INET6)[0]
         except (gaierror, IndexError):
-            bind = ("::", bind_parameter)
+            bind = ('::', bind_parameter)
     else:
         bind = bind_parameter
 
@@ -747,7 +750,6 @@ def parse_ipv6_parameter(bind_parameter):
 
 
 class TCP6Server(TCPServer):
-
     socket_family = AF_INET6
 
     def parse_bind_parameter(self, bind_parameter):
@@ -755,7 +757,6 @@ class TCP6Server(TCPServer):
 
 
 class UNIXServer(Server):
-
     socket_family = AF_UNIX
     socket_type = SOCK_STREAM
     socket_options = [
@@ -773,7 +774,6 @@ class UNIXServer(Server):
 
 
 class UDPServer(Server):
-
     socket_family = AF_INET
     socket_type = SOCK_DGRAM
     socket_options = [
@@ -798,7 +798,7 @@ class UDPServer(Server):
 
         self.fire(disconnect(sock))
 
-    @handler("close", override=True)
+    @handler('close', override=True)
     def close(self):
         self.fire(closed())
 
@@ -829,25 +829,25 @@ class UDPServer(Server):
             else:
                 self.fire(error(self._sock, e))
 
-    @handler("write", override=True)
+    @handler('write', override=True)
     def write(self, address, data):
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
         self._buffers[self._sock].append((address, data))
 
-    @handler("broadcast", override=True)
+    @handler('broadcast', override=True)
     def broadcast(self, data, port):
-        self.write(("<broadcast>", port), data)
+        self.write(('<broadcast>', port), data)
 
-    @handler("_disconnect", priority=1, override=True)
+    @handler('_disconnect', priority=1, override=True)
     def _on_disconnect(self, sock):
         self._close(sock)
 
-    @handler("_read", priority=1, override=True)
+    @handler('_read', priority=1, override=True)
     def _on_read(self, sock):
         self._read()
 
-    @handler("_write", priority=1, override=True)
+    @handler('_write', priority=1, override=True)
     def _on_write(self, sock):
         if self._buffers[self._sock]:
             address, data = self._buffers[self._sock].popleft()
@@ -885,7 +885,7 @@ def Pipe(*channels, **kwargs):
         raise RuntimeError('No socketpair support available.')
 
     if not channels:
-        channels = ("a", "b")
+        channels = ('a', 'b')
 
     s1, s2 = socketpair()
     s1.setblocking(False)

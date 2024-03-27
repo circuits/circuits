@@ -1,6 +1,5 @@
 """Internet Relay Chat Protocol numerics"""
 
-
 RPL_WELCOME = 1
 RPL_YOURHOST = 2
 

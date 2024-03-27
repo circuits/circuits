@@ -4,6 +4,7 @@ Static
 This modStatic implements a Static dispatcher used to serve up static
 resources and an optional apache-style directory listing.
 """
+
 import os
 from html import escape
 from string import Template
@@ -37,20 +38,17 @@ _dirlisting_template = Template(DEFAULT_DIRECTORY_INDEX_TEMPLATE)
 
 
 class Static(BaseComponent):
+    channel = 'web'
 
-    channel = "web"
-
-    def __init__(self, path=None, docroot=None,
-                 defaults=("index.html", "index.xhtml"), dirlisting=False, **kwargs):
+    def __init__(self, path=None, docroot=None, defaults=('index.html', 'index.xhtml'), dirlisting=False, **kwargs):
         super().__init__(**kwargs)
 
         self.path = path
-        self.docroot = os.path.abspath(
-            docroot) if docroot is not None else os.path.abspath(os.getcwd())
+        self.docroot = os.path.abspath(docroot) if docroot is not None else os.path.abspath(os.getcwd())
         self.defaults = defaults
         self.dirlisting = dirlisting
 
-    @handler("request", priority=0.9)
+    @handler('request', priority=0.9)
     def _on_request(self, event, request, response):
         if self.path is not None and not request.path.startswith(self.path):
             return
@@ -58,14 +56,14 @@ class Static(BaseComponent):
         path = request.path
 
         if self.path is not None:
-            path = path[len(self.path):]
+            path = path[len(self.path) :]
 
-        path = unquote(path.strip("/"))
+        path = unquote(path.strip('/'))
 
         if path:
             location = os.path.abspath(os.path.join(self.docroot, path))
         else:
-            location = os.path.abspath(os.path.join(self.docroot, "."))
+            location = os.path.abspath(os.path.join(self.docroot, '.'))
 
         if not os.path.exists(location):
             return
@@ -84,7 +82,6 @@ class Static(BaseComponent):
 
         # Is it a directory?
         elif os.path.isdir(location):
-
             # Try to serve one of default files first..
             for default in self.defaults:
                 location = os.path.abspath(
@@ -101,38 +98,40 @@ class Static(BaseComponent):
             # .. serve a directory listing if allowed to.
             if self.dirlisting:
                 directory = os.path.abspath(os.path.join(self.docroot, path))
-                cur_dir = os.path.join(self.path, path) if self.path else ""
+                cur_dir = os.path.join(self.path, path) if self.path else ''
 
                 if not path:
-                    url_up = ""
+                    url_up = ''
                 else:
                     if self.path is None:
-                        url_up = os.path.join("/", os.path.split(path)[0])
+                        url_up = os.path.join('/', os.path.split(path)[0])
                     else:
-                        url_up = os.path.join(cur_dir, "..")
-                    url_up = '<li><a href="%s">%s</a></li>' % (escape(url_up, True), "..")
+                        url_up = os.path.join(cur_dir, '..')
+                    url_up = '<li><a href="%s">%s</a></li>' % (escape(url_up, True), '..')
 
                 listing = []
                 for item in os.listdir(directory):
-                    if not item.startswith("."):
-                        url = os.path.join("/", path, cur_dir, item)
+                    if not item.startswith('.'):
+                        url = os.path.join('/', path, cur_dir, item)
                         location = os.path.abspath(
                             os.path.join(self.docroot, path, item),
                         )
                         if os.path.isdir(location):
                             li = '<li><a href="%s/">%s/</a></li>' % (
-                                escape(quote(url), True), escape(item),
+                                escape(quote(url), True),
+                                escape(item),
                             )
                         else:
                             li = '<li><a href="%s">%s</a></li>' % (
-                                escape(quote(url), True), escape(item),
+                                escape(quote(url), True),
+                                escape(item),
                             )
                         listing.append(li)
 
                 ctx = {}
-                ctx["directory"] = cur_dir or os.path.join("/", cur_dir, path)
-                ctx["url_up"] = url_up
-                ctx["listing"] = "\n".join(listing)
+                ctx['directory'] = cur_dir or os.path.join('/', cur_dir, path)
+                ctx['url_up'] = url_up
+                ctx['listing'] = '\n'.join(listing)
                 try:
                     return _dirlisting_template.safe_substitute(ctx)
                 finally:

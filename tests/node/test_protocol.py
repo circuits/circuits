@@ -41,8 +41,7 @@ class AppFirewall(Component):
         self.write_data = data
 
     def __event_is_allow(self, event):
-        allow = event.name == 'return_value' \
-            and 'prohibits_channel' not in event.channels
+        allow = event.name == 'return_value' and 'prohibits_channel' not in event.channels
 
         if not allow:
             self.fire(firewall_block())

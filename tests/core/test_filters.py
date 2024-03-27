@@ -7,11 +7,10 @@ class test(Event):
 
 
 class App(BaseComponent):
-
-    @handler("test")
+    @handler('test')
     def _on_test(self, event):
         try:
-            return "Hello World!"
+            return 'Hello World!'
         finally:
             event.stop()
 
@@ -25,4 +24,4 @@ def test_main():
         app.flush()
     x = app.fire(test())
     app.flush()
-    assert x.value == "Hello World!"
+    assert x.value == 'Hello World!'

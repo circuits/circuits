@@ -3,6 +3,7 @@ Web Servers
 
 This module implements the several Web Server components.
 """
+
 from sys import stderr
 
 from circuits import io
@@ -47,10 +48,19 @@ class BaseServer(BaseComponent):
     bound to the file given by the 'bind' argument.
     """
 
-    channel = "web"
+    channel = 'web'
 
-    def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
-                 channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
+    def __init__(
+        self,
+        bind,
+        encoding='utf-8',
+        secure=False,
+        certfile=None,
+        channel=channel,
+        display_banner=True,
+        bufsize=BUFSIZE,
+        **kwargs,
+    ):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
         super().__init__(channel=channel)
 
@@ -59,7 +69,7 @@ class BaseServer(BaseComponent):
         if isinstance(bind, (int, list, tuple)):
             SocketType = TCPServer
         else:
-            SocketType = TCPServer if ":" in bind else UNIXServer
+            SocketType = TCPServer if ':' in bind else UNIXServer
 
         self.server = SocketType(
             bind,
@@ -71,51 +81,54 @@ class BaseServer(BaseComponent):
         ).register(self)
 
         self.http = HTTP(
-            self, encoding=encoding, channel=channel,
+            self,
+            encoding=encoding,
+            channel=channel,
         ).register(self)
 
     @property
     def host(self):
-        if hasattr(self, "server"):
+        if hasattr(self, 'server'):
             return self.server.host
 
     @property
     def port(self):
-        if hasattr(self, "server"):
+        if hasattr(self, 'server'):
             return self.server.port
 
     @property
     def display_banner(self):
-        return getattr(self, "_display_banner", False)
+        return getattr(self, '_display_banner', False)
 
     @property
     def secure(self):
-        if hasattr(self, "server"):
+        if hasattr(self, 'server'):
             return self.server.secure
 
-    @handler("connect")
+    @handler('connect')
     def _on_connect(self, *args, **kwargs):
         """Dummy Event Handler for connect"""
 
-    @handler("closed")
+    @handler('closed')
     def _on_closed(self, *args, **kwargs):
         """Dummy Event Handler for closed"""
 
-    @handler("signal")
+    @handler('signal')
     def _on_signal(self, *args, **kwargs):
         """signal Event Handler"""
         self.fire(close())
         Timer(3, terminate()).register(self)
 
-    @handler("terminate")
+    @handler('terminate')
     def _on_terminate(self):
         raise SystemExit(0)
 
-    @handler("ready")
+    @handler('ready')
     def _on_ready(self, server, bind):
         stderr.write(
-            "{} ready! Listening on: {}\n".format(
-                self.http.version, self.http.base,
+            '{} ready! Listening on: {}\n'.format(
+                self.http.version,
+                self.http.base,
             ),
         )
 
@@ -138,22 +151,22 @@ class Server(BaseServer):
         Dispatcher(channel=self.channel).register(self.http)
 
 
-class FakeSock():
-
+class FakeSock:
     def getpeername(self):
         return (None, None)
 
 
 class StdinServer(BaseComponent):
+    channel = 'web'
 
-    channel = "web"
-
-    def __init__(self, encoding="utf-8", channel=channel):
+    def __init__(self, encoding='utf-8', channel=channel):
         super().__init__(channel=channel)
 
         self.server = (io.stdin + io.stdout).register(self)
         self.http = HTTP(
-            self, encoding=encoding, channel=channel,
+            self,
+            encoding=encoding,
+            channel=channel,
         ).register(self)
 
         Dispatcher(channel=self.channel).register(self)
@@ -170,10 +183,10 @@ class StdinServer(BaseComponent):
     def secure(self):
         return False
 
-    @handler("read", channel="stdin")
+    @handler('read', channel='stdin')
     def read(self, data):
         self.fire(read(FakeSock(), data))
 
-    @handler("write")
+    @handler('write')
     def write(self, sock, data):
         self.fire(write(data))

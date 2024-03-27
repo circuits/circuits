@@ -1,12 +1,11 @@
 """Internet Relay Chat Utilities"""
 
-
 from re import compile as compile_regex
 
 
-PREFIX = compile_regex("([^!].*)!(.*)@(.*)")
+PREFIX = compile_regex('([^!].*)!(.*)@(.*)')
 COLOR_CODE = compile_regex(r'(?:(\d\d?)(?:(,)(\d\d?))?)?')
-COLOR = compile_regex(r"\x03(?:(\d\d?)(?:,(\d\d?))?)?")
+COLOR = compile_regex(r'\x03(?:(\d\d?)(?:,(\d\d?))?)?')
 
 
 class Error(Exception):
@@ -26,19 +25,19 @@ def strip(s, color=False):
 
     :returns str: returns processes string
     """
-    if len(s) > 0 and s[0] == ":":
+    if len(s) > 0 and s[0] == ':':
         s = s[1:]
     if color:
-        s = s.replace("\x01", "")
-        s = s.replace("\x02", "")  # bold
-        s = s.replace("\x1d", "")  # italics
-        s = s.replace("\x1f", "")  # underline
-        s = s.replace("\x1e", "")  # strikethrough
-        s = s.replace("\x11", "")  # monospace
-        s = s.replace("\x16", "")  # reverse color
-        s = COLOR.sub("", s)  # color codes
-        s = s.replace("\x03", "")  # color
-        s = s.replace("\x0f", "")  # reset
+        s = s.replace('\x01', '')
+        s = s.replace('\x02', '')  # bold
+        s = s.replace('\x1d', '')  # italics
+        s = s.replace('\x1f', '')  # underline
+        s = s.replace('\x1e', '')  # strikethrough
+        s = s.replace('\x11', '')  # monospace
+        s = s.replace('\x16', '')  # reverse color
+        s = COLOR.sub('', s)  # color codes
+        s = s.replace('\x03', '')  # color
+        s = s.replace('\x0f', '')  # reset
     return s
 
 
@@ -52,7 +51,7 @@ def joinprefix(nick, user, host):
 
     :returns str: a string in the form of <nick>!<user>@<host>
     """
-    return "{}!{}@{}".format(nick or "", user or "", host or "")
+    return '{}!{}@{}'.format(nick or '', user or '', host or '')
 
 
 def parseprefix(prefix):
@@ -71,7 +70,7 @@ def parseprefix(prefix):
         return prefix or None, None, None
 
 
-def parsemsg(s, encoding="utf-8"):
+def parsemsg(s, encoding='utf-8'):
     """
     Parse an IRC Message from s
 
@@ -82,16 +81,16 @@ def parsemsg(s, encoding="utf-8"):
     """
     s = s.decode(encoding, 'replace')
 
-    prefix = ""
+    prefix = ''
     trailing = []
 
-    if s and s[0] == ":":
-        prefix, s = s[1:].split(" ", 1)
+    if s and s[0] == ':':
+        prefix, s = s[1:].split(' ', 1)
 
     prefix = parseprefix(prefix)
 
-    if s.find(" :") != -1:
-        s, trailing = s.split(" :", 1)
+    if s.find(' :') != -1:
+        s, trailing = s.split(' :', 1)
         args = s.split()
         args.append(trailing)
     else:
@@ -108,34 +107,141 @@ def irc_color_to_ansi(data, reset=True):
     """Maps IRC color codes to ANSI terminal escape sequences"""
 
     def ansi(*seq):
-        return "\33[{}m".format(";".join(f"{x:02}" for x in seq if x))
+        return '\33[{}m'.format(';'.join(f'{x:02}' for x in seq if x))
 
     ansi_default_fg = 39
     ansi_default_bg = 49
     color_map_fg = {
-        0: 37, 1: 30, 2: 34, 3: 32, 4: 31, 5: 36, 6: 35, 7: 33, 8: 93, 9: 92,
-        10: 36, 11: 96, 12: 94, 13: 95, 14: 90, 15: 37,
-        16: 52, 17: 94, 18: 100, 19: 58, 20: 22, 21: 29, 22: 23, 23: 24,
-        24: 17, 25: 54, 26: 53, 27: 89, 28: 88, 29: 130, 30: 142, 31: 64,
-        32: 28, 33: 35, 34: 30, 35: 25, 36: 18, 37: 91, 38: 90, 39: 125,
-        40: 124, 41: 166, 42: 184, 43: 106, 44: 34, 45: 49, 46: 37, 47: 33,
-        48: 19, 49: 129, 50: 127, 51: 161, 52: 196, 53: 208, 54: 226,
-        55: 154, 56: 46, 57: 86, 58: 51, 59: 75, 60: 21, 61: 171, 62: 201,
-        63: 198, 64: 203, 65: 215, 66: 227, 67: 191, 68: 83, 69: 122, 70: 87,
-        71: 111, 72: 63, 73: 177, 74: 207, 75: 205, 76: 217, 77: 223, 78: 229,
-        79: 193, 80: 157, 81: 158, 82: 159, 83: 153, 84: 147, 85: 183, 86: 219,
-        87: 212, 88: 16, 89: 233, 90: 235, 91: 237, 92: 239, 93: 241, 94: 244,
-        95: 247, 96: 250, 97: 254, 98: 231, 99: ansi_default_fg,
+        0: 37,
+        1: 30,
+        2: 34,
+        3: 32,
+        4: 31,
+        5: 36,
+        6: 35,
+        7: 33,
+        8: 93,
+        9: 92,
+        10: 36,
+        11: 96,
+        12: 94,
+        13: 95,
+        14: 90,
+        15: 37,
+        16: 52,
+        17: 94,
+        18: 100,
+        19: 58,
+        20: 22,
+        21: 29,
+        22: 23,
+        23: 24,
+        24: 17,
+        25: 54,
+        26: 53,
+        27: 89,
+        28: 88,
+        29: 130,
+        30: 142,
+        31: 64,
+        32: 28,
+        33: 35,
+        34: 30,
+        35: 25,
+        36: 18,
+        37: 91,
+        38: 90,
+        39: 125,
+        40: 124,
+        41: 166,
+        42: 184,
+        43: 106,
+        44: 34,
+        45: 49,
+        46: 37,
+        47: 33,
+        48: 19,
+        49: 129,
+        50: 127,
+        51: 161,
+        52: 196,
+        53: 208,
+        54: 226,
+        55: 154,
+        56: 46,
+        57: 86,
+        58: 51,
+        59: 75,
+        60: 21,
+        61: 171,
+        62: 201,
+        63: 198,
+        64: 203,
+        65: 215,
+        66: 227,
+        67: 191,
+        68: 83,
+        69: 122,
+        70: 87,
+        71: 111,
+        72: 63,
+        73: 177,
+        74: 207,
+        75: 205,
+        76: 217,
+        77: 223,
+        78: 229,
+        79: 193,
+        80: 157,
+        81: 158,
+        82: 159,
+        83: 153,
+        84: 147,
+        85: 183,
+        86: 219,
+        87: 212,
+        88: 16,
+        89: 233,
+        90: 235,
+        91: 237,
+        92: 239,
+        93: 241,
+        94: 244,
+        95: 247,
+        96: 250,
+        97: 254,
+        98: 231,
+        99: ansi_default_fg,
     }
     color_map_bg = {
-        0: 47, 1: 40, 2: 44, 3: 42, 4: 41, 5: 46, 6: 45, 7: 43, 8: 103, 10: 46, 14: 97, 15: 47, 99: ansi_default_bg,
+        0: 47,
+        1: 40,
+        2: 44,
+        3: 42,
+        4: 41,
+        5: 46,
+        6: 45,
+        7: 43,
+        8: 103,
+        10: 46,
+        14: 97,
+        15: 47,
+        99: ansi_default_bg,
     }
 
     enable_char = {
-        '\x02': 1, '\x1d': 3, '\x1e': 9, '\x1f': 4, '\x16': 7,
+        '\x02': 1,
+        '\x1d': 3,
+        '\x1e': 9,
+        '\x1f': 4,
+        '\x16': 7,
     }
     revert_char = {
-        '\x02': 22, '\x1d': 23, '\x1f': 24, '\x16': 27, '\x1e': 29,
+        '\x02': 22,
+        '\x1d': 23,
+        '\x1f': 24,
+        '\x16': 27,
+        '\x1e': 29,
     }
 
     def escape(data):
@@ -157,7 +263,7 @@ def irc_color_to_ansi(data, reset=True):
                 yield ansi(enable_char[char])
             elif char == '\x03':
                 i += 1
-                m = COLOR_CODE.match(data[i:i + 5])
+                m = COLOR_CODE.match(data[i : i + 5])
                 colors = []
                 if m:
                     fg, has_bg, bg = m.groups()
@@ -188,4 +294,5 @@ def irc_color_to_ansi(data, reset=True):
                 yield char
         if start and reset:
             yield ansi(0)
-    return "".join(escape(data))
+
+    return ''.join(escape(data))

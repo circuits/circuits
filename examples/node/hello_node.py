@@ -33,17 +33,16 @@ class hello(Event):
 
 
 class App(Component):
-
     def ready(self, client):
-        print("Ready!")
+        print('Ready!')
 
     def connected(self, host, port):
-        print(f"Connected to {host}:{port}")
-        print("Try: x = app.fire(hello())")
+        print(f'Connected to {host}:{port}')
+        print('Try: x = app.fire(hello())')
 
     def hello(self):
-        print("Now try: y = app.fire(remote(hello(), \"test\"))")
-        return f"Hello World! ({getpid():d})"
+        print('Now try: y = app.fire(remote(hello(), "test"))')
+        return f'Hello World! ({getpid():d})'
 
 
 # Setup app1 with a debugger
@@ -55,7 +54,7 @@ port = int(sys.argv[2])
 bind = (host, port)
 
 # Add an address of a node to talk to called "test"
-node.add("test", *bind)
+node.add('test', *bind)
 
 # Start app as a thread
 app.start()

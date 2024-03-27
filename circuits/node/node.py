@@ -4,6 +4,7 @@ Node
 this module manage node (start server, add peer, ...)
 .. seealso:: Examples in :file:`examples/node`
 """
+
 from circuits import BaseComponent, Timer, handler
 from circuits.net.events import connect
 
@@ -110,9 +111,11 @@ class Node(BaseComponent):
         auto_remote_event = kwargs.pop('auto_remote_event', {})
         for event_name in auto_remote_event:
             for channel in auto_remote_event[event_name]:
+
                 @handler(event_name, channel=channel)
                 def event_handle(self, event, *args, **kwargs):
                     yield self.call(remote(event, connection_name))
+
             self.addHandler(event_handle)
 
         client_channel = kwargs.pop(
@@ -125,18 +128,31 @@ class Node(BaseComponent):
         # connected event binding
         @handler('connected', channel=client_channel)
         def connected(self, hostname, port):
-            self.fire(connected_to(
-                connection_name, hostname, port, client_channel, client,
-            ))
+            self.fire(
+                connected_to(
+                    connection_name,
+                    hostname,
+                    port,
+                    client_channel,
+                    client,
+                )
+            )
+
         self.addHandler(connected)
 
         # disconnected event binding
         @handler('disconnected', 'unreachable', channel=client_channel)
         def disconnected(self, event, *args, **kwargs):
             if event.name == 'disconnected':
-                self.fire(disconnected_from(
-                    connection_name, hostname, port, client_channel, client,
-                ))
+                self.fire(
+                    disconnected_from(
+                        connection_name,
+                        hostname,
+                        port,
+                        client_channel,
+                        client,
+                    )
+                )
 
             # auto reconnect
             if reconnect_delay > 0:
@@ -171,8 +187,7 @@ class Node(BaseComponent):
         :return: The Client object
         :rtype: :class:`circuits.node.client.Client`
         """
-        return self.__peers[connection_name] if connection_name in self.__peers\
-            else None
+        return self.__peers[connection_name] if connection_name in self.__peers else None
 
     @handler('remote', channel='*')
     def __on_remote(self, event, remote_event, connection_name, channel=None):
@@ -204,6 +219,5 @@ class Node(BaseComponent):
         print(result.value)``
         """
         node = self.__peers[connection_name]
-        remote_event.channels = (channel,) if channel is not None \
-            else event.channels
+        remote_event.channels = (channel,) if channel is not None else event.channels
         return node.send(remote_event)

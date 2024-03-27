@@ -10,11 +10,26 @@ from .constants import HTTP_STATUS_CODES
 
 
 __all__ = (
-    'HTTPException', 'BadRequest', 'UnicodeError', 'Unauthorized', 'Forbidden',
-    'NotFound', 'MethodNotAllowed', 'NotAcceptable', 'RequestTimeout', 'Gone',
-    'LengthRequired', 'PreconditionFailed', 'RequestEntityTooLarge',
-    'RequestURITooLarge', 'UnsupportedMediaType', 'RangeUnsatisfiable',
-    'InternalServerError', 'NotImplemented', 'BadGateway', 'ServiceUnavailable',
+    'HTTPException',
+    'BadRequest',
+    'UnicodeError',
+    'Unauthorized',
+    'Forbidden',
+    'NotFound',
+    'MethodNotAllowed',
+    'NotAcceptable',
+    'RequestTimeout',
+    'Gone',
+    'LengthRequired',
+    'PreconditionFailed',
+    'RequestEntityTooLarge',
+    'RequestURITooLarge',
+    'UnsupportedMediaType',
+    'RangeUnsatisfiable',
+    'InternalServerError',
+    'NotImplemented',
+    'BadGateway',
+    'ServiceUnavailable',
     'Redirect',
 )
 
@@ -31,7 +46,7 @@ class HTTPException(Exception):
     description = None
 
     def __init__(self, description=None, traceback=None):
-        super().__init__("%d %s" % (self.code, self.name))
+        super().__init__('%d %s' % (self.code, self.name))
         if description is not None:
             self.description = description
         if traceback is not None:
@@ -55,10 +70,7 @@ class BadRequest(HTTPException):
     """
 
     code = 400
-    description = (
-        '<p>The browser (or proxy) sent a request that this server could '
-        'not understand.</p>'
-    )
+    description = '<p>The browser (or proxy) sent a request that this server could not understand.</p>'
 
 
 class UnicodeError(HTTPException):
@@ -80,7 +92,7 @@ class Unauthorized(HTTPException):
     description = (
         '<p>The server could not verify that you are authorized to access '
         'the URL requested.  You either supplied the wrong credentials (e.g. '
-        'a bad password), or your browser doesn\'t understand how to supply '
+        "a bad password), or your browser doesn't understand how to supply "
         'the credentials required.</p><p>In case you are allowed to request '
         'the document, please check your user-id and password and try '
         'again.</p>'
@@ -97,7 +109,7 @@ class Forbidden(HTTPException):
 
     code = 403
     description = (
-        '<p>You don\'t have the permission to access the requested resource. '
+        "<p>You don't have the permission to access the requested resource. "
         'It is either read-protected or not readable by the server.</p>'
     )
 
@@ -134,10 +146,7 @@ class MethodNotAllowed(HTTPException):
     def __init__(self, method, description=None):
         HTTPException.__init__(self, description)
         if description is None:
-            self.description = (
-                '<p>The method %s is not allowed '
-                'for the requested URL.</p>'
-            ) % method
+            self.description = ('<p>The method %s is not allowed for the requested URL.</p>') % method
 
 
 class NotAcceptable(HTTPException):
@@ -168,7 +177,7 @@ class RequestTimeout(HTTPException):
     code = 408
     description = (
         '<p>The server closed the network connection because the browser '
-        'didn\'t finish the request within the specified time.</p>'
+        "didn't finish the request within the specified time.</p>"
     )
 
 
@@ -196,10 +205,7 @@ class LengthRequired(HTTPException):
     """
 
     code = 411
-    description = (
-        '<p>A request with this method requires a valid <code>Content-'
-        'Length</code> header.</p>'
-    )
+    description = '<p>A request with this method requires a valid <code>Content-Length</code> header.</p>'
 
 
 class PreconditionFailed(HTTPException):
@@ -211,10 +217,7 @@ class PreconditionFailed(HTTPException):
     """
 
     code = 412
-    description = (
-        '<p>The precondition on the request for the URL failed positive '
-        'evaluation.</p>'
-    )
+    description = '<p>The precondition on the request for the URL failed positive evaluation.</p>'
 
 
 class RequestEntityTooLarge(HTTPException):
@@ -226,9 +229,7 @@ class RequestEntityTooLarge(HTTPException):
     """
 
     code = 413
-    description = (
-        '<p>The data value transmitted exceeds the capacity limit.</p>'
-    )
+    description = '<p>The data value transmitted exceeds the capacity limit.</p>'
 
 
 class RequestURITooLarge(HTTPException):
@@ -254,10 +255,7 @@ class UnsupportedMediaType(HTTPException):
     """
 
     code = 415
-    description = (
-        '<p>The server does not support the media type transmitted in '
-        'the request.</p>'
-    )
+    description = '<p>The server does not support the media type transmitted in the request.</p>'
 
 
 class RangeUnsatisfiable(HTTPException):
@@ -268,9 +266,7 @@ class RangeUnsatisfiable(HTTPException):
     """
 
     code = 416
-    description = (
-        '<p>The server cannot satisfy the request range(s).</p>'
-    )
+    description = '<p>The server cannot satisfy the request range(s).</p>'
 
 
 class InternalServerError(HTTPException):
@@ -298,10 +294,7 @@ class NotImplemented(HTTPException):
     """
 
     code = 501
-    description = (
-        '<p>The server does not support the action requested by the '
-        'browser.</p>'
-    )
+    description = '<p>The server does not support the action requested by the browser.</p>'
 
 
 class BadGateway(HTTPException):
@@ -314,10 +307,7 @@ class BadGateway(HTTPException):
     """
 
     code = 502
-    description = (
-        '<p>The proxy server received an invalid response from an upstream '
-        'server.</p>'
-    )
+    description = '<p>The proxy server received an invalid response from an upstream server.</p>'
 
 
 class ServiceUnavailable(HTTPException):
@@ -336,7 +326,6 @@ class ServiceUnavailable(HTTPException):
 
 
 class Redirect(HTTPException):
-
     code = 303
 
     def __init__(self, urls, status=None):

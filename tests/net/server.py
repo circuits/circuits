@@ -3,11 +3,10 @@ from circuits.net.events import write
 
 
 class Server(Component):
-
-    channel = "server"
+    channel = 'server'
 
     def init(self):
-        self.data = ""
+        self.data = ''
         self.host = None
         self.port = None
         self.client = None
@@ -29,7 +28,7 @@ class Server(Component):
     def connect(self, sock, *args):
         self.connected = True
         self.client = args
-        self.fire(write(sock, b"Ready"))
+        self.fire(write(sock, b'Ready'))
 
     def disconnect(self, sock):
         self.client = None

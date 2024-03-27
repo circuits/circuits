@@ -18,7 +18,6 @@ class return_value(Event):
 
 
 class App(Component):
-
     def return_value(self, event):
         print('Hello client!', event.channels)
 
@@ -140,10 +139,10 @@ def test_server_send_multicast(app, watcher, manager):
     assert watcher.wait('return_value')
 
     for _ in range(3):
-        if watcher.count("return_value") == 3:
+        if watcher.count('return_value') == 3:
             break
         sleep(1)
-    assert watcher.count("return_value") == 3
+    assert watcher.count('return_value') == 3
 
     client1.unregister()
     client2.unregister()

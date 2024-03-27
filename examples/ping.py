@@ -8,6 +8,7 @@ This example merely wraps the standard UNIX "/usr/bin/ping" command in a subproc
 using the ``circuits.io.Process`` Component for Asyncchronous I/O communications with
 the process.
 """
+
 import sys
 
 from circuits import Component, Debugger
@@ -15,12 +16,11 @@ from circuits.io import Process, stdout, write
 
 
 class Ping(Component):
-
     # This adds the already instantiated stdout instnace
     stdout = stdout
 
     def init(self, host):
-        self.p = Process(["/bin/ping", host]).register(self)
+        self.p = Process(['/bin/ping', host]).register(self)
         self.p.start()
 
     def read(self, data):

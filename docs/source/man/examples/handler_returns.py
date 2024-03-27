@@ -10,7 +10,6 @@ class Identify(Event):
 
 
 class Pound(Component):
-
     def __init__(self):
         super().__init__()
 
@@ -24,13 +23,12 @@ class Pound(Component):
     def Identify_success(self, evt, result):
         if not isinstance(result, list):
             result = [result]
-        print("In pound:")
+        print('In pound:')
         for name in result:
             print(name)
 
 
 class Dog(Component):
-
     def Identify(self):
         return self.__class__.__name__
 

@@ -7,6 +7,7 @@ be used for real-time monitoring of file system events. The example simply
 takes a path to watch as the first Command Line Argument and prints to
 stdour every file system event it sees.
 """
+
 import sys
 
 from circuits import Component
@@ -14,14 +15,13 @@ from circuits.io import Notify
 
 
 class FileWatcher(Component):
-
-    channel = "notify"
+    channel = 'notify'
 
     def opened(self, filename, path, fullpath, isdir):
-        print(f"File {filename:s} opened")
+        print(f'File {filename:s} opened')
 
     def closed(self, filename, path, fullpath, isdir):
-        print(f"File {filename:s} closed")
+        print(f'File {filename:s} closed')
 
 
 # Configure the system

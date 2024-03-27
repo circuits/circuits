@@ -2,13 +2,12 @@ from circuits import Component
 
 
 class Client(Component):
-
-    channel = "client"
+    channel = 'client'
 
     def __init__(self, channel=channel):
         super().__init__(channel=channel)
 
-        self.data = ""
+        self.data = ''
         self.error = None
         self.ready = False
         self.closed = False

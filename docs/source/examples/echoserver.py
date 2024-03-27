@@ -12,8 +12,7 @@ from circuits.net.sockets import TCPServer
 
 
 class EchoServer(TCPServer):
-
-    @handler("read")
+    @handler('read')
     def on_read(self, sock, data):
         """
         Read Event Handler
@@ -28,10 +27,11 @@ class EchoServer(TCPServer):
         """
         return data
 
+
 # Start and "run" the system.
 # Bind to port 0.0.0.0:8000
 
 
-app = EchoServer(("0.0.0.0", 8000))
+app = EchoServer(('0.0.0.0', 8000))
 Debugger().register(app)
 app.run()

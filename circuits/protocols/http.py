@@ -12,7 +12,6 @@ class response(Event):
 
 
 class ResponseObject:
-
     def __init__(self, headers, status, version):
         self.headers = headers
         self.status = status
@@ -22,13 +21,14 @@ class ResponseObject:
 
         # XXX: This sucks :/ Avoiding the circuit import here :/
         from circuits.web.constants import HTTP_STATUS_CODES
+
         self.reason = HTTP_STATUS_CODES[self.status]
 
     def __repr__(self):
-        return "<Response {:d} {} {} ({:d})>".format(
+        return '<Response {:d} {} {} ({:d})>'.format(
             self.status,
             self.reason,
-            self.headers.get("Content-Type"),
+            self.headers.get('Content-Type'),
             len(self.body.getvalue()),
         )
 
@@ -37,24 +37,26 @@ class ResponseObject:
 
 
 class HTTP(BaseComponent):
+    channel = 'web'
 
-    channel = "web"
-
-    def __init__(self, encoding="utf-8", channel=channel):
+    def __init__(self, encoding='utf-8', channel=channel):
         super().__init__(channel=channel)
 
         self._encoding = encoding
 
         # XXX: This sucks :/ Avoiding the circuit import here :/
         from circuits.web.parsers import HttpParser
+
         self._parser = HttpParser(1, True)
 
-    @handler("read")
+    @handler('read')
     def _on_client_read(self, data):
         self._parser.execute(data, len(data))
-        if self._parser.is_message_complete() or \
-                self._parser.is_upgrade() or \
-                (self._parser.is_headers_complete() and self._parser._clen == 0):
+        if (
+            self._parser.is_message_complete()
+            or self._parser.is_upgrade()
+            or (self._parser.is_headers_complete() and self._parser._clen == 0)
+        ):
             status = self._parser.get_status_code()
             version = self._parser.get_version()
             headers = self._parser.get_headers()
@@ -66,4 +68,5 @@ class HTTP(BaseComponent):
 
             # XXX: This sucks :/ Avoiding the circuit import here :/
             from circuits.web.parsers import HttpParser
+
             self._parser = HttpParser(1, True)

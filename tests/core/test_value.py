@@ -25,33 +25,32 @@ class values(Event):
 
 
 class App(Component):
-
     def hello(self):
-        return "Hello World!"
+        return 'Hello World!'
 
     def test(self):
         return self.fire(hello())
 
     def foo(self):
-        raise Exception("ERROR")
+        raise Exception('ERROR')
 
-    @handler("hello_value_changed")
+    @handler('hello_value_changed')
     def _on_hello_value_changed(self, value):
         self.value = value
 
-    @handler("test_value_changed")
+    @handler('test_value_changed')
     def _on_test_value_changed(self, value):
         self.value = value
 
-    @handler("values", priority=2.0)
+    @handler('values', priority=2.0)
     def _value1(self):
-        return "foo"
+        return 'foo'
 
-    @handler("values", priority=1.0)
+    @handler('values', priority=1.0)
     def _value2(self):
-        return "bar"
+        return 'bar'
 
-    @handler("values", priority=0.0)
+    @handler('values', priority=0.0)
     def _value3(self):
         return self.fire(hello())
 
@@ -65,16 +64,16 @@ def test_value(app, simple_manager):
     x = app.fire(hello())
     simple_manager.run()
 
-    assert "Hello World!" in x
-    assert x.value == "Hello World!"
+    assert 'Hello World!' in x
+    assert x.value == 'Hello World!'
 
 
 def test_nested_value(app, simple_manager):
     x = app.fire(test())
     simple_manager.run()
 
-    assert x.value == "Hello World!"
-    assert str(x) == "Hello World!"
+    assert x.value == 'Hello World!'
+    assert str(x) == 'Hello World!'
 
 
 def test_value_notify(app, simple_manager):
@@ -84,8 +83,8 @@ def test_value_notify(app, simple_manager):
 
     simple_manager.run()
 
-    assert "Hello World!" in x
-    assert x.value == "Hello World!"
+    assert 'Hello World!' in x
+    assert x.value == 'Hello World!'
     assert app.value is x
 
 
@@ -96,8 +95,8 @@ def test_nested_value_notify(app, simple_manager):
 
     simple_manager.run()
 
-    assert x.value == "Hello World!"
-    assert str(x) == "Hello World!"
+    assert x.value == 'Hello World!'
+    assert str(x) == 'Hello World!'
     assert app.value is x
 
 
@@ -107,7 +106,7 @@ def test_error_value(app, simple_manager):
 
     etype, evalue, etraceback = x
     assert etype is Exception
-    assert str(evalue) == "ERROR"
+    assert str(evalue) == 'ERROR'
     assert isinstance(etraceback, TracebackType)
 
 
@@ -119,8 +118,8 @@ def test_multiple_values(app, simple_manager):
 
     x = list(v)
 
-    assert "foo" in v
-    assert x == ["foo", "bar", "Hello World!"]
-    assert x[0] == "foo"
-    assert x[1] == "bar"
-    assert x[2] == "Hello World!"
+    assert 'foo' in v
+    assert x == ['foo', 'bar', 'Hello World!']
+    assert x[0] == 'foo'
+    assert x[1] == 'bar'
+    assert x[2] == 'Hello World!'
