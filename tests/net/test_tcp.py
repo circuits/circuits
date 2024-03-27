@@ -29,7 +29,8 @@ class _TestClient:
             SOCK_STREAM,
         )
 
-        context = create_default_context(Purpose.CLIENT_AUTH)
+        context = create_default_context()
+        #context = create_default_context(Purpose.CLIENT_AUTH)
         context.check_hostname = False
         self.ssock = context.wrap_socket(self.sock)
 
