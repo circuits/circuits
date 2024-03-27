@@ -1,0 +1,73 @@
+[tool.ruff]
+line-length = 180
+target-version = "py37"
+
+[tool.ruff.lint]
+preview = true
+ignore-init-module-imports = true
+# Enable Pyflakes `E` and `F` codes by default.
+#select = ["ANN", "E", "F"]
+select = ["ALL"]
+ignore = [
+ "D203",
+ "D212",
+# "E501", "I",
+ "T201", "T203",
+]
+
+#unfixable = ["UP024", "UP028", "RUF100", "UP020"]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 40
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+multiline-quotes = "double"
+inline-quotes = "single"
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+#filter-files = true
+#force-grid-wrap = false
+known-first-party = ["circuits"]
+# https://github.com/astral-sh/ruff/issues/2600 :
+#multi-line-output = 5
+include-trailing-comma = true
+lines-after-imports = 2
+#skip = ".tox,docs,circuits/web/parsers/multipart.py"
+#skip-glob = "venv/*"
