@@ -30,8 +30,8 @@ def wait(pid, timeout=3):
 
 
 def test(tmpdir):
-    tmpdir.ensure("app.pid")
-    pid_path = tmpdir.join("app.pid")
+    tmpdir.ensure('app.pid')
+    pid_path = tmpdir.join('app.pid')
 
     args = [sys.executable, app.__file__, str(pid_path)]
     Popen(args, env={'PYTHONPATH': ':'.join(sys.path)}).wait()

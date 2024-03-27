@@ -9,23 +9,20 @@ class test(Event):
 
 
 class Base(Component):
-
     def test(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 class App1(Base):
-
-    @handler("test", priority=-1)
+    @handler('test', priority=-1)
     def test(self):
-        return "Foobar"
+        return 'Foobar'
 
 
 class App2(Base):
-
-    @handler("test", override=True)
+    @handler('test', override=True)
     def test(self):
-        return "Foobar"
+        return 'Foobar'
 
 
 def test_inheritence():
@@ -33,9 +30,9 @@ def test_inheritence():
     app.start()
 
     x = app.fire(test())
-    assert pytest.wait_for(x, "result")
+    assert pytest.wait_for(x, 'result')
     v = x.value
-    assert v == ["Hello World!", "Foobar"]
+    assert v == ['Hello World!', 'Foobar']
 
     app.stop()
 
@@ -45,8 +42,8 @@ def test_override():
     app.start()
 
     x = app.fire(test())
-    assert pytest.wait_for(x, "result")
+    assert pytest.wait_for(x, 'result')
     v = x.value
-    assert v == "Foobar"
+    assert v == 'Foobar'
 
     app.stop()

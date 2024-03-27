@@ -14,14 +14,12 @@ class test(Event):
 
 
 class App(Component):
-
     def test(self, raiseException=False):
         if raiseException:
             raise Exception()
 
 
 class Logger:
-
     error_msg = None
     debug_msg = None
 
@@ -61,14 +59,14 @@ def test_main():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s == ""
+    assert s == ''
     stderr.seek(0)
     stderr.truncate()
 
 
 def test_file(tmpdir):
-    logfile = str(tmpdir.ensure("debug.log"))
-    stderr = open(logfile, "w+")
+    logfile = str(tmpdir.ensure('debug.log'))
+    stderr = open(logfile, 'w+')
 
     app = App()
     debugger = Debugger(file=stderr)
@@ -98,17 +96,17 @@ def test_file(tmpdir):
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s == ""
+    assert s == ''
     stderr.seek(0)
     stderr.truncate()
 
 
 def test_filename(tmpdir):
-    if "__pypy__" in sys.modules:
-        pytest.skip("Broken on pypy")
+    if '__pypy__' in sys.modules:
+        pytest.skip('Broken on pypy')
 
-    logfile = str(tmpdir.ensure("debug.log"))
-    stderr = open(logfile, "r+")
+    logfile = str(tmpdir.ensure('debug.log'))
+    stderr = open(logfile, 'r+')
 
     app = App()
     debugger = Debugger(file=logfile)
@@ -138,7 +136,7 @@ def test_filename(tmpdir):
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s == ""
+    assert s == ''
     stderr.seek(0)
     stderr.truncate()
 
@@ -169,7 +167,7 @@ def test_exceptions():
     app.flush()
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s.startswith("<exception[*]")
+    assert s.startswith('<exception[*]')
     stderr.seek(0)
     stderr.truncate()
 
@@ -185,14 +183,14 @@ def test_exceptions():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s == ""
+    assert s == ''
     stderr.seek(0)
     stderr.truncate()
 
     app.flush()
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s == ""
+    assert s == ''
 
 
 def test_IgnoreEvents():
@@ -207,7 +205,7 @@ def test_IgnoreEvents():
 
     assert debugger._events
 
-    debugger.IgnoreEvents.extend(["test"])
+    debugger.IgnoreEvents.extend(['test'])
 
     e = Event()
     app.fire(e)
@@ -225,7 +223,7 @@ def test_IgnoreEvents():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s == ""
+    assert s == ''
     stderr.seek(0)
     stderr.truncate()
 
@@ -241,7 +239,7 @@ def test_IgnoreChannels():
     stderr.truncate()
 
     assert debugger._events
-    debugger.IgnoreChannels.extend([("*", "test")])
+    debugger.IgnoreChannels.extend([('*', 'test')])
 
     e = Event()
     app.fire(e)
@@ -259,7 +257,7 @@ def test_IgnoreChannels():
 
     stderr.seek(0)
     s = stderr.read().strip()
-    assert s == ""
+    assert s == ''
     stderr.seek(0)
     stderr.truncate()
 
@@ -292,4 +290,4 @@ def test_Logger_error():
     while len(app):
         app.flush()
 
-    assert logger.error_msg.startswith("ERROR <handler[*][test] (App.test)> (")
+    assert logger.error_msg.startswith('ERROR <handler[*][test] (App.test)> (')

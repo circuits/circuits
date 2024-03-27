@@ -4,6 +4,7 @@ Forms
 
 A simple example showing how to deal with data forms.
 """
+
 from circuits.web import Controller, Server
 
 
@@ -42,7 +43,6 @@ FORM = """
 
 
 class Root(Controller):
-
     def index(self):
         """
         Request Handler
@@ -63,11 +63,12 @@ class Root(Controller):
         We will use the date to pretend we've saved the data and
         tell the user what was saved.
         """
-        return "Data Saved. firstName={:s} lastName={:s}".format(
-            firstName, lastName,
+        return 'Data Saved. firstName={:s} lastName={:s}'.format(
+            firstName,
+            lastName,
         )
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Root().register(app)
 app.run()

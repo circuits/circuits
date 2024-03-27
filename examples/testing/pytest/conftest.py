@@ -12,12 +12,11 @@ from circuits.core.manager import TIMEOUT
 
 
 class Watcher(BaseComponent):
-
     def init(self):
         self._lock = threading.Lock()
         self.events = deque()
 
-    @handler(channel="*", priority=999.9)
+    @handler(channel='*', priority=999.9)
     def _on_event(self, event, *args, **kwargs):
         with self._lock:
             self.events.append(event)
@@ -32,8 +31,7 @@ class Watcher(BaseComponent):
             else:
                 with self._lock:
                     for event in self.events:
-                        if event.name == name and \
-                                channel in event.channels:
+                        if event.name == name and channel in event.channels:
                             return True
 
             sleep(TIMEOUT)
@@ -44,10 +42,9 @@ class Flag:
 
 
 class WaitEvent:
-
     def __init__(self, manager, name, channel=None, timeout=6.0):
         if channel is None:
-            channel = getattr(manager, "channel", None)
+            channel = getattr(manager, 'channel', None)
 
         self.timeout = timeout
         self.manager = manager
@@ -71,7 +68,7 @@ class WaitEvent:
             self.manager.removeHandler(self.handler)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def manager(request):
     manager = Manager()
 
@@ -80,7 +77,7 @@ def manager(request):
 
     request.addfinalizer(finalizer)
 
-    waiter = WaitEvent(manager, "started")
+    waiter = WaitEvent(manager, 'started')
     manager.start()
     assert waiter.wait()
 
@@ -95,7 +92,7 @@ def watcher(request, manager):
     watcher = Watcher().register(manager)
 
     def finalizer():
-        waiter = WaitEvent(manager, "unregistered")
+        waiter = WaitEvent(manager, 'unregistered')
         watcher.unregister()
         waiter.wait()
 
@@ -104,7 +101,5 @@ def watcher(request, manager):
     return watcher
 
 
-for key, value in {"WaitEvent": WaitEvent,
-                   "PLATFORM": sys.platform,
-                   "PYVER": sys.version_info[:3]}.items():
+for key, value in {'WaitEvent': WaitEvent, 'PLATFORM': sys.platform, 'PYVER': sys.version_info[:3]}.items():
     setattr(pytest, key, value)

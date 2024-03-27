@@ -4,9 +4,8 @@ from circuits import Component
 
 
 class MyComponent(Component):
-
     def started(self, *args):
-        print("Hello World!")
+        print('Hello World!')
 
 
 MyComponent().run()

@@ -8,13 +8,13 @@ from circuits.app import Daemon
 
 try:
     from coverage import coverage
+
     HAS_COVERAGE = True
 except ImportError:
     HAS_COVERAGE = False
 
 
 class App(Component):
-
     def init(self, pidfile):
         self.pidfile = pidfile
 
@@ -44,5 +44,5 @@ def main():
         _coverage.save()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

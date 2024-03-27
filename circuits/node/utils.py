@@ -4,40 +4,40 @@ from circuits.core import Event
 
 
 META_EXCLUDE = set(dir(Event()))
-META_EXCLUDE.add("node_call_id")
-META_EXCLUDE.add("node_sock")
-META_EXCLUDE.add("node_without_result")
-META_EXCLUDE.add("success_channels")
+META_EXCLUDE.add('node_call_id')
+META_EXCLUDE.add('node_sock')
+META_EXCLUDE.add('node_without_result')
+META_EXCLUDE.add('success_channels')
 
 
 def load_event(s):
     data = json.loads(s)
 
-    name = data["name"]
+    name = data['name']
 
     args = []
-    for arg in data["args"]:
+    for arg in data['args']:
         if isinstance(arg, str):
-            arg = arg.encode("utf-8")
+            arg = arg.encode('utf-8')
         args.append(arg)
 
     kwargs = {}
-    for k, v in data["kwargs"].items():
+    for k, v in data['kwargs'].items():
         if isinstance(v, str):
-            v = v.encode("utf-8")
+            v = v.encode('utf-8')
         kwargs[str(k)] = v
 
     e = Event.create(name, *args, **kwargs)
 
-    e.success = bool(data["success"])
-    e.failure = bool(data["failure"])
-    e.notify = bool(data["notify"])
-    e.channels = tuple(data["channels"])
+    e.success = bool(data['success'])
+    e.failure = bool(data['failure'])
+    e.notify = bool(data['notify'])
+    e.channels = tuple(data['channels'])
 
-    for k, v in dict(data["meta"]).items():
+    for k, v in dict(data['meta']).items():
         setattr(e, k, v)
 
-    return e, data["id"]
+    return e, data['id']
 
 
 def dump_event(e, id):
@@ -46,15 +46,15 @@ def dump_event(e, id):
         meta[name] = getattr(e, name)
 
     data = {
-        "id": id,
-        "name": e.name,
-        "args": e.args,
-        "kwargs": e.kwargs,
-        "success": e.success,
-        "failure": e.failure,
-        "channels": e.channels,
-        "notify": e.notify,
-        "meta": meta,
+        'id': id,
+        'name': e.name,
+        'args': e.args,
+        'kwargs': e.kwargs,
+        'success': e.success,
+        'failure': e.failure,
+        'channels': e.channels,
+        'notify': e.notify,
+        'meta': meta,
     }
 
     return json.dumps(data)
@@ -68,10 +68,10 @@ def dump_value(v):
             meta[name] = getattr(e, name)
 
     data = {
-        "id": v.node_call_id,
-        "errors": v.errors,
-        "value": v._value,
-        "meta": meta,
+        'id': v.node_call_id,
+        'errors': v.errors,
+        'value': v._value,
+        'meta': meta,
     }
     return json.dumps(data)
 

@@ -9,15 +9,14 @@ from circuits.net.sockets import TCPClient
 
 
 class Telnet(Component):
-
-    channel = "telnet"
+    channel = 'telnet'
 
     def init(self, host, port):
         self.host = host
         self.port = port
 
         TCPClient(channel=self.channel).register(self)
-        File(sys.stdin, channel="stdin").register(self)
+        File(sys.stdin, channel='stdin').register(self)
 
     def ready(self, socket):
         self.fire(connect(self.host, self.port))
@@ -25,7 +24,7 @@ class Telnet(Component):
     def read(self, data):
         print(data.strip())
 
-    @handler("read", channel="stdin")
+    @handler('read', channel='stdin')
     def read_user_input(self, data):
         self.fire(write(data))
 

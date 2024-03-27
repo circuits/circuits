@@ -4,6 +4,7 @@ Tools
 This module implements tools used throughout circuits.web.
 These tools can also be used within Controllers and request handlers.
 """
+
 import hashlib
 import mimetypes
 import os
@@ -23,10 +24,10 @@ from .utils import compress, get_ranges
 
 
 mimetypes.init()
-mimetypes.add_type("image/x-dwg", ".dwg")
-mimetypes.add_type("image/x-icon", ".ico")
-mimetypes.add_type("text/javascript", ".js")
-mimetypes.add_type("application/xhtml+xml", ".xhtml")
+mimetypes.add_type('image/x-dwg', '.dwg')
+mimetypes.add_type('image/x-icon', '.ico')
+mimetypes.add_type('text/javascript', '.js')
+mimetypes.add_type('application/xhtml+xml', '.xhtml')
 
 
 def expires(request, response, secs=0, force=False):
@@ -61,24 +62,24 @@ def expires(request, response, secs=0, force=False):
             secs = secs.total_seconds()
 
         if secs == 0:
-            if force or "Pragma" not in headers:
-                headers["Pragma"] = "no-cache"
-            if request.protocol >= (1, 1) and (force or "Cache-Control" not in headers):
-                headers["Cache-Control"] = "no-cache, must-revalidate"
+            if force or 'Pragma' not in headers:
+                headers['Pragma'] = 'no-cache'
+            if request.protocol >= (1, 1) and (force or 'Cache-Control' not in headers):
+                headers['Cache-Control'] = 'no-cache, must-revalidate'
             # Set an explicit Expires date in the past.
             now = datetime.now()
             lastyear = now.replace(year=now.year - 1)
             expiry = formatdate(
-                mktime(lastyear.timetuple()), usegmt=True,
+                mktime(lastyear.timetuple()),
+                usegmt=True,
             )
         else:
             expiry = formatdate(response.time + secs, usegmt=True)
-        if force or "Expires" not in headers:
-            headers["Expires"] = expiry
+        if force or 'Expires' not in headers:
+            headers['Expires'] = expiry
 
 
-def serve_file(request, response, path, type=None, disposition=None,
-               name=None):
+def serve_file(request, response, path, type=None, disposition=None, name=None):
     """
     Set status, headers, and body in order to serve the given file.
 
@@ -107,7 +108,8 @@ def serve_file(request, response, path, type=None, disposition=None,
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
     response.headers['Last-Modified'] = formatdate(
-        st.st_mtime, usegmt=True,
+        st.st_mtime,
+        usegmt=True,
     )
 
     result = validate_since(request, response)
@@ -117,14 +119,14 @@ def serve_file(request, response, path, type=None, disposition=None,
     if type is None:
         # Set content-type based on filename extension
         ext = os.path.splitext(path)[-1].lower()
-        type = mimetypes.types_map.get(ext, "text/plain")
+        type = mimetypes.types_map.get(ext, 'text/plain')
     response.headers['Content-Type'] = type
 
     if disposition is not None:
         if name is None:
             name = os.path.basename(path)
         cd = f'{disposition}; filename="{name}"'
-        response.headers["Content-Disposition"] = cd
+        response.headers['Content-Disposition'] = cd
 
     # Set Content-Length and use an iterable (file object)
     #   this way CP won't load the whole file in memory
@@ -133,10 +135,10 @@ def serve_file(request, response, path, type=None, disposition=None,
 
     # HTTP/1.0 didn't have Range/Accept-Ranges headers, or the 206 code
     if request.protocol >= (1, 1):
-        response.headers["Accept-Ranges"] = "bytes"
+        response.headers['Accept-Ranges'] = 'bytes'
         r = get_ranges(request.headers.get('Range'), c_len)
         if r == []:
-            response.headers['Content-Range'] = "bytes */%s" % c_len
+            response.headers['Content-Range'] = 'bytes */%s' % c_len
             return httperror(request, response, 416)
         if r:
             if len(r) == 1:
@@ -144,9 +146,7 @@ def serve_file(request, response, path, type=None, disposition=None,
                 start, stop = r[0]
                 r_len = stop - start
                 response.status = 206
-                response.headers['Content-Range'] = (
-                    f"bytes {start}-{stop - 1}/{c_len}"
-                )
+                response.headers['Content-Range'] = f'bytes {start}-{stop - 1}/{c_len}'
                 response.headers['Content-Length'] = r_len
                 bodyfile.seek(start)
                 response.body = bodyfile.read(r_len)
@@ -154,29 +154,29 @@ def serve_file(request, response, path, type=None, disposition=None,
                 # Return a multipart/byteranges response.
                 response.status = 206
                 boundary = _make_boundary()
-                ct = "multipart/byteranges; boundary=%s" % boundary
+                ct = 'multipart/byteranges; boundary=%s' % boundary
                 response.headers['Content-Type'] = ct
-                if "Content-Length" in response.headers:
+                if 'Content-Length' in response.headers:
                     # Delete Content-Length header so finalize() recalcs it.
-                    del response.headers["Content-Length"]
+                    del response.headers['Content-Length']
 
                 def file_ranges():
                     # Apache compatibility:
-                    yield "\r\n"
+                    yield '\r\n'
 
                     for start, stop in r:
-                        yield "--" + boundary
-                        yield "\r\nContent-type: %s" % type
-                        yield ("\r\nContent-range: bytes %s-%s/%s\r\n\r\n"
-                               % (start, stop - 1, c_len))
+                        yield '--' + boundary
+                        yield '\r\nContent-type: %s' % type
+                        yield ('\r\nContent-range: bytes %s-%s/%s\r\n\r\n' % (start, stop - 1, c_len))
                         bodyfile.seek(start)
                         yield bodyfile.read(stop - start)
-                        yield "\r\n"
+                        yield '\r\n'
                     # Final boundary
-                    yield "--" + boundary + "--"
+                    yield '--' + boundary + '--'
 
                     # Apache compatibility:
-                    yield "\r\n"
+                    yield '\r\n'
+
                 response.body = file_ranges()
         else:
             response.headers['Content-Length'] = c_len
@@ -190,8 +190,8 @@ def serve_file(request, response, path, type=None, disposition=None,
 
 def serve_download(request, response, path, name=None):
     """Serve 'path' as an application/x-download attachment."""
-    type = "application/x-download"
-    disposition = "attachment"
+    type = 'application/x-download'
+    disposition = 'attachment'
 
     return serve_file(request, response, path, type, disposition, name)
 
@@ -214,7 +214,7 @@ def validate_etags(request, response, autotags=False):
     See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24
     """
     # Guard against being run twice.
-    if hasattr(response, "ETag"):
+    if hasattr(response, 'ETag'):
         return
 
     status = response.status
@@ -235,25 +235,33 @@ def validate_etags(request, response, autotags=False):
     if status >= 200 and status <= 299:
         conditions = request.headers.elements('If-Match') or []
         conditions = [str(x) for x in conditions]
-        if conditions and not (conditions == ["*"] or etag in conditions):
+        if conditions and not (conditions == ['*'] or etag in conditions):
             return httperror(
-                request, response, 412,
-                description="If-Match failed: ETag %r did not match %r" % (
-                    etag, conditions,
+                request,
+                response,
+                412,
+                description='If-Match failed: ETag %r did not match %r'
+                % (
+                    etag,
+                    conditions,
                 ),
             )
 
         conditions = request.headers.elements('If-None-Match') or []
         conditions = [str(x) for x in conditions]
-        if conditions == ["*"] or etag in conditions:
-            if request.method in ("GET", "HEAD"):
+        if conditions == ['*'] or etag in conditions:
+            if request.method in ('GET', 'HEAD'):
                 return redirect(request, response, [], code=304)
             else:
                 return httperror(
-                    request, response, 412,
+                    request,
+                    response,
+                    412,
                     description=(
-                        "If-None-Match failed: ETag %r matched %r" % (
-                            etag, conditions,
+                        'If-None-Match failed: ETag %r matched %r'
+                        % (
+                            etag,
+                            conditions,
                         )
                     ),
                 )
@@ -276,7 +284,7 @@ def validate_since(request, response):
 
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod and ((status >= 200 and status <= 299) or status == 304):
-            if request.method in ("GET", "HEAD"):
+            if request.method in ('GET', 'HEAD'):
                 return redirect(request, response, [], code=304)
             else:
                 return httperror(request, response, 412)
@@ -299,9 +307,9 @@ def check_auth(request, response, realm, users, encrypt=None):
                     the user-agent. if None it defaults to a md5 encryption.
     :type  encrypt: callable
     """
-    if "Authorization" in request.headers:
+    if 'Authorization' in request.headers:
         # make sure the provided credentials are correctly set
-        ah = _httpauth.parseAuthorization(request.headers.get("Authorization"))
+        ah = _httpauth.parseAuthorization(request.headers.get('Authorization'))
         if ah is None:
             return httperror(request, response, 400)
 
@@ -314,25 +322,24 @@ def check_auth(request, response, realm, users, encrypt=None):
                 users = users()  # expect it to return a dictionary
 
                 if not isinstance(users, dict):
-                    raise ValueError("Authentication users must be a dict")
+                    raise ValueError('Authentication users must be a dict')
 
                 # fetch the user password
-                password = users.get(ah["username"], None)
+                password = users.get(ah['username'], None)
             except TypeError:
                 # returns a password (encrypted or clear text)
-                password = users(ah["username"])
+                password = users(ah['username'])
         else:
             if not isinstance(users, dict):
-                raise ValueError("Authentication users must be a dict")
+                raise ValueError('Authentication users must be a dict')
 
             # fetch the user password
-            password = users.get(ah["username"], None)
+            password = users.get(ah['username'], None)
 
         # validate the Authorization by re-computing it here
         # and compare it with what the user-agent provided
-        if _httpauth.checkResponse(ah, password, method=request.method,
-                                   encrypt=encrypt, realm=realm):
-            request.login = ah["username"]
+        if _httpauth.checkResponse(ah, password, method=request.method, encrypt=encrypt, realm=realm):
+            request.login = ah['username']
             return True
 
         request.login = False
@@ -361,7 +368,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
         return
 
     # inform the user-agent this path is protected
-    response.headers["WWW-Authenticate"] = _httpauth.basicAuth(realm)
+    response.headers['WWW-Authenticate'] = _httpauth.basicAuth(realm)
 
     return unauthorized(request, response)
 
@@ -383,12 +390,12 @@ def digest_auth(request, response, realm, users):
         return
 
     # inform the user-agent this path is protected
-    response.headers["WWW-Authenticate"] = _httpauth.digestAuth(realm)
+    response.headers['WWW-Authenticate'] = _httpauth.digestAuth(realm)
 
     return unauthorized(request, response)
 
 
-def gzip(response, level=4, mime_types=("text/html", "text/plain")):
+def gzip(response, level=4, mime_types=('text/html', 'text/plain')):
     """
     Try to gzip the response body if Content-Type in mime_types.
 
@@ -407,7 +414,7 @@ def gzip(response, level=4, mime_types=("text/html", "text/plain")):
 
     # If returning cached content (which should already have been gzipped),
     # don't re-zip.
-    if getattr(response.request, "cached", False):
+    if getattr(response.request, 'cached', False):
         return response
 
     acceptable = response.request.headers.elements('Accept-Encoding')
@@ -430,25 +437,27 @@ def gzip(response, level=4, mime_types=("text/html", "text/plain")):
                 return response
             if ct in mime_types:
                 # Return a generator that compresses the page
-                varies = response.headers.get("Vary", "")
-                varies = [x.strip() for x in varies.split(",") if x.strip()]
-                if "Accept-Encoding" not in varies:
-                    varies.append("Accept-Encoding")
-                response.headers['Vary'] = ", ".join(varies)
+                varies = response.headers.get('Vary', '')
+                varies = [x.strip() for x in varies.split(',') if x.strip()]
+                if 'Accept-Encoding' not in varies:
+                    varies.append('Accept-Encoding')
+                response.headers['Vary'] = ', '.join(varies)
 
                 response.headers['Content-Encoding'] = 'gzip'
                 response.body = compress(response.body, level)
-                if "Content-Length" in response.headers:
+                if 'Content-Length' in response.headers:
                     # Delete Content-Length header so finalize() recalcs it.
-                    del response.headers["Content-Length"]
+                    del response.headers['Content-Length']
             return response
     return httperror(
-        response.request, response, 406, description="identity, gzip",
+        response.request,
+        response,
+        406,
+        description='identity, gzip',
     )
 
 
 class ReverseProxy(BaseComponent):
-
     headers = ('X-Real-IP', 'X-Forwarded-For')
 
     def init(self, headers=None):
@@ -463,4 +472,4 @@ class ReverseProxy(BaseComponent):
     @handler('request', priority=1)
     def _on_request(self, req, *_):
         ip = [v for v in map(req.headers.get, self.headers) if v]
-        req.remote = ip and Host(ip[0], "", ip[0]) or req.remote
+        req.remote = ip and Host(ip[0], '', ip[0]) or req.remote

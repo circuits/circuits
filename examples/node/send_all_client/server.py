@@ -6,27 +6,32 @@ from circuits import Component, Debugger, Event, Timer
 from circuits.node import Node
 
 
-__version__ = "0.0.1"
+__version__ = '0.0.1'
 
-USAGE = "%prog [options]"
-VERSION = "%prog v" + __version__
+USAGE = '%prog [options]'
+VERSION = '%prog v' + __version__
 
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-b", "--bind",
-        action="store", type="string",
-        default="0.0.0.0:8000", dest="bind",
-        help="Bind to address:[port]",
+        '-b',
+        '--bind',
+        action='store',
+        type='string',
+        default='0.0.0.0:8000',
+        dest='bind',
+        help='Bind to address:[port]',
     )
 
     parser.add_option(
-        "-d", "--debug",
-        action="store_true",
-        default=False, dest="debug",
-        help="Enable debug mode",
+        '-d',
+        '--debug',
+        action='store_true',
+        default=False,
+        dest='debug',
+        help='Enable debug mode',
     )
 
     opts, args = parser.parse_args()
@@ -35,19 +40,17 @@ def parse_options():
 
 
 class send_all_event(Event):
-
     def __init__(self, infos):
         super().__init__(infos)
 
 
 class NodeServer(Component):
-
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)
 
-        if ":" in opts.bind:
-            address, port = opts.bind.split(":")
+        if ':' in opts.bind:
+            address, port = opts.bind.split(':')
             port = int(port)
         else:
             address, port = opts.bind, 8000
@@ -77,5 +80,5 @@ def main():
     NodeServer(args, opts).run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

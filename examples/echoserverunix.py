@@ -5,13 +5,13 @@ Simple UNIX Echo Server
 This example shows how you can create a simple UNIX Server (an Echo Service)
 utilizing the builtin Socket Components that the circuits library ships with.
 """
+
 from circuits import Debugger, handler
 from circuits.net.sockets import UNIXServer
 
 
 class EchoServer(UNIXServer):
-
-    @handler("read")
+    @handler('read')
     def on_read(self, sock, data):
         """
         Read Event Handler
@@ -29,6 +29,6 @@ class EchoServer(UNIXServer):
 
 # Start and "run" the system.
 # Bind to a UNIX Socket at /tmp/test.sock
-app = EchoServer("/tmp/test.sock")
+app = EchoServer('/tmp/test.sock')
 Debugger().register(app)
 app.run()

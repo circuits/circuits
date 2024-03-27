@@ -1,9 +1,8 @@
-'''
+"""
 test_utils
 
 ...
-'''
-
+"""
 
 from circuits import Event
 from circuits.core import Value
@@ -11,7 +10,7 @@ from circuits.node.utils import dump_event, dump_value, load_event, load_value
 
 
 class test(Event):
-    '''test Event'''
+    """test Event"""
 
 
 def test_events():

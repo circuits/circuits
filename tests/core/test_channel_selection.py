@@ -5,7 +5,7 @@ from circuits import Component, Event, Manager
 class foo(Event):
     """foo Event"""
 
-    channels = ("a",)
+    channels = ('a',)
 
 
 class bar(Event):
@@ -13,30 +13,27 @@ class bar(Event):
 
 
 class A(Component):
-
-    channel = "a"
+    channel = 'a'
 
     def foo(self):
-        return "Foo"
+        return 'Foo'
 
 
 class B(Component):
-
-    channel = "b"
+    channel = 'b'
 
     def foo(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 class C(Component):
-
-    channel = "c"
+    channel = 'c'
 
     def foo(self):
         return self.fire(bar())
 
     def bar(self):
-        return "Bar"
+        return 'Bar'
 
 
 def test():
@@ -48,20 +45,20 @@ def test():
     # Rely on Event.channels
     x = m.fire(foo())
     m.flush()
-    assert x.value == "Foo"
+    assert x.value == 'Foo'
 
     # Explicitly specify the channel
-    x = m.fire(foo(), "b")
+    x = m.fire(foo(), 'b')
     m.flush()
-    assert x.value == "Hello World!"
+    assert x.value == 'Hello World!'
 
     # Explicitly specify a set of channels
-    x = m.fire(foo(), "a", "b")
+    x = m.fire(foo(), 'a', 'b')
     m.flush()
-    assert x.value == ["Foo", "Hello World!"]
+    assert x.value == ['Foo', 'Hello World!']
 
     # Rely on self.channel
-    x = m.fire(foo(), "c")
+    x = m.fire(foo(), 'c')
     m.flush()
     m.flush()
-    assert x.value == "Bar"
+    assert x.value == 'Bar'

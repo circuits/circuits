@@ -3,6 +3,7 @@ WSGI Components
 
 This module implements WSGI Components.
 """
+
 from io import StringIO
 from operator import itemgetter
 from sys import exc_info as _exc_info
@@ -23,46 +24,45 @@ def create_environ(errors, path, req):
     environ = {}
     env = environ.__setitem__
 
-    env("REQUEST_METHOD", req.method)
-    env("SERVER_NAME", req.host.split(":", 1)[0])
-    env("SERVER_PORT", "%i" % (req.server.port or 0))
-    env("SERVER_PROTOCOL", "HTTP/%d.%d" % req.server.http.protocol)
-    env("QUERY_STRING", req.qs)
-    env("SCRIPT_NAME", req.script_name)
-    env("CONTENT_TYPE", req.headers.get("Content-Type", ""))
-    env("CONTENT_LENGTH", req.headers.get("Content-Length", ""))
-    env("REMOTE_ADDR", req.remote.ip)
-    env("REMOTE_PORT", "%i" % (req.remote.port or 0))
-    env("wsgi.version", (1, 0))
-    env("wsgi.input", req.body)
-    env("wsgi.errors", errors)
-    env("wsgi.multithread", False)
-    env("wsgi.multiprocess", False)
-    env("wsgi.run_once", False)
-    env("wsgi.url_scheme", req.scheme)
+    env('REQUEST_METHOD', req.method)
+    env('SERVER_NAME', req.host.split(':', 1)[0])
+    env('SERVER_PORT', '%i' % (req.server.port or 0))
+    env('SERVER_PROTOCOL', 'HTTP/%d.%d' % req.server.http.protocol)
+    env('QUERY_STRING', req.qs)
+    env('SCRIPT_NAME', req.script_name)
+    env('CONTENT_TYPE', req.headers.get('Content-Type', ''))
+    env('CONTENT_LENGTH', req.headers.get('Content-Length', ''))
+    env('REMOTE_ADDR', req.remote.ip)
+    env('REMOTE_PORT', '%i' % (req.remote.port or 0))
+    env('wsgi.version', (1, 0))
+    env('wsgi.input', req.body)
+    env('wsgi.errors', errors)
+    env('wsgi.multithread', False)
+    env('wsgi.multiprocess', False)
+    env('wsgi.run_once', False)
+    env('wsgi.url_scheme', req.scheme)
 
     if req.path:
-        req.script_name = req.path[:len(path)]
-        req.path = req.path[len(path):]
-        env("SCRIPT_NAME", req.script_name)
-        env("PATH_INFO", req.path)
+        req.script_name = req.path[: len(path)]
+        req.path = req.path[len(path) :]
+        env('SCRIPT_NAME', req.script_name)
+        env('PATH_INFO', req.path)
 
     for k, v in list(req.headers.items()):
-        env("HTTP_%s" % k.upper().replace("-", "_"), v)
+        env('HTTP_%s' % k.upper().replace('-', '_'), v)
 
     return environ
 
 
 class Application(BaseComponent):
-
-    channel = "web"
+    channel = 'web'
 
     headerNames = {
-        "HTTP_CGI_AUTHORIZATION": "Authorization",
-        "CONTENT_LENGTH": "Content-Length",
-        "CONTENT_TYPE": "Content-Type",
-        "REMOTE_HOST": "Remote-Host",
-        "REMOTE_ADDR": "Remote-Addr",
+        'HTTP_CGI_AUTHORIZATION': 'Authorization',
+        'CONTENT_LENGTH': 'Content-Length',
+        'CONTENT_TYPE': 'Content-Type',
+        'REMOTE_HOST': 'Remote-Host',
+        'REMOTE_ADDR': 'Remote-Addr',
     }
 
     def init(self):
@@ -76,9 +76,9 @@ class Application(BaseComponent):
             # We assume all incoming header keys are uppercase already.
             if cgiName in self.headerNames:
                 yield self.headerNames[cgiName], environ[cgiName]
-            elif cgiName[:5] == "HTTP_":
+            elif cgiName[:5] == 'HTTP_':
                 # Hackish attempt at recovering original header names.
-                translatedHeader = cgiName[5:].replace("_", "-")
+                translatedHeader = cgiName[5:].replace('_', '-')
                 yield translatedHeader, environ[cgiName]
 
     def getRequestResponse(self, environ):
@@ -86,31 +86,31 @@ class Application(BaseComponent):
 
         headers = Headers(list(self.translateHeaders(environ)))
 
-        protocol = tuple(map(int, env("SERVER_PROTOCOL")[5:].split(".")))
+        protocol = tuple(map(int, env('SERVER_PROTOCOL')[5:].split('.')))
         req = wrappers.Request(
             None,
-            env("REQUEST_METHOD"),
-            env("wsgi.url_scheme"),
-            env("PATH_INFO", ""),
+            env('REQUEST_METHOD'),
+            env('wsgi.url_scheme'),
+            env('PATH_INFO', ''),
             protocol,
-            env("QUERY_STRING", ""),
+            env('QUERY_STRING', ''),
             headers=headers,
         )
 
-        req.remote = wrappers.Host(env("REMOTE_ADDR"), env("REMTOE_PORT"))
-        req.script_name = env("SCRIPT_NAME")
+        req.remote = wrappers.Host(env('REMOTE_ADDR'), env('REMTOE_PORT'))
+        req.script_name = env('SCRIPT_NAME')
         req.wsgi_environ = environ
 
         try:
-            cl = int(headers.get("Content-Length", "0"))
+            cl = int(headers.get('Content-Length', '0'))
         except ValueError:
             cl = 0
 
-        req.body.write(env("wsgi.input").read(cl))  # FIXME: what about chunked encoding?
+        req.body.write(env('wsgi.input').read(cl))  # FIXME: what about chunked encoding?
         req.body.seek(0)
 
         res = wrappers.Response(req)
-        res.gzip = "gzip" in req.headers.get("Accept-Encoding", "")
+        res.gzip = 'gzip' in req.headers.get('Accept-Encoding', '')
 
         return req, res
 
@@ -130,14 +130,14 @@ class Application(BaseComponent):
         start_response(str(status), headers, exc_info)
         return body
 
-    @handler("response", channel="web")
+    @handler('response', channel='web')
     def on_response(self, event, response):
         self._finished = True
         event.stop()
 
     @property
     def host(self):
-        return ""
+        return ''
 
     @property
     def port(self):
@@ -149,7 +149,6 @@ class Application(BaseComponent):
 
 
 class _Empty(str):
-
     def __bool__(self):
         return True
 
@@ -161,24 +160,23 @@ del _Empty
 
 
 class Gateway(BaseComponent):
-
-    channel = "web"
+    channel = 'web'
 
     def init(self, apps):
         self.apps = apps
 
         self.errors = {k: StringIO() for k in self.apps}
 
-    @handler("request", priority=0.2)
+    @handler('request', priority=0.2)
     def _on_request(self, event, req, res):
         if not self.apps:
             return
 
-        parts = req.path.split("/")
+        parts = req.path.split('/')
 
         candidates = []
         for i in range(len(parts)):
-            k = "/".join(parts[:(i + 1)]) or "/"
+            k = '/'.join(parts[: (i + 1)]) or '/'
             if k in self.apps:
                 candidates.append((k, self.apps[k]))
         candidates = sorted(candidates, key=itemgetter(0), reverse=True)
@@ -191,7 +189,7 @@ class Gateway(BaseComponent):
         buffer = StringIO()
 
         def start_response(status, headers, exc_info=None):
-            res.status = int(status.split(" ", 1)[0])
+            res.status = int(status.split(' ', 1)[0])
             for header in headers:
                 res.headers.add_header(*header)
             return buffer.write
@@ -203,7 +201,7 @@ class Gateway(BaseComponent):
         try:
             body = app(environ, start_response)
             if isinstance(body, list):
-                _body = type(body[0])() if body else ""
+                _body = type(body[0])() if body else ''
                 body = _body.join(body)
             elif isinstance(body, GeneratorType):
                 res.body = body

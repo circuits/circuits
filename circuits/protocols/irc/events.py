@@ -1,6 +1,5 @@
 """Internet Relay Chat Protocol events"""
 
-
 from circuits import Event
 
 

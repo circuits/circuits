@@ -14,14 +14,13 @@ class hello(Event):
 
 
 class App(Component):
-
     def hello(self):
         """Hello Event Handler"""
-        print("Hello World!")
+        print('Hello World!')
 
     def signal(self, event, signo, stack):
-        Timer(3, Event.create("terminate")).register(self)
-        print("Terminating in 3 seconds...")
+        Timer(3, Event.create('terminate')).register(self)
+        print('Terminating in 3 seconds...')
 
     def terminate(self):
         self.stop()

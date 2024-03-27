@@ -41,11 +41,11 @@ class Timer(BaseComponent):
         self.interval = None
         self.event = event
         self.channels = channels
-        self.persist = kwargs.get("persist", False)
+        self.persist = kwargs.get('persist', False)
 
         self.reset(interval)
 
-    @handler("generate_events")
+    @handler('generate_events')
     def _on_generate_events(self, event):
         if self.expiry is None:
             return
@@ -79,7 +79,7 @@ class Timer(BaseComponent):
 
     @property
     def expiry(self):
-        return getattr(self, "_expiry", None)
+        return getattr(self, '_expiry', None)
 
     @expiry.setter
     def expiry(self, seconds):

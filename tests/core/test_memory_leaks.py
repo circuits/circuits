@@ -17,19 +17,19 @@ class hello(Event):
 
 
 class App(Component):
-    @handler("call")
+    @handler('call')
     def _on_call(self):
         x = yield self.call(hello())
         yield x.value
 
     def hello(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 @pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
-    assert watcher.wait("registered")
+    assert watcher.wait('registered')
 
     def finalizer():
         app.unregister()
@@ -42,5 +42,5 @@ def app(request, manager, watcher):
 def test_done_handlers_dont_leak(manager, watcher, app):
     manager.fire(call())
     manager.fire(call())
-    assert watcher.wait("call_success")
-    assert "hello_done" not in app._handlers
+    assert watcher.wait('call_success')
+    assert 'hello_done' not in app._handlers

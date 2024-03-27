@@ -1,6 +1,5 @@
 """Internet Relay Chat Protocol"""
 
-
 from re import compile as compile_regex
 
 from circuits import Component
@@ -12,7 +11,7 @@ from .events import response
 from .utils import parsemsg
 
 
-NUMERIC = compile_regex("[0-9]+")
+NUMERIC = compile_regex('[0-9]+')
 
 
 class IRC(Component):
@@ -28,7 +27,7 @@ class IRC(Component):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.encoding = kwargs.get("encoding", "utf-8")
+        self.encoding = kwargs.get('encoding', 'utf-8')
 
         Line(**kwargs).register(self)
 
@@ -55,7 +54,7 @@ class IRC(Component):
 
         if NUMERIC.match(command):
             args.insert(0, int(command))
-            command = "numeric"
+            command = 'numeric'
 
         if sock is not None:
             self.fire(response.create(command, sock, prefix, *args))

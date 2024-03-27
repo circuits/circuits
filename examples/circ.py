@@ -12,6 +12,7 @@ For usage type:
 
    ./circ.py --help
 """
+
 import os
 import sys
 from optparse import OptionParser
@@ -31,22 +32,21 @@ from circuits.protocols.irc import (
 from circuits.tools import getargspec
 
 
-USAGE = "%prog [options] host [port]"
-VERSION = "%prog v" + systemVersion
+USAGE = '%prog [options] host [port]'
+VERSION = '%prog v' + systemVersion
 
-MAIN_TITLE = f"cIRC - {systemVersion:s}"
+MAIN_TITLE = f'cIRC - {systemVersion:s}'
 
 HELP_STRINGS = {
-    "main": "For help, type: /help",
+    'main': 'For help, type: /help',
 }
 
 CMD_REGEX = compile_regex(
-    r"\/(?P<command>[a-z]+) ?"
-    "(?P<args>.*)(?iu)",
+    r'\/(?P<command>[a-z]+) ?' '(?P<args>.*)(?iu)',
 )
 
 
-def back_merge(line, n, t=" "):
+def back_merge(line, n, t=' '):
     return line[:-n].extend([t.join(line[-n:])])
 
 
@@ -54,21 +54,30 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-c", "--channel",
-        action="store", default="#circuits", dest="channel",
-        help="Channel to join",
+        '-c',
+        '--channel',
+        action='store',
+        default='#circuits',
+        dest='channel',
+        help='Channel to join',
     )
 
     parser.add_option(
-        "", "--debug",
-        action="store_true", default=False, dest="debug",
-        help="Enable debug mode",
+        '',
+        '--debug',
+        action='store_true',
+        default=False,
+        dest='debug',
+        help='Enable debug mode',
     )
 
     parser.add_option(
-        "-n", "--nick",
-        action="store", default=os.environ["USER"], dest="nick",
-        help="Nickname to use",
+        '-n',
+        '--nick',
+        action='store',
+        default=os.environ['USER'],
+        dest='nick',
+        help='Nickname to use',
     )
 
     opts, args = parser.parse_args()
@@ -81,8 +90,7 @@ def parse_options():
 
 
 class Client(Component):
-
-    channel = "client"
+    channel = 'client'
 
     def init(self, host, port=6667, opts=None):
         self.host = host
@@ -103,24 +111,22 @@ class Client(Component):
         self.screen = Screen()
         self.screen.start()
 
-        self.screen.register_palette([
-            ("title", "white", "dark blue", "standout"),
-            ("line", "light gray", "black"),
-            ("help", "white", "dark blue")],
+        self.screen.register_palette(
+            [('title', 'white', 'dark blue', 'standout'), ('line', 'light gray', 'black'), ('help', 'white', 'dark blue')],
         )
 
         self.body = ListBox(SimpleListWalker([]))
         self.lines = self.body.body
 
         self.title = Text(MAIN_TITLE)
-        self.header = AttrWrap(self.title, "title")
+        self.header = AttrWrap(self.title, 'title')
 
         self.help = AttrWrap(
-            Text(HELP_STRINGS["main"]),
-            "help",
+            Text(HELP_STRINGS['main']),
+            'help',
         )
 
-        self.input = Edit(caption="%s> " % self.ircchannel)
+        self.input = Edit(caption='%s> ' % self.ircchannel)
         self.footer = Pile([self.help, self.input])
 
         self.top = Frame(self.body, self.header, self.footer)
@@ -143,7 +149,7 @@ class Client(Component):
         """
         nick = self.nick
         hostname = self.hostname
-        name = f"{nick} on {hostname} using circuits/{systemVersion}"
+        name = f'{nick} on {hostname} using circuits/{systemVersion}'
 
         self.fire(NICK(nick))
         self.fire(USER(nick, hostname, host, name))
@@ -156,15 +162,15 @@ class Client(Component):
         received an IRC Numberic Event from server we are connected to.
         """
         if numeric == ERR_NICKNAMEINUSE:
-            self.fire(NICK(f"{args[0]:s}_"))
+            self.fire(NICK(f'{args[0]:s}_'))
         elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
             self.fire(JOIN(self.ircchannel))
 
-    @handler("stopped", channel="*")
+    @handler('stopped', channel='*')
     def _on_stopped(self, component):
         self.screen.stop()
 
-    @handler("generate_events")
+    @handler('generate_events')
     def _on_generate_events(self, event):
         event.reduce_time_left(0)
 
@@ -174,12 +180,12 @@ class Client(Component):
             _timeout, keys, _raw = self.screen.get_input_nonblocking()
 
             for k in keys:
-                if k == "window resize":
+                if k == 'window resize':
                     size = self.screen.get_cols_rows()
                     continue
-                elif k == "enter":
+                elif k == 'enter':
                     self.processCommand(self.input.get_edit_text())
-                    self.input.set_edit_text("")
+                    self.input.set_edit_text('')
                     continue
 
                 self.top.keypress(size, k)
@@ -188,33 +194,30 @@ class Client(Component):
         self.update_screen(size)
 
     def unknownCommand(self, command):
-        self.lines.append(Text("Unknown command: %s" % command))
+        self.lines.append(Text('Unknown command: %s' % command))
 
     def syntaxError(self, command, args, expected):
         self.lines.append(
-            Text("Syntax error ({:s}): {:s} Expected: {:s}".format(
-                command, args, expected),
+            Text(
+                'Syntax error ({:s}): {:s} Expected: {:s}'.format(command, args, expected),
             ),
         )
 
     def processCommand(self, s):  # noqa
-
         match = CMD_REGEX.match(s)
         if match is not None:
-
-            command = match.groupdict()["command"]
-            if match.groupdict()["args"] != "":
-                tokens = match.groupdict()["args"].split(" ")
+            command = match.groupdict()['command']
+            if match.groupdict()['args'] != '':
+                tokens = match.groupdict()['args'].split(' ')
             else:
                 tokens = []
 
-            fn = "cmd" + command.upper()
+            fn = 'cmd' + command.upper()
             if hasattr(self, fn):
                 f = getattr(self, fn)
                 if callable(f):
-
                     args, vargs, _kwargs, default = getargspec(f)
-                    args.remove("self")
+                    args.remove('self')
                     if len(args) == len(tokens):
                         if len(args) == 0:
                             f()
@@ -228,36 +231,28 @@ class Client(Component):
                                     f(*back_merge(tokens, factor))
                                 else:
                                     self.syntaxError(
-                                        command, " ".join(tokens),
-                                        " ".join(
-                                            x for x in args + [vargs]
-                                            if x is not None
-                                        ),
+                                        command,
+                                        ' '.join(tokens),
+                                        ' '.join(x for x in args + [vargs] if x is not None),
                                     )
                             else:
                                 f(*tokens)
-                        elif default is not None and \
-                                len(args) == (
-                                    len(tokens) + len(default)):
+                        elif default is not None and len(args) == (len(tokens) + len(default)):
                             f(*(tokens + list(default)))
                         else:
                             self.syntaxError(
                                 command,
-                                " ".join(tokens),
-                                " ".join(
-                                    x for x in args + [vargs]
-                                    if x is not None
-                                ),
+                                ' '.join(tokens),
+                                ' '.join(x for x in args + [vargs] if x is not None),
                             )
         else:
             if self.ircchannel is not None:
-                self.lines.append(Text(f"<{self.nick}> {s}"))
+                self.lines.append(Text(f'<{self.nick}> {s}'))
                 self.fire(PRIVMSG(self.ircchannel, s))
             else:
-                self.lines.append(Text(
-                    "No channel joined. Try /join #<channel>"))
+                self.lines.append(Text('No channel joined. Try /join #<channel>'))
 
-    def cmdEXIT(self, message=""):
+    def cmdEXIT(self, message=''):
         self.fire(QUIT(message))
         raise SystemExit(0)
 
@@ -269,11 +264,11 @@ class Client(Component):
 
     def cmdJOIN(self, channel):
         if self.ircchannel is not None:
-            self.cmdPART(self.ircchannel, "Joining %s" % channel)
+            self.cmdPART(self.ircchannel, 'Joining %s' % channel)
         self.fire(JOIN(channel))
         self.ircchannel = channel
 
-    def cmdPART(self, channel=None, message="Leaving"):
+    def cmdPART(self, channel=None, message='Leaving'):
         if channel is None:
             channel = self.ircchannel
         if channel is not None:
@@ -283,21 +278,21 @@ class Client(Component):
     def cmdQUOTE(self, message):
         self.fire(request(Message(message)))
 
-    def cmdQUIT(self, message="Bye"):
+    def cmdQUIT(self, message='Bye'):
         self.fire(QUIT(message))
 
     def update_screen(self, size):
         canvas = self.top.render(size, focus=True)
         self.screen.draw_screen(size, canvas)
 
-    @handler("notice", "privmsg")
+    @handler('notice', 'privmsg')
     def _on_notice_or_privmsg(self, event, source, target, message):
         nick, _ident, _host = source
 
-        if event.name == "notice":
-            self.lines.append(Text(f"-{nick}- {message}"))
+        if event.name == 'notice':
+            self.lines.append(Text(f'-{nick}- {message}'))
         else:
-            self.lines.append(Text(f"<{nick}> {message}"))
+            self.lines.append(Text(f'<{nick}> {message}'))
 
 
 def main():
@@ -315,10 +310,11 @@ def main():
 
     if opts.debug:
         from circuits import Debugger
+
         Debugger(file=sys.stderr).register(client)
 
     client.run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

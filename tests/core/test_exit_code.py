@@ -7,18 +7,17 @@ from . import exitcodeapp
 
 def test_ints(tmpdir):
     for expected_status in range(4):
-        args = [sys.executable, exitcodeapp.__file__,
-                f"{expected_status:d}"]
-        p = Popen(args, env={"PYTHONPATH": ":".join(sys.path)})
+        args = [sys.executable, exitcodeapp.__file__, f'{expected_status:d}']
+        p = Popen(args, env={'PYTHONPATH': ':'.join(sys.path)})
         status = p.wait()
 
         assert status == expected_status
 
 
 def test_string(tmpdir):
-    args = [sys.executable, exitcodeapp.__file__, "foobar"]
-    p = Popen(args, env={"PYTHONPATH": ":".join(sys.path)}, stderr=PIPE)
+    args = [sys.executable, exitcodeapp.__file__, 'foobar']
+    p = Popen(args, env={'PYTHONPATH': ':'.join(sys.path)}, stderr=PIPE)
     status = p.wait()
 
     assert status == 1
-    assert p.stderr.read() == b"foobar\n"
+    assert p.stderr.read() == b'foobar\n'

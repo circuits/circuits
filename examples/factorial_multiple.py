@@ -14,12 +14,11 @@ def factorial(n):
 
 
 class App(Component):
-
     def init(self, *args, **kwargs):
         Worker(process=True).register(self)
 
     def foo(self):
-        print("Foo!")
+        print('Foo!')
 
     def started(self, component):
         self.fire(task(factorial, 3))  # async
@@ -30,11 +29,11 @@ class App(Component):
         self.fire(task(factorial, 11))  # async
         self.fire(task(factorial, 12))  # async
         self.fire(task(factorial, 14))  # async
-        Timer(1, Event.create("foo"), persist=True).register(self)
+        Timer(1, Event.create('foo'), persist=True).register(self)
 
     def task_success(self, function_called, factorial_result):
         _func, argument = function_called
-        print(f"factorial({str(argument)}) = {factorial_result:d}")
+        print(f'factorial({str(argument)}) = {factorial_result:d}')
         # Stop after the last and longest running task
         if argument == 14:
             self.stop()

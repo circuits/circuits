@@ -12,7 +12,6 @@ if PLATFORM == 'win32':
 
 
 class App(Component):
-
     _ready = False
     value = False
     disconnected = False
@@ -52,7 +51,7 @@ def app(request, manager, watcher, bind):
     node = Node().register(app)
     watcher.wait('ready')
 
-    child = (App() + Node(port=bind[1], server_ip=bind[0]))
+    child = App() + Node(port=bind[1], server_ip=bind[0])
     child.start(process=True)
 
     node.add('child', *bind)

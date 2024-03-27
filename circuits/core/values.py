@@ -1,4 +1,5 @@
 """This defines the Value object used by components and events."""
+
 from .events import Event
 
 
@@ -39,7 +40,7 @@ class Value:
 
     def __getstate__(self):
         odict = self.__dict__.copy()
-        del odict["manager"]
+        del odict['manager']
         return odict
 
     def __contains__(self, y):
@@ -58,11 +59,11 @@ class Value:
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
-        value = ""
+        value = ''
         if self.result:
             value = repr(self.value)
 
-        format = "<Value (%s) result=%r; errors=%r; for %r>"
+        format = '<Value (%s) result=%r; errors=%r; for %r>'
         return format % (value, self.result, self.errors, self.event)
 
     def __str__(self):
@@ -73,13 +74,13 @@ class Value:
         if self.promise and not force:
             return
 
-        notify = getattr(self.event, "notify", False) or self.notify
+        notify = getattr(self.event, 'notify', False) or self.notify
 
         if self.manager is not None and notify:
             if isinstance(notify, str):
                 e = Event.create(notify, self)
             else:
-                e = self.event.child("value_changed", self)
+                e = self.event.child('value_changed', self)
 
             self.manager.fire(e, self.manager)
 
@@ -122,4 +123,4 @@ class Value:
 
         update(self, value)
 
-    value = property(getValue, setValue, None, "Value of this Value")
+    value = property(getValue, setValue, None, 'Value of this Value')

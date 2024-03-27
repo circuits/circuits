@@ -9,6 +9,7 @@ to create a pool of workers using sub-processes for CPU-bound work or `False`
 Then fire `task()` events with a function and `*args` and `**kwargs` to pass
 to the function when called from within the workers.
 """
+
 from multiprocessing import Pool as ProcessPool, cpu_count
 from multiprocessing.pool import ThreadPool
 from threading import current_thread
@@ -62,25 +63,25 @@ class Worker(BaseComponent):
     :type process: bool
     """
 
-    channel = "worker"
+    channel = 'worker'
 
     def init(self, process=False, workers=None, channel=channel):
-        if not hasattr(current_thread(), "_children"):
+        if not hasattr(current_thread(), '_children'):
             current_thread()._children = WeakKeyDictionary()
 
         self.workers = workers or (cpu_count() if process else DEFAULT_WORKERS)
         Pool = ProcessPool if process else ThreadPool
         self.pool = Pool(self.workers)
 
-    @handler("stopped", "unregistered", channel="*")
+    @handler('stopped', 'unregistered', channel='*')
     def _on_stopped(self, event, *args):
-        if event.name == "unregistered" and args[0] is not self:
+        if event.name == 'unregistered' and args[0] is not self:
             return
 
         self.pool.close()
         self.pool.join()
 
-    @handler("task")
+    @handler('task')
     def _on_task(self, f, *args, **kwargs):
         result = self.pool.apply_async(f, args, kwargs)
         while not result.ready():

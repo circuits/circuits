@@ -7,6 +7,7 @@ processes. Bridge is used internally when a Component is started in
 Pipe is used as the socket transport between two sides of a Bridge
 (*there must be a :class:`~Bridge` instance on both sides*).
 """
+
 import traceback
 from pickle import dumps, loads
 
@@ -38,11 +39,10 @@ class ipc(Event):
 
 
 class Bridge(BaseComponent):
-
-    channel = "bridge"
+    channel = 'bridge'
 
     def init(self, socket, channel=channel):
-        self._buffer = b""
+        self._buffer = b''
         self._socket = socket
         self._values = {}
 
@@ -52,7 +52,7 @@ class Bridge(BaseComponent):
     def _process_packet(self, eid, obj):
         if isinstance(obj, Event):
             obj.remote = True
-            obj.notify = "value_changed"
+            obj.notify = 'value_changed'
             obj.waitingHandlers = 0
             value = self.fire(obj)
             self._values[value] = eid
@@ -67,7 +67,7 @@ class Bridge(BaseComponent):
             event.remote = True
             self.fire(event, self.channel)
 
-    @handler("value_changed", channel="*")
+    @handler('value_changed', channel='*')
     def _on_value_changed(self, value):
         try:
             eid = self._values[value]
@@ -77,12 +77,12 @@ class Bridge(BaseComponent):
         except Exception:
             pass
 
-    @handler("read")
+    @handler('read')
     def _on_read(self, data):
         self._buffer += data
         items = self._buffer.split(_sentinel)
 
-        if items[-1] != "":
+        if items[-1] != '':
             self._buffer = items.pop()
 
         for item in filter(None, items):
@@ -100,7 +100,7 @@ class Bridge(BaseComponent):
     def __write(self, eid, data):
         self._socket.write(dumps((eid, data)) + _sentinel)
 
-    @handler("ipc")
+    @handler('ipc')
     def _on_ipc(self, event, ipc_event, channel=None):
         """
         Send event to a child/parentprocess

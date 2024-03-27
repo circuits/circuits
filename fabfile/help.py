@@ -23,17 +23,17 @@ def help(name=None):
         $ fab help:<name>
     """
     if name is None:
-        name = "help"
+        name = 'help'
 
     task = crawl(name, state.commands)
     if isinstance(task, Task):
-        doc = getattr(task, "__doc__", None)
+        doc = getattr(task, '__doc__', None)
         if doc is not None:
-            print(f"Help on {name:s}:")
+            print(f'Help on {name:s}:')
             print()
             print(doc)
         else:
-            print(f"No help available for {name:s}")
+            print(f'No help available for {name:s}')
     else:
-        print(f"No such task {name:s}")
-        print("For a list of tasks type: fab -l")
+        print(f'No such task {name:s}')
+        print('For a list of tasks type: fab -l')

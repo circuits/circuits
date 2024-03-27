@@ -10,9 +10,9 @@ from circuits.web import Controller, Server, Static
 DEFAULTS = {}
 
 templates = TemplateLookup(
-    directories=[os.path.join(os.path.dirname(__file__), "tpl")],
-    module_directory="/tmp",
-    output_encoding="utf-8",
+    directories=[os.path.join(os.path.dirname(__file__), 'tpl')],
+    module_directory='/tmp',
+    output_encoding='utf-8',
 )
 
 
@@ -26,18 +26,17 @@ def render(name, **d):
 
 
 class Root(Controller):
-
-    tpl = "index.html"
+    tpl = 'index.html'
 
     def index(self):
         return render(self.tpl)
 
     def submit(self, firstName, lastName):
-        msg = f"Thank you {firstName} {lastName}"
+        msg = f'Thank you {firstName} {lastName}'
         return render(self.tpl, message=msg)
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Static().register(app)
 Root().register(app)
 app.run()

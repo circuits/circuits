@@ -16,8 +16,7 @@ class Protocol(Component):
     def init(self, sock=None, server=None, **kwargs):
         self.__server = server
         self.__sock = sock
-        self.__receive_event_firewall = kwargs.get('receive_event_firewall',
-                                                   None)
+        self.__receive_event_firewall = kwargs.get('receive_event_firewall', None)
         self.__send_event_firewall = kwargs.get('send_event_firewall', None)
 
     def add_buffer(self, data=''):
@@ -42,8 +41,7 @@ class Protocol(Component):
                 self.send_result(source_event.node_call_id, source_event.value)
 
     def send(self, event):
-        if self.__send_event_firewall and \
-                not self.__send_event_firewall(event, self.__sock):
+        if self.__send_event_firewall and not self.__send_event_firewall(event, self.__sock):
             yield Value(event, self)
 
         else:
@@ -58,7 +56,7 @@ class Protocol(Component):
                 while not hasattr(self.__events[id], 'remote_finish'):
                     yield
 
-                del (self.__events[id])
+                del self.__events[id]
                 yield event.value
 
     def send_result(self, id, value):
@@ -85,8 +83,7 @@ class Protocol(Component):
     def __process_packet_call(self, packet):
         event, id = load_event(packet)
 
-        if self.__receive_event_firewall and \
-                not self.__receive_event_firewall(event, self.__sock):
+        if self.__receive_event_firewall and not self.__receive_event_firewall(event, self.__sock):
             self.send_result(id, Value(event, self))
         else:
             event.success = True  # fire %s_success event
@@ -95,15 +92,14 @@ class Protocol(Component):
             event.node_sock = self.__sock
 
             # convert byte to str
-            event.args = [arg.decode('utf-8') if isinstance(arg, bytes) else
-                          arg for arg in event.args]
+            event.args = [arg.decode('utf-8') if isinstance(arg, bytes) else arg for arg in event.args]
 
             for i in event.kwargs:
                 v = event.kwargs[i]
                 index = i.decode('utf-8') if isinstance(i, bytes) else i
                 value = v.decode('utf-8') if isinstance(v, bytes) else v
 
-                del (event.kwargs[i])
+                del event.kwargs[i]
                 event.kwargs[index] = value
 
             self.fire(event, *event.channels)
@@ -113,13 +109,10 @@ class Protocol(Component):
 
         if id in self.__events:
             # convert byte to str
-            value = value.decode(
-                'utf-8') if isinstance(value, bytes) else value
-            error = error.decode(
-                'utf-8') if isinstance(error, bytes) else error
+            value = value.decode('utf-8') if isinstance(value, bytes) else value
+            error = error.decode('utf-8') if isinstance(error, bytes) else error
 
-            if not hasattr(self.__events[id], 'value') \
-                    or not self.__events[id].value:
+            if not hasattr(self.__events[id], 'value') or not self.__events[id].value:
                 self.__events[id].value = Value(self.__events[id], self)
 
             # save result

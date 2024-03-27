@@ -11,33 +11,30 @@ from .helpers import urlopen
 
 
 class Echo(Component):
-
-    channel = "wsserver"
+    channel = 'wsserver'
 
     def init(self):
         self.clients = []
 
     def connect(self, sock, host, port):
         self.clients.append(sock)
-        print("WebSocket Client Connected:", host, port)
-        self.fire(write(sock, f"Welcome {host:s}:{port:d}"))
+        print('WebSocket Client Connected:', host, port)
+        self.fire(write(sock, f'Welcome {host:s}:{port:d}'))
 
     def disconnect(self, sock):
         self.clients.remove(sock)
 
     def read(self, sock, data):
-        self.fire(write(sock, "Received: " + data))
+        self.fire(write(sock, 'Received: ' + data))
 
 
 class Root(Controller):
-
     def index(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 class Client(Component):
-
-    channel = "ws"
+    channel = 'ws'
 
     def init(self, *args, **kwargs):
         self.response = None
@@ -49,58 +46,57 @@ class Client(Component):
 @pytest.mark.parametrize('chunksize', [BUFSIZE, BUFSIZE + 1, BUFSIZE * 2])
 def test(manager, watcher, webapp, chunksize):
     echo = Echo().register(webapp)
-    assert watcher.wait("registered", channel="wsserver")
+    assert watcher.wait('registered', channel='wsserver')
 
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b"Hello World!"
+    assert s == b'Hello World!'
 
     watcher.clear()
 
-    WebSocketsDispatcher("/websocket").register(webapp)
-    assert watcher.wait("registered", channel="web")
+    WebSocketsDispatcher('/websocket').register(webapp)
+    assert watcher.wait('registered', channel='web')
 
-    uri = "ws://{:s}:{:d}/websocket".format(
-        webapp.server.host, webapp.server.port)
+    uri = 'ws://{:s}:{:d}/websocket'.format(webapp.server.host, webapp.server.port)
 
     WebSocketClient(uri).register(manager)
     client = Client().register(manager)
-    assert watcher.wait("registered", channel="wsclient")
-    assert watcher.wait("connected", channel="wsclient")
+    assert watcher.wait('registered', channel='wsclient')
+    assert watcher.wait('connected', channel='wsclient')
 
-    assert watcher.wait("connect", channel="wsserver")
+    assert watcher.wait('connect', channel='wsserver')
     assert len(echo.clients) == 1
 
-    assert watcher.wait("read", channel="ws")
-    assert client.response.startswith("Welcome")
+    assert watcher.wait('read', channel='ws')
+    assert client.response.startswith('Welcome')
     watcher.clear()
 
-    client.fire(write("Hello!"), "ws")
-    assert watcher.wait("read", channel="ws")
-    assert client.response == "Received: Hello!"
-
-    watcher.clear()
-
-    client.fire(write("World!"), "ws")
-    assert watcher.wait("read", channel="ws")
-    assert client.response == "Received: World!"
+    client.fire(write('Hello!'), 'ws')
+    assert watcher.wait('read', channel='ws')
+    assert client.response == 'Received: Hello!'
 
     watcher.clear()
 
-    data = "A" * (chunksize + 1)
-    client.fire(write(data), "ws")
-    assert watcher.wait("read", channel="ws")
-    assert client.response == f"Received: {data}"
+    client.fire(write('World!'), 'ws')
+    assert watcher.wait('read', channel='ws')
+    assert client.response == 'Received: World!'
+
+    watcher.clear()
+
+    data = 'A' * (chunksize + 1)
+    client.fire(write(data), 'ws')
+    assert watcher.wait('read', channel='ws')
+    assert client.response == f'Received: {data}'
 
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b"Hello World!"
+    assert s == b'Hello World!'
 
     assert len(echo.clients) == 1
 
-    client.fire(close(), "ws")
-    assert watcher.wait("disconnect", channel="wsserver")
+    client.fire(close(), 'ws')
+    assert watcher.wait('disconnect', channel='wsserver')
     assert len(echo.clients) == 0
 
     client.unregister()
-    assert watcher.wait("unregistered")
+    assert watcher.wait('unregistered')

@@ -21,29 +21,38 @@ from circuits.net.sockets import TCPClient
 from circuits.protocols.irc import IRC, JOIN, NICK, PRIVMSG, USER
 
 
-USAGE = "%prog [options] host [port]"
-VERSION = "%prog v" + systemVersion
+USAGE = '%prog [options] host [port]'
+VERSION = '%prog v' + systemVersion
 
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-n", "--nick",
-        action="store", default=os.environ["USER"], dest="nick",
-        help="Nickname to use",
+        '-n',
+        '--nick',
+        action='store',
+        default=os.environ['USER'],
+        dest='nick',
+        help='Nickname to use',
     )
 
     parser.add_option(
-        "-d", "--debug",
-        action="store_true", default=False, dest="debug",
-        help="Enable debug verbose logging",
+        '-d',
+        '--debug',
+        action='store_true',
+        default=False,
+        dest='debug',
+        help='Enable debug verbose logging',
     )
 
     parser.add_option(
-        "-c", "--channel",
-        action="store", default="#circuits", dest="channel",
-        help="Channel to join",
+        '-c',
+        '--channel',
+        action='store',
+        default='#circuits',
+        dest='channel',
+        help='Channel to join',
     )
 
     opts, args = parser.parse_args()
@@ -56,9 +65,8 @@ def parse_options():
 
 
 class Client(Component):
-
     # Set a separate channel in case we want multiple ``Client`` instances.
-    channel = "ircclient"
+    channel = 'ircclient'
 
     def init(self, host, port=6667, opts=None):
         self.host = host
@@ -93,11 +101,11 @@ class Client(Component):
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
         """
-        print("Connected to %s:%d" % (host, port))
+        print('Connected to %s:%d' % (host, port))
 
         nick = self.nick
         hostname = self.hostname
-        name = f"{nick} on {hostname} using circuits/{systemVersion}"
+        name = f'{nick} on {hostname} using circuits/{systemVersion}'
 
         self.fire(NICK(nick))
         self.fire(USER(nick, nick, self.hostname, name))
@@ -109,7 +117,7 @@ class Client(Component):
         This event is triggered by the underlying ``TCPClient`` Component
         when the connection has been disconnected.
         """
-        print("Disconnecetd from %s:%d" % (self.host, self.port))
+        print('Disconnecetd from %s:%d' % (self.host, self.port))
 
         raise SystemExit(0)
 
@@ -123,7 +131,7 @@ class Client(Component):
         if numeric == 1:
             self.fire(JOIN(self.ircchannel))
         elif numeric == 433:
-            self.nick = newnick = "%s_" % self.nick
+            self.nick = newnick = '%s_' % self.nick
             self.fire(NICK(newnick))
 
     def join(self, source, channel):
@@ -134,11 +142,14 @@ class Client(Component):
         user has joined a channel.
         """
         if source[0].lower() == self.nick.lower():
-            print("Joined %s" % channel)
+            print('Joined %s' % channel)
         else:
             print(
-                "--> %s (%s) has joined %s" % (
-                    source[0], "@".join(source[1:]), channel,
+                '--> %s (%s) has joined %s'
+                % (
+                    source[0],
+                    '@'.join(source[1:]),
+                    channel,
                 ),
             )
 
@@ -149,7 +160,7 @@ class Client(Component):
         This event is triggered by the ``IRC`` Protocol Component for each
         notice we receieve from the server.
         """
-        print(f"-{source[0]}- {message}")
+        print(f'-{source[0]}- {message}')
 
     def privmsg(self, source, target, message):
         """
@@ -158,12 +169,12 @@ class Client(Component):
         This event is triggered by the ``IRC`` Protocol Component for each
         message we receieve from the server.
         """
-        if target[0] == "#":
-            print(f"<{source[0]}> {message}")
+        if target[0] == '#':
+            print(f'<{source[0]}> {message}')
         else:
-            print(f"-{source[0]}- {message}")
+            print(f'-{source[0]}- {message}')
 
-    @handler("read", channel="stdin")
+    @handler('read', channel='stdin')
     def stdin_read(self, data):
         """
         read Event (on channel ``stdin``)
@@ -172,9 +183,9 @@ class Client(Component):
         ``stdin`` channel. This is triggered each time stdin has data that
         it has read.
         """
-        data = data.strip().decode("utf-8")
+        data = data.strip().decode('utf-8')
 
-        print(f"<{self.nick:s}> {data:s}")
+        print(f'<{self.nick:s}> {data:s}')
         self.fire(PRIVMSG(self.ircchannel, data))
 
 
@@ -193,5 +204,5 @@ def main():
     client.run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

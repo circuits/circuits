@@ -10,7 +10,6 @@ automatically registered as event handlers.
 
 
 class App(Component):
-
     def test(self, event, *args, **kwargs):
         pass
 
@@ -20,23 +19,20 @@ class A(Component):
 
 
 class B(Component):
-
     informed = False
 
-    @handler("prepare_unregister", channel="*")
+    @handler('prepare_unregister', channel='*')
     def _on_prepare_unregister(self, event, c):
         if event.in_subtree(self):
             self.informed = True
 
 
 class Base(Component):
-
-    channel = "base"
+    channel = 'base'
 
 
 class C(Base):
-
-    channel = "c"
+    channel = 'c'
 
 
 def test_basic():
@@ -45,7 +41,7 @@ def test_basic():
     app = App()
     app.register(m)
 
-    assert app.test in app._handlers.get("test", set())
+    assert app.test in app._handlers.get('test', set())
 
     app.unregister()
     while len(m):
@@ -86,8 +82,8 @@ def test_complex():
 def test_subclassing_with_custom_channel():
     base = Base()
 
-    assert base.channel == "base"
+    assert base.channel == 'base'
 
     c = C()
 
-    assert c.channel == "c"
+    assert c.channel == 'c'

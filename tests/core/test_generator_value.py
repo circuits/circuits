@@ -11,16 +11,16 @@ class hello(Event):
 
 
 class App(Component):
-
     def test(self):
         def f():
             while True:
-                yield "Hello"
+                yield 'Hello'
+
         return f()
 
     def hello(self):
-        yield "Hello "
-        yield "World!"
+        yield 'Hello '
+        yield 'World!'
 
 
 def test_return_generator():
@@ -33,7 +33,7 @@ def test_return_generator():
     app.tick()
 
     x = v.value
-    assert x == "Hello"
+    assert x == 'Hello'
 
 
 def test_yield():
@@ -47,4 +47,4 @@ def test_yield():
     app.tick()
 
     x = v.value
-    assert x == ["Hello ", "World!"]
+    assert x == ['Hello ', 'World!']

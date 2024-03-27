@@ -15,17 +15,16 @@ class bar(Event):
 
 
 class App(Component):
-
     def foo(self):
-        print("Foo!")
+        print('Foo!')
 
     def bar(self):
-        print("Bar!")
+        print('Bar!')
 
     def hello(self):
         self.fire(foo())
         self.fire(bar())
-        print("Hello World!")
+        print('Hello World!')
 
     def started(self, component):
         self.fire(hello())

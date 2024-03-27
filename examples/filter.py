@@ -21,12 +21,11 @@ class hello(Event):
 
 
 class App(Component):
-
     def hello(self, event):
         """Hello Event Handler"""
         event.stop()  # Stop further event processing
 
-        print("Hello World!")
+        print('Hello World!')
 
     def started(self, event, component):
         """

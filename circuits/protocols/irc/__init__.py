@@ -5,6 +5,7 @@ This package implements the Internet Relay Chat Protocol
 or commonly known as IRC. Support for both server and client
 is implemented.
 """
+
 from .commands import *  # noqa
 from .events import reply, response  # noqa
 from .message import Message  # noqa

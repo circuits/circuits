@@ -1,4 +1,5 @@
 """This module define the @handler decorator/function and the HandlesType type."""
+
 from collections.abc import Callable
 
 from circuits.tools import getargspec
@@ -69,15 +70,15 @@ def handler(*names, **kwargs):
         f.handler = True
 
         f.names = names
-        f.priority = kwargs.get("priority", 0)
-        f.channel = kwargs.get("channel", None)
-        f.override = kwargs.get("override", False)
+        f.priority = kwargs.get('priority', 0)
+        f.channel = kwargs.get('channel', None)
+        f.override = kwargs.get('override', False)
 
         args = getargspec(f)[0]
 
-        if args and args[0] == "self":
+        if args and args[0] == 'self':
             del args[0]
-        f.event = getattr(f, "event", bool(args and args[0] == "event"))
+        f.event = getattr(f, 'event', bool(args and args[0] == 'event'))
 
         return f
 
@@ -89,36 +90,35 @@ class Unknown:
 
 
 def reprhandler(handler):
-    format = "<handler[%s][%s]%s (%s.%s)>"
+    format = '<handler[%s][%s]%s (%s.%s)>'
 
-    channel = getattr(handler, "channel", "*")
+    channel = getattr(handler, 'channel', '*')
     if channel is None:
-        channel = "*"
+        channel = '*'
 
     from circuits.core.manager import Manager
 
     if isinstance(channel, Manager):
-        channel = "<instance of " + channel.__class__.__name__ + ">"
+        channel = '<instance of ' + channel.__class__.__name__ + '>'
 
-    names = ",".join(handler.names)
+    names = ','.join(handler.names)
 
-    instance = getattr(handler, "im_self", getattr(handler, "__self__", Unknown())).__class__.__name__
+    instance = getattr(handler, 'im_self', getattr(handler, '__self__', Unknown())).__class__.__name__
 
     method = handler.__name__
 
-    priority = f"[{handler.priority:0.2f}]" if handler.priority else ""
+    priority = f'[{handler.priority:0.2f}]' if handler.priority else ''
 
     return format % (channel, names, priority, instance, method)
 
 
 class HandlerMetaClass(type):
-
     def __init__(cls, name, bases, ns):
         super().__init__(name, bases, ns)
 
         callables = (x for x in ns.items() if isinstance(x[1], Callable))
         for name, callable in callables:
-            if not (name.startswith("_") or hasattr(callable, "handler")):
+            if not (name.startswith('_') or hasattr(callable, 'handler')):
                 try:
                     setattr(cls, name, handler(name)(callable))
                 except ValueError as e:

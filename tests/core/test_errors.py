@@ -9,7 +9,6 @@ class test(Event):
 
 
 class App(Component):
-
     def __init__(self):
         super().__init__()
 
@@ -37,7 +36,7 @@ def reraise(e):
 @pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
-    watcher.wait("registered")
+    watcher.wait('registered')
 
     def finalizer():
         app.unregister()
@@ -50,7 +49,7 @@ def app(request, manager, watcher):
 def test_main(app, watcher):
     e = test()
     app.fire(e)
-    watcher.wait("exception")
+    watcher.wait('exception')
 
     assert app.etype is NameError
     pytest.raises(NameError, lambda e: reraise(e), app.evalue)

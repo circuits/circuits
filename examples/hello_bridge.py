@@ -17,13 +17,11 @@ class hello(Event):
 
 
 class Child(Component):
-
     def hello(self):
-        return f"Hello from child with pid {getpid()}"
+        return f'Hello from child with pid {getpid()}'
 
 
 class App(Component):
-
     def init(self):
         Child().start(process=True, link=self)
 
@@ -37,7 +35,7 @@ class App(Component):
         raise SystemExit(0)
 
     def hello(self):
-        return f"Hello from parent with pid {getpid()}"
+        return f'Hello from parent with pid {getpid()}'
 
 
 App().run()

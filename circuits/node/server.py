@@ -10,9 +10,9 @@ class Server(BaseComponent):
     channel = 'node'
     __protocols = {}
 
-    def __init__(self, port, server_ip='0.0.0.0', channel=channel,
-                 receive_event_firewall=None, send_event_firewall=None,
-                 **kwargs):
+    def __init__(
+        self, port, server_ip='0.0.0.0', channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs
+    ):
         """
         Create server on node system.
 

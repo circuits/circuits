@@ -6,16 +6,16 @@ A simple example showing how to intercept and potentially filter requests.
 This example demonstrates how you could intercept the response before it goes
 out changing the response's content into ALL UPPER CASE!
 """
+
 from circuits import Component, handler
 from circuits.web import Controller, Server
 
 
 class Upper(Component):
-
-    channel = "web"  # By default all web related events
+    channel = 'web'  # By default all web related events
     # go to the "web" channel.
 
-    @handler("response", priority=1.0)
+    @handler('response', priority=1.0)
     def _on_response(self, response):
         """
         Response Handler
@@ -27,11 +27,10 @@ class Upper(Component):
         Here's we're simply modifying the response body by changing the content
         into ALL UPPERCASE!
         """
-        response.body = "".join(response.body).upper()
+        response.body = ''.join(response.body).upper()
 
 
 class Root(Controller):
-
     def index(self):
         """
         Request Handler
@@ -39,10 +38,10 @@ class Root(Controller):
         Our normal request handler simply returning
         "Hello World!" as the response.
         """
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Upper().register(app)
 Root().register(app)
 app.run()

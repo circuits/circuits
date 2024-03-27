@@ -1,12 +1,12 @@
 """This module defines the basic event class and common events."""
+
 from inspect import ismethod
 from traceback import format_tb
 
 
 class Event:
-
     channels = ()
-    "The channels this message is sent to."
+    'The channels this message is sent to.'
 
     parent = None
     notify = False
@@ -21,7 +21,7 @@ class Event:
         return type(cls)(_name, (cls,), {})(*args, **kwargs)
 
     def child(self, name, *args, **kwargs):
-        e = Event.create(f"{self.name:s}_{name:s}", *args, **kwargs)
+        e = Event.create(f'{self.name:s}_{name:s}', *args, **kwargs)
         e.parent = self
         return e
 
@@ -88,7 +88,7 @@ class Event:
 
     def __getstate__(self):
         odict = self.__dict__.copy()
-        del odict["handler"]
+        del odict['handler']
         return odict
 
     def __setstate__(self, dict):
@@ -107,14 +107,14 @@ class Event:
         elif len(self.channels) == 1:
             channels = str(self.channels[0])
         else:
-            channels = ""
+            channels = ''
 
-        data = "%s %s" % (
-            ", ".join(repr(arg) for arg in self.args),
-            ", ".join(f"{k}={repr(v)}" for k, v in self.kwargs.items()),
+        data = '%s %s' % (
+            ', '.join(repr(arg) for arg in self.args),
+            ', '.join(f'{k}={repr(v)}' for k, v in self.kwargs.items()),
         )
 
-        return f"<{self.name}[{channels}] ({data})>"
+        return f'<{self.name}[{channels}] ({data})>'
 
     def __getitem__(self, x):
         """
@@ -131,7 +131,7 @@ class Event:
         elif isinstance(x, str):
             return self.kwargs[x]
         else:
-            raise TypeError("Expected int or str, got %r" % type(x))
+            raise TypeError('Expected int or str, got %r' % type(x))
 
     def __setitem__(self, i, y):
         """
@@ -148,7 +148,7 @@ class Event:
         elif isinstance(i, str):
             self.kwargs[i] = y
         else:
-            raise TypeError("Expected int or str, got %r" % type(i))
+            raise TypeError('Expected int or str, got %r' % type(i))
 
     def cancel(self):
         """Cancel the event from being processed (if not already)"""
@@ -320,9 +320,12 @@ class generate_events(Event):
                 if self._time_left == 0 and self.handler is not None:
                     m = getattr(
                         getattr(
-                            self.handler, "im_self", self.handler.__self__,
+                            self.handler,
+                            'im_self',
+                            self.handler.__self__,
                         ),
-                        "resume", None,
+                        'resume',
+                        None,
                     )
                     if m is not None and ismethod(m):
                         m()

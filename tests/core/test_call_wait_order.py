@@ -19,7 +19,6 @@ def process(x=None):
 
 
 class App(Component):
-
     @handler('hello')
     def _on_hello(self):
         e1 = task(process, 1)
@@ -33,10 +32,10 @@ def app(request, manager, watcher):
     seed(time())
 
     app = App().register(manager)
-    assert watcher.wait("registered")
+    assert watcher.wait('registered')
 
     worker = Worker().register(manager)
-    assert watcher.wait("registered")
+    assert watcher.wait('registered')
 
     def finalizer():
         app.unregister()

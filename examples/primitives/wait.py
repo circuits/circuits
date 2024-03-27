@@ -15,7 +15,6 @@ class bar(Event):
 
 
 class App(Component):
-
     def foo(self):
         return 1
 
@@ -24,17 +23,17 @@ class App(Component):
 
     def hello(self):
         x = self.fire(foo())
-        yield self.wait("foo")
+        yield self.wait('foo')
 
         y = self.fire(bar())
-        yield self.wait("bar")
+        yield self.wait('bar')
 
         yield x.value + y.value
 
     def started(self, component):
         x = self.fire(hello())
-        yield self.wait("hello")
-        print(f"{x.value:d}")
+        yield self.wait('hello')
+        print(f'{x.value:d}')
         self.stop()
 
 
