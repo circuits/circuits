@@ -41,18 +41,22 @@ from .core import (
 try:
     __import__('pkg_resources').declare_namespace(__name__)
 except ImportError:
-    from pkgutil import extend_path
+    import importlib.metadata
+    import sys
 
-    __path__ = extend_path(__path__, __name__)
-    import os
-
-    fd = None
-    for _path in __path__:
-        _path = os.path.join(_path, '__init__.py')
-        if _path != __file__ and os.path.exists(_path):
-            with open(_path) as fd:
-                exec(fd.read(), globals())
-    del os, extend_path, _path, fd
+    try:
+        namespace_pkg = importlib.metadata.distribution(__name__)
+    except importlib.metadata.PackageNotFoundError:
+        pass
+    else:
+        namespace_pkg_files = namespace_pkg.files
+        if namespace_pkg_files:
+            for file in namespace_pkg_files:
+                if str(file).endswith('__init__.py'):
+                    namespace_pkg_path = str(file).split('__init__.py')[0]
+                    if namespace_pkg_path not in sys.path:
+                        sys.path.append(namespace_pkg_path)
+                    break
 
 # flake8: noqa
 # pylama:skip=1
