@@ -4,23 +4,23 @@ from circuits import Component, Debugger, Event
 
 
 class Identify(Event):
-    """Identify Event"""
+    """Identify Event."""
 
     success = True
 
 
 class Pound(Component):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         Debugger().register(self)
         Bob().register(self)
         Fred().register(self)
 
-    def started(self, *args):
+    def started(self, *args) -> None:
         self.fire(Identify())
 
-    def Identify_success(self, evt, result):
+    def Identify_success(self, evt, result) -> None:
         if not isinstance(result, list):
             result = [result]
         print('In pound:')
@@ -34,11 +34,11 @@ class Dog(Component):
 
 
 class Bob(Dog):
-    """Bob"""
+    """Bob."""
 
 
 class Fred(Dog):
-    """Fred"""
+    """Fred."""
 
 
 Pound().run()

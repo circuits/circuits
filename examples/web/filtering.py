@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Filtering
+Filtering.
 
 A simple example showing how to intercept and potentially filter requests.
 This example demonstrates how you could intercept the response before it goes
@@ -16,9 +16,9 @@ class Upper(Component):
     # go to the "web" channel.
 
     @handler('response', priority=1.0)
-    def _on_response(self, response):
+    def _on_response(self, response) -> None:
         """
-        Response Handler
+        Response Handler.
 
         Here we set the priority slightly higher than the default response
         handler in circutis.web (0.0) so that can we do something about the
@@ -31,9 +31,9 @@ class Upper(Component):
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         """
-        Request Handler
+        Request Handler.
 
         Our normal request handler simply returning
         "Hello World!" as the response.

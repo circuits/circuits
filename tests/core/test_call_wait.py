@@ -5,61 +5,61 @@ from circuits import Component, Event, handler
 
 
 class wait(Event):
-    """wait Event"""
+    """wait Event."""
 
     success = True
 
 
 class call(Event):
-    """call Event"""
+    """call Event."""
 
     success = True
 
 
 class long_call(Event):
-    """long_call Event"""
+    """long_call Event."""
 
     success = True
 
 
 class long_wait(Event):
-    """long_wait Event"""
+    """long_wait Event."""
 
     success = True
 
 
 class wait_return(Event):
-    """wait_return Event"""
+    """wait_return Event."""
 
     success = True
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
     success = True
 
 
 class foo(Event):
-    """foo Event"""
+    """foo Event."""
 
     success = True
 
 
 class get_x(Event):
-    """get_x Event"""
+    """get_x Event."""
 
     success = True
 
 
 class get_y(Event):
-    """get_y Event"""
+    """get_y Event."""
 
     success = True
 
 
 class eval(Event):
-    """eval Event"""
+    """eval Event."""
 
     success = True
 
@@ -76,7 +76,7 @@ class App(Component):
         x = yield self.call(hello())
         yield x.value
 
-    def hello(self):
+    def hello(self) -> str:
         return 'Hello World!'
 
     def long_wait(self):
@@ -95,10 +95,10 @@ class App(Component):
     def foo(self):
         yield from range(1, 10)
 
-    def get_x(self):
+    def get_x(self) -> int:
         return 1
 
-    def get_y(self):
+    def get_y(self) -> int:
         return 2
 
     def eval(self):
@@ -112,7 +112,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -120,7 +120,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test_wait_simple(manager, watcher, app):
+def test_wait_simple(manager, watcher, app) -> None:
     x = manager.fire(wait())
     assert watcher.wait('wait_success')
 
@@ -128,7 +128,7 @@ def test_wait_simple(manager, watcher, app):
     assert value == 'Hello World!'
 
 
-def call_simple(manager, watcher, app):
+def call_simple(manager, watcher, app) -> None:
     x = manager.fire(call())
     assert watcher.wait('call_success')
 
@@ -136,7 +136,7 @@ def call_simple(manager, watcher, app):
     assert value == 'Hello World!'
 
 
-def test_long_call(manager, watcher, app):
+def test_long_call(manager, watcher, app) -> None:
     x = manager.fire(long_call())
     assert watcher.wait('long_call_success')
 
@@ -144,7 +144,7 @@ def test_long_call(manager, watcher, app):
     assert value == list(range(1, 10))
 
 
-def test_long_wait(manager, watcher, app):
+def test_long_wait(manager, watcher, app) -> None:
     x = manager.fire(long_wait())
     assert watcher.wait('long_wait_success')
 
@@ -152,7 +152,7 @@ def test_long_wait(manager, watcher, app):
     assert value == list(range(1, 10))
 
 
-def test_wait_return(manager, watcher, app):
+def test_wait_return(manager, watcher, app) -> None:
     x = manager.fire(wait_return())
     assert watcher.wait('wait_return_success')
 
@@ -160,7 +160,7 @@ def test_wait_return(manager, watcher, app):
     assert value == list(range(1, 10))
 
 
-def test_eval(manager, watcher, app):
+def test_eval(manager, watcher, app) -> None:
     x = manager.fire(eval())
     assert watcher.wait('eval_success')
 
@@ -170,7 +170,7 @@ def test_eval(manager, watcher, app):
 
 @pytest.mark.xfail(reason='Issue #226')
 @pytest.mark.timeout(1)
-def test_wait_too_late(manager, watcher, app):
+def test_wait_too_late(manager, watcher, app) -> None:
     event = foo()
     manager.fire(event)
     assert watcher.wait('foo_success')

@@ -1,5 +1,5 @@
 """
-websocket - WebSocket client library for Python
+websocket - WebSocket client library for Python.
 
 Copyright (C) 2010 Hiroki Ohtani(liris)
 
@@ -43,7 +43,7 @@ default_timeout = None
 traceEnabled = False
 
 
-def enableTrace(tracable):
+def enableTrace(tracable) -> None:
     """Turn on/off the tracability."""
     global traceEnabled
     traceEnabled = tracable
@@ -53,7 +53,7 @@ def enableTrace(tracable):
         logger.setLevel(logging.DEBUG)
 
 
-def setdefaulttimeout(timeout):
+def setdefaulttimeout(timeout) -> None:
     """Set the global timeout setting to connect."""
     global default_timeout
     default_timeout = timeout
@@ -67,13 +67,14 @@ def getdefaulttimeout():
 def _parse_url(url):
     """
     parse url and the result is tuple of
-    (hostname, port, resource path and the flag of secure mode)
+    (hostname, port, resource path and the flag of secure mode).
     """
     parsed = urlparse(url)
     if parsed.hostname:
         hostname = parsed.hostname
     else:
-        raise ValueError('hostname is invalid')
+        msg = 'hostname is invalid'
+        raise ValueError(msg)
     port = 0
     if parsed.port:
         port = parsed.port
@@ -89,10 +90,7 @@ def _parse_url(url):
     else:
         raise ValueError('scheme %s is invalid' % parsed.scheme)
 
-    if parsed.path:
-        resource = parsed.path
-    else:
-        resource = '/'
+    resource = parsed.path if parsed.path else '/'
 
     return (hostname, port, resource, is_secure)
 
@@ -161,7 +159,7 @@ HEADERS_TO_EXIST_FOR_HIXIE75 = [
 
 
 class _SSLSocketWrapper:
-    def __init__(self, sock):
+    def __init__(self, sock) -> None:
         self.ssl = socket.ssl(sock)
 
     def recv(self, bufsize):
@@ -176,7 +174,7 @@ class WebSocket:
     Low level WebSocket interface.
     This class is based on
       The WebSocket protocol draft-hixie-thewebsocketprotocol-76
-      http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
+      http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76.
 
     We can connect to the websocket server and send/recieve data.
     The following example is a echo client.
@@ -190,12 +188,12 @@ class WebSocket:
     >>> ws.close()
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initalize WebSocket object."""
         self.connected = False
         self.io_sock = self.sock = socket.socket()
 
-    def settimeout(self, timeout):
+    def settimeout(self, timeout) -> None:
         """Set the timeout to the websocket."""
         self.sock.settimeout(timeout)
 
@@ -203,10 +201,10 @@ class WebSocket:
         """Get the websocket timeout."""
         return self.sock.gettimeout()
 
-    def connect(self, url, **options):
+    def connect(self, url, **options) -> None:
         """
         Connect to url. url is websocket url scheme.
-        ie. ws://host:port/resource
+        ie. ws://host:port/resource.
         """
         hostname, port, resource, is_secure = _parse_url(url)
         # TODO: we need to support proxy
@@ -215,18 +213,12 @@ class WebSocket:
             self.io_sock = _SSLSocketWrapper(self.sock)
         self._handshake(hostname, port, resource, **options)
 
-    def _handshake(self, host, port, resource, **options):
+    def _handshake(self, host, port, resource, **options) -> None:
         sock = self.io_sock
         headers = []
-        headers.append('GET %s HTTP/1.1' % resource)
-        headers.append('Upgrade: WebSocket')
-        headers.append('Connection: Upgrade')
-        if port == 80:
-            hostport = host
-        else:
-            hostport = '%s:%d' % (host, port)
-        headers.append('Host: %s' % hostport)
-        headers.append('Origin: %s' % hostport)
+        headers.extend(('GET %s HTTP/1.1' % resource, 'Upgrade: WebSocket', 'Connection: Upgrade'))
+        hostport = host if port == 80 else '%s:%d' % (host, port)
+        headers.extend(('Host: %s' % hostport, 'Origin: %s' % hostport))
 
         number_1, key_1 = _create_sec_websocket_key()
         headers.append('Sec-WebSocket-Key1: %s' % key_1)
@@ -254,14 +246,16 @@ class WebSocket:
         success, secure = self._validate_header(resp_headers)
         if not success:
             self.close()
-            raise WebSocketException('Invalid WebSocket Header')
+            msg = 'Invalid WebSocket Header'
+            raise WebSocketException(msg)
 
         if secure:
             resp = self._get_resp()
 
             if not self._validate_resp(number_1, number_2, key3, resp):
                 self.close()
-                raise WebSocketException('challenge-response error')
+                msg = 'challenge-response error'
+                raise WebSocketException(msg)
 
         self.connected = True
 
@@ -329,14 +323,15 @@ class WebSocket:
                     key, value = kv
                     headers[key.lower().decode('utf-8')] = value.strip().lower().decode('utf-8')
                 else:
-                    raise WebSocketException('Invalid header')
+                    msg = 'Invalid header'
+                    raise WebSocketException(msg)
 
         if traceEnabled:
             logger.debug('-----------------------')
 
         return status, headers
 
-    def send(self, payload):
+    def send(self, payload) -> None:
         """Send the data as string. payload must be utf-8 string or unicoce."""
         if isinstance(payload, str):
             payload = payload.encode('utf-8')
@@ -364,13 +359,13 @@ class WebSocket:
         if 0x80 < frame_type < 0xFF:
             # which frame type is valid?
             length = self._read_length()
-            bytes = self._recv_strict(length)
-            return bytes
+            return self._recv_strict(length)
         if frame_type == 0xFF:
             self._recv(1)
             self._closeInternal()
             return None
-        raise WebSocketException('Invalid frame type')
+        msg = 'Invalid frame type'
+        raise WebSocketException(msg)
 
     def _read_length(self):
         length = 0
@@ -382,8 +377,8 @@ class WebSocket:
 
         return length
 
-    def close(self):
-        """Close Websocket object"""
+    def close(self) -> None:
+        """Close Websocket object."""
         if self.connected:
             try:
                 self.io_sock.send('\xff\x00')
@@ -401,7 +396,7 @@ class WebSocket:
                 pass
         self._closeInternal()
 
-    def _closeInternal(self):
+    def _closeInternal(self) -> None:
         self.connected = False
         self.sock.close()
         self.io_sock = self.sock
@@ -438,7 +433,7 @@ class WebSocketApp:
     The interface is like JavaScript WebSocket object.
     """
 
-    def __init__(self, url, on_open=None, on_message=None, on_error=None, on_close=None):
+    def __init__(self, url, on_open=None, on_message=None, on_error=None, on_close=None) -> None:
         """
         url: websocket url.
         on_open: callable object which is called at opening websocket.
@@ -461,21 +456,22 @@ class WebSocketApp:
         self.on_close = on_close
         self.sock = None
 
-    def send(self, data):
+    def send(self, data) -> None:
         """Send message. data must be utf-8 string or unicode."""
         self.sock.send(data)
 
-    def close(self):
+    def close(self) -> None:
         """Close websocket connection."""
         self.sock.close()
 
-    def run_forever(self):
+    def run_forever(self) -> None:
         """
         run event loop for WebSocket framework.
         This loop is infinite loop and is alive during websocket is available.
         """
         if self.sock:
-            raise WebSocketException('socket is already opened')
+            msg = 'socket is already opened'
+            raise WebSocketException(msg)
         try:
             self.sock = WebSocket()
             self.sock.connect(self.url)
@@ -492,13 +488,13 @@ class WebSocketApp:
             self._run_with_no_err(self.on_close)
             self.sock = None
 
-    def _run_with_no_err(self, callback, *args):
+    def _run_with_no_err(self, callback, *args) -> None:
         if callback:
             try:
                 callback(self, *args)
             except Exception as e:
                 if logger.isEnabledFor(logging.DEBUG):
-                    logger.error(e)
+                    logger.exception(e)
 
 
 if __name__ == '__main__':

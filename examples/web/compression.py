@@ -12,13 +12,13 @@ from circuits.web.tools import gzip
 
 class Gzip(Component):
     @handler('response', priority=1.0)
-    def compress_response(self, event, response):
+    def compress_response(self, event, response) -> None:
         event[0] = gzip(response)
 
 
 class Root(BaseController):
     @expose('index')
-    def index(self):
+    def index(self) -> str:
         return 'Hello World! This is some test string which is compressed using gzip-4 if you want!'
 
 

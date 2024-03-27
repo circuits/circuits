@@ -1,5 +1,5 @@
 """
-Workers
+Workers.
 
 Worker is a component used to perform "work" in independent threads or
 processes. Simply create an instance of Worker() with either `process=True`
@@ -25,7 +25,7 @@ DEFAULT_WORKERS = 10
 
 class task(Event):
     """
-    task Event
+    task Event.
 
     This Event is used to initiate a new task to be performed by a Worker
 
@@ -42,14 +42,14 @@ class task(Event):
     success = True
     failure = True
 
-    def __init__(self, f, *args, **kwargs):
-        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, f, *args, **kwargs) -> None:
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         super().__init__(f, *args, **kwargs)
 
 
 class Worker(BaseComponent):
     """
-    A thread/process Worker Component
+    A thread/process Worker Component.
 
     This Component creates a pool of workers (either a thread or process)
     and executures the supplied function from a `task()` event passing
@@ -65,7 +65,7 @@ class Worker(BaseComponent):
 
     channel = 'worker'
 
-    def init(self, process=False, workers=None, channel=channel):
+    def init(self, process=False, workers=None, channel=channel) -> None:
         if not hasattr(current_thread(), '_children'):
             current_thread()._children = WeakKeyDictionary()
 
@@ -74,7 +74,7 @@ class Worker(BaseComponent):
         self.pool = Pool(self.workers)
 
     @handler('stopped', 'unregistered', channel='*')
-    def _on_stopped(self, event, *args):
+    def _on_stopped(self, event, *args) -> None:
         if event.name == 'unregistered' and args[0] is not self:
             return
 

@@ -1,5 +1,5 @@
 """
-Tools
+Tools.
 
 This module implements tools used throughout circuits.web.
 These tools can also be used within Controllers and request handlers.
@@ -30,7 +30,7 @@ mimetypes.add_type('text/javascript', '.js')
 mimetypes.add_type('application/xhtml+xml', '.xhtml')
 
 
-def expires(request, response, secs=0, force=False):
+def expires(request, response, secs=0, force=False) -> None:
     """
     Tool for influencing cache mechanisms using the 'Expires' header.
 
@@ -167,7 +167,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
                     for start, stop in r:
                         yield '--' + boundary
                         yield '\r\nContent-type: %s' % type
-                        yield ('\r\nContent-range: bytes %s-%s/%s\r\n\r\n' % (start, stop - 1, c_len))
+                        yield (f'\r\nContent-range: bytes {start}-{stop - 1}/{c_len}\r\n\r\n')
                         bodyfile.seek(start)
                         yield bodyfile.read(stop - start)
                         yield '\r\n'
@@ -240,30 +240,24 @@ def validate_etags(request, response, autotags=False):
                 request,
                 response,
                 412,
-                description='If-Match failed: ETag %r did not match %r'
-                % (
-                    etag,
-                    conditions,
-                ),
+                description=f'If-Match failed: ETag {etag!r} did not match {conditions!r}',
             )
 
         conditions = request.headers.elements('If-None-Match') or []
         conditions = [str(x) for x in conditions]
         if conditions == ['*'] or etag in conditions:
-            if request.method in ('GET', 'HEAD'):
+            if request.method in {'GET', 'HEAD'}:
                 return redirect(request, response, [], code=304)
             return httperror(
                 request,
                 response,
                 412,
                 description=(
-                    'If-None-Match failed: ETag %r matched %r'
-                    % (
-                        etag,
-                        conditions,
-                    )
+                    f'If-None-Match failed: ETag {etag!r} matched {conditions!r}'
                 ),
             )
+        return None
+    return None
 
 
 def validate_since(request, response):
@@ -283,14 +277,16 @@ def validate_since(request, response):
 
         since = request.headers.get('If-Modified-Since')
         if since and since == lastmod and ((status >= 200 and status <= 299) or status == 304):
-            if request.method in ('GET', 'HEAD'):
+            if request.method in {'GET', 'HEAD'}:
                 return redirect(request, response, [], code=304)
             return httperror(request, response, 412)
+        return None
+    return None
 
 
 def check_auth(request, response, realm, users, encrypt=None):
     """
-    Check Authentication
+    Check Authentication.
 
     If an Authorization header contains credentials, return True, else False.
 
@@ -320,7 +316,8 @@ def check_auth(request, response, realm, users, encrypt=None):
                 users = users()  # expect it to return a dictionary
 
                 if not isinstance(users, dict):
-                    raise ValueError('Authentication users must be a dict')
+                    msg = 'Authentication users must be a dict'
+                    raise ValueError(msg)
 
                 # fetch the user password
                 password = users.get(ah['username'], None)
@@ -329,7 +326,8 @@ def check_auth(request, response, realm, users, encrypt=None):
                 password = users(ah['username'])
         else:
             if not isinstance(users, dict):
-                raise ValueError('Authentication users must be a dict')
+                msg = 'Authentication users must be a dict'
+                raise ValueError(msg)
 
             # fetch the user password
             password = users.get(ah['username'], None)
@@ -346,7 +344,7 @@ def check_auth(request, response, realm, users, encrypt=None):
 
 def basic_auth(request, response, realm, users, encrypt=None):
     """
-    Perform Basic Authentication
+    Perform Basic Authentication.
 
     If auth fails, returns an Unauthorized error  with a
     basic authentication header.
@@ -373,7 +371,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
 
 def digest_auth(request, response, realm, users):
     """
-    Perform Digest Authentication
+    Perform Digest Authentication.
 
     If auth fails, raise 401 with a digest authentication header.
 
@@ -430,7 +428,7 @@ def gzip(response, level=4, mime_types=('text/html', 'text/plain')):
     for coding in acceptable:
         if coding.value == 'identity' and coding.qvalue != 0:
             return response
-        if coding.value in ('gzip', 'x-gzip'):
+        if coding.value in {'gzip', 'x-gzip'}:
             if coding.qvalue == 0:
                 return response
             if ct in mime_types:
@@ -458,9 +456,9 @@ def gzip(response, level=4, mime_types=('text/html', 'text/plain')):
 class ReverseProxy(BaseComponent):
     headers = ('X-Real-IP', 'X-Forwarded-For')
 
-    def init(self, headers=None):
+    def init(self, headers=None) -> None:
         """
-        Web Component for identifying the original client IP when a reverse proxy is used
+        Web Component for identifying the original client IP when a reverse proxy is used.
 
         :param headers: List of HTTP headers to read the original client IP
         """
@@ -468,6 +466,6 @@ class ReverseProxy(BaseComponent):
             self.headers = headers
 
     @handler('request', priority=1)
-    def _on_request(self, req, *_):
+    def _on_request(self, req, *_) -> None:
         ip = [v for v in map(req.headers.get, self.headers) if v]
         req.remote = (ip and Host(ip[0], '', ip[0])) or req.remote

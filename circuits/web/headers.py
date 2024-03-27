@@ -1,5 +1,5 @@
 """
-Headers Support
+Headers Support.
 
 This module implements support for parsing and handling headers.
 """
@@ -40,10 +40,7 @@ def header_elements(fieldname, fieldvalue):
 
     result = []
     for element in fieldvalue.split(','):
-        if fieldname.startswith('Accept') or fieldname == 'TE':
-            hv = AcceptElement.from_str(element)
-        else:
-            hv = HeaderElement.from_str(element)
+        hv = AcceptElement.from_str(element) if fieldname.startswith('Accept') or fieldname == 'TE' else HeaderElement.from_str(element)
         result.append(hv)
 
     return sorted(result, reverse=True)
@@ -52,7 +49,7 @@ def header_elements(fieldname, fieldvalue):
 class HeaderElement:
     """An element (with parameters) from an HTTP header's element list."""
 
-    def __init__(self, value, params=None):
+    def __init__(self, value, params=None) -> None:
         self.value = value
         if params is None:
             params = {}
@@ -64,11 +61,11 @@ class HeaderElement:
     def __lt__(self, other):
         return self.value < other.value
 
-    def __str__(self):
+    def __str__(self) -> str:
         p = [f';{k}={v}' for k, v in self.params.items()]
-        return '%s%s' % (self.value, ''.join(p))
+        return '{}{}'.format(self.value, ''.join(p))
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self.__str__().encode('ISO8859-1')
 
     @staticmethod
@@ -77,18 +74,12 @@ class HeaderElement:
         # Split the element into a value and parameters. The 'value' may
         # be of the form, "token=token", but we don't split that here.
         atoms = [x.strip() for x in elementstr.split(';') if x.strip()]
-        if not atoms:
-            initial_value = ''
-        else:
-            initial_value = atoms.pop(0).strip()
+        initial_value = '' if not atoms else atoms.pop(0).strip()
         params = {}
         for atom in atoms:
             atom = [x.strip() for x in atom.split('=', 1) if x.strip()]
             key = atom.pop(0)
-            if atom:
-                val = atom[0]
-            else:
-                val = ''
+            val = atom[0] if atom else ''
             params[key] = val
         return initial_value, params
 
@@ -151,7 +142,7 @@ class CaseInsensitiveDict(dict):
     Each key is changed on entry to str(key).title().
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         d = dict(*args, **kwargs)
         for key, value in d.items():
             dict.__setitem__(self, str(key).title(), value)
@@ -160,19 +151,19 @@ class CaseInsensitiveDict(dict):
     def __getitem__(self, key):
         return dict.__getitem__(self, str(key).title())
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value) -> None:
         dict.__setitem__(self, str(key).title(), value)
 
-    def __delitem__(self, key):
+    def __delitem__(self, key) -> None:
         dict.__delitem__(self, str(key).title())
 
-    def __contains__(self, key):
+    def __contains__(self, key) -> bool:
         return dict.__contains__(self, str(key).title())
 
     def get(self, key, default=None):
         return dict.get(self, str(key).title(), default)
 
-    def update(self, E):
+    def update(self, E) -> None:
         for k in E:
             self[str(k).title()] = E[k]
 
@@ -228,10 +219,10 @@ class Headers(CaseInsensitiveDict):
             return value
         return [val.strip() for val in value.split(',')]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'Headers(%s)' % repr(list(self.items()))
 
-    def __str__(self):
+    def __str__(self) -> str:
         headers = [f'{k}: {v}\r\n' for k, v in self.items()]
         return ''.join(headers) + '\r\n'
 
@@ -243,10 +234,10 @@ class Headers(CaseInsensitiveDict):
             else:
                 yield (str(k), str(v))
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return str(self).encode('latin1')
 
-    def append(self, key, value):
+    def append(self, key, value) -> None:
         """
         If a header with the given name already exists, the value is
         normally appended to the existing value separated by a comma.
@@ -265,7 +256,7 @@ class Headers(CaseInsensitiveDict):
         else:
             self[key] = ', '.join([self[key], value])
 
-    def add_header(self, _name, _value, **_params):
+    def add_header(self, _name, _value, **_params) -> None:
         """
         Extended header setting.
 

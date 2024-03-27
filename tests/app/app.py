@@ -15,17 +15,17 @@ except ImportError:
 
 
 class App(Component):
-    def init(self, pidfile):
+    def init(self, pidfile) -> None:
         self.pidfile = pidfile
 
-    def started(self, *args):
+    def started(self, *args) -> None:
         Daemon(self.pidfile).register(self)
 
-    def prepare_unregister(self, *args):
+    def prepare_unregister(self, *args) -> None:
         return
 
 
-def main():
+def main() -> None:
     if HAS_COVERAGE:
         _coverage = coverage(data_suffix=True)
         _coverage.start()

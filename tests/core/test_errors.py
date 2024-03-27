@@ -1,15 +1,17 @@
 #!/usr/bin/env python
+from typing import NoReturn
+
 import pytest
 
 from circuits import Component, Event
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class App(Component):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.etype = None
@@ -21,7 +23,7 @@ class App(Component):
     def test(self):
         return x  # noqa: F821
 
-    def exception(self, etype, evalue, etraceback, handler=None, fevent=None):
+    def exception(self, etype, evalue, etraceback, handler=None, fevent=None) -> None:
         self.etype = etype
         self.evalue = evalue
         self.etraceback = etraceback
@@ -29,7 +31,7 @@ class App(Component):
         self.fevent = fevent
 
 
-def reraise(e):
+def reraise(e) -> NoReturn:
     raise e
 
 
@@ -38,7 +40,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -46,7 +48,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test_main(app, watcher):
+def test_main(app, watcher) -> None:
     e = test()
     app.fire(e)
     watcher.wait('exception')

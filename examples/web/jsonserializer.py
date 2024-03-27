@@ -10,7 +10,7 @@ class JSONSerializer(Component):
 
     # 1 higher than the default response handler
     @handler('response', priority=1.0)
-    def serialize_response_body(self, response):
+    def serialize_response_body(self, response) -> None:
         response.headers['Content-Type'] = 'application/json'
         response.body = dumps(response.body)
 

@@ -25,7 +25,7 @@ class Event:
         e.parent = self
         return e
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         An event is a message send to one or more channels.
         It is eventually dispatched to all components
@@ -100,8 +100,8 @@ class Event:
     def __gt__(self, other):
         return False
 
-    def __repr__(self):
-        """x.__repr__() <==> repr(x)"""
+    def __repr__(self) -> str:
+        """x.__repr__() <==> repr(x)."""
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:
@@ -109,7 +109,7 @@ class Event:
         else:
             channels = ''
 
-        data = '%s %s' % (
+        data = '{} {}'.format(
             ', '.join(repr(arg) for arg in self.args),
             ', '.join(f'{k}={v!r}' for k, v in self.kwargs.items()),
         )
@@ -118,7 +118,7 @@ class Event:
 
     def __getitem__(self, x):
         """
-        x.__getitem__(y) <==> x[y]
+        x.__getitem__(y) <==> x[y].
 
         Get and return data from the event object requested by "x".
         If an int is passed to x, the requested argument from self.args
@@ -132,9 +132,9 @@ class Event:
             return self.kwargs[x]
         raise TypeError('Expected int or str, got %r' % type(x))
 
-    def __setitem__(self, i, y):
+    def __setitem__(self, i, y) -> None:
         """
-        x.__setitem__(i, y) <==> x[i] = y
+        x.__setitem__(i, y) <==> x[i] = y.
 
         Modify the data in the event object requested by "x".
         If i is an int, the ith requested argument from self.args
@@ -149,18 +149,18 @@ class Event:
         else:
             raise TypeError('Expected int or str, got %r' % type(i))
 
-    def cancel(self):
-        """Cancel the event from being processed (if not already)"""
+    def cancel(self) -> None:
+        """Cancel the event from being processed (if not already)."""
         self.cancelled = True
 
-    def stop(self):
-        """Stop further processing of this event"""
+    def stop(self) -> None:
+        """Stop further processing of this event."""
         self.stopped = True
 
 
 class exception(Event):
     """
-    exception Event
+    exception Event.
 
     This event is sent for any exceptions that occur during the execution
     of an event Handler that is not SystemExit or KeyboardInterrupt.
@@ -181,7 +181,7 @@ class exception(Event):
     :type  fevent: event
     """
 
-    def __init__(self, type, value, traceback, handler=None, fevent=None):
+    def __init__(self, type, value, traceback, handler=None, fevent=None) -> None:
         super().__init__(type, value, self.format_traceback(traceback), handler=handler, fevent=fevent)
 
     def format_traceback(self, traceback):
@@ -190,7 +190,7 @@ class exception(Event):
 
 class started(Event):
     """
-    started Event
+    started Event.
 
     This Event is sent when a Component or Manager has started running.
 
@@ -198,13 +198,13 @@ class started(Event):
     :type  manager: Component or Manager
     """
 
-    def __init__(self, manager):
+    def __init__(self, manager) -> None:
         super().__init__(manager)
 
 
 class stopped(Event):
     """
-    stopped Event
+    stopped Event.
 
     This Event is sent when a Component or Manager has stopped running.
 
@@ -212,13 +212,13 @@ class stopped(Event):
     :type  manager: Component or Manager
     """
 
-    def __init__(self, manager):
+    def __init__(self, manager) -> None:
         super().__init__(manager)
 
 
 class signal(Event):
     """
-    signal Event
+    signal Event.
 
     This Event is sent when a Component receives a signal.
 
@@ -229,13 +229,13 @@ class signal(Event):
     :type  object: A stack frame
     """
 
-    def __init__(self, signo, stack):
+    def __init__(self, signo, stack) -> None:
         super().__init__(signo, stack)
 
 
 class registered(Event):
     """
-    registered Event
+    registered Event.
 
     This Event is sent when a Component has registered with another Component
     or Manager. This Event is only sent if the Component or Manager being
@@ -248,13 +248,13 @@ class registered(Event):
     :type  manager: Component or Manager
     """
 
-    def __init__(self, component, manager):
+    def __init__(self, component, manager) -> None:
         super().__init__(component, manager)
 
 
 class unregistered(Event):
     """
-    unregistered Event
+    unregistered Event.
 
     This Event is sent when a Component has been unregistered from its
     Component or Manager.
@@ -263,7 +263,7 @@ class unregistered(Event):
 
 class generate_events(Event):
     """
-    generate_events Event
+    generate_events Event.
 
     This Event is sent by the circuits core. All components that generate
     timed events or events from external sources (e.g. data becoming
@@ -282,7 +282,7 @@ class generate_events(Event):
     that interrupts waiting for events.
     """
 
-    def __init__(self, lock, max_wait):
+    def __init__(self, lock, max_wait) -> None:
         super().__init__()
 
         self._time_left = max_wait
@@ -298,7 +298,7 @@ class generate_events(Event):
         """
         return self._time_left
 
-    def reduce_time_left(self, time_left):
+    def reduce_time_left(self, time_left) -> None:
         """
         Update the time left for generating events. This is typically
         used by event generators that currently don't want to generate

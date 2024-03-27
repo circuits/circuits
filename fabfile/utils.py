@@ -1,4 +1,4 @@
-"""Utilities"""
+"""Utilities."""
 
 from contextlib import contextmanager
 from functools import wraps
@@ -10,7 +10,7 @@ from fabric.api import abort, hide, local, puts, quiet, settings, warn
 def tobool(s):
     if isinstance(s, bool):
         return s
-    return s.lower() in ['yes', 'y']
+    return s.lower() in {'yes', 'y'}
 
 
 def toint(s):
@@ -22,7 +22,7 @@ def toint(s):
 @contextmanager
 def msg(s):
     """
-    Print message given as ``s`` in a context manager
+    Print message given as ``s`` in a context manager.
 
     Prints "{s} ... OK"
     """
@@ -32,7 +32,7 @@ def msg(s):
     puts('OK', show_prefix=False, flush=True)
 
 
-def pip(*args, **kwargs):
+def pip(*args, **kwargs) -> None:
     requirements = kwargs.get('requirements', None)
     if requirements is not None:
         local('pip install -U -r {:s}'.format(kwargs['requirements']))
@@ -78,6 +78,7 @@ def requires(*names, **kwargs):
                 if not test(name):
                     warn(f'{name:s} not found')
             abort(f'requires({names!r:s}) failed')
+            return None
 
         return wrapper
 

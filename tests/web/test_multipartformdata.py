@@ -33,7 +33,7 @@ class Root(Controller):
         return file.value
 
 
-def test(webapp):
+def test(webapp) -> None:
     form = MultiPartForm()
     form['description'] = 'Hello World!'
 
@@ -60,7 +60,7 @@ def test(webapp):
     assert lines[3] == b'Hello World!'
 
 
-def test_unicode(webapp, sample_file):
+def test_unicode(webapp, sample_file) -> None:
     form = MultiPartForm()
     form['description'] = sample_file.name
     form.add_file(

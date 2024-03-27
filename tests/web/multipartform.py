@@ -4,14 +4,14 @@ from mimetypes import guess_type
 
 
 class MultiPartForm(dict):
-    def __init__(self):
+    def __init__(self) -> None:
         self.files = []
         self.boundary = _make_boundary()
 
-    def get_content_type(self):
+    def get_content_type(self) -> str:
         return 'multipart/form-data; boundary="%s"' % self.boundary
 
-    def add_file(self, fieldname, filename, fd, mimetype=None):
+    def add_file(self, fieldname, filename, fd, mimetype=None) -> None:
         body = fd.read()
         if mimetype is None:
             mimetype = guess_type(filename)[0] or 'application/octet-stream'
@@ -40,7 +40,7 @@ class MultiPartForm(dict):
             [
                 part_boundary,
                 bytearray(
-                    'Content-Disposition: form-data; name="%s"; filename="%s"' % (fieldname, filename),
+                    f'Content-Disposition: form-data; name="{fieldname}"; filename="{filename}"',
                     'ascii',
                 ),
                 bytearray('Content-Type: %s' % content_type, 'ascii'),

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import webbrowser
+from typing import NoReturn
 
 from circuits.web import Controller, Server
 
@@ -23,7 +24,7 @@ class Root(Controller):
     def index(self):
         return HTML
 
-    def exit(self):
+    def exit(self) -> NoReturn:
         raise SystemExit(0)
 
 

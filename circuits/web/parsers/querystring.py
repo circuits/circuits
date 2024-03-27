@@ -8,13 +8,10 @@ class QueryStringToken:
 
 
 class QueryStringParser:
-    def __init__(self, data):
+    def __init__(self, data) -> None:
         self.result = {}
 
-        if isinstance(data, str):
-            sorted_pairs = self._sorted_from_string(data)
-        else:
-            sorted_pairs = self._sorted_from_obj(data)
+        sorted_pairs = self._sorted_from_string(data) if isinstance(data, str) else self._sorted_from_obj(data)
 
         [self.process(x) for x in sorted_pairs]
 
@@ -39,7 +36,7 @@ class QueryStringParser:
 
         return sorted(items, key=lambda p: p[0])
 
-    def process(self, pair):
+    def process(self, pair) -> None:
         key = pair[0]
         value = pair[1]
 
@@ -60,7 +57,7 @@ class QueryStringParser:
 
         self.result[key] = value
 
-    def parse(self, key, value):
+    def parse(self, key, value) -> None:
         ref = self.result
         tokens = self.tokens(key)
 

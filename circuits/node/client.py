@@ -6,11 +6,11 @@ from .protocol import Protocol
 
 
 class Client(BaseComponent):
-    """Node Client (peer)"""
+    """Node Client (peer)."""
 
     channel = 'node_client'
 
-    def __init__(self, host, port, channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs):
+    def __init__(self, host, port, channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs) -> None:
         """
         Create new connection for a node.
 
@@ -52,20 +52,20 @@ class Client(BaseComponent):
         TCPClient(channel=channel, **kwargs).register(self)
 
     @handler('ready')
-    def _on_ready(self, component):
+    def _on_ready(self, component) -> None:
         self.connect()
 
-    def close(self):
-        """Close the connection"""
+    def close(self) -> None:
+        """Close the connection."""
         self.fire(close())
 
-    def connect(self):
-        """Create the connection"""
+    def connect(self) -> None:
+        """Create the connection."""
         self.fire(connect(self.__host, self.__port))
 
     def send(self, event):
         """
-        Send event through the connection
+        Send event through the connection.
 
         :param event:    Event to send.
         :type event:     :class:`circuits.core.events.Event`
@@ -76,5 +76,5 @@ class Client(BaseComponent):
         return self.__protocol.send(event)
 
     @handler('read')
-    def _on_read(self, data):
+    def _on_read(self, data) -> None:
         self.__protocol.add_buffer(data)

@@ -5,7 +5,7 @@ from circuits import Component, Event
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
     success = True
 
@@ -13,7 +13,7 @@ class hello(Event):
 class App(Component):
     channel = 'app'
 
-    def hello(self):
+    def hello(self) -> str:
         return 'Hello World!'
 
 
@@ -22,7 +22,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -30,7 +30,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test(manager, watcher, app):
+def test(manager, watcher, app) -> None:
     x = manager.fire(hello(), app)
     assert watcher.wait('hello_success')
 

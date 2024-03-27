@@ -29,18 +29,18 @@ from circuits.node import Node, remote  # noqa
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
 
 class App(Component):
-    def ready(self, client):
+    def ready(self, client) -> None:
         print('Ready!')
 
-    def connected(self, host, port):
+    def connected(self, host, port) -> None:
         print(f'Connected to {host}:{port}')
         print('Try: x = app.fire(hello())')
 
-    def hello(self):
+    def hello(self) -> str:
         print('Now try: y = app.fire(remote(hello(), "test"))')
         return f'Hello World! ({getpid():d})'
 

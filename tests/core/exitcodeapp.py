@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import sys
+from typing import NoReturn
 
 from circuits import Component
 
 
 class App(Component):
-    def started(self, *args):
+    def started(self, *args) -> NoReturn:
         try:
             code = int(sys.argv[1])
         except ValueError:
@@ -14,7 +15,7 @@ class App(Component):
         raise SystemExit(code)
 
 
-def main():
+def main() -> None:
     App().run()
 
 

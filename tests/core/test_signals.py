@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import locale
 import os
 import sys
 from errno import ESRCH
@@ -12,7 +13,7 @@ import pytest
 from . import signalapp
 
 
-def is_running(pid):
+def is_running(pid) -> bool:
     try:
         kill(pid, 0)
     except OSError as error:
@@ -21,13 +22,13 @@ def is_running(pid):
     return True
 
 
-def wait(pid, timeout=3):
+def wait(pid, timeout=3) -> None:
     count = timeout
     while is_running(pid) and count:
         sleep(1)
 
 
-def test(tmpdir):
+def test(tmpdir) -> None:
     if os.name != 'posix':
         pytest.skip('Cannot run test on a non-POSIX platform.')
 
@@ -48,14 +49,14 @@ def test(tmpdir):
     assert os.path.exists(pidfile)
     assert os.path.isfile(pidfile)
 
-    f = open(pidfile)
+    f = open(pidfile, encoding=locale.getpreferredencoding(False))
     pid = int(f.read().strip())
     f.close()
 
     kill(pid, SIGTERM)
     wait(pid)
 
-    with open(signalfile) as fd:
+    with open(signalfile, encoding=locale.getpreferredencoding(False)) as fd:
         signal = fd.read().strip()
 
     assert int(signal) == int(SIGTERM)

@@ -3,25 +3,25 @@ from circuits import Component, Event
 
 
 class foo(Event):
-    """foo Event"""
+    """foo Event."""
 
 
 class done(Event):
-    """done Event"""
+    """done Event."""
 
 
 class App(Component):
-    def init(self):
+    def init(self) -> None:
         self.results = []
 
-    def foo(self, value):
+    def foo(self, value) -> None:
         self.results.append(value)
 
-    def done(self):
+    def done(self) -> None:
         self.stop()
 
 
-def test1():
+def test1() -> None:
     app = App()
 
     # Normal Order
@@ -33,7 +33,7 @@ def test1():
     assert app.results == [1, 2]
 
 
-def test2():
+def test2() -> None:
     app = App()
 
     # Priority Order

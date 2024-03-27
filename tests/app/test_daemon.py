@@ -14,7 +14,7 @@ from . import app
 pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 
 
-def is_running(pid):
+def is_running(pid) -> bool:
     try:
         kill(pid, 0)
     except OSError as error:
@@ -23,13 +23,13 @@ def is_running(pid):
     return True
 
 
-def wait(pid, timeout=3):
+def wait(pid, timeout=3) -> None:
     count = timeout
     while is_running(pid) and count:
         sleep(1)
 
 
-def test(tmpdir):
+def test(tmpdir) -> None:
     tmpdir.ensure('app.pid')
     pid_path = tmpdir.join('app.pid')
 

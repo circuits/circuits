@@ -10,13 +10,13 @@ from .components import BaseComponent
 
 class Timer(BaseComponent):
     """
-    Timer Component
+    Timer Component.
 
     A timer is a component that fires an event once after a certain
     delay or periodically at a regular interval.
     """
 
-    def __init__(self, interval, event, *channels, **kwargs):
+    def __init__(self, interval, event, *channels, **kwargs) -> None:
         """
         :param interval: the delay or interval to wait for until
                          the event is fired. If interval is specified as
@@ -46,7 +46,7 @@ class Timer(BaseComponent):
         self.reset(interval)
 
     @handler('generate_events')
-    def _on_generate_events(self, event):
+    def _on_generate_events(self, event) -> None:
         if self.expiry is None:
             return
 
@@ -65,7 +65,7 @@ class Timer(BaseComponent):
         else:
             event.reduce_time_left(self.expiry - now)
 
-    def reset(self, interval=None):
+    def reset(self, interval=None) -> None:
         """
         Reset the timer, i.e. clear the amount of time already waited
         for.
@@ -82,5 +82,5 @@ class Timer(BaseComponent):
         return getattr(self, '_expiry', None)
 
     @expiry.setter
-    def expiry(self, seconds):
+    def expiry(self, seconds) -> None:
         self._expiry = seconds

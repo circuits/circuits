@@ -1,5 +1,5 @@
 """
-Session Components
+Session Components.
 
 This module implements Session Components that can be used to store
 and access persistent information.
@@ -14,16 +14,16 @@ from circuits import Component, handler
 
 
 def who(request, encoding='utf-8'):
-    """Create a SHA1 Hash of the User's IP Address and User-Agent"""
+    """Create a SHA1 Hash of the User's IP Address and User-Agent."""
     ip = request.remote.ip
     agent = request.headers.get('User-Agent', '')
 
     return sha(f'{ip}{agent}'.encode(encoding)).hexdigest()
 
 
-def create_session(request):
+def create_session(request) -> str:
     """
-    Create a unique session id from the request
+    Create a unique session id from the request.
 
     Returns a unique session using ``uuid4()`` and a ``sha1()`` hash
     of the users IP Address and User Agent in the form of ``sid/who``.
@@ -33,7 +33,7 @@ def create_session(request):
 
 def verify_session(request, sid):
     """
-    Verify a User's Session
+    Verify a User's Session.
 
     This verifies the User's Session by verifying the SHA1 Hash
     of the User's IP Address and User-Agent match the provided
@@ -51,7 +51,7 @@ def verify_session(request, sid):
 
 
 class Session(dict):
-    def __init__(self, sid, data, store):
+    def __init__(self, sid, data, store) -> None:
         super().__init__(data)
 
         self._sid = sid
@@ -65,7 +65,7 @@ class Session(dict):
     def store(self):
         return self._store
 
-    def expire(self):
+    def expire(self) -> None:
         self.store.delete(self.sid)
 
     def __enter__(self):
@@ -79,39 +79,39 @@ class Session(dict):
 class Store(ABC):
     @abstractmethod
     def delete(self, sid):
-        """Delete the session data identified by sid"""
+        """Delete the session data identified by sid."""
 
     @abstractmethod
     def load(self, sid):
-        """Load the session data identified by sid"""
+        """Load the session data identified by sid."""
 
     @abstractmethod
     def save(self, sid):
-        """Save the session data identified by sid"""
+        """Save the session data identified by sid."""
 
 
 class MemoryStore(Store):
-    def __init__(self):
+    def __init__(self) -> None:
         self._data = defaultdict(dict)
 
     @property
     def data(self):
         return self._data
 
-    def delete(self, sid):
+    def delete(self, sid) -> None:
         del self.data[sid]
 
     def load(self, sid):
         return Session(sid, self.data[sid], self)
 
-    def save(self, sid, data):
+    def save(self, sid, data) -> None:
         self.data[sid] = data
 
 
 class Sessions(Component):
     channel = 'web'
 
-    def __init__(self, name='circuits', store=MemoryStore, channel=channel):
+    def __init__(self, name='circuits', store=MemoryStore, channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._name = name
@@ -126,7 +126,7 @@ class Sessions(Component):
         return self._store
 
     @handler('request', priority=10)
-    def request(self, request, response):
+    def request(self, request, response) -> None:
         if self.name in request.cookie:
             sid = request.cookie[self._name].value
             sid = verify_session(request, sid)

@@ -5,7 +5,7 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener
 
 
 class Root(Controller):
-    def index(self, vpath=None):
+    def index(self, vpath=None) -> str:
         if vpath:
             name = vpath
             with self.session as data:
@@ -15,12 +15,12 @@ class Root(Controller):
 
         return 'Hello %s' % name
 
-    def logout(self):
+    def logout(self) -> str:
         self.session.expire()
         return 'OK'
 
 
-def test(webapp):
+def test(webapp) -> None:
     Sessions().register(webapp)
 
     cj = CookieJar()
@@ -39,7 +39,7 @@ def test(webapp):
     assert s == b'Hello test'
 
 
-def test_expire(webapp):
+def test_expire(webapp) -> None:
     Sessions().register(webapp)
 
     cj = CookieJar()

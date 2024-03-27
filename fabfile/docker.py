@@ -1,4 +1,4 @@
-"""Docker Tasks"""
+"""Docker Tasks."""
 
 from fabric.api import local, task
 
@@ -10,9 +10,9 @@ TAG = 'prologic/circuits'
 
 @task(default=True)
 @requires('docker')
-def build(**options):
+def build(**options) -> None:
     """
-    Build Docker Image
+    Build Docker Image.
 
     Options can be provided to customize the build.
     The following options are supported:
@@ -35,8 +35,8 @@ def build(**options):
 
 @task()
 @requires('docker')
-def publish():
-    """Publish Docker Image"""
+def publish() -> None:
+    """Publish Docker Image."""
     args = ['docker', 'push', TAG]
 
     with msg('Pushing Image'):
@@ -45,8 +45,8 @@ def publish():
 
 @task()
 @requires('docker')
-def run():
-    """Run Docker Container"""
+def run() -> None:
+    """Run Docker Container."""
     args = ['docker', 'run', '-i', '-t', '--rm', TAG]
 
     local(' '.join(args))

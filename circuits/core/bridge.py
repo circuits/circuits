@@ -1,5 +1,5 @@
 """
-Bridge
+Bridge.
 
 The Bridge Component is used for inter-process communications between
 processes. Bridge is used internally when a Component is started in
@@ -22,12 +22,12 @@ _sentinel = b'~~~'
 
 class ipc(Event):
     """
-    ipc Event
+    ipc Event.
 
     Send an event to a child/parent process
     """
 
-    def __init__(self, event, channel=None):
+    def __init__(self, event, channel=None) -> None:
         """
         :param event:   Event to execute remotely.
         :type event:    :class:`circuits.core.events.Event`
@@ -41,7 +41,7 @@ class ipc(Event):
 class Bridge(BaseComponent):
     channel = 'bridge'
 
-    def init(self, socket, channel=channel):
+    def init(self, socket, channel=channel) -> None:
         self._buffer = b''
         self._socket = socket
         self._values = {}
@@ -49,7 +49,7 @@ class Bridge(BaseComponent):
         if self._socket is not None:
             self._socket.register(self)
 
-    def _process_packet(self, eid, obj):
+    def _process_packet(self, eid, obj) -> None:
         if isinstance(obj, Event):
             obj.remote = True
             obj.notify = 'value_changed'
@@ -68,7 +68,7 @@ class Bridge(BaseComponent):
             self.fire(event, self.channel)
 
     @handler('value_changed', channel='*')
-    def _on_value_changed(self, value):
+    def _on_value_changed(self, value) -> None:
         try:
             eid = self._values[value]
             if value.errors:
@@ -78,7 +78,7 @@ class Bridge(BaseComponent):
             pass
 
     @handler('read')
-    def _on_read(self, data):
+    def _on_read(self, data) -> None:
         self._buffer += data
         items = self._buffer.split(_sentinel)
 
@@ -88,7 +88,7 @@ class Bridge(BaseComponent):
         for item in filter(None, items):
             self._process_packet(*loads(item))
 
-    def __send(self, eid, event):
+    def __send(self, eid, event) -> None:
         try:
             if isinstance(event, exception):
                 Bridge.__adapt_exception(event)
@@ -97,13 +97,13 @@ class Bridge(BaseComponent):
         except Exception:
             pass
 
-    def __write(self, eid, data):
+    def __write(self, eid, data) -> None:
         self._socket.write(dumps((eid, data)) + _sentinel)
 
     @handler('ipc')
     def _on_ipc(self, event, ipc_event, channel=None):
         """
-        Send event to a child/parentprocess
+        Send event to a child/parentprocess.
 
         Event handler to run an event on a child/parent process
         (the event definition is :class:`circuits.core.bridge.ipc`)
@@ -133,15 +133,15 @@ class Bridge(BaseComponent):
         yield self.wait(Bridge.__waiting_event(eid))
 
     @staticmethod
-    def __waiting_event(eid):
+    def __waiting_event(eid) -> str:
         return '%s_done' % eid
 
     @staticmethod
-    def __adapt_exception(ex):
+    def __adapt_exception(ex) -> None:
         fevent_value = ex.kwargs['fevent'].value
         Bridge.__adapt_error_value(fevent_value)
 
     @staticmethod
-    def __adapt_error_value(value):
+    def __adapt_error_value(value) -> None:
         if not isinstance(value[2], list):
             value._value = (value[0], value[1], traceback.extract_tb(value[2]))

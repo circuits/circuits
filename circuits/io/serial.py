@@ -1,9 +1,10 @@
 """
-Serial I/O
+Serial I/O.
 
 This module implements basic Serial (RS232) I/O.
 """
 
+import contextlib
 from collections import deque
 
 from circuits.core import Component, Event, handler
@@ -21,17 +22,18 @@ BUFSIZE = 4096
 
 
 class _open(Event):
-    """_open Event"""
+    """_open Event."""
 
 
 class Serial(Component):
     channel = 'serial'
 
-    def __init__(self, port, baudrate=115200, bufsize=BUFSIZE, timeout=TIMEOUT, encoding='UTF-8', readline=False, channel=channel):
+    def __init__(self, port, baudrate=115200, bufsize=BUFSIZE, timeout=TIMEOUT, encoding='UTF-8', readline=False, channel=channel) -> None:
         super().__init__(channel=channel)
 
         if serial is None:
-            raise RuntimeError('No serial support available')
+            msg = 'No serial support available'
+            raise RuntimeError(msg)
 
         self._port = port
         self._baudrate = baudrate
@@ -45,11 +47,11 @@ class Serial(Component):
         self._closeflag = False
 
     @handler('ready')
-    def _on_ready(self, component):
+    def _on_ready(self, component) -> None:
         self.fire(_open(), self.channel)
 
     @handler('_open')
-    def _on_open(self, port=None, baudrate=None, bufsize=None):
+    def _on_open(self, port=None, baudrate=None, bufsize=None) -> None:
         self._port = port or self._port
         self._baudrate = baudrate or self._baudrate
         self._bufsize = bufsize or self._bufsize
@@ -62,7 +64,7 @@ class Serial(Component):
         self.fire(opened(self._port, self._baudrate))
 
     @handler('registered', 'started', channel='*')
-    def _on_registered_or_started(self, component, manager=None):
+    def _on_registered_or_started(self, component, manager=None) -> None:
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -79,15 +81,15 @@ class Serial(Component):
                     self.fire(ready(self))
 
     @handler('stopped', channel='*')
-    def _on_stopped(self, component):
+    def _on_stopped(self, component) -> None:
         self.fire(close())
 
     @handler('prepare_unregister', channel='*')
-    def _on_prepare_unregister(self, event, c):
+    def _on_prepare_unregister(self, event, c) -> None:
         if event.in_subtree(self):
             self._close()
 
-    def _close(self):
+    def _close(self) -> None:
         if self._closeflag:
             return
 
@@ -97,25 +99,20 @@ class Serial(Component):
         self._closeflag = False
         self._connected = False
 
-        try:
+        with contextlib.suppress(OSError):
             self._serial.close()
-        except OSError:
-            pass
 
         self.fire(closed())
 
-    def close(self):
+    def close(self) -> None:
         if not self._buffer:
             self._close()
         elif not self._closeflag:
             self._closeflag = True
 
-    def _read(self):
+    def _read(self) -> None:
         try:
-            if self._readline:
-                data = self._serial.readline(self._bufsize)
-            else:
-                data = self._serial.read(self._bufsize)
+            data = self._serial.readline(self._bufsize) if self._readline else self._serial.read(self._bufsize)
             if not isinstance(data, bytes):
                 data = data.encode(self._encoding)
 
@@ -125,7 +122,7 @@ class Serial(Component):
             self.fire(error(exc))
             self._close()
 
-    def _write(self, data):
+    def _write(self, data) -> None:
         try:
             if not isinstance(data, bytes):
                 data = data.encode(self._encoding)
@@ -140,21 +137,21 @@ class Serial(Component):
             self.fire(error(e))
             self._close()
 
-    def write(self, data):
+    def write(self, data) -> None:
         if self._poller is not None and not self._poller.isWriting(self._fd):
             self._poller.addWriter(self, self._fd)
         self._buffer.append(data)
 
     @handler('_disconnect')
-    def __on_disconnect(self, sock):
+    def __on_disconnect(self, sock) -> None:
         self._close()
 
     @handler('_read')
-    def __on_read(self, sock):
+    def __on_read(self, sock) -> None:
         self._read()
 
     @handler('_write')
-    def __on_write(self, sock):
+    def __on_write(self, sock) -> None:
         if self._buffer:
             data = self._buffer.popleft()
             self._write(data)

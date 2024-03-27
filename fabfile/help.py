@@ -1,4 +1,4 @@
-"""Help Tasks"""
+"""Help Tasks."""
 
 from fabric import state
 from fabric.api import task
@@ -7,9 +7,9 @@ from fabric.tasks import Task
 
 
 @task(default=True)
-def help(name=None):
+def help(name=None) -> None:
     """
-    Display help for a given task
+    Display help for a given task.
 
     Options:
         name    - The task to display help on.

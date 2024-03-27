@@ -6,13 +6,13 @@ from .helpers import urlopen
 
 
 class foo(Event):
-    """foo Event"""
+    """foo Event."""
 
 
 class App(Component):
     channel = 'app'
 
-    def foo(self):
+    def foo(self) -> str:
         return 'Hello World!'
 
 
@@ -22,7 +22,7 @@ class Root(Controller):
         yield value.value
 
 
-def test(webapp):
+def test(webapp) -> None:
     app = App().register(webapp)
     try:
         f = urlopen(webapp.server.http.base)

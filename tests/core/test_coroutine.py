@@ -9,17 +9,17 @@ pytestmark = pytest.mark.skip('XXX: This test fails intermittently')
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class coroutine1(Event):
-    """coroutine Event"""
+    """coroutine Event."""
 
     complete = True
 
 
 class coroutine2(Event):
-    """coroutine Event"""
+    """coroutine Event."""
 
     complete = True
 
@@ -27,7 +27,7 @@ class coroutine2(Event):
 class App(Component):
     returned = False
 
-    def test(self, event):
+    def test(self, event) -> str:
         event.stop()
         return 'Hello World!'
 
@@ -50,7 +50,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -58,7 +58,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test_coroutine(manager, watcher, app):
+def test_coroutine(manager, watcher, app) -> None:
     manager.fire(coroutine1())
     assert watcher.wait('coroutine1_complete')
     assert app.returned, 'coroutine1'

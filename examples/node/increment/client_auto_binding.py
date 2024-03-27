@@ -12,7 +12,7 @@ VERSION = '%prog v' + __version__
 
 
 class increment(Event):
-    def __init__(self, value):
+    def __init__(self, value) -> None:
         Event.__init__(self, value)
 
 
@@ -44,7 +44,7 @@ def parse_options():
 
 
 class NodeClient(Component):
-    def init(self, args, opts):
+    def init(self, args, opts) -> None:
         if opts.debug:
             Debugger().register(self)
 
@@ -68,7 +68,7 @@ class NodeClient(Component):
             i = (yield self.call(increment(i))).value
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     # Configure and "run" the System.

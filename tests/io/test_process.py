@@ -8,7 +8,7 @@ if pytest.PLATFORM == 'win32':
     pytest.skip('Unsupported Platform')
 
 
-def test(manager, watcher):
+def test(manager, watcher) -> None:
     p = Process(['echo', 'Hello World!']).register(manager)
     assert watcher.wait('registered')
 
@@ -21,7 +21,7 @@ def test(manager, watcher):
     assert s == b'Hello World!\n'
 
 
-def test2(manager, watcher, tmpdir):
+def test2(manager, watcher, tmpdir) -> None:
     foo = tmpdir.ensure('foo.txt')
 
     p = Process([f'cat - > {foo!s:s}'], shell=True).register(manager)
@@ -41,7 +41,7 @@ def test2(manager, watcher, tmpdir):
         assert f.read() == 'Hello World!'
 
 
-def test_two_procs(manager, watcher):
+def test_two_procs(manager, watcher) -> None:
     p1 = Process(['echo', '1']).register(manager)
     p2 = Process('echo 2 ; sleep 1', shell=True).register(manager)
 

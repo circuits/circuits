@@ -16,16 +16,16 @@ class App(Component):
     value = False
     disconnected = False
 
-    def foo(self):
+    def foo(self) -> str:
         return 'Hello World!'
 
-    def ready(self, *args):
+    def ready(self, *args) -> None:
         self.ready = True
 
-    def disconnect(self, component):
+    def disconnect(self, component) -> None:
         self.disconnected = True
 
-    def remote_value_changed(self, value):
+    def remote_value_changed(self, value) -> None:
         self.value = True
 
 
@@ -57,7 +57,7 @@ def app(request, manager, watcher, bind):
     node.add('child', *bind)
     watcher.wait('connected')
 
-    def finalizer():
+    def finalizer() -> None:
         child.stop()
 
     request.addfinalizer(finalizer)
@@ -65,7 +65,7 @@ def app(request, manager, watcher, bind):
     return app
 
 
-def test_return_value(app, watcher):
+def test_return_value(app, watcher) -> None:
     event = Event.create('foo')
     event.notify = True
 

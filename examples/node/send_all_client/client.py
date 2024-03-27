@@ -39,7 +39,7 @@ def parse_options():
 
 
 class NodeClient(Component):
-    def init(self, args, opts):
+    def init(self, args, opts) -> None:
         if opts.debug:
             Debugger().register(self)
 
@@ -52,11 +52,11 @@ class NodeClient(Component):
         node = Node().register(self)
         node.add('peer_name', address, port)
 
-    def send_all_event(self, infos):
+    def send_all_event(self, infos) -> None:
         print('receive: %s' % infos)
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     # Configure and "run" the System.

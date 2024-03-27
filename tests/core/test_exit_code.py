@@ -5,7 +5,7 @@ from subprocess import PIPE, Popen
 from . import exitcodeapp
 
 
-def test_ints(tmpdir):
+def test_ints(tmpdir) -> None:
     for expected_status in range(4):
         args = [sys.executable, exitcodeapp.__file__, f'{expected_status:d}']
         p = Popen(args, env={'PYTHONPATH': ':'.join(sys.path)})
@@ -14,7 +14,7 @@ def test_ints(tmpdir):
         assert status == expected_status
 
 
-def test_string(tmpdir):
+def test_string(tmpdir) -> None:
     args = [sys.executable, exitcodeapp.__file__, 'foobar']
     p = Popen(args, env={'PYTHONPATH': ':'.join(sys.path)}, stderr=PIPE)
     status = p.wait()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Multi Bridge Example
+Multi Bridge Example.
 
 Identical to the Hello Bridge Example but with a 2nd child.
 """
@@ -11,25 +11,25 @@ from circuits import Component, Event, ipc
 
 
 class go(Event):
-    """go Event"""
+    """go Event."""
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
 
 class Child(Component):
-    def hello(self):
+    def hello(self) -> str:
         return f'Hello from child with pid {getpid()}'
 
 
 class App(Component):
-    def init(self):
+    def init(self) -> None:
         self.counter = 0
         self.child1 = Child().start(process=True, link=self)
         self.child2 = Child().start(process=True, link=self)
 
-    def ready(self, *args):
+    def ready(self, *args) -> None:
         self.counter += 1
         if self.counter < 2:
             return
@@ -47,7 +47,7 @@ class App(Component):
 
         raise SystemExit(0)
 
-    def hello(self):
+    def hello(self) -> str:
         return f'Hello from parent with pid {getpid()}'
 
 

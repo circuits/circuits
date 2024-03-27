@@ -13,22 +13,22 @@ except ImportError:
 
 
 class App(Component):
-    def init(self, *args, **kwargs):
+    def init(self, *args, **kwargs) -> None:
         self.created_status = False
 
     @handler('created', channel='notify')
-    def created(self, *args, **kwargs):
+    def created(self, *args, **kwargs) -> None:
         self.created_status = True
 
 
 class Creator:
-    def __init__(self, app, watcher, tmpdir, timeout=0.5):
+    def __init__(self, app, watcher, tmpdir, timeout=0.5) -> None:
         self.app = app
         self.watcher = watcher
         self.tmpdir = tmpdir
         self.timeout = timeout
 
-    def create(self, *targets, **kwargs):
+    def create(self, *targets, **kwargs) -> None:
         assert_created = kwargs.get('assert_created', True)
         target = os.path.join(*targets)
         self.tmpdir.ensure(target, dir=kwargs.get('dir', False))
@@ -63,7 +63,7 @@ def creator(app, watcher, tmpdir):
 # TESTS
 
 
-def test_notify_file(notify, tmpdir, creator):
+def test_notify_file(notify, tmpdir, creator) -> None:
     # Add a path to the watch
     notify.add_path(str(tmpdir))
 
@@ -77,7 +77,7 @@ def test_notify_file(notify, tmpdir, creator):
     creator.create('helloworld2.txt', assert_created=False)
 
 
-def test_notify_dir(notify, tmpdir, creator):
+def test_notify_dir(notify, tmpdir, creator) -> None:
     # Add a path to the watch
     notify.add_path(str(tmpdir))
 
@@ -91,7 +91,7 @@ def test_notify_dir(notify, tmpdir, creator):
     creator.create('hellodir2', dir=True, assert_created=False)
 
 
-def test_notify_subdir_recursive(notify, tmpdir, creator):
+def test_notify_subdir_recursive(notify, tmpdir, creator) -> None:
     # Add a subdir
     subdir = 'sub'
     tmpdir.ensure(subdir, dir=True)
@@ -104,7 +104,7 @@ def test_notify_subdir_recursive(notify, tmpdir, creator):
 
 
 @pytest.mark.xfail(reason='pyinotify issue #133')
-def test_notify_subdir_recursive_remove_path(notify, tmpdir, creator):
+def test_notify_subdir_recursive_remove_path(notify, tmpdir, creator) -> None:
     # This is logically the second part of the above test,
     # but pyinotify fails on rm_watch(...., rec=True)
 
@@ -122,7 +122,7 @@ def test_notify_subdir_recursive_remove_path(notify, tmpdir, creator):
     creator.create(subdir, 'helloworld2.txt', assert_created=False)
 
 
-def test_notify_subdir_recursive_auto_add(notify, tmpdir, creator):
+def test_notify_subdir_recursive_auto_add(notify, tmpdir, creator) -> None:
     # Add a path to the watch
     notify.add_path(str(tmpdir), recursive=True)
 
@@ -136,7 +136,7 @@ def test_notify_subdir_recursive_auto_add(notify, tmpdir, creator):
     # Skip notify.remove_path() because pyinotify is broken
 
 
-def test_notify_subdir_recursive_no_auto_add(notify, tmpdir, creator):
+def test_notify_subdir_recursive_no_auto_add(notify, tmpdir, creator) -> None:
     # Add a path to the watch
     notify.add_path(str(tmpdir), recursive=True, auto_add=False)
 

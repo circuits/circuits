@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-DNS Server Example
+DNS Server Example.
 
 A simple little DNS Server example using
 `dnslib <https://pypi.python.org/pypi/dnslib>`_
@@ -31,25 +31,25 @@ from circuits.net.sockets import UDPServer
 
 
 class query(Event):
-    """query Event"""
+    """query Event."""
 
 
 class DNS(Component):
-    """DNS Protocol Handling"""
+    """DNS Protocol Handling."""
 
-    def read(self, peer, data):
+    def read(self, peer, data) -> None:
         self.fire(query(peer, DNSRecord.parse(data)))
 
 
 class Dummy(Component):
     """
-    A Dummy DNS Handler
+    A Dummy DNS Handler.
 
     This just returns an A record response
     of 127.0.0.1 for any query of any type!
     """
 
-    def query(self, peer, request):
+    def query(self, peer, request) -> None:
         id = request.header.id
         qname = request.q.qname
 
@@ -72,14 +72,14 @@ class Dummy(Component):
 
 class DNSServer(Component):
     """
-    DNS Server
+    DNS Server.
 
     This ties everything together in a nice
     configurable way with protocol, transport
     and dummy handler as well as optional debugger.
     """
 
-    def init(self, bind=None, verbose=False):
+    def init(self, bind=None, verbose=False) -> None:
         self.bind = bind or ('0.0.0.0', 53)
 
         if verbose:
@@ -89,10 +89,10 @@ class DNSServer(Component):
         self.protocol = DNS().register(self)
         self.dummy = Dummy().register(self)
 
-    def started(self, manager):
+    def started(self, manager) -> None:
         print('DNS Server Started!', file=sys.stderr)
 
-    def ready(self, server, bind):
+    def ready(self, server, bind) -> None:
         print('Ready! Listening on {:s}:{:d}'.format(*bind), file=sys.stderr)
 
 

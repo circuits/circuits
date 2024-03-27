@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Shadow Auth Demo
+Shadow Auth Demo.
 
 An example of a Circuits Component that requires users authenticate
 against /etc/passwd or /etc/shadow before letting them into the web site.
@@ -9,6 +9,7 @@ curl -i http://test:test@localhost:8000/
 curl -i http://root:test@localhost:8000/
 """
 
+import locale
 from crypt import crypt
 from os import path
 from re import compile as compile_regex
@@ -23,7 +24,7 @@ def check_auth(user, password):
     salt_pattern = compile_regex(r'\$.*\$.*\$')
     passwd = './etc/shadow' if path.exists('./etc/shadow') else '/etc/passwd'
 
-    with open(passwd) as f:
+    with open(passwd, encoding=locale.getpreferredencoding(False)) as f:
         rows = (line.strip().split(':') for line in f)
         records = [row for row in rows if row[0] == user]
 
@@ -38,7 +39,7 @@ def check_auth(user, password):
 class PasswdAuth(Component):
     channel = 'web'
 
-    def init(self, realm=None):
+    def init(self, realm=None) -> None:
         self.realm = realm or gethostname()
 
     @handler('request', priority=1.0)
@@ -62,7 +63,7 @@ class PasswdAuth(Component):
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return f'Hello, {self.request.login:s}'
 
 

@@ -1,5 +1,5 @@
 """
-JSON RPC
+JSON RPC.
 
 This module implements a JSON RPC dispatcher that translates incoming
 RPC calls over JSON into RPC events.
@@ -11,17 +11,18 @@ from circuits import BaseComponent, Event, handler
 
 
 class rpc(Event):
-    """RPC Event"""
+    """RPC Event."""
 
 
 class JSONRPC(BaseComponent):
     channel = 'web'
 
-    def __init__(self, path=None, encoding='utf-8', rpc_channel='*'):
+    def __init__(self, path=None, encoding='utf-8', rpc_channel='*') -> None:
         super().__init__()
 
         if json is None:
-            raise RuntimeError('No json support available')
+            msg = 'No json support available'
+            raise RuntimeError(msg)
 
         self.path = path
         self.encoding = encoding

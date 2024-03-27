@@ -10,7 +10,7 @@ from .helpers import HTTPError, urlencode, urlopen
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
     def test_args(self, *args, **kwargs):
@@ -44,23 +44,23 @@ class Root(Controller):
 application = Application() + Root()
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'
 
 
-def test_404(webapp):
+def test_404(webapp) -> None:
     with pytest.raises(HTTPError) as exc:
         urlopen('%s/foo' % webapp.server.http.base)
     assert exc.value.code == 404
     assert exc.value.msg == 'Not Found'
 
 
-def test_args(webapp):
+def test_args(webapp) -> None:
     args = ['1', '2', '3']
     kwargs = {'1': 'one', '2': 'two', '3': 'three'}
-    url = '%s/test_args/%s' % (webapp.server.http.base, '/'.join(args))
+    url = '{}/test_args/{}'.format(webapp.server.http.base, '/'.join(args))
     data = urlencode(kwargs).encode()
 
     f = urlopen(url, data)
@@ -78,20 +78,20 @@ def test_args(webapp):
     assert data['content_type'] == 'application/x-www-form-urlencoded'
 
 
-def test_redirect(webapp):
+def test_redirect(webapp) -> None:
     f = urlopen('%s/test_redirect' % webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'
 
 
-def test_forbidden(webapp):
+def test_forbidden(webapp) -> None:
     with pytest.raises(HTTPError) as exc:
         urlopen('%s/test_forbidden' % webapp.server.http.base)
     assert exc.value.code == 403
     assert exc.value.msg == 'Forbidden'
 
 
-def test_notfound(webapp):
+def test_notfound(webapp) -> None:
     with pytest.raises(HTTPError) as exc:
         urlopen('%s/test_notfound' % webapp.server.http.base)
     assert exc.value.code == 404

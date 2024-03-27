@@ -1,4 +1,4 @@
-"""stompest StompFrameTransport allowing for ssl.wrap_socket"""
+"""stompest StompFrameTransport allowing for ssl.wrap_socket."""
 
 import logging
 import socket
@@ -9,13 +9,14 @@ try:
     from stompest.error import StompConnectionError
     from stompest.sync.transport import StompFrameTransport
 except ImportError:
-    raise ImportError('No stomp support available.  Is stompest installed?')
+    msg = 'No stomp support available.  Is stompest installed?'
+    raise ImportError(msg)
 
 LOG = logging.getLogger(__name__)
 
 
 class EnhancedStompFrameTransport(StompFrameTransport):
-    """add support for older ssl module and http proxy"""
+    """add support for older ssl module and http proxy."""
 
     proxy_host = None
     proxy_port = None
@@ -23,8 +24,8 @@ class EnhancedStompFrameTransport(StompFrameTransport):
     proxy_password = None
 
     @staticmethod
-    def match_hostname(cert, hostname):
-        """Check that hostname matches cert"""
+    def match_hostname(cert, hostname) -> None:
+        """Check that hostname matches cert."""
         names = []
         # Python 3 has an ssl.match_hostname method, which does hostname validation.
         try:
@@ -38,10 +39,11 @@ class EnhancedStompFrameTransport(StompFrameTransport):
                         names.append(value)
                         if value == hostname:
                             return
-        raise RuntimeError(f'{hostname} does not match the expected value in the certificate {names!s}')
+        msg = f'{hostname} does not match the expected value in the certificate {names!s}'
+        raise RuntimeError(msg)
 
-    def connect(self, timeout=None):
-        """Allow older versions of ssl module, allow http proxy connections"""
+    def connect(self, timeout=None) -> None:
+        """Allow older versions of ssl module, allow http proxy connections."""
         LOG.debug('stomp_transport.connect()')
         ssl_params = None
         if isinstance(self.sslContext, dict):
@@ -55,7 +57,8 @@ class EnhancedStompFrameTransport(StompFrameTransport):
                     # Don't try to import this unless we need it
                     import socks
                 except ImportError:
-                    raise ImportError('No http proxy support available.  Is pysocks installed?')
+                    msg = 'No http proxy support available.  Is pysocks installed?'
+                    raise ImportError(msg)
 
                 LOG.info('Connecting through proxy %s', self.proxy_host)
                 self._socket = socks.socksocket()

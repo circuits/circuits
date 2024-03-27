@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import locale
 from io import BytesIO
 
 import pytest
@@ -12,29 +13,29 @@ pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported 
 
 
 class FileApp(Component):
-    def init(self, *args, **kwargs):
+    def init(self, *args, **kwargs) -> None:
         self.file = File(*args, **kwargs).register(self)
 
         self.eof = False
         self.closed = False
         self.buffer = BytesIO()
 
-    def read(self, data):
+    def read(self, data) -> None:
         self.buffer.write(data)
 
-    def eof(self):
+    def eof(self) -> None:
         self.eof = True
 
-    def closed(self):
+    def closed(self) -> None:
         self.closed = True
 
 
-def test_open_fileobj(manager, watcher, tmpdir):
+def test_open_fileobj(manager, watcher, tmpdir) -> None:
     filename = str(tmpdir.ensure('helloworld.txt'))
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding=locale.getpreferredencoding(False)) as f:
         f.write('Hello World!')
 
-    fileobj = open(filename)
+    fileobj = open(filename, encoding=locale.getpreferredencoding(False))
 
     app = FileApp(fileobj).register(manager)
     assert watcher.wait('opened', app.file.channel)
@@ -53,7 +54,7 @@ def test_open_fileobj(manager, watcher, tmpdir):
     assert s == b'Hello World!'
 
 
-def test_read_write(manager, watcher, tmpdir):
+def test_read_write(manager, watcher, tmpdir) -> None:
     filename = str(tmpdir.ensure('helloworld.txt'))
 
     app = FileApp(filename, 'w').register(manager)

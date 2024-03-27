@@ -5,16 +5,16 @@ from circuits import Component, Event
 
 
 class App(Component):
-    def init(self):
+    def init(self) -> None:
         self._ready = False
         self._done = False
         self._counter = 0
 
-    def registered(self, component, manager):
+    def registered(self, component, manager) -> None:
         if component is self:
             self.fire(Event.create('ready'))
 
-    def generate_events(self, event):
+    def generate_events(self, event) -> None:
         if not self._ready or self._done:
             return
 
@@ -24,13 +24,13 @@ class App(Component):
             self.fire(Event.create('done'))
         event.reduce_time_left(0)
 
-    def done(self):
+    def done(self) -> None:
         self._done = True
 
-    def hello(self):
+    def hello(self) -> None:
         self._counter += 1
 
-    def ready(self):
+    def ready(self) -> None:
         self._ready = True
 
 
@@ -38,7 +38,7 @@ class App(Component):
 def app(request, manager, watcher):
     app = App().register(manager)
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -48,6 +48,6 @@ def app(request, manager, watcher):
     return app
 
 
-def test(manager, watcher, app):
+def test(manager, watcher, app) -> None:
     watcher.wait('done')
     assert app._counter == 10

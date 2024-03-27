@@ -4,15 +4,15 @@ from circuits.core import BaseComponent, Event, handler
 
 
 class request(Event):
-    """request Event"""
+    """request Event."""
 
 
 class response(Event):
-    """response Event"""
+    """response Event."""
 
 
 class ResponseObject:
-    def __init__(self, headers, status, version):
+    def __init__(self, headers, status, version) -> None:
         self.headers = headers
         self.status = status
         self.version = version
@@ -24,7 +24,7 @@ class ResponseObject:
 
         self.reason = HTTP_STATUS_CODES[self.status]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<Response {:d} {} {} ({:d})>'.format(
             self.status,
             self.reason,
@@ -39,7 +39,7 @@ class ResponseObject:
 class HTTP(BaseComponent):
     channel = 'web'
 
-    def __init__(self, encoding='utf-8', channel=channel):
+    def __init__(self, encoding='utf-8', channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._encoding = encoding
@@ -50,7 +50,7 @@ class HTTP(BaseComponent):
         self._parser = HttpParser(1, True)
 
     @handler('read')
-    def _on_client_read(self, data):
+    def _on_client_read(self, data) -> None:
         self._parser.execute(data, len(data))
         if self._parser.is_message_complete() or self._parser.is_upgrade() or (self._parser.is_headers_complete() and self._parser._clen == 0):
             status = self._parser.get_status_code()

@@ -6,13 +6,13 @@ from circuits.protocols import Line
 
 
 class read(Event):
-    """read Event"""
+    """read Event."""
 
 
 class App(Component):
     lines = []
 
-    def line(self, line):
+    def line(self, line) -> None:
         self.lines.append(line)
 
 
@@ -21,11 +21,11 @@ class AppServer(Component):
 
     lines = []
 
-    def line(self, sock, line):
+    def line(self, sock, line) -> None:
         self.lines.append((sock, line))
 
 
-def test():
+def test() -> None:
     app = App()
     Line().register(app)
 
@@ -42,7 +42,7 @@ def test():
     assert app.lines[2] == b'3'
 
 
-def test_server():
+def test_server() -> None:
     app = AppServer()
     buffers = defaultdict(bytes)
     Line(

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-DNS Client Example
+DNS Client Example.
 
 A simple little DNS Client example using
 `dnslib <https://pypi.python.org/pypi/dnslib>`_
@@ -18,6 +18,7 @@ To run this example::
 """
 
 import sys
+from typing import NoReturn
 
 from dnslib import DNSQuestion, DNSRecord
 
@@ -27,25 +28,25 @@ from circuits.net.sockets import UDPClient
 
 
 class reply(Event):
-    """reply Event"""
+    """reply Event."""
 
 
 class DNS(Component):
-    """DNS Protocol Handling"""
+    """DNS Protocol Handling."""
 
-    def read(self, peer, data):
+    def read(self, peer, data) -> None:
         self.fire(reply(peer, DNSRecord.parse(data)))
 
 
 class Dummy(Component):
     """
-    A Dummy DNS Handler
+    A Dummy DNS Handler.
 
     This just parses the reply packet and
     prints any RR records it finds.
     """
 
-    def reply(self, peer, response):
+    def reply(self, peer, response) -> NoReturn:
         id = response.header.id
         qname = response.q.qname
 
@@ -62,14 +63,14 @@ class Dummy(Component):
 
 class DNSClient(Component):
     """
-    DNS Client
+    DNS Client.
 
     This ties everything together in a nice
     configurable way with protocol, transport,
     and dummy handler as well as optional debugger.
     """
 
-    def init(self, server, port, query, verbose=False):
+    def init(self, server, port, query, verbose=False) -> None:
         self.server = server
         self.port = int(port)
         self.query = query
@@ -81,10 +82,10 @@ class DNSClient(Component):
         self.protocol = DNS().register(self)
         self.dummy = Dummy().register(self)
 
-    def started(self, manager):
+    def started(self, manager) -> None:
         print('DNS Client Started!', file=sys.stderr)
 
-    def ready(self, client, bind):
+    def ready(self, client, bind) -> None:
         print('Ready! Bound to {:s}:{:d}'.format(*bind), file=sys.stderr)
 
         request = DNSRecord(q=DNSQuestion(self.query))

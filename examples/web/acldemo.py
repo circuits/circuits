@@ -10,7 +10,7 @@ class ACL(Component):
     @handler('request', priority=1.0)
     def on_request(self, event, request, response):
         """
-        Filter Requests applying IP based Authorization
+        Filter Requests applying IP based Authorization.
 
         Filter any incoming requests at a higher priority than the
         default dispatcher and apply IP based Authorization returning
@@ -20,10 +20,11 @@ class ACL(Component):
         if request.remote.ip not in self.allowed:
             event.stop()
             return forbidden(request, response)
+        return None
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 

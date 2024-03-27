@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Forms
+Forms.
 
 A simple example showing how to deal with data forms.
 """
@@ -45,16 +45,16 @@ FORM = """
 class Root(Controller):
     def index(self):
         """
-        Request Handler
+        Request Handler.
 
         Our index request handler which simply returns a response containing
         the contents of our form to display.
         """
         return FORM
 
-    def save(self, firstName, lastName):
+    def save(self, firstName, lastName) -> str:
         """
-        Save Request Handler
+        Save Request Handler.
 
         Our /save request handler (which our form above points to).
         This handler accepts the same arguments as the fields in the

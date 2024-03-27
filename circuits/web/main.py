@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 """
-Main
+Main.
 
 circutis.web Web Server and Testing Tool.
 """
 
+import locale
 import os
 from argparse import ArgumentParser
 from hashlib import md5
@@ -123,14 +124,14 @@ class Authentication(Component):
     realm = 'Secure Area'
     users = {'admin': md5(b'admin').hexdigest()}
 
-    def __init__(self, channel=channel, realm=None, passwd=None):
+    def __init__(self, channel=channel, realm=None, passwd=None) -> None:
         super().__init__(self, channel=channel)
 
         if realm is not None:
             self.realm = realm
 
         if passwd is not None:
-            with open(passwd) as f:
+            with open(passwd, encoding=locale.getpreferredencoding(False)) as f:
                 lines = (line.strip() for line in f)
                 self.users = dict(line.split(':', 1) for line in lines)
 
@@ -139,17 +140,18 @@ class Authentication(Component):
         if not check_auth(request, response, self.realm, self.users):
             event.stop()
             return digest_auth(request, response, self.realm, self.users)
+        return None
 
 
 class HelloWorld(Component):
     channel = 'web'
 
-    def request(self, request, response):
+    def request(self, request, response) -> str:
         return 'Hello World!'
 
 
 class Root(Controller):
-    def hello(self):
+    def hello(self) -> str:
         return 'Hello World!'
 
 
@@ -186,7 +188,7 @@ def parse_bind(bind):
     return (address, port)
 
 
-def main():
+def main() -> None:
     opts = parse_options()
 
     bind = parse_bind(opts.bind)

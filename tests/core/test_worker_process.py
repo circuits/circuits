@@ -1,4 +1,4 @@
-"""Workers Tests"""
+"""Workers Tests."""
 
 from os import getpid
 
@@ -11,7 +11,7 @@ from circuits import Worker, task
 def worker(request, manager):
     worker = Worker().register(manager)
 
-    def finalizer():
+    def finalizer() -> None:
         worker.unregister()
 
     request.addfinalizer(finalizer)
@@ -32,7 +32,7 @@ def foo():
     return x
 
 
-def pid():
+def pid() -> str:
     return f'Hello from {getpid():d}'
 
 
@@ -40,7 +40,7 @@ def add(a, b):
     return a + b
 
 
-def test_failure(manager, watcher, worker):
+def test_failure(manager, watcher, worker) -> None:
     e = task(err)
     e.failure = True
 
@@ -51,7 +51,7 @@ def test_failure(manager, watcher, worker):
     assert isinstance(x.value[1], Exception)
 
 
-def test_success(manager, watcher, worker):
+def test_success(manager, watcher, worker) -> None:
     e = task(foo)
     e.success = True
 
@@ -62,7 +62,7 @@ def test_success(manager, watcher, worker):
     assert x.value == 1000000
 
 
-def test_args(manager, watcher, worker):
+def test_args(manager, watcher, worker) -> None:
     e = task(add, 1, 2)
     e.success = True
 

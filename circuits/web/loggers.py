@@ -1,10 +1,11 @@
 """
-Logger Component
+Logger Component.
 
 This module implements Logger Components.
 """
 
 import datetime
+import locale
 import os
 import sys
 from io import IOBase
@@ -21,11 +22,11 @@ class Logger(BaseComponent):
 
     format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 
-    def __init__(self, file=None, logger=None, **kwargs):
+    def __init__(self, file=None, logger=None, **kwargs) -> None:
         super().__init__(**kwargs)
 
         if isinstance(file, str):
-            self.file = open(os.path.abspath(os.path.expanduser(file)), 'a')
+            self.file = open(os.path.abspath(os.path.expanduser(file)), 'a', encoding=locale.getpreferredencoding(False))
         elif isinstance(file, IOBase) or hasattr(file, 'write'):
             self.file = file
         else:
@@ -34,11 +35,11 @@ class Logger(BaseComponent):
         self.logger = logger
 
     @handler('response_success')
-    def log_response(self, response_event, value):
+    def log_response(self, response_event, value) -> None:
         response = response_event.args[0]
         self.log(response)
 
-    def log(self, response):
+    def log(self, response) -> None:
         request = response.request
         remote = request.remote
         outheaders = response.headers

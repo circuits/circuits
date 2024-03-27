@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Chat Server Example
+Chat Server Example.
 
 This example demonstrates how to create a very simple telnet-style chat
 server that supports many connecting clients.
@@ -47,7 +47,7 @@ def parse_options():
 
 
 class ChatServer(Component):
-    def init(self, args, opts):
+    def init(self, args, opts) -> None:
         """
         Initialize our ``ChatServer`` Component.
 
@@ -73,14 +73,14 @@ class ChatServer(Component):
 
         TCPServer(bind).register(self)
 
-    def broadcast(self, data, exclude=None):
+    def broadcast(self, data, exclude=None) -> None:
         exclude = exclude or []
         targets = (sock for sock in self.clients if sock not in exclude)
         for target in targets:
             self.fire(write(target, data))
 
-    def connect(self, sock, host, port):
-        """Connect Event -- Triggered for new connecting clients"""
+    def connect(self, sock, host, port) -> None:
+        """Connect Event -- Triggered for new connecting clients."""
         self.clients[sock] = {
             'host': sock,
             'port': port,
@@ -93,8 +93,8 @@ class ChatServer(Component):
         self.fire(write(sock, b'Welcome to the circuits Chat Server!\n'))
         self.fire(write(sock, b'Please enter a desired nickname: '))
 
-    def disconnect(self, sock):
-        """Disconnect Event -- Triggered for disconnecting clients"""
+    def disconnect(self, sock) -> None:
+        """Disconnect Event -- Triggered for disconnecting clients."""
         if sock not in self.clients:
             return
 
@@ -107,8 +107,8 @@ class ChatServer(Component):
 
         del self.clients[sock]
 
-    def read(self, sock, data):
-        """Read Event -- Triggered for when client connections have data"""
+    def read(self, sock, data) -> None:
+        """Read Event -- Triggered for when client connections have data."""
         data = data.strip().decode('utf-8')
 
         if not self.clients[sock]['state']['registered']:
@@ -129,7 +129,7 @@ class ChatServer(Component):
             )
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     # Configure and "run" the System.

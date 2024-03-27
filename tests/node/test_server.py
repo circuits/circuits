@@ -18,7 +18,7 @@ class return_value(Event):
 
 
 class App(Component):
-    def return_value(self, event):
+    def return_value(self, event) -> None:
         print('Hello client!', event.channels)
 
 
@@ -48,7 +48,7 @@ def app(manager, watcher, bind):
     return server
 
 
-def test_auto_reconnect(app, watcher, manager):
+def test_auto_reconnect(app, watcher, manager) -> None:
     # add client
     client = App().register(manager)
     node = Node().register(client)
@@ -77,7 +77,7 @@ def test_auto_reconnect(app, watcher, manager):
     client.unregister()
 
 
-def test_server_send_all(app, watcher, manager):
+def test_server_send_all(app, watcher, manager) -> None:
     client1 = App().register(manager)
     node1 = Node().register(client1)
     chan = node1.add('client1', *app.bind)
@@ -96,7 +96,7 @@ def test_server_send_all(app, watcher, manager):
     client2.unregister()
 
 
-def test_server_send(app, watcher, manager):
+def test_server_send(app, watcher, manager) -> None:
     client1 = App().register(manager)
     node1 = Node().register(client1)
     chan1 = node1.add('client1', *app.bind)
@@ -115,7 +115,7 @@ def test_server_send(app, watcher, manager):
     client2.unregister()
 
 
-def test_server_send_multicast(app, watcher, manager):
+def test_server_send_multicast(app, watcher, manager) -> None:
     client1 = App().register(manager)
     node1 = Node().register(client1)
     chan1 = node1.add('client1', *app.bind)

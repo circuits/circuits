@@ -1,4 +1,4 @@
-"""py.test config"""
+"""py.test config."""
 
 import os
 
@@ -16,7 +16,7 @@ DOCROOT = os.path.join(os.path.dirname(__file__), 'static')
 class WebApp(Component):
     channel = 'web'
 
-    def init(self):
+    def init(self) -> None:
         self.closed = False
 
         self.server = Server(0).register(self)
@@ -24,10 +24,12 @@ class WebApp(Component):
 
 
 class WebClient(Client):
-    def init(self, *args, **kwargs):
+    def init(self, *args, **kwargs) -> None:
         self.closed = False
 
-    def __call__(self, method, path, body=None, headers={}):
+    def __call__(self, method, path, body=None, headers=None):
+        if headers is None:
+            headers = {}
         waiter = pytest.WaitEvent(self, 'response', channel=self.channel)
         self.fire(request(method, path, body, headers))
         assert waiter.wait()
@@ -35,7 +37,7 @@ class WebClient(Client):
         return self.response
 
     @handler('closed', channel='*', priority=1.0)
-    def _on_closed(self):
+    def _on_closed(self) -> None:
         self.closed = True
 
 
@@ -60,7 +62,7 @@ def webapp(request, manager, watcher):
         Debugger().register(webapp)
         assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         webapp.fire(close())
         assert watcher.wait('closed')
 

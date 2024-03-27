@@ -10,7 +10,7 @@ automatically registered as event handlers.
 
 
 class App(Component):
-    def test(self, event, *args, **kwargs):
+    def test(self, event, *args, **kwargs) -> None:
         pass
 
 
@@ -22,7 +22,7 @@ class B(Component):
     informed = False
 
     @handler('prepare_unregister', channel='*')
-    def _on_prepare_unregister(self, event, c):
+    def _on_prepare_unregister(self, event, c) -> None:
         if event.in_subtree(self):
             self.informed = True
 
@@ -35,7 +35,7 @@ class C(Base):
     channel = 'c'
 
 
-def test_basic():
+def test_basic() -> None:
     m = Manager()
 
     app = App()
@@ -50,7 +50,7 @@ def test_basic():
     assert not m._handlers
 
 
-def test_complex():
+def test_complex() -> None:
     m = Manager()
 
     a = A()
@@ -79,7 +79,7 @@ def test_complex():
     assert b.parent == a
 
 
-def test_subclassing_with_custom_channel():
+def test_subclassing_with_custom_channel() -> None:
     base = Base()
 
     assert base.channel == 'base'

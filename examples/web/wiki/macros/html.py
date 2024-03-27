@@ -1,5 +1,5 @@
 """
-HTML macros
+HTML macros.
 
 Macros for generating snippets of HTML.
 """
@@ -39,7 +39,7 @@ def pre(macro, environ, *args, **kwargs):
 
 
 def code(macro, environ, *args, **kwargs):
-    """Render syntax highlighted code"""
+    """Render syntax highlighted code."""
     if not macro.body:
         return None
 
@@ -86,16 +86,13 @@ def div(macro, environ, cls=None, float=None, id=None, style=None, *args, **kwar
     if macro.body is None:
         return None
 
-    if float and float in ('left', 'right'):
+    if float and float in {'left', 'right'}:
         style = f'float: {float}; {style}'
 
     if style:
         style = ';'.join(sanitizer.sanitize_css(style))
 
-    if macro.isblock:
-        context = 'block'
-    else:
-        context = 'inline'
+    context = 'block' if macro.isblock else 'inline'
 
     contents = environ['parser'].generate(
         macro.body,

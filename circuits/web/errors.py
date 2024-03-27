@@ -1,5 +1,5 @@
 """
-Errors
+Errors.
 
 This module implements a set of standard HTTP Errors.
 """
@@ -20,12 +20,12 @@ from .constants import (
 
 
 class httperror(Event):
-    """An event for signaling an HTTP error"""
+    """An event for signaling an HTTP error."""
 
     code = 500
     description = ''
 
-    def __init__(self, request, response, code=None, **kwargs):
+    def __init__(self, request, response, code=None, **kwargs) -> None:
         """
         The constructor creates a new instance and modifies the *response*
         argument to reflect the error.
@@ -50,7 +50,7 @@ class httperror(Event):
 
         if self.error is not None:
             stack = self.error[2] if isinstance(self.error[2], (list, tuple)) else traceback.format_tb(self.error[2])
-            self.traceback = 'ERROR: (%s) %s\n%s' % (
+            self.traceback = 'ERROR: ({}) {}\n{}'.format(
                 self.error[0],
                 self.error[1],
                 ''.join(stack),
@@ -79,14 +79,14 @@ class httperror(Event):
             'powered_by': powered_by,
         }
 
-    def sanitize(self):
+    def sanitize(self) -> None:
         if self.code != 201 and not (299 < self.code < 400) and 'Location' in self.response.headers:
             del self.response.headers['Location']
 
-    def __str__(self):
+    def __str__(self) -> str:
         self.sanitize()
 
-        if self.code < 200 or self.code in (204, 205, 304):
+        if self.code < 200 or self.code in {204, 205, 304}:
             return ''
 
         if 'json' in self.response.headers.get('Content-Type', ''):
@@ -100,10 +100,10 @@ class httperror(Event):
 
         # FIXME: description is a possible XSS attack vector
         return DEFAULT_ERROR_MESSAGE % {
-            key: (escape(value, True) if key not in ('powered_by', 'description') and not isinstance(value, (int, float)) else value) for key, value in self.data.items()
+            key: (escape(value, True) if key not in {'powered_by', 'description'} and not isinstance(value, (int, float)) else value) for key, value in self.data.items()
         }
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<%s %d %s>' % (
             self.__class__.__name__,
             self.code,
@@ -115,27 +115,27 @@ class httperror(Event):
 
 
 class forbidden(httperror):
-    """An event for signaling the HTTP Forbidden error"""
+    """An event for signaling the HTTP Forbidden error."""
 
     code = 403
 
 
 class unauthorized(httperror):
-    """An event for signaling the HTTP Unauthorized error"""
+    """An event for signaling the HTTP Unauthorized error."""
 
     code = 401
 
 
 class notfound(httperror):
-    """An event for signaling the HTTP Not Fouond error"""
+    """An event for signaling the HTTP Not Fouond error."""
 
     code = 404
 
 
 class redirect(httperror):
-    """An event for signaling the HTTP Redirect response"""
+    """An event for signaling the HTTP Redirect response."""
 
-    def __init__(self, request, response, urls, code=None):
+    def __init__(self, request, response, urls, code=None) -> None:
         """
         The constructor creates a new instance and modifies the
         *response* argument to reflect a redirect response to the
@@ -159,16 +159,14 @@ class redirect(httperror):
         # browser support for 301 is quite messy. Do 302/303 instead. See
         # http://ppewww.ph.gla.ac.uk/~flavell/www/post-redirect.html
         if code is None:
-            if request.protocol >= (1, 1):
-                code = 303
-            else:
-                code = 302
+            code = 303 if request.protocol >= (1, 1) else 302
         elif code < 300 or code > 399:
-            raise ValueError('status code must be between 300 and 399.')
+            msg = 'status code must be between 300 and 399.'
+            raise ValueError(msg)
 
         super().__init__(request, response, code)
 
-        if code in (300, 301, 302, 303, 307, 308):
+        if code in {300, 301, 302, 303, 307, 308}:
             response.headers['Content-Type'] = 'text/html'
             # "The ... URI SHOULD be given by the Location field
             # in the response."
@@ -225,7 +223,7 @@ class redirect(httperror):
         else:
             raise ValueError('The %s status code is unknown.' % code)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:

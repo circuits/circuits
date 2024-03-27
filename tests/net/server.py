@@ -5,7 +5,7 @@ from circuits.net.events import write
 class Server(Component):
     channel = 'server'
 
-    def init(self):
+    def init(self) -> None:
         self.data = ''
         self.host = None
         self.port = None
@@ -15,22 +15,22 @@ class Server(Component):
         self.connected = False
         self.disconnected = False
 
-    def ready(self, server, bind):
+    def ready(self, server, bind) -> None:
         self.ready = True
         self.host, self.port = bind
 
-    def close(self):
+    def close(self) -> None:
         return
 
-    def closed(self):
+    def closed(self) -> None:
         self.closed = True
 
-    def connect(self, sock, *args):
+    def connect(self, sock, *args) -> None:
         self.connected = True
         self.client = args
         self.fire(write(sock, b'Ready'))
 
-    def disconnect(self, sock):
+    def disconnect(self, sock) -> None:
         self.client = None
         self.disconnected = True
 

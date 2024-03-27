@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import contextlib
 import os.path
 import select
 from socket import (
@@ -28,7 +29,7 @@ CERT_FILE = os.path.join(os.path.dirname(__file__), 'cert.pem')
 
 
 class _TestClient:
-    def __init__(self, ipv6=False):
+    def __init__(self, ipv6=False) -> None:
         self._sockname = None
 
         self.sock = socket(
@@ -42,33 +43,29 @@ class _TestClient:
     def sockname(self):
         return self._sockname
 
-    def connect(self, host, port):
+    def connect(self, host, port) -> None:
         self.ssock.connect_ex((host, port))
         self._sockname = self.ssock.getsockname()
 
-    def send(self, data):
+    def send(self, data) -> None:
         self.ssock.send(data)
 
     def recv(self, buflen=4069):
         return self.ssock.recv(buflen)
 
-    def disconnect(self):
-        try:
+    def disconnect(self) -> None:
+        with contextlib.suppress(OSError):
             self.ssock.shutdown(2)
-        except OSError:
-            pass
 
-        try:
+        with contextlib.suppress(OSError):
             self.ssock.close()
-        except OSError:
-            pass
 
 
 @pytest.fixture()
 def client(request, ipv6):
     client = _TestClient(ipv6=ipv6)
 
-    def finalizer():
+    def finalizer() -> None:
         client.disconnect()
 
     request.addfinalizer(finalizer)
@@ -76,14 +73,14 @@ def client(request, ipv6):
     return client
 
 
-def wait_host(server):
+def wait_host(server) -> None:
     def checker(obj, attr):
         return all(getattr(obj, a) for a in attr)
 
     assert pytest.wait_for(server, ('host', 'port'), checker)
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc) -> None:
     ipv6 = [False]
     if has_ipv6:
         ipv6.append(True)
@@ -103,7 +100,7 @@ def pytest_generate_tests(metafunc):
     metafunc.parametrize('Poller,ipv6', poller)
 
 
-def test_tcp_basic(Poller, ipv6):
+def test_tcp_basic(Poller, ipv6) -> None:
     m = Manager() + Poller()
 
     if ipv6:
@@ -144,13 +141,10 @@ def test_tcp_basic(Poller, ipv6):
         m.stop()
 
 
-def test_tcps_basic(manager, watcher, client, Poller, ipv6):
+def test_tcps_basic(manager, watcher, client, Poller, ipv6) -> None:
     poller = Poller().register(manager)
 
-    if ipv6:
-        tcp_server = TCP6Server(('::1', 0), secure=True, certfile=CERT_FILE)
-    else:
-        tcp_server = TCPServer(0, secure=True, certfile=CERT_FILE)
+    tcp_server = TCP6Server(('::1', 0), secure=True, certfile=CERT_FILE) if ipv6 else TCPServer(0, secure=True, certfile=CERT_FILE)
 
     server = Server() + tcp_server
 
@@ -177,7 +171,7 @@ def test_tcps_basic(manager, watcher, client, Poller, ipv6):
         server.unregister()
 
 
-def test_tcp_reconnect(Poller, ipv6):
+def test_tcp_reconnect(Poller, ipv6) -> None:
     # XXX: Apparently this doesn't work on Windows either?
     # XXX: UPDATE: Apparently Broken on Windows + Python 3.2
     # TODO: Need to look into this. Find out why...
@@ -238,7 +232,7 @@ def test_tcp_reconnect(Poller, ipv6):
         m.stop()
 
 
-def test_tcp_connect_closed_port(Poller, ipv6):
+def test_tcp_connect_closed_port(Poller, ipv6) -> None:
     if pytest.PLATFORM == 'win32':
         pytest.skip('Broken on Windows')
 
@@ -276,14 +270,14 @@ def test_tcp_connect_closed_port(Poller, ipv6):
         m.stop()
 
 
-def test_tcp_bind(Poller, ipv6):
+def test_tcp_bind(Poller, ipv6) -> None:
     m = Manager() + Poller()
 
     if ipv6:
         sock = socket(AF_INET6, SOCK_STREAM)
         sock.bind(('::1', 0))
         sock.listen(5)
-        _, bind_port, _, _ = sock.getsockname()
+        _, _bind_port, _, _ = sock.getsockname()
         sock.close()
         server = Server() + TCP6Server(('::1', 0))
         client = Client() + TCP6Client()
@@ -291,7 +285,7 @@ def test_tcp_bind(Poller, ipv6):
         sock = socket(AF_INET, SOCK_STREAM)
         sock.bind(('', 0))
         sock.listen(5)
-        _, bind_port = sock.getsockname()
+        _, _bind_port = sock.getsockname()
         sock.close()
         server = Server() + TCPServer(0)
         client = Client() + TCPClient()
@@ -326,13 +320,10 @@ def test_tcp_bind(Poller, ipv6):
         m.stop()
 
 
-def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
+def test_tcp_lookup_failure(manager, watcher, Poller, ipv6) -> None:
     poller = Poller().register(manager)
 
-    if ipv6:
-        tcp_client = TCP6Client()
-    else:
-        tcp_client = TCPClient()
+    tcp_client = TCP6Client() if ipv6 else TCPClient()
 
     client = Client() + tcp_client
     client.register(manager)
@@ -346,7 +337,7 @@ def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
         if pytest.PLATFORM == 'win32':
             assert client.error.errno == 11004
         else:
-            assert client.error.errno in (EAI_NODATA, EAI_NONAME)
+            assert client.error.errno in {EAI_NODATA, EAI_NONAME}
     finally:
         poller.unregister()
         client.unregister()

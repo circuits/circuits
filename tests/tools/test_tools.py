@@ -1,5 +1,5 @@
 """
-Tools Test Suite
+Tools Test Suite.
 
 Test all functionality of the tools package.
 """
@@ -11,36 +11,36 @@ from circuits.tools import findroot, inspect, kill, tryimport
 
 
 class A(Component):
-    def foo(self):
+    def foo(self) -> None:
         print('A!')
 
 
 class B(Component):
-    def foo(self):
+    def foo(self) -> None:
         print('B!')
 
 
 class C(Component):
-    def foo(self):
+    def foo(self) -> None:
         print('C!')
 
 
 class D(Component):
-    def foo(self):
+    def foo(self) -> None:
         print('D!')
 
 
 class E(Component):
-    def foo(self):
+    def foo(self) -> None:
         print('E!')
 
 
 class F(Component):
-    def foo(self):
+    def foo(self) -> None:
         print('F!')
 
 
-def test_kill():
+def test_kill() -> None:
     a = A()
     b = B()
     c = C()
@@ -94,7 +94,7 @@ def test_kill():
     assert not f.components
 
 
-def test_inspect():
+def test_inspect() -> None:
     a = A()
     s = inspect(a)
 
@@ -106,7 +106,7 @@ def test_inspect():
     assert '<handler[<instance of A>][prepare_unregister_complete] (A._on_prepare_unregister_complete)>' in s
 
 
-def test_findroot():
+def test_findroot() -> None:
     a = A()
     b = B()
     c = C()
@@ -124,7 +124,7 @@ def test_findroot():
     assert root == a
 
 
-def test_reprhandler():
+def test_reprhandler() -> None:
     a = A()
     s = reprhandler(a.foo)
     assert s == '<handler[*][foo] (A.foo)>'
@@ -132,20 +132,20 @@ def test_reprhandler():
     pytest.raises(AttributeError, reprhandler, lambda: None)
 
 
-def test_tryimport():
+def test_tryimport() -> None:
     import os
 
     m = tryimport('os')
     assert m is os
 
 
-def test_tryimport_obj():
+def test_tryimport_obj() -> None:
     from os import path
 
     m = tryimport('os', 'path')
     assert m is path
 
 
-def test_tryimport_fail():
+def test_tryimport_fail() -> None:
     m = tryimport('asdf')
     assert m is None

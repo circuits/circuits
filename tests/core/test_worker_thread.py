@@ -1,4 +1,4 @@
-"""Workers Tests"""
+"""Workers Tests."""
 
 import pytest
 
@@ -13,7 +13,7 @@ def worker(request, manager, watcher):
     worker = Worker().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         worker.unregister()
         assert watcher.wait('unregistered')
 
@@ -35,7 +35,7 @@ def add(a, b):
     return a + b
 
 
-def test(manager, watcher, worker):
+def test(manager, watcher, worker) -> None:
     x = manager.fire(task(f))
     assert watcher.wait('task_complete')
 
@@ -43,7 +43,7 @@ def test(manager, watcher, worker):
     assert x.value == 1000000
 
 
-def test_args(manager, watcher, worker):
+def test_args(manager, watcher, worker) -> None:
     x = manager.fire(task(add, 1, 2))
     assert watcher.wait('task_complete')
 

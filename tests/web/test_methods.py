@@ -5,11 +5,11 @@ from circuits.web import Controller
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test_GET(webapp):
+def test_GET(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
     connection.request('GET', '/')
@@ -20,7 +20,7 @@ def test_GET(webapp):
     assert s == b'Hello World!'
 
 
-def test_HEAD(webapp):
+def test_HEAD(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
     connection.request('HEAD', '/')

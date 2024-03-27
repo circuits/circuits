@@ -7,6 +7,7 @@ in circuits to write a very simple clone of the standard UNIX "cat" command.
 """
 
 import sys
+from typing import NoReturn
 
 from circuits.io import File, stdout, write
 
@@ -15,18 +16,18 @@ class Cat(File):
     # This adds the already instantiated stdout instnace
     stdout = stdout
 
-    def read(self, data):
+    def read(self, data) -> None:
         """
-        Read Event Handler
+        Read Event Handler.
 
         This is fired by the File Component when there is data to be read
         from the underlying file that was opened.
         """
         self.fire(write(data), stdout)
 
-    def eof(self):
+    def eof(self) -> NoReturn:
         """
-        End Of File Event
+        End Of File Event.
 
         This is fired by the File Component when the underlying input file
         has been exhcuasted.

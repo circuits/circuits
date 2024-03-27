@@ -14,10 +14,10 @@ def factorial(n):
 
 
 class App(Component):
-    def init(self, *args, **kwargs):
+    def init(self, *args, **kwargs) -> None:
         Worker(process=True).register(self)
 
-    def foo(self):
+    def foo(self) -> None:
         print('Foo!')
 
     def started(self, component):

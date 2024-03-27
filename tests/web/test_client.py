@@ -4,11 +4,11 @@ from circuits.web.client import Client, request
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     client = Client()
     client.start()
 

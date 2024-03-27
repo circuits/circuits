@@ -9,64 +9,64 @@ from .helpers import HTTPError, quote, urlopen
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'
 
 
-def test_404(webapp):
+def test_404(webapp) -> None:
     try:
         urlopen('%s/foo' % webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == 'Not Found'
     else:
-        assert False
+        raise AssertionError
 
 
-def test_file(webapp):
+def test_file(webapp) -> None:
     url = '%s/static/helloworld.txt' % webapp.server.http.base
     f = urlopen(url)
     s = f.read().strip()
     assert s == b'Hello World!'
 
 
-def test_largefile(webapp):
+def test_largefile(webapp) -> None:
     url = '%s/static/largefile.txt' % webapp.server.http.base
     f = urlopen(url)
     s = f.read().strip()
     assert s == open(path.join(DOCROOT, 'largefile.txt'), 'rb').read()
 
 
-def test_file404(webapp):
+def test_file404(webapp) -> None:
     try:
         urlopen('%s/static/foo.txt' % webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 404
         assert e.msg == 'Not Found'
     else:
-        assert False
+        raise AssertionError
 
 
-def test_directory(webapp):
+def test_directory(webapp) -> None:
     f = urlopen('%s/static/' % webapp.server.http.base)
     s = f.read()
     assert b'helloworld.txt' in s
 
 
-def test_file_quoting(webapp):
+def test_file_quoting(webapp) -> None:
     url = '{:s}{:s}'.format(webapp.server.http.base, quote('/static/#foobar.txt'))
     f = urlopen(url)
     s = f.read().strip()
     assert s == b'Hello World!'
 
 
-def test_range(webapp):
+def test_range(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
     connection.request('GET', '%s/static/largefile.txt' % webapp.server.http.base, headers={'Range': 'bytes=0-100'})
@@ -76,7 +76,7 @@ def test_range(webapp):
     assert s == open(path.join(DOCROOT, 'largefile.txt'), 'rb').read(101)
 
 
-def test_ranges(webapp):
+def test_ranges(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
     connection.request('GET', '%s/static/largefile.txt' % webapp.server.http.base, headers={'Range': 'bytes=0-50,51-100'})
@@ -90,7 +90,7 @@ def test_ranges(webapp):
     # assert s == open(path.join(DOCROOT, "largefile.txt"), "rb").read(101)
 
 
-def test_unsatisfiable_range1(webapp):
+def test_unsatisfiable_range1(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
     connection.request('GET', '%s/static/largefile.txt' % webapp.server.http.base, headers={'Range': 'bytes=0-100,100-10000,0-1'})

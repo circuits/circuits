@@ -1,9 +1,10 @@
 """
-Socket Components
+Socket Components.
 
 This module contains various Socket Components for use with Networking.
 """
 
+import contextlib
 import os
 import select
 from collections import defaultdict, deque
@@ -102,7 +103,7 @@ BACKLOG = 5000  # 5K Concurrent Connections
 
 def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
     """
-    SSL Async Handshake
+    SSL Async Handshake.
 
     :param on_done: Function called when handshake is complete
     :type on_done: :function:
@@ -138,7 +139,7 @@ class Client(BaseComponent):
     socket_protocol = IPPROTO_IP
     socket_options = []
 
-    def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel, **kwargs):
+    def __init__(self, bind=None, bufsize=BUFSIZE, channel=channel, **kwargs) -> None:
         super().__init__(channel=channel, **kwargs)
 
         if isinstance(bind, SocketType):
@@ -171,7 +172,7 @@ class Client(BaseComponent):
         return getattr(self, '_connected', None)
 
     @handler('registered', 'started', channel='*')
-    def _on_registered_or_started(self, component, manager=None):
+    def _on_registered_or_started(self, component, manager=None) -> None:
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -188,20 +189,20 @@ class Client(BaseComponent):
                     self.fire(ready(self))
 
     @handler('stopped', channel='*')
-    def _on_stopped(self, component):
+    def _on_stopped(self, component) -> None:
         self.fire(close())
 
     @handler('read_value_changed')
-    def _on_read_value_changed(self, value):
+    def _on_read_value_changed(self, value) -> None:
         if isinstance(value, bytes):
             self.fire(write(value))
 
     @handler('prepare_unregister', channel='*')
-    def _on_prepare_unregister(self, event, c):
+    def _on_prepare_unregister(self, event, c) -> None:
         if event.in_subtree(self):
             self._close()
 
-    def _close(self):
+    def _close(self) -> None:
         if not self._connected:
             return
 
@@ -211,33 +212,26 @@ class Client(BaseComponent):
         self._closeflag = False
         self._connected = False
 
-        try:
+        with contextlib.suppress(OSError):
             self._sock.shutdown(2)
-        except OSError:
-            pass
-        try:
+        with contextlib.suppress(OSError):
             self._sock.close()
-        except OSError:
-            pass
 
         self.fire(disconnected())
 
     @handler('close')
-    def close(self):
+    def close(self) -> None:
         if not self._buffer:
             self._close()
         elif not self._closeflag:
             self._closeflag = True
 
-    def _read(self):
+    def _read(self) -> None:
         try:
             try:
-                if self.secure and self._ssock:
-                    data = self._ssock.read(self._bufsize)
-                else:
-                    data = self._sock.recv(self._bufsize)
+                data = self._ssock.read(self._bufsize) if self.secure and self._ssock else self._sock.recv(self._bufsize)
             except SSLError as exc:
-                if exc.errno in (SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE):
+                if exc.errno in {SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE}:
                     return
                 raise
 
@@ -251,37 +245,34 @@ class Client(BaseComponent):
             self.fire(error(e))
             self._close()
 
-    def _write(self, data):
+    def _write(self, data) -> None:
         try:
-            if self.secure and self._ssock:
-                nbytes = self._ssock.write(data)
-            else:
-                nbytes = self._sock.send(data)
+            nbytes = self._ssock.write(data) if self.secure and self._ssock else self._sock.send(data)
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
         except OSError as e:
-            if e.args[0] in (EPIPE, ENOTCONN):
+            if e.args[0] in {EPIPE, ENOTCONN}:
                 self._close()
             else:
                 self.fire(error(e))
 
     @handler('write')
-    def write(self, data):
+    def write(self, data) -> None:
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
         self._buffer.append(data)
 
     @handler('_disconnect', priority=1)
-    def __on_disconnect(self, sock):
+    def __on_disconnect(self, sock) -> None:
         self._close()
 
     @handler('_read', priority=1)
-    def __on_read(self, sock):
+    def __on_read(self, sock) -> None:
         self._read()
 
     @handler('_write', priority=1)
-    def __on_write(self, sock):
+    def __on_write(self, sock) -> None:
         if self._buffer:
             data = self._buffer.popleft()
             self._write(data)
@@ -311,7 +302,7 @@ class TCPClient(Client):
         (IPPROTO_TCP, TCP_NODELAY, 1),
     ]
 
-    def init(self, connect_timeout=5, *args, **kwargs):
+    def init(self, connect_timeout=5, *args, **kwargs) -> None:
         self.connect_timeout = connect_timeout
 
     @handler('connect')
@@ -331,13 +322,13 @@ class TCPClient(Client):
         try:
             r = self._sock.connect((host, port))
         except OSError as e:
-            if e.args[0] in (EBADF, EINVAL):
+            if e.args[0] in {EBADF, EINVAL}:
                 self._sock = self._create_socket()
                 r = self._sock.connect_ex((host, port))
             else:
                 r = e.args[0]
 
-            if r not in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
+            if r not in {EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY}:
                 self.fire(unreachable(host, port, e))
                 self.fire(error(e))
                 self._close()
@@ -356,13 +347,13 @@ class TCPClient(Client):
             self.fire(unreachable(host, port))
             return
 
-        def on_done(sock):
+        def on_done(sock) -> None:
             self._poller.addReader(self, sock)
             self.fire(connected(host, port))
 
         if self.secure:
 
-            def on_error(sock, err):
+            def on_error(sock, err) -> None:
                 self.fire(error(sock, err))
                 self._close()
 
@@ -392,7 +383,7 @@ class UNIXClient(Client):
     socket_options = []
 
     @handler('ready')
-    def ready(self, component):
+    def ready(self, component) -> None:
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
@@ -415,7 +406,7 @@ class UNIXClient(Client):
             r = e.args[0]
 
         if r:
-            if r in (EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY):
+            if r in {EISCONN, EWOULDBLOCK, EINPROGRESS, EALREADY}:
                 self._connected = True
             else:
                 self.fire(error(r))
@@ -427,10 +418,10 @@ class UNIXClient(Client):
 
         if self.secure:
 
-            def on_done(sock):
+            def on_done(sock) -> None:
                 self.fire(connected(gethostname(), path))
 
-            def on_error(sock, err):
+            def on_error(sock, err) -> None:
                 self.fire(error(err))
 
             self._ssock = ssl_socket(
@@ -450,7 +441,7 @@ class Server(BaseComponent):
     channel = 'server'
     socket_protocol = IPPROTO_IP
 
-    def __init__(self, bind, secure=False, backlog=BACKLOG, bufsize=BUFSIZE, channel=channel, **kwargs):
+    def __init__(self, bind, secure=False, backlog=BACKLOG, bufsize=BUFSIZE, channel=channel, **kwargs) -> None:
         super().__init__(channel=channel)
 
         self.socket_options = self.socket_options[:] + kwargs.get('socket_options', [])
@@ -478,13 +469,14 @@ class Server(BaseComponent):
         self.ssl_version = kwargs.get('ssl_version', PROTOCOL_SSLv23)
         self.ca_certs = kwargs.get('ca_certs', None)
         if self.secure and not self.certfile:
-            raise RuntimeError('certfile must be specified for server-side operations')
+            msg = 'certfile must be specified for server-side operations'
+            raise RuntimeError(msg)
 
     def parse_bind_parameter(self, bind_parameter):
         return parse_ipv4_parameter(bind_parameter)
 
     @property
-    def connected(self):
+    def connected(self) -> bool:
         return True
 
     @property
@@ -497,6 +489,7 @@ class Server(BaseComponent):
                 return sockname
             except OSError:
                 return None
+        return None
 
     @property
     def port(self):
@@ -507,9 +500,10 @@ class Server(BaseComponent):
                     return sockname[1]
             except OSError:
                 return None
+        return None
 
     @handler('registered', 'started', channel='*')
-    def _on_registered_or_started(self, component, manager=None):
+    def _on_registered_or_started(self, component, manager=None) -> None:
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -533,16 +527,16 @@ class Server(BaseComponent):
                         self.fire(ready(self, (self.host, self.port)))
 
     @handler('stopped', channel='*')
-    def _on_stopped(self, component):
+    def _on_stopped(self, component) -> None:
         self.fire(close())
 
     @handler('read_value_changed')
-    def _on_read_value_changed(self, value):
+    def _on_read_value_changed(self, value) -> None:
         if isinstance(value.value, bytes):
             sock = value.event.args[0]
             self.fire(write(sock, value.value))
 
-    def _close(self, sock):
+    def _close(self, sock) -> None:
         if sock is None:
             return
 
@@ -562,19 +556,15 @@ class Server(BaseComponent):
         if sock in self.__starttls:
             self.__starttls.remove(sock)
 
-        try:
+        with contextlib.suppress(OSError):
             sock.shutdown(2)
-        except OSError:
-            pass
-        try:
+        with contextlib.suppress(OSError):
             sock.close()
-        except OSError:
-            pass
 
         self.fire(disconnect(sock))
 
     @handler('close')
-    def close(self, sock=None):
+    def close(self, sock=None) -> None:
         is_closed = sock is None
 
         if sock is None:
@@ -592,7 +582,7 @@ class Server(BaseComponent):
         if is_closed:
             self.fire(closed())
 
-    def _read(self, sock):
+    def _read(self, sock) -> None:
         if sock not in self._clients:
             return
 
@@ -608,7 +598,7 @@ class Server(BaseComponent):
             self.fire(error(sock, e))
             self._close(sock)
 
-    def _write(self, sock, data):
+    def _write(self, sock, data) -> None:
         if sock not in self._clients:
             return
 
@@ -617,30 +607,30 @@ class Server(BaseComponent):
             if nbytes < len(data):
                 self._buffers[sock].appendleft(data[nbytes:])
         except OSError as e:
-            if e.args[0] not in (EINTR, EWOULDBLOCK, ENOBUFS):
+            if e.args[0] not in {EINTR, EWOULDBLOCK, ENOBUFS}:
                 self.fire(error(sock, e))
                 self._close(sock)
             else:
                 self._buffers[sock].appendleft(data)
 
     @handler('write')
-    def write(self, sock, data):
+    def write(self, sock, data) -> None:
         if not self._poller.isWriting(sock):
             self._poller.addWriter(self, sock)
         self._buffers[sock].append(data)
 
     def _accept(self):
         try:
-            newsock, host = self._sock.accept()
+            newsock, _host = self._sock.accept()
         except OSError as e:
-            if e.args[0] in (EWOULDBLOCK, EAGAIN):
+            if e.args[0] in {EWOULDBLOCK, EAGAIN}:
                 return
             elif e.args[0] == EPERM:
                 # Netfilter on Linux may have rejected the
                 # connection, but we get told to try to accept()
                 # anyway.
                 return
-            elif e.args[0] in (EMFILE, ENOBUFS, ENFILE, ENOMEM, ECONNABORTED):
+            elif e.args[0] in {EMFILE, ENOBUFS, ENFILE, ENOMEM, ECONNABORTED}:
                 # Linux gives EMFILE when a process is not allowed
                 # to allocate any more file descriptors.  *BSD and
                 # Win32 give (WSA)ENOBUFS.  Linux can also give
@@ -678,7 +668,7 @@ class Server(BaseComponent):
 
         yield from do_handshake(sslsock, self._on_accept_done, self._on_handshake_error, (fire_connect_event,))
 
-    def _on_accept_done(self, sock, fire_connect_event=True):
+    def _on_accept_done(self, sock, fire_connect_event=True) -> None:
         sock.setblocking(False)
         self._poller.addReader(self, sock)
         self._clients.append(sock)
@@ -689,16 +679,18 @@ class Server(BaseComponent):
                 # errno 107 (ENOTCONN): the client already disconnected
                 self._on_handshake_error(sock, exc)
 
-    def _on_handshake_error(self, sock, err):
+    def _on_handshake_error(self, sock, err) -> None:
         self.fire(error(sock, err))
         self._close(sock)
 
     @handler('starttls')
     def starttls(self, sock):
         if not HAS_SSL:
-            raise RuntimeError('Cannot start TLS. No TLS support.')
+            msg = 'Cannot start TLS. No TLS support.'
+            raise RuntimeError(msg)
         if sock in self.__starttls:
-            raise RuntimeError('Cannot reuse socket for already started STARTTLS.')
+            msg = 'Cannot reuse socket for already started STARTTLS.'
+            raise RuntimeError(msg)
         self.__starttls.add(sock)
         self._poller.removeReader(sock)
         self._clients.remove(sock)
@@ -706,7 +698,7 @@ class Server(BaseComponent):
             yield
 
     @handler('_disconnect', priority=1)
-    def _on_disconnect(self, sock):
+    def _on_disconnect(self, sock) -> None:
         self._close(sock)
 
     @handler('_read', priority=1)
@@ -714,9 +706,10 @@ class Server(BaseComponent):
         if sock == self._sock:
             return self._accept()
         self._read(sock)
+        return None
 
     @handler('_write', priority=1)
-    def _on_write(self, sock):
+    def _on_write(self, sock) -> None:
         if self._buffers[sock]:
             data = self._buffers[sock].popleft()
             self._write(sock, data)
@@ -817,25 +810,21 @@ class UDPServer(Server):
         (SOL_SOCKET, SO_REUSEADDR, 1),
     ]
 
-    def _close(self, sock):
+    def _close(self, sock) -> None:
         self._poller.discard(sock)
 
         if sock in self._buffers:
             del self._buffers[sock]
 
-        try:
+        with contextlib.suppress(OSError):
             sock.shutdown(2)
-        except OSError:
-            pass
-        try:
+        with contextlib.suppress(OSError):
             sock.close()
-        except OSError:
-            pass
 
         self.fire(disconnect(sock))
 
     @handler('close', override=True)
-    def close(self):
+    def close(self) -> None:
         self.fire(closed())
 
         if self._buffers[self._sock] and self._sock not in self._closeq:
@@ -843,48 +832,48 @@ class UDPServer(Server):
         else:
             self._close(self._sock)
 
-    def _read(self):
+    def _read(self) -> None:
         try:
             data, address = self._sock.recvfrom(self._bufsize)
             if data:
                 self.fire(read(address, data)).notify = True
         except OSError as e:
-            if e.args[0] in (EWOULDBLOCK, EAGAIN):
+            if e.args[0] in {EWOULDBLOCK, EAGAIN}:
                 return
             self.fire(error(self._sock, e))
             self._close(self._sock)
 
-    def _write(self, address, data):
+    def _write(self, address, data) -> None:
         try:
             bytes = self._sock.sendto(data, address)
             if bytes < len(data):
                 self._buffers[self._sock].appendleft(data[bytes:])
         except OSError as e:
-            if e.args[0] in (EPIPE, ENOTCONN):
+            if e.args[0] in {EPIPE, ENOTCONN}:
                 self._close(self._sock)
             else:
                 self.fire(error(self._sock, e))
 
     @handler('write', override=True)
-    def write(self, address, data):
+    def write(self, address, data) -> None:
         if not self._poller.isWriting(self._sock):
             self._poller.addWriter(self, self._sock)
         self._buffers[self._sock].append((address, data))
 
     @handler('broadcast', override=True)
-    def broadcast(self, data, port):
+    def broadcast(self, data, port) -> None:
         self.write(('<broadcast>', port), data)
 
     @handler('_disconnect', priority=1, override=True)
-    def _on_disconnect(self, sock):
+    def _on_disconnect(self, sock) -> None:
         self._close(sock)
 
     @handler('_read', priority=1, override=True)
-    def _on_read(self, sock):
+    def _on_read(self, sock) -> None:
         self._read()
 
     @handler('_write', priority=1, override=True)
-    def _on_write(self, sock):
+    def _on_write(self, sock) -> None:
         if self._buffers[self._sock]:
             address, data = self._buffers[self._sock].popleft()
             self._write(address, data)
@@ -912,13 +901,14 @@ UDP6Client = UDP6Server
 
 def Pipe(*channels, **kwargs):
     """
-    Create a new full duplex Pipe
+    Create a new full duplex Pipe.
 
     Returns a pair of UNIXClient instances connected on either side of
     the pipe.
     """
     if socketpair is None:
-        raise RuntimeError('No socketpair support available.')
+        msg = 'No socketpair support available.'
+        raise RuntimeError(msg)
 
     if not channels:
         channels = ('a', 'b')

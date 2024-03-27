@@ -1,9 +1,10 @@
 """
-Utilities
+Utilities.
 
 This module implements utility functions.
 """
 
+import locale
 import os
 import re
 import stat
@@ -39,20 +40,20 @@ def average(xs):
 
 def variance(xs):
     avg = average(xs)
-    return list(map(lambda x: (x - avg) ** 2, xs))
+    return [(x - avg) ** 2 for x in xs]
 
 
 def stddev(xs):
     return sqrt(average(variance(xs)))
 
 
-def parse_body(request, response, params):
+def parse_body(request, response, params) -> None:
     if 'Content-Type' not in request.headers:
         request.headers['Content-Type'] = ''
 
     form = FieldStorage(
         environ={'REQUEST_METHOD': 'POST'},
-        fp=TextIOWrapper(request.body),
+        fp=TextIOWrapper(request.body, encoding=locale.getpreferredencoding(False)),
         headers=request.headers,
         keep_blank_values=True,
     )
@@ -65,7 +66,7 @@ def parse_body(request, response, params):
 
 def parse_qs(query_string, keep_blank_values=True):
     """
-    parse_qs(query_string) -> dict
+    parse_qs(query_string) -> dict.
 
     Build a params dictionary from a query_string.
     If keep_blank_values is True (the default), keep
@@ -143,7 +144,7 @@ def get_ranges(headervalue, content_length):
         return None
 
     result = []
-    bytesunit, byteranges = headervalue.split('=', 1)
+    _bytesunit, byteranges = headervalue.split('=', 1)
     for brange in byteranges.split(','):
         start, stop = (x.strip() for x in brange.split('-', 1))
         if start:
@@ -186,6 +187,6 @@ def get_ranges(headervalue, content_length):
     # See Issue #59
 
     if len(result) > 1 and stddev([x[1] - x[0] for x in result]) > 2.0:
-        raise RangeUnsatisfiable()
+        raise RangeUnsatisfiable
 
     return result

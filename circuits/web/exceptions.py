@@ -1,5 +1,5 @@
 """
-Exceptions
+Exceptions.
 
 This module implements a set of standard HTTP Errors as Python Exceptions.
 
@@ -45,7 +45,7 @@ class HTTPException(Exception):
     traceback = True
     description = None
 
-    def __init__(self, description=None, traceback=None):
+    def __init__(self, description=None, traceback=None) -> None:
         super().__init__('%d %s' % (self.code, self.name))
         if description is not None:
             self.description = description
@@ -57,13 +57,13 @@ class HTTPException(Exception):
         """The status name."""
         return HTTP_STATUS_CODES.get(self.code, '')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<{self.__class__.__name__} {str(self)!r}>'
 
 
 class BadRequest(HTTPException):
     """
-    *400* `Bad Request`
+    *400* `Bad Request`.
 
     Raise if the browser sends something to the application the application
     or server cannot handle.
@@ -82,7 +82,7 @@ class UnicodeError(HTTPException):
 
 class Unauthorized(HTTPException):
     """
-    *401* `Unauthorized`
+    *401* `Unauthorized`.
 
     Raise if the user is not authorized.  Also used if you want to use HTTP
     basic auth.
@@ -101,7 +101,7 @@ class Unauthorized(HTTPException):
 
 class Forbidden(HTTPException):
     """
-    *403* `Forbidden`
+    *403* `Forbidden`.
 
     Raise if the user doesn't have the permission for the requested resource
     but was authenticated.
@@ -113,7 +113,7 @@ class Forbidden(HTTPException):
 
 class NotFound(HTTPException):
     """
-    *404* `Not Found`
+    *404* `Not Found`.
 
     Raise if a resource does not exist and never existed.
     """
@@ -124,7 +124,7 @@ class NotFound(HTTPException):
 
 class MethodNotAllowed(HTTPException):
     """
-    *405* `Method Not Allowed`
+    *405* `Method Not Allowed`.
 
     Raise if the server used a method the resource does not handle.  For
     example `POST` if the resource is view only.  Especially useful for REST.
@@ -136,7 +136,7 @@ class MethodNotAllowed(HTTPException):
 
     code = 405
 
-    def __init__(self, method, description=None):
+    def __init__(self, method, description=None) -> None:
         HTTPException.__init__(self, description)
         if description is None:
             self.description = ('<p>The method %s is not allowed for the requested URL.</p>') % method
@@ -144,7 +144,7 @@ class MethodNotAllowed(HTTPException):
 
 class NotAcceptable(HTTPException):
     """
-    *406* `Not Acceptable`
+    *406* `Not Acceptable`.
 
     Raise if the server can't return any content conforming to the
     `Accept` headers of the client.
@@ -162,7 +162,7 @@ class NotAcceptable(HTTPException):
 
 class RequestTimeout(HTTPException):
     """
-    *408* `Request Timeout`
+    *408* `Request Timeout`.
 
     Raise to signalize a timeout.
     """
@@ -173,7 +173,7 @@ class RequestTimeout(HTTPException):
 
 class Gone(HTTPException):
     """
-    *410* `Gone`
+    *410* `Gone`.
 
     Raise if a resource existed previously and went away without new location.
     """
@@ -188,7 +188,7 @@ class Gone(HTTPException):
 
 class LengthRequired(HTTPException):
     """
-    *411* `Length Required`
+    *411* `Length Required`.
 
     Raise if the browser submitted data but no ``Content-Length`` header which
     is required for the kind of processing the server does.
@@ -200,7 +200,7 @@ class LengthRequired(HTTPException):
 
 class PreconditionFailed(HTTPException):
     """
-    *412* `Precondition Failed`
+    *412* `Precondition Failed`.
 
     Status code used in combination with ``If-Match``, ``If-None-Match``, or
     ``If-Unmodified-Since``.
@@ -212,7 +212,7 @@ class PreconditionFailed(HTTPException):
 
 class RequestEntityTooLarge(HTTPException):
     """
-    *413* `Request Entity Too Large`
+    *413* `Request Entity Too Large`.
 
     The status code one should return if the data submitted exceeded a given
     limit.
@@ -224,7 +224,7 @@ class RequestEntityTooLarge(HTTPException):
 
 class RequestURITooLarge(HTTPException):
     """
-    *414* `Request URI Too Large`
+    *414* `Request URI Too Large`.
 
     Like *413* but for too long URLs.
     """
@@ -235,7 +235,7 @@ class RequestURITooLarge(HTTPException):
 
 class UnsupportedMediaType(HTTPException):
     """
-    *415* `Unsupported Media Type`
+    *415* `Unsupported Media Type`.
 
     The status code returned if the server is unable to handle the media type
     the client transmitted.
@@ -247,7 +247,7 @@ class UnsupportedMediaType(HTTPException):
 
 class RangeUnsatisfiable(HTTPException):
     """
-    *416* `Range Unsatisfiable`
+    *416* `Range Unsatisfiable`.
 
     The status code returned if the server is unable to satisfy the request range
     """
@@ -258,7 +258,7 @@ class RangeUnsatisfiable(HTTPException):
 
 class InternalServerError(HTTPException):
     """
-    *500* `Internal Server Error`
+    *500* `Internal Server Error`.
 
     Raise if an internal server error occurred.  This is a good fallback if an
     unknown error occurred in the dispatcher.
@@ -272,7 +272,7 @@ class InternalServerError(HTTPException):
 
 class NotImplemented(HTTPException):
     """
-    *501* `Not Implemented`
+    *501* `Not Implemented`.
 
     Raise if the application does not support the action requested by the
     browser.
@@ -284,7 +284,7 @@ class NotImplemented(HTTPException):
 
 class BadGateway(HTTPException):
     """
-    *502* `Bad Gateway`
+    *502* `Bad Gateway`.
 
     If you do proxying in your application you should return this status code
     if you received an invalid response from the upstream server it accessed
@@ -297,7 +297,7 @@ class BadGateway(HTTPException):
 
 class ServiceUnavailable(HTTPException):
     """
-    *503* `Service Unavailable`
+    *503* `Service Unavailable`.
 
     Status code you should return if a service is temporarily unavailable.
     """
@@ -309,7 +309,7 @@ class ServiceUnavailable(HTTPException):
 class Redirect(HTTPException):
     code = 303
 
-    def __init__(self, urls, status=None):
+    def __init__(self, urls, status=None) -> None:
         super().__init__()
 
         if isinstance(urls, str):

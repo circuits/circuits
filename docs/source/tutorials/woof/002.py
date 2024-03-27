@@ -4,7 +4,7 @@ from circuits import Component
 
 
 class MyComponent(Component):
-    """My Component"""
+    """My Component."""
 
 
 MyComponent().run()

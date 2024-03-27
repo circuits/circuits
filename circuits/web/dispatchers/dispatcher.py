@@ -1,5 +1,5 @@
 """
-Dispatcher
+Dispatcher.
 
 This module implements a basic URL to Channel dispatcher.
 This is the default dispatcher used by circuits.web
@@ -13,7 +13,7 @@ from circuits.web.utils import parse_qs
 
 
 def resolve_path(paths, parts):
-    def rebuild_path(url_parts):
+    def rebuild_path(url_parts) -> str:
         return '/%s' % '/'.join(url_parts)
 
     left_over = []
@@ -58,7 +58,7 @@ def find_handlers(req, paths):
             if handlers and (not vpath or accepts_vpath(handlers, vpath)):
                 req.index = method == 'index'
                 return handlers, method, path, vpath
-            method, vpath = 'index', [method] + vpath
+            method, vpath = 'index', [method, *vpath]
             handlers = get_handlers(path, method)
             if handlers and (not vpath or accepts_vpath(handlers, vpath)):
                 req.index = True
@@ -70,18 +70,18 @@ def find_handlers(req, paths):
 class Dispatcher(BaseComponent):
     channel = 'web'
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.paths = {}
 
     @handler('registered', channel='*')
-    def _on_registered(self, component, manager):
+    def _on_registered(self, component, manager) -> None:
         if isinstance(component, BaseController) and component.channel not in self.paths:
             self.paths[component.channel] = component
 
     @handler('unregistered', channel='*')
-    def _on_unregistered(self, component, manager):
+    def _on_unregistered(self, component, manager) -> None:
         if isinstance(component, BaseController) and component.channel in self.paths:
             del self.paths[component.channel]
 
@@ -90,7 +90,7 @@ class Dispatcher(BaseComponent):
         if peer_cert:
             event.peer_cert = peer_cert
 
-        handlers, name, channel, vpath = find_handlers(req, self.paths)
+        _handlers, name, channel, vpath = find_handlers(req, self.paths)
 
         if name is not None and channel is not None:
             event.kwargs = parse_qs(req.qs)
@@ -107,13 +107,14 @@ class Dispatcher(BaseComponent):
                 ),
                 channel,
             )
+        return None
 
     @handler('request_value_changed')
-    def _on_request_value_changed(self, value):
+    def _on_request_value_changed(self, value) -> None:
         if value.handled:
             return
 
-        req, res = value.event.args[:2]
+        _req, res = value.event.args[:2]
         if value.result and not value.errors:
             res.body = value.value
             self.fire(response(res))

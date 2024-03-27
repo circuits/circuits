@@ -2,10 +2,10 @@
 from circuits.core.components import BaseComponent
 
 
-def test():
+def test() -> None:
     try:
         from circuits.core.pollers import BasePoller
 
         assert issubclass(BasePoller, BaseComponent)
     except ImportError:
-        assert False
+        raise AssertionError

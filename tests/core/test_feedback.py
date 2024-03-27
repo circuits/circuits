@@ -1,4 +1,6 @@
-"""Feedback Channels Tests"""
+"""Feedback Channels Tests."""
+
+from typing import NoReturn
 
 import pytest
 
@@ -6,14 +8,14 @@ from circuits import Component, Event, handler
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
     success = True
     failure = True
 
 
 class App(Component):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.e = None
@@ -23,32 +25,33 @@ class App(Component):
         self.failure = False
 
     @handler('*')
-    def event(self, event, *args, **kwargs):
+    def event(self, event, *args, **kwargs) -> None:
         if kwargs.get('filter', False):
             event.stop()
 
-    def test(self, error=False):
+    def test(self, error=False) -> str:
         if error:
-            raise Exception('Hello World!')
+            msg = 'Hello World!'
+            raise Exception(msg)
 
         return 'Hello World!'
 
-    def test_success(self, e, value):
+    def test_success(self, e, value) -> None:
         self.e = e
         self.value = value
         self.success = True
 
-    def test_failure(self, e, error):
+    def test_failure(self, e, error) -> None:
         self.e = e
         self.error = error
         self.failure = True
 
 
-def reraise(e):
+def reraise(e) -> NoReturn:
     raise e
 
 
-def test_success():
+def test_success() -> None:
     app = App()
     while len(app):
         app.flush()
@@ -72,7 +75,7 @@ def test_success():
     assert app.value == value.value
 
 
-def test_failure():
+def test_failure() -> None:
     app = App()
     while len(app):
         app.flush()
@@ -91,7 +94,7 @@ def test_failure():
 
     assert app.e == e
 
-    etype, evalue, etraceback = app.error
+    etype, evalue, _etraceback = app.error
     pytest.raises(Exception, reraise, evalue)
     assert etype == Exception
 

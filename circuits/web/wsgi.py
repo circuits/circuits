@@ -1,5 +1,5 @@
 """
-WSGI Components
+WSGI Components.
 
 This module implements WSGI Components.
 """
@@ -65,7 +65,7 @@ class Application(BaseComponent):
         'REMOTE_ADDR': 'Remote-Addr',
     }
 
-    def init(self):
+    def init(self) -> None:
         self._finished = False
 
         HTTP(self).register(self)
@@ -131,25 +131,25 @@ class Application(BaseComponent):
         return body
 
     @handler('response', channel='web')
-    def on_response(self, event, response):
+    def on_response(self, event, response) -> None:
         self._finished = True
         event.stop()
 
     @property
-    def host(self):
+    def host(self) -> str:
         return ''
 
     @property
-    def port(self):
+    def port(self) -> int:
         return 0
 
     @property
-    def secure(self):
+    def secure(self) -> bool:
         return False
 
 
 class _Empty(str):
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return True
 
     __nonzero__ = __bool__
@@ -162,7 +162,7 @@ del _Empty
 class Gateway(BaseComponent):
     channel = 'web'
 
-    def init(self, apps):
+    def init(self, apps) -> None:
         self.apps = apps
 
         self.errors = {k: StringIO() for k in self.apps}

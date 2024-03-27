@@ -5,13 +5,13 @@ from circuits import Component, Event, handler
 
 
 class call(Event):
-    """call Event"""
+    """call Event."""
 
     success = True
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
     success = True
 
@@ -22,7 +22,7 @@ class App(Component):
         x = yield self.call(hello())
         yield x.value
 
-    def hello(self):
+    def hello(self) -> str:
         return 'Hello World!'
 
 
@@ -31,7 +31,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -39,7 +39,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test_done_handlers_dont_leak(manager, watcher, app):
+def test_done_handlers_dont_leak(manager, watcher, app) -> None:
     manager.fire(call())
     manager.fire(call())
     assert watcher.wait('call_success')

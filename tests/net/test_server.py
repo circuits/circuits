@@ -6,7 +6,7 @@ class MockClass(BaseServer):
     pass
 
 
-def test_dynamic_bufsize_in_baseserver():
+def test_dynamic_bufsize_in_baseserver() -> None:
     bufsize = 10000
     try:
         # Assert when we set BUFSIZE ourselves
@@ -18,7 +18,7 @@ def test_dynamic_bufsize_in_baseserver():
         mock.stop()
 
 
-def test_constant_bufsize_in_baseserver():
+def test_constant_bufsize_in_baseserver() -> None:
     try:
         # Assert when we dont set BUFSIZE ourself
         mock = MockClass(bind='0.0.0.0:1235')

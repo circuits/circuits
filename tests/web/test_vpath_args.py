@@ -6,7 +6,7 @@ from .helpers import urlopen
 
 class Root(Controller):
     @expose('test.txt')
-    def index(self):
+    def index(self) -> str:
         return 'Hello world!'
 
 
@@ -20,7 +20,7 @@ class Leaf(Controller):
         return 'Hello world! ' + vpath
 
 
-def test(webapp):
+def test(webapp) -> None:
     Leaf().register(webapp)
 
     f = urlopen(webapp.server.http.base + '/test.txt')

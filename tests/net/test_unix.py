@@ -15,19 +15,17 @@ from .client import Client
 from .server import Server
 
 
-if sys.platform in ('win32', 'cygwin'):
+if sys.platform in {'win32', 'cygwin'}:
     pytest.skip('Test Not Applicable on Windows')
 
 
 @fixture()
 def tmpfile(request):
     tmpdir = tempfile.mkdtemp()
-    filename = os.path.join(tmpdir, 'test.sock')
-
-    return filename
+    return os.path.join(tmpdir, 'test.sock')
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc) -> None:
     poller = [Select]
 
     if hasattr(select, 'poll'):
@@ -41,7 +39,7 @@ def pytest_generate_tests(metafunc):
     metafunc.parametrize('Poller', poller)
 
 
-def test_unix(tmpfile, Poller):
+def test_unix(tmpfile, Poller) -> None:
     m = Manager() + Poller()
 
     server = Server() + UNIXServer(tmpfile)

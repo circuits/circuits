@@ -4,11 +4,11 @@ from circuits import Component, Event
 
 
 class bark(Event):
-    """bark Event"""
+    """bark Event."""
 
 
 class Pound(Component):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.bob = Bob().register(self)
@@ -16,21 +16,21 @@ class Pound(Component):
 
 
 class Dog(Component):
-    def started(self, *args):
+    def started(self, *args) -> None:
         self.fire(bark())
 
-    def bark(self):
+    def bark(self) -> None:
         print("Woof! I'm %s!" % self.name)
 
 
 class Bob(Dog):
-    """Bob"""
+    """Bob."""
 
     channel = 'bob'
 
 
 class Fred(Dog):
-    """Fred"""
+    """Fred."""
 
     channel = 'fred'
 

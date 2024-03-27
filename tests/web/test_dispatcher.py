@@ -4,24 +4,24 @@ from circuits.web.client import Client, request
 
 
 class Root(Controller):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self += Leaf()
 
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
-    def name(self):
+    def name(self) -> str:
         return 'Earth'
 
 
 class Leaf(Controller):
     channel = '/world/country/region'
 
-    def index(self):
+    def index(self) -> str:
         return 'Hello cities!'
 
-    def city(self):
+    def city(self) -> str:
         return 'Hello City!'
 
 
@@ -40,28 +40,28 @@ def make_request(webapp, path):
     return response.status, s
 
 
-def test_root(webapp):
+def test_root(webapp) -> None:
     status, content = make_request(webapp, webapp.server.http.base)
 
     assert status == 200
     assert content == b'Hello World!'
 
 
-def test_root_name(webapp):
+def test_root_name(webapp) -> None:
     status, content = make_request(webapp, '%s/name' % webapp.server.http.base)
 
     assert status == 200
     assert content == b'Earth'
 
 
-def test_leaf(webapp):
+def test_leaf(webapp) -> None:
     status, content = make_request(webapp, '%s/world/country/region' % webapp.server.http.base)
 
     assert status == 200
     assert content == b'Hello cities!'
 
 
-def test_city(webapp):
+def test_city(webapp) -> None:
     status, content = make_request(webapp, '%s/world/country/region/city' % webapp.server.http.base)
 
     assert status == 200

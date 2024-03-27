@@ -7,7 +7,7 @@ class simple_event(Event):
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
     success = True
 
@@ -15,7 +15,7 @@ class test(Event):
 class Nested3(Component):
     channel = 'nested3'
 
-    def test(self):
+    def test(self) -> None:
         """Updating state. Must be called twice to reach final state."""
         if self.root._state != 'Pre final state':
             self.root._state = 'Pre final state'
@@ -26,7 +26,7 @@ class Nested3(Component):
 class Nested2(Component):
     channel = 'nested2'
 
-    def test(self):
+    def test(self) -> None:
         """Updating state."""
         self.root._state = 'New state'
         # State change involves even more components as well.
@@ -37,7 +37,7 @@ class Nested2(Component):
 class Nested1(Component):
     channel = 'nested1'
 
-    def test(self):
+    def test(self) -> None:
         """State change involves other components as well."""
         self.fire(test(), Nested2.channel)
 
@@ -49,21 +49,21 @@ class App(Component):
     _state_when_success = None
     _state_when_complete = None
 
-    def simple_event_complete(self, e, value):
+    def simple_event_complete(self, e, value) -> None:
         self._simple_event_completed = True
 
-    def test(self):
+    def test(self) -> None:
         """Fire the test event that should produce a state change."""
         evt = test()
         evt.complete = True
         evt.complete_channels = [self.channel]
         self.fire(evt, Nested1.channel)
 
-    def test_success(self, e, value):
+    def test_success(self, e, value) -> None:
         """Test event has been processed, save the achieved state."""
         self._state_when_success = self._state
 
-    def test_complete(self, e, value):
+    def test_complete(self, e, value) -> None:
         """Test event has been completely processed, save the achieved state."""
         self._state_when_complete = self._state
 
@@ -77,8 +77,8 @@ while len(app):
     app.flush()
 
 
-def test_complete_simple():
-    """Test if complete works for an event without further effects"""
+def test_complete_simple() -> None:
+    """Test if complete works for an event without further effects."""
     app.fire(simple_event())
     while len(app):
         app.flush()
@@ -86,7 +86,7 @@ def test_complete_simple():
     assert app._simple_event_completed
 
 
-def test_complete_nested():
+def test_complete_nested() -> None:
     app.fire(test())
     while len(app):
         app.flush()

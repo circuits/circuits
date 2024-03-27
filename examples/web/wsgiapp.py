@@ -4,7 +4,7 @@ from circuits.web.wsgi import Application
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 

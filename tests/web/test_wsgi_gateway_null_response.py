@@ -5,7 +5,7 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-    def index(self, *args, **kwargs):
+    def index(self, *args, **kwargs) -> str:
         return 'ERROR'
 
 
@@ -15,7 +15,7 @@ def application(environ, start_response):
     return ['']
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b''

@@ -4,9 +4,9 @@ from circuits.web import Controller, Server
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         """
-        Index Request Handler
+        Index Request Handler.
 
         Controller(s) expose implicitly methods as request handlers.
         Request Handlers can still be customized by using the ``@expose``

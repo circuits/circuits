@@ -1,5 +1,5 @@
 """
-Node
+Node.
 
 this module manage node (start server, add peer, ...)
 .. seealso:: Examples in :file:`examples/node`
@@ -15,7 +15,7 @@ from .server import Server
 
 class Node(BaseComponent):
     """
-    Node
+    Node.
 
     this class manage node (start server, add peer, ...)
     .. seealso:: Examples in :file:`examples/node`
@@ -24,7 +24,7 @@ class Node(BaseComponent):
     channel = 'node'
     __peers = {}
 
-    def __init__(self, port=None, channel=channel, **kwargs):
+    def __init__(self, port=None, channel=channel, **kwargs) -> None:
         """
         Start node system.
 
@@ -127,7 +127,7 @@ class Node(BaseComponent):
 
         # connected event binding
         @handler('connected', channel=client_channel)
-        def connected(self, hostname, port):
+        def connected(self, hostname, port) -> None:
             self.fire(
                 connected_to(
                     connection_name,
@@ -142,7 +142,7 @@ class Node(BaseComponent):
 
         # disconnected event binding
         @handler('disconnected', 'unreachable', channel=client_channel)
-        def disconnected(self, event, *args, **kwargs):
+        def disconnected(self, event, *args, **kwargs) -> None:
             if event.name == 'disconnected':
                 self.fire(
                     disconnected_from(
@@ -170,7 +170,7 @@ class Node(BaseComponent):
 
     def get_connection_names(self):
         """
-        Get connections names
+        Get connections names.
 
         :return: The list of connections names
         :rtype: list of str
@@ -179,7 +179,7 @@ class Node(BaseComponent):
 
     def get_peer(self, connection_name):
         """
-        Get a client object by name
+        Get a client object by name.
 
         :param connection_name:    Connection name.
         :type connection_name:     str
@@ -187,12 +187,12 @@ class Node(BaseComponent):
         :return: The Client object
         :rtype: :class:`circuits.node.client.Client`
         """
-        return self.__peers[connection_name] if connection_name in self.__peers else None
+        return self.__peers.get(connection_name, None)
 
     @handler('remote', channel='*')
     def __on_remote(self, event, remote_event, connection_name, channel=None):
         """
-        Send event to peer
+        Send event to peer.
 
         Event handler to run an event on peer (the event definition is
         :class:`circuits.node.events.remote`)

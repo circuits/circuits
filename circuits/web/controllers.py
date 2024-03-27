@@ -1,5 +1,5 @@
 """
-Controllers
+Controllers.
 
 This module implements ...
 """
@@ -54,7 +54,7 @@ def expose(*channels, **config):
 
 
 class ExposeMetaClass(type):
-    def __init__(cls, name, bases, dct):
+    def __init__(cls, name, bases, dct) -> None:
         super().__init__(name, bases, dct)
 
         for k, v in dct.items():
@@ -68,16 +68,17 @@ class BaseController(BaseComponent):
     @property
     def uri(self):
         """
-        Return the current Request URI
+        Return the current Request URI.
 
         .. seealso:: :py:class:`circuits.web.url.URL`
         """
         if hasattr(self, 'request'):
             return self.request.uri
+        return None
 
     def forbidden(self, description=None):
         """
-        Return a 403 (Forbidden) response
+        Return a 403 (Forbidden) response.
 
         :param description: Message to display
         :type description: str
@@ -86,7 +87,7 @@ class BaseController(BaseComponent):
 
     def notfound(self, description=None):
         """
-        Return a 404 (Not Found) response
+        Return a 404 (Not Found) response.
 
         :param description: Message to display
         :type description: str
@@ -95,7 +96,7 @@ class BaseController(BaseComponent):
 
     def redirect(self, urls, code=None):
         """
-        Return a 30x (Redirect) response
+        Return a 30x (Redirect) response.
 
         Redirect to another location specified by urls with an optional
         custom response code.
@@ -126,7 +127,7 @@ class BaseController(BaseComponent):
             name,
         )
 
-    def expires(self, secs=0, force=False):
+    def expires(self, secs=0, force=False) -> None:
         tools.expires(self.request, self.response, secs, force)
 
 
@@ -167,7 +168,7 @@ def exposeJSON(*channels, **config):
 
 
 class ExposeJSONMetaClass(type):
-    def __init__(cls, name, bases, dct):
+    def __init__(cls, name, bases, dct) -> None:
         super().__init__(name, bases, dct)
 
         for k, v in dct.items():

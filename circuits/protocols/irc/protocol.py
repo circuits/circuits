@@ -1,4 +1,4 @@
-"""Internet Relay Chat Protocol"""
+"""Internet Relay Chat Protocol."""
 
 from re import compile as compile_regex
 
@@ -16,7 +16,7 @@ NUMERIC = compile_regex('[0-9]+')
 
 class IRC(Component):
     """
-    IRC Protocol Component
+    IRC Protocol Component.
 
     Creates a new IRC Component instance that implements the IRC Protocol.
     Incoming messages are handled by the "read" Event Handler, parsed and
@@ -24,16 +24,16 @@ class IRC(Component):
     the system to listen to and handle.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.encoding = kwargs.get('encoding', 'utf-8')
 
         Line(**kwargs).register(self)
 
-    def line(self, *args):
+    def line(self, *args) -> None:
         """
-        line Event Handler
+        line Event Handler.
 
         Process a line of text and generate the appropriate
         event. This must not be overridden by subclasses,
@@ -61,9 +61,9 @@ class IRC(Component):
         else:
             self.fire(response.create(command, prefix, *args))
 
-    def request(self, event, message):
+    def request(self, event, message) -> None:
         """
-        request Event Handler (Default)
+        request Event Handler (Default).
 
         This is a default event handler to respond to ``request`` events
         by converting the given message to bytes and firing a ``write``
@@ -76,9 +76,9 @@ class IRC(Component):
         message.encoding = self.encoding
         self.fire(write(bytes(message)))
 
-    def ping(self, event, *args):
+    def ping(self, event, *args) -> None:
         """
-        ping Event Handler (Default)
+        ping Event Handler (Default).
 
         This is a default event to respond to ``ping`` events
         by sending a ``PONG`` in response. Subclasses or

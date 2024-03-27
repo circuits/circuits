@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Simple Timers
+Simple Timers.
 
 A trivial simple example of using circuits and timers.
 """
@@ -9,33 +9,33 @@ from circuits import Component, Event, Timer
 
 
 class App(Component):
-    def hello(self):
+    def hello(self) -> None:
         """
-        hello Event handler
+        hello Event handler.
 
         Fired once in 5 seconds.
         """
         print('Hello World')
 
-    def foo(self):
+    def foo(self) -> None:
         """
-        foo Event handler
+        foo Event handler.
 
         Fired every 1 seconds.
         """
         print('Foo')
 
-    def bar(self):
+    def bar(self) -> None:
         """
-        bar Event handler
+        bar Event handler.
 
         Fired every 3 seconds.
         """
         print('Bar')
 
-    def started(self, component):
+    def started(self, component) -> None:
         """
-        started Event handler
+        started Event handler.
 
         Setup 3 timers at 5, 1 and 3 seconds.
         The 2nd two timers are persitent meaning that

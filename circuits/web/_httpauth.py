@@ -25,6 +25,7 @@ SUPPORTED_QOP - list of supported 'Digest' 'qop'.
 import time
 from base64 import decodebytes as base64_decodebytes
 from hashlib import md5, sha1
+from typing import Optional
 from urllib.request import parse_http_list, parse_keqv_list
 
 
@@ -105,7 +106,7 @@ def calculateNonce(realm, algorithm=MD5):
     return encoder(s.encode('utf-8'))
 
 
-def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH):
+def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH) -> str:
     """Challenges the client for a Digest authentication."""
     assert algorithm in SUPPORTED_ALGORITHM
     assert qop in SUPPORTED_QOP
@@ -113,15 +114,10 @@ def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH):
     if nonce is None:
         nonce = calculateNonce(realm, algorithm)
 
-    return 'Digest realm="%s", nonce="%s", algorithm="%s", qop="%s"' % (
-        realm,
-        nonce,
-        algorithm,
-        qop,
-    )
+    return f'Digest realm="{realm}", nonce="{nonce}", algorithm="{algorithm}", qop="{qop}"'
 
 
-def basicAuth(realm):
+def basicAuth(realm) -> str:
     """Challengenes the client for a Basic authentication."""
     assert '"' not in realm, 'Realms cannot contain the " (quote) character.'
 
@@ -229,7 +225,7 @@ def md5SessionKey(params, password):
     return _A1(params_copy, password)
 
 
-def _A1(params, password):
+def _A1(params, password) -> Optional[str]:
     algorithm = params.get('algorithm', MD5)
     H = DIGEST_AUTH_ENCODERS[algorithm]
 
@@ -237,15 +233,16 @@ def _A1(params, password):
         # If the "algorithm" directive's value is "MD5" or is
         # unspecified, then A1 is:
         # A1 = unq(username-value) ":" unq(realm-value) ":" passwd
-        return '%s:%s:%s' % (params['username'], params['realm'], password)
+        return '{}:{}:{}'.format(params['username'], params['realm'], password)
 
     if algorithm == MD5_SESS:
         # This is A1 if qop is set
         # A1 = H( unq(username-value) ":" unq(realm-value) ":" passwd )
         #         ":" unq(nonce-value) ":" unq(cnonce-value)
-        s = '%s:%s:%s' % (params['username'], params['realm'], password)
+        s = '{}:{}:{}'.format(params['username'], params['realm'], password)
         h_a1 = H(s.encode('utf-8'))
-        return '%s:%s:%s' % (h_a1, params['nonce'], params['cnonce'])
+        return '{}:{}:{}'.format(h_a1, params['nonce'], params['cnonce'])
+    return None
 
 
 def _A2(params, method, kwargs):
@@ -261,7 +258,7 @@ def _A2(params, method, kwargs):
         entity_body = kwargs.get('entity_body', '')
         H = kwargs['H']
 
-        return '%s:%s:%s' % (
+        return '{}:{}:{}'.format(
             method,
             params['uri'],
             H(entity_body),
@@ -271,7 +268,7 @@ def _A2(params, method, kwargs):
 
 
 def _computeDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):
-    """Generates a response respecting the algorithm defined in RFC 2617"""
+    """Generates a response respecting the algorithm defined in RFC 2617."""
     params = auth_map
 
     algorithm = params.get('algorithm', MD5)
@@ -293,7 +290,7 @@ def _computeDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):
         s = _A1(params, password)
         H_A1 = H(s.encode('utf-8'))
 
-    if qop in ('auth', 'auth-int'):
+    if qop in {'auth', 'auth-int'}:
         # If the "qop" value is "auth" or "auth-int":
         # request-digest  = <"> < KD ( H(A1),     unq(nonce-value)
         #                              ":" nc-value
@@ -301,7 +298,7 @@ def _computeDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):
         #                              ":" unq(qop-value)
         #                              ":" H(A2)
         #                      ) <">
-        request = '%s:%s:%s:%s:%s' % (
+        request = '{}:{}:{}:{}:{}'.format(
             params['nonce'],
             params['nc'],
             params['cnonce'],
@@ -314,7 +311,7 @@ def _computeDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):
         # for compatibility with RFC 2069):
         # request-digest  =
         #         <"> < KD ( H(A1), unq(nonce-value) ":" H(A2) ) > <">
-        request = '%s:%s' % (params['nonce'], H_A2)
+        request = '{}:{}'.format(params['nonce'], H_A2)
 
     return KD(H_A1, request)
 

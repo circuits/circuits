@@ -4,9 +4,9 @@ from circuits.web import BaseServer
 
 
 class Root(Component):
-    def request(self, request, response):
+    def request(self, request, response) -> str:
         """
-        Request Handler
+        Request Handler.
 
         Using ``BaseServer`` provides no URL dispatching of any kind.
         Requests are handled by any event handler listening to

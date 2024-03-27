@@ -56,7 +56,7 @@ def _gen_id():
 class Error(Exception):
     """Base class for client errors."""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return repr(self)
 
 
@@ -74,7 +74,7 @@ class Error(Exception):
 class ProtocolError(Error):
     """Indicates an HTTP protocol error."""
 
-    def __init__(self, url, errcode, errmsg, headers, response):
+    def __init__(self, url, errcode, errmsg, headers, response) -> None:
         Error.__init__(self)
         self.url = url
         self.errcode = errcode
@@ -82,8 +82,8 @@ class ProtocolError(Error):
         self.headers = headers
         self.response = response
 
-    def __repr__(self):
-        return '<ProtocolError for %s: %s %s>' % (self.url, self.errcode, self.errmsg)
+    def __repr__(self) -> str:
+        return f'<ProtocolError for {self.url}: {self.errcode} {self.errmsg}>'
 
 
 def getparser(encoding):
@@ -99,14 +99,15 @@ def dumps(params, methodname=None, methodresponse=None, encoding=None, allow_non
         request['params'] = params
         request['id'] = _gen_id()
         return json.dumps(request)
+    return None
 
 
 class Unmarshaller:
-    def __init__(self, encoding):
+    def __init__(self, encoding) -> None:
         self.data = None
         self.encoding = encoding
 
-    def feed(self, data):
+    def feed(self, data) -> None:
         if self.data is None:
             self.data = data
         else:
@@ -118,17 +119,17 @@ class Unmarshaller:
 
 
 class Parser:
-    def __init__(self, unmarshaller):
+    def __init__(self, unmarshaller) -> None:
         self._target = unmarshaller
         self.data = None
 
-    def feed(self, data):
+    def feed(self, data) -> None:
         if self.data is None:
             self.data = data
         else:
             self.data = self.data + data
 
-    def close(self):
+    def close(self) -> None:
         self._target.feed(self.data)
 
 
@@ -136,7 +137,7 @@ class _Method:
     # some magic to bind an JSON-RPC method to an RPC server.
     # supports "nested" methods (e.g. examples.getStateName)
 
-    def __init__(self, send, name):
+    def __init__(self, send, name) -> None:
         self.__send = send
         self.__name = name
 
@@ -253,7 +254,7 @@ class Transport:
 
     def make_connection(self, host):
         # create a HTTP connection object from a host descriptor
-        host, extra_headers, x509 = self.get_host_info(host)
+        host, _extra_headers, _x509 = self.get_host_info(host)
         return HTTPConnection(host)
 
     ##
@@ -263,7 +264,7 @@ class Transport:
     # @param handler Target RPC handler.
     # @param request_body JSON-RPC body.
 
-    def send_request(self, connection, handler, request_body):
+    def send_request(self, connection, handler, request_body) -> None:
         connection.putrequest('POST', handler)
 
     ##
@@ -272,8 +273,8 @@ class Transport:
     # @param connection Connection handle.
     # @param host Host name.
 
-    def send_host(self, connection, host):
-        host, extra_headers, x509 = self.get_host_info(host)
+    def send_host(self, connection, host) -> None:
+        host, extra_headers, _x509 = self.get_host_info(host)
         connection.putheader('Host', host)
         if extra_headers:
             if isinstance(extra_headers, dict):
@@ -286,7 +287,7 @@ class Transport:
     #
     # @param connection Connection handle.
 
-    def send_user_agent(self, connection):
+    def send_user_agent(self, connection) -> None:
         connection.putheader('User-Agent', self.user_agent)
 
     ##
@@ -295,7 +296,7 @@ class Transport:
     # @param connection Connection handle.
     # @param request_body JSON-RPC request body.
 
-    def send_content(self, connection, request_body):
+    def send_content(self, connection, request_body) -> None:
         connection.putheader('Content-Type', 'text/xml')
         connection.putheader('Content-Length', str(len(request_body)))
         connection.endheaders()
@@ -328,10 +329,7 @@ class Transport:
         p, u = self.getparser(encoding)
 
         while 1:
-            if sock:
-                response = sock.recv(1024)
-            else:
-                response = file.read(1024)
+            response = sock.recv(1024) if sock else file.read(1024)
             if not response:
                 break
             if self.verbose:
@@ -356,31 +354,30 @@ class SafeTransport(Transport):
     def make_connection(self, host):
         # create a HTTPS connection object from a host descriptor
         # host may be a string, or a (host, x509-dict) tuple
-        host, extra_headers, x509 = self.get_host_info(host)
+        host, _extra_headers, x509 = self.get_host_info(host)
         try:
             HTTPS = HTTPSConnection
         except AttributeError:
+            msg = "your version of httplib doesn't support HTTPS"
             raise NotImplementedError(
-                "your version of httplib doesn't support HTTPS",
+                msg,
             )
         else:
             return HTTPS(host, None, **(x509 or {}))
 
 
 class ServerProxy:
-    def __init__(self, uri, transport=None, encoding=None, verbose=None, allow_none=0):
+    def __init__(self, uri, transport=None, encoding=None, verbose=None, allow_none=0) -> None:
         utype, uri = splittype(uri)
-        if utype not in ('http', 'https'):
-            raise OSError('Unsupported JSONRPC protocol')
+        if utype not in {'http', 'https'}:
+            msg = 'Unsupported JSONRPC protocol'
+            raise OSError(msg)
         self.__host, self.__handler = splithost(uri)
         if not self.__handler:
             self.__handler = '/RPC2'
 
         if transport is None:
-            if utype == 'https':
-                transport = SafeTransport()
-            else:
-                transport = Transport()
+            transport = SafeTransport() if utype == 'https' else Transport()
         self.__transport = transport
 
         self.__encoding = encoding
@@ -388,7 +385,7 @@ class ServerProxy:
         self.__allow_none = allow_none
 
     def __request(self, methodname, params):
-        """Call a method on the remote server"""
+        """Call a method on the remote server."""
         request = dumps(params, methodname, encoding=self.__encoding, allow_none=self.__allow_none)
 
         response = self.__transport.request(
@@ -404,8 +401,8 @@ class ServerProxy:
 
         return response
 
-    def __repr__(self):
-        return '<JSONProxy for %s%s>' % (self.__host, self.__handler)
+    def __repr__(self) -> str:
+        return f'<JSONProxy for {self.__host}{self.__handler}>'
 
     __str__ = __repr__
 

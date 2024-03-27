@@ -4,19 +4,19 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
     @expose('+test')
-    def test(self):
+    def test(self) -> str:
         return 'test'
 
     @expose('foo+bar', 'foo_bar')
-    def foobar(self):
+    def foobar(self) -> str:
         return 'foobar'
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import locale
 import re
 import sys
 from io import StringIO
@@ -10,21 +11,21 @@ from .helpers import urlopen
 
 
 class DummyLogger:
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.message = None
 
-    def info(self, message):
+    def info(self, message) -> None:
         self.message = message
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test_file(webapp):
+def test_file(webapp) -> None:
     logfile = StringIO()
     logger = Logger(file=logfile)
     logger.register(webapp)
@@ -64,7 +65,7 @@ def test_file(webapp):
     logger.unregister()
 
 
-def test_logger(webapp):
+def test_logger(webapp) -> None:
     logobj = DummyLogger()
     logger = Logger(logger=logobj)
     logger.register(webapp)
@@ -102,12 +103,12 @@ def test_logger(webapp):
     logger.unregister()
 
 
-def test_filename(webapp, tmpdir):
+def test_filename(webapp, tmpdir) -> None:
     logfile = str(tmpdir.ensure('logfile'))
     logger = Logger(file=logfile)
     logger.register(webapp)
 
-    logfile = open(logfile)
+    logfile = open(logfile, encoding=locale.getpreferredencoding(False))
 
     f = urlopen(webapp.server.http.base)
     s = f.read()

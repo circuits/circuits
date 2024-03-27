@@ -1,5 +1,5 @@
 """
-Manager Repr Tests
+Manager Repr Tests.
 
 Test Manager's representation string.
 """
@@ -14,11 +14,11 @@ from circuits import Component, Manager
 
 
 class App(Component):
-    def test(self, event, *args, **kwargs):
+    def test(self, event, *args, **kwargs) -> None:
         pass
 
 
-def test_main():
+def test_main() -> None:
     id = f'{os.getpid()}:{current_thread().name}'
 
     m = Manager()

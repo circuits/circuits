@@ -7,14 +7,14 @@ from circuits.web.wsgi import Gateway
 from .helpers import urlopen
 
 
-def hello(environ, start_response):
+def hello(environ, start_response) -> str:
     status = '200 OK'
     response_headers = [('Content-type', 'text/plain')]
     start_response(status, response_headers)
     return 'Hello World!'
 
 
-def foobar(environ, start_response):
+def foobar(environ, start_response) -> str:
     status = '200 OK'
     response_headers = [('Content-type', 'text/plain')]
     start_response(status, response_headers)
@@ -29,7 +29,7 @@ def apps(request):
     }
 
 
-def test(apps):
+def test(apps) -> None:
     server = Server(0)
     Gateway(apps).register(server)
 

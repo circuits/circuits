@@ -1,5 +1,5 @@
 """
-test_utils
+test_utils.
 
 ...
 """
@@ -10,10 +10,10 @@ from circuits.node.utils import dump_event, dump_value, load_event, load_value
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
-def test_events():
+def test_events() -> None:
     event = test(1, 2, 3, foo='bar')
     event.success = True
     event.failure = False
@@ -32,7 +32,7 @@ def test_events():
     assert hasattr(event, 'test_meta')
 
 
-def test_values():
+def test_values() -> None:
     event = Event()
     event.test_meta = 1
 

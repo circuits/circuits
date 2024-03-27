@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Example usage for StompClient component
+Example usage for StompClient component.
 
 Requires a STOMP server to connect to.
 
@@ -19,53 +19,53 @@ LOG = logging.getLogger(__name__)
 
 
 class QueueHandler(Component):
-    def __init__(self, queue, host=None, *args, **kwargs):
+    def __init__(self, queue, host=None, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.queue = queue
         self.host = host
 
-    def registered(self, event, component, parent):
+    def registered(self, event, component, parent) -> None:
         if component.parent is self:
             self.fire(Event.create('reconnect'))
 
-    def connected(self):
-        """Client has connected to the STOMP server"""
+    def connected(self) -> None:
+        """Client has connected to the STOMP server."""
         LOG.info('STOMP connected.')
         # Let's subscribe to the message destination
         self.fire(subscribe(self.queue, ack=ACK_AUTO))
 
-    def subscribe_success(self, event, *args, **kwargs):
-        """Subscribed to message destination"""
+    def subscribe_success(self, event, *args, **kwargs) -> None:
+        """Subscribed to message destination."""
         # Let's fire off some messages
         self.fire(send(headers=None, body='Hello World', destination=self.queue))
         self.fire(send(headers=None, body='Hello Again World', destination=self.queue))
 
-    def heartbeat_timeout(self):
-        """Heartbeat timed out from the STOMP server"""
+    def heartbeat_timeout(self) -> None:
+        """Heartbeat timed out from the STOMP server."""
         LOG.error('STOMP heartbeat timeout!')
         # Set a timer to automatically reconnect
         Timer(10, Event.create('Reconnect')).register(self)
 
-    def on_stomp_error(self, headers, message, error):
+    def on_stomp_error(self, headers, message, error) -> None:
         """STOMP produced an error."""
         LOG.error('STOMP listener: Error:\n%s', message or error)
 
-    def message(self, event, headers, message):
+    def message(self, event, headers, message) -> None:
         """STOMP produced a message."""
         LOG.info('Message Received: %s', message)
 
-    def disconnected(self, event, *args, **kwargs):
+    def disconnected(self, event, *args, **kwargs) -> None:
         # Wait a while then try to reconnect
         LOG.info('We got disconnected, reconnect')
         Timer(10, Event.create('reconnect')).register(self)
 
-    def reconnect(self):
-        """Try (re)connect to the STOMP server"""
+    def reconnect(self) -> None:
+        """Try (re)connect to the STOMP server."""
         LOG.info('STOMP attempting to connect')
         self.fire(connect(host=self.host))
 
 
-def main():
+def main() -> None:
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
     # Configure and run

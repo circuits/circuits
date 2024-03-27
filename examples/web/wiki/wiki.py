@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import locale
 import os
 import sqlite3
 
@@ -16,7 +17,7 @@ text2html = Parser(
 
 
 class Wiki:
-    def __init__(self, database):
+    def __init__(self, database) -> None:
         super().__init__()
 
         create = not os.path.exists(database)
@@ -28,9 +29,9 @@ class Wiki:
             self._cu.execute('CREATE TABLE pages (name, text)')
             for defaultpage in os.listdir('defaultpages'):
                 filename = os.path.join('defaultpages', defaultpage)
-                self.save(defaultpage, open(filename).read())
+                self.save(defaultpage, open(filename, encoding=locale.getpreferredencoding(False)).read())
 
-    def save(self, name, text):
+    def save(self, name, text) -> None:
         self._cu.execute('SELECT COUNT() FROM pages WHERE name=?', (name,))
         row = self._cu.fetchone()
         if row[0]:
@@ -67,7 +68,7 @@ class Root(Controller):
         d['menu'] = text2html(self.db.get('SiteMenu', ''), environ=environ)
 
         text = self.db.get(name, '')
-        s = open('tpl/%s.html' % action).read()
+        s = open('tpl/%s.html' % action, encoding=locale.getpreferredencoding(False)).read()
 
         if action == 'view':
             d['text'] = text2html(text, environ=environ)

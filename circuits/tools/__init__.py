@@ -1,5 +1,5 @@
 """
-Circuits Tools
+Circuits Tools.
 
 circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
@@ -22,6 +22,8 @@ def tryimport(modules, obj=None, message=None):
 
     if message is not None:
         warn(message)
+        return None
+    return None
 
 
 def getargspec(func):
@@ -57,7 +59,7 @@ def findroot(x):
     return findroot(x.parent)
 
 
-def kill(x):
+def kill(x) -> None:
     for c in x.components.copy():
         kill(c)
     if x.parent is not x:
@@ -66,7 +68,7 @@ def kill(x):
 
 def _graph(x):
     """
-    Create a directed graph of the Component structure of x
+    Create a directed graph of the Component structure of x.
 
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
@@ -121,7 +123,7 @@ def _graph(x):
 
 def graph_ascii(x):
     """
-    Display a directed graph of the Component structure of x
+    Display a directed graph of the Component structure of x.
 
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
@@ -130,13 +132,13 @@ def graph_ascii(x):
     @rtype:  str
     """
 
-    def printer(d, x):
-        return '%s* %s' % (' ' * d, x)
+    def printer(d, x) -> str:
+        return '{}* {}'.format(' ' * d, x)
 
     return '\n'.join(walk(x, printer))
 
 
-def graph_dot(x, name=None):
+def graph_dot(x, name=None) -> None:
     """
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
@@ -145,12 +147,12 @@ def graph_dot(x, name=None):
     :type  name: str
     """
     networkx = tryimport('networkx')
-    plt, g = _graph(x)
+    _plt, g = _graph(x)
     if g is not None:
         networkx.drawing.nx_agraph.write_dot(g, f'{name or x.name}.dot')
 
 
-def graph_png(x, name=None):
+def graph_png(x, name=None) -> None:
     """
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
@@ -158,7 +160,7 @@ def graph_png(x, name=None):
     :param name: A name for the graph (defaults to x's name)
     :type  name: str
     """
-    plt, g = _graph(x)
+    plt, _g = _graph(x)
     if plt is not None:
         plt.savefig(f'{name or x.name}.png')
 
@@ -178,7 +180,7 @@ def graph(x, name=None):
 
 def inspect(x):
     """
-    Display an inspection report of the Component or Manager x
+    Display an inspection report of the Component or Manager x.
 
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
@@ -197,7 +199,7 @@ def inspect(x):
     from circuits import reprhandler
 
     write(' Event Handlers: %d\n' % len(x._handlers.values()))
-    for event, _handlers in x._handlers.items():
+    for event in x._handlers:
         write('  %s; %d\n' % (event, len(x._handlers[event])))
         for handler in x._handlers[event]:
             write('   %s\n' % reprhandler(handler))

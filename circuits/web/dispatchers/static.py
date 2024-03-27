@@ -1,5 +1,5 @@
 """
-Static
+Static.
 
 This modStatic implements a Static dispatcher used to serve up static
 resources and an optional apache-style directory listing.
@@ -40,7 +40,7 @@ _dirlisting_template = Template(DEFAULT_DIRECTORY_INDEX_TEMPLATE)
 class Static(BaseComponent):
     channel = 'web'
 
-    def __init__(self, path=None, docroot=None, defaults=('index.html', 'index.xhtml'), dirlisting=False, **kwargs):
+    def __init__(self, path=None, docroot=None, defaults=('index.html', 'index.xhtml'), dirlisting=False, **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.path = path
@@ -60,10 +60,7 @@ class Static(BaseComponent):
 
         path = unquote(path.strip('/'))
 
-        if path:
-            location = os.path.abspath(os.path.join(self.docroot, path))
-        else:
-            location = os.path.abspath(os.path.join(self.docroot, '.'))
+        location = os.path.abspath(os.path.join(self.docroot, path)) if path else os.path.abspath(os.path.join(self.docroot, '.'))
 
         if not os.path.exists(location):
             return None
@@ -103,11 +100,8 @@ class Static(BaseComponent):
                 if not path:
                     url_up = ''
                 else:
-                    if self.path is None:
-                        url_up = os.path.join('/', os.path.split(path)[0])
-                    else:
-                        url_up = os.path.join(cur_dir, '..')
-                    url_up = '<li><a href="%s">%s</a></li>' % (escape(url_up, True), '..')
+                    url_up = os.path.join('/', os.path.split(path)[0]) if self.path is None else os.path.join(cur_dir, '..')
+                    url_up = '<li><a href="{}">{}</a></li>'.format(escape(url_up, True), '..')
 
                 listing = []
                 for item in os.listdir(directory):
@@ -117,15 +111,9 @@ class Static(BaseComponent):
                             os.path.join(self.docroot, path, item),
                         )
                         if os.path.isdir(location):
-                            li = '<li><a href="%s/">%s/</a></li>' % (
-                                escape(quote(url), True),
-                                escape(item),
-                            )
+                            li = f'<li><a href="{escape(quote(url), True)}/">{escape(item)}/</a></li>'
                         else:
-                            li = '<li><a href="%s">%s</a></li>' % (
-                                escape(quote(url), True),
-                                escape(item),
-                            )
+                            li = f'<li><a href="{escape(quote(url), True)}">{escape(item)}</a></li>'
                         listing.append(li)
 
                 ctx = {}
@@ -136,3 +124,5 @@ class Static(BaseComponent):
                     return _dirlisting_template.safe_substitute(ctx)
                 finally:
                     event.stop()
+            return None
+        return None

@@ -5,9 +5,9 @@ from circuits.web.controllers import BaseController, expose
 
 class Root(BaseController):
     @expose('index')
-    def index(self):
+    def index(self) -> str:
         """
-        Index Request Handler
+        Index Request Handler.
 
         BaseController(s) do not expose methods as request handlers.
         Request Handlers _must_ be exposed explicitly using the ``@expose``

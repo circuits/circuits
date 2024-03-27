@@ -17,17 +17,17 @@ STREAMING = 2
 
 
 class kill(Event):
-    """kill Event"""
+    """kill Event."""
 
 
 class input(Event):
-    """input Event"""
+    """input Event."""
 
 
 class Command(Component):
     channel = 'cmd'
 
-    def __init__(self, request, response, command, channel=channel):
+    def __init__(self, request, response, command, channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._request = request
@@ -63,25 +63,25 @@ class Command(Component):
         self._stdout.register(self)
 
     @handler('disconnect', channel='web')
-    def disconnect(self, sock):
+    def disconnect(self, sock) -> None:
         if sock == self._request.sock:
             self.fire(kill(), self)
 
     @handler('response', channel='web', priority=-1)
-    def response(self, response):
+    def response(self, response) -> None:
         if response == self._response:
             self._state = STREAMING
 
-    def kill(self):
+    def kill(self) -> None:
         os.killpg(self._p.pid, signal.SIGINT)
         self.unregister()
 
-    def input(self, data):
+    def input(self, data) -> None:
         if self._stdin is not None:
             self.fire(write(data), self._stdin)
 
     @staticmethod
-    def _on_stdout_eof(self):
+    def _on_stdout_eof(self) -> None:
         if self._buffer is not None:
             self._buffer.flush()
             data = self._buffer.getvalue()
@@ -90,7 +90,7 @@ class Command(Component):
         self.fire(kill())
 
     @staticmethod
-    def _on_stdout_read(self, data):
+    def _on_stdout_read(self, data) -> None:
         if self._state == BUFFERING:
             if self._buffer is None:
                 self._buffer = StringIO()

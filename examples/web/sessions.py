@@ -3,7 +3,7 @@ from circuits.web import Controller, Server, Sessions
 
 
 class Root(Controller):
-    def index(self, name='World'):
+    def index(self, name='World') -> str:
         if 'name' in self.session:
             name = self.session['name']
         self.session['name'] = name

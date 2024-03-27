@@ -5,7 +5,7 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         visited = self.cookie.get('visited')
         if visited and visited.value:
             return 'Hello again!'
@@ -13,7 +13,7 @@ class Root(Controller):
         return 'Hello World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     cj = CookieJar()
     opener = build_opener(HTTPCookieProcessor(cj))
 

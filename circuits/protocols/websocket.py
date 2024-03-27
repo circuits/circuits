@@ -1,4 +1,4 @@
-""".. codeauthor: mnl"""
+""".. codeauthor: mnl."""
 
 import os
 import random
@@ -10,7 +10,7 @@ from circuits.net.events import close, read, write
 
 class WebSocketCodec(BaseComponent):
     """
-    WebSocket Protocol
+    WebSocket Protocol.
 
     Implements the Data Framing protocol for WebSocket.
 
@@ -30,7 +30,7 @@ class WebSocketCodec(BaseComponent):
 
     channel = 'ws'
 
-    def __init__(self, sock=None, data=bytearray(), *args, **kwargs):
+    def __init__(self, sock=None, data=bytearray(), *args, **kwargs) -> None:
         """
         Creates a new codec.
 
@@ -55,11 +55,11 @@ class WebSocketCodec(BaseComponent):
                 self.fire(read(message))
 
     @handler('registered')
-    def _on_registered(self, component, parent):
+    def _on_registered(self, component, parent) -> None:
         if component is self:
 
             @handler('read', priority=10, channel=parent.channel)
-            def _on_read_raw(self, event, *args):
+            def _on_read_raw(self, event, *args) -> None:
                 if self._sock is not None:
                     if args[0] != self._sock:
                         return
@@ -77,7 +77,7 @@ class WebSocketCodec(BaseComponent):
             self.addHandler(_on_read_raw)
 
             @handler('disconnect', channel=parent.channel)
-            def _on_disconnect(self, *args):
+            def _on_disconnect(self, *args) -> None:
                 if self._sock is not None and args[0] != self._sock:
                     return
                 self.unregister()
@@ -154,7 +154,7 @@ class WebSocketCodec(BaseComponent):
         return msgs
 
     @handler('write')
-    def _on_write(self, *args):
+    def _on_write(self, *args) -> None:
         if self._close_sent:
             return
 
@@ -205,14 +205,14 @@ class WebSocketCodec(BaseComponent):
             tail += data
         return tail
 
-    def _write(self, data):
+    def _write(self, data) -> None:
         if self._sock is not None:
             self.fire(write(self._sock, data), self.parent.channel)
         else:
             self.fire(write(data), self.parent.channel)
 
     @handler('close')
-    def _on_close(self, *args):
+    def _on_close(self, *args) -> None:
         if self._sock is not None and args and (args[0] != self._sock):
             return
         if not self._close_sent:

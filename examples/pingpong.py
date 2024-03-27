@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Bridge Example
+Bridge Example.
 
 A Bridge example that demonstrates bidirectional parent/child
 communications and displays the no. of events per second and latency.
@@ -14,56 +14,56 @@ from traceback import format_exc
 from circuits import Component, Event, handler, ipc
 
 
-def log(msg, *args, **kwargs):
+def log(msg, *args, **kwargs) -> None:
     sys.stderr.write('{:s}{:s}'.format(msg.format(*args), kwargs.get('n', '\n')))
     sys.stderr.flush()
 
 
-def error(e):
+def error(e) -> None:
     log('ERROR: {0:s}', e)
     log(format_exc())
 
 
-def status(msg, *args):
+def status(msg, *args) -> None:
     log('\r\x1b[K{0:s}', msg.format(*args), n='')
 
 
 class ping(Event):
-    """ping Event"""
+    """ping Event."""
 
 
 class pong(Event):
-    """pong Event"""
+    """pong Event."""
 
 
 class Child(Component):
-    def ping(self, ts):
+    def ping(self, ts) -> None:
         self.fire(ipc(pong(ts, time())))
 
 
 class App(Component):
-    def init(self):
+    def init(self) -> None:
         self.events = 0
         self.stime = time()
 
         Child().start(process=True, link=self)
 
-    def ready(self, *args):
+    def ready(self, *args) -> None:
         self.fire(ipc(ping(time())))
 
-    def pong(self, ts1, ts2):
+    def pong(self, ts1, ts2) -> None:
         latency = (ts2 - ts1) * 1000.0
         status(
             f'{int(self.events / (time() - self.stime)):d} event/s @ {latency:0.2f}ms latency',
         )
         self.fire(ipc(ping(time())))
 
-    def signal(self, signo, stack):
-        if signo in [SIGINT, SIGTERM]:
+    def signal(self, signo, stack) -> None:
+        if signo in {SIGINT, SIGTERM}:
             raise SystemExit(0)
 
     @handler()
-    def on_event(self, *args, **kwargs):
+    def on_event(self, *args, **kwargs) -> None:
         self.events += 1
 
 

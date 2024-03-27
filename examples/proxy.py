@@ -9,27 +9,27 @@ from circuits.net.sockets import TCPClient, TCPServer
 class Client(Component):
     channel = 'client'
 
-    def init(self, sock, host, port, channel=channel):
+    def init(self, sock, host, port, channel=channel) -> None:
         self.sock = sock
         self.host = host
         self.port = port
 
         TCPClient(channel=self.channel).register(self)
 
-    def ready(self, *args):
+    def ready(self, *args) -> None:
         self.fire(connect(self.host, self.port))
 
-    def disconnect(self, *args):
+    def disconnect(self, *args) -> None:
         self.fire(close(self.sock), self.parent.channel)
 
-    def read(self, data):
+    def read(self, data) -> None:
         self.fire(write(self.sock, data), self.parent.channel)
 
 
 class Proxy(Component):
     channel = 'server'
 
-    def init(self, bind, host, port):
+    def init(self, bind, host, port) -> None:
         self.bind = bind
         self.host = host
         self.port = port
@@ -38,7 +38,7 @@ class Proxy(Component):
 
         TCPServer(self.bind).register(self)
 
-    def connect(self, sock, host, port):
+    def connect(self, sock, host, port) -> None:
         channel = uuid()
 
         client = Client(
@@ -50,13 +50,13 @@ class Proxy(Component):
 
         self.clients[sock] = client
 
-    def disconnect(self, sock):
+    def disconnect(self, sock) -> None:
         client = self.clients.get(sock)
         if client is not None:
             client.unregister()
             del self.clients[sock]
 
-    def read(self, sock, data):
+    def read(self, sock, data) -> None:
         client = self.clients[sock]
         self.fire(write(data), client.channel)
 

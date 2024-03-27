@@ -4,12 +4,13 @@
 #
 # This module is liberally borrowed (with modifications) from:
 # https://raw.githubusercontent.com/benoitc/http-parser/master/http_parser/pyparser.py
+import contextlib
 import re
 import zlib
 from sys import maxsize
 from urllib.parse import urlsplit
 
-from ..headers import Headers
+from circuits.web.headers import Headers
 
 
 METHOD_RE = re.compile('^[A-Z0-9$-_.]{1,20}$')
@@ -24,19 +25,19 @@ INVALID_CHUNK = 2
 
 
 class InvalidRequestLine(Exception):
-    """error raised when first line is invalid"""
+    """error raised when first line is invalid."""
 
 
 class InvalidHeader(Exception):
-    """error raised on invalid header"""
+    """error raised on invalid header."""
 
 
 class InvalidChunkSize(Exception):
-    """error raised when we parse an invalid chunk size"""
+    """error raised when we parse an invalid chunk size."""
 
 
 class HttpParser:
-    def __init__(self, kind=2, decompress=False):
+    def __init__(self, kind=2, decompress=False) -> None:
         self.kind = kind
         self.decompress = decompress
 
@@ -97,7 +98,7 @@ class HttpParser:
         return self._headers
 
     def recv_body(self):
-        """Return last chunk of the parsed body"""
+        """Return last chunk of the parsed body."""
         body = b''.join(self._body)
         self._body = []
         self._partial_body = False
@@ -123,7 +124,7 @@ class HttpParser:
     def is_upgrade(self):
         """
         Do we get upgrade header in the request. Useful for
-        websockets
+        websockets.
         """
         hconn = self._headers.get('connection', '').lower()
         hconn_parts = [x.strip() for x in hconn.split(',')]
@@ -134,23 +135,23 @@ class HttpParser:
         return self.__on_headers_complete
 
     def is_partial_body(self):
-        """Return True if a chunk of body have been parsed"""
+        """Return True if a chunk of body have been parsed."""
         return self._partial_body
 
     def is_message_begin(self):
-        """Return True if the parsing start"""
+        """Return True if the parsing start."""
         return self.__on_message_begin
 
     def is_message_complete(self):
-        """Return True if the parsing is done (we get EOF)"""
+        """Return True if the parsing is done (we get EOF)."""
         return self.__on_message_complete
 
     def is_chunked(self):
-        """Return True if Transfer-Encoding header value is chunked"""
+        """Return True if Transfer-Encoding header value is chunked."""
         return self._chunked
 
     def should_keep_alive(self):
-        """Return True if the connection should be kept alive"""
+        """Return True if the connection should be kept alive."""
         hconn = self._headers.get('connection', '').lower()
         if hconn == 'close':
             return False
@@ -223,7 +224,7 @@ class HttpParser:
             else:
                 return 0
 
-    def _parse_firstline(self, line):
+    def _parse_firstline(self, line) -> bool:
         try:
             if self.kind == 2:  # auto detect
                 try:
@@ -240,7 +241,7 @@ class HttpParser:
             return False
         return True
 
-    def _parse_response_line(self, line):
+    def _parse_response_line(self, line) -> None:
         bits = line.split(None, 1)
         if len(bits) != 2:
             raise InvalidRequestLine(line)
@@ -254,13 +255,14 @@ class HttpParser:
         # status
         matchs = STATUS_RE.match(bits[1])
         if matchs is None:
-            raise InvalidRequestLine(f'Invalid status: {bits[1]!r}')
+            msg = f'Invalid status: {bits[1]!r}'
+            raise InvalidRequestLine(msg)
 
         self._status = bits[1]
         self._status_code = int(matchs.group(1))
         self._reason = matchs.group(2)
 
-    def _parse_request_line(self, line):
+    def _parse_request_line(self, line) -> None:
         bits = line.split(None, 2)
         if len(bits) != 3:
             raise InvalidRequestLine(line)
@@ -277,8 +279,9 @@ class HttpParser:
         self._path = parts.path or ''
         self._query_string = parts.query or ''
         if parts.fragment:
+            msg = 'HTTP requests may not contain fragment(s)'
             raise InvalidRequestLine(
-                'HTTP requests may not contain fragment(s)',
+                msg,
             )
 
         # Version
@@ -344,10 +347,8 @@ class HttpParser:
         te = self._headers.get('transfer-encoding', '').lower()
 
         if clen is not None:
-            try:
+            with contextlib.suppress(ValueError):
                 self._clen_rest = self._clen = int(clen)
-            except ValueError:
-                pass
         else:
             self._chunked = te == 'chunked'
             if not self._chunked:
@@ -444,7 +445,7 @@ class HttpParser:
             return 0, None
         return chunk_size, rest_chunk
 
-    def _parse_trailers(self, data):
+    def _parse_trailers(self, data) -> None:
         idx = data.find(b'\r\n\r\n')
 
         if data[:2] == b'\r\n':

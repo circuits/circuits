@@ -1,4 +1,4 @@
-"""Wiki macros"""
+"""Wiki macros."""
 
 from genshi import builder
 

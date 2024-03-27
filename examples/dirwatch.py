@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Directory Watch Example
+Directory Watch Example.
 
 This example demonstrates the inotify I/O Component ``Notify`` which can
 be used for real-time monitoring of file system events. The example simply
@@ -17,10 +17,10 @@ from circuits.io import Notify
 class FileWatcher(Component):
     channel = 'notify'
 
-    def opened(self, filename, path, fullpath, isdir):
+    def opened(self, filename, path, fullpath, isdir) -> None:
         print(f'File {filename:s} opened')
 
-    def closed(self, filename, path, fullpath, isdir):
+    def closed(self, filename, path, fullpath, isdir) -> None:
         print(f'File {filename:s} closed')
 
 

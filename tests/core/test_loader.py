@@ -7,10 +7,10 @@ from circuits import Event, Loader, Manager
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
-def test_main():
+def test_main() -> None:
     m = Manager()
     loader = Loader(paths=[dirname(__file__)]).register(m)
 

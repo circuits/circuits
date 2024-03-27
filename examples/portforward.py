@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-A Port Forwarding Example
+A Port Forwarding Example.
 
 This example demonstrates slightly more complex features and behaviors
 implementing a TCP/UDP Port Forwarder of network traffic. This can be used
@@ -59,9 +59,9 @@ def parse_options():
     return opts, args
 
 
-def _on_target_disconnected(self, event):
+def _on_target_disconnected(self, event) -> None:
     """
-    Disconnected Event Handler
+    Disconnected Event Handler.
 
     This unbound function will be later added as an event handler to a
     dynamically created and registered client instance and used to process
@@ -76,9 +76,9 @@ def _on_target_disconnected(self, event):
     del self._clients[sock]
 
 
-def _on_target_ready(self, component):
+def _on_target_ready(self, component) -> None:
     """
-    Ready Event Handler
+    Ready Event Handler.
 
     This unbound function will be later added as an event handler to a
     dynamically created and registered client instance and used to process
@@ -87,9 +87,9 @@ def _on_target_ready(self, component):
     self.fire(connect(*self._target, secure=self._secure), component.channel)
 
 
-def _on_target_read(self, event, data):
+def _on_target_read(self, event, data) -> None:
     """
-    Read Event Handler
+    Read Event Handler.
 
     This unbound function will be later added as an event handler to a
     dynamically created and registered client instance and used to process
@@ -100,7 +100,7 @@ def _on_target_read(self, event, data):
 
 
 class PortForwarder(Component):
-    def init(self, source, target, secure=False):
+    def init(self, source, target, secure=False) -> None:
         self._source = source
         self._target = target
         self._secure = secure
@@ -113,9 +113,9 @@ class PortForwarder(Component):
         server.register(self)
 
     @handler('connect', channel='source')
-    def _on_source_connect(self, sock, host, port):
+    def _on_source_connect(self, sock, host, port) -> None:
         """
-        Explicitly defined connect Event Handler
+        Explicitly defined connect Event Handler.
 
         This evens is triggered by the underlying TCPServer Component when
         a new client connection has been made.
@@ -146,9 +146,9 @@ class PortForwarder(Component):
         self._sockets[client.channel] = sock
 
     @handler('read', channel='source')
-    def _on_source_read(self, sock, data):
+    def _on_source_read(self, sock, data) -> None:
         """
-        Explicitly defined Read Event Handler
+        Explicitly defined Read Event Handler.
 
         This evens is triggered by the underlying TCPServer Component when
         a connected client has some data ready to be processed.
@@ -169,7 +169,7 @@ def sanitize(s):
     return s
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     source = sanitize(args[0])

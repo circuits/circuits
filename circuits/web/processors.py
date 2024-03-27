@@ -5,14 +5,11 @@ from .headers import HeaderElement
 from .parsers import MultipartParser, QueryStringParser
 
 
-def process_multipart(request, params):
+def process_multipart(request, params) -> None:
     headers = request.headers
 
     ctype = headers.elements('Content-Type')
-    if ctype:
-        ctype = ctype[0]
-    else:
-        ctype = HeaderElement.from_str('application/x-www-form-urlencoded')
+    ctype = ctype[0] if ctype else HeaderElement.from_str('application/x-www-form-urlencoded')
 
     ib = ''
     if 'boundary' in ctype.params:
@@ -23,7 +20,8 @@ def process_multipart(request, params):
         ib = ctype.params['boundary'].strip('"')
 
     if not re.match('^[ -~]{0,200}[!-~]$', ib):
-        raise ValueError(f'Invalid boundary in multipart form: {ib!r}')
+        msg = f'Invalid boundary in multipart form: {ib!r}'
+        raise ValueError(msg)
 
     parser = MultipartParser(request.body, ib)
     for part in parser:
@@ -33,7 +31,7 @@ def process_multipart(request, params):
             params[part.name] = part.value
 
 
-def process_urlencoded(request, params, encoding='utf-8'):
+def process_urlencoded(request, params, encoding='utf-8') -> None:
     params.update(QueryStringParser(request.qs).result)
     body = request.body.getvalue().decode(encoding)
     result = QueryStringParser(body).result
@@ -51,7 +49,7 @@ def _decode_value(value, encoding):
     return value
 
 
-def process(request, params):
+def process(request, params) -> None:
     ctype = request.headers.get('Content-Type')
     if not ctype:
         return

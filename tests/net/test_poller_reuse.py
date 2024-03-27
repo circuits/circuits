@@ -5,7 +5,7 @@ from circuits.core.utils import findtype
 from circuits.net.sockets import TCPClient, TCPServer
 
 
-def test():
+def test() -> None:
     m = Manager()
 
     poller = Poller().register(m)

@@ -8,7 +8,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -16,7 +16,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test(app, watcher):
+def test(app, watcher) -> None:
     x = app.fire(hello())
     assert watcher.wait('hello')
 

@@ -13,14 +13,14 @@ from .client import Client
 from .server import Server
 
 
-def wait_host(server):
+def wait_host(server) -> None:
     def checker(obj, attr):
         return all(getattr(obj, a) for a in attr)
 
     assert pytest.wait_for(server, ('host', 'port'), checker)
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc) -> None:
     ipv6 = [False]
     if socket.has_ipv6:
         ipv6.append(True)
@@ -40,7 +40,7 @@ def pytest_generate_tests(metafunc):
     metafunc.parametrize('Poller,ipv6', poller)
 
 
-def test_basic(Poller, ipv6):
+def test_basic(Poller, ipv6) -> None:
     m = Manager() + Poller()
 
     if ipv6:
@@ -74,7 +74,7 @@ def test_basic(Poller, ipv6):
         m.stop()
 
 
-def test_close(Poller, ipv6):
+def test_close(Poller, ipv6) -> None:
     m = Manager() + Poller()
     server = Server() + UDPServer(0)
     server.register(m)

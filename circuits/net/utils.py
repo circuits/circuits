@@ -1,14 +1,16 @@
-"""Utilities"""
+"""Utilities."""
+from typing import Optional
 
 
-def is_ssl_handshake(buf):
-    """Detect an SSLv2 or SSLv3 handshake"""
+def is_ssl_handshake(buf) -> Optional[bool]:
+    """Detect an SSLv2 or SSLv3 handshake."""
     # SSLv3, TLS 1.1 - 1.3
     v = buf[:3]
-    if v in ('\x16\x03\x00', '\x16\x03\x01', '\x16\x03\x02', '\x16\x03\x03', '\x16\x03\x04'):
+    if v in {'\x16\x03\x00', '\x16\x03\x01', '\x16\x03\x02', '\x16\x03\x03', '\x16\x03\x04'}:
         return True
 
     # SSLv2
-    v = list(iter(buf[:2])) + [0x00, 0x00]
+    v = [*list(iter(buf[:2])), 0, 0]
     if (v[0] & 0x80 == 0x80) and ((v[0] & 0x7F) << 8 | v[1]) > 9:
         return True
+    return None

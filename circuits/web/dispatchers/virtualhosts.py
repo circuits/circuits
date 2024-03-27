@@ -1,5 +1,5 @@
 """
-VirtualHost
+VirtualHost.
 
 This module implements a virtual host dispatcher that sends requests
 for configured virtual hosts to different dispatchers.
@@ -36,13 +36,13 @@ class VirtualHosts(BaseComponent):
 
     channel = 'web'
 
-    def __init__(self, domains):
+    def __init__(self, domains) -> None:
         super().__init__()
 
         self.domains = domains
 
     @handler('request', priority=1.0)
-    def _on_request(self, event, request, response):
+    def _on_request(self, event, request, response) -> None:
         path = request.path.strip('/')
 
         header = request.headers.get

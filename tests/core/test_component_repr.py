@@ -1,5 +1,5 @@
 """
-Component Repr Tests
+Component Repr Tests.
 
 Test Component's representation string.
 """
@@ -11,7 +11,7 @@ from circuits import Component, Event
 
 
 class App(Component):
-    def test(self, event, *args, **kwargs):
+    def test(self, event, *args, **kwargs) -> None:
         pass
 
 
@@ -19,7 +19,7 @@ class test(Event):
     pass
 
 
-def test_main():
+def test_main() -> None:
     id = f'{os.getpid()}:{current_thread().name}'
     app = App()
 
@@ -32,7 +32,7 @@ def test_main():
     assert repr(app) == '<App/* %s (queued=0) [S]>' % id
 
 
-def test_non_str_channel():
+def test_non_str_channel() -> None:
     id = f'{os.getpid()}:{current_thread().name}'
     app = App(channel=(1, 1))
 

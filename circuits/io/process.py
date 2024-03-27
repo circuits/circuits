@@ -1,5 +1,5 @@
 """
-Process
+Process.
 
 This module implements a wrapper for basic ``subprocess.Popen`` functionality.
 """
@@ -16,7 +16,7 @@ from .file import File
 
 class terminated(Event):
     """
-    terminated Event
+    terminated Event.
 
     This Event is sent when a process is completed
 
@@ -24,14 +24,14 @@ class terminated(Event):
     :type  tuple: tuple
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
 class Process(BaseComponent):
     channel = 'process'
 
-    def init(self, args, cwd=None, shell=False):
+    def init(self, args, cwd=None, shell=False) -> None:
         self.args = args
         self.cwd = cwd
         self.shell = shell
@@ -56,7 +56,7 @@ class Process(BaseComponent):
         self._stderr_closed_handler = None
         self._stdout_closed_handler = None
 
-    def start(self):
+    def start(self) -> None:
         self.p = Popen(
             self.args,
             cwd=self.cwd,
@@ -112,29 +112,30 @@ class Process(BaseComponent):
 
         self.fire(started(self))
 
-    def stop(self):
+    def stop(self) -> None:
         if self.p is not None:
             self.p.terminate()
 
-    def kill(self):
+    def kill(self) -> None:
         self.p.kill()
 
-    def signal(self, signal):
+    def signal(self, signal) -> None:
         self.p.send_signal(signal)
 
     def wait(self):
         return self.p.wait()
 
-    def write(self, data):
+    def write(self, data) -> None:
         self.fire(write(data), f'{self.p.pid:d}.stdin')
 
     @property
     def status(self):
         if getattr(self, 'p', None) is not None:
             return self.p.poll()
+        return None
 
     @handler('generate_events')
-    def _on_generate_events(self, event):
+    def _on_generate_events(self, event) -> None:
         if self.p is not None and self._status is None:
             self._status = self.p.poll()
 

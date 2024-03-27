@@ -16,12 +16,12 @@ class Gzip(Component):
     channel = 'web'
 
     @handler('response', priority=1.0)
-    def _on_response(self, event, *args, **kwargs):
+    def _on_response(self, event, *args, **kwargs) -> None:
         event[0] = gzip(event[0])
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
@@ -29,7 +29,7 @@ class Root(Controller):
 def gziptool(request, webapp):
     gziptool = Gzip().register(webapp)
 
-    def finalizer():
+    def finalizer() -> None:
         gziptool.unregister()
 
     request.addfinalizer(finalizer)
@@ -49,7 +49,7 @@ def decompress(body):
     return data
 
 
-def test1(webapp, gziptool):
+def test1(webapp, gziptool) -> None:
     request = Request(webapp.server.http.base)
     request.add_header('Accept-Encoding', 'gzip')
     opener = build_opener()
@@ -59,7 +59,7 @@ def test1(webapp, gziptool):
     assert s == b'Hello World!'
 
 
-def test2(webapp, gziptool):
+def test2(webapp, gziptool) -> None:
     request = Request('%s/static/largefile.txt' % webapp.server.http.base)
     request.add_header('Accept-Encoding', 'gzip')
     opener = build_opener()

@@ -1,5 +1,5 @@
 """
-Hyper Text Transfer Protocol
+Hyper Text Transfer Protocol.
 
 This module implements the server side Hyper Text Transfer Protocol
 or commonly known as HTTP.
@@ -28,7 +28,7 @@ HTTP_ENCODING = 'utf-8'
 
 class HTTP(BaseComponent):
     """
-    HTTP Protocol Component
+    HTTP Protocol Component.
 
     Implements the HTTP server protocol and parses and processes incoming
     HTTP messages, creating and sending an appropriate response.
@@ -47,7 +47,7 @@ class HTTP(BaseComponent):
 
     channel = 'web'
 
-    def __init__(self, server, encoding=HTTP_ENCODING, channel=channel):
+    def __init__(self, server, encoding=HTTP_ENCODING, channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._server = server
@@ -66,7 +66,7 @@ class HTTP(BaseComponent):
         return SERVER_PROTOCOL
 
     @property
-    def scheme(self):
+    def scheme(self) -> str:
         return 'https' if self._server.secure else 'http'
 
     @property
@@ -80,20 +80,20 @@ class HTTP(BaseComponent):
         return self._uri
 
     @handler('ready', priority=1.0)
-    def _on_ready(self, server, bind):
+    def _on_ready(self, server, bind) -> None:
         if is_unix_socket(server.host):
             url = server.host
         else:
             url = '{}://{}{}'.format(
                 (server.secure and 'https') or 'http',
                 server.host or '0.0.0.0',
-                f':{server.port or 80:d}' if server.port not in (80, 443) else '',
+                f':{server.port or 80:d}' if server.port not in {80, 443} else '',
             )
 
         self._uri = parse_url(url)
 
     @handler('stream')
-    def _on_stream(self, res, data):
+    def _on_stream(self, res, data) -> None:
         sock = res.request.sock
 
         if data is not None:
@@ -132,9 +132,9 @@ class HTTP(BaseComponent):
             res.done = True
 
     @handler('response')
-    def _on_response(self, res):
+    def _on_response(self, res) -> None:
         """
-        ``Response`` Event Handler
+        ``Response`` Event Handler.
 
         :param response: the ``Response`` object created when the
             HTTP request was initially received.
@@ -193,14 +193,14 @@ class HTTP(BaseComponent):
                 res.done = True
 
     @handler('disconnect')
-    def _on_disconnect(self, sock):
+    def _on_disconnect(self, sock) -> None:
         if sock in self._clients:
             del self._clients[sock]
 
     @handler('read')
     def _on_read(self, sock, data):
         """
-        Read Event Handler
+        Read Event Handler.
 
         Process any incoming data appending it to an internal buffer.
         Split the buffer by the standard HTTP delimiter CRLF and create
@@ -284,10 +284,7 @@ class HTTP(BaseComponent):
 
         if hasattr(sock, 'getpeercert'):
             peer_cert = sock.getpeercert()
-            if peer_cert:
-                e = request(req, res, peer_cert)
-            else:
-                e = request(req, res)
+            e = request(req, res, peer_cert) if peer_cert else request(req, res)
         else:
             e = request(req, res)
 
@@ -305,11 +302,12 @@ class HTTP(BaseComponent):
         del self._buffers[sock]
 
         self.fire(e)
+        return None
 
     @handler('httperror')
-    def _on_httperror(self, event, req, res, code, **kwargs):
+    def _on_httperror(self, event, req, res, code, **kwargs) -> None:
         """
-        Default HTTP Error Handler
+        Default HTTP Error Handler.
 
         Default Error Handler that by default just fires a ``Response``
         event with the *response* as argument. The *response* is normally
@@ -320,7 +318,7 @@ class HTTP(BaseComponent):
         self.fire(response(res))
 
     @handler('request_success')
-    def _on_request_success(self, e, value):
+    def _on_request_success(self, e, value) -> None:
         """
         Handler for the ``RequestSuccess`` event that is automatically
         generated after all handlers for a
@@ -363,7 +361,7 @@ class HTTP(BaseComponent):
                 self.fire(response(res))
             elif value.errors:
                 error = value.value
-                etype, evalue, traceback = error
+                _etype, evalue, _traceback = error
                 if isinstance(evalue, RedirectException):
                     self.fire(redirect(req, res, evalue.urls, evalue.code))
                 elif isinstance(evalue, HTTPException):
@@ -379,7 +377,7 @@ class HTTP(BaseComponent):
                 value.event = e
                 value.notify = True
         elif isinstance(value, tuple):
-            etype, evalue, traceback = error = value
+            _etype, evalue, _traceback = error = value
 
             if isinstance(evalue, RedirectException):
                 self.fire(redirect(req, res, evalue.urls, evalue.code))
@@ -395,7 +393,7 @@ class HTTP(BaseComponent):
             self.fire(response(res))
 
     @handler('exception')
-    def _on_exception(self, *args, **kwargs):
+    def _on_exception(self, *args, **kwargs) -> None:
         if len(args) != 3:
             return
 
@@ -415,15 +413,12 @@ class HTTP(BaseComponent):
         else:
             return
 
-        if isinstance(evalue, HTTPException):
-            code = evalue.code
-        else:
-            code = None
+        code = evalue.code if isinstance(evalue, HTTPException) else None
 
         self.fire(httperror(req, res, code=code, error=(etype, evalue, etraceback)))
 
     @handler('request_failure')
-    def _on_request_failure(self, erequest, error):
+    def _on_request_failure(self, erequest, error) -> None:
         req, res = erequest.args
 
         # Ignore filtered requests already handled (eg: HTTPException(s)).
@@ -432,7 +427,7 @@ class HTTP(BaseComponent):
 
         req.handled = True
 
-        etype, evalue, traceback = error
+        _etype, evalue, _traceback = error
 
         if isinstance(evalue, RedirectException):
             self.fire(redirect(req, res, evalue.urls, evalue.code))
@@ -442,7 +437,7 @@ class HTTP(BaseComponent):
             self.fire(httperror(req, res, error=error))
 
     @handler('response_failure')
-    def _on_response_failure(self, eresponse, error):
+    def _on_response_failure(self, eresponse, error) -> None:
         res = eresponse.args[0]
         req = res.request
 
@@ -454,26 +449,26 @@ class HTTP(BaseComponent):
         self.fire(httperror(req, res, error=error))
 
     @handler('request_complete')
-    def _on_request_complete(self, *args, **kwargs):
+    def _on_request_complete(self, *args, **kwargs) -> None:
         """
-        Dummy Event Handler for request events
+        Dummy Event Handler for request events.
 
         - request_complete
         """
 
     @handler('response_success', 'response_complete')
-    def _on_response_feedback(self, *args, **kwargs):
+    def _on_response_feedback(self, *args, **kwargs) -> None:
         """
-        Dummy Event Handler for response events
+        Dummy Event Handler for response events.
 
         - response_success
         - response_complete
         """
 
     @handler('stream_success', 'stream_failure', 'stream_complete')
-    def _on_stream_feedback(self, *args, **kwargs):
+    def _on_stream_feedback(self, *args, **kwargs) -> None:
         """
-        Dummy Event Handler for stream events
+        Dummy Event Handler for stream events.
 
         - stream_success
         - stream_failure

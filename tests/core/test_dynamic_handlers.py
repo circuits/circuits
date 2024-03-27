@@ -5,15 +5,15 @@ from circuits import Event, Manager, handler
 
 
 class foo(Event):
-    """foo Event"""
+    """foo Event."""
 
 
 @handler('foo')
-def on_foo(self):
+def on_foo(self) -> str:
     return 'Hello World!'
 
 
-def test_addHandler():
+def test_addHandler() -> None:
     m = Manager()
     m.start()
 
@@ -29,7 +29,7 @@ def test_addHandler():
     m.stop()
 
 
-def test_removeHandler():
+def test_removeHandler() -> None:
     m = Manager()
     m.start()
 

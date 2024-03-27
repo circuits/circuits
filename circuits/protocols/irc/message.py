@@ -1,14 +1,14 @@
-"""Internet Relay Chat message"""
+"""Internet Relay Chat message."""
 
 from .utils import parsemsg
 
 
 class Error(Exception):
-    """Error Exception"""
+    """Error Exception."""
 
 
 class Message:
-    def __init__(self, command, *args, **kwargs):
+    def __init__(self, command, *args, **kwargs) -> None:
         self.command = command
         self.prefix = str(kwargs['prefix']) if 'prefix' in kwargs else None
 
@@ -17,25 +17,28 @@ class Message:
         self.args = [arg if isinstance(arg, str) else arg.decode(self.encoding) for arg in args if arg is not None]
         self._check_args()
 
-    def _check_args(self):
+    def _check_args(self) -> None:
         if any(type(arg)(' ') in arg in arg for arg in self.args[:-1] if isinstance(arg, str)):
-            raise Error('Space can only appear in the very last arg')
+            msg = 'Space can only appear in the very last arg'
+            raise Error(msg)
         if any(type(arg)('\n') in arg for arg in self.args if isinstance(arg, str)):
-            raise Error('No newline allowed')
+            msg = 'No newline allowed'
+            raise Error(msg)
 
     @staticmethod
     def from_string(s):
         if len(s) > 512:
-            raise Error('Message must not be longer than 512 characters')
+            msg = 'Message must not be longer than 512 characters'
+            raise Error(msg)
 
         prefix, command, args = parsemsg(s)
 
         return Message(command, *args, prefix=prefix)
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return str(self).encode(self.encoding)
 
-    def __str__(self):
+    def __str__(self) -> str:
         self._check_args()
         args = self.args[:]
 
@@ -48,7 +51,7 @@ class Message:
             args=' '.join(args),
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(str(self)[:-2])
 
     def __eq__(self, other):

@@ -5,19 +5,19 @@ from circuits.core import Component, Event, TimeoutError, handler
 
 
 class wait(Event):
-    """wait Event"""
+    """wait Event."""
 
     success = True
 
 
 class call(Event):
-    """call Event"""
+    """call Event."""
 
     success = True
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
     success = True
 
@@ -34,7 +34,7 @@ class App(Component):
             yield result
 
     @handler('hello')
-    def _on_hello(self):
+    def _on_hello(self) -> str:
         return 'hello'
 
     @handler('call')
@@ -53,7 +53,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -61,7 +61,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test_wait_success(manager, watcher, app):
+def test_wait_success(manager, watcher, app) -> None:
     x = manager.fire(wait(10))
     assert watcher.wait('wait_success')
 
@@ -70,7 +70,7 @@ def test_wait_success(manager, watcher, app):
     assert value == 'hello'
 
 
-def test_wait_failure(manager, watcher, app):
+def test_wait_failure(manager, watcher, app) -> None:
     x = manager.fire(wait(0))
     assert watcher.wait('wait_success')
 
@@ -79,7 +79,7 @@ def test_wait_failure(manager, watcher, app):
     assert isinstance(value, TimeoutError)
 
 
-def test_call_success(manager, watcher, app):
+def test_call_success(manager, watcher, app) -> None:
     x = manager.fire(call(10))
     assert watcher.wait('call_success')
 
@@ -88,7 +88,7 @@ def test_call_success(manager, watcher, app):
     assert value == 'hello'
 
 
-def test_call_failure(manager, watcher, app):
+def test_call_failure(manager, watcher, app) -> None:
     x = manager.fire(call(0))
     assert watcher.wait('call_success')
 

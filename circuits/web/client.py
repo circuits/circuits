@@ -13,7 +13,8 @@ def parse_url(url):
     if p.hostname:
         host = p.hostname
     else:
-        raise ValueError('URL must be absolute')
+        msg = 'URL must be absolute'
+        raise ValueError(msg)
 
     if p.scheme == 'http':
         secure = False
@@ -22,7 +23,8 @@ def parse_url(url):
         secure = True
         port = p.port or 443
     else:
-        raise ValueError('Invalid URL scheme')
+        msg = 'Invalid URL scheme'
+        raise ValueError(msg)
 
     path = p.path or '/'
 
@@ -42,7 +44,7 @@ class NotConnected(HTTPException):
 
 class request(Event):
     """
-    request Event
+    request Event.
 
     This Event is used to initiate a new request.
 
@@ -53,15 +55,15 @@ class request(Event):
     :type  url: str
     """
 
-    def __init__(self, method, path, body=None, headers=None):
-        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, method, path, body=None, headers=None) -> None:
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         super().__init__(method, path, body, headers)
 
 
 class Client(BaseComponent):
     channel = 'client'
 
-    def __init__(self, channel=channel):
+    def __init__(self, channel=channel) -> None:
         super().__init__(channel=channel)
         self._response = None
 
@@ -70,17 +72,17 @@ class Client(BaseComponent):
         HTTP(channel=channel).register(self._transport)
 
     @handler('write')
-    def write(self, data):
+    def write(self, data) -> None:
         if self._transport.connected:
             self.fire(write(data), self._transport)
 
     @handler('close')
-    def close(self):
+    def close(self) -> None:
         if self._transport.connected:
             self.fire(close(), self._transport)
 
     @handler('connect', priority=1)
-    def connect(self, event, host=None, port=None, secure=None):
+    def connect(self, event, host=None, port=None, secure=None) -> None:
         if not self._transport.connected:
             self.fire(connect(host, port, secure), self._transport)
 
@@ -94,13 +96,13 @@ class Client(BaseComponent):
             self.fire(connect(host, port, secure))
             yield self.wait('connected', self._transport.channel)
 
-        headers = Headers([(k, v) for k, v in (headers or {}).items()])
+        headers = Headers(list((headers or {}).items()))
 
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if 'Host' not in headers:
             headers['Host'] = '{}{}'.format(
                 host,
-                '' if port in (80, 443) else f':{port:d}',
+                '' if port in {80, 443} else f':{port:d}',
             )
 
         if body is not None:
@@ -125,6 +127,7 @@ class Client(BaseComponent):
     def connected(self):
         if hasattr(self, '_transport'):
             return self._transport.connected
+        return None
 
     @property
     def response(self):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Example IRC Server
+Example IRC Server.
 
 .. note:: This is an example only and is feature incomplete.
 
@@ -81,7 +81,7 @@ def parse_args():
 
 
 class Channel:
-    def __init__(self, name):
+    def __init__(self, name) -> None:
         self.name = name
         self.topic = None
         self.mode = '+n'
@@ -90,7 +90,7 @@ class Channel:
 
 
 class User:
-    def __init__(self, sock, host, port):
+    def __init__(self, sock, host, port) -> None:
         self.sock = sock
         self.host = host
         self.port = port
@@ -110,7 +110,7 @@ class User:
 
 
 class UserInfo:
-    def __init__(self, user=None, host=None, name=None):
+    def __init__(self, user=None, host=None, name=None) -> None:
         self.user = user
         self.host = host
         self.name = name
@@ -123,7 +123,7 @@ class Server(Component):
     host = 'localhost'
     version = f'ircd v{__version__:s}'
 
-    def init(self, args, logger=None):
+    def init(self, args, logger=None) -> None:
         self.args = args
         self.logger = logger or getLogger(__name__)
 
@@ -154,13 +154,13 @@ class Server(Component):
             updateBuffer=self.buffers.__setitem__,
         ).register(self)
 
-    def _notify(self, users, message, exclude=None):
+    def _notify(self, users, message, exclude=None) -> None:
         for user in users:
             if exclude is not None and user is exclude:
                 continue
             self.fire(reply(user.sock, message))
 
-    def read(self, sock, data):
+    def read(self, sock, data) -> None:
         user = self.users[sock]
         host, port = user.host, user.port
 
@@ -168,7 +168,7 @@ class Server(Component):
             f'I: [{host:s}:{port:d}] {data!r:s}',
         )
 
-    def write(self, sock, data):
+    def write(self, sock, data) -> None:
         user = self.users[sock]
         host, port = user.host, user.port
 
@@ -176,7 +176,7 @@ class Server(Component):
             f'O: [{host:s}:{port:d}] {data!r:s}',
         )
 
-    def ready(self, server, bind):
+    def ready(self, server, bind) -> None:
         stderr.write(
             'ircd v{:s} ready! Listening on: {:s}\n'.format(
                 __version__,
@@ -184,7 +184,7 @@ class Server(Component):
             ),
         )
 
-    def connect(self, sock, host, port):
+    def connect(self, sock, host, port) -> None:
         self.users[sock] = User(sock, host, port)
 
         self.logger.info(f'C: [{host:s}:{port:d}]')
@@ -209,7 +209,7 @@ class Server(Component):
         if nick in self.nicks:
             del self.nicks[nick]
 
-    def quit(self, sock, source, reason='Leaving'):
+    def quit(self, sock, source, reason='Leaving') -> None:
         user = self.users[sock]
 
         channels = [self.channels[channel] for channel in user.channels]
@@ -240,8 +240,9 @@ class Server(Component):
 
         user.nick = nick
         self.nicks[nick] = user
+        return None
 
-    def user(self, sock, source, nick, user, host, name):
+    def user(self, sock, source, nick, user, host, name) -> None:
         _user = self.users[sock]
 
         _user.userinfo.user = user
@@ -252,7 +253,7 @@ class Server(Component):
             _user.registered = True
             self.fire(response.create('signon', sock, source))
 
-    def signon(self, sock, source):
+    def signon(self, sock, source) -> None:
         user = self.users[sock]
         if user.signon:
             return
@@ -266,7 +267,7 @@ class Server(Component):
         # Force users to join #circuits
         self.fire(response.create('join', sock, source, '#circuits'))
 
-    def join(self, sock, source, name):
+    def join(self, sock, source, name) -> None:
         user = self.users[sock]
 
         if name not in self.channels:
@@ -292,7 +293,7 @@ class Server(Component):
         self.fire(reply(sock, RPL_NAMEREPLY(channel.name, [u.prefix for u in channel.users])))
         self.fire(reply(sock, RPL_ENDOFNAMES(channel.name)))
 
-    def part(self, sock, source, name, reason='Leaving'):
+    def part(self, sock, source, name, reason='Leaving') -> None:
         user = self.users[sock]
 
         channel = self.channels[name]
@@ -322,16 +323,17 @@ class Server(Component):
                 Message('PRIVMSG', target, message, prefix=user.prefix),
                 user,
             )
-        else:
-            if target not in self.nicks:
-                return self.fire(reply(sock, ERR_NOSUCHNICK(target)))
+            return None
+        if target not in self.nicks:
+            return self.fire(reply(sock, ERR_NOSUCHNICK(target)))
 
-            self.fire(
-                reply(
-                    self.nicks[target].sock,
-                    Message('PRIVMSG', target, message, prefix=user.prefix),
-                ),
-            )
+        self.fire(
+            reply(
+                self.nicks[target].sock,
+                Message('PRIVMSG', target, message, prefix=user.prefix),
+            ),
+        )
+        return None
 
     def who(self, sock, source, mask):
         if mask.startswith('#'):
@@ -343,20 +345,21 @@ class Server(Component):
             for user in channel.users:
                 self.fire(reply(sock, RPL_WHOREPLY(user, mask, self.host)))
             self.fire(reply(sock, RPL_ENDOFWHO(mask)))
-        else:
-            if mask not in self.nicks:
-                return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
+            return None
+        if mask not in self.nicks:
+            return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
 
-            user = self.nicks[mask]
+        user = self.nicks[mask]
 
-            self.fire(reply(sock, RPL_WHOREPLY(user, mask, self.host)))
-            self.fire(reply(sock, RPL_ENDOFWHO(mask)))
+        self.fire(reply(sock, RPL_WHOREPLY(user, mask, self.host)))
+        self.fire(reply(sock, RPL_ENDOFWHO(mask)))
+        return None
 
-    def ping(self, event, sock, source, server):
+    def ping(self, event, sock, source, server) -> None:
         event.stop()
         self.fire(reply(sock, Message('PONG', server)))
 
-    def reply(self, target, message):
+    def reply(self, target, message) -> None:
         user = self.users[target]
 
         if message.add_nick:
@@ -374,10 +377,12 @@ class Server(Component):
             channel = self.channels[mask]
             if not params:
                 self.fire(reply(sock, RPL_CHANNELMODEIS(channel.name, channel.mode)))
+                return None
         elif mask not in self.users:
             return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
+        return None
 
-    def list(self, sock, source):
+    def list(self, sock, source) -> None:
         self.fire(reply(sock, RPL_LISTSTART()))
         for channel in self.channels.values():
             self.fire(reply(sock, RPL_LIST(channel, str(len(channel.users)), channel.topic or '')))
@@ -389,7 +394,7 @@ class Server(Component):
         return list(set(self.events()) - exclude)
 
     @handler()
-    def _on_event(self, event, *args, **kwargs):
+    def _on_event(self, event, *args, **kwargs) -> None:
         if event.name.endswith('_done'):
             return
 
@@ -398,7 +403,7 @@ class Server(Component):
             self.fire(reply(args[0], ERR_UNKNOWNCOMMAND(event.name)))
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
     logging.basicConfig(

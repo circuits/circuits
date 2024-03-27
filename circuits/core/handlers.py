@@ -7,7 +7,7 @@ from circuits.tools import getargspec
 
 def handler(*names, **kwargs):
     """
-    Creates an Event Handler
+    Creates an Event Handler.
 
     This decorator can be applied to methods of classes derived from
     :class:`circuits.core.components.BaseComponent`. It marks the method as a
@@ -86,7 +86,7 @@ def handler(*names, **kwargs):
 
 
 class Unknown:
-    """Unknown Dummy Component"""
+    """Unknown Dummy Component."""
 
 
 def reprhandler(handler):
@@ -113,7 +113,7 @@ def reprhandler(handler):
 
 
 class HandlerMetaClass(type):
-    def __init__(cls, name, bases, ns):
+    def __init__(cls, name, bases, ns) -> None:
         super().__init__(name, bases, ns)
 
         callables = (x for x in ns.items() if isinstance(x[1], Callable))
@@ -122,4 +122,5 @@ class HandlerMetaClass(type):
                 try:
                     setattr(cls, name, handler(name)(callable))
                 except ValueError as e:
-                    raise ValueError(f'{e!s} - {cls!r} {name}')
+                    msg = f'{e!s} - {cls!r} {name}'
+                    raise ValueError(msg)

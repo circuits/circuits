@@ -1,4 +1,4 @@
-"""Event Tests"""
+"""Event Tests."""
 
 import pytest
 
@@ -6,15 +6,15 @@ from circuits import Component, Event
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class App(Component):
-    def test(self):
+    def test(self) -> str:
         return 'Hello World!'
 
 
-def test_repr():
+def test_repr() -> None:
     app = App()
     while len(app):
         app.flush()
@@ -30,7 +30,7 @@ def test_repr():
     assert s == '<test[*] ( )>'
 
 
-def test_create():
+def test_create() -> None:
     app = App()
     while len(app):
         app.flush()
@@ -46,7 +46,7 @@ def test_create():
     assert s == '<test[*] ( )>'
 
 
-def test_getitem():
+def test_getitem() -> None:
     app = App()
     while len(app):
         app.flush()
@@ -62,7 +62,7 @@ def test_getitem():
     pytest.raises(TypeError, f, e, None)
 
 
-def test_setitem():
+def test_setitem() -> None:
     app = App()
     while len(app):
         app.flush()
@@ -75,7 +75,7 @@ def test_setitem():
     e[0] = 0
     e['foo'] = 'Hello'
 
-    def f(e, k, v):
+    def f(e, k, v) -> None:
         e[k] = v
 
     pytest.raises(TypeError, f, e, None, None)
@@ -84,7 +84,7 @@ def test_setitem():
     assert e['foo'] == 'Hello'
 
 
-def test_subclass_looses_properties():
+def test_subclass_looses_properties() -> None:
     class hello(Event):
         success = True
 

@@ -5,7 +5,7 @@ from .events import Event
 
 class Value:
     """
-    Create a new future Value Object
+    Create a new future Value Object.
 
     Creates a new future Value Object which is used by Event Objects and the
     Manager to store the result(s) of an Event Handler's exeuction of some
@@ -24,7 +24,7 @@ class Value:
     This is a Future/Promise implementation.
     """
 
-    def __init__(self, event=None, manager=None):
+    def __init__(self, event=None, manager=None) -> None:
         self.event = event
         self.manager = manager
 
@@ -43,7 +43,7 @@ class Value:
         del odict['manager']
         return odict
 
-    def __contains__(self, y):
+    def __contains__(self, y) -> bool:
         value = self.value
         return y in value if isinstance(value, list) else y == value
 
@@ -54,10 +54,10 @@ class Value:
         return v
 
     def __iter__(self):
-        return iter(map(lambda v: v.value if isinstance(v, Value) else v, self.value))
+        return iter(v.value if isinstance(v, Value) else v for v in self.value)
 
-    def __repr__(self):
-        """x.__repr__() <==> repr(x)"""
+    def __repr__(self) -> str:
+        """x.__repr__() <==> repr(x)."""
         value = ''
         if self.result:
             value = repr(self.value)
@@ -65,21 +65,18 @@ class Value:
         format = '<Value (%s) result=%r; errors=%r; for %r>'
         return format % (value, self.result, self.errors, self.event)
 
-    def __str__(self):
-        """x.__str__() <==> str(x)"""
+    def __str__(self) -> str:
+        """x.__str__() <==> str(x)."""
         return str(self.value)
 
-    def inform(self, force=False):
+    def inform(self, force=False) -> None:
         if self.promise and not force:
             return
 
         notify = getattr(self.event, 'notify', False) or self.notify
 
         if self.manager is not None and notify:
-            if isinstance(notify, str):
-                e = Event.create(notify, self)
-            else:
-                e = self.event.child('value_changed', self)
+            e = Event.create(notify, self) if isinstance(notify, str) else self.event.child('value_changed', self)
 
             self.manager.fire(e, self.manager)
 
@@ -94,7 +91,7 @@ class Value:
 
         return value
 
-    def setValue(self, value):
+    def setValue(self, value) -> None:
         if isinstance(value, Value):
             value.parent = self
 
@@ -106,7 +103,7 @@ class Value:
         else:
             self._value = value
 
-        def update(o, v):
+        def update(o, v) -> None:
             if isinstance(v, Value):
                 o.errors = v.errors
                 o.result = v.result

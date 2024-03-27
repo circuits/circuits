@@ -1,4 +1,4 @@
-"""Internet Relay Chat Protocol replies"""
+"""Internet Relay Chat Protocol replies."""
 
 from .message import Message
 
@@ -59,7 +59,7 @@ def RPL_MYINFO(server, version, umodes, chmodes):
 
 
 def RPL_ISUPPORT(features):
-    return _M('005', *(features + ('are supported by this server',)))
+    return _M('005', *((*features, 'are supported by this server')))
 
 
 def RPL_UMODEIS(modes):

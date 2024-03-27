@@ -9,16 +9,16 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         self.expires(60)
         return 'Hello World!'
 
-    def nocache(self):
+    def nocache(self) -> str:
         self.expires(0)
         return 'Hello World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'
@@ -27,7 +27,7 @@ def test(webapp):
     assert 60 - (60 * 0.1) < diff < 60 + (60 * 0.1)  # diff is about 60 +- 10%
 
 
-def test_nocache(webapp):
+def test_nocache(webapp) -> None:
     f = urlopen('%s/nocache' % webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'

@@ -1,4 +1,4 @@
-"""Internet Relay Chat Utilities"""
+"""Internet Relay Chat Utilities."""
 
 from re import compile as compile_regex
 
@@ -9,12 +9,12 @@ COLOR = compile_regex(r'\x03(?:(\d\d?)(?:,(\d\d?))?)?')
 
 
 class Error(Exception):
-    """Error Exception"""
+    """Error Exception."""
 
 
 def strip(s, color=False):
     """
-    strip(s, color=False) -> str
+    strip(s, color=False) -> str.
 
     Strips the : from the start of a string
     and optionally also strips all colors if
@@ -43,7 +43,7 @@ def strip(s, color=False):
 
 def joinprefix(nick, user, host):
     """
-    Join the parts of a prefix
+    Join the parts of a prefix.
 
     :param nick str: nickname
     :param user str: username
@@ -56,7 +56,7 @@ def joinprefix(nick, user, host):
 
 def parseprefix(prefix):
     """
-    Parse a prefix into it's parts
+    Parse a prefix into it's parts.
 
     :param prefix str: prefix to parse
 
@@ -71,7 +71,7 @@ def parseprefix(prefix):
 
 def parsemsg(s, encoding='utf-8'):
     """
-    Parse an IRC Message from s
+    Parse an IRC Message from s.
 
     :param s bytes: bytes to parse
     :param encoding str: encoding to use (Default: utf-8)
@@ -103,7 +103,7 @@ def parsemsg(s, encoding='utf-8'):
 
 
 def irc_color_to_ansi(data, reset=True):
-    """Maps IRC color codes to ANSI terminal escape sequences"""
+    """Maps IRC color codes to ANSI terminal escape sequences."""
 
     def ansi(*seq):
         return '\33[{}m'.format(';'.join(f'{x:02}' for x in seq if x))

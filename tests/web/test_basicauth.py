@@ -22,14 +22,14 @@ class Root(Controller):
         return basic_auth(self.request, self.response, realm, users, encrypt)
 
 
-def test(webapp):
+def test(webapp) -> None:
     try:
         f = urlopen(webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 401
         assert e.msg == 'Unauthorized'
     else:
-        assert False
+        raise AssertionError
 
     handler = HTTPBasicAuthHandler()
     handler.add_password('Test', webapp.server.http.base, 'admin', 'admin')

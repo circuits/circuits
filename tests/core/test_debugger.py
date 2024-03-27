@@ -1,5 +1,6 @@
-"""Debugger Tests"""
+"""Debugger Tests."""
 
+import locale
 import sys
 from io import StringIO
 
@@ -10,11 +11,11 @@ from circuits.core import Component, Event
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class App(Component):
-    def test(self, raiseException=False):
+    def test(self, raiseException=False) -> None:
         if raiseException:
             raise Exception
 
@@ -23,14 +24,14 @@ class Logger:
     error_msg = None
     debug_msg = None
 
-    def error(self, msg):
+    def error(self, msg) -> None:
         self.error_msg = msg
 
-    def debug(self, msg):
+    def debug(self, msg) -> None:
         self.debug_msg = msg
 
 
-def test_main():
+def test_main() -> None:
     app = App()
     stderr = StringIO()
     debugger = Debugger(file=stderr)
@@ -64,9 +65,9 @@ def test_main():
     stderr.truncate()
 
 
-def test_file(tmpdir):
+def test_file(tmpdir) -> None:
     logfile = str(tmpdir.ensure('debug.log'))
-    stderr = open(logfile, 'w+')
+    stderr = open(logfile, 'w+', encoding=locale.getpreferredencoding(False))
 
     app = App()
     debugger = Debugger(file=stderr)
@@ -101,12 +102,12 @@ def test_file(tmpdir):
     stderr.truncate()
 
 
-def test_filename(tmpdir):
+def test_filename(tmpdir) -> None:
     if '__pypy__' in sys.modules:
         pytest.skip('Broken on pypy')
 
     logfile = str(tmpdir.ensure('debug.log'))
-    stderr = open(logfile, 'r+')
+    stderr = open(logfile, 'r+', encoding=locale.getpreferredencoding(False))
 
     app = App()
     debugger = Debugger(file=logfile)
@@ -141,7 +142,7 @@ def test_filename(tmpdir):
     stderr.truncate()
 
 
-def test_exceptions():
+def test_exceptions() -> None:
     app = App()
     stderr = StringIO()
     debugger = Debugger(file=stderr)
@@ -193,7 +194,7 @@ def test_exceptions():
     assert s == ''
 
 
-def test_IgnoreEvents():
+def test_IgnoreEvents() -> None:
     app = App()
     stderr = StringIO()
     debugger = Debugger(file=stderr)
@@ -228,7 +229,7 @@ def test_IgnoreEvents():
     stderr.truncate()
 
 
-def test_IgnoreChannels():
+def test_IgnoreChannels() -> None:
     app = App()
     stderr = StringIO()
     debugger = Debugger(file=stderr)
@@ -262,7 +263,7 @@ def test_IgnoreChannels():
     stderr.truncate()
 
 
-def test_Logger_debug():
+def test_Logger_debug() -> None:
     app = App()
     logger = Logger()
     debugger = Debugger(logger=logger)
@@ -277,7 +278,7 @@ def test_Logger_debug():
     assert logger.debug_msg == repr(e)
 
 
-def test_Logger_error():
+def test_Logger_error() -> None:
     app = App()
     logger = Logger()
     debugger = Debugger(logger=logger)

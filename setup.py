@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import locale
 from glob import glob
 
 from setuptools import find_packages, setup
@@ -6,7 +7,7 @@ from setuptools import find_packages, setup
 
 def read_file(filename):
     try:
-        return open(filename).read()
+        return open(filename, encoding=locale.getpreferredencoding(False)).read()
     except OSError:
         return ''
 
@@ -14,7 +15,7 @@ def read_file(filename):
 setup(
     name='circuits',
     description='Asynchronous Component based Event Application Framework',
-    long_description=open('README.rst')
+    long_description=open('README.rst', encoding=locale.getpreferredencoding(False))
     .read()
     .replace(
         '.. include:: examples/index.rst',

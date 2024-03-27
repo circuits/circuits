@@ -1,5 +1,5 @@
 """
-File I/O
+File I/O.
 
 This module implements a wrapper for basic File I/O.
 """
@@ -11,6 +11,7 @@ except ImportError:
     # will fail anyway.
     pass
 
+import contextlib
 from collections import deque
 from errno import EINTR, EWOULDBLOCK
 from os import read as fd_read, write as fd_write
@@ -31,13 +32,13 @@ BUFSIZE = 4096
 
 
 class _open(Event):
-    """_open Event"""
+    """_open Event."""
 
 
 class File(Component):
     channel = 'file'
 
-    def init(self, filename, mode='r', bufsize=BUFSIZE, encoding=None, channel=channel):
+    def init(self, filename, mode='r', bufsize=BUFSIZE, encoding=None, channel=channel) -> None:
         self._mode = mode
         self._bufsize = bufsize
         self._filename = filename
@@ -61,11 +62,11 @@ class File(Component):
         return getattr(self, '_mode', None)
 
     @handler('ready')
-    def _on_ready(self, component):
+    def _on_ready(self, component) -> None:
         self.fire(_open(), self.channel)
 
     @handler('_open')
-    def _on_open(self, filename=None, mode=None, bufsize=None):
+    def _on_open(self, filename=None, mode=None, bufsize=None) -> None:
         self._filename = filename or self._filename
         self._bufsize = bufsize or self._bufsize
         self._mode = mode or self._mode
@@ -91,7 +92,7 @@ class File(Component):
         self.fire(opened(self.filename, self.mode))
 
     @handler('registered', 'started', channel='*')
-    def _on_registered_or_started(self, component, manager=None):
+    def _on_registered_or_started(self, component, manager=None) -> None:
         if self._poller is None:
             if isinstance(component, BasePoller):
                 self._poller = component
@@ -108,15 +109,15 @@ class File(Component):
                     self.fire(ready(self))
 
     @handler('stopped', channel='*')
-    def _on_stopped(self, component):
+    def _on_stopped(self, component) -> None:
         self.fire(close())
 
     @handler('prepare_unregister', channel='*')
-    def _on_prepare_unregister(self, event, c):
+    def _on_prepare_unregister(self, event, c) -> None:
         if event.in_subtree(self):
             self._close()
 
-    def _close(self):
+    def _close(self) -> None:
         if self.closed:
             return
 
@@ -126,20 +127,18 @@ class File(Component):
         self._closeflag = False
         self._connected = False
 
-        try:
+        with contextlib.suppress(OSError):
             self._fd.close()
-        except OSError:
-            pass
 
         self.fire(closed())
 
-    def close(self):
+    def close(self) -> None:
         if not self._buffer:
             self._close()
         elif not self._closeflag:
             self._closeflag = True
 
-    def _read(self):
+    def _read(self) -> None:
         try:
             data = fd_read(self._fd.fileno(), self._bufsize)
             if not isinstance(data, bytes):
@@ -154,15 +153,15 @@ class File(Component):
                 else:
                     self._poller.discard(self._fd)
         except OSError as exc:
-            if exc.args[0] in (EWOULDBLOCK, EINTR):
+            if exc.args[0] in {EWOULDBLOCK, EINTR}:
                 return
             self.fire(error(exc))
             self._close()
 
-    def seek(self, offset, whence=0):
+    def seek(self, offset, whence=0) -> None:
         self._fd.seek(offset, whence)
 
-    def _write(self, data):
+    def _write(self, data) -> None:
         try:
             if not isinstance(data, bytes):
                 data = data.encode(self._encoding)
@@ -172,26 +171,26 @@ class File(Component):
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
         except OSError as e:
-            if e.args[0] in (EWOULDBLOCK, EINTR):
+            if e.args[0] in {EWOULDBLOCK, EINTR}:
                 return
             self.fire(error(e))
             self._close()
 
-    def write(self, data):
+    def write(self, data) -> None:
         if self._poller is not None and not self._poller.isWriting(self._fd):
             self._poller.addWriter(self, self._fd)
         self._buffer.append(data)
 
     @handler('_disconnect')
-    def __on_disconnect(self, sock):
+    def __on_disconnect(self, sock) -> None:
         self._close()
 
     @handler('_read')
-    def __on_read(self, sock):
+    def __on_read(self, sock) -> None:
         self._read()
 
     @handler('_write')
-    def __on_write(self, sock):
+    def __on_write(self, sock) -> None:
         if self._buffer:
             data = self._buffer.popleft()
             self._write(data)

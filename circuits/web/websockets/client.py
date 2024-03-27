@@ -39,7 +39,7 @@ class WebSocketClient(BaseComponent):
 
     channel = 'wsclient'
 
-    def __init__(self, url, channel=channel, wschannel='ws', headers=None):
+    def __init__(self, url, channel=channel, wschannel='ws', headers=None) -> None:
         """
         :param url: the URL to connect to.
         :param channel: the channel used by this component
@@ -61,10 +61,11 @@ class WebSocketClient(BaseComponent):
         HTTP(channel=self.channel).register(self._transport)
 
     @handler('ready')
-    def _on_ready(self, event, *args, **kwargs):
+    def _on_ready(self, event, *args, **kwargs) -> None:
         p = urlparse(self._url)
         if not p.hostname:
-            raise ValueError('URL must be absolute')
+            msg = 'URL must be absolute'
+            raise ValueError(msg)
         self._host = p.hostname
         if p.scheme == 'ws':
             self._secure = False
@@ -73,15 +74,15 @@ class WebSocketClient(BaseComponent):
             self._secure = True
             self._port = p.port or 443
         else:
-            raise NotConnected()
+            raise NotConnected
         self._resource = p.path or '/'
         if p.query:
             self._resource += '?' + p.query
         self.fire(connect(self._host, self._port, self._secure), self._transport)
 
     @handler('connected')
-    def _on_connected(self, host, port):
-        headers = Headers([(k, v) for k, v in self._headers.items()])
+    def _on_connected(self, host, port) -> bool:
+        headers = Headers(list(self._headers.items()))
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if 'Host' not in headers:
             headers['Host'] = self._host + (':' + str(self._port)) if self._port else ''
@@ -102,16 +103,16 @@ class WebSocketClient(BaseComponent):
         return True
 
     @handler('response')
-    def _on_response(self, response):
+    def _on_response(self, response) -> None:
         self._response = response
         self._pending -= 1
         if response.headers.get('Connection', '').lower() == 'close' or response.status != 101:
             self.fire(close(), self._transport)
-            raise NotConnected()
+            raise NotConnected
         self._codec = WebSocketCodec(data=response.body.read(), channel=self._wschannel).register(self)
 
     @handler('read')
-    def _on_read(self, event, *args):
+    def _on_read(self, event, *args) -> None:
         # FIXME: every read-event is lost due to a race condition between
         # WebSocketCodec().register() and the registered()-event of that instance.
         if len(args) != 1:
@@ -124,13 +125,13 @@ class WebSocketClient(BaseComponent):
                 self.removeHandler(self._on_read)
 
     @handler('error', priority=10)
-    def _on_error(self, event, error, *args, **kwargs):
+    def _on_error(self, event, error, *args, **kwargs) -> None:
         # For HTTP 1.1 we leave the connection open. If the peer closes
         # it after some time and we have no pending request, that's OK.
         if isinstance(error, SocketError) and error.args[0] == ECONNRESET and self._pending == 0:
             event.stop()
 
-    def close(self):
+    def close(self) -> None:
         if self._transport is not None:
             self._transport.close()
 

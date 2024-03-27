@@ -8,7 +8,7 @@ from circuits.core import Component, Event, Worker, handler, task
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
     success = True
 
@@ -37,7 +37,7 @@ def app(request, manager, watcher):
     worker = Worker().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
         worker.unregister()
 
@@ -46,7 +46,7 @@ def app(request, manager, watcher):
     return app
 
 
-def test_call_order(manager, watcher, app):
+def test_call_order(manager, watcher, app) -> None:
     x = manager.fire(hello())
     assert watcher.wait('hello_success')
 

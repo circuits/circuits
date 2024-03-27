@@ -13,7 +13,7 @@ class Auth(Component):
     @handler('request', priority=1.0)
     def on_request(self, event, request, response):
         """
-        Filter Requests applying Basic Authentication
+        Filter Requests applying Basic Authentication.
 
         Filter any incoming requests at a higher priority than the
         default dispatcher and apply Basic Authentication returning
@@ -22,10 +22,11 @@ class Auth(Component):
         if not check_auth(request, response, self.realm, self.users):
             event.stop()
             return basic_auth(request, response, self.realm, self.users)
+        return None
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 

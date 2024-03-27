@@ -3,11 +3,11 @@ from circuits import Component, Event
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
 
 class App(Component):
@@ -23,7 +23,7 @@ class App(Component):
         yield 'World!'
 
 
-def test_return_generator():
+def test_return_generator() -> None:
     app = App()
     while len(app):
         app.flush()
@@ -36,7 +36,7 @@ def test_return_generator():
     assert x == 'Hello'
 
 
-def test_yield():
+def test_yield() -> None:
     app = App()
     while len(app):
         app.flush()

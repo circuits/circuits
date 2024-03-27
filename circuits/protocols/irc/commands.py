@@ -1,4 +1,4 @@
-"""Internet Relay Chat Protocol commands"""
+"""Internet Relay Chat Protocol commands."""
 
 from .events import request
 from .message import Message

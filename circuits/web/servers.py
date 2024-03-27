@@ -1,10 +1,11 @@
 """
-Web Servers
+Web Servers.
 
 This module implements the several Web Server components.
 """
 
 from sys import stderr
+from typing import NoReturn
 
 from circuits import io
 from circuits.core import BaseComponent, Timer, handler
@@ -18,7 +19,7 @@ from .http import HTTP
 
 class BaseServer(BaseComponent):
     """
-    Create a Base Web Server
+    Create a Base Web Server.
 
     Create a Base Web Server (HTTP) bound to the IP Address / Port or
     UNIX Socket specified by the 'bind' parameter.
@@ -50,16 +51,13 @@ class BaseServer(BaseComponent):
 
     channel = 'web'
 
-    def __init__(self, bind, encoding='utf-8', secure=False, certfile=None, channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
-        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, bind, encoding='utf-8', secure=False, certfile=None, channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs) -> None:
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         super().__init__(channel=channel)
 
         self._display_banner = display_banner
 
-        if isinstance(bind, (int, list, tuple)):
-            SocketType = TCPServer
-        else:
-            SocketType = TCPServer if ':' in bind else UNIXServer
+        SocketType = TCPServer if isinstance(bind, (int, list, tuple)) else TCPServer if ':' in bind else UNIXServer
 
         self.server = SocketType(
             bind,
@@ -80,11 +78,13 @@ class BaseServer(BaseComponent):
     def host(self):
         if hasattr(self, 'server'):
             return self.server.host
+        return None
 
     @property
     def port(self):
         if hasattr(self, 'server'):
             return self.server.port
+        return None
 
     @property
     def display_banner(self):
@@ -94,27 +94,28 @@ class BaseServer(BaseComponent):
     def secure(self):
         if hasattr(self, 'server'):
             return self.server.secure
+        return None
 
     @handler('connect')
-    def _on_connect(self, *args, **kwargs):
-        """Dummy Event Handler for connect"""
+    def _on_connect(self, *args, **kwargs) -> None:
+        """Dummy Event Handler for connect."""
 
     @handler('closed')
-    def _on_closed(self, *args, **kwargs):
-        """Dummy Event Handler for closed"""
+    def _on_closed(self, *args, **kwargs) -> None:
+        """Dummy Event Handler for closed."""
 
     @handler('signal')
-    def _on_signal(self, *args, **kwargs):
-        """Signal Event Handler"""
+    def _on_signal(self, *args, **kwargs) -> None:
+        """Signal Event Handler."""
         self.fire(close())
         Timer(3, terminate()).register(self)
 
     @handler('terminate')
-    def _on_terminate(self):
+    def _on_terminate(self) -> NoReturn:
         raise SystemExit(0)
 
     @handler('ready')
-    def _on_ready(self, server, bind):
+    def _on_ready(self, server, bind) -> None:
         stderr.write(
             f'{self.http.version} ready! Listening on: {self.http.base}\n',
         )
@@ -122,7 +123,7 @@ class BaseServer(BaseComponent):
 
 class Server(BaseServer):
     """
-    Create a Web Server
+    Create a Web Server.
 
     Create a Web Server (HTTP) complete with the default Dispatcher to
     parse requests and posted form data dispatching to appropriate
@@ -131,8 +132,8 @@ class Server(BaseServer):
     See: circuits.web.servers.BaseServer
     """
 
-    def __init__(self, bind, **kwargs):
-        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, bind, **kwargs) -> None:
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         super().__init__(bind, **kwargs)
 
         Dispatcher(channel=self.channel).register(self.http)
@@ -146,7 +147,7 @@ class FakeSock:
 class StdinServer(BaseComponent):
     channel = 'web'
 
-    def __init__(self, encoding='utf-8', channel=channel):
+    def __init__(self, encoding='utf-8', channel=channel) -> None:
         super().__init__(channel=channel)
 
         self.server = (io.stdin + io.stdout).register(self)
@@ -163,17 +164,17 @@ class StdinServer(BaseComponent):
         return io.stdin.filename
 
     @property
-    def port(self):
+    def port(self) -> int:
         return 0
 
     @property
-    def secure(self):
+    def secure(self) -> bool:
         return False
 
     @handler('read', channel='stdin')
-    def read(self, data):
+    def read(self, data) -> None:
         self.fire(read(FakeSock(), data))
 
     @handler('write')
-    def write(self, sock, data):
+    def write(self, sock, data) -> None:
         self.fire(write(data))

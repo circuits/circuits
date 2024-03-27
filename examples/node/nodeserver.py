@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Node Server Example
+Node Server Example.
 
 This example demonstrates how to create a very simple node server
 that supports bi-diractional messaging between server and connected
@@ -48,7 +48,7 @@ def parse_options():
 
 
 class NodeServer(Component):
-    def init(self, args, opts):
+    def init(self, args, opts) -> None:
         """
         Initialize our ``ChatServer`` Component.
 
@@ -72,29 +72,29 @@ class NodeServer(Component):
 
         Node(port=port, server_ip=address).register(self)
 
-    def connect(self, sock, host, port):
-        """Connect Event -- Triggered for new connecting clients"""
+    def connect(self, sock, host, port) -> None:
+        """Connect Event -- Triggered for new connecting clients."""
         self.clients[sock] = {
             'host': sock,
             'port': port,
         }
 
-    def disconnect(self, sock):
-        """Disconnect Event -- Triggered for disconnecting clients"""
+    def disconnect(self, sock) -> None:
+        """Disconnect Event -- Triggered for disconnecting clients."""
         if sock not in self.clients:
             return
 
         del self.clients[sock]
 
-    def ready(self, server, bind):
+    def ready(self, server, bind) -> None:
         print('Ready! Listening on {}:{}'.format(*bind))
         print('Waiting for remote events...')
 
-    def hello(self):
+    def hello(self) -> str:
         return f'Hello World! ({getpid():d})'
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     # Configure and "run" the System.

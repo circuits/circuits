@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Bridge Example
+Bridge Example.
 
 This example is quite similar to the Hello example
 but displays a hello form both the parent and child
@@ -13,16 +13,16 @@ from circuits import Component, Event, ipc
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
 
 class Child(Component):
-    def hello(self):
+    def hello(self) -> str:
         return f'Hello from child with pid {getpid()}'
 
 
 class App(Component):
-    def init(self):
+    def init(self) -> None:
         Child().start(process=True, link=self)
 
     def ready(self, *args):
@@ -34,7 +34,7 @@ class App(Component):
 
         raise SystemExit(0)
 
-    def hello(self):
+    def hello(self) -> str:
         return f'Hello from parent with pid {getpid()}'
 
 

@@ -12,17 +12,17 @@ pytest.importorskip('multiprocessing')
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
 
 class App(Component):
-    def hello(self):
+    def hello(self) -> str:
         return f'Hello from {getpid():d}'
 
 
-def test(manager, watcher):
+def test(manager, watcher) -> None:
     app = App()
-    process, bridge = app.start(process=True, link=manager)
+    _process, bridge = app.start(process=True, link=manager)
     assert watcher.wait('ready')
 
     x = manager.fire(ipc(hello()))

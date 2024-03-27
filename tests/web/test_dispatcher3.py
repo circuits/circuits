@@ -7,21 +7,21 @@ from circuits.web import Controller
 
 
 class Root(Controller):
-    def GET(self):
+    def GET(self) -> str:
         return 'GET'
 
-    def PUT(self):
+    def PUT(self) -> str:
         return 'PUT'
 
-    def POST(self):
+    def POST(self) -> str:
         return 'POST'
 
-    def DELETE(self):
+    def DELETE(self) -> str:
         return 'DELETE'
 
 
 @pytest.mark.parametrize(('method'), ['GET', 'PUT', 'POST', 'DELETE'])
-def test(webapp, method):
+def test(webapp, method) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 

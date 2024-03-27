@@ -13,38 +13,38 @@ from .helpers import urlopen
 class Echo(Component):
     channel = 'wsserver'
 
-    def init(self):
+    def init(self) -> None:
         self.clients = []
 
-    def connect(self, sock, host, port):
+    def connect(self, sock, host, port) -> None:
         self.clients.append(sock)
         print('WebSocket Client Connected:', host, port)
         self.fire(write(sock, f'Welcome {host:s}:{port:d}'))
 
-    def disconnect(self, sock):
+    def disconnect(self, sock) -> None:
         self.clients.remove(sock)
 
-    def read(self, sock, data):
+    def read(self, sock, data) -> None:
         self.fire(write(sock, 'Received: ' + data))
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
 class Client(Component):
     channel = 'ws'
 
-    def init(self, *args, **kwargs):
+    def init(self, *args, **kwargs) -> None:
         self.response = None
 
-    def read(self, data):
+    def read(self, data) -> None:
         self.response = data
 
 
 @pytest.mark.parametrize('chunksize', [BUFSIZE, BUFSIZE + 1, BUFSIZE * 2])
-def test(manager, watcher, webapp, chunksize):
+def test(manager, watcher, webapp, chunksize) -> None:
     echo = Echo().register(webapp)
     assert watcher.wait('registered', channel='wsserver')
 

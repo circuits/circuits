@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-An implementation of the Python Concurrency Problem of 99 Bottles of Beer
+An implementation of the Python Concurrency Problem of 99 Bottles of Beer.
 
 See: http://wiki.python.org/moin/Concurrency/99Bottles
 """
@@ -19,7 +19,7 @@ class Tail(Component):
     the UNIX ``tail`` command.
     """
 
-    def init(self, filename):
+    def init(self, filename) -> None:
         """
         Initialize the Component.
 
@@ -35,11 +35,11 @@ class Grep(Component):
     line. If the line matches it is printed to standard output.
     """
 
-    def init(self, pattern):
+    def init(self, pattern) -> None:
         self.pattern = pattern
 
-    def line(self, line):
-        """Line Event Handler"""
+    def line(self, line) -> None:
+        """Line Event Handler."""
         line = line.decode('utf-8')
 
         if self.pattern in line:

@@ -9,12 +9,12 @@ from circuits.web.client import parse_url
 
 
 class Client(Component):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._buffer = []
         self.done = False
 
-    def read(self, data):
+    def read(self, data) -> None:
         self._buffer.append(data)
         if data.find(b'\r\n') != -1:
             self.done = True
@@ -24,17 +24,17 @@ class Client(Component):
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     transport = TCPClient()
     client = Client()
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.http.base)
+    host, port, _resource, _secure = parse_url(webapp.server.http.base)
     client.fire(connect(host, port))
     assert pytest.wait_for(transport, 'connected')
 
@@ -50,13 +50,13 @@ def test(webapp):
     assert s == 'HTTP/1.1 200 OK', ss
 
 
-def test_http_1_0(webapp):
+def test_http_1_0(webapp) -> None:
     transport = TCPClient()
     client = Client()
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.http.base)
+    host, port, _resource, _secure = parse_url(webapp.server.http.base)
     client.fire(connect(host, port))
     assert pytest.wait_for(transport, 'connected')
 
@@ -69,13 +69,13 @@ def test_http_1_0(webapp):
     assert s == 'HTTP/1.0 200 OK'
 
 
-def test_http_1_1_no_host_headers(webapp):
+def test_http_1_1_no_host_headers(webapp) -> None:
     transport = TCPClient()
     client = Client()
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.http.base)
+    host, port, _resource, _secure = parse_url(webapp.server.http.base)
     client.fire(connect(host, port))
     assert pytest.wait_for(transport, 'connected')
 

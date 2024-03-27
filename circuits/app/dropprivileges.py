@@ -7,12 +7,12 @@ from circuits.core import BaseComponent, handler
 
 
 class DropPrivileges(BaseComponent):
-    def init(self, user='nobody', group='nobody', umask=0o077, **kwargs):
+    def init(self, user='nobody', group='nobody', umask=0o077, **kwargs) -> None:
         self.user = user
         self.group = group
         self.umask = umask
 
-    def drop_privileges(self):
+    def drop_privileges(self) -> None:
         if getuid() > 0:
             # Running as non-root. Ignore.
             return
@@ -42,7 +42,7 @@ class DropPrivileges(BaseComponent):
             raise SystemExit(-1)
 
     @handler('ready', channel='*')
-    def on_ready(self, server, bind):
+    def on_ready(self, server, bind) -> None:
         try:
             self.drop_privileges()
         finally:

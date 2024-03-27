@@ -1,16 +1,19 @@
+from typing import NoReturn
+
 import pytest
 
 from .helpers import HTTPError, urlopen
 
 
-def application(environ, start_response):
+def application(environ, start_response) -> NoReturn:
     status = '200 OK'
     response_headers = [('Content-type', 'text/plain')]
     start_response(status, response_headers)
-    raise Exception('Hello World!')
+    msg = 'Hello World!'
+    raise Exception(msg)
 
 
-def test(webapp):
+def test(webapp) -> None:
     with pytest.raises(HTTPError) as exc:
         urlopen(webapp.server.http.base)
     assert exc.value.code == 500

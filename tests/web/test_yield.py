@@ -10,7 +10,7 @@ class Root(Controller):
         yield 'World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'

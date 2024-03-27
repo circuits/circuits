@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from typing import NoReturn
+
 from circuits.core.components import BaseComponent
 from circuits.core.handlers import handler
 
@@ -9,15 +11,15 @@ class Root(BaseComponent):
     channel = 'web'
 
     @handler('request', priority=0.2)
-    def request(self, request, response):
+    def request(self, request, response) -> NoReturn:
         raise Exception
 
 
-def test(webapp):
+def test(webapp) -> None:
     try:
         Root().register(webapp)
         urlopen(webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 500
     else:
-        assert False
+        raise AssertionError

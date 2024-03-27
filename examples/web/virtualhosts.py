@@ -8,21 +8,21 @@ from circuits.web.dispatchers import VirtualHosts
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'I am the main vhost'
 
 
 class Foo(Controller):
     channel = '/foo'
 
-    def index(self):
+    def index(self) -> str:
         return 'I am foo.'
 
 
 class Bar(Controller):
     channel = '/bar'
 
-    def index(self):
+    def index(self) -> str:
         return 'I am bar.'
 
 

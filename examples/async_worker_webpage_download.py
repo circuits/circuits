@@ -15,25 +15,25 @@ def download_web_page(url):
 
 
 class App(Component):
-    def init(self, *args, **kwargs):
+    def init(self, *args, **kwargs) -> None:
         self.foo_count = 0
         Worker(process=False).register(self)
 
-    def foo(self):
+    def foo(self) -> None:
         self.foo_count += 1
         print('Foo!')
         if self.foo_count > 10:
             self.stop()
 
-    def started(self, component):
+    def started(self, component) -> None:
         # x = yield self.call(task(factorial, 10))
         Timer(1, Event.create('foo'), persist=True).register(self)
         self.fire(task(download_web_page, 'http://www.slickdeals.net'))  # async
         self.fire(task(download_web_page, 'http://www.google.com'))  # async
         self.fire(task(download_web_page, 'http://www.yahoo.com'))  # async
 
-    def task_success(self, function_called, function_result):
-        func, url_called = function_called
+    def task_success(self, function_called, function_result) -> None:
+        _func, url_called = function_called
         print(f'url {url_called} gave {function_result}')
 
 

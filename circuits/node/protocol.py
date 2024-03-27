@@ -13,13 +13,13 @@ class Protocol(Component):
     __nid = 0
     __events = {}
 
-    def init(self, sock=None, server=None, **kwargs):
+    def init(self, sock=None, server=None, **kwargs) -> None:
         self.__server = server
         self.__sock = sock
         self.__receive_event_firewall = kwargs.get('receive_event_firewall', None)
         self.__send_event_firewall = kwargs.get('send_event_firewall', None)
 
-    def add_buffer(self, data=''):
+    def add_buffer(self, data='') -> None:
         if data:
             self.__buffer += data
 
@@ -33,7 +33,7 @@ class Protocol(Component):
                 self.__buffer = packet
 
     @handler(channel='node_result', priority=100)
-    def result_handler(self, event, *args, **kwargs):
+    def result_handler(self, event, *args, **kwargs) -> None:
         if event.name.endswith('_success'):
             source_event = args[0]
 
@@ -59,19 +59,19 @@ class Protocol(Component):
                 del self.__events[id]
                 yield event.value
 
-    def send_result(self, id, value):
+    def send_result(self, id, value) -> None:
         value.node_call_id = id
         value.node_sock = self.__sock
         packet = dump_value(value).encode('utf-8') + DELIMITER
         self.__send(packet)
 
-    def __send(self, packet):
+    def __send(self, packet) -> None:
         if self.__server is not None:
             self.fire(write(self.__sock, packet))
         else:
             self.fire(write(packet))
 
-    def __process_packet(self, packet):
+    def __process_packet(self, packet) -> None:
         packet = packet.decode('utf-8')
 
         if '"value":' in packet:
@@ -80,7 +80,7 @@ class Protocol(Component):
         else:
             self.__process_packet_call(packet)
 
-    def __process_packet_call(self, packet):
+    def __process_packet_call(self, packet) -> None:
         event, id = load_event(packet)
 
         if self.__receive_event_firewall and not self.__receive_event_firewall(event, self.__sock):
@@ -104,7 +104,7 @@ class Protocol(Component):
 
             self.fire(event, *event.channels)
 
-    def __process_packet_value(self, packet):
+    def __process_packet_value(self, packet) -> None:
         value, id, error, meta = load_value(packet)
 
         if id in self.__events:

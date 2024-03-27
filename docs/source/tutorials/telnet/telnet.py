@@ -11,21 +11,21 @@ from circuits.net.sockets import TCPClient
 class Telnet(Component):
     channel = 'telnet'
 
-    def init(self, host, port):
+    def init(self, host, port) -> None:
         self.host = host
         self.port = port
 
         TCPClient(channel=self.channel).register(self)
         File(sys.stdin, channel='stdin').register(self)
 
-    def ready(self, socket):
+    def ready(self, socket) -> None:
         self.fire(connect(self.host, self.port))
 
-    def read(self, data):
+    def read(self, data) -> None:
         print(data.strip())
 
     @handler('read', channel='stdin')
-    def read_user_input(self, data):
+    def read_user_input(self, data) -> None:
         self.fire(write(data))
 
 

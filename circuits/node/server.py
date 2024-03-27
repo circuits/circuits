@@ -1,3 +1,5 @@
+import contextlib
+
 from circuits import BaseComponent, handler
 from circuits.net.sockets import TCPServer
 
@@ -10,7 +12,7 @@ class Server(BaseComponent):
     channel = 'node'
     __protocols = {}
 
-    def __init__(self, port, server_ip='0.0.0.0', channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs):
+    def __init__(self, port, server_ip='0.0.0.0', channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs) -> None:
         """
         Create server on node system.
 
@@ -50,7 +52,7 @@ class Server(BaseComponent):
 
     def send(self, event, sock, no_result=False):
         """
-        Send event to peer
+        Send event to peer.
 
         :param event:    Event to execute remotely.
         :type event:     :class:`circuits.core.events.Event`
@@ -69,15 +71,13 @@ class Server(BaseComponent):
         iterator = self.__protocols[sock].send(event)
         if no_result:
             event.node_without_result = True
-            try:
+            with contextlib.suppress(StopIteration):
                 next(iterator)
-            except StopIteration:
-                pass
         return iterator
 
-    def send_to(self, event, socks):
+    def send_to(self, event, socks) -> None:
         """
-        Send event to multiple peer
+        Send event to multiple peer.
 
         :param event:    Event to execute remotely.
         :type event:     :class:`circuits.core.events.Event`
@@ -88,9 +88,9 @@ class Server(BaseComponent):
         for sock in socks:
             self.send(event, sock, no_result=True)
 
-    def send_all(self, event):
+    def send_all(self, event) -> None:
         """
-        Send event to all peer
+        Send event to all peer.
 
         :param event:    Event to execute remotely.
         :type event:     :class:`circuits.core.events.Event`
@@ -98,22 +98,24 @@ class Server(BaseComponent):
         self.send_to(event, list(self.__protocols))
 
     @handler('read')
-    def _on_read(self, sock, data):
+    def _on_read(self, sock, data) -> None:
         self.__protocols[sock].add_buffer(data)
 
     @property
     def host(self):
         if hasattr(self, 'server'):
             return self.server.host
+        return None
 
     @property
     def port(self):
         if hasattr(self, 'server'):
             return self.server.port
+        return None
 
     def get_socks(self):
         """
-        Get clients sockets list
+        Get clients sockets list.
 
         :return: The list of client socket
         :rtype: list of :class:`socket.socket`
@@ -121,7 +123,7 @@ class Server(BaseComponent):
         return list(self.__protocols)
 
     @handler('connect')
-    def __connect_peer(self, sock, host, port):
+    def __connect_peer(self, sock, host, port) -> None:
         self.__protocols[sock] = Protocol(
             sock=sock,
             server=self.server,
@@ -131,7 +133,7 @@ class Server(BaseComponent):
         ).register(self)
 
     @handler('disconnect')
-    def __disconnect_peer(self, sock):
+    def __disconnect_peer(self, sock) -> None:
         for s in self.__protocols.copy():
             try:
                 s.getpeername()

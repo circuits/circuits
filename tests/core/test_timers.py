@@ -1,4 +1,4 @@
-"""Timers Tests"""
+"""Timers Tests."""
 
 from datetime import datetime, timedelta
 from itertools import starmap
@@ -15,7 +15,7 @@ def app(request, manager, watcher):
     app = App().register(manager)
     assert watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
         assert watcher.wait('unregistered')
 
@@ -25,24 +25,24 @@ def app(request, manager, watcher):
 
 
 class single(Event):
-    """single Event"""
+    """single Event."""
 
     complete = True
 
 
 class persistent(Event):
-    """persistent Event"""
+    """persistent Event."""
 
     complete = True
 
 
 class App(Component):
-    def init(self):
+    def init(self) -> None:
         self.flag = False
         self.count = 0
         self.timestamps = []
 
-    def single(self):
+    def single(self) -> None:
         self.timestamps.append(time())
         self.count += 1
         self.flag = True
@@ -56,13 +56,13 @@ class App(Component):
         timer.unregister()
 
 
-def test_single(app, watcher):
+def test_single(app, watcher) -> None:
     Timer(0.1, single()).register(app)
     assert watcher.wait('single_complete')
     assert app.flag
 
 
-def test_persistent(app, watcher):
+def test_persistent(app, watcher) -> None:
     exponent = -1
     interval = 10.0**exponent
     app.fire(persistent(interval))
@@ -74,7 +74,7 @@ def test_persistent(app, watcher):
     assert round(avg, abs(exponent)) == interval
 
 
-def test_datetime(app, watcher):
+def test_datetime(app, watcher) -> None:
     now = datetime.now()
     d = now + timedelta(seconds=0.1)
     Timer(d, single()).register(app)

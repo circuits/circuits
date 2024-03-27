@@ -2,6 +2,7 @@
 
 import _thread
 import atexit
+import contextlib
 import types
 from collections import deque
 from heapq import heappop, heappush
@@ -37,16 +38,16 @@ class UnregistrableError(Exception):
 
 
 class TimeoutError(Exception):
-    """Raised if wait event timeout occurred"""
+    """Raised if wait event timeout occurred."""
 
 
 class CallValue:
-    def __init__(self, value):
+    def __init__(self, value) -> None:
         self.value = value
 
 
 class ExceptionWrapper:
-    def __init__(self, exception):
+    def __init__(self, exception) -> None:
         self.exception = exception
 
     def extract(self):
@@ -54,18 +55,19 @@ class ExceptionWrapper:
 
 
 class Sleep:
-    def __init__(self, seconds):
+    def __init__(self, seconds) -> None:
         self._task = None
 
         try:
             self.expiry = time() + float(seconds)
         except ValueError:
-            raise TypeError('a float is required')
+            msg = 'a float is required'
+            raise TypeError(msg)
 
     def __iter__(self):
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'sleep({self.expiry - time()!r})'
 
     def __next__(self):
@@ -82,7 +84,7 @@ class Sleep:
         return self._task
 
     @task.setter
-    def task(self, task):
+    def task(self, task) -> None:
         self._task = task
 
 
@@ -105,7 +107,7 @@ del Dummy
 class _State:
     __slots__ = ('event', 'flag', 'parent', 'run', 'task', 'task_event', 'tick_handler', 'timeout')
 
-    def __init__(self, timeout):
+    def __init__(self, timeout) -> None:
         self.task = None
         self.run = False
         self.flag = False
@@ -119,25 +121,25 @@ class _State:
 class _EventQueue:
     __slots__ = ('_counter', '_flush_batch', '_priority_queue', '_queue')
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._queue = deque()
         self._priority_queue = []
         self._counter = count()
         self._flush_batch = 0
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._queue) + len(self._priority_queue)
 
-    def drainFrom(self, other_queue):
+    def drainFrom(self, other_queue) -> None:
         self._queue.extend(other_queue._queue)
         other_queue._queue.clear()
         # Queue is currently flushing events /o\
         assert not len(other_queue._priority_queue)
 
-    def append(self, event, channel, priority):
+    def append(self, event, channel, priority) -> None:
         self._queue.append((priority, next(self._counter), (event, channel)))
 
-    def dispatchEvents(self, dispatcher):
+    def dispatchEvents(self, dispatcher) -> None:
         if self._flush_batch == 0:
             # FIXME: Might be faster to use heapify instead of pop +
             # heappush. Though, with regards to thread safety this
@@ -207,8 +209,8 @@ class Manager:
     The event currently being handled.
     """
 
-    def __init__(self, *args, **kwargs):
-        """Initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, *args, **kwargs) -> None:
+        """Initializes x; see x.__class__.__doc__ for signature."""
         self._queue = _EventQueue()
 
         self._tasks = set()
@@ -230,13 +232,13 @@ class Manager:
         self.components = set()
 
     def __nonzero__(self):
-        """x.__nonzero__() <==> bool(x)"""
+        """x.__nonzero__() <==> bool(x)."""
         return True
 
     __bool__ = __nonzero__
 
-    def __repr__(self):
-        """x.__repr__() <==> repr(x)"""
+    def __repr__(self) -> str:
+        """x.__repr__() <==> repr(x)."""
         name = self.__class__.__name__
 
         channel = '/{}'.format(getattr(self, 'channel', ''))
@@ -246,26 +248,23 @@ class Manager:
 
         pid = current_process().pid
 
-        if pid:
-            id = f'{pid}:{current_thread().name}'
-        else:
-            id = current_thread().name
+        id = f'{pid}:{current_thread().name}' if pid else current_thread().name
 
         format = '<%s%s %s (queued=%d) [%s]>'
         return format % (name, channel, id, q, state)
 
-    def __contains__(self, y):
+    def __contains__(self, y) -> bool:
         """
-        x.__contains__(y) <==> y in x
+        x.__contains__(y) <==> y in x.
 
         Return True if the Component y is registered.
         """
         components = self.components.copy()
         return y in components or y in [c.__class__ for c in components]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
-        x.__len__() <==> len(x)
+        x.__len__() <==> len(x).
 
         Returns the number of events in the Event Queue.
         """
@@ -273,7 +272,7 @@ class Manager:
 
     def __add__(self, y):
         """
-        x.__add__(y) <==> x+y
+        x.__add__(y) <==> x+y.
 
         (Optional) Convenience operator to register y with x
         Equivalent to: y.register(x)
@@ -286,7 +285,7 @@ class Manager:
 
     def __iadd__(self, y):
         """
-        x.__iadd__(y) <==> x += y
+        x.__iadd__(y) <==> x += y.
 
         (Optional) Convenience operator to register y with x
         Equivalent to: y.register(x)
@@ -299,7 +298,7 @@ class Manager:
 
     def __sub__(self, y):
         """
-        x.__sub__(y) <==> x-y
+        x.__sub__(y) <==> x-y.
 
         (Optional) Convenience operator to unregister y from x.parent
         Equivalent to: y.unregister()
@@ -313,7 +312,7 @@ class Manager:
 
     def __isub__(self, y):
         """
-        x.__sub__(y) <==> x -= y
+        x.__sub__(y) <==> x -= y.
 
         (Optional) Convenience operator to unregister y from x
         Equivalent to: y.unregister()
@@ -327,17 +326,17 @@ class Manager:
 
     @property
     def name(self):
-        """Return the name of this Component/Manager"""
+        """Return the name of this Component/Manager."""
         return self.__class__.__name__
 
     @property
     def running(self):
-        """Return the running state of this Component/Manager"""
+        """Return the running state of this Component/Manager."""
         return self._running
 
     @property
     def pid(self):
-        """Return the process id of this Component/Manager"""
+        """Return the process id of this Component/Manager."""
         return getpid() if self.__process is None else self.__process.pid
 
     def getHandlers(self, event, channel, **kwargs):
@@ -360,7 +359,7 @@ class Manager:
                     None,
                 )
 
-            if channel == '*' or handler_channel in ('*', channel) or channel is self:
+            if channel == '*' or handler_channel in {'*', channel} or channel is self:
                 handlers.add(_handler)
 
         if not kwargs.get('exclude_globals', False):
@@ -388,11 +387,8 @@ class Manager:
 
         return method
 
-    def removeHandler(self, method, event=None):
-        if event is None:
-            names = method.names
-        else:
-            names = [event]
+    def removeHandler(self, method, event=None) -> None:
+        names = method.names if event is None else [event]
 
         for name in names:
             self._handlers[name].remove(method)
@@ -406,7 +402,7 @@ class Manager:
 
         self.root._cache_needs_refresh = True
 
-    def registerChild(self, component):
+    def registerChild(self, component) -> None:
         if component._executing_thread is not None:
             if self.root._executing_thread is not None:
                 raise UnregistrableError
@@ -416,11 +412,11 @@ class Manager:
         self.root._queue.drainFrom(component._queue)
         self.root._cache_needs_refresh = True
 
-    def unregisterChild(self, component):
+    def unregisterChild(self, component) -> None:
         self.components.remove(component)
         self.root._cache_needs_refresh = True
 
-    def _fire(self, event, channel, priority=0):
+    def _fire(self, event, channel, priority=0) -> None:
         # check if event is fired while handling an event
         th = self._executing_thread or self._flushing_thread
         if _thread.get_ident() == (th.ident if th else None) and not isinstance(event, signal):
@@ -467,7 +463,7 @@ class Manager:
            channels ("*").
         """
         if not channels:
-            channels = event.channels or (getattr(self, 'channel', '*'),) or ('*',)
+            channels = event.channels or (getattr(self, 'channel', '*'),)
 
         event.channels = channels
 
@@ -478,10 +474,10 @@ class Manager:
 
     fire = fireEvent
 
-    def registerTask(self, g):
+    def registerTask(self, g) -> None:
         self.root._tasks.add(g)
 
-    def unregisterTask(self, g):
+    def unregisterTask(self, g) -> None:
         if g in self.root._tasks:
             self.root._tasks.remove(g)
 
@@ -499,21 +495,21 @@ class Manager:
 
         state = _State(timeout=kwargs.get('timeout', -1))
 
-        def _on_event(self, event, *args, **kwargs):
+        def _on_event(self, event, *args, **kwargs) -> None:
             if not state.run and (event_object is None or event is event_object):
                 self.removeHandler(_on_event_handler, event_name)
                 event.alert_done = True
                 state.run = True
                 state.event = event
 
-        def _on_done(self, event, *args, **kwargs):
+        def _on_done(self, event, *args, **kwargs) -> None:
             if state.event == event.parent:
                 state.flag = True
                 self.registerTask((state.task_event, state.task, state.parent))
                 if state.timeout > 0:
                     self.removeHandler(state.tick_handler, 'generate_events')
 
-        def _on_tick(self):
+        def _on_tick(self) -> None:
             if state.timeout == 0:
                 self.registerTask(
                     (
@@ -561,7 +557,7 @@ class Manager:
 
     call = callEvent
 
-    def _flush(self):
+    def _flush(self) -> None:
         # Handle events currently on queue, but none of the newly generated
         # events. Note that _flush can be called recursively.
         old_flushing = self._flushing_thread
@@ -571,7 +567,7 @@ class Manager:
         finally:
             self._flushing_thread = old_flushing
 
-    def flushEvents(self):
+    def flushEvents(self) -> None:
         """
         Flush all Events in the Event Queue. If called on a manager
         that is not the root of an object hierarchy, the invocation
@@ -645,10 +641,7 @@ class Manager:
         for event_handler in event_handlers:
             event.handler = event_handler
             try:
-                if event_handler.event:
-                    value = event_handler(event, *eargs, **ekwargs)
-                else:
-                    value = event_handler(*eargs, **ekwargs)
+                value = event_handler(event, *eargs, **ekwargs) if event_handler.event else event_handler(*eargs, **ekwargs)
             except KeyboardInterrupt:
                 self.stop()
             except SystemExit as e:
@@ -681,7 +674,7 @@ class Manager:
         self._currently_handling = None
         self._eventDone(event, err)
 
-    def _eventDone(self, event, err=None):
+    def _eventDone(self, event, err=None) -> None:
         if event.waitingHandlers:
             return
 
@@ -717,7 +710,7 @@ class Manager:
             # cause has one of its nested events done, decrement and check
             event = cause
 
-    def _signal_handler(self, signo, stack):
+    def _signal_handler(self, signo, stack) -> None:
         self.fire(signal(signo, stack))
 
     def start(self, process=False, link=None):
@@ -758,13 +751,14 @@ class Manager:
 
         if self.__process is not None:
             return self.__process.join()
+        return None
 
-    def stop(self, code=None):
+    def stop(self, code=None) -> None:
         """
         Stop this manager. Invoking this method causes
         an invocation of ``run()`` to return.
         """
-        if self.__process not in (None, current_process()) and self.__process.is_alive():
+        if self.__process not in {None, current_process()} and self.__process.is_alive():
             self.__process.terminate()
             self.__process.join(TIMEOUT)
 
@@ -872,7 +866,7 @@ class Manager:
 
             self.fire(exception(*err, handler=None, fevent=event))
 
-    def tick(self, timeout=-1):
+    def tick(self, timeout=-1) -> None:
         """
         Execute all possible actions once. Process all registered tasks
         and flush the event queue. If the application is running fire a
@@ -897,7 +891,7 @@ class Manager:
         if len(self._queue):
             self.flush()
 
-    def run(self, socket=None):
+    def run(self, socket=None) -> None:
         """
         Run this manager. The method fires the
         :class:`~.events.Started` event and then continuously
@@ -943,10 +937,8 @@ class Manager:
             stderr.write(f'Unhandled ERROR: {exc}\n')
             stderr.write(format_exc())
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 self.tick()
-            except Exception:
-                pass
 
         self.root._executing_thread = None
         self.__thread = None

@@ -19,13 +19,13 @@ class Ping(Component):
     # This adds the already instantiated stdout instnace
     stdout = stdout
 
-    def init(self, host):
+    def init(self, host) -> None:
         self.p = Process(['/bin/ping', host]).register(self)
         self.p.start()
 
-    def read(self, data):
+    def read(self, data) -> None:
         """
-        read Event Handler
+        read Event Handler.
 
         This is fired by the File Component when there is data to be read
         from the underlying file that was opened.

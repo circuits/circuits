@@ -1,4 +1,4 @@
-""".. codeauthor: mnl"""
+""".. codeauthor: mnl."""
 
 from signal import SIGINT, SIGTERM
 from sys import stderr
@@ -12,12 +12,12 @@ from .handlers import handler
 
 
 class FallBackGenerator(BaseComponent):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._continue = Event()
 
     @handler('generate_events', priority=-100)
-    def _on_generate_events(self, event):
+    def _on_generate_events(self, event) -> None:
         """
         Fall back handler for the :class:`~.events.GenerateEvents` event.
 
@@ -57,7 +57,7 @@ class FallBackGenerator(BaseComponent):
 
         event.stop()
 
-    def resume(self):
+    def resume(self) -> None:
         """
         Implements the resume method as required from components that
         handle :class:`~.events.GenerateEvents`.
@@ -73,18 +73,14 @@ class FallBackExceptionHandler(BaseComponent):
     """
 
     @handler('exception', channel='*')
-    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
+    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None) -> None:
         s = []
 
-        if handler is None:
-            handler = ''
-        else:
-            handler = reprhandler(handler)
+        handler = '' if handler is None else reprhandler(handler)
 
         msg = f'ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n'
 
-        s.append(msg)
-        s.append('Traceback (most recent call last):\n')
+        s.extend((msg, 'Traceback (most recent call last):\n'))
         s.extend(traceback)
         s.extend(format_exception_only(error_type, value))
         s.append('\n')
@@ -99,6 +95,6 @@ class FallBackSignalHandler(BaseComponent):
     """
 
     @handler('signal', channel='*')
-    def _on_signal(self, signo, stack):
-        if signo in [SIGINT, SIGTERM]:
+    def _on_signal(self, signo, stack) -> None:
+        if signo in {SIGINT, SIGTERM}:
             raise SystemExit(0)

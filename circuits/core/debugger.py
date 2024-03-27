@@ -3,6 +3,7 @@ Debugger component used to debug each event in a system by printing
 each event to sys.stderr or to a Logger Component instance.
 """
 
+import locale
 import os
 import sys
 from signal import SIGINT, SIGTERM
@@ -14,7 +15,7 @@ from .handlers import handler, reprhandler
 
 class Debugger(BaseComponent):
     """
-    Create a new Debugger Component
+    Create a new Debugger Component.
 
     Creates a new Debugger Component that listens to all events in the system
     printing each event to sys.stderr or a Logger Component.
@@ -29,15 +30,15 @@ class Debugger(BaseComponent):
     IgnoreEvents = ['generate_events']
     IgnoreChannels = []
 
-    def __init__(self, errors=True, events=True, file=None, logger=None, prefix=None, trim=None, **kwargs):
-        """Initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, errors=True, events=True, file=None, logger=None, prefix=None, trim=None, **kwargs) -> None:
+        """Initializes x; see x.__class__.__doc__ for signature."""
         super().__init__()
 
         self._errors = errors
         self._events = events
 
         if isinstance(file, str):
-            self.file = open(os.path.abspath(os.path.expanduser(file)), 'a')
+            self.file = open(os.path.abspath(os.path.expanduser(file)), 'a', encoding=locale.getpreferredencoding(False))
         elif hasattr(file, 'write'):
             self.file = file
         else:
@@ -51,26 +52,22 @@ class Debugger(BaseComponent):
         self.IgnoreChannels.extend(kwargs.get('IgnoreChannels', []))
 
     @handler('signal', channel='*')
-    def _on_signal(self, signo, stack):
-        if signo in [SIGINT, SIGTERM]:
+    def _on_signal(self, signo, stack) -> None:
+        if signo in {SIGINT, SIGTERM}:
             raise SystemExit(0)
 
     @handler('exception', channel='*', priority=100.0)
-    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
+    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None) -> None:
         if not self._errors:
             return
 
         s = []
 
-        if handler is None:
-            handler = ''
-        else:
-            handler = reprhandler(handler)
+        handler = '' if handler is None else reprhandler(handler)
 
         msg = f'ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n'
 
-        s.append(msg)
-        s.append('Traceback (most recent call last):\n')
+        s.extend((msg, 'Traceback (most recent call last):\n'))
         s.extend(traceback)
         s.extend(format_exception_only(error_type, value))
         s.append('\n')
@@ -85,9 +82,9 @@ class Debugger(BaseComponent):
                 pass
 
     @handler(priority=101.0)
-    def _on_event(self, event, *args, **kwargs):
+    def _on_event(self, event, *args, **kwargs) -> None:
         """
-        Global Event Handler
+        Global Event Handler.
 
         Event handler to listen to all events printing
         each event to self.file or a Logger Component instance
@@ -108,10 +105,7 @@ class Debugger(BaseComponent):
             s = repr(event)
 
             if self.prefix:
-                if callable(self.prefix):
-                    s = f'{self.prefix()}: {s}'
-                else:
-                    s = f'{self.prefix}: {s}'
+                s = f'{self.prefix()}: {s}' if callable(self.prefix) else f'{self.prefix}: {s}'
 
             if self.trim:
                 s = '%s ...>' % s[: self.trim]

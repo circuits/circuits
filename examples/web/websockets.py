@@ -10,12 +10,12 @@ from circuits.web.dispatchers import WebSocketsDispatcher
 class Echo(Component):
     channel = 'wsserver'
 
-    def read(self, sock, data):
+    def read(self, sock, data) -> None:
         self.fireEvent(write(sock, 'Received: ' + data))
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 

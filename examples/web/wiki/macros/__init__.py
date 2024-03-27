@@ -1,5 +1,5 @@
 """
-Macro
+Macro.
 
 Macro support and dispatcher
 """
@@ -11,7 +11,7 @@ from creoleparser import parse_args
 
 
 class Macro:
-    def __init__(self, name, arg_string, body, isblock):
+    def __init__(self, name, arg_string, body, isblock) -> None:
         super().__init__()
 
         self.name = name

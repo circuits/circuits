@@ -27,31 +27,29 @@ if pytest.PYVER >= (2, 7, 9):
 @fixture()
 def tmpfile(request):
     tmpdir = tempfile.mkdtemp()
-    filename = os.path.join(tmpdir, 'test.sock')
-
-    return filename
+    return os.path.join(tmpdir, 'test.sock')
 
 
 class BaseRoot(Component):
     channel = 'web'
 
-    def request(self, request, response):
+    def request(self, request, response) -> str:
         return 'Hello World!'
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
 class MakeQuiet(Component):
     channel = 'web'
 
-    def ready(self, event, *args):
+    def ready(self, event, *args) -> None:
         event.stop()
 
 
-def test_baseserver(manager, watcher):
+def test_baseserver(manager, watcher) -> None:
     server = BaseServer(0).register(manager)
     MakeQuiet().register(server)
     watcher.wait('ready')
@@ -74,7 +72,7 @@ def test_baseserver(manager, watcher):
     watcher.wait('unregistered')
 
 
-def test_server(manager, watcher):
+def test_server(manager, watcher) -> None:
     server = Server(0).register(manager)
     MakeQuiet().register(server)
     watcher.wait('ready')
@@ -98,7 +96,7 @@ def test_server(manager, watcher):
 
 @pytest.mark.skipif((2,) < sys.version_info < (3, 4, 3), reason='Context not implemented under python 3.4.3')
 @pytest.mark.skipif(sys.version_info < (2, 7, 9), reason='Context not implemented under python 2.7.9')
-def test_secure_server(manager, watcher):
+def test_secure_server(manager, watcher) -> None:
     pytest.importorskip('ssl')
 
     server = Server(0, secure=True, certfile=CERTFILE).register(manager)
@@ -122,7 +120,7 @@ def test_secure_server(manager, watcher):
     watcher.wait('unregistered')
 
 
-def test_unixserver(manager, watcher, tmpfile):
+def test_unixserver(manager, watcher, tmpfile) -> None:
     if pytest.PLATFORM == 'win32':
         pytest.skip('Unsupported Platform')
 
@@ -152,7 +150,7 @@ def test_unixserver(manager, watcher, tmpfile):
 
 @pytest.mark.skipif((2, 7, 9) < sys.version_info < (3, 4, 3), reason='Context not implemented under python 3.4.3')
 @pytest.mark.skipif(sys.version_info < (2, 7, 9), reason='Context not implemented under python 2.7.9')
-def test_multi_servers(manager, watcher):
+def test_multi_servers(manager, watcher) -> None:
     pytest.importorskip('ssl')
 
     insecure_server = Server(0, channel='insecure')

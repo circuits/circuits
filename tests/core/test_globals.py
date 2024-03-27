@@ -3,31 +3,31 @@ from circuits import Component, Event, handler
 
 
 class foo(Event):
-    """foo Event"""
+    """foo Event."""
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class A(Component):
     channel = 'a'
 
-    def test(self):
+    def test(self) -> str:
         return 'Hello World!'
 
     @handler(priority=1.0)
-    def _on_event(self, event, *args, **kwargs):
+    def _on_event(self, event, *args, **kwargs) -> str:
         return 'Foo'
 
 
 class B(Component):
     @handler(priority=10.0, channel='*')
-    def _on_channel(self, event, *args, **kwargs):
+    def _on_channel(self, event, *args, **kwargs) -> str:
         return 'Bar'
 
 
-def test_main():
+def test_main() -> None:
     app = A() + B()
     while len(app):
         app.flush()
@@ -41,7 +41,7 @@ def test_main():
     assert x.value[2] == 'Hello World!'
 
 
-def test_event():
+def test_event() -> None:
     app = A() + B()
     while len(app):
         app.flush()
@@ -56,7 +56,7 @@ def test_event():
     assert x.value[2] == 'Hello World!'
 
 
-def test_channel():
+def test_channel() -> None:
     app = A() + B()
     while len(app):
         app.flush()

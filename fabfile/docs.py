@@ -1,4 +1,4 @@
-"""Documentation Tasks"""
+"""Documentation Tasks."""
 
 from fabric.api import lcd, local, task
 
@@ -9,8 +9,8 @@ PACKAGE = 'circuits'
 
 
 @task()
-def api():
-    """Generate the API Documentation"""
+def api() -> None:
+    """Generate the API Documentation."""
     if PACKAGE is not None:
         pip(requirements='docs/requirements.txt')
         local(f'sphinx-apidoc -f -e -T -o docs/source/api {PACKAGE:s}')
@@ -18,8 +18,8 @@ def api():
 
 @task()
 @requires('make')
-def clean():
-    """Delete Generated Documentation"""
+def clean() -> None:
+    """Delete Generated Documentation."""
     with lcd('docs'):
         pip(requirements='requirements.txt')
         local('make clean')
@@ -27,8 +27,8 @@ def clean():
 
 @task(default=True)
 @requires('make')
-def build(**options):
-    """Build the Documentation"""
+def build(**options) -> None:
+    """Build the Documentation."""
     pip(requirements='docs/requirements.txt')
 
     with lcd('docs'):
@@ -37,8 +37,8 @@ def build(**options):
 
 @task()
 @requires('open')
-def view(**options):
-    """View the Documentation"""
+def view(**options) -> None:
+    """View the Documentation."""
     with lcd('docs'):
         import webbrowser
 

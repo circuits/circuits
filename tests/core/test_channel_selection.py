@@ -3,26 +3,26 @@ from circuits import Component, Event, Manager
 
 
 class foo(Event):
-    """foo Event"""
+    """foo Event."""
 
     channels = ('a',)
 
 
 class bar(Event):
-    """bar Event"""
+    """bar Event."""
 
 
 class A(Component):
     channel = 'a'
 
-    def foo(self):
+    def foo(self) -> str:
         return 'Foo'
 
 
 class B(Component):
     channel = 'b'
 
-    def foo(self):
+    def foo(self) -> str:
         return 'Hello World!'
 
 
@@ -32,11 +32,11 @@ class C(Component):
     def foo(self):
         return self.fire(bar())
 
-    def bar(self):
+    def bar(self) -> str:
         return 'Bar'
 
 
-def test():
+def test() -> None:
     m = Manager() + A() + B() + C()
 
     while len(m):

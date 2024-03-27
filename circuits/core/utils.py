@@ -1,5 +1,5 @@
 """
-Utils
+Utils.
 
 This module defines utilities used by circuits.
 """
@@ -26,6 +26,7 @@ def findchannel(root, channel, all=False):
 
     if components:
         return components[0]
+    return None
 
 
 def findtype(root, component, all=False):
@@ -36,6 +37,7 @@ def findtype(root, component, all=False):
 
     if components:
         return components[0]
+    return None
 
 
 findcmp = findtype

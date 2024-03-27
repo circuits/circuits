@@ -20,7 +20,7 @@ class Root(JSONController):
         return {'success': True, 'message': 'Hello %s' % name}
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     data = f.read()
     data = data.decode('utf-8')
@@ -29,7 +29,7 @@ def test(webapp):
     assert d['message'] == 'Hello World!'
 
 
-def test_sessions(webapp):
+def test_sessions(webapp) -> None:
     Sessions().register(webapp)
 
     cj = CookieJar()

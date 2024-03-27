@@ -11,19 +11,19 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
     def request_body(self):
         return self.request.body.read()
 
-    def response_body(self):
+    def response_body(self) -> str:
         return 'ä'
 
     def request_headers(self):
         return self.request.headers['A']
 
-    def response_headers(self):
+    def response_headers(self) -> str:
         self.response.headers['A'] = 'ä'
         return 'ä'
 
@@ -31,7 +31,7 @@ class Root(Controller):
         return arg
 
 
-def test_index(webapp):
+def test_index(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'
@@ -44,7 +44,7 @@ def test_index(webapp):
         'ä'.encode('iso8859-1'),
     ],
 )
-def test_request_body(webapp, body):
+def test_request_body(webapp, body) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
@@ -58,7 +58,7 @@ def test_request_body(webapp, body):
     connection.close()
 
 
-def test_response_body(webapp):
+def test_response_body(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
@@ -72,7 +72,7 @@ def test_response_body(webapp):
     connection.close()
 
 
-def test_request_headers(webapp):
+def test_request_headers(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
@@ -88,17 +88,13 @@ def test_request_headers(webapp):
     connection.close()
 
 
-def test_response_headers(webapp):
+def test_response_headers(webapp) -> None:
     client = Client()
     client.start()
     client.fire(
         request(
             'GET',
-            'http://%s:%s/response_headers'
-            % (
-                webapp.server.host,
-                webapp.server.port,
-            ),
+            f'http://{webapp.server.host}:{webapp.server.port}/response_headers',
         ),
     )
 
@@ -112,7 +108,7 @@ def test_response_headers(webapp):
     assert s == 'ä'.encode()
 
 
-def test_argument(webapp):
+def test_argument(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 

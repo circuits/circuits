@@ -16,9 +16,9 @@ class Tail(Component):
     # Shorthand for declaring a compoent to be a part of this component.
     stdout = stdout
 
-    def init(self, filename):
+    def init(self, filename) -> None:
         """
-        Initialize Tail Component
+        Initialize Tail Component.
 
         Using the convenience ``init`` method we simply register a ``File``
         Component as part of our ``Tail`` Component and ask it to seek to
@@ -26,9 +26,9 @@ class Tail(Component):
         """
         File(filename, 'r', autoclose=False).register(self).seek(0, 2)
 
-    def read(self, data):
+    def read(self, data) -> None:
         """
-        Read Event Handler
+        Read Event Handler.
 
         This event is triggered by the underlying ``File`` Component for
         when there is data to be processed. Here we simply fire a ``Write``

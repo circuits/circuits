@@ -13,11 +13,11 @@ class App(Component):
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     rpc = XMLRPC('/rpc')
     test = App()
     rpc.register(webapp)

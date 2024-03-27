@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Circuits IRC Client
+Circuits IRC Client.
 
 A circuits based IRC Client demonstrating integration with urwid - a curses
 application development library and interacting with and processing irc
@@ -19,6 +19,7 @@ from optparse import OptionParser
 from re import compile as compile_regex
 from select import select
 from socket import gethostname
+from typing import NoReturn
 
 from urwid import AttrWrap, Edit, Frame, ListBox, Pile, SimpleListWalker, Text
 from urwid.raw_display import Screen
@@ -102,7 +103,7 @@ def parse_options():
 class Client(Component):
     channel = 'client'
 
-    def init(self, host, port=6667, opts=None):
+    def init(self, host, port=6667, opts=None) -> None:
         self.host = host
         self.port = port
         self.opts = opts
@@ -117,7 +118,7 @@ class Client(Component):
 
         self.create_interface()
 
-    def create_interface(self):
+    def create_interface(self) -> None:
         self.screen = Screen()
         self.screen.start()
 
@@ -141,18 +142,18 @@ class Client(Component):
 
         self.top = Frame(self.body, self.header, self.footer)
 
-    def ready(self, component):
+    def ready(self, component) -> None:
         """
-        Ready Event
+        Ready Event.
 
         This event is triggered by the underlying ``TCPClient`` Component
         when it is ready to start making a new connection.
         """
         self.fire(connect(self.host, self.port))
 
-    def connected(self, host, port):
+    def connected(self, host, port) -> None:
         """
-        connected Event
+        connected Event.
 
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
@@ -164,30 +165,30 @@ class Client(Component):
         self.fire(NICK(nick))
         self.fire(USER(nick, hostname, host, name))
 
-    def numeric(self, source, numeric, *args):
+    def numeric(self, source, numeric, *args) -> None:
         """
-        Numeric Event
+        Numeric Event.
 
         This event is triggered by the ``IRC`` Protocol Component when we have
         received an IRC Numberic Event from server we are connected to.
         """
         if numeric == ERR_NICKNAMEINUSE:
             self.fire(NICK(f'{args[0]:s}_'))
-        elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
+        elif numeric in {RPL_ENDOFMOTD, ERR_NOMOTD}:
             self.fire(JOIN(self.ircchannel))
 
     @handler('stopped', channel='*')
-    def _on_stopped(self, component):
+    def _on_stopped(self, component) -> None:
         self.screen.stop()
 
     @handler('generate_events')
-    def _on_generate_events(self, event):
+    def _on_generate_events(self, event) -> None:
         event.reduce_time_left(0)
 
         size = self.screen.get_cols_rows()
 
         if select(self.screen.get_input_descriptors(), [], [], 0.1)[0] != []:
-            timeout, keys, raw = self.screen.get_input_nonblocking()
+            _timeout, keys, _raw = self.screen.get_input_nonblocking()
 
             for k in keys:
                 if k == 'window resize':
@@ -203,10 +204,10 @@ class Client(Component):
 
         self.update_screen(size)
 
-    def unknownCommand(self, command):
+    def unknownCommand(self, command) -> None:
         self.lines.append(Text('Unknown command: %s' % command))
 
-    def syntaxError(self, command, args, expected):
+    def syntaxError(self, command, args, expected) -> None:
         self.lines.append(
             Text(
                 f'Syntax error ({command:s}): {args:s} Expected: {expected:s}',
@@ -217,16 +218,13 @@ class Client(Component):
         match = CMD_REGEX.match(s)
         if match is not None:
             command = match.groupdict()['command']
-            if match.groupdict()['args'] != '':
-                tokens = match.groupdict()['args'].split(' ')
-            else:
-                tokens = []
+            tokens = match.groupdict()['args'].split(' ') if match.groupdict()['args'] != '' else []
 
             fn = 'cmd' + command.upper()
             if hasattr(self, fn):
                 f = getattr(self, fn)
                 if callable(f):
-                    args, vargs, kwargs, default = getargspec(f)
+                    args, vargs, _kwargs, default = getargspec(f)
                     args.remove('self')
                     if len(args) == len(tokens):
                         if len(args) == 0:
@@ -242,7 +240,7 @@ class Client(Component):
                                 self.syntaxError(
                                     command,
                                     ' '.join(tokens),
-                                    ' '.join(x for x in args + [vargs] if x is not None),
+                                    ' '.join(x for x in [*args, vargs] if x is not None),
                                 )
                         else:
                             f(*tokens)
@@ -252,7 +250,7 @@ class Client(Component):
                         self.syntaxError(
                             command,
                             ' '.join(tokens),
-                            ' '.join(x for x in args + [vargs] if x is not None),
+                            ' '.join(x for x in [*args, vargs] if x is not None),
                         )
         elif self.ircchannel is not None:
             self.lines.append(Text(f'<{self.nick}> {s}'))
@@ -260,42 +258,42 @@ class Client(Component):
         else:
             self.lines.append(Text('No channel joined. Try /join #<channel>'))
 
-    def cmdEXIT(self, message=''):
+    def cmdEXIT(self, message='') -> NoReturn:
         self.fire(QUIT(message))
         raise SystemExit(0)
 
-    def cmdSERVER(self, host, port=6667):
+    def cmdSERVER(self, host, port=6667) -> None:
         self.fire(connect(host, port))
 
-    def cmdSSLSERVER(self, host, port=6697):
+    def cmdSSLSERVER(self, host, port=6697) -> None:
         self.fire(connect(host, port, secure=True))
 
-    def cmdJOIN(self, channel):
+    def cmdJOIN(self, channel) -> None:
         if self.ircchannel is not None:
             self.cmdPART(self.ircchannel, 'Joining %s' % channel)
         self.fire(JOIN(channel))
         self.ircchannel = channel
 
-    def cmdPART(self, channel=None, message='Leaving'):
+    def cmdPART(self, channel=None, message='Leaving') -> None:
         if channel is None:
             channel = self.ircchannel
         if channel is not None:
             self.fire(PART(channel, message))
             self.ircchannel = None
 
-    def cmdQUOTE(self, message):
+    def cmdQUOTE(self, message) -> None:
         self.fire(request(Message(message)))
 
-    def cmdQUIT(self, message='Bye'):
+    def cmdQUIT(self, message='Bye') -> None:
         self.fire(QUIT(message))
 
-    def update_screen(self, size):
+    def update_screen(self, size) -> None:
         canvas = self.top.render(size, focus=True)
         self.screen.draw_screen(size, canvas)
 
     @handler('notice', 'privmsg')
-    def _on_notice_or_privmsg(self, event, source, target, message):
-        nick, ident, host = source
+    def _on_notice_or_privmsg(self, event, source, target, message) -> None:
+        nick, _ident, _host = source
 
         if event.name == 'notice':
             self.lines.append(Text(f'-{nick}- {message}'))
@@ -303,14 +301,11 @@ class Client(Component):
             self.lines.append(Text(f'<{nick}> {message}'))
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     host = args[0]
-    if len(args) > 1:
-        port = int(args[1])
-    else:
-        port = 6667
+    port = int(args[1]) if len(args) > 1 else 6667
 
     # Configure and run the system.
 

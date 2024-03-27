@@ -5,27 +5,27 @@ from circuits import Component, Event, handler
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class Base(Component):
-    def test(self):
+    def test(self) -> str:
         return 'Hello World!'
 
 
 class App1(Base):
     @handler('test', priority=-1)
-    def test(self):
+    def test(self) -> str:
         return 'Foobar'
 
 
 class App2(Base):
     @handler('test', override=True)
-    def test(self):
+    def test(self) -> str:
         return 'Foobar'
 
 
-def test_inheritence():
+def test_inheritence() -> None:
     app = App1()
     app.start()
 
@@ -37,7 +37,7 @@ def test_inheritence():
     app.stop()
 
 
-def test_override():
+def test_override() -> None:
     app = App2()
     app.start()
 

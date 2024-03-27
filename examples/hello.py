@@ -1,25 +1,27 @@
 #!/usr/bin/env python
-"""circuits Hello World"""
+"""circuits Hello World."""
+
+from typing import NoReturn
 
 from circuits import Component, Event
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
 
 class terminate(Event):
-    """terminate Event"""
+    """terminate Event."""
 
 
 class App(Component):
-    def hello(self):
-        """Hello Event Handler"""
+    def hello(self) -> None:
+        """Hello Event Handler."""
         print('Hello World!')
 
-    def started(self, *args):
+    def started(self, *args) -> None:
         """
-        Started Event Handler
+        Started Event Handler.
 
         This is fired internally when your application starts up
         and can be used to trigger events that only occur once
@@ -28,7 +30,7 @@ class App(Component):
         self.fire(hello())  # Fire hello Event
         self.fire(terminate())
 
-    def terminate(self):
+    def terminate(self) -> NoReturn:
         raise SystemExit(0)  # Terminate the Application
 
 

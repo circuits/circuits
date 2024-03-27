@@ -3,7 +3,7 @@
 from subprocess import PIPE, STDOUT, Popen
 
 
-def test_linkcheck(tmpdir):
+def test_linkcheck(tmpdir) -> None:
     doctrees = tmpdir.join('doctrees')
     htmldir = tmpdir.join('html')
     p = Popen(
@@ -24,7 +24,7 @@ def test_linkcheck(tmpdir):
         print(stdout)
 
 
-def test_build_docs(tmpdir):
+def test_build_docs(tmpdir) -> None:
     doctrees = tmpdir.join('doctrees')
     htmldir = tmpdir.join('html')
     p = Popen(

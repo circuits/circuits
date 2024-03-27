@@ -18,11 +18,11 @@ def foo();
 
 
 class Base(Component):
-    """Base"""
+    """Base."""
 
 
 class App(Base):
-    def hello(self):
+    def hello(self) -> str:
         return 'Hello World!'
 
 
@@ -34,7 +34,7 @@ class B(Component):
     channel = 'b'
 
 
-def test_safeimport(tmpdir):
+def test_safeimport(tmpdir) -> None:
     from circuits.core.utils import safeimport
 
     sys.path.insert(0, str(tmpdir))
@@ -61,7 +61,7 @@ def test_safeimport(tmpdir):
     assert foo not in sys.modules
 
 
-def test_findroot():
+def test_findroot() -> None:
     app = App()
     a = A()
     b = B()
@@ -77,7 +77,7 @@ def test_findroot():
     assert root == app
 
 
-def test_findchannel():
+def test_findchannel() -> None:
     app = App()
     (A() + B()).register(app)
 
@@ -89,7 +89,7 @@ def test_findchannel():
     assert a.channel == 'a'
 
 
-def test_findtype():
+def test_findtype() -> None:
     app = App()
     (A() + B()).register(app)
 

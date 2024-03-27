@@ -4,31 +4,31 @@ from circuits import Component, Event
 
 
 class woof(Event):
-    """woof Event"""
+    """woof Event."""
 
 
 class Pound(Component):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.bob = Bob().register(self)
         self.fred = Fred().register(self)
 
-    def started(self, *args):
+    def started(self, *args) -> None:
         self.fire(woof())
 
 
 class Dog(Component):
-    def woof(self):
+    def woof(self) -> None:
         print("Woof! I'm %s!" % self.name)
 
 
 class Bob(Dog):
-    """Bob"""
+    """Bob."""
 
 
 class Fred(Dog):
-    """Fred"""
+    """Fred."""
 
 
 Pound().run()

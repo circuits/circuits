@@ -1,10 +1,11 @@
-"""py.test config"""
+"""py.test config."""
 
 import sys
 import threading
 from collections import deque
 from collections.abc import Callable
 from time import sleep
+from typing import Optional
 
 import pytest
 
@@ -13,19 +14,19 @@ from circuits.core.manager import TIMEOUT
 
 
 class Watcher(BaseComponent):
-    def init(self):
+    def init(self) -> None:
         self._lock = threading.Lock()
         self.events = deque()
 
     @handler(channel='*', priority=999.9)
-    def _on_event(self, event, *args, **kwargs):
+    def _on_event(self, event, *args, **kwargs) -> None:
         with self._lock:
             self.events.append(event)
 
-    def clear(self):
+    def clear(self) -> None:
         self.events.clear()
 
-    def wait(self, name, channel=None, timeout=30.0):
+    def wait(self, name, channel=None, timeout=30.0) -> bool:
         for _i in range(int(timeout / TIMEOUT)):
             with self._lock:
                 for event in self.events:
@@ -63,7 +64,7 @@ def call_event(manager, event, *channels):
 
 
 class WaitEvent:
-    def __init__(self, manager, name, channel=None, timeout=30.0):
+    def __init__(self, manager, name, channel=None, timeout=30.0) -> None:
         if channel is None:
             channel = getattr(manager, 'channel', None)
 
@@ -73,13 +74,13 @@ class WaitEvent:
         flag = Flag()
 
         @handler(name, channel=channel)
-        def on_event(self, *args, **kwargs):
+        def on_event(self, *args, **kwargs) -> None:
             flag.status = True
 
         self.handler = self.manager.addHandler(on_event)
         self.flag = flag
 
-    def wait(self):
+    def wait(self) -> Optional[bool]:
         try:
             for _i in range(int(self.timeout / TIMEOUT)):
                 if self.flag.status:
@@ -89,7 +90,7 @@ class WaitEvent:
             self.manager.removeHandler(self.handler)
 
 
-def wait_for(obj, attr, value=True, timeout=30.0):
+def wait_for(obj, attr, value=True, timeout=30.0) -> Optional[bool]:
     from circuits.core.manager import TIMEOUT
 
     for _i in range(int(timeout / TIMEOUT)):
@@ -99,6 +100,7 @@ def wait_for(obj, attr, value=True, timeout=30.0):
         elif getattr(obj, attr) == value:
             return True
         sleep(TIMEOUT)
+    return None
 
 
 class SimpleManager(Manager):
@@ -118,7 +120,7 @@ def simple_manager(request):
 def manager(request):
     manager = Manager()
 
-    def finalizer():
+    def finalizer() -> None:
         manager.stop()
 
     request.addfinalizer(finalizer)
@@ -136,7 +138,7 @@ def manager(request):
 def watcher(request, manager):
     watcher = Watcher().register(manager)
 
-    def finalizer():
+    def finalizer() -> None:
         waiter = WaitEvent(manager, 'unregistered')
         watcher.unregister()
         waiter.wait()

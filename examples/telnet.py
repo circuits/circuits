@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Telnet Example
+Telnet Example.
 
 A basic telnet-like clone that connects to remote hosts
 via tcp and allows the user to send data to the remote
@@ -77,7 +77,7 @@ class Telnet(Component):
     # the ``read`` event of the ``stdin`` component.
     channel = 'telnet'
 
-    def __init__(self, *args, **opts):
+    def __init__(self, *args, **opts) -> None:
         super().__init__()
 
         self.args = args
@@ -110,21 +110,21 @@ class Telnet(Component):
         else:
             self.fire(write((host, port), b'\x00'))
 
-    def ready(self, *args):
+    def ready(self, *args) -> None:
         graph(self.root)
 
-    def connected(self, host, port=None):
+    def connected(self, host, port=None) -> None:
         """
-        connected Event Handler
+        connected Event Handler.
 
         This event is fired by the TCPClient Componentt to indicate a
         successful connection.
         """
         print(f'connected to {host}')
 
-    def error(self, *args, **kwargs):
+    def error(self, *args, **kwargs) -> None:
         """
-        error Event Handler
+        error Event Handler.
 
         If any exception/error occurs in the system this event is triggered.
         """
@@ -133,9 +133,9 @@ class Telnet(Component):
         else:
             print(f'ERROR: {args[0]}')
 
-    def read(self, *args):
+    def read(self, *args) -> None:
         """
-        read Event Handler
+        read Event Handler.
 
         This event is fired by the underlying TCPClient Component when there
         is data to be read from the connection.
@@ -143,7 +143,7 @@ class Telnet(Component):
         if len(args) == 1:
             data = args[0]
         else:
-            peer, data = args
+            _peer, data = args
 
         data = data.strip().decode('utf-8')
 
@@ -151,9 +151,9 @@ class Telnet(Component):
 
     # Setup an Event Handler for "read" events on the "stdin" channel.
     @handler('read', channel='stdin')
-    def _on_stdin_read(self, data):
+    def _on_stdin_read(self, data) -> None:
         """
-        read Event Handler for stdin
+        read Event Handler for stdin.
 
         This event is triggered by the connected ``stdin`` component when
         there is new data to be read in from standard input.
@@ -164,7 +164,7 @@ class Telnet(Component):
             self.fire(write((self.host, self.port), data))
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     # Configure and "run" the System.

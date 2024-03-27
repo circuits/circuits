@@ -252,6 +252,6 @@ latex_documents = [
 # latex_use_modindex = True
 
 
-def setup(app):
+def setup(app) -> None:
     # ifconfig variables
     app.add_config_value('devel', '', devel)

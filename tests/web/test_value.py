@@ -6,11 +6,11 @@ from .helpers import urlopen
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
 
 class App(Component):
-    def hello(self):
+    def hello(self) -> str:
         return 'Hello World!'
 
 
@@ -19,7 +19,7 @@ class Root(Controller):
         return self.fire(hello())
 
 
-def test(webapp):
+def test(webapp) -> None:
     App().register(webapp)
 
     f = urlopen(webapp.server.http.base)

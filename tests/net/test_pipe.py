@@ -12,11 +12,11 @@ from .client import Client
 pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc) -> None:
     metafunc.parametrize('Poller', [Select])
 
 
-def test_pipe(Poller):
+def test_pipe(Poller) -> None:
     m = Manager() + Poller()
 
     a, b = Pipe('a', 'b')

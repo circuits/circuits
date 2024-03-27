@@ -7,7 +7,7 @@ from circuits.web import Controller, Server
 
 
 class Root(Controller):
-    def GET(self, peer_cert=None):
+    def GET(self, peer_cert=None) -> str:
         return "Here's your cert %s" % peer_cert
 
 

@@ -1,5 +1,5 @@
 """
-Request/Response Wrappers
+Request/Response Wrappers.
 
 This module implements the Request and Response objects.
 """
@@ -41,25 +41,25 @@ class Host:
     port = 80
     name = 'unknown.tld'
 
-    def __init__(self, ip, port, name=None):
+    def __init__(self, ip, port, name=None) -> None:
         self.ip = ip
         self.port = port
         if name is None:
             name = ip
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Host({self.ip!r}, {self.port!r}, {self.name!r})'
 
 
 class HTTPStatus:
     __slots__ = ('_reason', '_status')
 
-    def __init__(self, status=200, reason=None):
+    def __init__(self, status=200, reason=None) -> None:
         self._status = status
         self._reason = reason or HTTP_STATUS_CODES.get(status, '')
 
-    def __int__(self):
+    def __int__(self) -> int:
         return self._status
 
     def __lt__(self, other):
@@ -87,13 +87,13 @@ class HTTPStatus:
             return self._status == other
         return super().__eq__(other)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self._status:d} {self._reason}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<Status (status={self._status:d} reason={self._reason}>'
 
-    def __format__(self, format_spec):
+    def __format__(self, format_spec) -> str:
         return format(str(self), format_spec)
 
     @property
@@ -143,8 +143,8 @@ class Request:
     login = None
     handled = False
 
-    def __init__(self, sock, method='GET', scheme='http', path='/', protocol=(1, 1), qs='', headers=None, server=None):
-        """Initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, sock, method='GET', scheme='http', path='/', protocol=(1, 1), qs='', headers=None, server=None) -> None:
+        """Initializes x; see x.__class__.__doc__ for signature."""
         self.sock = sock
         self.method = method
         self.scheme = scheme or Request.scheme
@@ -194,7 +194,7 @@ class Request:
         base = '{}://{}{}/'.format(
             self.scheme,
             self.host,
-            f':{self.port:d}' if self.port not in (80, 443) else '',
+            f':{self.port:d}' if self.port not in {80, 443} else '',
         )
 
         self.base = parse_url(base)
@@ -207,13 +207,13 @@ class Request:
         self.uri = parse_url(url)
         self.uri.sanitize()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         protocol = 'HTTP/%d.%d' % self.protocol
         return f'<Request {self.method} {self.path} {protocol}>'
 
 
 class Body:
-    """Response Body"""
+    """Response Body."""
 
     encode_errors = 'strict'
 
@@ -222,20 +222,14 @@ class Body:
             return self
         return response._body
 
-    def __set__(self, response, value):
+    def __set__(self, response, value) -> None:
         if response == value:
             return
 
         if isinstance(value, bytes):
-            if value:
-                value = [value]
-            else:
-                value = []
+            value = [value] if value else []
         elif isinstance(value, str):
-            if value:
-                value = [value.encode(response.encoding, self.encode_errors)]
-            else:
-                value = []
+            value = [value.encode(response.encoding, self.encode_errors)] if value else []
         elif hasattr(value, 'read'):
             response.stream = True
             value = file_generator(value)
@@ -248,14 +242,14 @@ class Body:
 
 
 class Status:
-    """Response Status"""
+    """Response Status."""
 
     def __get__(self, response, cls=None):
         if response is None:
             return self
         return response._status
 
-    def __set__(self, response, value):
+    def __set__(self, response, value) -> None:
         value = HTTPStatus(value) if isinstance(value, int) else value
 
         response._status = value
@@ -263,7 +257,7 @@ class Status:
 
 class Response:
     """
-    Response(sock, request) -> new Response object
+    Response(sock, request) -> new Response object.
 
     A Response object that holds the response to
     send back to the client. This ensure that the correct data
@@ -278,8 +272,8 @@ class Response:
     stream = False
     chunked = False
 
-    def __init__(self, request, encoding='utf-8', status=None):
-        """Initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, request, encoding='utf-8', status=None) -> None:
+        """Initializes x; see x.__class__.__doc__ for signature."""
         self.request = request
         self.encoding = encoding
 
@@ -301,20 +295,20 @@ class Response:
 
         self.protocol = 'HTTP/%d.%d' % self.request.protocol
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<Response %s %s (%d)>' % (
             self.status,
             self.headers.get('Content-Type'),
             (len(self.body) if isinstance(self.body, str) else 0),
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.protocol} {self.status}\r\n'
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return str(self).encode('ISO8859-1')
 
-    def prepare(self):
+    def prepare(self) -> None:
         # Set a default content-Type if we don't have one.
         self.headers.setdefault(
             'Content-Type',
@@ -333,7 +327,7 @@ class Response:
         if cLength is not None:
             self.headers['Content-Length'] = str(cLength)
 
-        for _k, v in self.cookie.items():
+        for v in self.cookie.values():
             self.headers.add_header('Set-Cookie', v.OutputString())
 
         status = self.status
@@ -341,7 +335,7 @@ class Response:
         if status == 413:
             self.close = True
         elif 'Content-Length' not in self.headers:
-            if status < 200 or status in (204, 205, 304):
+            if status < 200 or status in {204, 205, 304}:
                 pass
             elif self.protocol == 'HTTP/1.1' and self.request.method != 'HEAD' and self.request.server is not None and cLength != 0:
                 self.chunked = True

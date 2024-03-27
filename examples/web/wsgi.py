@@ -10,9 +10,9 @@ def foo(environ, start_response):
 
 
 class Root(Controller):
-    """App Rot"""
+    """App Rot."""
 
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 

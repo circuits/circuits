@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import locale
 import os
 import sys
 
@@ -15,20 +16,20 @@ except ImportError:
 
 
 class App(Component):
-    def init(self, pidfile, signalfile):
+    def init(self, pidfile, signalfile) -> None:
         self.pidfile = pidfile
         self.signalfile = signalfile
 
         Daemon(self.pidfile).register(self)
 
-    def signal(self, signal, stack):
-        f = open(self.signalfile, 'w')
+    def signal(self, signal, stack) -> None:
+        f = open(self.signalfile, 'w', encoding=locale.getpreferredencoding(False))
         f.write(str(signal))
         f.close()
         self.stop()
 
 
-def main():
+def main() -> None:
     if HAS_COVERAGE:
         _coverage = coverage(data_suffix=True)
         _coverage.start()

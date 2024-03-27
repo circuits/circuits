@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Example IRC Client
+Example IRC Client.
 
 A basic IRC client with a very basic console interface.
 
@@ -13,6 +13,7 @@ For usage type:
 import os
 from optparse import OptionParser
 from socket import gethostname
+from typing import NoReturn
 
 from circuits import Component, Debugger, __version__ as systemVersion, handler
 from circuits.io import stdin
@@ -68,7 +69,7 @@ class Client(Component):
     # Set a separate channel in case we want multiple ``Client`` instances.
     channel = 'ircclient'
 
-    def init(self, host, port=6667, opts=None):
+    def init(self, host, port=6667, opts=None) -> None:
         self.host = host
         self.port = port
         self.opts = opts
@@ -85,18 +86,18 @@ class Client(Component):
         if opts.debug:
             Debugger().register(self)
 
-    def ready(self, component):
+    def ready(self, component) -> None:
         """
-        ready Event
+        ready Event.
 
         This event is triggered by the underlying ``TCPClient`` Component
         when it is ready to start making a new connection.
         """
         self.fire(connect(self.host, self.port))
 
-    def connected(self, host, port):
+    def connected(self, host, port) -> None:
         """
-        connected Event
+        connected Event.
 
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
@@ -110,9 +111,9 @@ class Client(Component):
         self.fire(NICK(nick))
         self.fire(USER(nick, nick, self.hostname, name))
 
-    def disconnected(self):
+    def disconnected(self) -> NoReturn:
         """
-        disconnected Event
+        disconnected Event.
 
         This event is triggered by the underlying ``TCPClient`` Component
         when the connection has been disconnected.
@@ -121,9 +122,9 @@ class Client(Component):
 
         raise SystemExit(0)
 
-    def numeric(self, source, numeric, *args):
+    def numeric(self, source, numeric, *args) -> None:
         """
-        numeric Event
+        numeric Event.
 
         This event is triggered by the ``IRC`` Protocol Component when we have
         received an IRC Numberic Event from server we are connected to.
@@ -134,9 +135,9 @@ class Client(Component):
             self.nick = newnick = '%s_' % self.nick
             self.fire(NICK(newnick))
 
-    def join(self, source, channel):
+    def join(self, source, channel) -> None:
         """
-        join Event
+        join Event.
 
         This event is triggered by the ``IRC`` Protocol Component when a
         user has joined a channel.
@@ -145,26 +146,25 @@ class Client(Component):
             print('Joined %s' % channel)
         else:
             print(
-                '--> %s (%s) has joined %s'
-                % (
+                '--> {} ({}) has joined {}'.format(
                     source[0],
                     '@'.join(source[1:]),
                     channel,
                 ),
             )
 
-    def notice(self, source, target, message):
+    def notice(self, source, target, message) -> None:
         """
-        notice Event
+        notice Event.
 
         This event is triggered by the ``IRC`` Protocol Component for each
         notice we receieve from the server.
         """
         print(f'-{source[0]}- {message}')
 
-    def privmsg(self, source, target, message):
+    def privmsg(self, source, target, message) -> None:
         """
-        privmsg Event
+        privmsg Event.
 
         This event is triggered by the ``IRC`` Protocol Component for each
         message we receieve from the server.
@@ -175,9 +175,9 @@ class Client(Component):
             print(f'-{source[0]}- {message}')
 
     @handler('read', channel='stdin')
-    def stdin_read(self, data):
+    def stdin_read(self, data) -> None:
         """
-        read Event (on channel ``stdin``)
+        read Event (on channel ``stdin``).
 
         This is the event handler for ``read`` events specifically from the
         ``stdin`` channel. This is triggered each time stdin has data that
@@ -189,14 +189,11 @@ class Client(Component):
         self.fire(PRIVMSG(self.ircchannel, data))
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     host = args[0]
-    if len(args) > 1:
-        port = int(args[1])
-    else:
-        port = 6667
+    port = int(args[1]) if len(args) > 1 else 6667
 
     # Configure and run the system.
     client = Client(host, port, opts=opts)

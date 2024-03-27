@@ -21,10 +21,10 @@ class firewall_block(Event):
 class AppClient(Component):
     write_data = b''
 
-    def return_value(self):
+    def return_value(self) -> str:
         return 'Hello server!'
 
-    def write(self, data):
+    def write(self, data) -> None:
         self.write_data = data
 
 
@@ -37,7 +37,7 @@ class AppFirewall(Component):
     def fw_send(self, event, sock):
         return self.__event_is_allow(event)
 
-    def write(self, data):
+    def write(self, data) -> None:
         self.write_data = data
 
     def __event_is_allow(self, event):
@@ -53,10 +53,10 @@ class AppServer(Component):
     write_data = b''
     write_sock = None
 
-    def return_value(self):
+    def return_value(self) -> str:
         return 'Hello client!'
 
-    def write(self, sock, data):
+    def write(self, sock, data) -> None:
         self.write_sock = sock
         self.write_data = data
 
@@ -70,7 +70,7 @@ def app_client(request, manager, watcher):
     app.protocol = Protocol().register(app)
     watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -91,7 +91,7 @@ def app_firewall(request, manager, watcher):
     ).register(app)
     watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -108,7 +108,7 @@ def app_server(request, manager, watcher):
     app.protocol = Protocol(sock='sock obj', server=True).register(app)
     watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
 
     request.addfinalizer(finalizer)
@@ -116,7 +116,7 @@ def app_server(request, manager, watcher):
     return app
 
 
-def test_add_buffer(app_client, watcher):
+def test_add_buffer(app_client, watcher) -> None:
     packet = str.encode(dump_event(return_value(), 1))
     app_client.protocol.add_buffer(packet)
     assert watcher.wait('return_value_success')
@@ -129,7 +129,7 @@ def test_add_buffer(app_client, watcher):
     assert app_client.write_data == str.encode(dump_value(value) + '~~~')
 
 
-def test_add_buffer_server(app_server, watcher):
+def test_add_buffer_server(app_server, watcher) -> None:
     packet = str.encode(dump_event(return_value(), 1))
     app_server.protocol.add_buffer(packet)
     assert watcher.wait('return_value_success')
@@ -143,7 +143,7 @@ def test_add_buffer_server(app_server, watcher):
     assert app_server.write_sock == 'sock obj'
 
 
-def test_firewall_receive(app_firewall, watcher):
+def test_firewall_receive(app_firewall, watcher) -> None:
     # good event
     packet = str.encode(dump_event(return_value(), 1))
     app_firewall.protocol.add_buffer(packet)
@@ -162,7 +162,7 @@ def test_firewall_receive(app_firewall, watcher):
     assert watcher.wait('firewall_block')
 
 
-def test_firewall_send(app_firewall, watcher):
+def test_firewall_send(app_firewall, watcher) -> None:
     # good event
     event = return_value()
     generator = app_firewall.protocol.send(event)
@@ -183,7 +183,7 @@ def test_firewall_send(app_firewall, watcher):
     assert watcher.wait('firewall_block')
 
 
-def test_send(app_client, watcher):
+def test_send(app_client, watcher) -> None:
     event = return_value()
     generator = app_client.protocol.send(event)
     next(generator)  # exec
@@ -200,7 +200,7 @@ def test_send(app_client, watcher):
     assert next(generator).getValue() == value.value
 
 
-def test_send_server(app_server, watcher):
+def test_send_server(app_server, watcher) -> None:
     event = return_value()
     generator = app_server.protocol.send(event)
     next(generator)  # exec

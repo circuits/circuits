@@ -5,13 +5,13 @@ from circuits import Component, Event
 
 
 class hello(Event):
-    """hello Event"""
+    """hello Event."""
 
     success = True
 
 
 class App(Component):
-    def hello(self, event, *args, **kwargs):
+    def hello(self, event, *args, **kwargs) -> str:
         if kwargs.get('stop', False):
             event.stop()
         return 'Hello World!'
@@ -22,7 +22,7 @@ def app(request, manager, watcher):
     app = (App() + App()).register(manager)
     watcher.wait('registered')
 
-    def finalizer():
+    def finalizer() -> None:
         app.unregister()
         watcher.wait('unregistered')
 
@@ -31,13 +31,13 @@ def app(request, manager, watcher):
     return app
 
 
-def test_normal(app, watcher):
+def test_normal(app, watcher) -> None:
     x = app.fire(hello())
     watcher.wait('hello_success')
     assert x.value == ['Hello World!', 'Hello World!']
 
 
-def test_filter(app, watcher):
+def test_filter(app, watcher) -> None:
     x = app.fire(hello(stop=True))
     watcher.wait('hello_success')
     assert x.value == 'Hello World!'

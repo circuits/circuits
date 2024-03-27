@@ -1,4 +1,5 @@
 import base64
+import contextlib
 import hashlib
 
 from circuits import BaseComponent, handler
@@ -29,7 +30,7 @@ class WebSocketsDispatcher(BaseComponent):
 
     channel = 'web'
 
-    def __init__(self, path=None, wschannel='wsserver', *args, **kwargs):
+    def __init__(self, path=None, wschannel='wsserver', *args, **kwargs) -> None:
         """
         :param path: the path to handle. Requests that start with this
             path are considered to be WebSocket Opening Handshakes.
@@ -47,7 +48,7 @@ class WebSocketsDispatcher(BaseComponent):
         self._codecs = {}
 
         @handler('read', channel=wschannel, priority=100)
-        def _on_read_handler(self, event, socket, data):
+        def _on_read_handler(self, event, socket, data) -> None:
             if socket in self._requests:
                 event.request = self._requests[socket]
 
@@ -87,10 +88,8 @@ class WebSocketsDispatcher(BaseComponent):
             # Successful completion
             response.status = 101
             response.close = False
-            try:
+            with contextlib.suppress(KeyError):
                 del response.headers['Content-Type']
-            except KeyError:
-                pass
             response.headers['Upgrade'] = 'WebSocket'
             response.headers['Connection'] = 'Upgrade'
             response.headers['Sec-WebSocket-Accept'] = accept.decode('ASCII')
@@ -107,7 +106,7 @@ class WebSocketsDispatcher(BaseComponent):
         return subprotocols[0]
 
     @handler('response_complete')
-    def _on_response_complete(self, e, value):
+    def _on_response_complete(self, e, value) -> None:
         response = e.args[0]
         request = response.request
         if request.sock in self._codecs:
@@ -120,7 +119,7 @@ class WebSocketsDispatcher(BaseComponent):
             self.fire(cevent, self._wschannel)
 
     @handler('disconnect')
-    def _on_disconnect(self, sock):
+    def _on_disconnect(self, sock) -> None:
         if sock in self._codecs:
             devent = disconnect(sock)
             devent.request = self._requests.get(sock)

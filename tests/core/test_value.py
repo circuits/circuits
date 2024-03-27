@@ -1,5 +1,6 @@
 #!/usr/bin/python -i
 from types import TracebackType
+from typing import NoReturn
 
 import pytest
 
@@ -7,47 +8,48 @@ from circuits import Component, Event, handler
 
 
 class hello(Event):
-    """Hello Event"""
+    """Hello Event."""
 
 
 class test(Event):
-    """test Event"""
+    """test Event."""
 
 
 class foo(Event):
-    """foo Event"""
+    """foo Event."""
 
 
 class values(Event):
-    """values Event"""
+    """values Event."""
 
     complete = True
 
 
 class App(Component):
-    def hello(self):
+    def hello(self) -> str:
         return 'Hello World!'
 
     def test(self):
         return self.fire(hello())
 
-    def foo(self):
-        raise Exception('ERROR')
+    def foo(self) -> NoReturn:
+        msg = 'ERROR'
+        raise Exception(msg)
 
     @handler('hello_value_changed')
-    def _on_hello_value_changed(self, value):
+    def _on_hello_value_changed(self, value) -> None:
         self.value = value
 
     @handler('test_value_changed')
-    def _on_test_value_changed(self, value):
+    def _on_test_value_changed(self, value) -> None:
         self.value = value
 
     @handler('values', priority=2.0)
-    def _value1(self):
+    def _value1(self) -> str:
         return 'foo'
 
     @handler('values', priority=1.0)
-    def _value2(self):
+    def _value2(self) -> str:
         return 'bar'
 
     @handler('values', priority=0.0)
@@ -60,7 +62,7 @@ def app(request, simple_manager):
     return App().register(simple_manager)
 
 
-def test_value(app, simple_manager):
+def test_value(app, simple_manager) -> None:
     x = app.fire(hello())
     simple_manager.run()
 
@@ -68,7 +70,7 @@ def test_value(app, simple_manager):
     assert x.value == 'Hello World!'
 
 
-def test_nested_value(app, simple_manager):
+def test_nested_value(app, simple_manager) -> None:
     x = app.fire(test())
     simple_manager.run()
 
@@ -76,7 +78,7 @@ def test_nested_value(app, simple_manager):
     assert str(x) == 'Hello World!'
 
 
-def test_value_notify(app, simple_manager):
+def test_value_notify(app, simple_manager) -> None:
     ev = hello()
     ev.notify = True
     x = app.fire(ev)
@@ -88,7 +90,7 @@ def test_value_notify(app, simple_manager):
     assert app.value is x
 
 
-def test_nested_value_notify(app, simple_manager):
+def test_nested_value_notify(app, simple_manager) -> None:
     ev = test()
     ev.notify = True
     x = app.fire(ev)
@@ -100,7 +102,7 @@ def test_nested_value_notify(app, simple_manager):
     assert app.value is x
 
 
-def test_error_value(app, simple_manager):
+def test_error_value(app, simple_manager) -> None:
     x = app.fire(foo())
     simple_manager.run()
 
@@ -110,7 +112,7 @@ def test_error_value(app, simple_manager):
     assert isinstance(etraceback, TracebackType)
 
 
-def test_multiple_values(app, simple_manager):
+def test_multiple_values(app, simple_manager) -> None:
     v = app.fire(values())
     simple_manager.run()
 

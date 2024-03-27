@@ -5,11 +5,11 @@ from circuits.web import Controller
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test(webapp):
+def test(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.auto_open = False
     connection.connect()

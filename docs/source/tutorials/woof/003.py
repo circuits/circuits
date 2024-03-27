@@ -4,7 +4,7 @@ from circuits import Component
 
 
 class MyComponent(Component):
-    def started(self, *args):
+    def started(self, *args) -> None:
         print('Hello World!')
 
 

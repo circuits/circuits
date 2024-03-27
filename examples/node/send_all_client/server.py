@@ -40,12 +40,12 @@ def parse_options():
 
 
 class send_all_event(Event):
-    def __init__(self, infos):
+    def __init__(self, infos) -> None:
         super().__init__(infos)
 
 
 class NodeServer(Component):
-    def init(self, args, opts):
+    def init(self, args, opts) -> None:
         if opts.debug:
             Debugger().register(self)
 
@@ -57,23 +57,23 @@ class NodeServer(Component):
 
         self.node = Node(port=port, server_ip=address).register(self)
 
-    def connect(self, sock, host, port):
+    def connect(self, sock, host, port) -> None:
         print('Peer connected: %s:%d' % (host, port))
 
-    def disconnect(self, sock):
+    def disconnect(self, sock) -> None:
         print('Peer disconnected: %s' % sock)
 
-    def ready(self, server, bind):
+    def ready(self, server, bind) -> None:
         print('Server ready: %s:%d' % bind)
         Timer(3, Event.create('send_all'), persist=True).register(self)
 
-    def send_all(self):
+    def send_all(self) -> None:
         event = send_all_event(str(datetime.now()))
         print('send: %s' % event)
         self.node.server.send_all(event)
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     # Configure and "run" the System.

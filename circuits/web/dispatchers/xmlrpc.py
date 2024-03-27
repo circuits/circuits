@@ -1,5 +1,5 @@
 """
-XML RPC
+XML RPC.
 
 This module implements a XML RPC dispatcher that translates incoming
 RPC calls over XML into RPC events.
@@ -11,13 +11,13 @@ from circuits import BaseComponent, Event, handler
 
 
 class rpc(Event):
-    """rpc Event"""
+    """rpc Event."""
 
 
 class XMLRPC(BaseComponent):
     channel = 'web'
 
-    def __init__(self, path=None, encoding='utf-8', rpc_channel='*'):
+    def __init__(self, path=None, encoding='utf-8', rpc_channel='*') -> None:
         super().__init__()
 
         self.path = path

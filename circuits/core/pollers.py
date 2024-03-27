@@ -8,6 +8,7 @@ descriptors for read/write events. Pollers:
 - EPoll
 """
 
+import contextlib
 import os
 import platform
 import select
@@ -28,25 +29,25 @@ from .events import Event
 
 
 class _read(Event):
-    """_read Event"""
+    """_read Event."""
 
 
 class _write(Event):
-    """_write Event"""
+    """_write Event."""
 
 
 class _error(Event):
-    """_error Event"""
+    """_error Event."""
 
 
 class _disconnect(Event):
-    """_disconnect Event"""
+    """_disconnect Event."""
 
 
 class BasePoller(BaseComponent):
     channel = None
 
-    def __init__(self, channel=channel):
+    def __init__(self, channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._read = []
@@ -64,7 +65,7 @@ class BasePoller(BaseComponent):
         res_list = []
         exc = []
 
-        def accept():
+        def accept() -> None:
             try:
                 sock, _ = server.accept()
                 sock.setblocking(False)
@@ -81,7 +82,7 @@ class BasePoller(BaseComponent):
         return (res_list[0], clnt_sock)
 
     @handler('generate_events', priority=-9)
-    def _on_generate_events(self, event):
+    def _on_generate_events(self, event) -> None:
         """
         Pollers have slightly higher priority than the default handler
         from Manager to ensure that they are invoked before the
@@ -92,7 +93,7 @@ class BasePoller(BaseComponent):
         event.stop()
         self._generate_events(event)
 
-    def resume(self):
+    def resume(self) -> None:
         if isinstance(self._ctrl_send, socket):
             self._ctrl_send.send(b'\0')
         else:
@@ -106,23 +107,23 @@ class BasePoller(BaseComponent):
         except (OSError, EOFError):
             return b'\0'
 
-    def addReader(self, source, fd):
+    def addReader(self, source, fd) -> None:
         channel = getattr(source, 'channel', '*')
         self._read.append(fd)
         self._targets[fd] = channel
 
-    def addWriter(self, source, fd):
+    def addWriter(self, source, fd) -> None:
         channel = getattr(source, 'channel', '*')
         self._write.append(fd)
         self._targets[fd] = channel
 
-    def removeReader(self, fd):
+    def removeReader(self, fd) -> None:
         if fd in self._read:
             self._read.remove(fd)
         if not (fd in self._read or fd in self._write) and fd in self._targets:
             del self._targets[fd]
 
-    def removeWriter(self, fd):
+    def removeWriter(self, fd) -> None:
         if fd in self._write:
             self._write.remove(fd)
         if not (fd in self._read or fd in self._write) and fd in self._targets:
@@ -134,7 +135,7 @@ class BasePoller(BaseComponent):
     def isWriting(self, fd):
         return fd in self._write
 
-    def discard(self, fd):
+    def discard(self, fd) -> None:
         if fd in self._read:
             self._read.remove(fd)
         if fd in self._write:
@@ -148,7 +149,7 @@ class BasePoller(BaseComponent):
 
 class Select(BasePoller):
     """
-    Select(...) -> new Select Poller Component
+    Select(...) -> new Select Poller Component.
 
     Creates a new Select Poller Component that uses the select poller
     implementation. This poller is not recommended but is available for legacy
@@ -158,12 +159,12 @@ class Select(BasePoller):
 
     channel = 'select'
 
-    def __init__(self, channel=channel):
+    def __init__(self, channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._read.append(self._ctrl_recv)
 
-    def _preenDescriptors(self):
+    def _preenDescriptors(self) -> None:
         for socks in (self._read[:], self._write[:]):
             for sock in socks:
                 try:
@@ -189,7 +190,7 @@ class Select(BasePoller):
             return self._preenDescriptors()
         except OSError as e:
             # select(2) encountered an error
-            if e.args[0] in (0, 2):
+            if e.args[0] in {0, 2}:
                 # windows does this if it got an empty list
                 if (not self._read) and (not self._write):
                     return None
@@ -211,11 +212,12 @@ class Select(BasePoller):
                 continue
             if self.isReading(sock):
                 self.fire(_read(sock), self.getTarget(sock))
+        return None
 
 
 class Poll(BasePoller):
     """
-    Poll(...) -> new Poll Poller Component
+    Poll(...) -> new Poll Poller Component.
 
     Creates a new Poll Poller Component that uses the poll poller
     implementation.
@@ -223,7 +225,7 @@ class Poll(BasePoller):
 
     channel = 'poll'
 
-    def __init__(self, channel=channel):
+    def __init__(self, channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._map = {}
@@ -234,13 +236,11 @@ class Poll(BasePoller):
         self._read.append(self._ctrl_recv)
         self._updateRegistration(self._ctrl_recv)
 
-    def _updateRegistration(self, fd):
+    def _updateRegistration(self, fd) -> None:
         fileno = fd.fileno() if not isinstance(fd, int) else fd
 
-        try:
+        with contextlib.suppress(KeyError, ValueError):
             self._poller.unregister(fileno)
-        except (KeyError, ValueError):
-            pass
 
         mask = 0
 
@@ -254,38 +254,33 @@ class Poll(BasePoller):
             self._map[fileno] = fd
         else:
             super().discard(fd)
-            try:
+            with contextlib.suppress(KeyError):
                 del self._map[fileno]
-            except KeyError:
-                pass
 
-    def addReader(self, source, fd):
+    def addReader(self, source, fd) -> None:
         super().addReader(source, fd)
         self._updateRegistration(fd)
 
-    def addWriter(self, source, fd):
+    def addWriter(self, source, fd) -> None:
         super().addWriter(source, fd)
         self._updateRegistration(fd)
 
-    def removeReader(self, fd):
+    def removeReader(self, fd) -> None:
         super().removeReader(fd)
         self._updateRegistration(fd)
 
-    def removeWriter(self, fd):
+    def removeWriter(self, fd) -> None:
         super().removeWriter(fd)
         self._updateRegistration(fd)
 
-    def discard(self, fd):
+    def discard(self, fd) -> None:
         super().discard(fd)
         self._updateRegistration(fd)
 
-    def _generate_events(self, event):
+    def _generate_events(self, event) -> None:
         try:
             timeout = event.time_left
-            if timeout < 0:
-                ll = self._poller.poll()
-            else:
-                ll = self._poller.poll(1000 * timeout)
+            ll = self._poller.poll() if timeout < 0 else self._poller.poll(1000 * timeout)
         except OSError as e:
             if e.args[0] == EINTR:
                 return
@@ -294,7 +289,7 @@ class Poll(BasePoller):
         for fileno, event in ll:
             self._process(fileno, event)
 
-    def _process(self, fileno, event):
+    def _process(self, fileno, event) -> None:
         if fileno not in self._map:
             return
 
@@ -324,7 +319,7 @@ class Poll(BasePoller):
 
 class EPoll(BasePoller):
     """
-    EPoll(...) -> new EPoll Poller Component
+    EPoll(...) -> new EPoll Poller Component.
 
     Creates a new EPoll Poller Component that uses the epoll poller
     implementation.
@@ -332,7 +327,7 @@ class EPoll(BasePoller):
 
     channel = 'epoll'
 
-    def __init__(self, channel=channel):
+    def __init__(self, channel=channel) -> None:
         super().__init__(channel=channel)
 
         self._map = {}
@@ -343,7 +338,7 @@ class EPoll(BasePoller):
         self._read.append(self._ctrl_recv)
         self._updateRegistration(self._ctrl_recv)
 
-    def _updateRegistration(self, fd):
+    def _updateRegistration(self, fd) -> None:
         try:
             fileno = fd.fileno() if not isinstance(fd, int) else fd
             self._poller.unregister(fileno)
@@ -366,33 +361,30 @@ class EPoll(BasePoller):
         else:
             super().discard(fd)
 
-    def addReader(self, source, fd):
+    def addReader(self, source, fd) -> None:
         super().addReader(source, fd)
         self._updateRegistration(fd)
 
-    def addWriter(self, source, fd):
+    def addWriter(self, source, fd) -> None:
         super().addWriter(source, fd)
         self._updateRegistration(fd)
 
-    def removeReader(self, fd):
+    def removeReader(self, fd) -> None:
         super().removeReader(fd)
         self._updateRegistration(fd)
 
-    def removeWriter(self, fd):
+    def removeWriter(self, fd) -> None:
         super().removeWriter(fd)
         self._updateRegistration(fd)
 
-    def discard(self, fd):
+    def discard(self, fd) -> None:
         super().discard(fd)
         self._updateRegistration(fd)
 
-    def _generate_events(self, event):
+    def _generate_events(self, event) -> None:
         try:
             timeout = event.time_left
-            if timeout < 0:
-                ll = self._poller.poll()
-            else:
-                ll = self._poller.poll(timeout)
+            ll = self._poller.poll() if timeout < 0 else self._poller.poll(timeout)
         except OSError as e:
             if e.args[0] == EINTR:
                 return
@@ -404,7 +396,7 @@ class EPoll(BasePoller):
         for fileno, event in ll:
             self._process(fileno, event)
 
-    def _process(self, fileno, event):
+    def _process(self, fileno, event) -> None:
         if fileno not in self._map:
             return
 
@@ -434,7 +426,7 @@ class EPoll(BasePoller):
 
 class KQueue(BasePoller):
     """
-    KQueue(...) -> new KQueue Poller Component
+    KQueue(...) -> new KQueue Poller Component.
 
     Creates a new KQueue Poller Component that uses the kqueue poller
     implementation.
@@ -442,7 +434,7 @@ class KQueue(BasePoller):
 
     channel = 'kqueue'
 
-    def __init__(self, channel=channel):
+    def __init__(self, channel=channel) -> None:
         super().__init__(channel=channel)
         self._map = {}
         self._poller = select.kqueue()
@@ -451,25 +443,25 @@ class KQueue(BasePoller):
         self._map[self._ctrl_recv.fileno()] = self._ctrl_recv
         self._poller.control([select.kevent(self._ctrl_recv, select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0)
 
-    def addReader(self, source, sock):
+    def addReader(self, source, sock) -> None:
         super().addReader(source, sock)
         self._map[sock.fileno()] = sock
         self._poller.control([select.kevent(sock, select.KQ_FILTER_READ, select.KQ_EV_ADD)], 0)
 
-    def addWriter(self, source, sock):
+    def addWriter(self, source, sock) -> None:
         super().addWriter(source, sock)
         self._map[sock.fileno()] = sock
         self._poller.control([select.kevent(sock, select.KQ_FILTER_WRITE, select.KQ_EV_ADD)], 0)
 
-    def removeReader(self, sock):
+    def removeReader(self, sock) -> None:
         super().removeReader(sock)
         self._poller.control([select.kevent(sock, select.KQ_FILTER_READ, select.KQ_EV_DELETE)], 0)
 
-    def removeWriter(self, sock):
+    def removeWriter(self, sock) -> None:
         super().removeWriter(sock)
         self._poller.control([select.kevent(sock, select.KQ_FILTER_WRITE, select.KQ_EV_DELETE)], 0)
 
-    def discard(self, sock):
+    def discard(self, sock) -> None:
         super().discard(sock)
         del self._map[sock.fileno()]
         self._poller.control(
@@ -477,13 +469,10 @@ class KQueue(BasePoller):
             0,
         )
 
-    def _generate_events(self, event):
+    def _generate_events(self, event) -> None:
         try:
             timeout = event.time_left
-            if timeout < 0:
-                ll = self._poller.control(None, 1000)
-            else:
-                ll = self._poller.control(None, 1000, timeout)
+            ll = self._poller.control(None, 1000) if timeout < 0 else self._poller.control(None, 1000, timeout)
         except OSError as e:
             if e[0] == EINTR:
                 return
@@ -492,7 +481,7 @@ class KQueue(BasePoller):
         for event in ll:
             self._process(event)
 
-    def _process(self, event):
+    def _process(self, event) -> None:
         if event.ident not in self._map:
             # shouldn't happen ?
             # we unregister the socket since we don't care about it anymore

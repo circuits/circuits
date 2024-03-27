@@ -8,21 +8,21 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(self, *args, **kwargs)
 
         fd, self.filename = mkstemp()
         os.write(fd, b'Hello World!')
         os.close(fd)
 
-    def __del__(self):
+    def __del__(self) -> None:
         os.remove(self.filename)
 
     def index(self):
         return self.serve_file(self.filename)
 
 
-def test(webapp):
+def test(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'

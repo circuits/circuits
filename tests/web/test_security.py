@@ -9,24 +9,24 @@ from .helpers import HTTPError, urlopen
 
 
 class Root(Controller):
-    def index(self):
+    def index(self) -> str:
         return 'Hello World!'
 
 
-def test_root(webapp):
+def test_root(webapp) -> None:
     f = urlopen(webapp.server.http.base)
     s = f.read()
     assert s == b'Hello World!'
 
 
-def test_badpath_notfound(webapp):
+def test_badpath_notfound(webapp) -> None:
     url = '%s/../../../../../../etc/passwd' % webapp.server.http.base
     with pytest.raises(HTTPError) as exc:
         urlopen(url)
     assert exc.value.code == 404
 
 
-def test_badpath_redirect(webapp):
+def test_badpath_redirect(webapp) -> None:
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 

@@ -3,9 +3,9 @@ from circuits.web import Controller, Logger, Server
 
 
 class Root(Controller):
-    def GET(self, *args, **kwargs):
+    def GET(self, *args, **kwargs) -> str:
         """
-        GET Request Handler
+        GET Request Handler.
 
         The default Dispatcher in circuits.web also looks for GET, POST,
         PUT, DELETE and HEAD Request handlers on registered Controller(s).
@@ -14,16 +14,16 @@ class Root(Controller):
         """
         return f'GET({args!r:s}, {kwargs!r:s})'
 
-    def POST(self, *args, **kwargs):
+    def POST(self, *args, **kwargs) -> str:
         return f'POST({args!r:s}, {kwargs!r:s})'
 
-    def PUT(self, *args, **kwargs):
+    def PUT(self, *args, **kwargs) -> str:
         return f'PUT({args!r:s}, {kwargs!r:s})'
 
-    def DELETE(self, *args, **kwargs):
+    def DELETE(self, *args, **kwargs) -> str:
         return f'DELETE({args!r:s}, {kwargs!r:s})'
 
-    def HEAD(self, *args, **kwargs):
+    def HEAD(self, *args, **kwargs) -> str:
         return f'HEAD({args!r:s}, {kwargs!r:s})'
 
 

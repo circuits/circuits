@@ -39,7 +39,7 @@ def parse_options():
 
 
 class NodeServer(Component):
-    def init(self, args, opts):
+    def init(self, args, opts) -> None:
         if opts.debug:
             Debugger().register(self)
 
@@ -51,13 +51,13 @@ class NodeServer(Component):
 
         Node(port=port, server_ip=address).register(self)
 
-    def connect(self, sock, host, port):
+    def connect(self, sock, host, port) -> None:
         print('Peer connected: %s:%d' % (host, port))
 
-    def disconnect(self, sock):
+    def disconnect(self, sock) -> None:
         print('Peer disconnected: %s' % sock)
 
-    def ready(self, server, bind):
+    def ready(self, server, bind) -> None:
         print('Server ready: %s:%d' % bind)
 
     @handler('increment')
@@ -66,7 +66,7 @@ class NodeServer(Component):
         return value + 1
 
 
-def main():
+def main() -> None:
     opts, args = parse_options()
 
     # Configure and "run" the System.

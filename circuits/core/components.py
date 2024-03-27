@@ -4,6 +4,7 @@ from collections.abc import Callable
 from inspect import getmembers
 from itertools import chain
 from types import MethodType
+from typing import Optional
 
 from .events import Event, registered, unregistered
 from .handlers import HandlerMetaClass, handler
@@ -27,10 +28,10 @@ class prepare_unregister(Event):
 
     complete = True
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def in_subtree(self, component):
+    def in_subtree(self, component) -> Optional[bool]:
         """
         Convenience method that checks if the given *component*
         is in the subtree that is about to be detached.
@@ -98,8 +99,8 @@ class BaseComponent(Manager):
 
         return self
 
-    def __init__(self, *args, **kwargs):
-        """Initializes x; see x.__class__.__doc__ for signature"""
+    def __init__(self, *args, **kwargs) -> None:
+        """Initializes x; see x.__class__.__doc__ for signature."""
         super().__init__(*args, **kwargs)
 
         self.channel = kwargs.get('channel', self.channel) or '*'
@@ -108,14 +109,14 @@ class BaseComponent(Manager):
             if getattr(v, 'handler', False) is True:
                 self.addHandler(v)
             # TODO: Document this feature. See Issue #88
-            if v is not self and isinstance(v, BaseComponent) and v not in ('parent', 'root'):
+            if v is not self and isinstance(v, BaseComponent) and v not in {'parent', 'root'}:
                 v.register(self)
 
         if hasattr(self, 'init') and isinstance(self.init, Callable):
             self.init(*args, **kwargs)
 
         @handler('prepare_unregister_complete', channel=self)
-        def _on_prepare_unregister_complete(self, event, e, value):
+        def _on_prepare_unregister_complete(self, event, e, value) -> None:
             self._do_prepare_unregister_complete(event.parent, value)
 
         self.addHandler(_on_prepare_unregister_complete)
@@ -190,26 +191,26 @@ class BaseComponent(Manager):
         self._updateRoot(self)
         return self
 
-    def _updateRoot(self, root):
+    def _updateRoot(self, root) -> None:
         self.root = root
         for c in self.components:
             c._updateRoot(root)
 
     @classmethod
     def handlers(cls):
-        """Returns a list of all event handlers for this Component"""
+        """Returns a list of all event handlers for this Component."""
         return list({getattr(cls, k) for k in dir(cls) if getattr(getattr(cls, k), 'handler', False)})
 
     @classmethod
     def events(cls):
-        """Returns a list of all events this Component listens to"""
+        """Returns a list of all events this Component listens to."""
         handlers = (getattr(cls, k).names for k in dir(cls) if getattr(getattr(cls, k), 'handler', False))
 
         return list({name for name in chain(*handlers) if not name.startswith('_')})
 
     @classmethod
     def handles(cls, *names):
-        """Returns True if all names are event handlers of this Component"""
+        """Returns True if all names are event handlers of this Component."""
         return all(name in cls.events() for name in names)
 
 

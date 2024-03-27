@@ -31,25 +31,25 @@ from circuits.protocols.irc import (
 
 
 class App(Component):
-    def init(self):
+    def init(self) -> None:
         IRC().register(self)
 
         self.data = []
         self.events = []
 
     @handler(False)
-    def reset(self):
+    def reset(self) -> None:
         self.data = []
         self.events = []
 
     @handler()
-    def _on_event(self, event, *args, **kwargs):
+    def _on_event(self, event, *args, **kwargs) -> None:
         self.events.append(event)
 
-    def request(self, message):
+    def request(self, message) -> None:
         self.fire(write(bytes(message)))
 
-    def write(self, data):
+    def write(self, data) -> None:
         self.data.append(data)
 
 
@@ -63,7 +63,7 @@ def app(request):
     return app
 
 
-def test_strip():
+def test_strip() -> None:
     s = ':\x01\x02test\x02\x01'
     s = strip(s)
     assert s == '\x01\x02test\x02\x01'
@@ -73,13 +73,13 @@ def test_strip():
     assert s == 'test'
 
 
-def test_joinprefix():
+def test_joinprefix() -> None:
     nick, ident, host = 'test', 'foo', 'localhost'
     s = joinprefix(nick, ident, host)
     assert s == 'test!foo@localhost'
 
 
-def test_parsemsg():
+def test_parsemsg() -> None:
     s = b':foo!bar@localhost NICK foobar'
     source, command, args = parsemsg(s)
     assert source == ('foo', 'bar', 'localhost')
@@ -93,7 +93,7 @@ def test_parsemsg():
     assert args == []
 
 
-def test_parseprefix():
+def test_parseprefix() -> None:
     s = 'test!foo@localhost'
     nick, ident, host = parseprefix(s)
     assert nick == 'test'
@@ -140,7 +140,7 @@ def test_parseprefix():
         pytest.param(WHOIS('somenick'), b'WHOIS :somenick\r\n', marks=pytest.mark.xfail),
     ],
 )
-def test_commands(event, data):
+def test_commands(event, data) -> None:
     message = event.args[0]
     assert bytes(message) == data
 
@@ -159,7 +159,7 @@ def test_commands(event, data):
         ),
     ],
 )
-def test_responses(app, data, event):
+def test_responses(app, data, event) -> None:
     app.reset()
     app.fire(read(data))
     while len(app):
@@ -200,5 +200,5 @@ def test_responses(app, data, event):
         ('\x0302blue', '\x1b[34mblue\x1b[m'),
     ],
 )
-def test_ansi_color(inp, out):
+def test_ansi_color(inp, out) -> None:
     assert irc_color_to_ansi(inp) == out
