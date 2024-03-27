@@ -10,6 +10,7 @@ import pytest
 
 from . import app
 
+
 pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 
 

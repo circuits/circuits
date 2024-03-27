@@ -6,6 +6,7 @@ from mako.lookup import TemplateLookup
 
 from circuits.web import Controller, Server, Static
 
+
 DEFAULTS = {}
 
 templates = TemplateLookup(

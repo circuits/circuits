@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+
 import pytest
 
 from circuits.web import Controller

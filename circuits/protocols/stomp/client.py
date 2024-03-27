@@ -13,11 +13,12 @@ from circuits.protocols.stomp.events import (
 )
 from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
 
+
 try:
     from stompest.config import StompConfig
-    from stompest.protocol import StompSpec, StompSession
-    from stompest.sync import Stomp
     from stompest.error import StompConnectionError, StompError
+    from stompest.protocol import StompSession, StompSpec
+    from stompest.sync import Stomp
     from stompest.sync.client import LOG_CATEGORY
 except ImportError:
     raise ImportError("No stomp support available.  Is stompest installed?")

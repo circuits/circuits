@@ -12,7 +12,8 @@ from errno import (
 )
 from socket import (
     AF_INET, AF_INET6, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR,
-    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, gaierror, getaddrinfo, getfqdn, gethostbyname, gethostname, socket,
+    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, gaierror, getaddrinfo,
+    getfqdn, gethostbyname, gethostname, socket,
 )
 from time import time
 
@@ -27,6 +28,7 @@ from .events import (
     ready, unreachable, write,
 )
 
+
 try:
     from socket import AF_UNIX
 except ImportError:
@@ -38,9 +40,10 @@ except ImportError:
     socketpair = None
 
 try:
-    from ssl import wrap_socket as ssl_socket
-    from ssl import CERT_NONE, PROTOCOL_SSLv23
-    from ssl import SSLError, SSL_ERROR_WANT_WRITE, SSL_ERROR_WANT_READ
+    from ssl import (
+        CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23,
+        SSLError, wrap_socket as ssl_socket,
+    )
 
     HAS_SSL = 1
 except ImportError:

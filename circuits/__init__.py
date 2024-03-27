@@ -22,6 +22,7 @@ from .core import (
     TimeoutError, Timer, Worker, handler, ipc, reprhandler, sleep, task,
 )
 
+
 # See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
 try:
     __import__('pkg_resources').declare_namespace(__name__)

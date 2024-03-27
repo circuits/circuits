@@ -14,6 +14,7 @@ from .utils import (  # noqa
     irc_color_to_ansi, joinprefix, parsemsg, parseprefix, strip,
 )
 
+
 sourceJoin = joinprefix
 sourceSplit = parseprefix
 

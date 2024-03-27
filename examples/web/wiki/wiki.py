@@ -8,6 +8,7 @@ from creoleparser import Parser, create_dialect, creole11_base
 import circuits
 from circuits.web import Controller, Logger, Server, Static
 
+
 text2html = Parser(
     create_dialect(creole11_base, macro_func=macros.dispatcher),
     method="xhtml",

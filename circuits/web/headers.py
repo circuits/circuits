@@ -5,6 +5,7 @@ This module implements support for parsing and handling headers.
 """
 import re
 
+
 # Regular expression that matches `special' characters in parameters, the
 # existence of which force quoting of the parameter value.
 

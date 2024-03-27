@@ -26,6 +26,7 @@ from hashlib import md5
 
 from .helpers import urlparse
 
+
 logger = logging.getLogger()
 
 

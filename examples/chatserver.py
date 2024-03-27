@@ -11,6 +11,7 @@ from circuits import Component, Debugger
 from circuits.net.events import write
 from circuits.net.sockets import TCPServer
 
+
 __version__ = "0.0.1"
 
 USAGE = "%prog [options]"

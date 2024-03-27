@@ -1,7 +1,7 @@
 """This module defines the Manager class."""
+import _thread
 import atexit
 import types
-import _thread
 from collections import deque
 from heapq import heappop, heappush
 from inspect import isfunction
@@ -20,6 +20,7 @@ from uuid import uuid4 as uuid
 from .events import Event, exception, generate_events, signal, started, stopped
 from .handlers import handler
 from .values import Value
+
 
 try:
     from signal import SIGKILL
@@ -736,8 +737,8 @@ class Manager:
         if process:
             # Parent<->Child Bridge
             if link is not None:
-                from circuits.net.sockets import Pipe
                 from circuits.core.bridge import Bridge
+                from circuits.net.sockets import Pipe
 
                 channels = (uuid(),) * 2
                 parent, child = Pipe(*channels)

@@ -5,6 +5,7 @@ import pytest
 
 from circuits import Component, handler
 
+
 try:
     from circuits.io.notify import Notify
 except ImportError:

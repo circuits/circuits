@@ -6,6 +6,7 @@ from circuits.core import Value
 from circuits.node.protocol import Protocol
 from circuits.node.utils import dump_event, dump_value
 
+
 pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Broken on Windows')
 
 

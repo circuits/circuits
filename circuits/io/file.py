@@ -22,6 +22,7 @@ from circuits.tools import tryimport
 
 from .events import close, closed, eof, error, opened, read, ready
 
+
 fcntl = tryimport("fcntl")
 
 TIMEOUT = 0.2

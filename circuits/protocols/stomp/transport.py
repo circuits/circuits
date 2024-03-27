@@ -4,9 +4,10 @@ import logging
 import socket
 import ssl
 
+
 try:
-    from stompest.sync.transport import StompFrameTransport
     from stompest.error import StompConnectionError
+    from stompest.sync.transport import StompFrameTransport
 except ImportError:
     raise ImportError("No stomp support available.  Is stompest installed?")
 

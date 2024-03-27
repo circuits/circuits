@@ -18,6 +18,7 @@ from .components import BaseComponent
 from .events import Event
 from .handlers import handler
 
+
 DEFAULT_WORKERS = 10
 
 

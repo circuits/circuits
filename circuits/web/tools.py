@@ -21,6 +21,7 @@ from . import _httpauth
 from .errors import httperror, notfound, redirect, unauthorized
 from .utils import compress, get_ranges
 
+
 mimetypes.init()
 mimetypes.add_type("image/x-dwg", ".dwg")
 mimetypes.add_type("image/x-icon", ".ico")

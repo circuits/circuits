@@ -14,6 +14,7 @@ from circuits.net.sockets import UNIXClient, UNIXServer, close, connect, write
 from .client import Client
 from .server import Server
 
+
 if sys.platform in ("win32", "cygwin"):
     pytest.skip("Test Not Applicable on Windows")
 

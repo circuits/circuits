@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 
 from ..headers import Headers
 
+
 METHOD_RE = re.compile("^[A-Z0-9$-_.]{1,20}$")
 VERSION_RE = re.compile(r"^HTTP/(\d+).(\d+)$")
 STATUS_RE = re.compile(r"^(\d{3})(?:\s+([\s\w]*))$")

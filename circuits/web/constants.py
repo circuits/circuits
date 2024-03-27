@@ -5,6 +5,7 @@ This module implements required shared global constants.
 """
 from circuits import __version__
 
+
 SERVER_PROTOCOL = (1, 1)
 SERVER_VERSION = "circuits.web/%s" % __version__
 SERVER_URL = "http://circuitsweb.com/"
