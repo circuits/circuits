@@ -1,13 +1,13 @@
 .. _#circuits IRC Channel: https://web.libera.chat/#circuits
 .. _Mailing List: http://groups.google.com/group/circuits-users
 
-.. faq:
+.. faq::
 
 Frequently Asked Questions
 ==========================
 
 
-.. general:
+.. general::
 
 General
 -------
