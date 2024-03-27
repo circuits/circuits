@@ -32,43 +32,43 @@ Here is the basic example:
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/env python
-    
+
     import os
-    
+
 
     import mako
     from mako.lookup import TemplateLookup
-    
-    
+
+
     from circuits.web import Server, Controller
-    
-    
+
+
     templates = TemplateLookup(
         directories=[os.path.join(os.path.dirname(__file__), "tpl")],
         module_directory="/tmp",
         output_encoding="utf-8"
     )
-    
-    
+
+
     def render(name, **d): #**
         try:
             return templates.get_template(name).render(**d) #**
         except:
             return mako.exceptions.html_error_template().render()
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             return render("index.html")
-        
+
         def submit(self, firstName, lastName):
             msg = "Thank you %s %s" % (firstName, lastName)
             return render("index.html", message=msg)
-    
-    
+
+
     (Server(8000) + Root()).run()
 
 
@@ -123,29 +123,29 @@ trivial example:
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/env python
-    
+
     from circuits.net.events import write
     from circuits import Component, Debugger
     from circuits.web.dispatchers import WebSocketsDispatcher
     from circuits.web import Controller, Logger, Server, Static
-    
-    
+
+
     class Echo(Component):
-        
+
         channel = "wsserver"
-        
+
         def read(self, sock, data):
             self.fireEvent(write(sock, "Received: " + data))
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             return "Hello World!"
-    
-    
+
+
     app = Server(("0.0.0.0", 8000))
     Debugger().register(app)
     Static().register(app)
@@ -169,14 +169,14 @@ Here is a simple example of handling form data:
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/env python
-    
+
     from circuits.web import Server, Controller
-    
-    
+
+
     class Root(Controller):
-        
+
         html = """\
     <html>
      <head>
@@ -209,15 +209,15 @@ Here is a simple example of handling form data:
       </form>
      </body>
     </html>"""
-        
-        
+
+
         def index(self):
             return self.html
-        
+
         def submit(self, firstName, lastName):
             return "Hello %s %s" % (firstName, lastName)
-    
-    
+
+
     (Server(8000) + Root()).run(
 
 
@@ -229,7 +229,7 @@ You can easily handle File Uploads as well using the same techniques as above.
 Basically the "name" you give your <input> tag of type="file" will get passed
 as the Keyword Argument to your Request Handler. It has the following two
 attributes::
-    
+
     .filename - The name of the uploaded file.
     .value - The contents of the uploaded file.
 
@@ -237,12 +237,12 @@ Here's the code!
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/env python
-    
+
     from circuits.web import Server, Controller
-    
-    
+
+
     UPLOAD_FORM = """
     <html>
      <head>
@@ -258,7 +258,7 @@ Here's the code!
      </body>
     </html>
     """
-    
+
     UPLOADED_FILE = """
     <html>
      <head>
@@ -277,8 +277,8 @@ Here's the code!
      </body>
     </html>
     """
-    
-    
+
+
     class Root(Controller):
 
         def index(self, file=None, desc=""):
@@ -287,8 +287,8 @@ Here's the code!
             else:
                 filename = file.filename
                 return UPLOADED_FILE % (file.filename, desc, file.value)
-    
-    
+
+
     (Server(8000) + Root()).run()
 
 circuits.web automatically handles form and file uploads and gives you access
@@ -309,25 +309,25 @@ Example:
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/env python
-    
+
     from circuits.web.wsgi import Gateway
     from circuits.web import Controller, Server
-    
-    
+
+
     def foo(environ, start_response):
         start_response("200 OK", [("Content-Type", "text/plain")])
         return ["Foo!"]
-    
-    
+
+
     class Root(Controller):
         """App Rot"""
-        
+
         def index(self):
             return "Hello World!"
-    
-    
+
+
     app = Server(("0.0.0.0", 10000))
     Root().register(app)
     Gateway({"/foo": foo}).register(app)
@@ -357,12 +357,12 @@ Configuring Apache
 ..................
 
 
-The first step is to add in the following .htaccess file to tell Apache 
+The first step is to add in the following .htaccess file to tell Apache
 hat we want any and all requests to http://example.com/~joeblogs/ to be
 served up by our circuits.web application.
 
 Created the .htaccess file in your **Docroot**::
-    
+
     ReWriteEngine On
     ReWriteCond %{REQUEST_FILENAME} !-f
     ReWriteCond %{REQUEST_FILENAME} !-d
@@ -379,19 +379,19 @@ example earlier, we modify it to the following:
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/env python
-    
+
     from circuits.web import Controller
     from circuits.web.wsgi import Application
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             return "Hello World!"
-    
-    
+
+
     application = Application() + Root()
 
 That's it! To run this, save it as index.wsgi and place it in your Web Root
@@ -402,6 +402,6 @@ favorite Web Browser to: http://example.com/~joeblogs/
           setup for deploying circuits.web web application so that
           you don't loose the advantages and functionality of using
           an event-driven component architecture in your web apps.
-        
+
           In **production** you should use a load balance and reverse
           proxy combination for best performance.

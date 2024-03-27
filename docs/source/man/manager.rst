@@ -34,14 +34,14 @@ Example:
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits import Component, Manager
-    
-    
+
+
     class App(Component):
         """Your Application"""
-    
-    
+
+
     manager = Manager()
     App().register(manager)
     manager.run()

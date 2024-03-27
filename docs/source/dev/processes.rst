@@ -70,7 +70,7 @@ Writing new Code
 - Write your code.
 - Use `flake8 <http://pypi.python.org/pypi/flake8>`_ to ensure code quality.
 - Run the tests::
-      
+
     $ tox
 
 - Ensure any new or modified code does not break existing unit tests.
@@ -95,5 +95,5 @@ Please also ensure that you you have all supported versions of Python
 that circuits supports installed in your local environment.
 
 To run the tests::
-    
+
     $ tox

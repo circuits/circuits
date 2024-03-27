@@ -113,7 +113,7 @@ You can contribute in these easy steps:
 
 See: [Editing files in another user's repository](https://help.github.com/articles/editing-files-in-another-user-s-repository/)
 
-# Community 
+# Community
 This section includes ideas on how non-developers can help with the project. Here's a few examples:
 
 * You can help us answer questions our users have here: [StackOverflow circuits-framework](http://stackoverflow.com/questions/tagged/circuits-framework)
@@ -121,7 +121,7 @@ This section includes ideas on how non-developers can help with the project. Her
 * You can help write blog posts about the project by: sharing them with the [Community](http://circuitsframework.com/Community)
 * You can tweet about your use of circuits and tag [@pythoncircuits](https://twitter.com/pythoncircuits)
 
-* Create an example of the project in real world by building something or showing what others have built. 
+* Create an example of the project in real world by building something or showing what others have built.
 * Write about other people’s projects based on this project. Show how it’s used in daily life. Take screenshots and make videos!
 
 ----

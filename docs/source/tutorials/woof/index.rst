@@ -70,7 +70,7 @@ Here we've created a simple **Event Handler** that listens for the ``started`` E
           your **Event Handlers**.
 
 Running this we get::
-   
+
    Hello World!
 
 
@@ -104,7 +104,7 @@ Notice the way we register the two components ``Bob`` and ``Fred`` together
 two components together and plugging them into a circuit board.
 
 Running this example produces the following result::
-   
+
    Hello I'm Bob!
    Hello I'm Fred!
 
@@ -136,24 +136,24 @@ So now ``Pound`` is a Component that consists of two other components
 registered to it: ``Bob`` and ``Fred``
 
 The output of this is identical to the previous::
-   
+
    * <Pound/* 3391:MainThread (queued=0, channels=1, handlers=3) [R]>
     * <Bob/* 3391:MainThread (queued=0, channels=1, handlers=1) [S]>
     * <Fred/* 3391:MainThread (queued=0, channels=1, handlers=1) [S]>
    Hello I'm Bob!
    Hello I'm Fred!
-   
+
 The only difference is that ``Bob`` and ``Fred`` are now part of a more
 Complex Component called ``Pound``. This can be illustrated by the
 following diagram:
 
 .. graphviz::
-   
+
    digraph G {
       "Pound-1344" -> "Bob-9b0c";
       "Pound-1344" -> "Fred-e98a";
    }
-   
+
 .. note::
    The extra lines in the above output are an ASCII representation of the
    above graph (*produced by pydot + graphviz*).
@@ -179,7 +179,7 @@ subclass this.
 :download:`Download 006.py <006.py>`
 
 Now let's try to run this and see what happens::
-   
+
   Woof! I'm Bob!
   Woof! I'm Fred!
 
@@ -205,7 +205,7 @@ Easy! Use a separate ``channel`` like so:
    method.
 
 If you run this, you'll get::
-   
+
    Woof! I'm Bob!
 
 
@@ -221,7 +221,7 @@ Defining your own Events helps with documentation and testing and makes
 things a little easier.
 
 Example::
-   
+
    class MyEvent(Event):
       """MyEvent"""
 
@@ -235,7 +235,7 @@ and make our ``Dog`` fire a ``Bark`` event when our application starts up.
 :download:`Download 008.py <008.py>`
 
 If you run this, you'll get::
-   
+
    Woof! I'm Bob!
    Woof! I'm Fred!
 
@@ -256,7 +256,7 @@ your application is doing.
 
 Let's say that we defined out ``bark`` Event Handler in our ``Dog``
 Component as follows::
-   
+
    def bark(self):
       print("Woof! I'm %s!" % name)
 
@@ -294,13 +294,13 @@ From:
 To:
 
 .. code-block:: python
-   
+
    from circuits import Debugger
 
    (Pound() + Debugger()).run()
 
 Then run this, you'll get the following::
-   
+
    <Registered[bob:registered] [<Bob/bob 3191:MainThread (queued=0, channels=2, handlers=2) [S]>, <Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [R]>] {}>
    <Registered[fred:registered] [<Fred/fred 3191:MainThread (queued=0, channels=2, handlers=2) [S]>, <Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [R]>] {}>
    <Registered[*:registered] [<Debugger/* 3191:MainThread (queued=0, channels=1, handlers=1) [S]>, <Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [R]>] {}>
@@ -313,18 +313,18 @@ Then run this, you'll get the following::
     retval = handler(*eargs, **ekwargs)
      File "source/tutorial/009.py", line 22, in bark
        print("Woof! I'm %s!" % name)
-   
+
    <Error[*:exception] [<type 'exceptions.NameError'>, NameError("global name 'name' is not defined",), ['  File "/home/prologic/work/circuits/circuits/core/manager.py", line 459, in __handleEvent\n    retval = handler(*eargs, **ekwargs)\n', '  File "source/tutorial/009.py", line 22, in bark\n    print("Woof! I\'m %s!" % name)\n'], <bound method ?.bark of <Fred/fred 3191:MainThread (queued=0, channels=2, handlers=2) [S]>>] {}>
    ERROR <listener on ('bark',) {target='fred', priority=0.0}> (<type 'exceptions.NameError'>): global name 'name' is not defined
      File "/home/prologic/work/circuits/circuits/core/manager.py", line 459, in __handleEvent
        retval = handler(*eargs, **ekwargs)
      File "source/tutorial/009.py", line 22, in bark
        print("Woof! I'm %s!" % name)
-   
+
    ^C<Signal[*:signal] [2, <frame object at 0x808e8ec>] {}>
    <Stopped[*:stopped] [<Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [S]>] {}>
    <Stopped[*:stopped] [<Pound/* 3191:MainThread (queued=0, channels=5, handlers=5) [S]>] {}>
-   
+
 You'll notice whereas there was no output before there is now a pretty
 detailed output with the ``Debugger`` added to the application. Looking
 through the output, we find that the application does indeed start
@@ -339,17 +339,17 @@ the code.
    These are all default events that circuits has builtin which your
    application can respond to. Each builtin Event has a special meaning
    with relation to the state of the application at that point.
-   
+
    See: :py:mod:`circuits.core.events` for detailed documentation regarding
    these events.
 
 The correct code for the ``bark`` Event Handler should be::
-   
+
    def bark(self):
        print("Woof! I'm %s!" % self.name)
 
 Running again with our correction results in the expected output::
-   
+
    Woof! I'm Bob!
    Woof! I'm Fred!
 

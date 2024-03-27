@@ -31,16 +31,16 @@ Here's the code again for easy reference:
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits.web import Server, Controller
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             return "Hello World!"
-    
-    
+
+
     (Server(8000) + Root()).run()
 
 
@@ -55,11 +55,11 @@ log file formats to your web application.
 To use the :class:`~Logger` simply add it to your application:
 
 .. code-block:: python
-    
+
     (Server(8000) + Logger() + Root()).run()
 
 Example Log Output::
-    
+
     127.0.0.1 - - [05/Apr/2014:10:13:01] "GET / HTTP/1.1" 200 12 "" "curl/7.35.0"
     127.0.0.1 - - [05/Apr/2014:10:13:02] "GET /docs/build/html/index.html HTTP/1.1" 200 22402 "" "curl/7.35.0"
 
@@ -84,22 +84,22 @@ Here's how we do it:
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits.web import Server, Controller
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self, name=None):
             if name:
                 self.cookie["name"] = name
             else:
                 name = self.cookie.get("name", None)
                 name = "World!" if name is None else name.value
-            
+
             return "Hello {0:s}!".format(name)
-    
-    
+
+
     (Server(8000) + Root()).run()
 
 .. note:: To access the actual value of a cookie use the ``.value`` attribute.
@@ -118,7 +118,7 @@ simply importing the required "dispatcher" from circuits.web.
 Example:
 
 .. code-block:: python
-    
+
     from circuits.web import Static
 
 The most important "dispatcher" is the default :class:`~.Dispatcher` used by the
@@ -142,7 +142,7 @@ some optional configuration which affects it's behavior.
 The simplest example (*as per our Base Example*):
 
 .. code-block:: python
-    
+
     (Server(8000) + Static() + Root()).run()
 
 This will serve up files in the *current directory* as static resources.
@@ -156,14 +156,14 @@ This will serve up files in the *current directory* as static resources.
 Static files stored in ``/home/joe/www/``:
 
 .. code-block:: python
-    
+
     (Server(8000) + Static(docroot="/home/joe/www/") + Root()).run()
 
 Static files stored in ``/home/joe/www/`` **and** we want them served up as
 ``/static`` URI(s):
 
 .. code-block:: python
-    
+
     (Server(8000) + Static("/static", docroot="/home/joe/www/") + Root()).run()
 
 
@@ -186,28 +186,28 @@ This Dispatcher also included support for matching against HTTP methods:
 - POST
 - PUT
 - DELETE.
-  
+
 Here are some examples:
 
 .. code-block:: python
     :linenos:
-    
+
     class Root(Controller):
-    
+
         def index(self):
             return "Hello World!"
-        
+
         def foo(self, arg1, arg2, arg3):
             return "Foo: %r, %r, %r" % (arg1, arg2, arg3)
-        
+
         def bar(self, kwarg1="foo", kwarg2="bar"):
             return "Bar: kwarg1=%r, kwarg2=%r" % (kwarg1, kwarg2)
-        
+
         def foobar(self, arg1, kwarg1="foo"):
             return "FooBar: %r, kwarg1=%r" % (arg1, kwarg1)
 
 With the following requests::
-    
+
     http://127.0.0.1:8000/
     http://127.0.0.1:8000/foo/1/2/3
     http://127.0.0.1:8000/bar?kwarg1=1
@@ -216,7 +216,7 @@ With the following requests::
     http://127.0.0.1:8000/foobar/1?kwarg1=1
 
 The following output is produced::
-    
+
     Hello World!
     Foo: '1', '2', '3'
     Bar: kwargs1='1', kwargs2='bar'
@@ -232,17 +232,17 @@ To define a Request Handler that is specifically for the HTTP ``POST`` method, s
 
 .. code-block:: python
     :linenos:
-    
+
     class Root(Controller):
-        
+
         def index(self):
             return "Hello World!"
-       
-    
+
+
     class Test(Controller):
-        
+
         channel = "/test"
-        
+
         def POST(self, *args, **kwargs): #***
             return "%r %r" % (args, kwargs)
 
@@ -269,7 +269,7 @@ The :class:`~.VirtualHosts` "dispatcher" allows you to serves up different parts
 your application for different "virtual" hosts.
 
 Consider for example you have the following hosts defined::
-    
+
     localdomain
     foo.localdomain
     bar.localdomain
@@ -282,48 +282,48 @@ To do this, we use the VirtualHosts "dispatcher":
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits.web import Server, Controller, VirtualHosts
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             return "I am the main vhost"
-    
-    
+
+
     class Foo(Controller):
-        
+
         channel = "/foo"
-        
+
         def index(self):
             return "I am foo."
-    
-    
+
+
     class Bar(Controller):
-        
+
         channel = "/bar"
-        
+
         def index(self):
             return "I am bar."
-    
-    
+
+
     domains = {
         "foo.localdomain:8000": "foo",
         "bar.localdomain:8000": "bar",
     }
-    
-    
+
+
     (Server(8000) + VirtualHosts(domains) + Root() + Foo() + Bar()).run()
 
 With the following requests::
-    
+
     http://localdomain:8000/
     http://foo.localdomain:8000/
     http://bar.localdomain:8000/
 
 The following output is produced::
-    
+
     I am the main vhost
     I am foo.
     I am bar.
@@ -342,26 +342,26 @@ Without going into too much details (*if you're using any kind of RPC "dispatche
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits import Component
     from circuits.web import Server, Logger, XMLRPC
-    
-    
+
+
     class Test(Component):
-        
+
         def foo(self, a, b, c):
             return a, b, c
-    
-    
+
+
     (Server(8000) + Logger() + XMLRPC() + Test()).run()
 
 Here is a simple interactive session::
-    
+
     >>> import xmlrpclib
     >>> xmlrpc = xmlrpclib.ServerProxy("http://127.0.0.1:8000/rpc/")
     >>> xmlrpc.foo(1, 2, 3)
     [1, 2, 3]
-    >>> 
+    >>>
 
 
 JSONRPC
@@ -373,26 +373,26 @@ Example:
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits import Component
     from circuits.web import Server, Logger, JSONRPC
-    
-    
+
+
     class Test(Component):
-        
+
         def foo(self, a, b, c):
             return a, b, c
-    
-    
+
+
     (Server(8000) + Logger() + JSONRPC() + Test()).run()
 
 Interactive session (*requires the `jsonrpclib <https://pypi.python.org/pypi/jsonrpc>`_ library*)::
-    
+
     >>> import jsonrpclib
     >>> jsonrpc = jsonrpclib.ServerProxy("http://127.0.0.1:8000/rpc/")
     >>> jsonrpc.foo(1, 2, 3)
     {'result': [1, 2, 3], 'version': '1.1', 'id': 2, 'error': None}
-    >>> 
+    >>>
 
 
 Caching
@@ -407,17 +407,17 @@ Example:
 
 .. code-block:: python
    :linenos:
-    
+
     from circuits.web import Server, Controller
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             self.expires(3600)
             return "Hello World!"
-    
-    
+
+
     (Server(8000) + Root()).run()
 
 For other caching mechanisms and validation please
@@ -449,26 +449,26 @@ in your web application or website.
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits import handler, Component
-    
+
     from circuits.web.tools import gzip
     from circuits.web import Server, Controller, Logger
-    
-    
+
+
     class Gzip(Component):
-        
+
         @handler("response", priority=1.0)
         def compress_response(self, event, response):
             event[0] = gzip(response)
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             return "Hello World!"
-    
-    
+
+
     (Server(8000) + Gzip() + Root()).run()
 
 
@@ -495,48 +495,48 @@ An example demonstrating the use of "Basic Auth":
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits.web import Server, Controller
     from circuits.web.tools import check_auth, basic_auth
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             realm = "Test"
             users = {"admin": "admin"}
             encrypt = str
-            
+
             if check_auth(self.request, self.response, realm, users, encrypt):
                 return "Hello %s" % self.request.login
-            
+
             return basic_auth(self.request, self.response, realm, users, encrypt)
-    
-    
+
+
     (Server(8000) + Root()).run()
 
 For "Digest Auth":
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits.web import Server, Controller
     from circuits.web.tools import check_auth, digest_auth
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self):
             realm = "Test"
             users = {"admin": "admin"}
             encrypt = str
-            
+
             if check_auth(self.request, self.response, realm, users, encrypt):
                 return "Hello %s" % self.request.login
-            
+
             return digest_auth(self.request, self.response, realm, users, encrypt)
-    
-    
+
+
     (Server(8000) + Root()).run()
 
 
@@ -552,21 +552,21 @@ Rewriting the Cookie Example to use a session instead:
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits.web import Server, Controller, Sessions
-    
-    
+
+
     class Root(Controller):
-        
+
         def index(self, name=None):
             if name:
                 self.session["name"] = name
             else:
                 name = self.session.get("name", "World!")
-            
+
             return "Hello %s!" % name
-    
-    
+
+
     (Server(8000) + Sessions() + Root()).run()
 
 .. note:: The only Session Handling provided is a

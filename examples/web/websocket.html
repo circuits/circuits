@@ -16,16 +16,16 @@ function WebSocketTest()
         ws.send("Hello server");
         alert("Message is sent...");
      };
-     ws.onmessage = function (evt) 
-     { 
+     ws.onmessage = function (evt)
+     {
         var received_msg = evt.data;
         alert("Message is received:\n" + evt.data);
         ws.close()
      };
      ws.onclose = function()
-     { 
+     {
         // websocket is closed.
-        alert("Connection is closed..."); 
+        alert("Connection is closed...");
      };
   }
   else

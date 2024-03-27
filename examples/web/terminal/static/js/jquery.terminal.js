@@ -1,4 +1,4 @@
-/* 
+/*
  * AJAX Terminal (0.1)
  * by Sagie Maoz (n0nick.net)
  * n0nick@php.net
@@ -8,13 +8,13 @@
  * Designed to be utterly simple and highly customizable.
  *
  * Copyright (c) 2009 Sagie Maoz <n0nick@php.net>
- * Licensed under the GPL license, see http://www.gnu.org/licenses/gpl-3.0.html 
+ * Licensed under the GPL license, see http://www.gnu.org/licenses/gpl-3.0.html
  *
  *
  * NOTE: This script requires jQuery to work.  Download jQuery at www.jquery.com
  *
  */
- 
+
 (function($) {
 
 	$.fn.terminal = function(url, options) {
@@ -96,7 +96,7 @@
 
 				terminal_form.show();
 				terminal_input.val('').focus();
-				
+
 				// if input is disabled, we trick a focus so the scrolling will be ok
 				if (settings.disable_input)
 				{
@@ -105,7 +105,7 @@
 			}
 			// outsource this function for misc. implementations
 			terminal_container[0].append = terminal_append;
-			
+
 			var terminal_command = function(first)
 			{
 				var first = first || false;
