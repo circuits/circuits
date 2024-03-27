@@ -66,7 +66,17 @@ except ImportError:
     socketpair = None
 
 try:
-    from ssl import CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23, SSLError, wrap_socket as ssl_socket
+    from ssl import (
+        CERT_NONE,
+        CERT_REQUIRED,
+        PROTOCOL_TLS,
+        SSL_ERROR_WANT_READ,
+        SSL_ERROR_WANT_WRITE,
+        Purpose,
+        SSLContext,
+        SSLError,
+        create_default_context,
+    )
 
     HAS_SSL = 1
 except ImportError:
@@ -75,11 +85,42 @@ except ImportError:
     warnings.warn('No SSL support available.')
     HAS_SSL = 0
     CERT_NONE = None
-    PROTOCOL_SSLv23 = None
+    PROTOCOL_TLS = None
 
 
 BUFSIZE = 4096  # 4KB Buffer
 BACKLOG = 5000  # 5K Concurrent Connections
+
+
+def wrap_socket(
+    sock,
+    keyfile=None,
+    certfile=None,
+    ca_certs=None,
+    purpose=Purpose.SERVER_AUTH,
+    verify_mode=None,
+    minimum_version=PROTOCOL_TLS,
+    check_hostname=None,
+    **kwargs,
+):
+    if minimum_version != PROTOCOL_TLS:
+        context = SSLContext(minimum_version)
+        if purpose == Purpose.SERVER_AUTH:
+            context.verify_mode = CERT_REQUIRED
+            context.check_hostname = True
+        if ca_certs:
+            context.load_verify_locations(cafile=ca_certs)
+    else:
+        context = create_default_context(purpose, cafile=ca_certs)
+    if check_hostname is not None:
+        context.check_hostname = check_hostname
+    if verify_mode:
+        if verify_mode == CERT_NONE:
+            context.check_hostname = False
+        context.verify_mode = verify_mode
+    if certfile:
+        context.load_cert_chain(certfile=certfile, keyfile=keyfile)
+    return context.wrap_socket(sock, **kwargs)
 
 
 def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
@@ -338,11 +379,13 @@ class TCPClient(Client):
                 self.fire(error(sock, err))
                 self._close()
 
-            self._sock = ssl_socket(
+            self._sock = wrap_socket(
                 self._sock,
                 self.keyfile,
                 self.certfile,
                 ca_certs=self.ca_certs,
+                purpose=Purpose.SERVER_AUTH,
+                server_hostname=self.host,
                 do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._sock, on_done, on_error):
@@ -405,11 +448,13 @@ class UNIXClient(Client):
             def on_error(sock, err):
                 self.fire(error(err))
 
-            self._ssock = ssl_socket(
+            self._ssock = wrap_socket(
                 self._sock,
                 self.keyfile,
                 self.certfile,
                 ca_certs=self.ca_certs,
+                purpose=Purpose.SERVER_AUTH,
+                server_hostname=self.host,
                 do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._ssock, on_done, on_error):
@@ -447,7 +492,7 @@ class Server(BaseComponent):
         self.certfile = kwargs.get('certfile')
         self.keyfile = kwargs.get('keyfile', None)
         self.cert_reqs = kwargs.get('cert_reqs', CERT_NONE)
-        self.ssl_version = kwargs.get('ssl_version', PROTOCOL_SSLv23)
+        self.ssl_version = kwargs.get('ssl_version', PROTOCOL_TLS)
         self.ca_certs = kwargs.get('ca_certs', None)
         if self.secure and not self.certfile:
             raise RuntimeError('certfile must be specified for server-side operations')
@@ -635,14 +680,15 @@ class Server(BaseComponent):
             self._on_accept_done(newsock)
 
     def _do_handshake(self, sock, fire_connect_event=True):
-        sslsock = ssl_socket(
+        sslsock = wrap_socket(
             sock,
-            server_side=True,
-            keyfile=self.keyfile,
+            self.keyfile,
+            self.certfile,
             ca_certs=self.ca_certs,
-            certfile=self.certfile,
-            cert_reqs=self.cert_reqs,
-            ssl_version=self.ssl_version,
+            purpose=Purpose.CLIENT_AUTH,
+            verify_mode=self.cert_reqs,
+            minimum_version=self.ssl_version,
+            server_side=True,
             do_handshake_on_connect=False,
         )
 

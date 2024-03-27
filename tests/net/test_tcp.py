@@ -3,7 +3,7 @@ import contextlib
 import os.path
 import select
 from socket import AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM, has_ipv6, socket
-from ssl import wrap_socket as sslsocket
+from ssl import CERT_NONE, PROTOCOL_TLS_CLIENT, SSLContext
 
 import pytest
 
@@ -29,7 +29,10 @@ class _TestClient:
             SOCK_STREAM,
         )
 
-        self.ssock = sslsocket(self.sock)
+        ctx = SSLContext(PROTOCOL_TLS_CLIENT)
+        ctx.check_hostname = False
+        ctx.verify_mode = CERT_NONE
+        self.ssock = ctx.wrap_socket(self.sock)
 
     @property
     def sockname(self):
