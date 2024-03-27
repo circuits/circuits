@@ -52,8 +52,8 @@ except ImportError:
         namespace_pkg_files = namespace_pkg.files
         if namespace_pkg_files:
             for file in namespace_pkg_files:
-                if file.endswith("__init__.py"):
-                    namespace_pkg_path = file.split("__init__.py")[0]
+                if str(file).endswith("__init__.py"):
+                    namespace_pkg_path = str(file).split("__init__.py")[0]
                     if namespace_pkg_path not in sys.path:
                         sys.path.append(namespace_pkg_path)
                     break
