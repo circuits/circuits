@@ -35,17 +35,21 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -U isort flake8 pytest
+        pip install -U isort flake8 pytest ruff
         pip install setuptools-scm==5.0.2
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with ruff
+      run: |
+        ruff check --statistics .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Lint with isort
+    - name: Format with ruff and isort
       run: |
+        ruff format .
         isort . --check --diff || true
       continue-on-error: true
     - name: Install test requirements
