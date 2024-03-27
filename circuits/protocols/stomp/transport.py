@@ -47,7 +47,12 @@ class EnhancedStompFrameTransport(StompFrameTransport):
         if isinstance(self.sslContext, dict):
             # This is actually a dictionary of ssl parameters for wrapping the socket
             ssl_params = self.sslContext
-            self.sslContext = None
+            self.sslContext = ssl.create_default_context()
+            self.sslContext.load_cert_chain(certfile=ssl_params['cert_file'], keyfile=ssl_params['key_file'])
+            self.sslContext.load_verify_locations(cafile=ssl_params['ca_certs'])
+            cert_required = ssl.CERT_REQUIRED if ssl_params["ca_certs"] else ssl.CERT_NONE
+            self.sslContext.verify_mode = cert_required
+            self.sslContext.minimum_version = ssl_params['ssl_version']
 
         try:
             if self.proxy_host:
@@ -70,15 +75,6 @@ class EnhancedStompFrameTransport(StompFrameTransport):
 
             if ssl_params:
                 # For cases where we don't have a modern SSLContext (so no SNI)
-                cert_required = ssl.CERT_REQUIRED if ssl_params['ca_certs'] else ssl.CERT_NONE
-                self._socket = ssl.wrap_socket(
-                    self._socket,
-                    keyfile=ssl_params['key_file'],
-                    certfile=ssl_params['cert_file'],
-                    cert_reqs=cert_required,
-                    ca_certs=ssl_params['ca_certs'],
-                    ssl_version=ssl_params['ssl_version'],
-                )
                 if cert_required:
                     LOG.info('Performing manual hostname check')
                     cert = self._socket.getpeercert()
