@@ -11,7 +11,6 @@ class test(Event):
 
 
 class A(Component):
-
     channel = "a"
 
     def test(self):
@@ -23,7 +22,6 @@ class A(Component):
 
 
 class B(Component):
-
     @handler(priority=10.0, channel="*")
     def _on_channel(self, event, *args, **kwargs):
         return "Bar"

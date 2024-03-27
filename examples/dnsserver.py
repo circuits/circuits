@@ -22,7 +22,6 @@ Usage (*using dig*)::
 """
 
 import sys
-
 from dnslib import QTYPE, RR, A, DNSHeader, DNSRecord
 
 from circuits import Component, Debugger, Event

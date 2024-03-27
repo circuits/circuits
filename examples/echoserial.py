@@ -8,13 +8,13 @@ on the serial port.
 
 .. warning:: This example is currently untested.
 """
+
 from circuits import Component, Debugger, handler
 from circuits.io import Serial
 from circuits.io.events import write
 
 
 class EchoSerial(Component):
-
     def init(self, port):
         Serial(port).register(self)
 

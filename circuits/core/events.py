@@ -1,10 +1,10 @@
 """This module defines the basic event class and common events."""
+
 from inspect import ismethod
 from traceback import format_tb
 
 
 class Event:
-
     channels = ()
     "The channels this message is sent to."
 
@@ -83,7 +83,7 @@ class Event:
         self.handler = None
         self.stopped = False
         self.cancelled = False
-        if not hasattr(self, 'name'):
+        if not hasattr(self, "name"):
             self.name = self.__class__.__name__
 
     def __getstate__(self):
@@ -320,9 +320,12 @@ class generate_events(Event):
                 if self._time_left == 0 and self.handler is not None:
                     m = getattr(
                         getattr(
-                            self.handler, "im_self", self.handler.__self__,
+                            self.handler,
+                            "im_self",
+                            self.handler.__self__,
                         ),
-                        "resume", None,
+                        "resume",
+                        None,
                     )
                     if m is not None and ismethod(m):
                         m()

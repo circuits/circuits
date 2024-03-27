@@ -1,8 +1,7 @@
 #!/usr/bin/env python
+import pytest
 import select
 import socket
-
-import pytest
 
 from circuits import Manager
 from circuits.core.pollers import EPoll, KQueue, Poll, Select
@@ -16,6 +15,7 @@ from .server import Server
 def wait_host(server):
     def checker(obj, attr):
         return all(getattr(obj, a) for a in attr)
+
     assert pytest.wait_for(server, ("host", "port"), checker)
 
 
@@ -36,7 +36,7 @@ def pytest_generate_tests(metafunc):
         if hasattr(select, "kqueue"):
             poller.append((KQueue, ipv6))
 
-    metafunc.parametrize('Poller,ipv6', poller)
+    metafunc.parametrize("Poller,ipv6", poller)
 
 
 def test_basic(Poller, ipv6):
@@ -92,6 +92,7 @@ def test_close(Poller, ipv6):
 
         def test(obj, attr):
             return attr not in obj.components
+
         assert pytest.wait_for(m, server, value=test)
 
         server = Server() + UDPServer((host, port))

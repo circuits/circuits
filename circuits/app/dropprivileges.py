@@ -7,7 +7,6 @@ from circuits.core import BaseComponent, handler
 
 
 class DropPrivileges(BaseComponent):
-
     def init(self, user="nobody", group="nobody", umask=0o077, **kwargs):
         self.user = user
         self.group = group

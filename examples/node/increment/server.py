@@ -14,16 +14,21 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-b", "--bind",
-        action="store", type="string",
-        default="0.0.0.0:8000", dest="bind",
+        "-b",
+        "--bind",
+        action="store",
+        type="string",
+        default="0.0.0.0:8000",
+        dest="bind",
         help="Bind to address:[port]",
     )
 
     parser.add_option(
-        "-d", "--debug",
+        "-d",
+        "--debug",
         action="store_true",
-        default=False, dest="debug",
+        default=False,
+        dest="debug",
         help="Enable debug mode",
     )
 
@@ -33,7 +38,6 @@ def parse_options():
 
 
 class NodeServer(Component):
-
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)
@@ -47,17 +51,17 @@ class NodeServer(Component):
         Node(port=port, server_ip=address).register(self)
 
     def connect(self, sock, host, port):
-        print('Peer connected: %s:%d' % (host, port))
+        print("Peer connected: %s:%d" % (host, port))
 
     def disconnect(self, sock):
-        print('Peer disconnected: %s' % sock)
+        print("Peer disconnected: %s" % sock)
 
     def ready(self, server, bind):
-        print('Server ready: %s:%d' % bind)
+        print("Server ready: %s:%d" % bind)
 
-    @handler('increment')
+    @handler("increment")
     def increment(self, value):
-        print('Execute increment event (value: %d)' % value)
+        print("Execute increment event (value: %d)" % value)
         return value + 1
 
 

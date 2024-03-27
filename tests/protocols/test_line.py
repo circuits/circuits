@@ -10,7 +10,6 @@ class read(Event):
 
 
 class App(Component):
-
     lines = []
 
     def line(self, line):
@@ -18,7 +17,6 @@ class App(Component):
 
 
 class AppServer(Component):
-
     channel = "server"
 
     lines = []

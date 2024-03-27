@@ -7,7 +7,6 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener, urlopen
 
 
 class Root(JSONController):
-
     def index(self):
         return {"success": True, "message": "Hello World!"}
 

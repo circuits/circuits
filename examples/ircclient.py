@@ -28,20 +28,29 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-n", "--nick",
-        action="store", default=os.environ["USER"], dest="nick",
+        "-n",
+        "--nick",
+        action="store",
+        default=os.environ["USER"],
+        dest="nick",
         help="Nickname to use",
     )
 
     parser.add_option(
-        "-d", "--debug",
-        action="store_true", default=False, dest="debug",
+        "-d",
+        "--debug",
+        action="store_true",
+        default=False,
+        dest="debug",
         help="Enable debug verbose logging",
     )
 
     parser.add_option(
-        "-c", "--channel",
-        action="store", default="#circuits", dest="channel",
+        "-c",
+        "--channel",
+        action="store",
+        default="#circuits",
+        dest="channel",
         help="Channel to join",
     )
 
@@ -55,7 +64,6 @@ def parse_options():
 
 
 class Client(Component):
-
     # Set a separate channel in case we want multiple ``Client`` instances.
     channel = "ircclient"
 
@@ -136,8 +144,11 @@ class Client(Component):
             print("Joined %s" % channel)
         else:
             print(
-                "--> %s (%s) has joined %s" % (
-                    source[0], "@".join(source[1:]), channel,
+                "--> %s (%s) has joined %s"
+                % (
+                    source[0],
+                    "@".join(source[1:]),
+                    channel,
                 ),
             )
 

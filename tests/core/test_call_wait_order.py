@@ -1,8 +1,7 @@
 #!/usr/bin/env python
+import pytest
 from random import random, seed
 from time import sleep, time
-
-import pytest
 
 from circuits.core import Component, Event, Worker, handler, task
 
@@ -19,8 +18,7 @@ def process(x=None):
 
 
 class App(Component):
-
-    @handler('hello')
+    @handler("hello")
     def _on_hello(self):
         e1 = task(process, 1)
         self.fire(task(process, 2))
@@ -49,7 +47,7 @@ def app(request, manager, watcher):
 
 def test_call_order(manager, watcher, app):
     x = manager.fire(hello())
-    assert watcher.wait('hello_success')
+    assert watcher.wait("hello_success")
 
     value = x.value
 

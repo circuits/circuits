@@ -8,6 +8,7 @@ Implements commands::
 
     USER NICK JOIN PART NICK WHO QUIT
 """
+
 import logging
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from collections import defaultdict
@@ -38,22 +39,27 @@ def parse_args():
     )
 
     parser.add_argument(
-        "-v", "--version",
+        "-v",
+        "--version",
         action="version",
         version=f"%(prog)s {__version__}",
     )
 
     parser.add_argument(
-        "-b", "--bind",
-        action="store", type=str,
-        default="0.0.0.0:6667", dest="bind",
+        "-b",
+        "--bind",
+        action="store",
+        type=str,
+        default="0.0.0.0:6667",
+        dest="bind",
         help="Bind to address:[port]",
     )
 
     parser.add_argument(
         "--debug",
         action="store_true",
-        default=False, dest="debug",
+        default=False,
+        dest="debug",
         help="Enable debug mode",
     )
 
@@ -61,24 +67,22 @@ def parse_args():
 
 
 class Channel:
-
     def __init__(self, name):
         self.name = name
         self.topic = None
-        self.mode = '+n'
+        self.mode = "+n"
 
         self.users = []
 
 
 class User:
-
     def __init__(self, sock, host, port):
         self.sock = sock
         self.host = host
         self.port = port
 
         self.nick = None
-        self.mode = ''
+        self.mode = ""
         self.away = False
         self.channels = []
         self.signon = None
@@ -92,7 +96,6 @@ class User:
 
 
 class UserInfo:
-
     def __init__(self, user=None, host=None, name=None):
         self.user = user
         self.host = host
@@ -100,7 +103,6 @@ class UserInfo:
 
 
 class Server(Component):
-
     channel = "server"
 
     network = "Test"
@@ -163,7 +165,8 @@ class Server(Component):
     def ready(self, server, bind):
         stderr.write(
             "ircd v{:s} ready! Listening on: {:s}\n".format(
-                __version__, "{:s}:{:d}".format(*bind),
+                __version__,
+                "{:s}:{:d}".format(*bind),
             ),
         )
 
@@ -207,7 +210,8 @@ class Server(Component):
 
         self._notify(
             users,
-            Message("QUIT", reason, prefix=user.prefix), user,
+            Message("QUIT", reason, prefix=user.prefix),
+            user,
         )
 
     def nick(self, sock, source, nick):
@@ -350,7 +354,7 @@ class Server(Component):
         self.fire(write(target, bytes(message)))
 
     def mode(self, sock, source, mask, mode=None, params=None):
-        if mask.startswith('#'):
+        if mask.startswith("#"):
             if mask not in self.channels:
                 return self.fire(reply(sock, ERR_NOSUCHCHANNEL(mask)))
             channel = self.channels[mask]
@@ -362,7 +366,7 @@ class Server(Component):
     def list(self, sock, source):
         self.fire(reply(sock, RPL_LISTSTART()))
         for channel in self.channels.values():
-            self.fire(reply(sock, RPL_LIST(channel, str(len(channel.users)), channel.topic or '')))
+            self.fire(reply(sock, RPL_LIST(channel, str(len(channel.users)), channel.topic or "")))
         self.fire(reply(sock, RPL_LISTEND()))
 
     @property

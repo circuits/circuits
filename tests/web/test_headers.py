@@ -5,7 +5,6 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 

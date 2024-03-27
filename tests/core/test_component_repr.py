@@ -3,6 +3,7 @@ Component Repr Tests
 
 Test Component's representation string.
 """
+
 import os
 from threading import current_thread
 
@@ -10,7 +11,6 @@ from circuits import Component, Event
 
 
 class App(Component):
-
     def test(self, event, *args, **kwargs):
         pass
 

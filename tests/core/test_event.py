@@ -10,7 +10,6 @@ class test(Event):
 
 
 class App(Component):
-
     def test(self):
         return "Hello World!"
 
@@ -88,5 +87,6 @@ def test_setitem():
 def test_subclass_looses_properties():
     class hello(Event):
         success = True
-    e = hello().child('success')
+
+    e = hello().child("success")
     assert e.success is False

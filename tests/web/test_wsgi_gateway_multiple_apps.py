@@ -40,11 +40,11 @@ def test(apps):
     f = urlopen(server.http.base)
     s = f.read()
     assert s == b"Hello World!"
-    assert f.headers.get('Transfer-Encoding') != 'chunked'
+    assert f.headers.get("Transfer-Encoding") != "chunked"
 
     f = urlopen(f"{server.http.base:s}/foobar/")
     s = f.read()
     assert s == b"FooBar!"
-    assert f.headers.get('Transfer-Encoding') != 'chunked'
+    assert f.headers.get("Transfer-Encoding") != "chunked"
 
     server.stop()

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import pytest
 import sys
 from errno import ESRCH
 from os import kill
@@ -6,11 +7,9 @@ from signal import SIGTERM
 from subprocess import Popen
 from time import sleep
 
-import pytest
-
 from . import app
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == "win32", reason="Unsupported Platform")
 
 
 def is_running(pid):
@@ -33,7 +32,7 @@ def test(tmpdir):
     pid_path = tmpdir.join("app.pid")
 
     args = [sys.executable, app.__file__, str(pid_path)]
-    Popen(args, env={'PYTHONPATH': ':'.join(sys.path)}).wait()
+    Popen(args, env={"PYTHONPATH": ":".join(sys.path)}).wait()
 
     sleep(1)
 

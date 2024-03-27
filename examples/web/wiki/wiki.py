@@ -1,8 +1,7 @@
 #!/usr/bin/env python
+import macros
 import os
 import sqlite3
-
-import macros
 from creoleparser import Parser, create_dialect, creole11_base
 
 import circuits
@@ -15,7 +14,6 @@ text2html = Parser(
 
 
 class Wiki:
-
     def __init__(self, database):
         super().__init__()
 
@@ -52,7 +50,6 @@ class Wiki:
 
 
 class Root(Controller):
-
     db = Wiki("wiki.db")
 
     environ = {"db": db, "macros": macros.loadMacros()}

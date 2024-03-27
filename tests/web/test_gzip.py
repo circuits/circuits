@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from io import BytesIO
 from os import path
-
 from pytest import fixture
 
 from circuits import Component, handler
@@ -13,7 +12,6 @@ from .helpers import Request, build_opener
 
 
 class Gzip(Component):
-
     channel = "web"
 
     @handler("response", priority=1.0)
@@ -22,7 +20,6 @@ class Gzip(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
@@ -45,7 +42,7 @@ def decompress(body):
     zbuf = BytesIO()
     zbuf.write(body)
     zbuf.seek(0)
-    zfile = gzip.GzipFile(mode='rb', fileobj=zbuf)
+    zfile = gzip.GzipFile(mode="rb", fileobj=zbuf)
     data = zfile.read()
     zfile.close()
     return data

@@ -4,8 +4,8 @@ File Upload
 
 A simple example showing how to access an uploaded file.
 """
-from circuits.web import Controller, Server
 
+from circuits.web import Controller, Server
 
 UPLOAD_FORM = """
 <html>
@@ -44,7 +44,6 @@ UPLOADED_FILE = """
 
 
 class Root(Controller):
-
     def index(self, file=None, desc=""):
         """
         Request Handler

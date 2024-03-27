@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from http.client import HTTPConnection
-
 import pytest
+from http.client import HTTPConnection
 
 from circuits.web import Controller
 
@@ -9,7 +8,6 @@ from .helpers import HTTPError, urlopen
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 

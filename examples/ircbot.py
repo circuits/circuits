@@ -7,6 +7,7 @@ as one of the builtin networking protocols. This IRC Bot simply connects
 to the Libera.Chat IRC Network and joins the #circuits channel. It will also
 echo anything privately messages to it in response.
 """
+
 import sys
 
 from circuits import Component, Debugger
@@ -18,7 +19,6 @@ from circuits.protocols.irc import (
 
 
 class Bot(Component):
-
     # Define a separate channel so we can create many instances of ``Bot``
     channel = "ircbot"
 

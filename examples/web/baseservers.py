@@ -4,7 +4,6 @@ from circuits.web import BaseServer
 
 
 class Root(Component):
-
     def request(self, request, response):
         """
         Request Handler

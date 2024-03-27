@@ -4,7 +4,6 @@ from circuits.web.tools import basic_auth, check_auth
 
 
 class Root(Controller):
-
     def index(self):
         realm = "Test"
         users = {"admin": "admin"}

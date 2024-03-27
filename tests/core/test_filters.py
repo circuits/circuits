@@ -7,7 +7,6 @@ class test(Event):
 
 
 class App(BaseComponent):
-
     @handler("test")
     def _on_test(self, event):
         try:

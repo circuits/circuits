@@ -4,6 +4,7 @@ This package contains various I/O Components. Provided are a generic File
 Component, StdIn, StdOut and StdErr components. Instances of StdIn, StdOut
 and StdErr are also created by importing this package.
 """
+
 import sys
 
 from .events import close, open, seek, write

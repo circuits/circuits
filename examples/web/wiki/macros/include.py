@@ -3,6 +3,7 @@ Include macros
 
 Macros for inclusion of other wiki pages
 """
+
 from genshi import builder
 
 
@@ -49,6 +50,6 @@ def include_source(macro, environ, pagename=None, *args, **kwargs):
     if page is not None:
         environ["page.name"] = pagename
 
-        return builder.tag.pre(environ["parser"].render(
-            page, environ=environ).decode("utf-8"),
+        return builder.tag.pre(
+            environ["parser"].render(page, environ=environ).decode("utf-8"),
         )

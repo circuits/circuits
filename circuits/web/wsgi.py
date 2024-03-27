@@ -3,6 +3,7 @@ WSGI Components
 
 This module implements WSGI Components.
 """
+
 from io import StringIO
 from operator import itemgetter
 from sys import exc_info as _exc_info
@@ -42,8 +43,8 @@ def create_environ(errors, path, req):
     env("wsgi.url_scheme", req.scheme)
 
     if req.path:
-        req.script_name = req.path[:len(path)]
-        req.path = req.path[len(path):]
+        req.script_name = req.path[: len(path)]
+        req.path = req.path[len(path) :]
         env("SCRIPT_NAME", req.script_name)
         env("PATH_INFO", req.path)
 
@@ -54,7 +55,6 @@ def create_environ(errors, path, req):
 
 
 class Application(BaseComponent):
-
     channel = "web"
 
     headerNames = {
@@ -149,7 +149,6 @@ class Application(BaseComponent):
 
 
 class _Empty(str):
-
     def __bool__(self):
         return True
 
@@ -161,7 +160,6 @@ del _Empty
 
 
 class Gateway(BaseComponent):
-
     channel = "web"
 
     def init(self, apps):
@@ -178,7 +176,7 @@ class Gateway(BaseComponent):
 
         candidates = []
         for i in range(len(parts)):
-            k = "/".join(parts[:(i + 1)]) or "/"
+            k = "/".join(parts[: (i + 1)]) or "/"
             if k in self.apps:
                 candidates.append((k, self.apps[k]))
         candidates = sorted(candidates, key=itemgetter(0), reverse=True)

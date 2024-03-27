@@ -24,7 +24,6 @@ class input(Event):
 
 
 class Command(Component):
-
     channel = "cmd"
 
     def __init__(self, request, response, command, channel=channel):
@@ -38,8 +37,12 @@ class Command(Component):
         self._buffer = None
 
         self._p = Popen(
-            command, shell=True, stdout=PIPE, stderr=PIPE,
-            close_fds=True, preexec_fn=os.setsid,
+            command,
+            shell=True,
+            stdout=PIPE,
+            stderr=PIPE,
+            close_fds=True,
+            preexec_fn=os.setsid,
         )
 
         self._stdin = None
@@ -103,7 +106,6 @@ class Command(Component):
 
 
 class Root(Controller):
-
     def GET(self, *args, **kwargs):
         self.expires(60 * 60 * 24 * 30)
         return self.serve_file(os.path.abspath("static/index.html"))

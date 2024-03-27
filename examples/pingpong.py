@@ -37,13 +37,11 @@ class pong(Event):
 
 
 class Child(Component):
-
     def ping(self, ts):
         self.fire(ipc(pong(ts, time())))
 
 
 class App(Component):
-
     def init(self):
         self.events = 0
         self.stime = time()

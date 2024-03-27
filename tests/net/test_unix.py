@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 import os
+import pytest
 import select
 import sys
 import tempfile
-
-import pytest
 from pytest import fixture
 
 from circuits import Manager
@@ -37,7 +36,7 @@ def pytest_generate_tests(metafunc):
 
     if hasattr(select, "kqueue"):
         poller.append(KQueue)
-    metafunc.parametrize('Poller', poller)
+    metafunc.parametrize("Poller", poller)
 
 
 def test_unix(tmpfile, Poller):

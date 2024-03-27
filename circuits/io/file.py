@@ -3,6 +3,7 @@ File I/O
 
 This module implements a wrapper for basic File I/O.
 """
+
 try:
     from os import O_NONBLOCK
 except ImportError:
@@ -33,7 +34,6 @@ class _open(Event):
 
 
 class File(Component):
-
     channel = "file"
 
     def init(self, filename, mode="r", bufsize=BUFSIZE, encoding=None, channel=channel):

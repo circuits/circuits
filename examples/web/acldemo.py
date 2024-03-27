@@ -5,7 +5,6 @@ from circuits.web.errors import forbidden
 
 
 class ACL(Component):
-
     allowed = ["127.0.0.1"]
 
     @handler("request", priority=1.0)
@@ -24,7 +23,6 @@ class ACL(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 

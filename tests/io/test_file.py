@@ -1,17 +1,15 @@
 #!/usr/bin/env python
-from io import BytesIO
-
 import pytest
+from io import BytesIO
 
 from circuits import Component
 from circuits.io import File
 from circuits.io.events import close, write
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == "win32", reason="Unsupported Platform")
 
 
 class FileApp(Component):
-
     def init(self, *args, **kwargs):
         self.file = File(*args, **kwargs).register(self)
 

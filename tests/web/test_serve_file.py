@@ -8,7 +8,6 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-
     def __init__(self, *args, **kwargs):
         super().__init__(self, *args, **kwargs)
 

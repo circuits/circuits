@@ -3,19 +3,20 @@ Request/Response Wrappers
 
 This module implements the Request and Response objects.
 """
+
+from email.utils import formatdate
 from functools import partial
+from http.cookies import SimpleCookie
 from io import BytesIO
 from time import time
 
 from circuits.net.sockets import BUFSIZE
-from http.cookies import SimpleCookie
 
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 from .errors import httperror
 from .headers import Headers
 from .url import parse_url
 
-from email.utils import formatdate
 formatdate = partial(formatdate, usegmt=True)
 
 
@@ -51,7 +52,6 @@ class Host:
 
 
 class HTTPStatus:
-
     __slots__ = ("_reason", "_status")
 
     def __init__(self, status=200, reason=None):
@@ -91,7 +91,8 @@ class HTTPStatus:
 
     def __repr__(self):
         return "<Status (status={:d} reason={}>".format(
-            self._status, self._reason,
+            self._status,
+            self._reason,
         )
 
     def __format__(self, format_spec):
@@ -144,8 +145,7 @@ class Request:
     login = None
     handled = False
 
-    def __init__(self, sock, method="GET", scheme="http", path="/",
-                 protocol=(1, 1), qs="", headers=None, server=None):
+    def __init__(self, sock, method="GET", scheme="http", path="/", protocol=(1, 1), qs="", headers=None, server=None):
         "initializes x; see x.__class__.__doc__ for signature"
         self.sock = sock
         self.method = method
@@ -196,9 +196,7 @@ class Request:
         base = "{}://{}{}/".format(
             self.scheme,
             self.host,
-            f":{self.port:d}"
-            if self.port not in (80, 443)
-            else "",
+            f":{self.port:d}" if self.port not in (80, 443) else "",
         )
 
         self.base = parse_url(base)
@@ -219,7 +217,7 @@ class Request:
 class Body:
     """Response Body"""
 
-    encode_errors = 'strict'
+    encode_errors = "strict"
 
     def __get__(self, response, cls=None):
         if response is None:
@@ -284,7 +282,7 @@ class Response:
     stream = False
     chunked = False
 
-    def __init__(self, request, encoding='utf-8', status=None):
+    def __init__(self, request, encoding="utf-8", status=None):
         "initializes x; see x.__class__.__doc__ for signature"
         self.request = request
         self.encoding = encoding
@@ -318,12 +316,13 @@ class Response:
         return f"{self.protocol} {self.status}\r\n"
 
     def __bytes__(self):
-        return str(self).encode('ISO8859-1')
+        return str(self).encode("ISO8859-1")
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
         self.headers.setdefault(
-            "Content-Type", f"text/html; charset={self.encoding}",
+            "Content-Type",
+            f"text/html; charset={self.encoding}",
         )
 
         cLength = None
@@ -333,12 +332,7 @@ class Response:
             elif isinstance(self.body, str):
                 cLength = len(self.body.encode(self.encoding))
             elif isinstance(self.body, list):
-                cLength = sum(
-                    len(s.encode(self.encoding))
-                    if not isinstance(s, bytes)
-                    else len(s) for s in self.body
-                    if s is not None
-                )
+                cLength = sum(len(s.encode(self.encoding)) if not isinstance(s, bytes) else len(s) for s in self.body if s is not None)
 
         if cLength is not None:
             self.headers["Content-Length"] = str(cLength)
@@ -354,16 +348,13 @@ class Response:
             if status < 200 or status in (204, 205, 304):
                 pass
             else:
-                if self.protocol == "HTTP/1.1" \
-                        and self.request.method != "HEAD" \
-                        and self.request.server is not None \
-                        and cLength != 0:
+                if self.protocol == "HTTP/1.1" and self.request.method != "HEAD" and self.request.server is not None and cLength != 0:
                     self.chunked = True
                     self.headers.add_header("Transfer-Encoding", "chunked")
                 else:
                     self.close = True
 
-        if (self.request.server is not None and "Connection" not in self.headers):
+        if self.request.server is not None and "Connection" not in self.headers:
             if self.protocol == "HTTP/1.1":
                 if self.close:
                     self.headers.add_header("Connection", "close")

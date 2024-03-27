@@ -4,8 +4,9 @@ Main
 
 circutis.web Web Server and Testing Tool.
 """
-from argparse import ArgumentParser
+
 import os
+from argparse import ArgumentParser
 from hashlib import md5
 from sys import stderr
 from wsgiref.simple_server import make_server
@@ -41,68 +42,81 @@ def parse_options():
     parser = ArgumentParser()
 
     parser.add_argument(
-        "-b", "--bind",
-        action="store", default="0.0.0.0:8000",
+        "-b",
+        "--bind",
+        action="store",
+        default="0.0.0.0:8000",
         help="Bind to address:[port]",
     )
 
     parser.add_argument(
-        "-l", "--logging",
-        action="store_true", default=False,
+        "-l",
+        "--logging",
+        action="store_true",
+        default=False,
         help="Enable logging of requests",
     )
 
     parser.add_argument(
-        "-p", "--passwd",
-        action="store", default=None,
+        "-p",
+        "--passwd",
+        action="store",
+        default=None,
         help="Location to passwd file for Digest Auth",
     )
 
     parser.add_argument(
-        "-j", "--jobs",
-        action="store", type=int, default=0,
+        "-j",
+        "--jobs",
+        action="store",
+        type=int,
+        default=0,
         help="Specify number of jobs/processes to start",
     )
 
     parser.add_argument(
         "--poller",
-        action="store", default="select",
+        action="store",
+        default="select",
         help="Specify type of poller to use",
     )
 
     parser.add_argument(
         "--server",
-        action="store", default="server",
+        action="store",
+        default="server",
         help="Specify server to use",
     )
 
     parser.add_argument(
         "--profile",
-        action="store_true", default=False,
+        action="store_true",
+        default=False,
         help="Enable execution profiling support",
     )
 
     parser.add_argument(
         "--debug",
-        action="store_true", default=False,
+        action="store_true",
+        default=False,
         help="Enable debug mode",
     )
 
     parser.add_argument(
         "--validate",
-        action="store_true", default=False,
+        action="store_true",
+        default=False,
         help="Enable WSGI validation mode",
     )
 
-    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s v{circuits.__version__}')
+    parser.add_argument("-v", "--version", action="version", version=f"%(prog)s v{circuits.__version__}")
 
-    parser.add_argument('docroot', nargs='?', default=os.getcwd())
+    parser.add_argument("docroot", nargs="?", default=os.getcwd())
 
     return parser.parse_args()
 
 
 class Authentication(Component):
-
     channel = "web"
 
     realm = "Secure Area"
@@ -127,7 +141,6 @@ class Authentication(Component):
 
 
 class HelloWorld(Component):
-
     channel = "web"
 
     def request(self, request, response):
@@ -135,7 +148,6 @@ class HelloWorld(Component):
 
 
 class Root(Controller):
-
     def hello(self):
         return "Hello World!"
 
@@ -179,7 +191,7 @@ def main():
     bind = parse_bind(opts.bind)
 
     if opts.validate:
-        application = (Application() + Root())
+        application = Application() + Root()
         app = validator(application)
 
         httpd = make_server(bind[0], bind[1], app)

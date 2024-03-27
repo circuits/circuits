@@ -11,7 +11,6 @@ from .helpers import urlopen
 
 
 class Echo(Component):
-
     channel = "wsserver"
 
     def init(self):
@@ -30,13 +29,11 @@ class Echo(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
 
 class Client(Component):
-
     channel = "ws"
 
     def init(self, *args, **kwargs):
@@ -46,7 +43,7 @@ class Client(Component):
         self.response = data
 
 
-@pytest.mark.parametrize('chunksize', [BUFSIZE, BUFSIZE + 1, BUFSIZE * 2])
+@pytest.mark.parametrize("chunksize", [BUFSIZE, BUFSIZE + 1, BUFSIZE * 2])
 def test(manager, watcher, webapp, chunksize):
     echo = Echo().register(webapp)
     assert watcher.wait("registered", channel="wsserver")
@@ -60,8 +57,7 @@ def test(manager, watcher, webapp, chunksize):
     WebSocketsDispatcher("/websocket").register(webapp)
     assert watcher.wait("registered", channel="web")
 
-    uri = "ws://{:s}:{:d}/websocket".format(
-        webapp.server.host, webapp.server.port)
+    uri = "ws://{:s}:{:d}/websocket".format(webapp.server.host, webapp.server.port)
 
     WebSocketClient(uri).register(manager)
     client = Client().register(manager)

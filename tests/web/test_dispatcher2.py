@@ -5,7 +5,6 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self += Hello()
@@ -22,30 +21,30 @@ class Root(Controller):
         return "hello2"
 
     def query(req, test):
-        return 'query %s' % test
+        return "query %s" % test
 
 
 class Hello(Controller):
     channel = "/hello"
 
     def index(self):
-        return 'hello index'
+        return "hello index"
 
     def test(self):
-        return 'hello test'
+        return "hello test"
 
     def query(req, test):
-        return 'hello query %s' % test
+        return "hello query %s" % test
 
 
 class World(Controller):
     channel = "/world"
 
     def index(self):
-        return 'world index'
+        return "world index"
 
     def test(self):
-        return 'world test'
+        return "world test"
 
 
 def test_simple(webapp):

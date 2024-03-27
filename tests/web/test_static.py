@@ -9,7 +9,6 @@ from .helpers import HTTPError, quote, urlopen
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
@@ -61,8 +60,7 @@ def test_directory(webapp):
 
 
 def test_file_quoting(webapp):
-    url = "{:s}{:s}".format(
-        webapp.server.http.base, quote("/static/#foobar.txt"))
+    url = "{:s}{:s}".format(webapp.server.http.base, quote("/static/#foobar.txt"))
     f = urlopen(url)
     s = f.read().strip()
     assert s == b"Hello World!"
@@ -71,8 +69,7 @@ def test_file_quoting(webapp):
 def test_range(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
-    connection.request("GET", "%s/static/largefile.txt" %
-                       webapp.server.http.base, headers={"Range": "bytes=0-100"})
+    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-100"})
     response = connection.getresponse()
     assert response.status == 206
     s = response.read()
@@ -82,8 +79,7 @@ def test_range(webapp):
 def test_ranges(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
-    connection.request("GET", "%s/static/largefile.txt" %
-                       webapp.server.http.base, headers={"Range": "bytes=0-50,51-100"})
+    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-50,51-100"})
     response = connection.getresponse()
     assert response.status == 206
 
@@ -97,8 +93,7 @@ def test_ranges(webapp):
 def test_unsatisfiable_range1(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
 
-    connection.request("GET", "%s/static/largefile.txt" %
-                       webapp.server.http.base, headers={"Range": "bytes=0-100,100-10000,0-1"})
+    connection.request("GET", "%s/static/largefile.txt" % webapp.server.http.base, headers={"Range": "bytes=0-100,100-10000,0-1"})
     response = connection.getresponse()
     assert response.status == 416
 

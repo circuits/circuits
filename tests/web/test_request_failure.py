@@ -6,7 +6,6 @@ from .helpers import HTTPError, urlopen
 
 
 class Root(BaseComponent):
-
     channel = "web"
 
     @handler("request", priority=0.2)

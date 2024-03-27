@@ -7,6 +7,7 @@ try:
     from gzip import decompress
 except ImportError:
     import zlib
+
     decompress = zlib.decompressobj(16 + zlib.MAX_WBITS).decompress  # NOQA
 
 

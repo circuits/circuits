@@ -3,7 +3,6 @@ from circuits.web import Controller, Logger, Server
 
 
 class Root(Controller):
-
     def GET(self, *args, **kwargs):
         """
         GET Request Handler

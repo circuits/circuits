@@ -21,7 +21,6 @@ class hello(Event):
 
 
 class App(Component):
-
     def hello(self, event):
         """Hello Event Handler"""
         event.stop()  # Stop further event processing

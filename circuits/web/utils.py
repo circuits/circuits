@@ -3,6 +3,7 @@ Utilities
 
 This module implements utility functions.
 """
+
 import os
 import re
 import stat
@@ -103,9 +104,7 @@ def dictform(form):
 def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
     # Header
-    yield b"\037\213\010\0" \
-        + struct.pack("<L", int(time.time())) \
-        + b"\002\377"
+    yield b"\037\213\010\0" + struct.pack("<L", int(time.time())) + b"\002\377"
 
     size = 0
     crc = zlib.crc32(b"")
@@ -126,9 +125,7 @@ def compress(body, compress_level):
         crc = zlib.crc32(chunk, crc)
         yield zobj.compress(chunk)
 
-    yield zobj.flush() \
-        + struct.pack("<l", crc) \
-        + struct.pack("<L", size & 0xFFFFFFFF)
+    yield zobj.flush() + struct.pack("<l", crc) + struct.pack("<L", size & 0xFFFFFFFF)
 
 
 def get_ranges(headervalue, content_length):

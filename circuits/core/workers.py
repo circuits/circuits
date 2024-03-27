@@ -9,6 +9,7 @@ to create a pool of workers using sub-processes for CPU-bound work or `False`
 Then fire `task()` events with a function and `*args` and `**kwargs` to pass
 to the function when called from within the workers.
 """
+
 from multiprocessing import Pool as ProcessPool, cpu_count
 from multiprocessing.pool import ThreadPool
 from threading import current_thread

@@ -1,4 +1,4 @@
-""" Circuits events for STOMP Client """
+"""Circuits events for STOMP Client"""
 
 import logging
 

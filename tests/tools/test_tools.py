@@ -3,6 +3,7 @@ Tools Test Suite
 
 Test all functionality of the tools package.
 """
+
 import pytest
 
 from circuits import Component, reprhandler
@@ -10,37 +11,31 @@ from circuits.tools import findroot, inspect, kill, tryimport
 
 
 class A(Component):
-
     def foo(self):
         print("A!")
 
 
 class B(Component):
-
     def foo(self):
         print("B!")
 
 
 class C(Component):
-
     def foo(self):
         print("C!")
 
 
 class D(Component):
-
     def foo(self):
         print("D!")
 
 
 class E(Component):
-
     def foo(self):
         print("E!")
 
 
 class F(Component):
-
     def foo(self):
         print("F!")
 
@@ -139,12 +134,14 @@ def test_reprhandler():
 
 def test_tryimport():
     import os
+
     m = tryimport("os")
     assert m is os
 
 
 def test_tryimport_obj():
     from os import path
+
     m = tryimport("os", "path")
     assert m is path
 

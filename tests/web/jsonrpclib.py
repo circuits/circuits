@@ -31,12 +31,8 @@
 # --------------------------------------------------------------------
 import base64
 import json
-
-from http.client import HTTPConnection
-from http.client import HTTPSConnection
-
-from urllib.parse import unquote
-from urllib.parse import splithost, splittype, splituser
+from http.client import HTTPConnection, HTTPSConnection
+from urllib.parse import splithost, splittype, splituser, unquote
 
 __version__ = "0.0.1"
 
@@ -55,11 +51,13 @@ def _gen_id():
 ##
 # Base class for all kinds of client-side errors.
 
+
 class Error(Exception):
     """Base class for client errors."""
 
     def __str__(self):
         return repr(self)
+
 
 ##
 # Indicates an HTTP-level protocol error.  This is raised by the HTTP
@@ -84,10 +82,7 @@ class ProtocolError(Error):
         self.response = response
 
     def __repr__(self):
-        return (
-            "<ProtocolError for %s: %s %s>" %
-            (self.url, self.errcode, self.errmsg)
-        )
+        return "<ProtocolError for %s: %s %s>" % (self.url, self.errcode, self.errmsg)
 
 
 def getparser(encoding):
@@ -96,8 +91,7 @@ def getparser(encoding):
     return par, un
 
 
-def dumps(params, methodname=None, methodresponse=None, encoding=None,
-          allow_none=0):
+def dumps(params, methodname=None, methodresponse=None, encoding=None, allow_none=0):
     if methodname:
         request = {}
         request["method"] = methodname
@@ -107,7 +101,6 @@ def dumps(params, methodname=None, methodresponse=None, encoding=None,
 
 
 class Unmarshaller:
-
     def __init__(self, encoding):
         self.data = None
         self.encoding = encoding
@@ -124,7 +117,6 @@ class Unmarshaller:
 
 
 class Parser:
-
     def __init__(self, unmarshaller):
         self._target = unmarshaller
         self.data = None
@@ -152,6 +144,7 @@ class _Method:
 
     def __call__(self, *args):
         return self.__send(self.__name, args)
+
 
 ##
 # Standard transport class for JSON-RPC over HTTP.
@@ -199,7 +192,8 @@ class Transport:
             response = r.read()
             raise ProtocolError(
                 host + handler,
-                errcode, errmsg,
+                errcode,
+                errmsg,
                 headers,
                 response,
             )
@@ -233,7 +227,6 @@ class Transport:
     #     x509 info).  The header and x509 fields may be None.
 
     def get_host_info(self, host):
-
         x509 = {}
         if isinstance(host, tuple):
             host, x509 = host
@@ -349,6 +342,7 @@ class Transport:
 
         return u.close()
 
+
 ##
 # Standard transport class for JSON-RPC over HTTPS.
 
@@ -373,9 +367,7 @@ class SafeTransport(Transport):
 
 
 class ServerProxy:
-
-    def __init__(self, uri, transport=None, encoding=None,
-                 verbose=None, allow_none=0):
+    def __init__(self, uri, transport=None, encoding=None, verbose=None, allow_none=0):
         utype, uri = splittype(uri)
         if utype not in ("http", "https"):
             raise OSError("Unsupported JSONRPC protocol")
@@ -396,8 +388,7 @@ class ServerProxy:
 
     def __request(self, methodname, params):
         """call a method on the remote server"""
-        request = dumps(params, methodname, encoding=self.__encoding,
-                        allow_none=self.__allow_none)
+        request = dumps(params, methodname, encoding=self.__encoding, allow_none=self.__allow_none)
 
         response = self.__transport.request(
             self.__host,
@@ -413,9 +404,7 @@ class ServerProxy:
         return response
 
     def __repr__(self):
-        return ("<JSONProxy for %s%s>" %
-                (self.__host, self.__handler)
-                )
+        return "<JSONProxy for %s%s>" % (self.__host, self.__handler)
 
     __str__ = __repr__
 

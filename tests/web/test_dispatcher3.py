@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 import pytest
+from http.client import HTTPConnection
 
 from circuits.web import Controller
 
-from http.client import HTTPConnection
-
 
 class Root(Controller):
-
     def GET(self):
         return "GET"
 

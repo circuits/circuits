@@ -3,14 +3,13 @@ Macro
 
 Macro support and dispatcher
 """
-import os
-from inspect import getmembers, getmodule, isfunction
 
+import os
 from creoleparser import parse_args
+from inspect import getmembers, getmodule, isfunction
 
 
 class Macro:
-
     def __init__(self, name, arg_string, body, isblock):
         super().__init__()
 
@@ -37,6 +36,7 @@ def loadMacros():
 
     def p(x):
         return os.path.splitext(x)[1] == ".py"
+
     modules = [x for x in os.listdir(path) if p(x) and x != "__init__.py"]
 
     macros = {}
@@ -49,6 +49,7 @@ def loadMacros():
 
         def p(x):
             return isfunction(x) and getmodule(x) is m
+
         for name, function in getmembers(m, p):
             name = name.replace("_", "-")
             try:

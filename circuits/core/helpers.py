@@ -1,4 +1,5 @@
 """.. codeauthor: mnl"""
+
 from signal import SIGINT, SIGTERM
 from sys import stderr
 from threading import Event
@@ -11,7 +12,6 @@ from .handlers import handler
 
 
 class FallBackGenerator(BaseComponent):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._continue = Event()
@@ -73,8 +73,7 @@ class FallBackExceptionHandler(BaseComponent):
     """
 
     @handler("exception", channel="*")
-    def _on_exception(self, error_type, value, traceback,
-                      handler=None, fevent=None):
+    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
         s = []
 
         if handler is None:
@@ -85,7 +84,7 @@ class FallBackExceptionHandler(BaseComponent):
         msg = f"ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n"
 
         s.append(msg)
-        s.append('Traceback (most recent call last):\n')
+        s.append("Traceback (most recent call last):\n")
         s.extend(traceback)
         s.extend(format_exception_only(error_type, value))
         s.append("\n")

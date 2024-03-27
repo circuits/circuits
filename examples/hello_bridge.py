@@ -17,13 +17,11 @@ class hello(Event):
 
 
 class Child(Component):
-
     def hello(self):
         return f"Hello from child with pid {getpid()}"
 
 
 class App(Component):
-
     def init(self):
         Child().start(process=True, link=self)
 

@@ -9,7 +9,6 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-
     def index(self):
         self.expires(60)
         return "Hello World!"
@@ -24,7 +23,7 @@ def test(webapp):
     s = f.read()
     assert s == b"Hello World!"
     expires = f.headers["Expires"]
-    diff = (mktime(parsedate(expires)) - mktime(datetime.utcnow().timetuple()))
+    diff = mktime(parsedate(expires)) - mktime(datetime.utcnow().timetuple())
     assert 60 - (60 * 0.1) < diff < 60 + (60 * 0.1)  # diff is about 60 +- 10%
 
 
@@ -40,7 +39,7 @@ def test_nocache(webapp):
     now = datetime.utcnow()
     lastyear = now.replace(year=now.year - 1)
 
-    diff = (mktime(parsedate(expires)) - mktime(lastyear.utctimetuple()))
+    diff = mktime(parsedate(expires)) - mktime(lastyear.utctimetuple())
     assert diff < 1.0
 
     assert pragma == "no-cache"

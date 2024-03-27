@@ -10,7 +10,6 @@ class Identify(Event):
 
 
 class Pound(Component):
-
     def __init__(self):
         super().__init__()
 
@@ -30,7 +29,6 @@ class Pound(Component):
 
 
 class Dog(Component):
-
     def Identify(self):
         return self.__class__.__name__
 

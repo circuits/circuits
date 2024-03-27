@@ -18,6 +18,7 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
+
 import logging
 import random
 import socket
@@ -111,8 +112,8 @@ def create_connection(url, timeout=None, **options):
 
 
 _MAX_INTEGER = (1 << 32) - 1
-_AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)).extend(
-    list(range(0x3a, 0x7e + 1)),
+_AVAILABLE_KEY_CHARS = list(range(0x21, 0x2F + 1)).extend(
+    list(range(0x3A, 0x7E + 1)),
 )
 _MAX_CHAR_BYTE = (1 << 8) - 1
 _MAX_ASCII_BYTE = (1 << 7) - 1
@@ -159,7 +160,6 @@ HEADERS_TO_EXIST_FOR_HIXIE75 = [
 
 
 class _SSLSocketWrapper:
-
     def __init__(self, sock):
         self.ssl = socket.ssl(sock)
 
@@ -239,7 +239,7 @@ class WebSocket:
         headers.append(key3)
 
         header_str = "\r\n".join(headers)
-        sock.send(header_str.encode('utf-8'))
+        sock.send(header_str.encode("utf-8"))
         if traceEnabled:
             logger.debug("--- request header ---")
             logger.debug(header_str)
@@ -267,7 +267,7 @@ class WebSocket:
     def _validate_resp(self, number_1, number_2, key3, resp):
         challenge = struct.pack("!I", number_1)
         challenge += struct.pack("!I", number_2)
-        challenge += key3.encode('utf-8')
+        challenge += key3.encode("utf-8")
         digest = md5(challenge).digest()
 
         return resp == digest
@@ -326,8 +326,7 @@ class WebSocket:
                 kv = line.split(b":", 1)
                 if len(kv) == 2:
                     key, value = kv
-                    headers[key.lower().decode('utf-8')] \
-                        = value.strip().lower().decode('utf-8')
+                    headers[key.lower().decode("utf-8")] = value.strip().lower().decode("utf-8")
                 else:
                     raise WebSocketException("Invalid header")
 
@@ -362,12 +361,12 @@ class WebSocket:
                 else:
                     bytes.append(b)
             return b"".join(bytes)
-        elif 0x80 < frame_type < 0xff:
+        elif 0x80 < frame_type < 0xFF:
             # which frame type is valid?
             length = self._read_length()
             bytes = self._recv_strict(length)
             return bytes
-        elif frame_type == 0xff:
+        elif frame_type == 0xFF:
             self._recv(1)
             self._closeInternal()
             return None
@@ -378,7 +377,7 @@ class WebSocket:
         length = 0
         while True:
             b = ord(self._recv(1))
-            length = length * (1 << 7) + (b & 0x7f)
+            length = length * (1 << 7) + (b & 0x7F)
             if b < 0x80:
                 break
 
@@ -440,9 +439,7 @@ class WebSocketApp:
     The interface is like JavaScript WebSocket object.
     """
 
-    def __init__(self, url,
-                 on_open=None, on_message=None, on_error=None,
-                 on_close=None):
+    def __init__(self, url, on_open=None, on_message=None, on_error=None, on_close=None):
         """
         url: websocket url.
         on_open: callable object which is called at opening websocket.

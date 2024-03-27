@@ -10,7 +10,6 @@ from .helpers import urlopen
 
 
 class DummyLogger:
-
     def __init__(self):
         super().__init__()
 
@@ -21,7 +20,6 @@ class DummyLogger:
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 

@@ -20,7 +20,7 @@ def process_multipart(request, params):
         # "The grammar for parameters on the Content-type field is such that it
         # is often necessary to enclose the boundary parameter values in quotes
         # on the Content-type line"
-        ib = ctype.params["boundary"].strip("\"")
+        ib = ctype.params["boundary"].strip('"')
 
     if not re.match("^[ -~]{0,200}[!-~]$", ib):
         raise ValueError(f"Invalid boundary in multipart form: {ib!r}")

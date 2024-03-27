@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-import os
-
 import mako
+import os
 from mako.lookup import TemplateLookup
 
 from circuits.web import Controller, Server, Static
@@ -25,7 +24,6 @@ def render(name, **d):
 
 
 class Root(Controller):
-
     tpl = "index.html"
 
     def index(self):

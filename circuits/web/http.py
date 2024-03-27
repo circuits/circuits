@@ -4,6 +4,7 @@ Hyper Text Transfer Protocol
 This module implements the server side Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
+
 from io import BytesIO
 from socket import socket
 from urllib.parse import quote
@@ -148,7 +149,7 @@ class HTTP(BaseComponent):
 
         # send HTTP response status line and headers
         res.prepare()
-        self.fire(write(sock, b'%s%s' % (bytes(res), bytes(headers))))
+        self.fire(write(sock, b"%s%s" % (bytes(res), bytes(headers))))
 
         if req.method == "HEAD":
             return

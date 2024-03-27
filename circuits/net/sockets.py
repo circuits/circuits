@@ -3,8 +3,10 @@ Socket Components
 
 This module contains various Socket Components for use with Networking.
 """
+
 import os
 import select
+from _socket import socket as SocketType
 from collections import defaultdict, deque
 from errno import (
     EAGAIN, EALREADY, EBADF, ECONNABORTED, EINPROGRESS, EINTR, EINVAL, EISCONN,
@@ -12,11 +14,10 @@ from errno import (
 )
 from socket import (
     AF_INET, AF_INET6, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR,
-    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, gaierror, getaddrinfo, getfqdn, gethostbyname, gethostname, socket,
+    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, gaierror, getaddrinfo,
+    getfqdn, gethostbyname, gethostname, socket,
 )
 from time import time
-
-from _socket import socket as SocketType
 
 from circuits.core import BaseComponent, handler
 from circuits.core.pollers import BasePoller, Poller
@@ -38,9 +39,10 @@ except ImportError:
     socketpair = None
 
 try:
-    from ssl import wrap_socket as ssl_socket
-    from ssl import CERT_NONE, PROTOCOL_SSLv23
-    from ssl import SSLError, SSL_ERROR_WANT_WRITE, SSL_ERROR_WANT_READ
+    from ssl import (
+        CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23,
+        SSLError, wrap_socket as ssl_socket,
+    )
 
     HAS_SSL = 1
 except ImportError:
@@ -87,7 +89,6 @@ def do_handshake(sock, on_done=None, on_error=None, extra_args=None):
 
 
 class Client(BaseComponent):
-
     channel = "client"
 
     socket_family = AF_INET
@@ -262,7 +263,6 @@ class Client(BaseComponent):
 
 
 class TCPClient(Client):
-
     socket_family = AF_INET
     socket_type = SOCK_STREAM
     socket_protocol = IPPROTO_TCP
@@ -326,7 +326,11 @@ class TCPClient(Client):
                 self._close()
 
             self._sock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False,
+                self._sock,
+                self.keyfile,
+                self.certfile,
+                ca_certs=self.ca_certs,
+                do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._sock, on_done, on_error):
                 yield
@@ -335,7 +339,6 @@ class TCPClient(Client):
 
 
 class TCP6Client(TCPClient):
-
     socket_family = AF_INET6
 
     def parse_bind_parameter(self, bind_parameter):
@@ -343,7 +346,6 @@ class TCP6Client(TCPClient):
 
 
 class UNIXClient(Client):
-
     socket_family = AF_UNIX
     socket_type = SOCK_STREAM
     socket_options = []
@@ -391,7 +393,11 @@ class UNIXClient(Client):
                 self.fire(error(err))
 
             self._ssock = ssl_socket(
-                self._sock, self.keyfile, self.certfile, ca_certs=self.ca_certs, do_handshake_on_connect=False,
+                self._sock,
+                self.keyfile,
+                self.certfile,
+                ca_certs=self.ca_certs,
+                do_handshake_on_connect=False,
             )
             for _ in do_handshake(self._ssock, on_done, on_error):
                 yield
@@ -400,14 +406,13 @@ class UNIXClient(Client):
 
 
 class Server(BaseComponent):
-
     channel = "server"
     socket_protocol = IPPROTO_IP
 
     def __init__(self, bind, secure=False, backlog=BACKLOG, bufsize=BUFSIZE, channel=channel, **kwargs):
         super().__init__(channel=channel)
 
-        self.socket_options = self.socket_options[:] + kwargs.get('socket_options', [])
+        self.socket_options = self.socket_options[:] + kwargs.get("socket_options", [])
         self._bind = self.parse_bind_parameter(bind)
 
         self._backlog = backlog
@@ -649,12 +654,12 @@ class Server(BaseComponent):
         self.fire(error(sock, err))
         self._close(sock)
 
-    @handler('starttls')
+    @handler("starttls")
     def starttls(self, sock):
         if not HAS_SSL:
-            raise RuntimeError('Cannot start TLS. No TLS support.')
+            raise RuntimeError("Cannot start TLS. No TLS support.")
         if sock in self.__starttls:
-            raise RuntimeError('Cannot reuse socket for already started STARTTLS.')
+            raise RuntimeError("Cannot reuse socket for already started STARTTLS.")
         self.__starttls.add(sock)
         self._poller.removeReader(sock)
         self._clients.remove(sock)
@@ -697,7 +702,6 @@ class Server(BaseComponent):
 
 
 class TCPServer(Server):
-
     socket_family = AF_INET
     socket_type = SOCK_STREAM
     socket_options = [
@@ -744,7 +748,6 @@ def parse_ipv6_parameter(bind_parameter):
 
 
 class TCP6Server(TCPServer):
-
     socket_family = AF_INET6
 
     def parse_bind_parameter(self, bind_parameter):
@@ -752,7 +755,6 @@ class TCP6Server(TCPServer):
 
 
 class UNIXServer(Server):
-
     socket_family = AF_UNIX
     socket_type = SOCK_STREAM
     socket_options = [
@@ -770,7 +772,6 @@ class UNIXServer(Server):
 
 
 class UDPServer(Server):
-
     socket_family = AF_INET
     socket_type = SOCK_DGRAM
     socket_options = [
@@ -879,7 +880,7 @@ def Pipe(*channels, **kwargs):
     the pipe.
     """
     if socketpair is None:
-        raise RuntimeError('No socketpair support available.')
+        raise RuntimeError("No socketpair support available.")
 
     if not channels:
         channels = ("a", "b")

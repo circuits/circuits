@@ -1,7 +1,6 @@
 #!/usr/bin/python -i
-from types import TracebackType
-
 import pytest
+from types import TracebackType
 
 from circuits import Component, Event, handler
 
@@ -25,7 +24,6 @@ class values(Event):
 
 
 class App(Component):
-
     def hello(self):
         return "Hello World!"
 

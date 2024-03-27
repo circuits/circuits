@@ -7,7 +7,6 @@ from circuits.web.tools import basic_auth, check_auth
 
 
 class Auth(Component):
-
     realm = "Test"
     users = {"admin": md5(b"admin").hexdigest()}
 
@@ -26,7 +25,6 @@ class Auth(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 

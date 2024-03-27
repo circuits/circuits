@@ -1,8 +1,7 @@
 #!/usr/bin/env python
+import pytest
 from io import BytesIO
 from os import path
-
-import pytest
 
 from circuits.web import Controller
 
@@ -15,14 +14,14 @@ def sample_file(request):
     return open(
         path.join(
             path.dirname(__file__),
-            "static", "unicode.txt",
+            "static",
+            "unicode.txt",
         ),
         "rb",
     )
 
 
 class Root(Controller):
-
     def index(self, file, description=""):
         yield "Filename: %s\n" % file.filename
         yield "Description: %s\n" % description
@@ -64,7 +63,9 @@ def test_unicode(webapp, sample_file):
     form = MultiPartForm()
     form["description"] = sample_file.name
     form.add_file(
-        "file", "helloworld.txt", sample_file,
+        "file",
+        "helloworld.txt",
+        sample_file,
         "text/plain; charset=utf-8",
     )
 

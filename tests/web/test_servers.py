@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import os
+import pytest
 import ssl
 import sys
 import tempfile
 from os import path
-from socket import gaierror
-
-import pytest
 from pytest import fixture
+from socket import gaierror
 
 from circuits import Component
 from circuits.web import BaseServer, Controller, Server
@@ -32,7 +31,6 @@ def tmpfile(request):
 
 
 class BaseRoot(Component):
-
     channel = "web"
 
     def request(self, request, response):
@@ -40,13 +38,11 @@ class BaseRoot(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
 
 class MakeQuiet(Component):
-
     channel = "web"
 
     def ready(self, event, *args):
@@ -98,10 +94,8 @@ def test_server(manager, watcher):
     watcher.wait("unregistered")
 
 
-@pytest.mark.skipif((2,) < sys.version_info < (3, 4, 3),
-                    reason="Context not implemented under python 3.4.3")
-@pytest.mark.skipif(sys.version_info < (2, 7, 9),
-                    reason="Context not implemented under python 2.7.9")
+@pytest.mark.skipif((2,) < sys.version_info < (3, 4, 3), reason="Context not implemented under python 3.4.3")
+@pytest.mark.skipif(sys.version_info < (2, 7, 9), reason="Context not implemented under python 2.7.9")
 def test_secure_server(manager, watcher):
     pytest.importorskip("ssl")
 
@@ -154,17 +148,17 @@ def test_unixserver(manager, watcher, tmpfile):
     watcher.wait("unregistered")
 
 
-@pytest.mark.skipif((2, 7, 9) < sys.version_info < (3, 4, 3),
-                    reason="Context not implemented under python 3.4.3")
-@pytest.mark.skipif(sys.version_info < (2, 7, 9),
-                    reason="Context not implemented under python 2.7.9")
+@pytest.mark.skipif((2, 7, 9) < sys.version_info < (3, 4, 3), reason="Context not implemented under python 3.4.3")
+@pytest.mark.skipif(sys.version_info < (2, 7, 9), reason="Context not implemented under python 2.7.9")
 def test_multi_servers(manager, watcher):
     pytest.importorskip("ssl")
 
     insecure_server = Server(0, channel="insecure")
     secure_server = Server(
         0,
-        channel="secure", secure=True, certfile=CERTFILE,
+        channel="secure",
+        secure=True,
+        certfile=CERTFILE,
     )
 
     server = (insecure_server + secure_server).register(manager)

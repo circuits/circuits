@@ -9,7 +9,6 @@ from circuits.web.client import parse_url
 
 
 class Client(Component):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._buffer = []
@@ -21,11 +20,10 @@ class Client(Component):
             self.done = True
 
     def buffer(self):
-        return b''.join(self._buffer)
+        return b"".join(self._buffer)
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
@@ -47,8 +45,8 @@ def test(webapp):
 
     client.stop()
 
-    ss = client.buffer().decode('utf-8')
-    s = ss.split('\r\n')[0]
+    ss = client.buffer().decode("utf-8")
+    s = ss.split("\r\n")[0]
     assert s == "HTTP/1.1 200 OK", ss
 
 
@@ -67,7 +65,7 @@ def test_http_1_0(webapp):
 
     client.stop()
 
-    s = client.buffer().decode('utf-8').split('\r\n')[0]
+    s = client.buffer().decode("utf-8").split("\r\n")[0]
     assert s == "HTTP/1.0 200 OK"
 
 
@@ -86,5 +84,5 @@ def test_http_1_1_no_host_headers(webapp):
 
     client.stop()
 
-    s = client.buffer().decode('utf-8').split('\r\n')[0]
+    s = client.buffer().decode("utf-8").split("\r\n")[0]
     assert s == "HTTP/1.1 400 Bad Request"

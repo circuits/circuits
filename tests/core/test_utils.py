@@ -5,7 +5,6 @@ from types import ModuleType
 from circuits import Component
 from circuits.core.utils import findchannel, findroot, findtype
 
-
 FOO = """\
 def foo():
     return "Hello World!"
@@ -22,18 +21,15 @@ class Base(Component):
 
 
 class App(Base):
-
     def hello(self):
         return "Hello World!"
 
 
 class A(Component):
-
     channel = "a"
 
 
 class B(Component):
-
     channel = "b"
 
 
@@ -54,7 +50,7 @@ def test_safeimport(tmpdir):
     pyc = foo_path.new(ext="pyc")
     if pyc.check(file=1):
         pyc.remove(ignore_errors=True)
-    pyd = foo_path.dirpath('__pycache__')
+    pyd = foo_path.dirpath("__pycache__")
     if pyd.check(dir=1):
         pyd.remove(ignore_errors=True)
     foo_path.write(FOOBAR)

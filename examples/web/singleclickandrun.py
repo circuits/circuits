@@ -3,7 +3,6 @@ import webbrowser
 
 from circuits.web import Controller, Server
 
-
 HTML = """\
 <html>
  <head>
@@ -20,7 +19,6 @@ HTML = """\
 
 
 class Root(Controller):
-
     def index(self):
         return HTML
 

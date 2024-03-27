@@ -1,6 +1,6 @@
 """py.test config"""
-import os
 
+import os
 import pytest
 
 from circuits import Component, Debugger, handler
@@ -12,7 +12,6 @@ DOCROOT = os.path.join(os.path.dirname(__file__), "static")
 
 
 class WebApp(Component):
-
     channel = "web"
 
     def init(self):
@@ -23,7 +22,6 @@ class WebApp(Component):
 
 
 class WebClient(Client):
-
     def init(self, *args, **kwargs):
         self.closed = False
 
@@ -46,6 +44,7 @@ def webapp(request, manager, watcher):
 
     if hasattr(request.module, "application"):
         from circuits.web.wsgi import Gateway
+
         application = request.module.application
         Gateway({"/": application}).register(webapp)
         assert watcher.wait("registered")

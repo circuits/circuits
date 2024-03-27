@@ -5,7 +5,6 @@ from circuits import Component, Event
 
 
 class App(Component):
-
     def init(self):
         self._ready = False
         self._done = False

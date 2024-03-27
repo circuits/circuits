@@ -4,7 +4,6 @@ from circuits.web import Controller, Server, Static
 
 
 class Root(Controller):
-
     def index(self):
         """
         Index Request Handler

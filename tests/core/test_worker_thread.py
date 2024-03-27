@@ -1,6 +1,5 @@
 """Workers Tests"""
 
-
 import pytest
 
 from circuits import Worker, task

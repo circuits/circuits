@@ -24,7 +24,6 @@ class coroutine2(Event):
 
 
 class App(Component):
-
     returned = False
 
     def test(self, event):

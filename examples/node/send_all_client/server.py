@@ -15,16 +15,21 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-b", "--bind",
-        action="store", type="string",
-        default="0.0.0.0:8000", dest="bind",
+        "-b",
+        "--bind",
+        action="store",
+        type="string",
+        default="0.0.0.0:8000",
+        dest="bind",
         help="Bind to address:[port]",
     )
 
     parser.add_option(
-        "-d", "--debug",
+        "-d",
+        "--debug",
         action="store_true",
-        default=False, dest="debug",
+        default=False,
+        dest="debug",
         help="Enable debug mode",
     )
 
@@ -34,13 +39,11 @@ def parse_options():
 
 
 class send_all_event(Event):
-
     def __init__(self, infos):
         super().__init__(infos)
 
 
 class NodeServer(Component):
-
     def init(self, args, opts):
         if opts.debug:
             Debugger().register(self)
@@ -54,18 +57,18 @@ class NodeServer(Component):
         self.node = Node(port=port, server_ip=address).register(self)
 
     def connect(self, sock, host, port):
-        print('Peer connected: %s:%d' % (host, port))
+        print("Peer connected: %s:%d" % (host, port))
 
     def disconnect(self, sock):
-        print('Peer disconnected: %s' % sock)
+        print("Peer disconnected: %s" % sock)
 
     def ready(self, server, bind):
-        print('Server ready: %s:%d' % bind)
-        Timer(3, Event.create('send_all'), persist=True).register(self)
+        print("Server ready: %s:%d" % bind)
+        Timer(3, Event.create("send_all"), persist=True).register(self)
 
     def send_all(self):
         event = send_all_event(str(datetime.now()))
-        print('send: %s' % event)
+        print("send: %s" % event)
         self.node.server.send_all(event)
 
 

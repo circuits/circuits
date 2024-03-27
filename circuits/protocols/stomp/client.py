@@ -1,4 +1,4 @@
-""" Circuits component for handling Stomp Connection """
+"""Circuits component for handling Stomp Connection"""
 
 import logging
 import ssl
@@ -15,15 +15,15 @@ from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
 
 try:
     from stompest.config import StompConfig
-    from stompest.protocol import StompSpec, StompSession
-    from stompest.sync import Stomp
     from stompest.error import StompConnectionError, StompError
+    from stompest.protocol import StompSession, StompSpec
+    from stompest.sync import Stomp
     from stompest.sync.client import LOG_CATEGORY
 except ImportError:
     raise ImportError("No stomp support available.  Is stompest installed?")
 
 
-StompSpec.DEFAULT_VERSION = '1.2'
+StompSpec.DEFAULT_VERSION = "1.2"
 ACK_CLIENT_INDIVIDUAL = StompSpec.ACK_CLIENT_INDIVIDUAL
 ACK_AUTO = StompSpec.ACK_AUTO
 ACK_CLIENT = StompSpec.ACK_CLIENT
@@ -37,22 +37,31 @@ class StompClient(BaseComponent):
 
     channel = "stomp"
 
-    def init(self, host, port, username=None, password=None,
-             connect_timeout=3, connected_timeout=3,
-             version=StompSpec.VERSION_1_2, accept_versions=["1.0", "1.1", "1.2"],
-             heartbeats=(0, 0), ssl_context=None,
-             use_ssl=True,
-             key_file=None,
-             cert_file=None,
-             ca_certs=None,
-             ssl_version=ssl.PROTOCOL_SSLv23,
-             key_file_password=None,
-             proxy_host=None,
-             proxy_port=None,
-             proxy_user=None,
-             proxy_password=None,
-             channel=channel):
-        """ Initialize StompClient.  Called after __init__ """
+    def init(
+        self,
+        host,
+        port,
+        username=None,
+        password=None,
+        connect_timeout=3,
+        connected_timeout=3,
+        version=StompSpec.VERSION_1_2,
+        accept_versions=["1.0", "1.1", "1.2"],
+        heartbeats=(0, 0),
+        ssl_context=None,
+        use_ssl=True,
+        key_file=None,
+        cert_file=None,
+        ca_certs=None,
+        ssl_version=ssl.PROTOCOL_SSLv23,
+        key_file_password=None,
+        proxy_host=None,
+        proxy_port=None,
+        proxy_user=None,
+        proxy_password=None,
+        channel=channel,
+    ):
+        """Initialize StompClient.  Called after __init__"""
         self.channel = channel
         if proxy_host:
             LOG.info("Connect to %s:%s through proxy %s:%d", host, port, proxy_host, proxy_port)
@@ -60,12 +69,7 @@ class StompClient(BaseComponent):
             LOG.info("Connect to %s:%s", host, port)
 
         if use_ssl and not ssl_context:
-
-            ssl_params = {"key_file": key_file,
-                          "cert_file": cert_file,
-                          "ca_certs": ca_certs,
-                          "ssl_version": ssl_version,
-                          "password": key_file_password}
+            ssl_params = {"key_file": key_file, "cert_file": cert_file, "ca_certs": ca_certs, "ssl_version": ssl_version, "password": key_file_password}
             LOG.info("Request to use old-style socket wrapper: %s", ssl_params)
             ssl_context = ssl_params
 
@@ -77,10 +81,7 @@ class StompClient(BaseComponent):
         # Configure failover options so it only tries to connect once
         self._stomp_server = "failover:(%s)?maxReconnectAttempts=1,startupMaxReconnectAttempts=1" % uri
 
-        self._stomp_config = StompConfig(uri=self._stomp_server, sslContext=ssl_context,
-                                         version=version,
-                                         login=username,
-                                         passcode=password)
+        self._stomp_config = StompConfig(uri=self._stomp_server, sslContext=ssl_context, version=version, login=username, passcode=password)
 
         self._heartbeats = heartbeats
         self._accept_versions = accept_versions
@@ -130,8 +131,7 @@ class StompClient(BaseComponent):
             else:
                 LOG.info("Client will send heartbeats to server")
                 # Send heartbeats at 80% of agreed rate
-                self.client_heartbeat = Timer((self._client.clientHeartBeat / 1000.0) * 0.8,
-                                              client_heartbeat(), persist=True)
+                self.client_heartbeat = Timer((self._client.clientHeartBeat / 1000.0) * 0.8, client_heartbeat(), persist=True)
                 self.client_heartbeat.register(self)
         else:
             LOG.info("No Client heartbeats will be sent")
@@ -143,8 +143,7 @@ class StompClient(BaseComponent):
             else:
                 LOG.info("Requested heartbeats from server.")
                 # Allow a grace period on server heartbeats
-                self.server_heartbeat = Timer((self._client.serverHeartBeat / 1000.0) * self.ALLOWANCE,
-                                              server_heartbeat(), persist=True)
+                self.server_heartbeat = Timer((self._client.serverHeartBeat / 1000.0) * self.ALLOWANCE, server_heartbeat(), persist=True)
                 self.server_heartbeat.register(self)
         else:
             LOG.info("Expecting no heartbeats from Server")
@@ -223,7 +222,7 @@ class StompClient(BaseComponent):
             event.success = False
             return
         try:
-            self._client.send(destination, body=body.encode('utf-8'), headers=headers, receipt=receipt)
+            self._client.send(destination, body=body.encode("utf-8"), headers=headers, receipt=receipt)
             LOG.debug("Message sent")
         except StompConnectionError:
             event.success = False
@@ -240,9 +239,7 @@ class StompClient(BaseComponent):
         LOG.info("Subscribe to message destination %s", destination)
         try:
             # Set ID to match destination name for easy reference later
-            frame, token = self._client.subscribe(destination,
-                                                  headers={StompSpec.ACK_HEADER: ack,
-                                                           'id': destination})
+            frame, token = self._client.subscribe(destination, headers={StompSpec.ACK_HEADER: ack, "id": destination})
             self._subscribed[destination] = token
         except StompConnectionError:
             event.success = False

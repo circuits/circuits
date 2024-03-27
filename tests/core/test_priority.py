@@ -7,7 +7,6 @@ class test(Event):
 
 
 class App(Component):
-
     @handler("test")
     def test_0(self):
         return 0

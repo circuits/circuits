@@ -2,7 +2,6 @@ from circuits import Component
 
 
 class Client(Component):
-
     channel = "client"
 
     def __init__(self, channel=channel):

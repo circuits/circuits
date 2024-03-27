@@ -7,7 +7,6 @@ from circuits.net.sockets import TCPClient, TCPServer
 
 
 class Client(Component):
-
     channel = "client"
 
     def init(self, sock, host, port, channel=channel):
@@ -28,7 +27,6 @@ class Client(Component):
 
 
 class Proxy(Component):
-
     channel = "server"
 
     def init(self, bind, host, port):
@@ -44,7 +42,10 @@ class Proxy(Component):
         channel = uuid()
 
         client = Client(
-            sock, self.host, self.port, channel=channel,
+            sock,
+            self.host,
+            self.port,
+            channel=channel,
         ).register(self)
 
         self.clients[sock] = client

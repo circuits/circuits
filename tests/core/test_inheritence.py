@@ -9,20 +9,17 @@ class test(Event):
 
 
 class Base(Component):
-
     def test(self):
         return "Hello World!"
 
 
 class App1(Base):
-
     @handler("test", priority=-1)
     def test(self):
         return "Foobar"
 
 
 class App2(Base):
-
     @handler("test", override=True)
     def test(self):
         return "Foobar"

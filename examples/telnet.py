@@ -36,20 +36,29 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-s", "--secure",
-        action="store_true", default=False, dest="secure",
+        "-s",
+        "--secure",
+        action="store_true",
+        default=False,
+        dest="secure",
         help="Enable secure mode",
     )
 
     parser.add_option(
-        "-u", "--udp",
-        action="store_true", default=False, dest="udp",
+        "-u",
+        "--udp",
+        action="store_true",
+        default=False,
+        dest="udp",
         help="Use UDP transport",
     )
 
     parser.add_option(
-        "-v", "--verbose",
-        action="store_true", default=False, dest="verbose",
+        "-v",
+        "--verbose",
+        action="store_true",
+        default=False,
+        dest="verbose",
         help="Enable verbose debugging",
     )
 
@@ -63,7 +72,6 @@ def parse_options():
 
 
 class Telnet(Component):
-
     # Define a separate channel for this component so we don't clash with
     # the ``read`` event of the ``stdin`` component.
     channel = "telnet"
@@ -162,6 +170,7 @@ def main():
     app = Telnet(*args, **opts.__dict__)
     if opts.verbose:
         from circuits import Debugger
+
         Debugger().register(app)
     stdin.register(app)
     app.run()

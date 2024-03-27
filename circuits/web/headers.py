@@ -3,13 +3,14 @@ Headers Support
 
 This module implements support for parsing and handling headers.
 """
+
 import re
 
 # Regular expression that matches `special' characters in parameters, the
 # existence of which force quoting of the parameter value.
 
 tspecials = re.compile(r'[ \(\)<>@,;:\\"/\[\]\?=]')
-q_separator = re.compile(r'; *q *=')
+q_separator = re.compile(r"; *q *=")
 
 
 def _formatparam(param, value=None, quote=1):
@@ -20,10 +21,10 @@ def _formatparam(param, value=None, quote=1):
     """
     if value is not None and len(value) > 0:
         if quote or tspecials.search(value):
-            value = value.replace('\\', '\\\\').replace('"', r'\"')
+            value = value.replace("\\", "\\\\").replace('"', r"\"")
             return f'{param}="{value}"'
         else:
-            return f'{param}={value}'
+            return f"{param}={value}"
     else:
         return param
 
@@ -40,7 +41,7 @@ def header_elements(fieldname, fieldvalue):
 
     result = []
     for element in fieldvalue.split(","):
-        if fieldname.startswith("Accept") or fieldname == 'TE':
+        if fieldname.startswith("Accept") or fieldname == "TE":
             hv = AcceptElement.from_str(element)
         else:
             hv = HeaderElement.from_str(element)
@@ -69,7 +70,7 @@ class HeaderElement:
         return "%s%s" % (self.value, "".join(p))
 
     def __bytes__(self):
-        return self.__str__().encode('ISO8859-1')
+        return self.__str__().encode("ISO8859-1")
 
     def parse(elementstr):
         """Transform 'token;key=val' to ('token', {'key': 'val'})."""
@@ -77,7 +78,7 @@ class HeaderElement:
         # be of the form, "token=token", but we don't split that here.
         atoms = [x.strip() for x in elementstr.split(";") if x.strip()]
         if not atoms:
-            initial_value = ''
+            initial_value = ""
         else:
             initial_value = atoms.pop(0).strip()
         params = {}
@@ -90,6 +91,7 @@ class HeaderElement:
                 val = ""
             params[key] = val
         return initial_value, params
+
     parse = staticmethod(parse)
 
     @classmethod
@@ -132,6 +134,7 @@ class AcceptElement(HeaderElement):
         if isinstance(val, HeaderElement):
             val = val.value
         return float(val)
+
     qvalue = property(qvalue, doc="The qvalue, or priority, of this value.")
 
     def __eq__(self, other):
@@ -223,17 +226,17 @@ class Headers(CaseInsensitiveDict):
 
     def get_all(self, name):
         """Return a list of all the values for the named field."""
-        value = self.get(name, '')
+        value = self.get(name, "")
         if isinstance(value, list):
             return value
-        return [val.strip() for val in value.split(',')]
+        return [val.strip() for val in value.split(",")]
 
     def __repr__(self):
         return "Headers(%s)" % repr(list(self.items()))
 
     def __str__(self):
         headers = [f"{k}: {v}\r\n" for k, v in self.items()]
-        return "".join(headers) + '\r\n'
+        return "".join(headers) + "\r\n"
 
     def items(self):
         for k, v in super().items():
@@ -287,7 +290,7 @@ class Headers(CaseInsensitiveDict):
         if _value is not None:
             parts.append(_value)
         for k, v in list(_params.items()):
-            k = k.replace('_', '-')
+            k = k.replace("_", "-")
             if v is None:
                 parts.append(k)
             else:

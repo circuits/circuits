@@ -3,7 +3,6 @@ from circuits.web import JSONController, Server
 
 
 class Root(JSONController):
-
     def index(self):
         return {"success": True, "message": "Hello World!"}
 

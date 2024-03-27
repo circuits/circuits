@@ -1,11 +1,9 @@
 """Utilities"""
 
-
 from contextlib import contextmanager
+from fabric.api import abort, hide, local, puts, quiet, settings, warn
 from functools import wraps
 from imp import find_module
-
-from fabric.api import abort, hide, local, puts, quiet, settings, warn
 
 
 def tobool(s):
@@ -80,5 +78,7 @@ def requires(*names, **kwargs):
                     if not test(name):
                         warn(f"{name:s} not found")
                 abort(f"requires({repr(names):s}) failed")
+
         return wrapper
+
     return decorator

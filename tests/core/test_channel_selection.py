@@ -13,7 +13,6 @@ class bar(Event):
 
 
 class A(Component):
-
     channel = "a"
 
     def foo(self):
@@ -21,7 +20,6 @@ class A(Component):
 
 
 class B(Component):
-
     channel = "b"
 
     def foo(self):
@@ -29,7 +27,6 @@ class B(Component):
 
 
 class C(Component):
-
     channel = "c"
 
     def foo(self):

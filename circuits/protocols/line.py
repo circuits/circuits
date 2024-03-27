@@ -5,6 +5,7 @@ This module implements the basic Line protocol.
 
 This module can be used in both server and client implementations.
 """
+
 import re
 
 from circuits.core import BaseComponent, Event, handler
@@ -81,7 +82,7 @@ class Line(BaseComponent):
         "initializes x; see x.__class__.__doc__ for signature"
         super().__init__(*args, **kwargs)
 
-        self.encoding = kwargs.get('encoding', 'utf-8')
+        self.encoding = kwargs.get("encoding", "utf-8")
 
         # Used for Servers
         self.getBuffer = kwargs.get("getBuffer")
@@ -95,7 +96,7 @@ class Line(BaseComponent):
     def _on_read(self, *args):
         if len(args) == 1:
             # Client read
-            data, = args
+            (data,) = args
             lines, self.buffer = self.splitter(data, self.buffer)
             [self.fire(line(x)) for x in lines]
         else:

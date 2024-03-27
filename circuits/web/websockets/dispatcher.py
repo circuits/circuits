@@ -50,6 +50,7 @@ class WebSocketsDispatcher(BaseComponent):
         def _on_read_handler(self, event, socket, data):
             if socket in self._requests:
                 event.request = self._requests[socket]
+
         self.addHandler(_on_read_handler)
 
     @handler("request", priority=0.2)
@@ -62,12 +63,16 @@ class WebSocketsDispatcher(BaseComponent):
         sec_key = headers.get("Sec-WebSocket-Key", "").encode("utf-8")
         subprotocols = headers.elements("Sec-WebSocket-Protocol")
 
-        connection_tokens = [s.strip() for s in
-                             headers.get("Connection", "").lower().split(",")]
+        connection_tokens = [s.strip() for s in headers.get("Connection", "").lower().split(",")]
 
         try:
-            if ("Host" not in headers or headers.get("Upgrade", "").lower() != "websocket" or
-                    "upgrade" not in connection_tokens or sec_key is None or len(base64.b64decode(sec_key)) != 16):
+            if (
+                "Host" not in headers
+                or headers.get("Upgrade", "").lower() != "websocket"
+                or "upgrade" not in connection_tokens
+                or sec_key is None
+                or len(base64.b64decode(sec_key)) != 16
+            ):
                 return httperror(request, response, code=400)
             if headers.get("Sec-WebSocket-Version", "") != "13":
                 response.headers["Sec-WebSocket-Version"] = "13"

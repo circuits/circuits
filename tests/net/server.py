@@ -3,7 +3,6 @@ from circuits.net.events import write
 
 
 class Server(Component):
-
     channel = "server"
 
     def init(self):

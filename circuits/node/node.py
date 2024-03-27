@@ -4,6 +4,7 @@ Node
 this module manage node (start server, add peer, ...)
 .. seealso:: Examples in :file:`examples/node`
 """
+
 from circuits import BaseComponent, Timer, handler
 from circuits.net.events import connect
 
@@ -20,7 +21,7 @@ class Node(BaseComponent):
     .. seealso:: Examples in :file:`examples/node`
     """
 
-    channel = 'node'
+    channel = "node"
     __peers = {}
 
     def __init__(self, port=None, channel=channel, **kwargs):
@@ -107,36 +108,51 @@ class Node(BaseComponent):
         :rtype: str
         """
         # automatic send event to peer
-        auto_remote_event = kwargs.pop('auto_remote_event', {})
+        auto_remote_event = kwargs.pop("auto_remote_event", {})
         for event_name in auto_remote_event:
             for channel in auto_remote_event[event_name]:
+
                 @handler(event_name, channel=channel)
                 def event_handle(self, event, *args, **kwargs):
                     yield self.call(remote(event, connection_name))
+
             self.addHandler(event_handle)
 
         client_channel = kwargs.pop(
-            'channel',
-            f'{self.channel}_client_{connection_name}',
+            "channel",
+            f"{self.channel}_client_{connection_name}",
         )
-        reconnect_delay = kwargs.pop('reconnect_delay', 10)
+        reconnect_delay = kwargs.pop("reconnect_delay", 10)
         client = Client(hostname, port, channel=client_channel, **kwargs)
 
         # connected event binding
-        @handler('connected', channel=client_channel)
+        @handler("connected", channel=client_channel)
         def connected(self, hostname, port):
-            self.fire(connected_to(
-                connection_name, hostname, port, client_channel, client,
-            ))
+            self.fire(
+                connected_to(
+                    connection_name,
+                    hostname,
+                    port,
+                    client_channel,
+                    client,
+                )
+            )
+
         self.addHandler(connected)
 
         # disconnected event binding
-        @handler('disconnected', 'unreachable', channel=client_channel)
+        @handler("disconnected", "unreachable", channel=client_channel)
         def disconnected(self, event, *args, **kwargs):
-            if event.name == 'disconnected':
-                self.fire(disconnected_from(
-                    connection_name, hostname, port, client_channel, client,
-                ))
+            if event.name == "disconnected":
+                self.fire(
+                    disconnected_from(
+                        connection_name,
+                        hostname,
+                        port,
+                        client_channel,
+                        client,
+                    )
+                )
 
             # auto reconnect
             if reconnect_delay > 0:
@@ -171,10 +187,9 @@ class Node(BaseComponent):
         :return: The Client object
         :rtype: :class:`circuits.node.client.Client`
         """
-        return self.__peers[connection_name] if connection_name in self.__peers\
-            else None
+        return self.__peers[connection_name] if connection_name in self.__peers else None
 
-    @handler('remote', channel='*')
+    @handler("remote", channel="*")
     def __on_remote(self, event, remote_event, connection_name, channel=None):
         """
         Send event to peer
@@ -204,6 +219,5 @@ class Node(BaseComponent):
         print(result.value)``
         """
         node = self.__peers[connection_name]
-        remote_event.channels = (channel,) if channel is not None \
-            else event.channels
+        remote_event.channels = (channel,) if channel is not None else event.channels
         return node.send(remote_event)

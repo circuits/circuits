@@ -18,7 +18,6 @@ To run this example::
 """
 
 import sys
-
 from dnslib import DNSQuestion, DNSRecord
 
 from circuits import Component, Debugger, Event
@@ -51,7 +50,10 @@ class Dummy(Component):
 
         print(
             "DNS Response from {:s}:{:d} id={:d} qname={:s}".format(
-                peer[0], peer[1], id, str(qname),
+                peer[0],
+                peer[1],
+                id,
+                str(qname),
             ),
             file=sys.stderr,
         )

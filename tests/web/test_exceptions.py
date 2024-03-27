@@ -8,7 +8,6 @@ from .helpers import HTTPError, urlopen
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
@@ -87,8 +86,7 @@ def test_contenttype_json(webapp):
 
 def test_contenttype_json_no_debug(webapp):
     try:
-        urlopen("%s/test_contenttype_json_no_debug" %
-                webapp.server.http.base)
+        urlopen("%s/test_contenttype_json_no_debug" % webapp.server.http.base)
     except HTTPError as e:
         assert "json" in e.headers.get("Content-Type")
         result = json.loads(e.read().decode("utf-8"))

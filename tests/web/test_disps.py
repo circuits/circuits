@@ -19,7 +19,6 @@ class PrefixingDispatcher(BaseComponent):
 
 
 class DummyRoot(Controller):
-
     channel = "/"
 
     def index(self):
@@ -27,7 +26,6 @@ class DummyRoot(Controller):
 
 
 class Root1(Controller):
-
     channel = "/site1"
 
     def index(self):
@@ -35,7 +33,6 @@ class Root1(Controller):
 
 
 class Root2(Controller):
-
     channel = "/site2"
 
     def index(self):

@@ -6,7 +6,6 @@ def test_client_bind_int():
     from circuits.net.sockets import Client
 
     class TestClient(Client):
-
         def _create_socket(self):
             return None
 
@@ -24,7 +23,6 @@ def test_client_bind_int_gaierror(monkeypatch):
     monkeypatch.setattr(sockets, "gethostname", broken_gethostname)
 
     class TestClient(sockets.Client):
-
         def _create_socket(self):
             return None
 
@@ -37,7 +35,6 @@ def test_client_bind_str():
     from circuits.net.sockets import Client
 
     class TestClient(Client):
-
         def _create_socket(self):
             return None
 

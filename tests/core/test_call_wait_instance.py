@@ -17,7 +17,6 @@ class hello(Event):
 
 
 class App(Component):
-
     @handler("wait")
     def _on_wait(self):
         e = hello()

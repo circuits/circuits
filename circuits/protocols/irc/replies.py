@@ -1,6 +1,5 @@
 """Internet Relay Chat Protocol replies"""
 
-
 from .message import Message
 
 
@@ -71,7 +70,9 @@ def RPL_LUSERCLIENT(nusers, nservices, nservers):
     return _M(
         "251",
         "There are {} users and {} services on {} servers".format(
-            nusers, nservices, nservers,
+            nusers,
+            nservices,
+            nservers,
         ),
     )
 
@@ -122,8 +123,10 @@ def RPL_ENDOFWHO(mask):
 
 def RPL_WHOISIDLE(nick, idle, signon):
     return _M(
-        "317", nick,
-        f"{idle}", f"{signon}",
+        "317",
+        nick,
+        f"{idle}",
+        f"{signon}",
         "seconds idle, signon time",
     )
 
@@ -188,7 +191,14 @@ def RPL_VERSION(name, version, hostname, url):
 
 def RPL_WHOREPLY(channel, user, host, server, nick, status, hops, name):
     return _M(
-        "352", channel, user, host, server, nick, status, f":{hops} {name}",
+        "352",
+        channel,
+        user,
+        host,
+        server,
+        nick,
+        status,
+        f":{hops} {name}",
     )
 
 

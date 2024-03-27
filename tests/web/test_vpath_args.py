@@ -5,14 +5,12 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-
     @expose("test.txt")
     def index(self):
         return "Hello world!"
 
 
 class Leaf(Controller):
-
     channel = "/test"
 
     @expose("test.txt")

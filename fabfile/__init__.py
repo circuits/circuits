@@ -1,14 +1,14 @@
 """Development Task"""
 
-from os import getcwd
-
 import docker  # noqa
-import docs  # noqa
 import help  # noqa
 from fabric.api import (
     abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings,
     task,
 )
+from os import getcwd
+
+import docs  # noqa
 
 from .utils import msg, pip, requires, tobool
 

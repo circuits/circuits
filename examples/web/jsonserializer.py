@@ -6,7 +6,6 @@ from circuits.web import Controller, Logger, Server
 
 
 class JSONSerializer(Component):
-
     channel = "web"
 
     # 1 higher than the default response handler
@@ -17,7 +16,6 @@ class JSONSerializer(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return {"message": "Hello World!"}
 

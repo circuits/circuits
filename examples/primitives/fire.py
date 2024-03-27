@@ -15,7 +15,6 @@ class bar(Event):
 
 
 class App(Component):
-
     def foo(self):
         print("Foo!")
 

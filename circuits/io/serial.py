@@ -3,6 +3,7 @@ Serial I/O
 
 This module implements basic Serial (RS232) I/O.
 """
+
 from collections import deque
 
 from circuits.core import Component, Event, handler
@@ -23,11 +24,9 @@ class _open(Event):
 
 
 class Serial(Component):
-
     channel = "serial"
 
-    def __init__(self, port, baudrate=115200, bufsize=BUFSIZE,
-                 timeout=TIMEOUT, encoding='UTF-8', readline=False, channel=channel):
+    def __init__(self, port, baudrate=115200, bufsize=BUFSIZE, timeout=TIMEOUT, encoding="UTF-8", readline=False, channel=channel):
         super().__init__(channel=channel)
 
         if serial is None:

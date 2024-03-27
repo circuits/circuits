@@ -1,6 +1,5 @@
 """Internet Relay Chat message"""
 
-
 from .utils import parsemsg
 
 
@@ -9,7 +8,6 @@ class Error(Exception):
 
 
 class Message:
-
     def __init__(self, command, *args, **kwargs):
         self.command = command
         self.prefix = str(kwargs["prefix"]) if "prefix" in kwargs else None
@@ -20,9 +18,9 @@ class Message:
         self._check_args()
 
     def _check_args(self):
-        if any(type(arg)(' ') in arg in arg for arg in self.args[:-1] if isinstance(arg, str)):
+        if any(type(arg)(" ") in arg in arg for arg in self.args[:-1] if isinstance(arg, str)):
             raise Error("Space can only appear in the very last arg")
-        if any(type(arg)('\n') in arg for arg in self.args if isinstance(arg, str)):
+        if any(type(arg)("\n") in arg for arg in self.args if isinstance(arg, str)):
             raise Error("No newline allowed")
 
     @staticmethod
@@ -45,11 +43,7 @@ class Message:
             args[-1] = f":{args[-1]}"
 
         return "{prefix}{command} {args}\r\n".format(
-            prefix=(
-                f":{self.prefix} "
-                if self.prefix is not None
-                else ""
-            ),
+            prefix=(f":{self.prefix} " if self.prefix is not None else ""),
             command=str(self.command),
             args=" ".join(args),
         )
@@ -58,7 +52,4 @@ class Message:
         return repr(str(self)[:-2])
 
     def __eq__(self, other):
-        return isinstance(other, Message) \
-            and self.prefix == other.prefix \
-            and self.command == other.command \
-            and self.args == other.args
+        return isinstance(other, Message) and self.prefix == other.prefix and self.command == other.command and self.args == other.args

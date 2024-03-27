@@ -13,9 +13,7 @@ setup(
     name="wiki",
     version="dev",
     description="circuits wiki demo",
-    scripts=(
-        "wiki.py",
-    ),
+    scripts=("wiki.py",),
     install_requires=list(parse_requirements("requirements.txt")),
     zip_safe=True,
 )

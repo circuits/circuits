@@ -3,6 +3,7 @@ Errors
 
 This module implements a set of standard HTTP Errors.
 """
+
 import json
 import traceback
 from html import escape
@@ -40,13 +41,16 @@ class httperror(Event):
         self.error = kwargs.get("error", None)
 
         self.description = kwargs.get(
-            "description", getattr(self.__class__, "description", ""),
+            "description",
+            getattr(self.__class__, "description", ""),
         )
 
         if self.error is not None:
             stack = self.error[2] if isinstance(self.error[2], (list, tuple)) else traceback.format_tb(self.error[2])
             self.traceback = "ERROR: (%s) %s\n%s" % (
-                self.error[0], self.error[1], "".join(stack),
+                self.error[0],
+                self.error[1],
+                "".join(stack),
             )
         else:
             self.traceback = ""
@@ -54,10 +58,15 @@ class httperror(Event):
         self.response.close = True
         self.response.status = self.code
 
-        powered_by = POWERED_BY % {
-            "url": escape(SERVER_URL, True),
-            "version": escape(SERVER_VERSION),
-        } if getattr(request.server, 'display_banner', False) else ""
+        powered_by = (
+            POWERED_BY
+            % {
+                "url": escape(SERVER_URL, True),
+                "version": escape(SERVER_VERSION),
+            }
+            if getattr(request.server, "display_banner", False)
+            else ""
+        )
 
         self.data = {
             "code": self.code,
@@ -75,7 +84,7 @@ class httperror(Event):
         self.sanitize()
 
         if self.code < 200 or self.code in (204, 205, 304):
-            return ''
+            return ""
 
         if "json" in self.response.headers.get("Content-Type", ""):
             index = ["code", "name", "description"]
@@ -84,22 +93,20 @@ class httperror(Event):
             return json.dumps({key: self.data[key] for key in index})
 
         if not self.request.print_debug:
-            self.data["traceback"] = ''
+            self.data["traceback"] = ""
 
         # FIXME: description is a possible XSS attack vector
         return DEFAULT_ERROR_MESSAGE % {
-            key: (
-                escape(value, True)
-                if key not in ('powered_by', 'description') and not isinstance(value, (int, float))
-                else value
-            )
-            for key, value in self.data.items()
+            key: (escape(value, True) if key not in ("powered_by", "description") and not isinstance(value, (int, float)) else value) for key, value in self.data.items()
         }
 
     def __repr__(self):
         return "<%s %d %s>" % (
-            self.__class__.__name__, self.code, HTTP_STATUS_CODES.get(
-                self.code, "???",
+            self.__class__.__name__,
+            self.code,
+            HTTP_STATUS_CODES.get(
+                self.code,
+                "???",
             ),
         )
 
@@ -168,18 +175,14 @@ class redirect(httperror):
             # "Unless the request method was HEAD, the entity of the response
             # SHOULD contain a short hypertext note with a hyperlink to the
             # new URI(s)."
-            msg = {300: "This resource can be found at <a href='%s'>%s</a>.",
-                   301: ("This resource has permanently moved to "
-                         '<a href="%s">%s</a>.'),
-                   302: ("This resource resides temporarily at "
-                         '<a href="%s">%s</a>.'),
-                   303: ("This resource can be found at "
-                         '<a href="%s">%s</a>.'),
-                   307: ("This resource has moved temporarily to "
-                         '<a href="%s">%s</a>.'),
-                   308: ("This resource has permanently moved to "
-                         '<a href="%s">%s</a>.'),
-                   }[code]
+            msg = {
+                300: "This resource can be found at <a href='%s'>%s</a>.",
+                301: ("This resource has permanently moved to " '<a href="%s">%s</a>.'),
+                302: ("This resource resides temporarily at " '<a href="%s">%s</a>.'),
+                303: ("This resource can be found at " '<a href="%s">%s</a>.'),
+                307: ("This resource has moved temporarily to " '<a href="%s">%s</a>.'),
+                308: ("This resource has permanently moved to " '<a href="%s">%s</a>.'),
+            }[code]
             response.body = "<br />\n".join([msg % (escape(u, True), escape(u)) for u in urls])
             # Previous code may have set C-L, so we have to reset it
             # (allow finalize to set it).
@@ -191,10 +194,18 @@ class redirect(httperror):
             # The "Date" header should have been set in Response.__init__
 
             # "...the response SHOULD NOT include other entity-headers."
-            for key in ("Allow", "Content-Encoding", "Content-Language",
-                        "Content-Length", "Content-Location", "Content-MD5",
-                        "Content-Range", "Content-Type", "Expires",
-                        "Last-Modified"):
+            for key in (
+                "Allow",
+                "Content-Encoding",
+                "Content-Language",
+                "Content-Length",
+                "Content-Location",
+                "Content-MD5",
+                "Content-Range",
+                "Content-Type",
+                "Expires",
+                "Last-Modified",
+            ):
                 if key in response.headers:
                     del response.headers[key]
 
@@ -220,6 +231,9 @@ class redirect(httperror):
         else:
             channels = ""
         return "<%s %d[%s.%s] %s>" % (
-            self.__class__.__name__, self.code, channels, self.name,
+            self.__class__.__name__,
+            self.code,
+            channels,
+            self.name,
             " ".join(self.urls),
         )

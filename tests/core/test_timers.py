@@ -1,12 +1,10 @@
 """Timers Tests"""
 
-
+import pytest
 from datetime import datetime, timedelta
 from itertools import starmap
 from operator import sub
 from time import time
-
-import pytest
 
 from circuits import Component, Event, Timer, sleep
 
@@ -38,7 +36,6 @@ class persistent(Event):
 
 
 class App(Component):
-
     def init(self):
         self.flag = False
         self.count = 0
@@ -66,7 +63,7 @@ def test_single(app, watcher):
 
 def test_persistent(app, watcher):
     exponent = -1
-    interval = 10.0 ** exponent
+    interval = 10.0**exponent
     app.fire(persistent(interval))
     assert watcher.wait("persistent_complete")
 

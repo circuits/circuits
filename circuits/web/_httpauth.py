@@ -21,8 +21,9 @@ Usage:
 SUPPORTED_ALGORITHM - list of supported 'Digest' algorithms
 SUPPORTED_QOP - list of supported 'Digest' 'qop'.
 """
-from base64 import decodebytes as base64_decodebytes
+
 import time
+from base64 import decodebytes as base64_decodebytes
 from hashlib import md5, sha1
 from urllib.request import parse_http_list, parse_keqv_list
 
@@ -62,9 +63,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-__all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse",
-           "parseAuthorization", "SUPPORTED_ALGORITHM", "md5SessionKey",
-           "calculateNonce", "SUPPORTED_QOP")
+__all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse", "parseAuthorization", "SUPPORTED_ALGORITHM", "md5SessionKey", "calculateNonce", "SUPPORTED_QOP")
 
 ###############################################################################
 
@@ -98,8 +97,7 @@ def calculateNonce(realm, algorithm=MD5):
         encoder = DIGEST_AUTH_ENCODERS[algorithm]
     except KeyError:
         raise NotImplementedError(
-            "The chosen algorithm (%s) does not have "
-            "an implementation yet" % algorithm,
+            "The chosen algorithm (%s) does not have " "an implementation yet" % algorithm,
         )
 
     s = "%d:%s" % (time.time(), realm)
@@ -115,13 +113,16 @@ def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH):
         nonce = calculateNonce(realm, algorithm)
 
     return 'Digest realm="%s", nonce="%s", algorithm="%s", qop="%s"' % (
-        realm, nonce, algorithm, qop,
+        realm,
+        nonce,
+        algorithm,
+        qop,
     )
 
 
 def basicAuth(realm):
     """Challengenes the client for a Basic authentication."""
-    assert '"' not in realm, "Realms cannot contain the \" (quote) character."
+    assert '"' not in realm, 'Realms cannot contain the " (quote) character.'
 
     return 'Basic realm="%s"' % realm
 
@@ -238,7 +239,6 @@ def _A1(params, password):
         return "%s:%s:%s" % (params["username"], params["realm"], password)
 
     elif algorithm == MD5_SESS:
-
         # This is A1 if qop is set
         # A1 = H( unq(username-value) ":" unq(realm-value) ":" passwd )
         #         ":" unq(nonce-value) ":" unq(cnonce-value)
@@ -270,8 +270,7 @@ def _A2(params, method, kwargs):
         raise NotImplementedError("The 'qop' method is unknown: %s" % qop)
 
 
-def _computeDigestResponse(auth_map, password, method="GET", A1=None,
-                           **kwargs):
+def _computeDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
     """Generates a response respecting the algorithm defined in RFC 2617"""
     params = auth_map
 
@@ -332,7 +331,7 @@ def _checkDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
                    directive of the authorization map. They must represent
                    the same resource (unused at this time).
     """
-    if auth_map['realm'] != kwargs.get('realm', None):
+    if auth_map["realm"] != kwargs.get("realm", None):
         return False
 
     response = _computeDigestResponse(auth_map, password, method, A1, **kwargs)
@@ -340,8 +339,7 @@ def _checkDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
     return response == auth_map["response"]
 
 
-def _checkBasicResponse(auth_map, password, method='GET', encrypt=None,
-                        **kwargs):
+def _checkBasicResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
     # Note that the Basic response doesn't provide the realm value so we cannot
     # test it
     try:
@@ -376,5 +374,9 @@ def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
     """
     checker = AUTH_RESPONSES[auth_map["auth_scheme"]]
     return checker(
-        auth_map, password, method=method, encrypt=encrypt, **kwargs,
+        auth_map,
+        password,
+        method=method,
+        encrypt=encrypt,
+        **kwargs,
     )

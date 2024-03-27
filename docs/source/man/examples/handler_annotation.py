@@ -4,7 +4,6 @@ from circuits import BaseComponent, Debugger, handler
 
 
 class MyComponent(BaseComponent):
-
     def __init__(self):
         super().__init__()
 

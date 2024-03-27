@@ -4,7 +4,6 @@ from circuits.web import XMLRPC, Logger, Server
 
 
 class Test(Component):
-
     def foo(self, a, b, c):
         return a, b, c
 

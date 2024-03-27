@@ -5,11 +5,11 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-
     def index(self):
         def response():
             yield "Hello "
             yield "World!"
+
         return response()
 
 

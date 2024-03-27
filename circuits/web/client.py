@@ -59,7 +59,6 @@ class request(Event):
 
 
 class Client(BaseComponent):
-
     channel = "client"
 
     def __init__(self, channel=channel):
@@ -100,7 +99,8 @@ class Client(BaseComponent):
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if "Host" not in headers:
             headers["Host"] = "{}{}".format(
-                host, "" if port in (80, 443) else f":{port:d}",
+                host,
+                "" if port in (80, 443) else f":{port:d}",
             )
 
         if body is not None:
@@ -108,7 +108,7 @@ class Client(BaseComponent):
 
         command = f"{method} {path} HTTP/1.1"
         message = f"{command}\r\n{headers}"
-        self.fire(write(message.encode('utf-8')), self._transport)
+        self.fire(write(message.encode("utf-8")), self._transport)
         if body is not None:
             self.fire(write(body), self._transport)
 

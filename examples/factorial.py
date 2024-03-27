@@ -14,7 +14,6 @@ def factorial(n):
 
 
 class App(Component):
-
     def init(self, *args, **kwargs):
         Worker(process=True).register(self)
 

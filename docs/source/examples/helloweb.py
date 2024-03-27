@@ -4,7 +4,6 @@ from circuits.web import Controller, Server
 
 
 class Root(Controller):
-
     def index(self):
         """
         Index Request Handler
@@ -14,6 +13,7 @@ class Root(Controller):
         decorator. For example exposing as a different path.
         """
         return "Hello World!"
+
 
 app = Server(("0.0.0.0", 8000))
 Root().register(app)

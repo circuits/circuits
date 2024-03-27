@@ -8,7 +8,7 @@ from circuits.net.sockets import Pipe
 
 from .client import Client
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == "win32", reason="Unsupported Platform")
 
 
 def pytest_generate_tests(metafunc):

@@ -23,8 +23,7 @@ def test(manager, watcher):
 def test2(manager, watcher, tmpdir):
     foo = tmpdir.ensure("foo.txt")
 
-    p = Process(
-        [f"cat - > {str(foo):s}"], shell=True).register(manager)
+    p = Process([f"cat - > {str(foo):s}"], shell=True).register(manager)
     assert watcher.wait("registered")
 
     p.start()
@@ -54,7 +53,7 @@ def test_two_procs(manager, watcher):
     assert not p2._stdout_closed
     assert not p2._stderr_closed
 
-    watcher.clear()     # Get rid of first terminated()
+    watcher.clear()  # Get rid of first terminated()
 
     s1 = p1.stdout.getvalue()
     assert s1 == b"1\n"

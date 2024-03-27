@@ -5,7 +5,6 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener
 
 
 class Root(Controller):
-
     def index(self, vpath=None):
         if vpath:
             name = vpath

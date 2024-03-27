@@ -8,7 +8,6 @@ class woof(Event):
 
 
 class Pound(Component):
-
     def __init__(self):
         super().__init__()
 
@@ -20,7 +19,6 @@ class Pound(Component):
 
 
 class Dog(Component):
-
     def woof(self):
         print("Woof! I'm %s!" % self.name)
 
@@ -35,5 +33,6 @@ class Fred(Dog):
     """Fred"""
 
     channel = "fred"
+
 
 Pound().run()

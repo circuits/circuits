@@ -5,6 +5,7 @@ Chat Server Example
 This example demonstrates how to create a very simple telnet-style chat
 server that supports many connecting clients.
 """
+
 from optparse import OptionParser
 
 from circuits import Component, Debugger
@@ -21,16 +22,21 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-b", "--bind",
-        action="store", type="string",
-        default="0.0.0.0:8000", dest="bind",
+        "-b",
+        "--bind",
+        action="store",
+        type="string",
+        default="0.0.0.0:8000",
+        dest="bind",
         help="Bind to address:[port]",
     )
 
     parser.add_option(
-        "-d", "--debug",
+        "-d",
+        "--debug",
         action="store_true",
-        default=False, dest="debug",
+        default=False,
+        dest="debug",
         help="Enable debug mode",
     )
 
@@ -40,7 +46,6 @@ def parse_options():
 
 
 class ChatServer(Component):
-
     def init(self, args, opts):
         """
         Initialize our ``ChatServer`` Component.

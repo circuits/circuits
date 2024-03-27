@@ -18,7 +18,6 @@ LOG = logging.getLogger(__name__)
 
 
 class QueueHandler(Component):
-
     def __init__(self, queue, host=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.queue = queue
@@ -35,14 +34,10 @@ class QueueHandler(Component):
         self.fire(subscribe(self.queue, ack=ACK_AUTO))
 
     def subscribe_success(self, event, *args, **kwargs):
-        """ Subscribed to message destination """
+        """Subscribed to message destination"""
         # Let's fire off some messages
-        self.fire(send(headers=None,
-                       body="Hello World",
-                       destination=self.queue))
-        self.fire(send(headers=None,
-                       body="Hello Again World",
-                       destination=self.queue))
+        self.fire(send(headers=None, body="Hello World", destination=self.queue))
+        self.fire(send(headers=None, body="Hello Again World", destination=self.queue))
 
     def heartbeat_timeout(self):
         """Heartbeat timed out from the STOMP server"""
@@ -52,7 +47,7 @@ class QueueHandler(Component):
 
     def on_stomp_error(self, headers, message, error):
         """STOMP produced an error."""
-        LOG.error('STOMP listener: Error:\n%s', message or error)
+        LOG.error("STOMP listener: Error:\n%s", message or error)
 
     def message(self, event, headers, message):
         """STOMP produced a message."""
@@ -85,11 +80,7 @@ def main():
     host = "xxxyyy"
     queue = "test1"
 
-    s = StompClient(uri, port,
-                    username=login,
-                    password=passcode,
-                    heartbeats=(10000, 10000),
-                    ssl_context=context)
+    s = StompClient(uri, port, username=login, password=passcode, heartbeats=(10000, 10000), ssl_context=context)
 
     qr = QueueHandler(queue, host=host)
     s.register(qr)

@@ -8,13 +8,11 @@ from circuits.web.dispatchers import VirtualHosts
 
 
 class Root(Controller):
-
     def index(self):
         return "I am the main vhost"
 
 
 class Foo(Controller):
-
     channel = "/foo"
 
     def index(self):
@@ -22,7 +20,6 @@ class Foo(Controller):
 
 
 class Bar(Controller):
-
     channel = "/bar"
 
     def index(self):

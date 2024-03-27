@@ -12,6 +12,7 @@ Example:
 
 This example also has support for daemonizing the process into the background.
 """
+
 from optparse import OptionParser
 from uuid import uuid4 as uuid
 
@@ -30,14 +31,20 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-d", "--daemon",
-        action="store_true", default=False, dest="daemon",
+        "-d",
+        "--daemon",
+        action="store_true",
+        default=False,
+        dest="daemon",
         help="Enable daemon mode (fork into the background)",
     )
 
     parser.add_option(
-        "", "--debug",
-        action="store_true", default=False, dest="debug",
+        "",
+        "--debug",
+        action="store_true",
+        default=False,
+        dest="debug",
         help="Enable debug mode (verbose event output)",
     )
 
@@ -91,7 +98,6 @@ def _on_target_read(self, event, data):
 
 
 class PortForwarder(Component):
-
     def init(self, source, target, secure=False):
         self._source = source
         self._target = target

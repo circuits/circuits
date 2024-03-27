@@ -3,6 +3,7 @@ HTML macros
 
 Macros for generating snippets of HTML.
 """
+
 import genshi
 import pygments
 import pygments.formatters
@@ -55,7 +56,8 @@ def code(macro, environ, *args, **kwargs):
 
     if lexer:
         text = pygments.highlight(
-            macro.body, lexer,
+            macro.body,
+            lexer,
             pygments.formatters.HtmlFormatter(),
         )
         output = genshi.core.Markup(text)
@@ -64,7 +66,8 @@ def code(macro, environ, *args, **kwargs):
     else:
         output = genshi.builder.tag.code(
             macro.body,
-            style="white-space:pre-wrap", class_="highlight",
+            style="white-space:pre-wrap",
+            class_="highlight",
         )
 
     return output
@@ -75,13 +78,10 @@ def source(macro, environ, *args, **kwargs):
     if macro.body is None:
         return None
 
-    return builder.tag.pre(environ["parser"].render(
-        macro.body, environ=environ).decode("utf-8"))
+    return builder.tag.pre(environ["parser"].render(macro.body, environ=environ).decode("utf-8"))
 
 
-def div(macro, environ, cls=None, float=None, id=None, style=None,
-        *args, **kwargs):
-
+def div(macro, environ, cls=None, float=None, id=None, style=None, *args, **kwargs):
     if macro.body is None:
         return None
 
@@ -97,7 +97,9 @@ def div(macro, environ, cls=None, float=None, id=None, style=None,
         context = "inline"
 
     contents = environ["parser"].generate(
-        macro.body, environ=environ, context=context,
+        macro.body,
+        environ=environ,
+        context=context,
     )
 
     return builder.tag.div(contents, id=id, class_=cls, style=style)
@@ -109,10 +111,12 @@ def span(macro, environ, class_=None, id=None, style=None, *args, **kwargs):
         return None
 
     if style:
-        style = ';'.join(sanitizer.sanitize_css(style))
+        style = ";".join(sanitizer.sanitize_css(style))
 
-    contents = environ['parser'].generate(
-        macro.body, environ=environ, context='inline',
+    contents = environ["parser"].generate(
+        macro.body,
+        environ=environ,
+        context="inline",
     )
 
     return builder.tag.span(contents, id=id, class_=class_, style=style)

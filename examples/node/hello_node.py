@@ -33,7 +33,6 @@ class hello(Event):
 
 
 class App(Component):
-
     def ready(self, client):
         print("Ready!")
 
@@ -42,7 +41,7 @@ class App(Component):
         print("Try: x = app.fire(hello())")
 
     def hello(self):
-        print("Now try: y = app.fire(remote(hello(), \"test\"))")
+        print('Now try: y = app.fire(remote(hello(), "test"))')
         return f"Hello World! ({getpid():d})"
 
 

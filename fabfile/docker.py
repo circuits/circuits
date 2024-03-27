@@ -1,6 +1,5 @@
 """Docker Tasks"""
 
-
 from fabric.api import local, task
 
 from .utils import msg, requires, tobool

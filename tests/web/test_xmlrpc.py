@@ -8,13 +8,11 @@ from .helpers import urlopen
 
 
 class App(Component):
-
     def eval(self, s):
         return eval(s)
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 

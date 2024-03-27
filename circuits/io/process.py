@@ -3,6 +3,7 @@ Process
 
 This module implements a wrapper for basic ``subprocess.Popen`` functionality.
 """
+
 from io import BytesIO
 from subprocess import PIPE, Popen
 
@@ -28,7 +29,6 @@ class terminated(Event):
 
 
 class Process(BaseComponent):
-
     channel = "process"
 
     def init(self, args, cwd=None, shell=False):
@@ -100,13 +100,13 @@ class Process(BaseComponent):
 
         self._stderr_closed_handler = self.addHandler(
             handler("closed", channel=self._stderr.channel)(
-                lambda self: setattr(self, '_stderr_closed', True),
+                lambda self: setattr(self, "_stderr_closed", True),
             ),
         )
 
         self._stdout_closed_handler = self.addHandler(
             handler("closed", channel=self._stdout.channel)(
-                lambda self: setattr(self, '_stdout_closed', True),
+                lambda self: setattr(self, "_stdout_closed", True),
             ),
         )
 
@@ -138,8 +138,7 @@ class Process(BaseComponent):
         if self.p is not None and self._status is None:
             self._status = self.p.poll()
 
-        if self._status is not None and self._stderr_closed \
-                and self._stdout_closed and not self._terminated:
+        if self._status is not None and self._stderr_closed and self._stdout_closed and not self._terminated:
             self._terminated = True
             self.removeHandler(self._stderr_read_handler)
             self.removeHandler(self._stdout_read_handler)

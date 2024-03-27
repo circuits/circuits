@@ -2,6 +2,7 @@
 Debugger component used to debug each event in a system by printing
 each event to sys.stderr or to a Logger Component instance.
 """
+
 import os
 import sys
 from signal import SIGINT, SIGTERM
@@ -28,8 +29,7 @@ class Debugger(BaseComponent):
     IgnoreEvents = ["generate_events"]
     IgnoreChannels = []
 
-    def __init__(self, errors=True, events=True, file=None, logger=None,
-                 prefix=None, trim=None, **kwargs):
+    def __init__(self, errors=True, events=True, file=None, logger=None, prefix=None, trim=None, **kwargs):
         "initializes x; see x.__class__.__doc__ for signature"
         super().__init__()
 
@@ -56,9 +56,7 @@ class Debugger(BaseComponent):
             raise SystemExit(0)
 
     @handler("exception", channel="*", priority=100.0)
-    def _on_exception(self, error_type, value, traceback,
-                      handler=None, fevent=None):
-
+    def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
         if not self._errors:
             return
 
@@ -72,7 +70,7 @@ class Debugger(BaseComponent):
         msg = f"ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n"
 
         s.append(msg)
-        s.append('Traceback (most recent call last):\n')
+        s.append("Traceback (most recent call last):\n")
         s.extend(traceback)
         s.extend(format_exception_only(error_type, value))
         s.append("\n")
@@ -110,13 +108,13 @@ class Debugger(BaseComponent):
             s = repr(event)
 
             if self.prefix:
-                if hasattr(self.prefix, '__call__'):
+                if hasattr(self.prefix, "__call__"):
                     s = f"{self.prefix()}: {s}"
                 else:
                     s = f"{self.prefix}: {s}"
 
             if self.trim:
-                s = "%s ...>" % s[:self.trim]
+                s = "%s ...>" % s[: self.trim]
 
             if self.logger is not None:
                 self.logger.debug(s)

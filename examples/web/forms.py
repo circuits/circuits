@@ -4,8 +4,8 @@ Forms
 
 A simple example showing how to deal with data forms.
 """
-from circuits.web import Controller, Server
 
+from circuits.web import Controller, Server
 
 FORM = """
 <html>
@@ -42,7 +42,6 @@ FORM = """
 
 
 class Root(Controller):
-
     def index(self):
         """
         Request Handler
@@ -64,7 +63,8 @@ class Root(Controller):
         tell the user what was saved.
         """
         return "Data Saved. firstName={:s} lastName={:s}".format(
-            firstName, lastName,
+            firstName,
+            lastName,
         )
 
 

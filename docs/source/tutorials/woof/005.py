@@ -5,7 +5,6 @@ from circuits.tools import graph
 
 
 class Pound(Component):
-
     def __init__(self):
         super().__init__()
 
@@ -17,14 +16,13 @@ class Pound(Component):
 
 
 class Bob(Component):
-
     def started(self, *args):
         print("Hello I'm Bob!")
 
 
 class Fred(Component):
-
     def started(self, *args):
         print("Hello I'm Fred!")
+
 
 Pound().run()

@@ -11,11 +11,11 @@ class hello(Event):
 
 
 class App(Component):
-
     def test(self):
         def f():
             while True:
                 yield "Hello"
+
         return f()
 
     def hello(self):

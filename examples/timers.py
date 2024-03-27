@@ -4,11 +4,11 @@ Simple Timers
 
 A trivial simple example of using circuits and timers.
 """
+
 from circuits import Component, Event, Timer
 
 
 class App(Component):
-
     def hello(self):
         """
         hello Event handler

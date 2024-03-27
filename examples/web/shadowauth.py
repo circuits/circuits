@@ -8,7 +8,9 @@ against /etc/passwd or /etc/shadow before letting them into the web site.
 curl -i http://test:test@localhost:8000/
 curl -i http://root:test@localhost:8000/
 """
+
 from crypt import crypt
+
 from os import path
 from re import compile as compile_regex
 from socket import gethostname
@@ -35,7 +37,6 @@ def check_auth(user, password):
 
 
 class PasswdAuth(Component):
-
     channel = "web"
 
     def init(self, realm=None):
@@ -62,7 +63,6 @@ class PasswdAuth(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return f"Hello, {self.request.login:s}"
 

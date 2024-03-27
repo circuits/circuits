@@ -23,19 +23,18 @@ INVALID_CHUNK = 2
 
 
 class InvalidRequestLine(Exception):
-    """ error raised when first line is invalid """
+    """error raised when first line is invalid"""
 
 
 class InvalidHeader(Exception):
-    """ error raised on invalid header """
+    """error raised on invalid header"""
 
 
 class InvalidChunkSize(Exception):
-    """ error raised when we parse an invalid chunk size """
+    """error raised when we parse an invalid chunk size"""
 
 
 class HttpParser:
-
     def __init__(self, kind=2, decompress=False):
         self.kind = kind
         self.decompress = decompress
@@ -97,7 +96,7 @@ class HttpParser:
         return self._headers
 
     def recv_body(self):
-        """ return last chunk of the parsed body"""
+        """return last chunk of the parsed body"""
         body = b"".join(self._body)
         self._body = []
         self._partial_body = False
@@ -125,33 +124,33 @@ class HttpParser:
         Do we get upgrade header in the request. Useful for
         websockets
         """
-        hconn = self._headers.get('connection', "").lower()
-        hconn_parts = [x.strip() for x in hconn.split(',')]
+        hconn = self._headers.get("connection", "").lower()
+        hconn_parts = [x.strip() for x in hconn.split(",")]
         return "upgrade" in hconn_parts
 
     def is_headers_complete(self):
-        """ return True if all headers have been parsed. """
+        """return True if all headers have been parsed."""
         return self.__on_headers_complete
 
     def is_partial_body(self):
-        """ return True if a chunk of body have been parsed """
+        """return True if a chunk of body have been parsed"""
         return self._partial_body
 
     def is_message_begin(self):
-        """ return True if the parsing start """
+        """return True if the parsing start"""
         return self.__on_message_begin
 
     def is_message_complete(self):
-        """ return True if the parsing is done (we get EOF) """
+        """return True if the parsing is done (we get EOF)"""
         return self.__on_message_complete
 
     def is_chunked(self):
-        """ return True if Transfer-Encoding header value is chunked"""
+        """return True if Transfer-Encoding header value is chunked"""
         return self._chunked
 
     def should_keep_alive(self):
         """return True if the connection should be kept alive"""
-        hconn = self._headers.get('connection', "").lower()
+        hconn = self._headers.get("connection", "").lower()
         if hconn == "close":
             return False
         elif hconn == "keep-alive":
@@ -177,10 +176,10 @@ class HttpParser:
                     self.__on_firstline = True
                     self._buf.append(data[:idx])
                     first_line = b"".join(self._buf)
-                    first_line = str(first_line, 'unicode_escape')
+                    first_line = str(first_line, "unicode_escape")
                     nb_parsed = nb_parsed + idx + 2
 
-                    rest = data[idx + 2:]
+                    rest = data[idx + 2 :]
                     data = b""
                     if self._parse_firstline(first_line):
                         self._buf = [rest]
@@ -290,16 +289,11 @@ class HttpParser:
         self._version = (int(match.group(1)), int(match.group(2)))
 
         # update environ
-        if hasattr(self, '_environ'):
-            self._environ.update({
-                "PATH_INFO": self._path,
-                "QUERY_STRING": self._query_string,
-                "RAW_URI": self._url,
-                "REQUEST_METHOD": self._method,
-                "SERVER_PROTOCOL": bits[2]})
+        if hasattr(self, "_environ"):
+            self._environ.update({"PATH_INFO": self._path, "QUERY_STRING": self._query_string, "RAW_URI": self._url, "REQUEST_METHOD": self._method, "SERVER_PROTOCOL": bits[2]})
 
     def _parse_headers(self, data):
-        if data == b'\r\n':
+        if data == b"\r\n":
             self.__on_headers_complete = True
             self._buf = []
             return 0
@@ -313,8 +307,7 @@ class HttpParser:
                 return False
 
         # Split lines on \r\n keeping the \r\n on each line
-        lines = [str(line, 'unicode_escape') + "\r\n"
-                 for line in data[:idx].split(b"\r\n")]
+        lines = [str(line, "unicode_escape") + "\r\n" for line in data[:idx].split(b"\r\n")]
 
         # Parse headers into key/value pairs paying attention
         # to continuation lines.
@@ -339,18 +332,18 @@ class HttpParser:
                 if curr.endswith("\r\n"):
                     curr = curr[:-2]
                 value.append(curr)
-            value = ''.join(value).rstrip()
+            value = "".join(value).rstrip()
 
             # store new header value
             self._headers.add_header(name, value)
 
             # update WSGI environ
-            key = 'HTTP_%s' % name.upper().replace('-', '_')
+            key = "HTTP_%s" % name.upper().replace("-", "_")
             self._environ[key] = value
 
         # detect now if body is sent by chunks.
-        clen = self._headers.get('content-length')
-        te = self._headers.get('transfer-encoding', '').lower()
+        clen = self._headers.get("content-length")
+        te = self._headers.get("transfer-encoding", "").lower()
 
         if clen is not None:
             try:
@@ -358,12 +351,12 @@ class HttpParser:
             except ValueError:
                 pass
         else:
-            self._chunked = (te == 'chunked')
+            self._chunked = te == "chunked"
             if not self._chunked:
                 self._clen_rest = maxsize
 
         # detect encoding and set decompress object
-        encoding = self._headers.get('content-encoding')
+        encoding = self._headers.get("content-encoding")
         if self.decompress:
             if encoding == "gzip":
                 self.__decompress_obj = zlib.decompressobj(16 + zlib.MAX_WBITS)
@@ -371,7 +364,7 @@ class HttpParser:
             elif encoding == "deflate":
                 self.__decompress_obj = zlib.decompressobj()
 
-        rest = data[idx + 4:]
+        rest = data[idx + 4 :]
         self._buf = [rest]
         self.__on_headers_complete = True
         return len(rest)
@@ -410,7 +403,6 @@ class HttpParser:
         else:
             data = b"".join(self._buf)
             try:
-
                 size, rest = self._parse_chunk_size(data)
             except InvalidChunkSize as e:
                 self.errno = INVALID_CHUNK
@@ -443,7 +435,7 @@ class HttpParser:
         idx = data.find(b"\r\n")
         if idx < 0:
             return None, None
-        line, rest_chunk = data[:idx], data[idx + 2:]
+        line, rest_chunk = data[:idx], data[idx + 2 :]
         chunk_size = line.split(b";", 1)[0].strip()
         try:
             chunk_size = int(chunk_size, 16)

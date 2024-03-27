@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 import os.path
+import pytest
 import select
 from socket import (
-    AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM,
-    has_ipv6, socket,
+    AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM, has_ipv6, socket,
 )
 from ssl import wrap_socket as sslsocket
-
-import pytest
-from tests.conftest import WaitEvent
 
 from circuits import Debugger, Manager
 from circuits.core.pollers import EPoll, KQueue, Poll, Select
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCP6Client, TCP6Server, TCPClient, TCPServer
+from tests.conftest import WaitEvent
 
 from .client import Client
 from .server import Server
@@ -22,13 +20,11 @@ CERT_FILE = os.path.join(os.path.dirname(__file__), "cert.pem")
 
 
 class _TestClient:
-
     def __init__(self, ipv6=False):
         self._sockname = None
 
         self.sock = socket(
-            AF_INET6 if ipv6
-            else AF_INET,
+            AF_INET6 if ipv6 else AF_INET,
             SOCK_STREAM,
         )
 
@@ -75,6 +71,7 @@ def client(request, ipv6):
 def wait_host(server):
     def checker(obj, attr):
         return all(getattr(obj, a) for a in attr)
+
     assert pytest.wait_for(server, ("host", "port"), checker)
 
 
@@ -95,7 +92,7 @@ def pytest_generate_tests(metafunc):
         if hasattr(select, "kqueue"):
             poller.append((KQueue, ipv6))
 
-    metafunc.parametrize('Poller,ipv6', poller)
+    metafunc.parametrize("Poller,ipv6", poller)
 
 
 def test_tcp_basic(Poller, ipv6):
@@ -234,7 +231,6 @@ def test_tcp_reconnect(Poller, ipv6):
 
 
 def test_tcp_connect_closed_port(Poller, ipv6):
-
     if pytest.PLATFORM == "win32":
         pytest.skip("Broken on Windows")
 
@@ -264,7 +260,7 @@ def test_tcp_connect_closed_port(Poller, ipv6):
 
         # 1st connect
         client.fire(connect(host, port))
-        waiter = WaitEvent(m, "unreachable", channel='client')
+        waiter = WaitEvent(m, "unreachable", channel="client")
         assert waiter.wait()
     finally:
         server.unregister()

@@ -12,13 +12,13 @@ For usage type:
 
    ./circ.py --help
 """
+
 import os
 import sys
 from optparse import OptionParser
 from re import compile as compile_regex
 from select import select
 from socket import gethostname
-
 from urwid import AttrWrap, Edit, Frame, ListBox, Pile, SimpleListWalker, Text
 from urwid.raw_display import Screen
 
@@ -40,8 +40,7 @@ HELP_STRINGS = {
 }
 
 CMD_REGEX = compile_regex(
-    r"\/(?P<command>[a-z]+) ?"
-    "(?P<args>.*)(?iu)",
+    r"\/(?P<command>[a-z]+) ?" "(?P<args>.*)(?iu)",
 )
 
 
@@ -53,20 +52,29 @@ def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-c", "--channel",
-        action="store", default="#circuits", dest="channel",
+        "-c",
+        "--channel",
+        action="store",
+        default="#circuits",
+        dest="channel",
         help="Channel to join",
     )
 
     parser.add_option(
-        "", "--debug",
-        action="store_true", default=False, dest="debug",
+        "",
+        "--debug",
+        action="store_true",
+        default=False,
+        dest="debug",
         help="Enable debug mode",
     )
 
     parser.add_option(
-        "-n", "--nick",
-        action="store", default=os.environ["USER"], dest="nick",
+        "-n",
+        "--nick",
+        action="store",
+        default=os.environ["USER"],
+        dest="nick",
         help="Nickname to use",
     )
 
@@ -80,7 +88,6 @@ def parse_options():
 
 
 class Client(Component):
-
     channel = "client"
 
     def init(self, host, port=6667, opts=None):
@@ -102,10 +109,8 @@ class Client(Component):
         self.screen = Screen()
         self.screen.start()
 
-        self.screen.register_palette([
-            ("title", "white", "dark blue", "standout"),
-            ("line", "light gray", "black"),
-            ("help", "white", "dark blue")],
+        self.screen.register_palette(
+            [("title", "white", "dark blue", "standout"), ("line", "light gray", "black"), ("help", "white", "dark blue")],
         )
 
         self.body = ListBox(SimpleListWalker([]))
@@ -191,16 +196,14 @@ class Client(Component):
 
     def syntaxError(self, command, args, expected):
         self.lines.append(
-            Text("Syntax error ({:s}): {:s} Expected: {:s}".format(
-                command, args, expected),
+            Text(
+                "Syntax error ({:s}): {:s} Expected: {:s}".format(command, args, expected),
             ),
         )
 
     def processCommand(self, s):  # noqa
-
         match = CMD_REGEX.match(s)
         if match is not None:
-
             command = match.groupdict()["command"]
             if match.groupdict()["args"] != "":
                 tokens = match.groupdict()["args"].split(" ")
@@ -211,7 +214,6 @@ class Client(Component):
             if hasattr(self, fn):
                 f = getattr(self, fn)
                 if callable(f):
-
                     args, vargs, kwargs, default = getargspec(f)
                     args.remove("self")
                     if len(args) == len(tokens):
@@ -227,34 +229,26 @@ class Client(Component):
                                     f(*back_merge(tokens, factor))
                                 else:
                                     self.syntaxError(
-                                        command, " ".join(tokens),
-                                        " ".join(
-                                            x for x in args + [vargs]
-                                            if x is not None
-                                        ),
+                                        command,
+                                        " ".join(tokens),
+                                        " ".join(x for x in args + [vargs] if x is not None),
                                     )
                             else:
                                 f(*tokens)
-                        elif default is not None and \
-                                len(args) == (
-                                    len(tokens) + len(default)):
+                        elif default is not None and len(args) == (len(tokens) + len(default)):
                             f(*(tokens + list(default)))
                         else:
                             self.syntaxError(
                                 command,
                                 " ".join(tokens),
-                                " ".join(
-                                    x for x in args + [vargs]
-                                    if x is not None
-                                ),
+                                " ".join(x for x in args + [vargs] if x is not None),
                             )
         else:
             if self.ircchannel is not None:
                 self.lines.append(Text(f"<{self.nick}> {s}"))
                 self.fire(PRIVMSG(self.ircchannel, s))
             else:
-                self.lines.append(Text(
-                    "No channel joined. Try /join #<channel>"))
+                self.lines.append(Text("No channel joined. Try /join #<channel>"))
 
     def cmdEXIT(self, message=""):
         self.fire(QUIT(message))
@@ -314,6 +308,7 @@ def main():
 
     if opts.debug:
         from circuits import Debugger
+
         Debugger(file=sys.stderr).register(client)
 
     client.run()

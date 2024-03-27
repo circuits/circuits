@@ -8,7 +8,6 @@ from circuits.web.dispatchers import WebSocketsDispatcher
 
 
 class Echo(Component):
-
     channel = "wsserver"
 
     def read(self, sock, data):
@@ -16,7 +15,6 @@ class Echo(Component):
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 

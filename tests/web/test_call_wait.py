@@ -10,7 +10,6 @@ class foo(Event):
 
 
 class App(Component):
-
     channel = "app"
 
     def foo(self):
@@ -18,9 +17,8 @@ class App(Component):
 
 
 class Root(Controller):
-
     def index(self):
-        value = (yield self.call(foo(), "app"))
+        value = yield self.call(foo(), "app")
         yield value.value
 
 

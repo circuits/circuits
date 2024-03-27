@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """circuits Hello World"""
 
-
 from circuits import Component, Event
 
 
@@ -14,7 +13,6 @@ class terminate(Event):
 
 
 class App(Component):
-
     def hello(self):
         """Hello Event Handler"""
         print("Hello World!")

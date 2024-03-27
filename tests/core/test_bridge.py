@@ -1,11 +1,10 @@
 #!/usr/bin/python -i
-from os import getpid
-
 import pytest
+from os import getpid
 
 from circuits import Component, Event, ipc
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == "win32", reason="Unsupported Platform")
 
 pytest.importorskip("multiprocessing")
 
@@ -15,7 +14,6 @@ class hello(Event):
 
 
 class App(Component):
-
     def hello(self):
         return f"Hello from {getpid():d}"
 

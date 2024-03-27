@@ -7,7 +7,6 @@ from .helpers import HTTPError, urlencode, urlopen
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
@@ -50,18 +49,21 @@ def test_args(webapp):
     args = ("1", "2", "3")
     kwargs = {"1": "one", "2": "two", "3": "three"}
     url = "%s/test_args/%s" % (webapp.server.http.base, "/".join(args))
-    data = urlencode(kwargs).encode('utf-8')
+    data = urlencode(kwargs).encode("utf-8")
     f = urlopen(url, data)
     data = f.read().split(b"\n")
     assert eval(data[0]) == args
     assert eval(data[1]) == kwargs
 
 
-@pytest.mark.parametrize("data,expected", [
-    ((["1"], {}), b"a=1\nb=None"),
-    ((["1", "2"], {}), b"a=1\nb=2"),
-    ((["1"], {"b": "2"}), b"a=1\nb=2"),
-])
+@pytest.mark.parametrize(
+    "data,expected",
+    [
+        ((["1"], {}), b"a=1\nb=None"),
+        ((["1", "2"], {}), b"a=1\nb=2"),
+        ((["1"], {"b": "2"}), b"a=1\nb=2"),
+    ],
+)
 def test_default_args(webapp, data, expected):
     args, kwargs = data
     url = "{:s}/test_default_args/{:s}".format(

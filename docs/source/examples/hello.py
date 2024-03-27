@@ -10,7 +10,6 @@ class hello(Event):
 
 
 class App(Component):
-
     def hello(self):
         """Hello Event Handler"""
         print("Hello World!")
@@ -25,5 +24,6 @@ class App(Component):
         self.fire(hello())  # Fire hello Event
 
         raise SystemExit(0)  # Terminate the Application
+
 
 App().run()

@@ -4,6 +4,7 @@ Session Components
 This module implements Session Components that can be used to store
 and access persistent information.
 """
+
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from hashlib import sha1 as sha
@@ -50,7 +51,6 @@ def verify_session(request, sid):
 
 
 class Session(dict):
-
     def __init__(self, sid, data, store):
         super().__init__(data)
 
@@ -77,7 +77,6 @@ class Session(dict):
 
 
 class Store(metaclass=ABCMeta):
-
     @abstractmethod
     def delete(self, sid):
         """Delete the session data identified by sid"""
@@ -92,7 +91,6 @@ class Store(metaclass=ABCMeta):
 
 
 class MemoryStore(Store):
-
     def __init__(self):
         self._data = defaultdict(dict)
 
@@ -111,7 +109,6 @@ class MemoryStore(Store):
 
 
 class Sessions(Component):
-
     channel = "web"
 
     def __init__(self, name="circuits", store=MemoryStore, channel=channel):

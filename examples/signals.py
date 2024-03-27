@@ -14,7 +14,6 @@ class hello(Event):
 
 
 class App(Component):
-
     def hello(self):
         """Hello Event Handler"""
         print("Hello World!")

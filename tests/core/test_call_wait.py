@@ -168,7 +168,7 @@ def test_eval(manager, watcher, app):
     assert value == 3
 
 
-@pytest.mark.xfail(reason='Issue #226')
+@pytest.mark.xfail(reason="Issue #226")
 @pytest.mark.timeout(1)
 def test_wait_too_late(manager, watcher, app):
     event = foo()
@@ -176,6 +176,6 @@ def test_wait_too_late(manager, watcher, app):
     assert watcher.wait("foo_success")
     manager.tick()
 
-    x = manager.wait(event, timeout=.1)
+    x = manager.wait(event, timeout=0.1)
     value = next(x)
     assert value == list(range(1, 10))

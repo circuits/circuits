@@ -4,7 +4,6 @@ from .helpers import HTTPError, urlopen
 
 
 class Root(Controller):
-
     def index(self):
         pass
 

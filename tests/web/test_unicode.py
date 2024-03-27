@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-from http.client import HTTPConnection
-
 import pytest
+from http.client import HTTPConnection
 
 from circuits.web import Controller
 from circuits.web.client import Client, request
@@ -11,7 +10,6 @@ from .helpers import urlopen
 
 
 class Root(Controller):
-
     def index(self):
         return "Hello World!"
 
@@ -38,10 +36,13 @@ def test_index(webapp):
     assert s == b"Hello World!"
 
 
-@pytest.mark.parametrize('body', [
-    "ä".encode(),
-    "ä".encode('iso8859-1'),
-])
+@pytest.mark.parametrize(
+    "body",
+    [
+        "ä".encode(),
+        "ä".encode("iso8859-1"),
+    ],
+)
 def test_request_body(webapp, body):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
@@ -92,8 +93,10 @@ def test_response_headers(webapp):
     client.fire(
         request(
             "GET",
-            "http://%s:%s/response_headers" % (
-                webapp.server.host, webapp.server.port,
+            "http://%s:%s/response_headers"
+            % (
+                webapp.server.host,
+                webapp.server.port,
             ),
         ),
     )
@@ -101,9 +104,9 @@ def test_response_headers(webapp):
     while client.response is None:
         pass
     assert client.response.status == 200
-    assert client.response.reason == 'OK'
+    assert client.response.reason == "OK"
     s = client.response.read()
-    a = client.response.headers.get('A')
+    a = client.response.headers.get("A")
     assert a == "ä"
     assert s == "ä".encode()
 
@@ -112,12 +115,12 @@ def test_argument(webapp):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
-    data = 'arg=%E2%86%92'
+    data = "arg=%E2%86%92"
     connection.request("POST", "/argument", data, {"Content-type": "application/x-www-form-urlencoded"})
     response = connection.getresponse()
     assert response.status == 200
     assert response.reason == "OK"
     s = response.read()
-    assert s.decode('utf-8') == '\u2192'
+    assert s.decode("utf-8") == "\u2192"
 
     connection.close()

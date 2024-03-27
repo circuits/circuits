@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from glob import glob
-
 from setuptools import find_packages, setup
 
 
@@ -14,7 +13,9 @@ def read_file(filename):
 setup(
     name="circuits",
     description="Asynchronous Component based Event Application Framework",
-    long_description=open("README.rst").read().replace(
+    long_description=open("README.rst")
+    .read()
+    .replace(
         ".. include:: examples/index.rst",
         read_file("examples/index.rst"),
     ),
@@ -57,7 +58,8 @@ setup(
         "Topic :: Software Development :: Libraries :: Application Frameworks",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: System :: Clustering",
-        "Topic :: System :: Distributed Computing"],
+        "Topic :: System :: Distributed Computing",
+    ],
     license="MIT",
     keywords="event framework distributed concurrent component asynchronous",
     platforms="POSIX",

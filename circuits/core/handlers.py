@@ -1,4 +1,5 @@
 """This module define the @handler decorator/function and the HandlesType type."""
+
 from collections.abc import Callable
 
 from circuits.tools import getargspec
@@ -112,7 +113,6 @@ def reprhandler(handler):
 
 
 class HandlerMetaClass(type):
-
     def __init__(cls, name, bases, ns):
         super().__init__(name, bases, ns)
 
@@ -122,4 +122,4 @@ class HandlerMetaClass(type):
                 try:
                     setattr(cls, name, handler(name)(callable))
                 except ValueError as e:
-                    raise ValueError(f'{str(e)} - {repr(cls)} {name}')
+                    raise ValueError(f"{str(e)} - {repr(cls)} {name}")

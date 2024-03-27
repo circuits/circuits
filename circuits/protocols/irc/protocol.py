@@ -1,6 +1,5 @@
 """Internet Relay Chat Protocol"""
 
-
 from re import compile as compile_regex
 
 from circuits import Component

@@ -3,6 +3,7 @@ Web Servers
 
 This module implements the several Web Server components.
 """
+
 from sys import stderr
 
 from circuits import io
@@ -49,8 +50,7 @@ class BaseServer(BaseComponent):
 
     channel = "web"
 
-    def __init__(self, bind, encoding="utf-8", secure=False, certfile=None,
-                 channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
+    def __init__(self, bind, encoding="utf-8", secure=False, certfile=None, channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
         "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
         super().__init__(channel=channel)
 
@@ -71,7 +71,9 @@ class BaseServer(BaseComponent):
         ).register(self)
 
         self.http = HTTP(
-            self, encoding=encoding, channel=channel,
+            self,
+            encoding=encoding,
+            channel=channel,
         ).register(self)
 
     @property
@@ -115,7 +117,8 @@ class BaseServer(BaseComponent):
     def _on_ready(self, server, bind):
         stderr.write(
             "{} ready! Listening on: {}\n".format(
-                self.http.version, self.http.base,
+                self.http.version,
+                self.http.base,
             ),
         )
 
@@ -138,14 +141,12 @@ class Server(BaseServer):
         Dispatcher(channel=self.channel).register(self.http)
 
 
-class FakeSock():
-
+class FakeSock:
     def getpeername(self):
         return (None, None)
 
 
 class StdinServer(BaseComponent):
-
     channel = "web"
 
     def __init__(self, encoding="utf-8", channel=channel):
@@ -153,7 +154,9 @@ class StdinServer(BaseComponent):
 
         self.server = (io.stdin + io.stdout).register(self)
         self.http = HTTP(
-            self, encoding=encoding, channel=channel,
+            self,
+            encoding=encoding,
+            channel=channel,
         ).register(self)
 
         Dispatcher(channel=self.channel).register(self)

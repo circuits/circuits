@@ -12,8 +12,7 @@ def api():
     """Generate the API Documentation"""
     if PACKAGE is not None:
         pip(requirements="docs/requirements.txt")
-        local(
-            f"sphinx-apidoc -f -e -T -o docs/source/api {PACKAGE:s}")
+        local(f"sphinx-apidoc -f -e -T -o docs/source/api {PACKAGE:s}")
 
 
 @task()
@@ -41,4 +40,5 @@ def view(**options):
     """View the Documentation"""
     with lcd("docs"):
         import webbrowser
+
         webbrowser.open_new_tab("build/html/index.html")

@@ -9,7 +9,6 @@ from circuits.net.sockets import TCPClient
 
 
 class Telnet(Component):
-
     channel = "telnet"
 
     def init(self, host, port):

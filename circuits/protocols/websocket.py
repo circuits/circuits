@@ -1,4 +1,5 @@
 """.. codeauthor: mnl"""
+
 import os
 import random
 
@@ -104,7 +105,7 @@ class WebSocketCodec(BaseComponent):
                     offset += 1
             # retrieve optional masking key
             if masking:
-                masking_key = data[offset:offset + 4]
+                masking_key = data[offset : offset + 4]
                 offset += 4
             # if not enough bytes available yet, retry after next read
             if len(data) - offset < payload_length:
@@ -112,7 +113,7 @@ class WebSocketCodec(BaseComponent):
                 break
             self._buffer = bytearray()
             # rest of _buffer is payload
-            msg = data[offset:offset + payload_length]
+            msg = data[offset : offset + payload_length]
             if masking:  # unmask
                 msg = list(msg)
                 for i, c in enumerate(msg):
@@ -143,7 +144,7 @@ class WebSocketCodec(BaseComponent):
                 elif opcode == 9:
                     if self._close_sent:
                         return
-                    frame = bytearray(b'\x8a')
+                    frame = bytearray(b"\x8a")
                     frame += self._encode_tail(msg, self._sock is None)
                     self._write(frame)
             else:

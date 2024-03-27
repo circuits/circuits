@@ -1,7 +1,6 @@
 from circuits import Component, Manager
 from circuits.core.handlers import handler
 
-
 """Component Setup Tests
 
 Tests that event handlers of a Component are
@@ -10,7 +9,6 @@ automatically registered as event handlers.
 
 
 class App(Component):
-
     def test(self, event, *args, **kwargs):
         pass
 
@@ -20,7 +18,6 @@ class A(Component):
 
 
 class B(Component):
-
     informed = False
 
     @handler("prepare_unregister", channel="*")
@@ -30,12 +27,10 @@ class B(Component):
 
 
 class Base(Component):
-
     channel = "base"
 
 
 class C(Base):
-
     channel = "c"
 
 

@@ -4,10 +4,11 @@ Static
 This modStatic implements a Static dispatcher used to serve up static
 resources and an optional apache-style directory listing.
 """
+
 import os
-from urllib.parse import quote, unquote
-from string import Template
 from html import escape
+from string import Template
+from urllib.parse import quote, unquote
 
 from circuits import BaseComponent, handler
 from circuits.web.tools import serve_file
@@ -36,16 +37,13 @@ _dirlisting_template = Template(DEFAULT_DIRECTORY_INDEX_TEMPLATE)
 
 
 class Static(BaseComponent):
-
     channel = "web"
 
-    def __init__(self, path=None, docroot=None,
-                 defaults=("index.html", "index.xhtml"), dirlisting=False, **kwargs):
+    def __init__(self, path=None, docroot=None, defaults=("index.html", "index.xhtml"), dirlisting=False, **kwargs):
         super().__init__(**kwargs)
 
         self.path = path
-        self.docroot = os.path.abspath(
-            docroot) if docroot is not None else os.path.abspath(os.getcwd())
+        self.docroot = os.path.abspath(docroot) if docroot is not None else os.path.abspath(os.getcwd())
         self.defaults = defaults
         self.dirlisting = dirlisting
 
@@ -57,7 +55,7 @@ class Static(BaseComponent):
         path = request.path
 
         if self.path is not None:
-            path = path[len(self.path):]
+            path = path[len(self.path) :]
 
         path = unquote(path.strip("/"))
 
@@ -83,7 +81,6 @@ class Static(BaseComponent):
 
         # Is it a directory?
         elif os.path.isdir(location):
-
             # Try to serve one of default files first..
             for default in self.defaults:
                 location = os.path.abspath(
@@ -120,11 +117,13 @@ class Static(BaseComponent):
                         )
                         if os.path.isdir(location):
                             li = '<li><a href="%s/">%s/</a></li>' % (
-                                escape(quote(url), True), escape(item),
+                                escape(quote(url), True),
+                                escape(item),
                             )
                         else:
                             li = '<li><a href="%s">%s</a></li>' % (
-                                escape(quote(url), True), escape(item),
+                                escape(quote(url), True),
+                                escape(item),
                             )
                         listing.append(li)
 

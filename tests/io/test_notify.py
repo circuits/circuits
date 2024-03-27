@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-
 import pytest
 
 from circuits import Component, handler
@@ -12,17 +11,15 @@ except ImportError:
 
 
 class App(Component):
-
     def init(self, *args, **kwargs):
         self.created_status = False
 
-    @handler('created', channel='notify')
+    @handler("created", channel="notify")
     def created(self, *args, **kwargs):
         self.created_status = True
 
 
 class Creator:
-
     def __init__(self, app, watcher, tmpdir, timeout=0.5):
         self.app = app
         self.watcher = watcher
@@ -30,9 +27,9 @@ class Creator:
         self.timeout = timeout
 
     def create(self, *targets, **kwargs):
-        assert_created = kwargs.get('assert_created', True)
+        assert_created = kwargs.get("assert_created", True)
         target = os.path.join(*targets)
-        self.tmpdir.ensure(target, dir=kwargs.get('dir', False))
+        self.tmpdir.ensure(target, dir=kwargs.get("dir", False))
         self.watcher.wait("created", timeout=self.timeout)
         assert self.app.created_status == assert_created
         # Reset for next call
@@ -65,7 +62,6 @@ def creator(app, watcher, tmpdir):
 
 
 def test_notify_file(notify, tmpdir, creator):
-
     # Add a path to the watch
     notify.add_path(str(tmpdir))
 
@@ -80,7 +76,6 @@ def test_notify_file(notify, tmpdir, creator):
 
 
 def test_notify_dir(notify, tmpdir, creator):
-
     # Add a path to the watch
     notify.add_path(str(tmpdir))
 
@@ -95,7 +90,6 @@ def test_notify_dir(notify, tmpdir, creator):
 
 
 def test_notify_subdir_recursive(notify, tmpdir, creator):
-
     # Add a subdir
     subdir = "sub"
     tmpdir.ensure(subdir, dir=True)
@@ -127,7 +121,6 @@ def test_notify_subdir_recursive_remove_path(notify, tmpdir, creator):
 
 
 def test_notify_subdir_recursive_auto_add(notify, tmpdir, creator):
-
     # Add a path to the watch
     notify.add_path(str(tmpdir), recursive=True)
 
@@ -142,7 +135,6 @@ def test_notify_subdir_recursive_auto_add(notify, tmpdir, creator):
 
 
 def test_notify_subdir_recursive_no_auto_add(notify, tmpdir, creator):
-
     # Add a path to the watch
     notify.add_path(str(tmpdir), recursive=True, auto_add=False)
 

@@ -11,7 +11,6 @@ class hello(Event):
 
 
 class App(Component):
-
     channel = "app"
 
     def hello(self):

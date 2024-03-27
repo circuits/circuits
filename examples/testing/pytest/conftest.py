@@ -1,18 +1,16 @@
 """py.test config"""
 
+import pytest
 import sys
 import threading
 from collections import deque
 from time import sleep
-
-import pytest
 
 from circuits import BaseComponent, Debugger, Manager, handler
 from circuits.core.manager import TIMEOUT
 
 
 class Watcher(BaseComponent):
-
     def init(self):
         self._lock = threading.Lock()
         self.events = deque()
@@ -32,8 +30,7 @@ class Watcher(BaseComponent):
             else:
                 with self._lock:
                     for event in self.events:
-                        if event.name == name and \
-                                channel in event.channels:
+                        if event.name == name and channel in event.channels:
                             return True
 
             sleep(TIMEOUT)
@@ -44,7 +41,6 @@ class Flag:
 
 
 class WaitEvent:
-
     def __init__(self, manager, name, channel=None, timeout=6.0):
         if channel is None:
             channel = getattr(manager, "channel", None)
@@ -104,7 +100,5 @@ def watcher(request, manager):
     return watcher
 
 
-for key, value in {"WaitEvent": WaitEvent,
-    "PLATFORM": sys.platform,
-    "PYVER": sys.version_info[:3]}.items():
+for key, value in {"WaitEvent": WaitEvent, "PLATFORM": sys.platform, "PYVER": sys.version_info[:3]}.items():
     setattr(pytest, key, value)

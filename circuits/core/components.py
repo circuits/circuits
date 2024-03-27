@@ -1,4 +1,5 @@
 """This module defines the BaseComponent and its subclass Component."""
+
 from collections.abc import Callable
 from inspect import getmembers
 from itertools import chain
@@ -79,10 +80,7 @@ class BaseComponent(Manager):
     def __new__(cls, *args, **kwargs):
         self = super().__new__(cls)
 
-        handlers = {
-            k: v for k, v in list(cls.__dict__.items())
-            if getattr(v, "handler", False)
-        }
+        handlers = {k: v for k, v in list(cls.__dict__.items()) if getattr(v, "handler", False)}
 
         def overridden(x):
             return x in handlers and handlers[x].override
@@ -110,8 +108,7 @@ class BaseComponent(Manager):
             if getattr(v, "handler", False) is True:
                 self.addHandler(v)
             # TODO: Document this feature. See Issue #88
-            if v is not self and isinstance(v, BaseComponent) \
-                    and v not in ('parent', 'root'):
+            if v is not self and isinstance(v, BaseComponent) and v not in ("parent", "root"):
                 v.register(self)
 
         if hasattr(self, "init") and isinstance(self.init, Callable):
@@ -120,6 +117,7 @@ class BaseComponent(Manager):
         @handler("prepare_unregister_complete", channel=self)
         def _on_prepare_unregister_complete(self, event, e, value):
             self._do_prepare_unregister_complete(event.parent, value)
+
         self.addHandler(_on_prepare_unregister_complete)
 
     def register(self, parent):
@@ -200,23 +198,14 @@ class BaseComponent(Manager):
     @classmethod
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
-        return list({
-            getattr(cls, k) for k in dir(cls)
-            if getattr(getattr(cls, k), "handler", False)
-        })
+        return list({getattr(cls, k) for k in dir(cls) if getattr(getattr(cls, k), "handler", False)})
 
     @classmethod
     def events(cls):
         """Returns a list of all events this Component listens to"""
-        handlers = (
-            getattr(cls, k).names for k in dir(cls)
-            if getattr(getattr(cls, k), "handler", False)
-        )
+        handlers = (getattr(cls, k).names for k in dir(cls) if getattr(getattr(cls, k), "handler", False))
 
-        return list({
-            name for name in chain(*handlers)
-            if not name.startswith("_")
-        })
+        return list({name for name in chain(*handlers) if not name.startswith("_")})
 
     @classmethod
     def handles(cls, *names):

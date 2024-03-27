@@ -4,6 +4,7 @@ Circuits Tools
 circuits.tools contains a standard set of tools for circuits. These
 tools are installed as executables with a prefix of "circuits."
 """
+
 import inspect as _inspect
 from functools import wraps
 from warnings import warn, warn_explicit
@@ -24,7 +25,7 @@ def tryimport(modules, obj=None, message=None):
 
 
 def getargspec(func):
-    getargs = _inspect.getfullargspec if hasattr(_inspect, 'getfullargspec') else _inspect.getargspec
+    getargs = _inspect.getfullargspec if hasattr(_inspect, "getfullargspec") else _inspect.getargspec
     return getargs(func)[:4]
 
 
@@ -79,7 +80,7 @@ def _graph(x):
         return None, None
 
     graph_edges = []
-    for (u, v, d) in edges(x):
+    for u, v, d in edges(x):
         graph_edges.append((u.name, v.name, float(d)))
 
     g = networkx.DiGraph()
@@ -96,13 +97,21 @@ def _graph(x):
     # edges
     networkx.draw_networkx_edges(g, pos, edgelist=elarge, width=1)
     networkx.draw_networkx_edges(
-        g, pos, edgelist=esmall, width=1,
-        alpha=0.5, edge_color="b", style="dashed",
+        g,
+        pos,
+        edgelist=esmall,
+        width=1,
+        alpha=0.5,
+        edge_color="b",
+        style="dashed",
     )
 
     # labels
     networkx.draw_networkx_labels(
-        g, pos, font_size=10, font_family="sans-serif",
+        g,
+        pos,
+        font_size=10,
+        font_family="sans-serif",
     )
 
     plt.axis("off")

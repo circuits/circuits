@@ -5,7 +5,6 @@ from circuits import Component
 
 
 class App(Component):
-
     def started(self, *args):
         try:
             code = int(sys.argv[1])

@@ -14,7 +14,6 @@ def factorial(n):
 
 
 class App(Component):
-
     def init(self, *args, **kwargs):
         Worker(process=True).register(self)
 
@@ -40,7 +39,7 @@ class App(Component):
             self.stop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = App()
     Debugger().register(app)
     app.run()

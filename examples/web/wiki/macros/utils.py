@@ -3,6 +3,7 @@ Utils macros
 
 Utility macros
 """
+
 from inspect import getdoc
 
 

@@ -16,7 +16,7 @@ class Nested3(Component):
     channel = "nested3"
 
     def test(self):
-        """ Updating state. Must be called twice to reach final state."""
+        """Updating state. Must be called twice to reach final state."""
         if self.root._state != "Pre final state":
             self.root._state = "Pre final state"
         else:
@@ -27,7 +27,7 @@ class Nested2(Component):
     channel = "nested2"
 
     def test(self):
-        """ Updating state. """
+        """Updating state."""
         self.root._state = "New state"
         # State change involves even more components as well.
         self.fire(test(), Nested3.channel)
@@ -38,7 +38,7 @@ class Nested1(Component):
     channel = "nested1"
 
     def test(self):
-        """ State change involves other components as well. """
+        """State change involves other components as well."""
         self.fire(test(), Nested2.channel)
 
 
@@ -53,14 +53,14 @@ class App(Component):
         self._simple_event_completed = True
 
     def test(self):
-        """ Fire the test event that should produce a state change. """
+        """Fire the test event that should produce a state change."""
         evt = test()
         evt.complete = True
         evt.complete_channels = [self.channel]
         self.fire(evt, Nested1.channel)
 
     def test_success(self, e, value):
-        """ Test event has been processed, save the achieved state."""
+        """Test event has been processed, save the achieved state."""
         self._state_when_success = self._state
 
     def test_complete(self, e, value):

@@ -1,8 +1,7 @@
 """Workers Tests"""
 
-from os import getpid
-
 import pytest
+from os import getpid
 
 from circuits import Worker, task
 

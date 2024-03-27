@@ -77,4 +77,4 @@ def dump_value(v):
 
 def load_value(v):
     data = json.loads(v)
-    return data['value'], data['id'], data['errors'], data['meta']
+    return data["value"], data["id"], data["errors"], data["meta"]

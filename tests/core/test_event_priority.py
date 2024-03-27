@@ -11,7 +11,6 @@ class done(Event):
 
 
 class App(Component):
-
     def init(self):
         self.results = []
 

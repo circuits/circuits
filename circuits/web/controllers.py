@@ -3,6 +3,7 @@ Controllers
 
 This module implements ...
 """
+
 import json
 from collections.abc import Callable
 from functools import update_wrapper
@@ -39,8 +40,7 @@ def expose(*channels, **config):
                 if hasattr(self, "session"):
                     del self.session
 
-        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
-            getargspec(f)
+        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
         if wrapper.args and wrapper.args[0] == "self":
             del wrapper.args[0]
 
@@ -55,18 +55,15 @@ def expose(*channels, **config):
 
 
 class ExposeMetaClass(type):
-
     def __init__(cls, name, bases, dct):
         super().__init__(name, bases, dct)
 
         for k, v in dct.items():
-            if isinstance(v, Callable) \
-                    and not (k[0] == "_" or hasattr(v, "handler")):
+            if isinstance(v, Callable) and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, expose(k)(v))
 
 
 class BaseController(BaseComponent):
-
     channel = "/"
 
     @property
@@ -114,12 +111,20 @@ class BaseController(BaseComponent):
 
     def serve_file(self, path, type=None, disposition=None, name=None):
         return tools.serve_file(
-            self.request, self.response, path, type, disposition, name,
+            self.request,
+            self.response,
+            path,
+            type,
+            disposition,
+            name,
         )
 
     def serve_download(self, path, name=None):
         return tools.serve_download(
-            self.request, self.response, path, name,
+            self.request,
+            self.response,
+            path,
+            name,
         )
 
     def expires(self, secs=0, force=False):
@@ -154,8 +159,7 @@ def exposeJSON(*channels, **config):
                 if hasattr(self, "session"):
                     del self.session
 
-        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = \
-            getargspec(f)
+        wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
         if wrapper.args and wrapper.args[0] == "self":
             del wrapper.args[0]
 
@@ -165,13 +169,11 @@ def exposeJSON(*channels, **config):
 
 
 class ExposeJSONMetaClass(type):
-
     def __init__(cls, name, bases, dct):
         super().__init__(name, bases, dct)
 
         for k, v in dct.items():
-            if isinstance(v, Callable) \
-                    and not (k[0] == "_" or hasattr(v, "handler")):
+            if isinstance(v, Callable) and not (k[0] == "_" or hasattr(v, "handler")):
                 setattr(cls, k, exposeJSON(k)(v))
 
 

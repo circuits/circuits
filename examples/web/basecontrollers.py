@@ -4,7 +4,6 @@ from circuits.web.controllers import BaseController, expose
 
 
 class Root(BaseController):
-
     @expose("index")
     def index(self):
         """

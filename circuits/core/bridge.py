@@ -7,17 +7,16 @@ processes. Bridge is used internally when a Component is started in
 Pipe is used as the socket transport between two sides of a Bridge
 (*there must be a :class:`~Bridge` instance on both sides*).
 """
+
 import traceback
+from pickle import dumps, loads
 
 from .components import BaseComponent
 from .events import Event, exception
 from .handlers import handler
 from .values import Value
 
-from pickle import dumps, loads
-
-
-_sentinel = b'~~~'
+_sentinel = b"~~~"
 
 
 class ipc(Event):
@@ -39,7 +38,6 @@ class ipc(Event):
 
 
 class Bridge(BaseComponent):
-
     channel = "bridge"
 
     def init(self, socket, channel=channel):
@@ -135,11 +133,11 @@ class Bridge(BaseComponent):
 
     @staticmethod
     def __waiting_event(eid):
-        return '%s_done' % eid
+        return "%s_done" % eid
 
     @staticmethod
     def __adapt_exception(ex):
-        fevent_value = ex.kwargs['fevent'].value
+        fevent_value = ex.kwargs["fevent"].value
         Bridge.__adapt_error_value(fevent_value)
 
     @staticmethod

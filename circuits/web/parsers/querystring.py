@@ -2,14 +2,12 @@ from urllib.parse import parse_qsl
 
 
 class QueryStringToken:
-
     ARRAY = "ARRAY"
     OBJECT = "OBJECT"
     KEY = "KEY"
 
 
 class QueryStringParser:
-
     def __init__(self, data):
         self.result = {}
 
@@ -91,14 +89,12 @@ class QueryStringParser:
                     # there is not a next token
                     # set the value
                     try:
-
                         next_token = next(tokens)
 
                         if next_token[0] == QueryStringToken.ARRAY:
                             ref.append([])
                             ref = ref[key]
                         elif next_token[0] == QueryStringToken.OBJECT:
-
                             try:
                                 ref[key] = {}
                             except IndexError:
