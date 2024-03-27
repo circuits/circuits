@@ -11,6 +11,7 @@ from circuits.tools import inspect
 from circuits.web import Controller, Logger, Server, Sessions, Static
 from circuits.web.events import stream
 
+
 BUFFERING = 1
 STREAMING = 2
 

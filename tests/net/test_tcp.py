@@ -2,21 +2,21 @@
 import os.path
 import select
 from socket import (
-    AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM,
-    has_ipv6, socket,
+    AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM, has_ipv6, socket,
 )
 from ssl import wrap_socket as sslsocket
 
 import pytest
-from tests.conftest import WaitEvent
 
 from circuits import Debugger, Manager
 from circuits.core.pollers import EPoll, KQueue, Poll, Select
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCP6Client, TCP6Server, TCPClient, TCPServer
+from tests.conftest import WaitEvent
 
 from .client import Client
 from .server import Server
+
 
 CERT_FILE = os.path.join(os.path.dirname(__file__), "cert.pem")
 

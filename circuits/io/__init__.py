@@ -10,6 +10,7 @@ from .events import close, open, seek, write
 from .file import File
 from .process import Process
 
+
 try:
     from .notify import Notify
 except:

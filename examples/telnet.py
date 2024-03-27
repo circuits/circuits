@@ -28,6 +28,7 @@ from circuits.net.events import connect, write
 from circuits.net.sockets import TCPClient, UDPClient, UNIXClient
 from circuits.tools import graph
 
+
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + circuits.__version__
 

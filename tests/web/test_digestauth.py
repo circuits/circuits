@@ -8,6 +8,7 @@ from .helpers import (
     HTTPDigestAuthHandler, HTTPError, build_opener, install_opener, urlopen,
 )
 
+
 pytestmark = pytest.mark.skipif(pytest.PYVER[:2] == (3, 3), reason='Broken on Python 3.3')
 
 

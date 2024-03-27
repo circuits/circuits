@@ -8,13 +8,12 @@ Pipe is used as the socket transport between two sides of a Bridge
 (*there must be a :class:`~Bridge` instance on both sides*).
 """
 import traceback
+from pickle import dumps, loads
 
 from .components import BaseComponent
 from .events import Event, exception
 from .handlers import handler
 from .values import Value
-
-from pickle import dumps, loads
 
 
 _sentinel = b'~~~'

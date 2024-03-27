@@ -5,6 +5,7 @@ import pytest
 
 from circuits import Worker, task
 
+
 task.complete = True
 
 

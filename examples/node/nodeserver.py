@@ -13,6 +13,7 @@ from os import getpid
 from circuits import Component, Debugger
 from circuits.node import Node
 
+
 __version__ = "0.0.1"
 
 USAGE = "%prog [options]"

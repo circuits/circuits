@@ -3,6 +3,7 @@ import pytest
 
 from circuits.io import Process, write
 
+
 if pytest.PLATFORM == "win32":
     pytest.skip("Unsupported Platform")
 

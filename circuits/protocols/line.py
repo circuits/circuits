@@ -9,6 +9,7 @@ import re
 
 from circuits.core import BaseComponent, Event, handler
 
+
 LINESEP = re.compile(b"\r?\n")
 
 

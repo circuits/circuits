@@ -20,6 +20,7 @@ from circuits.app import Daemon
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCPClient, TCPServer
 
+
 __version__ = "0.2"
 
 USAGE = "%prog [options] <srcaddr:srcport> <destaddr:destport>"

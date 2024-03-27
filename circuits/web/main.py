@@ -4,8 +4,8 @@ Main
 
 circutis.web Web Server and Testing Tool.
 """
-from argparse import ArgumentParser
 import os
+from argparse import ArgumentParser
 from hashlib import md5
 from sys import stderr
 from wsgiref.simple_server import make_server
@@ -18,6 +18,7 @@ from circuits.tools import graph, inspect
 from circuits.web import BaseServer, Controller, Logger, Server, Static
 from circuits.web.tools import check_auth, digest_auth
 from circuits.web.wsgi import Application
+
 
 try:
     import hotshot

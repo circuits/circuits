@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+from http.client import HTTPConnection
+
 import pytest
 
 from circuits.web import Controller
-
-from http.client import HTTPConnection
 
 
 class Root(Controller):

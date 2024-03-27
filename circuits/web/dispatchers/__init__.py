@@ -11,5 +11,6 @@ from .static import Static
 from .virtualhosts import VirtualHosts
 from .xmlrpc import XMLRPC
 
+
 # flake8: noqa
 # pylama: skip=1

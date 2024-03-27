@@ -5,12 +5,13 @@ This modStatic implements a Static dispatcher used to serve up static
 resources and an optional apache-style directory listing.
 """
 import os
-from urllib.parse import quote, unquote
-from string import Template
 from html import escape
+from string import Template
+from urllib.parse import quote, unquote
 
 from circuits import BaseComponent, handler
 from circuits.web.tools import serve_file
+
 
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"

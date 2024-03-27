@@ -21,10 +21,11 @@ Usage:
 SUPPORTED_ALGORITHM - list of supported 'Digest' algorithms
 SUPPORTED_QOP - list of supported 'Digest' 'qop'.
 """
-from base64 import decodebytes as base64_decodebytes
 import time
+from base64 import decodebytes as base64_decodebytes
 from hashlib import md5, sha1
 from urllib.request import parse_http_list, parse_keqv_list
+
 
 __version__ = 1, 0, 1
 __author__ = "Tiago Cogumbreiro <cogumbreiro@users.sf.net>"

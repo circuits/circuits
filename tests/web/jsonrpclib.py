@@ -31,12 +31,9 @@
 # --------------------------------------------------------------------
 import base64
 import json
+from http.client import HTTPConnection, HTTPSConnection
+from urllib.parse import splithost, splittype, splituser, unquote
 
-from http.client import HTTPConnection
-from http.client import HTTPSConnection
-
-from urllib.parse import unquote
-from urllib.parse import splithost, splittype, splituser
 
 __version__ = "0.0.1"
 

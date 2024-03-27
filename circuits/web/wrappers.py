@@ -3,19 +3,20 @@ Request/Response Wrappers
 
 This module implements the Request and Response objects.
 """
+from email.utils import formatdate
 from functools import partial
+from http.cookies import SimpleCookie
 from io import BytesIO
 from time import time
 
 from circuits.net.sockets import BUFSIZE
-from http.cookies import SimpleCookie
 
 from .constants import HTTP_STATUS_CODES, SERVER_VERSION
 from .errors import httperror
 from .headers import Headers
 from .url import parse_url
 
-from email.utils import formatdate
+
 formatdate = partial(formatdate, usegmt=True)
 
 

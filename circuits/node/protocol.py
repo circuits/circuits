@@ -4,6 +4,7 @@ from circuits.net.events import write
 
 from .utils import dump_event, dump_value, load_event, load_value
 
+
 DELIMITER = b'~~~'
 
 

@@ -3,6 +3,7 @@
 
 from re import compile as compile_regex
 
+
 PREFIX = compile_regex("([^!].*)!(.*)@(.*)")
 COLOR_CODE = compile_regex(r'(?:(\d\d?)(?:(,)(\d\d?))?)?')
 COLOR = compile_regex(r"\x03(?:(\d\d?)(?:,(\d\d?))?)?")

@@ -28,6 +28,7 @@ from circuits.protocols.irc.replies import (
     RPL_TOPIC, RPL_WELCOME, RPL_WHOREPLY, RPL_YOURHOST,
 )
 
+
 __version__ = "0.0.1"
 
 

@@ -2,8 +2,9 @@ import pytest
 
 from circuits.net.sockets import TCPServer
 
+
 try:
-    from socket import SOL_SOCKET, SO_REUSEPORT
+    from socket import SO_REUSEPORT, SOL_SOCKET
 except ImportError:
     pytestmark = pytest.mark.skip(reason='Missing SO_REUSEPORT')
 

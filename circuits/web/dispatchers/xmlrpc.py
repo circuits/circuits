@@ -4,7 +4,7 @@ XML RPC
 This module implements a XML RPC dispatcher that translates incoming
 RPC calls over XML into RPC events.
 """
-from xmlrpc.client import dumps, loads, Fault
+from xmlrpc.client import Fault, dumps, loads
 
 from circuits import BaseComponent, Event, handler
 

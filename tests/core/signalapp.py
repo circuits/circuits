@@ -5,6 +5,7 @@ import sys
 from circuits import Component
 from circuits.app import Daemon
 
+
 try:
     from coverage import coverage
     HAS_COVERAGE = True

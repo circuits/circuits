@@ -24,8 +24,8 @@
 
 import codecs
 import re
-
 from urllib.parse import quote, unquote, urljoin, urlparse, urlunparse
+
 
 # Come codes that we'll need
 IDNA = codecs.lookup('idna')

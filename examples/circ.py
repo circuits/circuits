@@ -30,6 +30,7 @@ from circuits.protocols.irc import (
 )
 from circuits.tools import getargspec
 
+
 USAGE = "%prog [options] host [port]"
 VERSION = "%prog v" + systemVersion
 

@@ -4,11 +4,12 @@ File Notification Support
 A Component wrapping the inotify API using the pyinotify library.
 """
 try:
-    from pyinotify import IN_UNMOUNT
-    from pyinotify import WatchManager, Notifier, ALL_EVENTS
-    from pyinotify import IN_ACCESS, IN_MODIFY, IN_ATTRIB, IN_CLOSE_WRITE
-    from pyinotify import IN_CREATE, IN_DELETE, IN_DELETE_SELF, IN_MOVE_SELF
-    from pyinotify import IN_CLOSE_NOWRITE, IN_OPEN, IN_MOVED_FROM, IN_MOVED_TO
+    from pyinotify import (
+        ALL_EVENTS, IN_ACCESS, IN_ATTRIB, IN_CLOSE_NOWRITE, IN_CLOSE_WRITE,
+        IN_CREATE, IN_DELETE, IN_DELETE_SELF, IN_MODIFY, IN_MOVE_SELF,
+        IN_MOVED_FROM, IN_MOVED_TO, IN_OPEN, IN_UNMOUNT, Notifier,
+        WatchManager,
+    )
 except ImportError:
     raise ImportError("No pyinotify support available. Is pyinotify installed?")
 
@@ -20,6 +21,7 @@ from .events import (
     accessed, closed, created, deleted, modified, moved, opened, ready,
     unmounted,
 )
+
 
 MASK = ALL_EVENTS
 

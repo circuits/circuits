@@ -16,6 +16,7 @@ from circuits import (
     Component, Debugger, Event, Manager, __version__ as systemVersion, handler,
 )
 
+
 if sys.platform == "win32":
     from time import clock as time
 else:

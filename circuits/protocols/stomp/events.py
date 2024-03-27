@@ -4,6 +4,7 @@ import logging
 
 from circuits import Event
 
+
 LOG = logging.getLogger(__name__)
 
 
