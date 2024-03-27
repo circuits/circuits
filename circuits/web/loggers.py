@@ -13,11 +13,11 @@ from circuits.core import BaseComponent, handler
 
 
 def formattime():
-    return datetime.datetime.now().strftime("[%d/%b/%Y:%H:%M:%S]")
+    return datetime.datetime.now().strftime('[%d/%b/%Y:%H:%M:%S]')
 
 
 class Logger(BaseComponent):
-    channel = "web"
+    channel = 'web'
 
     format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 
@@ -25,15 +25,15 @@ class Logger(BaseComponent):
         super().__init__(**kwargs)
 
         if isinstance(file, str):
-            self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
-        elif isinstance(file, IOBase) or hasattr(file, "write"):
+            self.file = open(os.path.abspath(os.path.expanduser(file)), 'a')
+        elif isinstance(file, IOBase) or hasattr(file, 'write'):
             self.file = file
         else:
             self.file = sys.stdout
 
         self.logger = logger
 
-    @handler("response_success")
+    @handler('response_success')
     def log_response(self, response_event, value):
         response = response_event.args[0]
         self.log(response)
@@ -44,24 +44,24 @@ class Logger(BaseComponent):
         outheaders = response.headers
         inheaders = request.headers or {}
 
-        protocol = "HTTP/%d.%d" % request.protocol
+        protocol = 'HTTP/%d.%d' % request.protocol
 
-        host = inheaders.get("X-Forwarded-For", (remote.name or remote.ip))
+        host = inheaders.get('X-Forwarded-For', (remote.name or remote.ip))
 
         atoms = {
-            "h": host,
-            "l": "-",
-            "u": getattr(request, "login", None) or "-",
-            "t": formattime(),
-            "r": f"{request.method} {request.path} {protocol}",
-            "s": int(response.status),
-            "b": outheaders.get("Content-Length", "") or "-",
-            "f": inheaders.get("Referer", ""),
-            "a": inheaders.get("User-Agent", ""),
+            'h': host,
+            'l': '-',
+            'u': getattr(request, 'login', None) or '-',
+            't': formattime(),
+            'r': f'{request.method} {request.path} {protocol}',
+            's': int(response.status),
+            'b': outheaders.get('Content-Length', '') or '-',
+            'f': inheaders.get('Referer', ''),
+            'a': inheaders.get('User-Agent', ''),
         }
         for k, v in list(atoms.items()):
             if isinstance(v, str):
-                v = v.encode("utf8")
+                v = v.encode('utf8')
             elif not isinstance(v, str):
                 v = str(v)
             # Fortunately, repr(str) escapes unprintable chars, \n, \t, etc
@@ -74,5 +74,5 @@ class Logger(BaseComponent):
             self.logger.info(self.format % atoms)
         else:
             self.file.write(self.format % atoms)
-            self.file.write("\n")
+            self.file.write('\n')
             self.file.flush()

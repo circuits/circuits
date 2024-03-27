@@ -13,32 +13,32 @@ from os import getpid
 from circuits import Component, Debugger
 from circuits.node import Node
 
-__version__ = "0.0.1"
+__version__ = '0.0.1'
 
-USAGE = "%prog [options]"
-VERSION = "%prog v" + __version__
+USAGE = '%prog [options]'
+VERSION = '%prog v' + __version__
 
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-b",
-        "--bind",
-        action="store",
-        type="string",
-        default="0.0.0.0:8000",
-        dest="bind",
-        help="Bind to address:[port]",
+        '-b',
+        '--bind',
+        action='store',
+        type='string',
+        default='0.0.0.0:8000',
+        dest='bind',
+        help='Bind to address:[port]',
     )
 
     parser.add_option(
-        "-d",
-        "--debug",
-        action="store_true",
+        '-d',
+        '--debug',
+        action='store_true',
         default=False,
-        dest="debug",
-        help="Enable debug mode",
+        dest='debug',
+        help='Enable debug mode',
     )
 
     opts, args = parser.parse_args()
@@ -63,8 +63,8 @@ class NodeServer(Component):
         if opts.debug:
             Debugger().register(self)
 
-        if ":" in opts.bind:
-            address, port = opts.bind.split(":")
+        if ':' in opts.bind:
+            address, port = opts.bind.split(':')
             port = int(port)
         else:
             address, port = opts.bind, 8000
@@ -74,8 +74,8 @@ class NodeServer(Component):
     def connect(self, sock, host, port):
         """Connect Event -- Triggered for new connecting clients"""
         self.clients[sock] = {
-            "host": sock,
-            "port": port,
+            'host': sock,
+            'port': port,
         }
 
     def disconnect(self, sock):
@@ -86,11 +86,11 @@ class NodeServer(Component):
         del self.clients[sock]
 
     def ready(self, server, bind):
-        print("Ready! Listening on {}:{}".format(*bind))
-        print("Waiting for remote events...")
+        print('Ready! Listening on {}:{}'.format(*bind))
+        print('Waiting for remote events...')
 
     def hello(self):
-        return f"Hello World! ({getpid():d})"
+        return f'Hello World! ({getpid():d})'
 
 
 def main():
@@ -100,5 +100,5 @@ def main():
     NodeServer(args, opts).run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

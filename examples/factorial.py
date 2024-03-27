@@ -18,12 +18,12 @@ class App(Component):
         Worker(process=True).register(self)
 
     def foo(self):
-        print("Foo!")
+        print('Foo!')
 
     def started(self, component):
-        Timer(1, Event.create("foo"), persist=True).register(self)
+        Timer(1, Event.create('foo'), persist=True).register(self)
         x = yield self.call(task(factorial, 10))
-        print(f"{x.value:d}")
+        print(f'{x.value:d}')
         self.stop()
 
 

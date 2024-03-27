@@ -20,18 +20,18 @@ class SuperBase(Base):
 
 
 def test_handles_base_class():
-    assert Base.handles("foo")
+    assert Base.handles('foo')
 
 
 def test_handles_super_base_class():
-    assert SuperBase.handles("foo", "bar")
+    assert SuperBase.handles('foo', 'bar')
 
 
 def test_handles_base_instance():
     base = Base()
-    assert base.handles("foo")
+    assert base.handles('foo')
 
 
 def test_handles_super_base_instance():
     superbase = SuperBase()
-    assert superbase.handles("foo", "bar")
+    assert superbase.handles('foo', 'bar')

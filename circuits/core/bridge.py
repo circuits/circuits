@@ -16,7 +16,7 @@ from .events import Event, exception
 from .handlers import handler
 from .values import Value
 
-_sentinel = b"~~~"
+_sentinel = b'~~~'
 
 
 class ipc(Event):
@@ -38,10 +38,10 @@ class ipc(Event):
 
 
 class Bridge(BaseComponent):
-    channel = "bridge"
+    channel = 'bridge'
 
     def init(self, socket, channel=channel):
-        self._buffer = b""
+        self._buffer = b''
         self._socket = socket
         self._values = {}
 
@@ -51,7 +51,7 @@ class Bridge(BaseComponent):
     def _process_packet(self, eid, obj):
         if isinstance(obj, Event):
             obj.remote = True
-            obj.notify = "value_changed"
+            obj.notify = 'value_changed'
             obj.waitingHandlers = 0
             value = self.fire(obj)
             self._values[value] = eid
@@ -66,7 +66,7 @@ class Bridge(BaseComponent):
             event.remote = True
             self.fire(event, self.channel)
 
-    @handler("value_changed", channel="*")
+    @handler('value_changed', channel='*')
     def _on_value_changed(self, value):
         try:
             eid = self._values[value]
@@ -76,12 +76,12 @@ class Bridge(BaseComponent):
         except Exception:
             pass
 
-    @handler("read")
+    @handler('read')
     def _on_read(self, data):
         self._buffer += data
         items = self._buffer.split(_sentinel)
 
-        if items[-1] != "":
+        if items[-1] != '':
             self._buffer = items.pop()
 
         for item in filter(None, items):
@@ -99,7 +99,7 @@ class Bridge(BaseComponent):
     def __write(self, eid, data):
         self._socket.write(dumps((eid, data)) + _sentinel)
 
-    @handler("ipc")
+    @handler('ipc')
     def _on_ipc(self, event, ipc_event, channel=None):
         """
         Send event to a child/parentprocess
@@ -133,11 +133,11 @@ class Bridge(BaseComponent):
 
     @staticmethod
     def __waiting_event(eid):
-        return "%s_done" % eid
+        return '%s_done' % eid
 
     @staticmethod
     def __adapt_exception(ex):
-        fevent_value = ex.kwargs["fevent"].value
+        fevent_value = ex.kwargs['fevent'].value
         Bridge.__adapt_error_value(fevent_value)
 
     @staticmethod

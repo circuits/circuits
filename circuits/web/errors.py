@@ -20,7 +20,7 @@ class httperror(Event):
     """An event for signaling an HTTP error"""
 
     code = 500
-    description = ""
+    description = ''
 
     def __init__(self, request, response, code=None, **kwargs):
         """
@@ -30,7 +30,7 @@ class httperror(Event):
         super().__init__(request, response, code, **kwargs)
 
         # Override HTTPError subclasses
-        self.name = "httperror"
+        self.name = 'httperror'
 
         self.request = request
         self.response = response
@@ -38,22 +38,22 @@ class httperror(Event):
         if code is not None:
             self.code = code
 
-        self.error = kwargs.get("error", None)
+        self.error = kwargs.get('error', None)
 
         self.description = kwargs.get(
-            "description",
-            getattr(self.__class__, "description", ""),
+            'description',
+            getattr(self.__class__, 'description', ''),
         )
 
         if self.error is not None:
             stack = self.error[2] if isinstance(self.error[2], (list, tuple)) else traceback.format_tb(self.error[2])
-            self.traceback = "ERROR: (%s) %s\n%s" % (
+            self.traceback = 'ERROR: (%s) %s\n%s' % (
                 self.error[0],
                 self.error[1],
-                "".join(stack),
+                ''.join(stack),
             )
         else:
-            self.traceback = ""
+            self.traceback = ''
 
         self.response.close = True
         self.response.status = self.code
@@ -61,52 +61,52 @@ class httperror(Event):
         powered_by = (
             POWERED_BY
             % {
-                "url": escape(SERVER_URL, True),
-                "version": escape(SERVER_VERSION),
+                'url': escape(SERVER_URL, True),
+                'version': escape(SERVER_VERSION),
             }
-            if getattr(request.server, "display_banner", False)
-            else ""
+            if getattr(request.server, 'display_banner', False)
+            else ''
         )
 
         self.data = {
-            "code": self.code,
-            "name": HTTP_STATUS_CODES.get(self.code, "???"),
-            "description": self.description,
-            "traceback": self.traceback,
-            "powered_by": powered_by,
+            'code': self.code,
+            'name': HTTP_STATUS_CODES.get(self.code, '???'),
+            'description': self.description,
+            'traceback': self.traceback,
+            'powered_by': powered_by,
         }
 
     def sanitize(self):
-        if self.code != 201 and not (299 < self.code < 400) and "Location" in self.response.headers:
-            del self.response.headers["Location"]
+        if self.code != 201 and not (299 < self.code < 400) and 'Location' in self.response.headers:
+            del self.response.headers['Location']
 
     def __str__(self):
         self.sanitize()
 
         if self.code < 200 or self.code in (204, 205, 304):
-            return ""
+            return ''
 
-        if "json" in self.response.headers.get("Content-Type", ""):
-            index = ["code", "name", "description"]
+        if 'json' in self.response.headers.get('Content-Type', ''):
+            index = ['code', 'name', 'description']
             if self.request.print_debug:
-                index.append("traceback")
+                index.append('traceback')
             return json.dumps({key: self.data[key] for key in index})
 
         if not self.request.print_debug:
-            self.data["traceback"] = ""
+            self.data['traceback'] = ''
 
         # FIXME: description is a possible XSS attack vector
         return DEFAULT_ERROR_MESSAGE % {
-            key: (escape(value, True) if key not in ("powered_by", "description") and not isinstance(value, (int, float)) else value) for key, value in self.data.items()
+            key: (escape(value, True) if key not in ('powered_by', 'description') and not isinstance(value, (int, float)) else value) for key, value in self.data.items()
         }
 
     def __repr__(self):
-        return "<%s %d %s>" % (
+        return '<%s %d %s>' % (
             self.__class__.__name__,
             self.code,
             HTTP_STATUS_CODES.get(
                 self.code,
-                "???",
+                '???',
             ),
         )
 
@@ -162,31 +162,31 @@ class redirect(httperror):
                 code = 302
         else:
             if code < 300 or code > 399:
-                raise ValueError("status code must be between 300 and 399.")
+                raise ValueError('status code must be between 300 and 399.')
 
         super().__init__(request, response, code)
 
         if code in (300, 301, 302, 303, 307, 308):
-            response.headers["Content-Type"] = "text/html"
+            response.headers['Content-Type'] = 'text/html'
             # "The ... URI SHOULD be given by the Location field
             # in the response."
-            response.headers["Location"] = urls[0]
+            response.headers['Location'] = urls[0]
 
             # "Unless the request method was HEAD, the entity of the response
             # SHOULD contain a short hypertext note with a hyperlink to the
             # new URI(s)."
             msg = {
                 300: "This resource can be found at <a href='%s'>%s</a>.",
-                301: ("This resource has permanently moved to " '<a href="%s">%s</a>.'),
-                302: ("This resource resides temporarily at " '<a href="%s">%s</a>.'),
-                303: ("This resource can be found at " '<a href="%s">%s</a>.'),
-                307: ("This resource has moved temporarily to " '<a href="%s">%s</a>.'),
-                308: ("This resource has permanently moved to " '<a href="%s">%s</a>.'),
+                301: ('This resource has permanently moved to ' '<a href="%s">%s</a>.'),
+                302: ('This resource resides temporarily at ' '<a href="%s">%s</a>.'),
+                303: ('This resource can be found at ' '<a href="%s">%s</a>.'),
+                307: ('This resource has moved temporarily to ' '<a href="%s">%s</a>.'),
+                308: ('This resource has permanently moved to ' '<a href="%s">%s</a>.'),
             }[code]
-            response.body = "<br />\n".join([msg % (escape(u, True), escape(u)) for u in urls])
+            response.body = '<br />\n'.join([msg % (escape(u, True), escape(u)) for u in urls])
             # Previous code may have set C-L, so we have to reset it
             # (allow finalize to set it).
-            response.headers.pop("Content-Length", None)
+            response.headers.pop('Content-Length', None)
         elif code == 304:
             # Not Modified.
             # "The response MUST include the following header fields:
@@ -195,16 +195,16 @@ class redirect(httperror):
 
             # "...the response SHOULD NOT include other entity-headers."
             for key in (
-                "Allow",
-                "Content-Encoding",
-                "Content-Language",
-                "Content-Length",
-                "Content-Location",
-                "Content-MD5",
-                "Content-Range",
-                "Content-Type",
-                "Expires",
-                "Last-Modified",
+                'Allow',
+                'Content-Encoding',
+                'Content-Language',
+                'Content-Length',
+                'Content-Location',
+                'Content-MD5',
+                'Content-Range',
+                'Content-Type',
+                'Expires',
+                'Last-Modified',
             ):
                 if key in response.headers:
                     del response.headers[key]
@@ -212,16 +212,16 @@ class redirect(httperror):
             # "The 304 response MUST NOT contain a message-body."
             response.body = None
             # Previous code may have set C-L, so we have to reset it.
-            response.headers.pop("Content-Length", None)
+            response.headers.pop('Content-Length', None)
         elif code == 305:
             # Use Proxy.
             # urls[0] should be the URI of the proxy.
-            response.headers["Location"] = urls[0]
+            response.headers['Location'] = urls[0]
             response.body = None
             # Previous code may have set C-L, so we have to reset it.
-            response.headers.pop("Content-Length", None)
+            response.headers.pop('Content-Length', None)
         else:
-            raise ValueError("The %s status code is unknown." % code)
+            raise ValueError('The %s status code is unknown.' % code)
 
     def __repr__(self):
         if len(self.channels) > 1:
@@ -229,11 +229,11 @@ class redirect(httperror):
         elif len(self.channels) == 1:
             channels = str(self.channels[0])
         else:
-            channels = ""
-        return "<%s %d[%s.%s] %s>" % (
+            channels = ''
+        return '<%s %d[%s.%s] %s>' % (
             self.__class__.__name__,
             self.code,
             channels,
             self.name,
-            " ".join(self.urls),
+            ' '.join(self.urls),
         )

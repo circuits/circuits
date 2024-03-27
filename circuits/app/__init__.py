@@ -8,8 +8,8 @@ from .daemon import Daemon
 from .dropprivileges import DropPrivileges
 
 __all__ = (
-    "Daemon",
-    "DropPrivileges",
+    'Daemon',
+    'DropPrivileges',
 )
 
 # flake8: noqa

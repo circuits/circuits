@@ -62,12 +62,12 @@ class Root(Controller):
         We will use the date to pretend we've saved the data and
         tell the user what was saved.
         """
-        return "Data Saved. firstName={:s} lastName={:s}".format(
+        return 'Data Saved. firstName={:s} lastName={:s}'.format(
             firstName,
             lastName,
         )
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Root().register(app)
 app.run()

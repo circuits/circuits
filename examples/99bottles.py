@@ -25,7 +25,7 @@ class Tail(Component):
 
         NB: This is automatically called after ``__new__`` and ``__init__``.
         """
-        (File(filename, "r") + Line()).register(self)
+        (File(filename, 'r') + Line()).register(self)
 
 
 class Grep(Component):
@@ -40,7 +40,7 @@ class Grep(Component):
 
     def line(self, line):
         """Line Event Handler"""
-        line = line.decode("utf-8")
+        line = line.decode('utf-8')
 
         if self.pattern in line:
             print(line)

@@ -37,9 +37,9 @@ class WebSocketClient(BaseComponent):
     WebSocket protocol).
     """
 
-    channel = "wsclient"
+    channel = 'wsclient'
 
-    def __init__(self, url, channel=channel, wschannel="ws", headers=None):
+    def __init__(self, url, channel=channel, wschannel='ws', headers=None):
         """
         :param url: the URL to connect to.
         :param channel: the channel used by this component
@@ -60,70 +60,70 @@ class WebSocketClient(BaseComponent):
         self._transport = TCPClient(channel=self.channel).register(self)
         HTTP(channel=self.channel).register(self._transport)
 
-    @handler("ready")
+    @handler('ready')
     def _on_ready(self, event, *args, **kwargs):
         p = urlparse(self._url)
         if not p.hostname:
-            raise ValueError("URL must be absolute")
+            raise ValueError('URL must be absolute')
         self._host = p.hostname
-        if p.scheme == "ws":
+        if p.scheme == 'ws':
             self._secure = False
             self._port = p.port or 80
-        elif p.scheme == "wss":
+        elif p.scheme == 'wss':
             self._secure = True
             self._port = p.port or 443
         else:
             raise NotConnected()
-        self._resource = p.path or "/"
+        self._resource = p.path or '/'
         if p.query:
-            self._resource += "?" + p.query
+            self._resource += '?' + p.query
         self.fire(connect(self._host, self._port, self._secure), self._transport)
 
-    @handler("connected")
+    @handler('connected')
     def _on_connected(self, host, port):
         headers = Headers([(k, v) for k, v in self._headers.items()])
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-        if "Host" not in headers:
-            headers["Host"] = self._host + (":" + str(self._port)) if self._port else ""
-        headers["Upgrade"] = "websocket"
-        headers["Connection"] = "Upgrade"
+        if 'Host' not in headers:
+            headers['Host'] = self._host + (':' + str(self._port)) if self._port else ''
+        headers['Upgrade'] = 'websocket'
+        headers['Connection'] = 'Upgrade'
         try:
             sec_key = os.urandom(16)
         except NotImplementedError:
-            sec_key = "".join([chr(random.randint(0, 255)) for i in range(16)])
-        headers["Sec-WebSocket-Key"] = base64.b64encode(sec_key).decode("latin1")
-        headers["Sec-WebSocket-Version"] = "13"
-        UNSAFE_CHARS = re.compile("[^0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]")  # noqa: E501
-        escaped_resource = UNSAFE_CHARS.sub("", self._resource.encode("ASCII", "replace").decode("ASCII"))
-        command = f"GET {escaped_resource} HTTP/1.1"
-        message = f"{command}\r\n{headers}"
+            sec_key = ''.join([chr(random.randint(0, 255)) for i in range(16)])
+        headers['Sec-WebSocket-Key'] = base64.b64encode(sec_key).decode('latin1')
+        headers['Sec-WebSocket-Version'] = '13'
+        UNSAFE_CHARS = re.compile('[^0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]')  # noqa: E501
+        escaped_resource = UNSAFE_CHARS.sub('', self._resource.encode('ASCII', 'replace').decode('ASCII'))
+        command = f'GET {escaped_resource} HTTP/1.1'
+        message = f'{command}\r\n{headers}'
         self._pending += 1
-        self.fire(write(message.encode("utf-8")), self._transport)
+        self.fire(write(message.encode('utf-8')), self._transport)
         return True
 
-    @handler("response")
+    @handler('response')
     def _on_response(self, response):
         self._response = response
         self._pending -= 1
-        if response.headers.get("Connection", "").lower() == "close" or response.status != 101:
+        if response.headers.get('Connection', '').lower() == 'close' or response.status != 101:
             self.fire(close(), self._transport)
             raise NotConnected()
         self._codec = WebSocketCodec(data=response.body.read(), channel=self._wschannel).register(self)
 
-    @handler("read")
+    @handler('read')
     def _on_read(self, event, *args):
         # FIXME: every read-event is lost due to a race condition between
         # WebSocketCodec().register() and the registered()-event of that instance.
         if len(args) != 1:
             return
         if self._codec is not None and self._codec.parent is self:
-            if "read" not in self._codec.events():
+            if 'read' not in self._codec.events():
                 event.stop()
-                self.fire(event.create("read", *args))
+                self.fire(event.create('read', *args))
             else:
                 self.removeHandler(self._on_read)
 
-    @handler("error", priority=10)
+    @handler('error', priority=10)
     def _on_error(self, event, error, *args, **kwargs):
         # For HTTP 1.1 we leave the connection open. If the peer closes
         # it after some time and we have no pending request, that's OK.
@@ -136,4 +136,4 @@ class WebSocketClient(BaseComponent):
 
     @property
     def connected(self):
-        return getattr(self._transport, "connected", False) if hasattr(self, "_transport") else False
+        return getattr(self._transport, 'connected', False) if hasattr(self, '_transport') else False

@@ -8,7 +8,7 @@ class test(Event):
 
 class App(Component):
     def test(self):
-        return "Hello World!"
+        return 'Hello World!'
 
     def unregistered(self, *args):
         return
@@ -28,7 +28,7 @@ while len(app):
 def test_fire():
     x = m.fire(test())
     m.flush()
-    assert x.value == "Hello World!"
+    assert x.value == 'Hello World!'
 
 
 def test_contains():

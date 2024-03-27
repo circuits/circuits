@@ -23,21 +23,21 @@ class hello(Event):
 
 
 class App(Component):
-    @handler("wait")
+    @handler('wait')
     def _on_wait(self, timeout=-1):
         result = self.fire(hello())
         try:
-            yield self.wait("hello", timeout=timeout)
+            yield self.wait('hello', timeout=timeout)
         except TimeoutError as e:
             yield e
         else:
             yield result
 
-    @handler("hello")
+    @handler('hello')
     def _on_hello(self):
-        return "hello"
+        return 'hello'
 
-    @handler("call")
+    @handler('call')
     def _on_call(self, timeout=-1):
         result = None
         try:
@@ -51,7 +51,7 @@ class App(Component):
 @pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
-    assert watcher.wait("registered")
+    assert watcher.wait('registered')
 
     def finalizer():
         app.unregister()
@@ -63,16 +63,16 @@ def app(request, manager, watcher):
 
 def test_wait_success(manager, watcher, app):
     x = manager.fire(wait(10))
-    assert watcher.wait("wait_success")
+    assert watcher.wait('wait_success')
 
     value = x.value
 
-    assert value == "hello"
+    assert value == 'hello'
 
 
 def test_wait_failure(manager, watcher, app):
     x = manager.fire(wait(0))
-    assert watcher.wait("wait_success")
+    assert watcher.wait('wait_success')
 
     value = x.value
 
@@ -81,16 +81,16 @@ def test_wait_failure(manager, watcher, app):
 
 def test_call_success(manager, watcher, app):
     x = manager.fire(call(10))
-    assert watcher.wait("call_success")
+    assert watcher.wait('call_success')
 
     value = x.value
 
-    assert value == "hello"
+    assert value == 'hello'
 
 
 def test_call_failure(manager, watcher, app):
     x = manager.fire(call(0))
-    assert watcher.wait("call_success")
+    assert watcher.wait('call_success')
 
     value = x.value
 

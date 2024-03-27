@@ -26,7 +26,7 @@ class Debugger(BaseComponent):
     :param log: Logger Component instance or None (*default*)
     """
 
-    IgnoreEvents = ["generate_events"]
+    IgnoreEvents = ['generate_events']
     IgnoreChannels = []
 
     def __init__(self, errors=True, events=True, file=None, logger=None, prefix=None, trim=None, **kwargs):
@@ -37,8 +37,8 @@ class Debugger(BaseComponent):
         self._events = events
 
         if isinstance(file, str):
-            self.file = open(os.path.abspath(os.path.expanduser(file)), "a")
-        elif hasattr(file, "write"):
+            self.file = open(os.path.abspath(os.path.expanduser(file)), 'a')
+        elif hasattr(file, 'write'):
             self.file = file
         else:
             self.file = sys.stderr
@@ -47,15 +47,15 @@ class Debugger(BaseComponent):
         self.prefix = prefix
         self.trim = trim
 
-        self.IgnoreEvents.extend(kwargs.get("IgnoreEvents", []))
-        self.IgnoreChannels.extend(kwargs.get("IgnoreChannels", []))
+        self.IgnoreEvents.extend(kwargs.get('IgnoreEvents', []))
+        self.IgnoreChannels.extend(kwargs.get('IgnoreChannels', []))
 
-    @handler("signal", channel="*")
+    @handler('signal', channel='*')
     def _on_signal(self, signo, stack):
         if signo in [SIGINT, SIGTERM]:
             raise SystemExit(0)
 
-    @handler("exception", channel="*", priority=100.0)
+    @handler('exception', channel='*', priority=100.0)
     def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
         if not self._errors:
             return
@@ -63,23 +63,23 @@ class Debugger(BaseComponent):
         s = []
 
         if handler is None:
-            handler = ""
+            handler = ''
         else:
             handler = reprhandler(handler)
 
-        msg = f"ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n"
+        msg = f'ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n'
 
         s.append(msg)
-        s.append("Traceback (most recent call last):\n")
+        s.append('Traceback (most recent call last):\n')
         s.extend(traceback)
         s.extend(format_exception_only(error_type, value))
-        s.append("\n")
+        s.append('\n')
 
         if self.logger is not None:
-            self.logger.error("".join(s))
+            self.logger.error(''.join(s))
         else:
             try:
-                self.file.write("".join(s))
+                self.file.write(''.join(s))
                 self.file.flush()
             except OSError:
                 pass
@@ -108,20 +108,20 @@ class Debugger(BaseComponent):
             s = repr(event)
 
             if self.prefix:
-                if hasattr(self.prefix, "__call__"):
-                    s = f"{self.prefix()}: {s}"
+                if hasattr(self.prefix, '__call__'):
+                    s = f'{self.prefix()}: {s}'
                 else:
-                    s = f"{self.prefix}: {s}"
+                    s = f'{self.prefix}: {s}'
 
             if self.trim:
-                s = "%s ...>" % s[: self.trim]
+                s = '%s ...>' % s[: self.trim]
 
             if self.logger is not None:
                 self.logger.debug(s)
             else:
                 self.file.write(s)
-                self.file.write("\n")
+                self.file.write('\n')
                 self.file.flush()
         except Exception as e:
-            sys.stderr.write(f"ERROR (Debugger): {e}")
-            sys.stderr.write(f"{format_exc()}")
+            sys.stderr.write(f'ERROR (Debugger): {e}')
+            sys.stderr.write(f'{format_exc()}')

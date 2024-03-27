@@ -8,16 +8,16 @@ from .helpers import (
     HTTPDigestAuthHandler, HTTPError, build_opener, install_opener, urlopen,
 )
 
-pytestmark = pytest.mark.skipif(pytest.PYVER[:2] == (3, 3), reason="Broken on Python 3.3")
+pytestmark = pytest.mark.skipif(pytest.PYVER[:2] == (3, 3), reason='Broken on Python 3.3')
 
 
 class Root(Controller):
     def index(self):
-        realm = "Test"
-        users = {"admin": "admin"}
+        realm = 'Test'
+        users = {'admin': 'admin'}
 
         if check_auth(self.request, self.response, realm, users):
-            return "Hello World!"
+            return 'Hello World!'
 
         return digest_auth(self.request, self.response, realm, users)
 
@@ -27,16 +27,16 @@ def test(webapp):
         f = urlopen(webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 401
-        assert e.msg == "Unauthorized"
+        assert e.msg == 'Unauthorized'
     else:
         assert False
 
     handler = HTTPDigestAuthHandler()
-    handler.add_password("Test", webapp.server.http.base, "admin", "admin")
+    handler.add_password('Test', webapp.server.http.base, 'admin', 'admin')
     opener = build_opener(handler)
     install_opener(opener)
 
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b"Hello World!"
+    assert s == b'Hello World!'
     install_opener(None)

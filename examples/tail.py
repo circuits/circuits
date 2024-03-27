@@ -24,7 +24,7 @@ class Tail(Component):
         Component as part of our ``Tail`` Component and ask it to seek to
         the end of the file.
         """
-        File(filename, "r", autoclose=False).register(self).seek(0, 2)
+        File(filename, 'r', autoclose=False).register(self).seek(0, 2)
 
     def read(self, data):
         """

@@ -10,7 +10,7 @@ import re
 
 from circuits.core import BaseComponent, Event, handler
 
-LINESEP = re.compile(b"\r?\n")
+LINESEP = re.compile(b'\r?\n')
 
 
 def splitLines(s, buffer):
@@ -82,17 +82,17 @@ class Line(BaseComponent):
         "initializes x; see x.__class__.__doc__ for signature"
         super().__init__(*args, **kwargs)
 
-        self.encoding = kwargs.get("encoding", "utf-8")
+        self.encoding = kwargs.get('encoding', 'utf-8')
 
         # Used for Servers
-        self.getBuffer = kwargs.get("getBuffer")
-        self.updateBuffer = kwargs.get("updateBuffer")
+        self.getBuffer = kwargs.get('getBuffer')
+        self.updateBuffer = kwargs.get('updateBuffer')
 
-        self.splitter = kwargs.get("splitter", splitLines)
+        self.splitter = kwargs.get('splitter', splitLines)
 
-        self.buffer = b""
+        self.buffer = b''
 
-    @handler("read")
+    @handler('read')
     def _on_read(self, *args):
         if len(args) == 1:
             # Client read

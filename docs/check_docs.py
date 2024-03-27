@@ -4,16 +4,16 @@ from subprocess import PIPE, STDOUT, Popen
 
 
 def test_linkcheck(tmpdir):
-    doctrees = tmpdir.join("doctrees")
-    htmldir = tmpdir.join("html")
+    doctrees = tmpdir.join('doctrees')
+    htmldir = tmpdir.join('html')
     p = Popen(
         [
-            "sphinx-build",
-            "-W",
-            "-blinkcheck",
-            "-d",
+            'sphinx-build',
+            '-W',
+            '-blinkcheck',
+            '-d',
             str(doctrees),
-            "source",
+            'source',
             str(htmldir),
         ],
         stdout=PIPE,
@@ -25,16 +25,16 @@ def test_linkcheck(tmpdir):
 
 
 def test_build_docs(tmpdir):
-    doctrees = tmpdir.join("doctrees")
-    htmldir = tmpdir.join("html")
+    doctrees = tmpdir.join('doctrees')
+    htmldir = tmpdir.join('html')
     p = Popen(
         [
-            "sphinx-build",
-            "-W",
-            "-bhtml",
-            "-d",
+            'sphinx-build',
+            '-W',
+            '-bhtml',
+            '-d',
             str(doctrees),
-            "source",
+            'source',
             str(htmldir),
         ],
         stdout=PIPE,

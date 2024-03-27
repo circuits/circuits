@@ -29,7 +29,7 @@ class terminated(Event):
 
 
 class Process(BaseComponent):
-    channel = "process"
+    channel = 'process'
 
     def init(self, args, cwd=None, shell=False):
         self.args = args
@@ -73,40 +73,40 @@ class Process(BaseComponent):
 
         self._stdin = File(
             self.p.stdin,
-            channel=f"{self.p.pid:d}.stdin",
+            channel=f'{self.p.pid:d}.stdin',
         ).register(self)
 
         self._stderr = File(
             self.p.stderr,
-            channel=f"{self.p.pid:d}.stderr",
+            channel=f'{self.p.pid:d}.stderr',
         ).register(self)
 
         self._stdout = File(
             self.p.stdout,
-            channel=f"{self.p.pid:d}.stdout",
+            channel=f'{self.p.pid:d}.stdout',
         ).register(self)
 
         self._stderr_read_handler = self.addHandler(
-            handler("read", channel=self._stderr.channel)(
+            handler('read', channel=self._stderr.channel)(
                 lambda self, data: self.stderr.write(data),
             ),
         )
 
         self._stdout_read_handler = self.addHandler(
-            handler("read", channel=self._stdout.channel)(
+            handler('read', channel=self._stdout.channel)(
                 lambda self, data: self.stdout.write(data),
             ),
         )
 
         self._stderr_closed_handler = self.addHandler(
-            handler("closed", channel=self._stderr.channel)(
-                lambda self: setattr(self, "_stderr_closed", True),
+            handler('closed', channel=self._stderr.channel)(
+                lambda self: setattr(self, '_stderr_closed', True),
             ),
         )
 
         self._stdout_closed_handler = self.addHandler(
-            handler("closed", channel=self._stdout.channel)(
-                lambda self: setattr(self, "_stdout_closed", True),
+            handler('closed', channel=self._stdout.channel)(
+                lambda self: setattr(self, '_stdout_closed', True),
             ),
         )
 
@@ -126,14 +126,14 @@ class Process(BaseComponent):
         return self.p.wait()
 
     def write(self, data):
-        self.fire(write(data), f"{self.p.pid:d}.stdin")
+        self.fire(write(data), f'{self.p.pid:d}.stdin')
 
     @property
     def status(self):
-        if getattr(self, "p", None) is not None:
+        if getattr(self, 'p', None) is not None:
             return self.p.poll()
 
-    @handler("generate_events")
+    @handler('generate_events')
     def _on_generate_events(self, event):
         if self.p is not None and self._status is None:
             self._status = self.p.poll()

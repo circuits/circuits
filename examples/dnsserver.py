@@ -53,7 +53,7 @@ class Dummy(Component):
         qname = request.q.qname
 
         print(
-            f"DNS Request for qname({str(qname):s})",
+            f'DNS Request for qname({str(qname):s})',
             file=sys.stderr,
         )
 
@@ -63,7 +63,7 @@ class Dummy(Component):
         )
 
         # Add A Record
-        reply.add_answer(RR(qname, QTYPE.A, rdata=A("127.0.0.1")))
+        reply.add_answer(RR(qname, QTYPE.A, rdata=A('127.0.0.1')))
 
         # Send To Client
         self.fire(write(peer, reply.pack()))
@@ -79,7 +79,7 @@ class DNSServer(Component):
     """
 
     def init(self, bind=None, verbose=False):
-        self.bind = bind or ("0.0.0.0", 53)
+        self.bind = bind or ('0.0.0.0', 53)
 
         if verbose:
             Debugger().register(self)
@@ -89,10 +89,10 @@ class DNSServer(Component):
         self.dummy = Dummy().register(self)
 
     def started(self, manager):
-        print("DNS Server Started!", file=sys.stderr)
+        print('DNS Server Started!', file=sys.stderr)
 
     def ready(self, server, bind):
-        print("Ready! Listening on {:s}:{:d}".format(*bind), file=sys.stderr)
+        print('Ready! Listening on {:s}:{:d}'.format(*bind), file=sys.stderr)
 
 
-DNSServer(("0.0.0.0", 1053), verbose=True).run()
+DNSServer(('0.0.0.0', 1053), verbose=True).run()

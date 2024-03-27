@@ -21,30 +21,30 @@ def expose(*channels, **config):
         @handler(*channels, **config)
         def wrapper(self, event, *args, **kwargs):
             try:
-                if not hasattr(self, "request"):
+                if not hasattr(self, 'request'):
                     (self.request, self.response), args = args[:2], args[2:]
                     self.request.args = args
                     self.request.kwargs = kwargs
                     self.cookie = self.request.cookie
-                    if hasattr(self.request, "session"):
+                    if hasattr(self.request, 'session'):
                         self.session = self.request.session
-                if not getattr(f, "event", False):
+                if not getattr(f, 'event', False):
                     return f(self, *args, **kwargs)
                 else:
                     return f(self, event, *args, **kwargs)
             finally:
-                if hasattr(self, "request"):
+                if hasattr(self, 'request'):
                     del self.request
                     del self.response
                     del self.cookie
-                if hasattr(self, "session"):
+                if hasattr(self, 'session'):
                     del self.session
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
-        if wrapper.args and wrapper.args[0] == "self":
+        if wrapper.args and wrapper.args[0] == 'self':
             del wrapper.args[0]
 
-        if wrapper.args and wrapper.args[0] == "event":
+        if wrapper.args and wrapper.args[0] == 'event':
             f.event = True
             del wrapper.args[0]
         wrapper.event = True
@@ -59,12 +59,12 @@ class ExposeMetaClass(type):
         super().__init__(name, bases, dct)
 
         for k, v in dct.items():
-            if isinstance(v, Callable) and not (k[0] == "_" or hasattr(v, "handler")):
+            if isinstance(v, Callable) and not (k[0] == '_' or hasattr(v, 'handler')):
                 setattr(cls, k, expose(k)(v))
 
 
 class BaseController(BaseComponent):
-    channel = "/"
+    channel = '/'
 
     @property
     def uri(self):
@@ -73,7 +73,7 @@ class BaseController(BaseComponent):
 
         .. seealso:: :py:class:`circuits.web.url.URL`
         """
-        if hasattr(self, "request"):
+        if hasattr(self, 'request'):
             return self.request.uri
 
     def forbidden(self, description=None):
@@ -131,7 +131,7 @@ class BaseController(BaseComponent):
         tools.expires(self.request, self.response, secs, force)
 
 
-Controller = ExposeMetaClass("Controller", (BaseController,), {})
+Controller = ExposeMetaClass('Controller', (BaseController,), {})
 
 
 def exposeJSON(*channels, **config):
@@ -139,28 +139,28 @@ def exposeJSON(*channels, **config):
         @handler(*channels, **config)
         def wrapper(self, *args, **kwargs):
             try:
-                if not hasattr(self, "request"):
+                if not hasattr(self, 'request'):
                     self.request, self.response = args[:2]
                     args = args[2:]
                     self.cookie = self.request.cookie
-                    if hasattr(self.request, "session"):
+                    if hasattr(self.request, 'session'):
                         self.session = self.request.session
-                self.response.headers["Content-Type"] = "application/json"
+                self.response.headers['Content-Type'] = 'application/json'
                 result = f(self, *args, **kwargs)
                 if isinstance(result, (httperror, Response)):
                     return result
                 else:
                     return json.dumps(result)
             finally:
-                if hasattr(self, "request"):
+                if hasattr(self, 'request'):
                     del self.request
                     del self.response
                     del self.cookie
-                if hasattr(self, "session"):
+                if hasattr(self, 'session'):
                     del self.session
 
         wrapper.args, wrapper.varargs, wrapper.varkw, wrapper.defaults = getargspec(f)
-        if wrapper.args and wrapper.args[0] == "self":
+        if wrapper.args and wrapper.args[0] == 'self':
             del wrapper.args[0]
 
         return update_wrapper(wrapper, f)
@@ -173,8 +173,8 @@ class ExposeJSONMetaClass(type):
         super().__init__(name, bases, dct)
 
         for k, v in dct.items():
-            if isinstance(v, Callable) and not (k[0] == "_" or hasattr(v, "handler")):
+            if isinstance(v, Callable) and not (k[0] == '_' or hasattr(v, 'handler')):
                 setattr(cls, k, exposeJSON(k)(v))
 
 
-JSONController = ExposeJSONMetaClass("JSONController", (BaseController,), {})
+JSONController = ExposeJSONMetaClass('JSONController', (BaseController,), {})

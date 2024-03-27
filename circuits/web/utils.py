@@ -19,8 +19,8 @@ from circuits.net.utils import is_ssl_handshake  # noqa
 
 from .exceptions import RangeUnsatisfiable
 
-quoted_slash = re.compile("(?i)%2F")
-image_map_pattern = re.compile("^[0-9]+,[0-9]+$")
+quoted_slash = re.compile('(?i)%2F')
+image_map_pattern = re.compile('^[0-9]+,[0-9]+$')
 
 
 def is_unix_socket(path):
@@ -46,11 +46,11 @@ def stddev(xs):
 
 
 def parse_body(request, response, params):
-    if "Content-Type" not in request.headers:
-        request.headers["Content-Type"] = ""
+    if 'Content-Type' not in request.headers:
+        request.headers['Content-Type'] = ''
 
     form = FieldStorage(
-        environ={"REQUEST_METHOD": "POST"},
+        environ={'REQUEST_METHOD': 'POST'},
         fp=TextIOWrapper(request.body),
         headers=request.headers,
         keep_blank_values=True,
@@ -73,8 +73,8 @@ def parse_qs(query_string, keep_blank_values=True):
     if image_map_pattern.match(query_string):
         # Server-side image map. Map the coords to "x" and "y"
         # (like CGI::Request does).
-        pm = query_string.split(",")
-        return {"x": int(pm[0]), "y": int(pm[1])}
+        pm = query_string.split(',')
+        return {'x': int(pm[0]), 'y': int(pm[1])}
     else:
         pm = _parse_qs(query_string, keep_blank_values)
         return {k: v[0] for k, v in pm.items() if v}
@@ -104,10 +104,10 @@ def dictform(form):
 def compress(body, compress_level):
     """Compress 'body' at the given compress_level."""
     # Header
-    yield b"\037\213\010\0" + struct.pack("<L", int(time.time())) + b"\002\377"
+    yield b'\037\213\010\0' + struct.pack('<L', int(time.time())) + b'\002\377'
 
     size = 0
-    crc = zlib.crc32(b"")
+    crc = zlib.crc32(b'')
 
     zobj = zlib.compressobj(
         compress_level,
@@ -119,13 +119,13 @@ def compress(body, compress_level):
 
     for chunk in body:
         if not isinstance(chunk, bytes):
-            chunk = chunk.encode("utf-8")
+            chunk = chunk.encode('utf-8')
 
         size += len(chunk)
         crc = zlib.crc32(chunk, crc)
         yield zobj.compress(chunk)
 
-    yield zobj.flush() + struct.pack("<l", crc) + struct.pack("<L", size & 0xFFFFFFFF)
+    yield zobj.flush() + struct.pack('<l', crc) + struct.pack('<L', size & 0xFFFFFFFF)
 
 
 def get_ranges(headervalue, content_length):
@@ -143,9 +143,9 @@ def get_ranges(headervalue, content_length):
         return None
 
     result = []
-    bytesunit, byteranges = headervalue.split("=", 1)
-    for brange in byteranges.split(","):
-        start, stop = (x.strip() for x in brange.split("-", 1))
+    bytesunit, byteranges = headervalue.split('=', 1)
+    for brange in byteranges.split(','):
+        start, stop = (x.strip() for x in brange.split('-', 1))
         if start:
             if not stop:
                 stop = content_length - 1

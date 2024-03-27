@@ -21,31 +21,31 @@ from circuits.app import Daemon
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCPClient, TCPServer
 
-__version__ = "0.2"
+__version__ = '0.2'
 
-USAGE = "%prog [options] <srcaddr:srcport> <destaddr:destport>"
-VERSION = "%prog v" + __version__
+USAGE = '%prog [options] <srcaddr:srcport> <destaddr:destport>'
+VERSION = '%prog v' + __version__
 
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-d",
-        "--daemon",
-        action="store_true",
+        '-d',
+        '--daemon',
+        action='store_true',
         default=False,
-        dest="daemon",
-        help="Enable daemon mode (fork into the background)",
+        dest='daemon',
+        help='Enable daemon mode (fork into the background)',
     )
 
     parser.add_option(
-        "",
-        "--debug",
-        action="store_true",
+        '',
+        '--debug',
+        action='store_true',
         default=False,
-        dest="debug",
-        help="Enable debug mode (verbose event output)",
+        dest='debug',
+        help='Enable debug mode (verbose event output)',
     )
 
     opts, args = parser.parse_args()
@@ -68,7 +68,7 @@ def _on_target_disconnected(self, event):
     channel = event.channels[0]
     sock = self._sockets[channel]
 
-    self.fire(close(sock), "source")
+    self.fire(close(sock), 'source')
 
     del self._sockets[channel]
     del self._clients[sock]
@@ -94,7 +94,7 @@ def _on_target_read(self, event, data):
     Read events of a connected client.
     """
     sock = self._sockets[event.channels[0]]
-    self.fire(write(sock, data), "source")
+    self.fire(write(sock, data), 'source')
 
 
 class PortForwarder(Component):
@@ -107,10 +107,10 @@ class PortForwarder(Component):
         self._sockets = {}
 
         # Setup our components and register them.
-        server = TCPServer(self._source, secure=self._secure, channel="source")
+        server = TCPServer(self._source, secure=self._secure, channel='source')
         server.register(self)
 
-    @handler("connect", channel="source")
+    @handler('connect', channel='source')
     def _on_source_connect(self, sock, host, port):
         """
         Explicitly defined connect Event Handler
@@ -129,21 +129,21 @@ class PortForwarder(Component):
         client.register(self)
 
         self.addHandler(
-            handler("disconnected", channel=channel)(_on_target_disconnected),
+            handler('disconnected', channel=channel)(_on_target_disconnected),
         )
 
         self.addHandler(
-            handler("ready", channel=channel)(_on_target_ready),
+            handler('ready', channel=channel)(_on_target_ready),
         )
 
         self.addHandler(
-            handler("read", channel=channel)(_on_target_read),
+            handler('read', channel=channel)(_on_target_read),
         )
 
         self._clients[sock] = client
         self._sockets[client.channel] = sock
 
-    @handler("read", channel="source")
+    @handler('read', channel='source')
     def _on_source_read(self, sock, data):
         """
         Explicitly defined Read Event Handler
@@ -160,8 +160,8 @@ class PortForwarder(Component):
 
 
 def sanitize(s):
-    if ":" in s:
-        address, port = s.split(":")
+    if ':' in s:
+        address, port = s.split(':')
         port = int(port)
         return address, port
     return s
@@ -174,17 +174,17 @@ def main():
     target = sanitize(args[1])
 
     if type(source) is not tuple:
-        print("ERROR: source address must specify port (address:port)")
+        print('ERROR: source address must specify port (address:port)')
         raise SystemExit(-1)
 
     if type(target) is not tuple:
-        print("ERROR: target address must specify port (address:port)")
+        print('ERROR: target address must specify port (address:port)')
         raise SystemExit(-1)
 
     system = PortForwarder(source, target)
 
     if opts.daemon:
-        Daemon("portforward.pid").register(system)
+        Daemon('portforward.pid').register(system)
 
     if opts.debug:
         Debugger().register(system)
@@ -192,5 +192,5 @@ def main():
     system.run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -13,9 +13,9 @@ class Root(Component):
         ``Request`` events and must accept a (request, response)
         as arguments.
         """
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = BaseServer(("0.0.0.0", 8000))
+app = BaseServer(('0.0.0.0', 8000))
 Root().register(app)
 app.run()

@@ -20,7 +20,7 @@ class Loader(BaseComponent):
     components from modules either in local paths, eggs or zip archives.
     """
 
-    channel = "loader"
+    channel = 'loader'
 
     def __init__(self, auto_register=True, init_args=None, init_kwargs=None, paths=None, channel=channel):
         "initializes x; see x.__class__.__doc__ for signature"
@@ -34,7 +34,7 @@ class Loader(BaseComponent):
             for path in paths:
                 sys.path.insert(0, path)
 
-    @handler("load")
+    @handler('load')
     def load(self, name):
         module = safeimport(name)
         if module is not None:

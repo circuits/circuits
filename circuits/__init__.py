@@ -10,13 +10,13 @@ with a strong **Component** Architecture.
 .. _Python Programming Language: http://www.python.org/
 """
 
-__author__ = "James Mills"
-__date__ = "24th February 2013"
+__author__ = 'James Mills'
+__date__ = '24th February 2013'
 
 try:
     from .version import version as __version__
 except ImportError:
-    __version__ = "unknown"
+    __version__ = 'unknown'
 
 from .core import (
     BaseComponent, Bridge, Component, Debugger, Event, Loader, Manager,
@@ -25,7 +25,7 @@ from .core import (
 
 # See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
 try:
-    __import__("pkg_resources").declare_namespace(__name__)
+    __import__('pkg_resources').declare_namespace(__name__)
 except ImportError:
     from pkgutil import extend_path
 
@@ -34,7 +34,7 @@ except ImportError:
 
     fd = None
     for _path in __path__:
-        _path = os.path.join(_path, "__init__.py")
+        _path = os.path.join(_path, '__init__.py')
         if _path != __file__ and os.path.exists(_path):
             with open(_path) as fd:
                 exec(fd, globals())

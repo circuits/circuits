@@ -14,12 +14,12 @@ class MultiPartForm(dict):
     def add_file(self, fieldname, filename, fd, mimetype=None):
         body = fd.read()
         if mimetype is None:
-            mimetype = guess_type(filename)[0] or "application/octet-stream"
+            mimetype = guess_type(filename)[0] or 'application/octet-stream'
         self.files.append((fieldname, filename, mimetype, body))
 
     def bytes(self):
         parts = []
-        part_boundary = bytearray("--%s" % self.boundary, "ascii")
+        part_boundary = bytearray('--%s' % self.boundary, 'ascii')
 
         # Add the form fields
         parts.extend(
@@ -27,10 +27,10 @@ class MultiPartForm(dict):
                 part_boundary,
                 bytearray(
                     'Content-Disposition: form-data; name="%s"' % k,
-                    "ascii",
+                    'ascii',
                 ),
                 bytes(),
-                v if isinstance(v, bytes) else bytearray(v, "ascii"),
+                v if isinstance(v, bytes) else bytearray(v, 'ascii'),
             ]
             for k, v in list(self.items())
         )
@@ -41,11 +41,11 @@ class MultiPartForm(dict):
                 part_boundary,
                 bytearray(
                     'Content-Disposition: form-data; name="%s"; filename="%s"' % (fieldname, filename),
-                    "ascii",
+                    'ascii',
                 ),
-                bytearray("Content-Type: %s" % content_type, "ascii"),
+                bytearray('Content-Type: %s' % content_type, 'ascii'),
                 bytearray(),
-                body if isinstance(body, bytes) else bytearray(body, "ascii"),
+                body if isinstance(body, bytes) else bytearray(body, 'ascii'),
             ]
             for fieldname, filename, content_type, body in self.files
         )
@@ -53,9 +53,9 @@ class MultiPartForm(dict):
         # Flatten the list and add closing boundary marker,
         # then return CR+LF separated data
         flattened = list(itertools.chain(*parts))
-        flattened.append(bytearray("--%s--" % self.boundary, "ascii"))
+        flattened.append(bytearray('--%s--' % self.boundary, 'ascii'))
         res = bytearray()
         for item in flattened:
             res += item
-            res += bytearray("\r\n", "ascii")
+            res += bytearray('\r\n', 'ascii')
         return res

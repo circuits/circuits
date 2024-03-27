@@ -54,10 +54,10 @@ class BasePoller(BaseComponent):
         self._ctrl_recv, self._ctrl_send = self._create_control_con()
 
     def _create_control_con(self):
-        if platform.system() == "Linux":
+        if platform.system() == 'Linux':
             return os.pipe()
         server = socket(AF_INET, SOCK_STREAM)
-        server.bind(("localhost", 0))
+        server.bind(('localhost', 0))
         server.listen(1)
         res_list = []
         exc = []
@@ -78,7 +78,7 @@ class BasePoller(BaseComponent):
             raise exc[1].with_traceback(exc[2])
         return (res_list[0], clnt_sock)
 
-    @handler("generate_events", priority=-9)
+    @handler('generate_events', priority=-9)
     def _on_generate_events(self, event):
         """
         Pollers have slightly higher priority than the default handler
@@ -92,9 +92,9 @@ class BasePoller(BaseComponent):
 
     def resume(self):
         if isinstance(self._ctrl_send, socket):
-            self._ctrl_send.send(b"\0")
+            self._ctrl_send.send(b'\0')
         else:
-            os.write(self._ctrl_send, b"\0")
+            os.write(self._ctrl_send, b'\0')
 
     def _read_ctrl(self):
         try:
@@ -103,15 +103,15 @@ class BasePoller(BaseComponent):
             else:
                 return os.read(self._ctrl_recv, 1)
         except (OSError, EOFError):
-            return b"\0"
+            return b'\0'
 
     def addReader(self, source, fd):
-        channel = getattr(source, "channel", "*")
+        channel = getattr(source, 'channel', '*')
         self._read.append(fd)
         self._targets[fd] = channel
 
     def addWriter(self, source, fd):
-        channel = getattr(source, "channel", "*")
+        channel = getattr(source, 'channel', '*')
         self._write.append(fd)
         self._targets[fd] = channel
 
@@ -155,7 +155,7 @@ class Select(BasePoller):
     compatibility.
     """
 
-    channel = "select"
+    channel = 'select'
 
     def __init__(self, channel=channel):
         super().__init__(channel=channel)
@@ -222,7 +222,7 @@ class Poll(BasePoller):
     implementation.
     """
 
-    channel = "poll"
+    channel = 'poll'
 
     def __init__(self, channel=channel):
         super().__init__(channel=channel)
@@ -332,7 +332,7 @@ class EPoll(BasePoller):
     implementation.
     """
 
-    channel = "epoll"
+    channel = 'epoll'
 
     def __init__(self, channel=channel):
         super().__init__(channel=channel)
@@ -443,7 +443,7 @@ class KQueue(BasePoller):
     implementation.
     """
 
-    channel = "kqueue"
+    channel = 'kqueue'
 
     def __init__(self, channel=channel):
         super().__init__(channel=channel)
@@ -510,7 +510,7 @@ class KQueue(BasePoller):
             return
 
         if event.flags & select.KQ_EV_ERROR:
-            self.fire(_error(sock, "error"), self.getTarget(sock))
+            self.fire(_error(sock, 'error'), self.getTarget(sock))
         elif event.flags & select.KQ_EV_EOF:
             self.fire(_disconnect(sock), self.getTarget(sock))
         elif event.filter == select.KQ_FILTER_WRITE:
@@ -521,4 +521,4 @@ class KQueue(BasePoller):
 
 Poller = Select
 
-__all__ = ("BasePoller", "Poller", "Select", "Poll", "EPoll", "KQueue")
+__all__ = ('BasePoller', 'Poller', 'Select', 'Poll', 'EPoll', 'KQueue')

@@ -16,7 +16,7 @@ class Watcher(BaseComponent):
         self._lock = threading.Lock()
         self.events = deque()
 
-    @handler(channel="*", priority=999.9)
+    @handler(channel='*', priority=999.9)
     def _on_event(self, event, *args, **kwargs):
         with self._lock:
             self.events.append(event)
@@ -64,7 +64,7 @@ def call_event(manager, event, *channels):
 class WaitEvent:
     def __init__(self, manager, name, channel=None, timeout=30.0):
         if channel is None:
-            channel = getattr(manager, "channel", None)
+            channel = getattr(manager, 'channel', None)
 
         self.timeout = timeout
         self.manager = manager
@@ -122,7 +122,7 @@ def manager(request):
 
     request.addfinalizer(finalizer)
 
-    waiter = WaitEvent(manager, "started")
+    waiter = WaitEvent(manager, 'started')
     manager.start()
     assert waiter.wait()
 
@@ -136,7 +136,7 @@ def watcher(request, manager):
     watcher = Watcher().register(manager)
 
     def finalizer():
-        waiter = WaitEvent(manager, "unregistered")
+        waiter = WaitEvent(manager, 'unregistered')
         watcher.unregister()
         waiter.wait()
 
@@ -146,11 +146,11 @@ def watcher(request, manager):
 
 
 for key, value in {
-    "WaitEvent": WaitEvent,
-    "wait_for": wait_for,
-    "call_event": call_event,
-    "PLATFORM": sys.platform,
-    "PYVER": sys.version_info[:3],
-    "call_event_from_name": call_event_from_name,
+    'WaitEvent': WaitEvent,
+    'wait_for': wait_for,
+    'call_event': call_event,
+    'PLATFORM': sys.platform,
+    'PYVER': sys.version_info[:3],
+    'call_event_from_name': call_event_from_name,
 }.items():
     setattr(pytest, key, value)

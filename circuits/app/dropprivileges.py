@@ -7,7 +7,7 @@ from circuits.core import BaseComponent, handler
 
 
 class DropPrivileges(BaseComponent):
-    def init(self, user="nobody", group="nobody", umask=0o077, **kwargs):
+    def init(self, user='nobody', group='nobody', umask=0o077, **kwargs):
         self.user = user
         self.group = group
         self.umask = umask
@@ -22,7 +22,7 @@ class DropPrivileges(BaseComponent):
             uid = getpwnam(self.user).pw_uid
             gid = getgrnam(self.group).gr_gid
         except KeyError as error:
-            print(f"ERROR: Could not drop privileges {error}")
+            print(f'ERROR: Could not drop privileges {error}')
             print(format_exc())
             raise SystemExit(-1)
 
@@ -37,11 +37,11 @@ class DropPrivileges(BaseComponent):
             if self.umask is not None:
                 umask(self.umask)
         except Exception as error:
-            print(f"ERROR: Could not drop privileges {error}")
+            print(f'ERROR: Could not drop privileges {error}')
             print(format_exc())
             raise SystemExit(-1)
 
-    @handler("ready", channel="*")
+    @handler('ready', channel='*')
     def on_ready(self, server, bind):
         try:
             self.drop_privileges()

@@ -5,30 +5,30 @@ from .helpers import urlopen
 
 class Root(Controller):
     def index(self):
-        return "Hello World!"
+        return 'Hello World!'
 
-    @expose("+test")
+    @expose('+test')
     def test(self):
-        return "test"
+        return 'test'
 
-    @expose("foo+bar", "foo_bar")
+    @expose('foo+bar', 'foo_bar')
     def foobar(self):
-        return "foobar"
+        return 'foobar'
 
 
 def test(webapp):
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b"Hello World!"
+    assert s == b'Hello World!'
 
-    f = urlopen("%s/+test" % webapp.server.http.base)
+    f = urlopen('%s/+test' % webapp.server.http.base)
     s = f.read()
-    assert s == b"test"
+    assert s == b'test'
 
-    f = urlopen("%s/foo+bar" % webapp.server.http.base)
+    f = urlopen('%s/foo+bar' % webapp.server.http.base)
     s = f.read()
-    assert s == b"foobar"
+    assert s == b'foobar'
 
-    f = urlopen("%s/foo_bar" % webapp.server.http.base)
+    f = urlopen('%s/foo_bar' % webapp.server.http.base)
     s = f.read()
-    assert s == b"foobar"
+    assert s == b'foobar'

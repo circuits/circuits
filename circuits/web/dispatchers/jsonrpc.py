@@ -15,29 +15,29 @@ class rpc(Event):
 
 
 class JSONRPC(BaseComponent):
-    channel = "web"
+    channel = 'web'
 
-    def __init__(self, path=None, encoding="utf-8", rpc_channel="*"):
+    def __init__(self, path=None, encoding='utf-8', rpc_channel='*'):
         super().__init__()
 
         if json is None:
-            raise RuntimeError("No json support available")
+            raise RuntimeError('No json support available')
 
         self.path = path
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("request", priority=0.2)
+    @handler('request', priority=0.2)
     def _on_request(self, event, req, res):
-        if self.path is not None and self.path != req.path.rstrip("/"):
+        if self.path is not None and self.path != req.path.rstrip('/'):
             return
 
-        res.headers["Content-Type"] = "application/json"
+        res.headers['Content-Type'] = 'application/json'
 
         try:
             data = req.body.read().decode(self.encoding)
             o = json.loads(data)
-            id, method, params = o["id"], o["method"], o.get("params", {})
+            id, method, params = o['id'], o['method'], o.get('params', {})
             if isinstance(params, dict):
                 params = {str(k): v for k, v in params.items()}
 
@@ -50,27 +50,27 @@ class JSONRPC(BaseComponent):
 
             yield self._response(id, value.value)
         except Exception as e:
-            yield self._error(-1, 100, f"{e.__class__.__name__}: {e}")
+            yield self._error(-1, 100, f'{e.__class__.__name__}: {e}')
         finally:
             event.stop()
 
     def _response(self, id, result):
         data = {
-            "id": id,
-            "version": "1.1",
-            "result": result,
-            "error": None,
+            'id': id,
+            'version': '1.1',
+            'result': result,
+            'error': None,
         }
         return json.dumps(data).encode(self.encoding)
 
     def _error(self, id, code, message):
         data = {
-            "id": id,
-            "version": "1.1",
-            "error": {
-                "name": "JSONRPCError",
-                "code": code,
-                "message": message,
+            'id': id,
+            'version': '1.1',
+            'error': {
+                'name': 'JSONRPCError',
+                'code': code,
+                'message': message,
             },
         }
         return json.dumps(data).encode(self.encoding)

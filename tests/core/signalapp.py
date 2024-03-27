@@ -21,7 +21,7 @@ class App(Component):
         Daemon(self.pidfile).register(self)
 
     def signal(self, signal, stack):
-        f = open(self.signalfile, "w")
+        f = open(self.signalfile, 'w')
         f.write(str(signal))
         f.close()
         self.stop()
@@ -41,5 +41,5 @@ def main():
         _coverage.save()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

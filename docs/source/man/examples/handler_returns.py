@@ -23,7 +23,7 @@ class Pound(Component):
     def Identify_success(self, evt, result):
         if not isinstance(result, list):
             result = [result]
-        print("In pound:")
+        print('In pound:')
         for name in result:
             print(name)
 

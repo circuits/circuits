@@ -7,10 +7,10 @@ from .protocol import Protocol
 class Server(BaseComponent):
     """Node server."""
 
-    channel = "node"
+    channel = 'node'
     __protocols = {}
 
-    def __init__(self, port, server_ip="0.0.0.0", channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs):
+    def __init__(self, port, server_ip='0.0.0.0', channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs):
         """
         Create server on node system.
 
@@ -97,18 +97,18 @@ class Server(BaseComponent):
         """
         self.send_to(event, list(self.__protocols))
 
-    @handler("read")
+    @handler('read')
     def _on_read(self, sock, data):
         self.__protocols[sock].add_buffer(data)
 
     @property
     def host(self):
-        if hasattr(self, "server"):
+        if hasattr(self, 'server'):
             return self.server.host
 
     @property
     def port(self):
-        if hasattr(self, "server"):
+        if hasattr(self, 'server'):
             return self.server.port
 
     def get_socks(self):
@@ -120,7 +120,7 @@ class Server(BaseComponent):
         """
         return list(self.__protocols)
 
-    @handler("connect")
+    @handler('connect')
     def __connect_peer(self, sock, host, port):
         self.__protocols[sock] = Protocol(
             sock=sock,
@@ -130,7 +130,7 @@ class Server(BaseComponent):
             channel=self.channel,
         ).register(self)
 
-    @handler("disconnect")
+    @handler('disconnect')
     def __disconnect_peer(self, sock):
         for s in self.__protocols.copy():
             try:

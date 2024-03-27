@@ -12,32 +12,32 @@ from circuits.tools import findroot, inspect, kill, tryimport
 
 class A(Component):
     def foo(self):
-        print("A!")
+        print('A!')
 
 
 class B(Component):
     def foo(self):
-        print("B!")
+        print('B!')
 
 
 class C(Component):
     def foo(self):
-        print("C!")
+        print('C!')
 
 
 class D(Component):
     def foo(self):
-        print("D!")
+        print('D!')
 
 
 class E(Component):
     def foo(self):
-        print("E!")
+        print('E!')
 
 
 class F(Component):
     def foo(self):
-        print("F!")
+        print('F!')
 
 
 def test_kill():
@@ -98,12 +98,12 @@ def test_inspect():
     a = A()
     s = inspect(a)
 
-    assert "Components: 0" in s
-    assert "Event Handlers: 2" in s
-    assert "foo; 1" in s
-    assert "<handler[*][foo] (A.foo)>" in s
-    assert "prepare_unregister_complete; 1" in s
-    assert "<handler[<instance of A>][prepare_unregister_complete] (A._on_prepare_unregister_complete)>" in s
+    assert 'Components: 0' in s
+    assert 'Event Handlers: 2' in s
+    assert 'foo; 1' in s
+    assert '<handler[*][foo] (A.foo)>' in s
+    assert 'prepare_unregister_complete; 1' in s
+    assert '<handler[<instance of A>][prepare_unregister_complete] (A._on_prepare_unregister_complete)>' in s
 
 
 def test_findroot():
@@ -127,7 +127,7 @@ def test_findroot():
 def test_reprhandler():
     a = A()
     s = reprhandler(a.foo)
-    assert s == "<handler[*][foo] (A.foo)>"
+    assert s == '<handler[*][foo] (A.foo)>'
 
     pytest.raises(AttributeError, reprhandler, lambda: None)
 
@@ -135,17 +135,17 @@ def test_reprhandler():
 def test_tryimport():
     import os
 
-    m = tryimport("os")
+    m = tryimport('os')
     assert m is os
 
 
 def test_tryimport_obj():
     from os import path
 
-    m = tryimport("os", "path")
+    m = tryimport('os', 'path')
     assert m is path
 
 
 def test_tryimport_fail():
-    m = tryimport("asdf")
+    m = tryimport('asdf')
     assert m is None

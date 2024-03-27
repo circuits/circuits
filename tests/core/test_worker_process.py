@@ -32,7 +32,7 @@ def foo():
 
 
 def pid():
-    return f"Hello from {getpid():d}"
+    return f'Hello from {getpid():d}'
 
 
 def add(a, b):
@@ -45,7 +45,7 @@ def test_failure(manager, watcher, worker):
 
     x = worker.fire(e)
 
-    assert watcher.wait("task_failure")
+    assert watcher.wait('task_failure')
 
     assert isinstance(x.value[1], Exception)
 
@@ -56,7 +56,7 @@ def test_success(manager, watcher, worker):
 
     x = worker.fire(e)
 
-    assert watcher.wait("task_success")
+    assert watcher.wait('task_success')
 
     assert x.value == 1000000
 
@@ -67,6 +67,6 @@ def test_args(manager, watcher, worker):
 
     x = worker.fire(e)
 
-    assert watcher.wait("task_success")
+    assert watcher.wait('task_success')
 
     assert x.value == 3

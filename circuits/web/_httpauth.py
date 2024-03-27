@@ -28,7 +28,7 @@ from hashlib import md5, sha1
 from urllib.request import parse_http_list, parse_keqv_list
 
 __version__ = 1, 0, 1
-__author__ = "Tiago Cogumbreiro <cogumbreiro@users.sf.net>"
+__author__ = 'Tiago Cogumbreiro <cogumbreiro@users.sf.net>'
 __credits__ = """
     Peter van Kampen for its recipe which implement most of Digest
     authentication:
@@ -63,15 +63,15 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-__all__ = ("digestAuth", "basicAuth", "doAuth", "checkResponse", "parseAuthorization", "SUPPORTED_ALGORITHM", "md5SessionKey", "calculateNonce", "SUPPORTED_QOP")
+__all__ = ('digestAuth', 'basicAuth', 'doAuth', 'checkResponse', 'parseAuthorization', 'SUPPORTED_ALGORITHM', 'md5SessionKey', 'calculateNonce', 'SUPPORTED_QOP')
 
 ###############################################################################
 
-MD5 = "MD5"
-SHA1 = "SHA1"
-MD5_SESS = "MD5-sess"
-AUTH = "auth"
-AUTH_INT = "auth-int"
+MD5 = 'MD5'
+SHA1 = 'SHA1'
+MD5_SESS = 'MD5-sess'
+AUTH = 'auth'
+AUTH_INT = 'auth-int'
 
 SUPPORTED_ALGORITHM = (MD5, MD5_SESS)
 SUPPORTED_QOP = (AUTH, AUTH_INT)
@@ -97,11 +97,11 @@ def calculateNonce(realm, algorithm=MD5):
         encoder = DIGEST_AUTH_ENCODERS[algorithm]
     except KeyError:
         raise NotImplementedError(
-            "The chosen algorithm (%s) does not have " "an implementation yet" % algorithm,
+            'The chosen algorithm (%s) does not have ' 'an implementation yet' % algorithm,
         )
 
-    s = "%d:%s" % (time.time(), realm)
-    return encoder(s.encode("utf-8"))
+    s = '%d:%s' % (time.time(), realm)
+    return encoder(s.encode('utf-8'))
 
 
 def digestAuth(realm, algorithm=MD5, nonce=None, qop=AUTH):
@@ -135,7 +135,7 @@ def doAuth(realm):
 
     This should be set in the HTTP header under the key 'WWW-Authenticate'.
     """
-    return digestAuth(realm) + " " + basicAuth(realm)
+    return digestAuth(realm) + ' ' + basicAuth(realm)
 
 
 ###############################################################################
@@ -149,33 +149,33 @@ def _parseDigestAuthorization(auth_params):
     # Now validate the params
 
     # Check for required parameters
-    required = ["username", "realm", "nonce", "uri", "response"]
+    required = ['username', 'realm', 'nonce', 'uri', 'response']
     for k in required:
         if k not in params:
             return None
 
     # If qop is sent then cnonce and nc MUST be present
-    if "qop" in params and not ("cnonce" in params and "nc" in params):
+    if 'qop' in params and not ('cnonce' in params and 'nc' in params):
         return None
 
     # If qop is not sent, neither cnonce nor nc can be present
-    if ("cnonce" in params or "nc" in params) and "qop" not in params:
+    if ('cnonce' in params or 'nc' in params) and 'qop' not in params:
         return None
 
     return params
 
 
 def _parseBasicAuthorization(auth_params):
-    auth_params = auth_params.encode("utf-8")
-    username, password = base64_decodebytes(auth_params).split(b":", 1)
-    username = username.decode("utf-8")
-    password = password.decode("utf-8")
-    return {"username": username, "password": password}
+    auth_params = auth_params.encode('utf-8')
+    username, password = base64_decodebytes(auth_params).split(b':', 1)
+    username = username.decode('utf-8')
+    password = password.decode('utf-8')
+    return {'username': username, 'password': password}
 
 
 AUTH_SCHEMES = {
-    "basic": _parseBasicAuthorization,
-    "digest": _parseDigestAuthorization,
+    'basic': _parseBasicAuthorization,
+    'digest': _parseDigestAuthorization,
 }
 
 
@@ -184,7 +184,7 @@ def parseAuthorization(credentials):
     parseAuthorization will convert the value of the 'Authorization' key in
     the HTTP header to a map itself. If the parsing fails 'None' is returned.
     """
-    auth_scheme, auth_params = credentials.split(" ", 1)
+    auth_scheme, auth_params = credentials.split(' ', 1)
     auth_scheme = auth_scheme.lower()
 
     parser = AUTH_SCHEMES[auth_scheme]
@@ -193,8 +193,8 @@ def parseAuthorization(credentials):
     if params is None:
         return
 
-    assert "auth_scheme" not in params
-    params["auth_scheme"] = auth_scheme
+    assert 'auth_scheme' not in params
+    params['auth_scheme'] = auth_scheme
     return params
 
 
@@ -219,50 +219,50 @@ def md5SessionKey(params, password):
     specification of such a protocol is beyond the scope of this
     specification.
     """
-    keys = ("username", "realm", "nonce", "cnonce")
+    keys = ('username', 'realm', 'nonce', 'cnonce')
     params_copy = {}
     for key in keys:
         params_copy[key] = params[key]
 
-    params_copy["algorithm"] = MD5_SESS
+    params_copy['algorithm'] = MD5_SESS
     return _A1(params_copy, password)
 
 
 def _A1(params, password):
-    algorithm = params.get("algorithm", MD5)
+    algorithm = params.get('algorithm', MD5)
     H = DIGEST_AUTH_ENCODERS[algorithm]
 
     if algorithm == MD5:
         # If the "algorithm" directive's value is "MD5" or is
         # unspecified, then A1 is:
         # A1 = unq(username-value) ":" unq(realm-value) ":" passwd
-        return "%s:%s:%s" % (params["username"], params["realm"], password)
+        return '%s:%s:%s' % (params['username'], params['realm'], password)
 
     elif algorithm == MD5_SESS:
         # This is A1 if qop is set
         # A1 = H( unq(username-value) ":" unq(realm-value) ":" passwd )
         #         ":" unq(nonce-value) ":" unq(cnonce-value)
-        s = "%s:%s:%s" % (params["username"], params["realm"], password)
-        h_a1 = H(s.encode("utf-8"))
-        return "%s:%s:%s" % (h_a1, params["nonce"], params["cnonce"])
+        s = '%s:%s:%s' % (params['username'], params['realm'], password)
+        h_a1 = H(s.encode('utf-8'))
+        return '%s:%s:%s' % (h_a1, params['nonce'], params['cnonce'])
 
 
 def _A2(params, method, kwargs):
     # If the "qop" directive's value is "auth" or is unspecified, then A2 is:
     # A2 = Method ":" digest-uri-value
 
-    qop = params.get("qop", "auth")
-    if qop == "auth":
-        return method + ":" + params["uri"]
-    elif qop == "auth-int":
+    qop = params.get('qop', 'auth')
+    if qop == 'auth':
+        return method + ':' + params['uri']
+    elif qop == 'auth-int':
         # If the "qop" value is "auth-int", then A2 is:
         # A2 = Method ":" digest-uri-value ":" H(entity-body)
-        entity_body = kwargs.get("entity_body", "")
-        H = kwargs["H"]
+        entity_body = kwargs.get('entity_body', '')
+        H = kwargs['H']
 
-        return "%s:%s:%s" % (
+        return '%s:%s:%s' % (
             method,
-            params["uri"],
+            params['uri'],
             H(entity_body),
         )
 
@@ -270,30 +270,30 @@ def _A2(params, method, kwargs):
         raise NotImplementedError("The 'qop' method is unknown: %s" % qop)
 
 
-def _computeDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
+def _computeDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):
     """Generates a response respecting the algorithm defined in RFC 2617"""
     params = auth_map
 
-    algorithm = params.get("algorithm", MD5)
+    algorithm = params.get('algorithm', MD5)
 
     H = DIGEST_AUTH_ENCODERS[algorithm]
 
     def KD(secret, data):
-        s = secret + ":" + data
-        return H(s.encode("utf-8"))
+        s = secret + ':' + data
+        return H(s.encode('utf-8'))
 
-    qop = params.get("qop", None)
+    qop = params.get('qop', None)
 
     s = _A2(params, method, kwargs)
-    H_A2 = H(s.encode("utf-8"))
+    H_A2 = H(s.encode('utf-8'))
 
     if algorithm == MD5_SESS and A1 is not None:
-        H_A1 = H(A1.encode("utf-8"))
+        H_A1 = H(A1.encode('utf-8'))
     else:
         s = _A1(params, password)
-        H_A1 = H(s.encode("utf-8"))
+        H_A1 = H(s.encode('utf-8'))
 
-    if qop in ("auth", "auth-int"):
+    if qop in ('auth', 'auth-int'):
         # If the "qop" value is "auth" or "auth-int":
         # request-digest  = <"> < KD ( H(A1),     unq(nonce-value)
         #                              ":" nc-value
@@ -301,11 +301,11 @@ def _computeDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
         #                              ":" unq(qop-value)
         #                              ":" H(A2)
         #                      ) <">
-        request = "%s:%s:%s:%s:%s" % (
-            params["nonce"],
-            params["nc"],
-            params["cnonce"],
-            params["qop"],
+        request = '%s:%s:%s:%s:%s' % (
+            params['nonce'],
+            params['nc'],
+            params['cnonce'],
+            params['qop'],
             H_A2,
         )
 
@@ -314,12 +314,12 @@ def _computeDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
         # for compatibility with RFC 2069):
         # request-digest  =
         #         <"> < KD ( H(A1), unq(nonce-value) ":" H(A2) ) > <">
-        request = "%s:%s" % (params["nonce"], H_A2)
+        request = '%s:%s' % (params['nonce'], H_A2)
 
     return KD(H_A1, request)
 
 
-def _checkDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
+def _checkDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):
     """
     This function is used to verify the response given by the client when
     he tries to authenticate.
@@ -331,30 +331,30 @@ def _checkDigestResponse(auth_map, password, method="GET", A1=None, **kwargs):
                    directive of the authorization map. They must represent
                    the same resource (unused at this time).
     """
-    if auth_map["realm"] != kwargs.get("realm", None):
+    if auth_map['realm'] != kwargs.get('realm', None):
         return False
 
     response = _computeDigestResponse(auth_map, password, method, A1, **kwargs)
 
-    return response == auth_map["response"]
+    return response == auth_map['response']
 
 
-def _checkBasicResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
+def _checkBasicResponse(auth_map, password, method='GET', encrypt=None, **kwargs):
     # Note that the Basic response doesn't provide the realm value so we cannot
     # test it
     try:
-        return encrypt(auth_map["password"], auth_map["username"]) == password
+        return encrypt(auth_map['password'], auth_map['username']) == password
     except TypeError:
-        return encrypt(auth_map["password"]) == password
+        return encrypt(auth_map['password']) == password
 
 
 AUTH_RESPONSES = {
-    "basic": _checkBasicResponse,
-    "digest": _checkDigestResponse,
+    'basic': _checkBasicResponse,
+    'digest': _checkDigestResponse,
 }
 
 
-def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
+def checkResponse(auth_map, password, method='GET', encrypt=None, **kwargs):
     """
     'checkResponse' compares the auth_map with the password and optionally
     other arguments that each implementation might need.
@@ -372,7 +372,7 @@ def checkResponse(auth_map, password, method="GET", encrypt=None, **kwargs):
     The 'A1' argument is only used in MD5_SESS algorithm based responses.
     Check md5SessionKey() for more info.
     """
-    checker = AUTH_RESPONSES[auth_map["auth_scheme"]]
+    checker = AUTH_RESPONSES[auth_map['auth_scheme']]
     return checker(
         auth_map,
         password,

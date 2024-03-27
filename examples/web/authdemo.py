@@ -7,10 +7,10 @@ from circuits.web.tools import basic_auth, check_auth
 
 
 class Auth(Component):
-    realm = "Test"
-    users = {"admin": md5(b"admin").hexdigest()}
+    realm = 'Test'
+    users = {'admin': md5(b'admin').hexdigest()}
 
-    @handler("request", priority=1.0)
+    @handler('request', priority=1.0)
     def on_request(self, event, request, response):
         """
         Filter Requests applying Basic Authentication
@@ -26,10 +26,10 @@ class Auth(Component):
 
 class Root(Controller):
     def index(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Auth().register(app)
 Root().register(app)
 app.run()

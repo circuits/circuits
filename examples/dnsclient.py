@@ -49,7 +49,7 @@ class Dummy(Component):
         qname = response.q.qname
 
         print(
-            "DNS Response from {:s}:{:d} id={:d} qname={:s}".format(
+            'DNS Response from {:s}:{:d} id={:d} qname={:s}'.format(
                 peer[0],
                 peer[1],
                 id,
@@ -59,7 +59,7 @@ class Dummy(Component):
         )
 
         for rr in response.rr:
-            print(f" {str(rr):s}")
+            print(f' {str(rr):s}')
 
         raise SystemExit(0)
 
@@ -86,10 +86,10 @@ class DNSClient(Component):
         self.dummy = Dummy().register(self)
 
     def started(self, manager):
-        print("DNS Client Started!", file=sys.stderr)
+        print('DNS Client Started!', file=sys.stderr)
 
     def ready(self, client, bind):
-        print("Ready! Bound to {:s}:{:d}".format(*bind), file=sys.stderr)
+        print('Ready! Bound to {:s}:{:d}'.format(*bind), file=sys.stderr)
 
         request = DNSRecord(q=DNSQuestion(self.query))
         self.fire(write((self.server, self.port), request.pack()))

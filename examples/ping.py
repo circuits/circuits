@@ -20,7 +20,7 @@ class Ping(Component):
     stdout = stdout
 
     def init(self, host):
-        self.p = Process(["/bin/ping", host]).register(self)
+        self.p = Process(['/bin/ping', host]).register(self)
         self.p.start()
 
     def read(self, data):

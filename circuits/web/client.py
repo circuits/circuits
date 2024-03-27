@@ -13,21 +13,21 @@ def parse_url(url):
     if p.hostname:
         host = p.hostname
     else:
-        raise ValueError("URL must be absolute")
+        raise ValueError('URL must be absolute')
 
-    if p.scheme == "http":
+    if p.scheme == 'http':
         secure = False
         port = p.port or 80
-    elif p.scheme == "https":
+    elif p.scheme == 'https':
         secure = True
         port = p.port or 443
     else:
-        raise ValueError("Invalid URL scheme")
+        raise ValueError('Invalid URL scheme')
 
-    path = p.path or "/"
+    path = p.path or '/'
 
     if p.query:
-        path += "?" + p.query
+        path += '?' + p.query
 
     return (host, port, path, secure)
 
@@ -59,7 +59,7 @@ class request(Event):
 
 
 class Client(BaseComponent):
-    channel = "client"
+    channel = 'client'
 
     def __init__(self, channel=channel):
         super().__init__(channel=channel)
@@ -69,63 +69,63 @@ class Client(BaseComponent):
 
         HTTP(channel=channel).register(self._transport)
 
-    @handler("write")
+    @handler('write')
     def write(self, data):
         if self._transport.connected:
             self.fire(write(data), self._transport)
 
-    @handler("close")
+    @handler('close')
     def close(self):
         if self._transport.connected:
             self.fire(close(), self._transport)
 
-    @handler("connect", priority=1)
+    @handler('connect', priority=1)
     def connect(self, event, host=None, port=None, secure=None):
         if not self._transport.connected:
             self.fire(connect(host, port, secure), self._transport)
 
         event.stop()
 
-    @handler("request")
+    @handler('request')
     def request(self, method, url, body=None, headers=None):
         host, port, path, secure = parse_url(url)
 
         if not self._transport.connected:
             self.fire(connect(host, port, secure))
-            yield self.wait("connected", self._transport.channel)
+            yield self.wait('connected', self._transport.channel)
 
         headers = Headers([(k, v) for k, v in (headers or {}).items()])
 
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
-        if "Host" not in headers:
-            headers["Host"] = "{}{}".format(
+        if 'Host' not in headers:
+            headers['Host'] = '{}{}'.format(
                 host,
-                "" if port in (80, 443) else f":{port:d}",
+                '' if port in (80, 443) else f':{port:d}',
             )
 
         if body is not None:
-            headers["Content-Length"] = len(body)
+            headers['Content-Length'] = len(body)
 
-        command = f"{method} {path} HTTP/1.1"
-        message = f"{command}\r\n{headers}"
-        self.fire(write(message.encode("utf-8")), self._transport)
+        command = f'{method} {path} HTTP/1.1'
+        message = f'{command}\r\n{headers}'
+        self.fire(write(message.encode('utf-8')), self._transport)
         if body is not None:
             self.fire(write(body), self._transport)
 
-        yield (yield self.wait("response"))
+        yield (yield self.wait('response'))
 
-    @handler("response")
+    @handler('response')
     def _on_response(self, response):
         self._response = response
-        if response.headers.get("Connection", "").lower() == "close":
+        if response.headers.get('Connection', '').lower() == 'close':
             self.fire(close(), self._transport)
         return response
 
     @property
     def connected(self):
-        if hasattr(self, "_transport"):
+        if hasattr(self, '_transport'):
             return self._transport.connected
 
     @property
     def response(self):
-        return getattr(self, "_response", None)
+        return getattr(self, '_response', None)

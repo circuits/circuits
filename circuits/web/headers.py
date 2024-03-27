@@ -10,7 +10,7 @@ import re
 # existence of which force quoting of the parameter value.
 
 tspecials = re.compile(r'[ \(\)<>@,;:\\"/\[\]\?=]')
-q_separator = re.compile(r"; *q *=")
+q_separator = re.compile(r'; *q *=')
 
 
 def _formatparam(param, value=None, quote=1):
@@ -21,10 +21,10 @@ def _formatparam(param, value=None, quote=1):
     """
     if value is not None and len(value) > 0:
         if quote or tspecials.search(value):
-            value = value.replace("\\", "\\\\").replace('"', r"\"")
+            value = value.replace('\\', '\\\\').replace('"', r'\"')
             return f'{param}="{value}"'
         else:
-            return f"{param}={value}"
+            return f'{param}={value}'
     else:
         return param
 
@@ -40,8 +40,8 @@ def header_elements(fieldname, fieldvalue):
         return []
 
     result = []
-    for element in fieldvalue.split(","):
-        if fieldname.startswith("Accept") or fieldname == "TE":
+    for element in fieldvalue.split(','):
+        if fieldname.startswith('Accept') or fieldname == 'TE':
             hv = AcceptElement.from_str(element)
         else:
             hv = HeaderElement.from_str(element)
@@ -66,29 +66,29 @@ class HeaderElement:
         return self.value < other.value
 
     def __str__(self):
-        p = [f";{k}={v}" for k, v in self.params.items()]
-        return "%s%s" % (self.value, "".join(p))
+        p = [f';{k}={v}' for k, v in self.params.items()]
+        return '%s%s' % (self.value, ''.join(p))
 
     def __bytes__(self):
-        return self.__str__().encode("ISO8859-1")
+        return self.__str__().encode('ISO8859-1')
 
     def parse(elementstr):
         """Transform 'token;key=val' to ('token', {'key': 'val'})."""
         # Split the element into a value and parameters. The 'value' may
         # be of the form, "token=token", but we don't split that here.
-        atoms = [x.strip() for x in elementstr.split(";") if x.strip()]
+        atoms = [x.strip() for x in elementstr.split(';') if x.strip()]
         if not atoms:
-            initial_value = ""
+            initial_value = ''
         else:
             initial_value = atoms.pop(0).strip()
         params = {}
         for atom in atoms:
-            atom = [x.strip() for x in atom.split("=", 1) if x.strip()]
+            atom = [x.strip() for x in atom.split('=', 1) if x.strip()]
             key = atom.pop(0)
             if atom:
                 val = atom[0]
             else:
-                val = ""
+                val = ''
             params[key] = val
         return initial_value, params
 
@@ -126,16 +126,16 @@ class AcceptElement(HeaderElement):
 
         media_type, params = cls.parse(media_range)
         if qvalue is not None:
-            params["q"] = qvalue
+            params['q'] = qvalue
         return cls(media_type, params)
 
     def qvalue(self):
-        val = self.params.get("q", "1")
+        val = self.params.get('q', '1')
         if isinstance(val, HeaderElement):
             val = val.value
         return float(val)
 
-    qvalue = property(qvalue, doc="The qvalue, or priority, of this value.")
+    qvalue = property(qvalue, doc='The qvalue, or priority, of this value.')
 
     def __eq__(self, other):
         return self.qvalue == other.qvalue
@@ -226,17 +226,17 @@ class Headers(CaseInsensitiveDict):
 
     def get_all(self, name):
         """Return a list of all the values for the named field."""
-        value = self.get(name, "")
+        value = self.get(name, '')
         if isinstance(value, list):
             return value
-        return [val.strip() for val in value.split(",")]
+        return [val.strip() for val in value.split(',')]
 
     def __repr__(self):
-        return "Headers(%s)" % repr(list(self.items()))
+        return 'Headers(%s)' % repr(list(self.items()))
 
     def __str__(self):
-        headers = [f"{k}: {v}\r\n" for k, v in self.items()]
-        return "".join(headers) + "\r\n"
+        headers = [f'{k}: {v}\r\n' for k, v in self.items()]
+        return ''.join(headers) + '\r\n'
 
     def items(self):
         for k, v in super().items():
@@ -247,7 +247,7 @@ class Headers(CaseInsensitiveDict):
                 yield (str(k), str(v))
 
     def __bytes__(self):
-        return str(self).encode("latin1")
+        return str(self).encode('latin1')
 
     def append(self, key, value):
         """
@@ -259,7 +259,7 @@ class Headers(CaseInsensitiveDict):
         the new value is appended to that list.
         """
         if key not in self:
-            if key.lower() == "set-cookie":
+            if key.lower() == 'set-cookie':
                 self[key] = [value]
             else:
                 self[key] = value
@@ -267,7 +267,7 @@ class Headers(CaseInsensitiveDict):
             if isinstance(self[key], list):
                 self[key].append(value)
             else:
-                self[key] = ", ".join([self[key], value])
+                self[key] = ', '.join([self[key], value])
 
     def add_header(self, _name, _value, **_params):
         """
@@ -290,9 +290,9 @@ class Headers(CaseInsensitiveDict):
         if _value is not None:
             parts.append(_value)
         for k, v in list(_params.items()):
-            k = k.replace("_", "-")
+            k = k.replace('_', '-')
             if v is None:
                 parts.append(k)
             else:
                 parts.append(_formatparam(k, v))
-        self.append(_name, "; ".join(parts))
+        self.append(_name, '; '.join(parts))

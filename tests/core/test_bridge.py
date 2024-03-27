@@ -4,9 +4,9 @@ from os import getpid
 
 from circuits import Component, Event, ipc
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == "win32", reason="Unsupported Platform")
+pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 
-pytest.importorskip("multiprocessing")
+pytest.importorskip('multiprocessing')
 
 
 class hello(Event):
@@ -15,22 +15,22 @@ class hello(Event):
 
 class App(Component):
     def hello(self):
-        return f"Hello from {getpid():d}"
+        return f'Hello from {getpid():d}'
 
 
 def test(manager, watcher):
     app = App()
     process, bridge = app.start(process=True, link=manager)
-    assert watcher.wait("ready")
+    assert watcher.wait('ready')
 
     x = manager.fire(ipc(hello()))
 
-    assert pytest.wait_for(x, "result")
+    assert pytest.wait_for(x, 'result')
 
-    assert x.value == f"Hello from {app.pid:d}"
+    assert x.value == f'Hello from {app.pid:d}'
 
     app.stop()
     app.join()
 
     bridge.unregister()
-    watcher.wait("unregistered")
+    watcher.wait('unregistered')

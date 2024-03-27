@@ -9,9 +9,9 @@ class MyComponent(BaseComponent):
 
         Debugger().register(self)
 
-    @handler("started", channel="*")
+    @handler('started', channel='*')
     def system_started(self, component):
-        print("Start event detected")
+        print('Start event detected')
 
 
 MyComponent().run()

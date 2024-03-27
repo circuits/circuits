@@ -16,7 +16,7 @@ class FallBackGenerator(BaseComponent):
         super().__init__(*args, **kwargs)
         self._continue = Event()
 
-    @handler("generate_events", priority=-100)
+    @handler('generate_events', priority=-100)
     def _on_generate_events(self, event):
         """
         Fall back handler for the :class:`~.events.GenerateEvents` event.
@@ -72,23 +72,23 @@ class FallBackExceptionHandler(BaseComponent):
     the error information on stderr.
     """
 
-    @handler("exception", channel="*")
+    @handler('exception', channel='*')
     def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
         s = []
 
         if handler is None:
-            handler = ""
+            handler = ''
         else:
             handler = reprhandler(handler)
 
-        msg = f"ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n"
+        msg = f'ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n'
 
         s.append(msg)
-        s.append("Traceback (most recent call last):\n")
+        s.append('Traceback (most recent call last):\n')
         s.extend(traceback)
         s.extend(format_exception_only(error_type, value))
-        s.append("\n")
-        stderr.write("".join(s))
+        s.append('\n')
+        stderr.write(''.join(s))
 
 
 class FallBackSignalHandler(BaseComponent):
@@ -98,7 +98,7 @@ class FallBackSignalHandler(BaseComponent):
     system if the signal is SIGINT or SIGTERM.
     """
 
-    @handler("signal", channel="*")
+    @handler('signal', channel='*')
     def _on_signal(self, signo, stack):
         if signo in [SIGINT, SIGTERM]:
             raise SystemExit(0)

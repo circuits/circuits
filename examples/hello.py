@@ -15,7 +15,7 @@ class terminate(Event):
 class App(Component):
     def hello(self):
         """Hello Event Handler"""
-        print("Hello World!")
+        print('Hello World!')
 
     def started(self, *args):
         """

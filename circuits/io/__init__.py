@@ -22,9 +22,9 @@ except:
     pass
 
 try:
-    stdin = File(sys.stdin, channel="stdin")
-    stdout = File(sys.stdout, channel="stdout")
-    stderr = File(sys.stderr, channel="stderr")
+    stdin = File(sys.stdin, channel='stdin')
+    stdout = File(sys.stdout, channel='stdout')
+    stderr = File(sys.stderr, channel='stderr')
 except:
     pass
 

@@ -9,27 +9,27 @@ class Root(Controller):
         self += Leaf()
 
     def index(self):
-        return "Hello World!"
+        return 'Hello World!'
 
     def name(self):
-        return "Earth"
+        return 'Earth'
 
 
 class Leaf(Controller):
-    channel = "/world/country/region"
+    channel = '/world/country/region'
 
     def index(self):
-        return "Hello cities!"
+        return 'Hello cities!'
 
     def city(self):
-        return "Hello City!"
+        return 'Hello City!'
 
 
 def make_request(webapp, path):
     client = Client()
     client.start()
 
-    client.fire(request("GET", path))
+    client.fire(request('GET', path))
     while client.response is None:
         pass
 
@@ -44,25 +44,25 @@ def test_root(webapp):
     status, content = make_request(webapp, webapp.server.http.base)
 
     assert status == 200
-    assert content == b"Hello World!"
+    assert content == b'Hello World!'
 
 
 def test_root_name(webapp):
-    status, content = make_request(webapp, "%s/name" % webapp.server.http.base)
+    status, content = make_request(webapp, '%s/name' % webapp.server.http.base)
 
     assert status == 200
-    assert content == b"Earth"
+    assert content == b'Earth'
 
 
 def test_leaf(webapp):
-    status, content = make_request(webapp, "%s/world/country/region" % webapp.server.http.base)
+    status, content = make_request(webapp, '%s/world/country/region' % webapp.server.http.base)
 
     assert status == 200
-    assert content == b"Hello cities!"
+    assert content == b'Hello cities!'
 
 
 def test_city(webapp):
-    status, content = make_request(webapp, "%s/world/country/region/city" % webapp.server.http.base)
+    status, content = make_request(webapp, '%s/world/country/region/city' % webapp.server.http.base)
 
     assert status == 200
-    assert content == b"Hello City!"
+    assert content == b'Hello City!'

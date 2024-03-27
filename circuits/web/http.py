@@ -22,7 +22,7 @@ from .parsers import BAD_FIRST_LINE, HttpParser
 from .url import parse_url
 from .utils import is_unix_socket
 
-HTTP_ENCODING = "utf-8"
+HTTP_ENCODING = 'utf-8'
 
 
 class HTTP(BaseComponent):
@@ -44,7 +44,7 @@ class HTTP(BaseComponent):
     the client.
     """
 
-    channel = "web"
+    channel = 'web'
 
     def __init__(self, server, encoding=HTTP_ENCODING, channel=channel):
         super().__init__(channel=channel)
@@ -66,32 +66,32 @@ class HTTP(BaseComponent):
 
     @property
     def scheme(self):
-        return "https" if self._server.secure else "http"
+        return 'https' if self._server.secure else 'http'
 
     @property
     def base(self):
         if self.uri is None:
-            return ""
-        return self.uri.utf8().rstrip(b"/").decode(self._encoding)
+            return ''
+        return self.uri.utf8().rstrip(b'/').decode(self._encoding)
 
     @property
     def uri(self):
         return self._uri
 
-    @handler("ready", priority=1.0)
+    @handler('ready', priority=1.0)
     def _on_ready(self, server, bind):
         if is_unix_socket(server.host):
             url = server.host
         else:
-            url = "{}://{}{}".format(
-                (server.secure and "https") or "http",
-                server.host or "0.0.0.0",
-                f":{server.port or 80:d}" if server.port not in (80, 443) else "",
+            url = '{}://{}{}'.format(
+                (server.secure and 'https') or 'http',
+                server.host or '0.0.0.0',
+                f':{server.port or 80:d}' if server.port not in (80, 443) else '',
             )
 
         self._uri = parse_url(url)
 
-    @handler("stream")  # noqa
+    @handler('stream')  # noqa
     def _on_stream(self, res, data):
         sock = res.request.sock
 
@@ -102,11 +102,11 @@ class HTTP(BaseComponent):
             if res.chunked:
                 buf = [
                     hex(len(data))[2:].encode(self._encoding),
-                    b"\r\n",
+                    b'\r\n',
                     data,
-                    b"\r\n",
+                    b'\r\n',
                 ]
-                data = b"".join(buf)
+                data = b''.join(buf)
 
             self.fire(write(sock, data))
 
@@ -122,7 +122,7 @@ class HTTP(BaseComponent):
             if res.body:
                 res.body.close()
             if res.chunked:
-                self.fire(write(sock, b"0\r\n\r\n"))
+                self.fire(write(sock, b'0\r\n\r\n'))
             if res.close:
                 self.fire(close(sock))
             if sock in self._clients:
@@ -130,7 +130,7 @@ class HTTP(BaseComponent):
 
             res.done = True
 
-    @handler("response")  # noqa
+    @handler('response')  # noqa
     def _on_response(self, res):
         """
         ``Response`` Event Handler
@@ -149,9 +149,9 @@ class HTTP(BaseComponent):
 
         # send HTTP response status line and headers
         res.prepare()
-        self.fire(write(sock, b"%s%s" % (bytes(res), bytes(headers))))
+        self.fire(write(sock, b'%s%s' % (bytes(res), bytes(headers))))
 
-        if req.method == "HEAD":
+        if req.method == 'HEAD':
             return
         elif res.stream and res.body:
             try:
@@ -166,22 +166,22 @@ class HTTP(BaseComponent):
                 body = res.body.encode(self._encoding)
             else:
                 parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in res.body if s is not None)
-                body = b"".join(parts)
+                body = b''.join(parts)
 
             if body:
                 if res.chunked:
                     buf = [
                         hex(len(body))[2:].encode(self._encoding),
-                        b"\r\n",
+                        b'\r\n',
                         body,
-                        b"\r\n",
+                        b'\r\n',
                     ]
-                    body = b"".join(buf)
+                    body = b''.join(buf)
 
                 self.fire(write(sock, body))
 
                 if res.chunked:
-                    self.fire(write(sock, b"0\r\n\r\n"))
+                    self.fire(write(sock, b'0\r\n\r\n'))
 
             if not res.stream:
                 if res.close:
@@ -191,12 +191,12 @@ class HTTP(BaseComponent):
                     del self._clients[sock]
                 res.done = True
 
-    @handler("disconnect")
+    @handler('disconnect')
     def _on_disconnect(self, sock):
         if sock in self._clients:
             del self._clients[sock]
 
-    @handler("read")  # noqa
+    @handler('read')  # noqa
     def _on_read(self, sock, data):
         """
         Read Event Handler
@@ -221,7 +221,7 @@ class HTTP(BaseComponent):
                     del self._clients[sock]
                 return self.fire(close(sock))
 
-        _scheme = "https" if self._server.secure else "http"
+        _scheme = 'https' if self._server.secure else 'http'
         parser.execute(data, len(data))
         if not parser.is_headers_complete():
             if parser.errno is not None:
@@ -274,14 +274,14 @@ class HTTP(BaseComponent):
                 # the major HTTP version differs
                 return self.fire(httperror(req, res, 505))
 
-            res.protocol = "HTTP/{:d}.{:d}".format(*min(rp, sp))
+            res.protocol = 'HTTP/{:d}.{:d}'.format(*min(rp, sp))
             res.close = not parser.should_keep_alive()
 
-        clen = int(req.headers.get("Content-Length", "0"))
-        if (clen or req.headers.get("Transfer-Encoding") == "chunked") and not parser.is_message_complete():
+        clen = int(req.headers.get('Content-Length', '0'))
+        if (clen or req.headers.get('Transfer-Encoding') == 'chunked') and not parser.is_message_complete():
             return
 
-        if hasattr(sock, "getpeercert"):
+        if hasattr(sock, 'getpeercert'):
             peer_cert = sock.getpeercert()
             if peer_cert:
                 e = request(req, res, peer_cert)
@@ -290,9 +290,9 @@ class HTTP(BaseComponent):
         else:
             e = request(req, res)
 
-        if req.protocol != (1, 0) and not req.headers.get("Host"):
+        if req.protocol != (1, 0) and not req.headers.get('Host'):
             del self._buffers[sock]
-            return self.fire(httperror(req, res, 400, description="No host header defined"))
+            return self.fire(httperror(req, res, 400, description='No host header defined'))
 
         # Guard against unwanted request paths (SECURITY).
         path = req.path
@@ -305,7 +305,7 @@ class HTTP(BaseComponent):
 
         self.fire(e)
 
-    @handler("httperror")
+    @handler('httperror')
     def _on_httperror(self, event, req, res, code, **kwargs):
         """
         Default HTTP Error Handler
@@ -318,7 +318,7 @@ class HTTP(BaseComponent):
         res.body = str(event)
         self.fire(response(res))
 
-    @handler("request_success")  # noqa
+    @handler('request_success')  # noqa
     def _on_request_success(self, e, value):
         """
         Handler for the ``RequestSuccess`` event that is automatically
@@ -393,13 +393,13 @@ class HTTP(BaseComponent):
             res.body = value
             self.fire(response(res))
 
-    @handler("exception")
+    @handler('exception')
     def _on_exception(self, *args, **kwargs):
         if len(args) != 3:
             return
 
         etype, evalue, etraceback = args
-        fevent = kwargs["fevent"]
+        fevent = kwargs['fevent']
 
         if isinstance(fevent, response):
             res = fevent.args[0]
@@ -421,7 +421,7 @@ class HTTP(BaseComponent):
 
         self.fire(httperror(req, res, code=code, error=(etype, evalue, etraceback)))
 
-    @handler("request_failure")
+    @handler('request_failure')
     def _on_request_failure(self, erequest, error):
         req, res = erequest.args
 
@@ -440,7 +440,7 @@ class HTTP(BaseComponent):
         else:
             self.fire(httperror(req, res, error=error))
 
-    @handler("response_failure")
+    @handler('response_failure')
     def _on_response_failure(self, eresponse, error):
         res = eresponse.args[0]
         req = res.request
@@ -452,7 +452,7 @@ class HTTP(BaseComponent):
         res = wrappers.Response(req, self._encoding, 500)
         self.fire(httperror(req, res, error=error))
 
-    @handler("request_complete")
+    @handler('request_complete')
     def _on_request_complete(self, *args, **kwargs):
         """
         Dummy Event Handler for request events
@@ -460,7 +460,7 @@ class HTTP(BaseComponent):
         - request_complete
         """
 
-    @handler("response_success", "response_complete")
+    @handler('response_success', 'response_complete')
     def _on_response_feedback(self, *args, **kwargs):
         """
         Dummy Event Handler for response events
@@ -469,7 +469,7 @@ class HTTP(BaseComponent):
         - response_complete
         """
 
-    @handler("stream_success", "stream_failure", "stream_complete")
+    @handler('stream_success', 'stream_failure', 'stream_complete')
     def _on_stream_feedback(self, *args, **kwargs):
         """
         Dummy Event Handler for stream events

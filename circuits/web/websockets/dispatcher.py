@@ -27,9 +27,9 @@ class WebSocketsDispatcher(BaseComponent):
     WebSocket protocol).
     """
 
-    channel = "web"
+    channel = 'web'
 
-    def __init__(self, path=None, wschannel="wsserver", *args, **kwargs):
+    def __init__(self, path=None, wschannel='wsserver', *args, **kwargs):
         """
         :param path: the path to handle. Requests that start with this
             path are considered to be WebSocket Opening Handshakes.
@@ -46,40 +46,40 @@ class WebSocketsDispatcher(BaseComponent):
         self._wschannel = wschannel
         self._codecs = {}
 
-        @handler("read", channel=wschannel, priority=100)
+        @handler('read', channel=wschannel, priority=100)
         def _on_read_handler(self, event, socket, data):
             if socket in self._requests:
                 event.request = self._requests[socket]
 
         self.addHandler(_on_read_handler)
 
-    @handler("request", priority=0.2)
+    @handler('request', priority=0.2)
     def _on_request(self, event, request, response):
         if self._path is not None and not request.path.startswith(self._path):
             return
 
         self._protocol_version = 13
         headers = request.headers
-        sec_key = headers.get("Sec-WebSocket-Key", "").encode("utf-8")
-        subprotocols = headers.elements("Sec-WebSocket-Protocol")
+        sec_key = headers.get('Sec-WebSocket-Key', '').encode('utf-8')
+        subprotocols = headers.elements('Sec-WebSocket-Protocol')
 
-        connection_tokens = [s.strip() for s in headers.get("Connection", "").lower().split(",")]
+        connection_tokens = [s.strip() for s in headers.get('Connection', '').lower().split(',')]
 
         try:
             if (
-                "Host" not in headers
-                or headers.get("Upgrade", "").lower() != "websocket"
-                or "upgrade" not in connection_tokens
+                'Host' not in headers
+                or headers.get('Upgrade', '').lower() != 'websocket'
+                or 'upgrade' not in connection_tokens
                 or sec_key is None
                 or len(base64.b64decode(sec_key)) != 16
             ):
                 return httperror(request, response, code=400)
-            if headers.get("Sec-WebSocket-Version", "") != "13":
-                response.headers["Sec-WebSocket-Version"] = "13"
+            if headers.get('Sec-WebSocket-Version', '') != '13':
+                response.headers['Sec-WebSocket-Version'] = '13'
                 return httperror(request, response, code=400)
 
             # Generate accept header information
-            msg = sec_key + b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+            msg = sec_key + b'258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
             hasher = hashlib.sha1()
             hasher.update(msg)
             accept = base64.b64encode(hasher.digest())
@@ -88,14 +88,14 @@ class WebSocketsDispatcher(BaseComponent):
             response.status = 101
             response.close = False
             try:
-                del response.headers["Content-Type"]
+                del response.headers['Content-Type']
             except KeyError:
                 pass
-            response.headers["Upgrade"] = "WebSocket"
-            response.headers["Connection"] = "Upgrade"
-            response.headers["Sec-WebSocket-Accept"] = accept.decode("ASCII")
+            response.headers['Upgrade'] = 'WebSocket'
+            response.headers['Connection'] = 'Upgrade'
+            response.headers['Sec-WebSocket-Accept'] = accept.decode('ASCII')
             if subprotocols:
-                response.headers["Sec-WebSocket-Protocol"] = self.select_subprotocol(subprotocols)
+                response.headers['Sec-WebSocket-Protocol'] = self.select_subprotocol(subprotocols)
             codec = WebSocketCodec(request.sock, channel=self._wschannel)
             self._codecs[request.sock] = codec
             codec.register(self)
@@ -106,7 +106,7 @@ class WebSocketsDispatcher(BaseComponent):
     def select_subprotocol(self, subprotocols):
         return subprotocols[0]
 
-    @handler("response_complete")
+    @handler('response_complete')
     def _on_response_complete(self, e, value):
         response = e.args[0]
         request = response.request
@@ -119,7 +119,7 @@ class WebSocketsDispatcher(BaseComponent):
             cevent.request = request
             self.fire(cevent, self._wschannel)
 
-    @handler("disconnect")
+    @handler('disconnect')
     def _on_disconnect(self, sock):
         if sock in self._codecs:
             devent = disconnect(sock)

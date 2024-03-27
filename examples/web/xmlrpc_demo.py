@@ -8,7 +8,7 @@ class Test(Component):
         return a, b, c
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Logger().register(app)
 XMLRPC().register(app)
 Test().register(app)

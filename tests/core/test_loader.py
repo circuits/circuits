@@ -15,13 +15,13 @@ def test_main():
 
     m.start()
 
-    loader.load("app")
+    loader.load('app')
 
     x = m.fire(test())
 
-    assert pytest.wait_for(x, "result")
+    assert pytest.wait_for(x, 'result')
 
     s = x.value
-    assert s == "Hello World!"
+    assert s == 'Hello World!'
 
     m.stop()

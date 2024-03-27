@@ -42,85 +42,85 @@ def parse_options():
     parser = ArgumentParser()
 
     parser.add_argument(
-        "-b",
-        "--bind",
-        action="store",
-        default="0.0.0.0:8000",
-        help="Bind to address:[port]",
+        '-b',
+        '--bind',
+        action='store',
+        default='0.0.0.0:8000',
+        help='Bind to address:[port]',
     )
 
     parser.add_argument(
-        "-l",
-        "--logging",
-        action="store_true",
+        '-l',
+        '--logging',
+        action='store_true',
         default=False,
-        help="Enable logging of requests",
+        help='Enable logging of requests',
     )
 
     parser.add_argument(
-        "-p",
-        "--passwd",
-        action="store",
+        '-p',
+        '--passwd',
+        action='store',
         default=None,
-        help="Location to passwd file for Digest Auth",
+        help='Location to passwd file for Digest Auth',
     )
 
     parser.add_argument(
-        "-j",
-        "--jobs",
-        action="store",
+        '-j',
+        '--jobs',
+        action='store',
         type=int,
         default=0,
-        help="Specify number of jobs/processes to start",
+        help='Specify number of jobs/processes to start',
     )
 
     parser.add_argument(
-        "--poller",
-        action="store",
-        default="select",
-        help="Specify type of poller to use",
+        '--poller',
+        action='store',
+        default='select',
+        help='Specify type of poller to use',
     )
 
     parser.add_argument(
-        "--server",
-        action="store",
-        default="server",
-        help="Specify server to use",
+        '--server',
+        action='store',
+        default='server',
+        help='Specify server to use',
     )
 
     parser.add_argument(
-        "--profile",
-        action="store_true",
+        '--profile',
+        action='store_true',
         default=False,
-        help="Enable execution profiling support",
+        help='Enable execution profiling support',
     )
 
     parser.add_argument(
-        "--debug",
-        action="store_true",
+        '--debug',
+        action='store_true',
         default=False,
-        help="Enable debug mode",
+        help='Enable debug mode',
     )
 
     parser.add_argument(
-        "--validate",
-        action="store_true",
+        '--validate',
+        action='store_true',
         default=False,
-        help="Enable WSGI validation mode",
+        help='Enable WSGI validation mode',
     )
 
-    parser.add_argument("-v", "--version", action="version", version=f"%(prog)s v{circuits.__version__}")
+    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s v{circuits.__version__}')
 
-    parser.add_argument("docroot", nargs="?", default=os.getcwd())
+    parser.add_argument('docroot', nargs='?', default=os.getcwd())
 
     return parser.parse_args()
 
 
 class Authentication(Component):
-    channel = "web"
+    channel = 'web'
 
-    realm = "Secure Area"
-    users = {"admin": md5(b"admin").hexdigest()}
+    realm = 'Secure Area'
+    users = {'admin': md5(b'admin').hexdigest()}
 
     def __init__(self, channel=channel, realm=None, passwd=None):
         super().__init__(self, channel=channel)
@@ -131,9 +131,9 @@ class Authentication(Component):
         if passwd is not None:
             with open(passwd) as f:
                 lines = (line.strip() for line in f)
-                self.users = dict(line.split(":", 1) for line in lines)
+                self.users = dict(line.split(':', 1) for line in lines)
 
-    @handler("request", priority=10)
+    @handler('request', priority=10)
     def request(self, event, request, response):
         if not check_auth(request, response, self.realm, self.users):
             event.stop()
@@ -141,30 +141,30 @@ class Authentication(Component):
 
 
 class HelloWorld(Component):
-    channel = "web"
+    channel = 'web'
 
     def request(self, request, response):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 class Root(Controller):
     def hello(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 def select_poller(poller):
-    if poller == "poll":
+    if poller == 'poll':
         if Poll is None:
             stderr.write(
-                "No poll support available - defaulting to Select...",
+                'No poll support available - defaulting to Select...',
             )
             Poller = Select
         else:
             Poller = Poll
-    elif poller == "epoll":
+    elif poller == 'epoll':
         if EPoll is None:
             stderr.write(
-                "No epoll support available - defaulting to Select...",
+                'No epoll support available - defaulting to Select...',
             )
             Poller = Select
         else:
@@ -176,8 +176,8 @@ def select_poller(poller):
 
 
 def parse_bind(bind):
-    if ":" in bind:
-        address, port = bind.split(":")
+    if ':' in bind:
+        address, port = bind.split(':')
         port = int(port)
     else:
         address, port = bind, 8000
@@ -206,7 +206,7 @@ def main():
     Poller = select_poller(opts.poller.lower())
     Poller().register(manager)
 
-    if opts.server.lower() == "base":
+    if opts.server.lower() == 'base':
         BaseServer(bind).register(manager)
         HelloWorld().register(manager)
     else:
@@ -220,11 +220,11 @@ def main():
     opts.logging and Logger().register(manager)
 
     if opts.profile and hotshot:
-        profiler = hotshot.Profile(".profile")
+        profiler = hotshot.Profile('.profile')
         profiler.start()
 
     if opts.debug:
-        print(graph(manager, name="circuits.web"))
+        print(graph(manager, name='circuits.web'))
         print()
         print(inspect(manager))
 
@@ -237,11 +237,11 @@ def main():
         profiler.stop()
         profiler.close()
 
-        stats = hotshot.stats.load(".profile")
+        stats = hotshot.stats.load('.profile')
         stats.strip_dirs()
-        stats.sort_stats("time", "calls")
+        stats.sort_stats('time', 'calls')
         stats.print_stats(20)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

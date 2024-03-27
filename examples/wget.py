@@ -19,12 +19,12 @@ class WebClient(Component):
         Client().register(self)
 
     def ready(self, *args):
-        self.fire(request("GET", self.url))
+        self.fire(request('GET', self.url))
 
     def response(self, response):
-        print(f"{response.status:d} {response.reason:s}")
+        print(f'{response.status:d} {response.reason:s}')
         print(
-            "\n".join(f"{k:s}: {v:s}" for k, v in response.headers.items()),
+            '\n'.join(f'{k:s}: {v:s}' for k, v in response.headers.items()),
         )
         print(response.read())
         raise SystemExit(0)

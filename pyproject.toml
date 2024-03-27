@@ -67,7 +67,7 @@ combine-as-imports = true
 known-first-party = ["circuits"]
 # https://github.com/astral-sh/ruff/issues/2600 :
 #multi-line-output = 5
-include-trailing-comma = true
+#include-trailing-comma = true
 lines-after-imports = 2
 #skip = ".tox,docs,circuits/web/parsers/multipart.py"
 #skip-glob = "venv/*"

@@ -25,7 +25,7 @@ def tryimport(modules, obj=None, message=None):
 
 
 def getargspec(func):
-    getargs = _inspect.getfullargspec if hasattr(_inspect, "getfullargspec") else _inspect.getargspec
+    getargs = _inspect.getfullargspec if hasattr(_inspect, 'getfullargspec') else _inspect.getargspec
     return getargs(func)[:4]
 
 
@@ -72,9 +72,9 @@ def _graph(x):
     :param x: A Component or Manager to graph
     :type  x: Component or Manager
     """
-    networkx = tryimport("networkx")
-    pygraphviz = tryimport("pygraphviz")
-    plt = tryimport("matplotlib.pyplot", "pyplot")
+    networkx = tryimport('networkx')
+    pygraphviz = tryimport('pygraphviz')
+    plt = tryimport('matplotlib.pyplot', 'pyplot')
 
     if not all([networkx, pygraphviz, plt]):
         return None, None
@@ -86,8 +86,8 @@ def _graph(x):
     g = networkx.DiGraph()
     g.add_weighted_edges_from(graph_edges)
 
-    elarge = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] > 3.0]
-    esmall = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] <= 3.0]
+    elarge = [(u, v) for (u, v, d) in g.edges(data=True) if d['weight'] > 3.0]
+    esmall = [(u, v) for (u, v, d) in g.edges(data=True) if d['weight'] <= 3.0]
 
     pos = networkx.spring_layout(g)  # positions for all nodes
 
@@ -102,8 +102,8 @@ def _graph(x):
         edgelist=esmall,
         width=1,
         alpha=0.5,
-        edge_color="b",
-        style="dashed",
+        edge_color='b',
+        style='dashed',
     )
 
     # labels
@@ -111,10 +111,10 @@ def _graph(x):
         g,
         pos,
         font_size=10,
-        font_family="sans-serif",
+        font_family='sans-serif',
     )
 
-    plt.axis("off")
+    plt.axis('off')
 
     plt.clf()
     return plt, g
@@ -132,9 +132,9 @@ def graph_ascii(x):
     """
 
     def printer(d, x):
-        return "%s* %s" % (" " * d, x)
+        return '%s* %s' % (' ' * d, x)
 
-    return "\n".join(walk(x, printer))
+    return '\n'.join(walk(x, printer))
 
 
 def graph_dot(x, name=None):
@@ -145,10 +145,10 @@ def graph_dot(x, name=None):
     :param name: A name for the graph (defaults to x's name)
     :type  name: str
     """
-    networkx = tryimport("networkx")
+    networkx = tryimport('networkx')
     plt, g = _graph(x)
     if g is not None:
-        networkx.drawing.nx_agraph.write_dot(g, f"{name or x.name}.dot")
+        networkx.drawing.nx_agraph.write_dot(g, f'{name or x.name}.dot')
 
 
 def graph_png(x, name=None):
@@ -161,7 +161,7 @@ def graph_png(x, name=None):
     """
     plt, g = _graph(x)
     if plt is not None:
-        plt.savefig(f"{name or x.name}.png")
+        plt.savefig(f'{name or x.name}.png')
 
 
 def graph(x, name=None):
@@ -190,27 +190,27 @@ def inspect(x):
     s = []
     write = s.append
 
-    write(" Components: %d\n" % len(x.components))
+    write(' Components: %d\n' % len(x.components))
     for component in x.components:
-        write("  %s\n" % component)
-    write("\n")
+        write('  %s\n' % component)
+    write('\n')
 
     from circuits import reprhandler
 
-    write(" Event Handlers: %d\n" % len(x._handlers.values()))
+    write(' Event Handlers: %d\n' % len(x._handlers.values()))
     for event, _handlers in x._handlers.items():
-        write("  %s; %d\n" % (event, len(x._handlers[event])))
+        write('  %s; %d\n' % (event, len(x._handlers[event])))
         for handler in x._handlers[event]:
-            write("   %s\n" % reprhandler(handler))
+            write('   %s\n' % reprhandler(handler))
 
-    return "".join(s)
+    return ''.join(s)
 
 
 def deprecated(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         warn_explicit(
-            f"Call to deprecated function {f.__name__}",
+            f'Call to deprecated function {f.__name__}',
             category=DeprecationWarning,
             filename=f.__code__.co_filename,
             lineno=f.__code__.co_firstlineno + 1,

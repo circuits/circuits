@@ -42,7 +42,7 @@ def code(macro, environ, *args, **kwargs):
     if not macro.body:
         return None
 
-    lang = kwargs.get("lang", None)
+    lang = kwargs.get('lang', None)
 
     if lang is not None:
         if not macro.isblock:
@@ -66,8 +66,8 @@ def code(macro, environ, *args, **kwargs):
     else:
         output = genshi.builder.tag.code(
             macro.body,
-            style="white-space:pre-wrap",
-            class_="highlight",
+            style='white-space:pre-wrap',
+            class_='highlight',
         )
 
     return output
@@ -78,25 +78,25 @@ def source(macro, environ, *args, **kwargs):
     if macro.body is None:
         return None
 
-    return builder.tag.pre(environ["parser"].render(macro.body, environ=environ).decode("utf-8"))
+    return builder.tag.pre(environ['parser'].render(macro.body, environ=environ).decode('utf-8'))
 
 
 def div(macro, environ, cls=None, float=None, id=None, style=None, *args, **kwargs):
     if macro.body is None:
         return None
 
-    if float and float in ("left", "right"):
-        style = f"float: {float}; {style}"
+    if float and float in ('left', 'right'):
+        style = f'float: {float}; {style}'
 
     if style:
-        style = ";".join(sanitizer.sanitize_css(style))
+        style = ';'.join(sanitizer.sanitize_css(style))
 
     if macro.isblock:
-        context = "block"
+        context = 'block'
     else:
-        context = "inline"
+        context = 'inline'
 
-    contents = environ["parser"].generate(
+    contents = environ['parser'].generate(
         macro.body,
         environ=environ,
         context=context,
@@ -111,12 +111,12 @@ def span(macro, environ, class_=None, id=None, style=None, *args, **kwargs):
         return None
 
     if style:
-        style = ";".join(sanitizer.sanitize_css(style))
+        style = ';'.join(sanitizer.sanitize_css(style))
 
-    contents = environ["parser"].generate(
+    contents = environ['parser'].generate(
         macro.body,
         environ=environ,
-        context="inline",
+        context='inline',
     )
 
     return builder.tag.span(contents, id=id, class_=class_, style=style)

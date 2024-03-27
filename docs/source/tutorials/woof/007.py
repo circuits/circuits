@@ -26,13 +26,13 @@ class Dog(Component):
 class Bob(Dog):
     """Bob"""
 
-    channel = "bob"
+    channel = 'bob'
 
 
 class Fred(Dog):
     """Fred"""
 
-    channel = "fred"
+    channel = 'fred'
 
 
 Pound().run()

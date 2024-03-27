@@ -6,9 +6,9 @@ from .helpers import HTTPError, urlopen
 
 
 class Root(BaseComponent):
-    channel = "web"
+    channel = 'web'
 
-    @handler("request", priority=0.2)
+    @handler('request', priority=0.2)
     def request(self, request, response):
         raise Exception()
 

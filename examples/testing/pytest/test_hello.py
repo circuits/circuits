@@ -6,7 +6,7 @@ from hello import App, hello
 @pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
-    watcher.wait("registered")
+    watcher.wait('registered')
 
     def finalizer():
         app.unregister()
@@ -18,6 +18,6 @@ def app(request, manager, watcher):
 
 def test(app, watcher):
     x = app.fire(hello())
-    assert watcher.wait("hello")
+    assert watcher.wait('hello')
 
-    assert x.value == "Hello World!"
+    assert x.value == 'Hello World!'

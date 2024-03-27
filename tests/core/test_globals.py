@@ -11,20 +11,20 @@ class test(Event):
 
 
 class A(Component):
-    channel = "a"
+    channel = 'a'
 
     def test(self):
-        return "Hello World!"
+        return 'Hello World!'
 
     @handler(priority=1.0)
     def _on_event(self, event, *args, **kwargs):
-        return "Foo"
+        return 'Foo'
 
 
 class B(Component):
-    @handler(priority=10.0, channel="*")
+    @handler(priority=10.0, channel='*')
     def _on_channel(self, event, *args, **kwargs):
-        return "Bar"
+        return 'Bar'
 
 
 def test_main():
@@ -32,13 +32,13 @@ def test_main():
     while len(app):
         app.flush()
 
-    x = app.fire(test(), "a")
+    x = app.fire(test(), 'a')
     while len(app):
         app.flush()
 
-    assert x.value[0] == "Bar"
-    assert x.value[1] == "Foo"
-    assert x.value[2] == "Hello World!"
+    assert x.value[0] == 'Bar'
+    assert x.value[1] == 'Foo'
+    assert x.value[2] == 'Hello World!'
 
 
 def test_event():
@@ -51,9 +51,9 @@ def test_event():
     while len(app):
         app.flush()
 
-    assert x.value[0] == "Bar"
-    assert x.value[1] == "Foo"
-    assert x.value[2] == "Hello World!"
+    assert x.value[0] == 'Bar'
+    assert x.value[1] == 'Foo'
+    assert x.value[2] == 'Hello World!'
 
 
 def test_channel():
@@ -62,8 +62,8 @@ def test_channel():
         app.flush()
 
     e = foo()
-    x = app.fire(e, "b")
+    x = app.fire(e, 'b')
     while len(app):
         app.flush()
 
-    assert x.value == "Bar"
+    assert x.value == 'Bar'

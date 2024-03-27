@@ -8,22 +8,22 @@ from .parsers import MultipartParser, QueryStringParser
 def process_multipart(request, params):
     headers = request.headers
 
-    ctype = headers.elements("Content-Type")
+    ctype = headers.elements('Content-Type')
     if ctype:
         ctype = ctype[0]
     else:
-        ctype = HeaderElement.from_str("application/x-www-form-urlencoded")
+        ctype = HeaderElement.from_str('application/x-www-form-urlencoded')
 
-    ib = ""
-    if "boundary" in ctype.params:
+    ib = ''
+    if 'boundary' in ctype.params:
         # http://tools.ietf.org/html/rfc2046#section-5.1.1
         # "The grammar for parameters on the Content-type field is such that it
         # is often necessary to enclose the boundary parameter values in quotes
         # on the Content-type line"
-        ib = ctype.params["boundary"].strip('"')
+        ib = ctype.params['boundary'].strip('"')
 
-    if not re.match("^[ -~]{0,200}[!-~]$", ib):
-        raise ValueError(f"Invalid boundary in multipart form: {ib!r}")
+    if not re.match('^[ -~]{0,200}[!-~]$', ib):
+        raise ValueError(f'Invalid boundary in multipart form: {ib!r}')
 
     parser = MultipartParser(request.body, ib)
     for part in parser:
@@ -33,7 +33,7 @@ def process_multipart(request, params):
             params[part.name] = part.value
 
 
-def process_urlencoded(request, params, encoding="utf-8"):
+def process_urlencoded(request, params, encoding='utf-8'):
     params.update(QueryStringParser(request.qs).result)
     body = request.body.getvalue().decode(encoding)
     result = QueryStringParser(body).result
@@ -52,16 +52,16 @@ def _decode_value(value, encoding):
 
 
 def process(request, params):
-    ctype = request.headers.get("Content-Type")
+    ctype = request.headers.get('Content-Type')
     if not ctype:
         return
 
-    mtype, mencoding = ctype.split("/", 1) if "/" in ctype else (ctype, None)
+    mtype, mencoding = ctype.split('/', 1) if '/' in ctype else (ctype, None)
     mencoding, extra = parse_header(mencoding)
 
-    charset = extra.get("charset", "utf-8")
+    charset = extra.get('charset', 'utf-8')
 
-    if mtype == "multipart":
+    if mtype == 'multipart':
         process_multipart(request, params)
-    elif mtype == "application" and mencoding == "x-www-form-urlencoded":
+    elif mtype == 'application' and mencoding == 'x-www-form-urlencoded':
         process_urlencoded(request, params, encoding=charset)

@@ -13,6 +13,6 @@ def test(webapp):
         urlopen(webapp.server.http.base)
     except HTTPError as e:
         assert e.code == 404
-        assert e.msg == "Not Found"
+        assert e.msg == 'Not Found'
     else:
         assert False

@@ -7,29 +7,29 @@ from circuits.web import Controller
 
 class Root(Controller):
     def GET(self):
-        return "GET"
+        return 'GET'
 
     def PUT(self):
-        return "PUT"
+        return 'PUT'
 
     def POST(self):
-        return "POST"
+        return 'POST'
 
     def DELETE(self):
-        return "DELETE"
+        return 'DELETE'
 
 
-@pytest.mark.parametrize(("method"), ["GET", "PUT", "POST", "DELETE"])
+@pytest.mark.parametrize(('method'), ['GET', 'PUT', 'POST', 'DELETE'])
 def test(webapp, method):
     connection = HTTPConnection(webapp.server.host, webapp.server.port)
     connection.connect()
 
-    connection.request(method, "/")
+    connection.request(method, '/')
     response = connection.getresponse()
     assert response.status == 200
-    assert response.reason == "OK"
+    assert response.reason == 'OK'
 
     s = response.read()
-    assert s == f"{method:s}".encode()
+    assert s == f'{method:s}'.encode()
 
     connection.close()

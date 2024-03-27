@@ -12,9 +12,9 @@ class Root(Controller):
         Request Handlers can still be customized by using the ``@expose``
         decorator. For example exposing as a different path.
         """
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Root().register(app)
 app.run()

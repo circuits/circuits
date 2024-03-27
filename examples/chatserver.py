@@ -12,32 +12,32 @@ from circuits import Component, Debugger
 from circuits.net.events import write
 from circuits.net.sockets import TCPServer
 
-__version__ = "0.0.1"
+__version__ = '0.0.1'
 
-USAGE = "%prog [options]"
-VERSION = "%prog v" + __version__
+USAGE = '%prog [options]'
+VERSION = '%prog v' + __version__
 
 
 def parse_options():
     parser = OptionParser(usage=USAGE, version=VERSION)
 
     parser.add_option(
-        "-b",
-        "--bind",
-        action="store",
-        type="string",
-        default="0.0.0.0:8000",
-        dest="bind",
-        help="Bind to address:[port]",
+        '-b',
+        '--bind',
+        action='store',
+        type='string',
+        default='0.0.0.0:8000',
+        dest='bind',
+        help='Bind to address:[port]',
     )
 
     parser.add_option(
-        "-d",
-        "--debug",
-        action="store_true",
+        '-d',
+        '--debug',
+        action='store_true',
         default=False,
-        dest="debug",
-        help="Enable debug mode",
+        dest='debug',
+        help='Enable debug mode',
     )
 
     opts, args = parser.parse_args()
@@ -62,8 +62,8 @@ class ChatServer(Component):
         if opts.debug:
             Debugger().register(self)
 
-        if ":" in opts.bind:
-            address, port = opts.bind.split(":")
+        if ':' in opts.bind:
+            address, port = opts.bind.split(':')
             port = int(port)
         else:
             address, port = opts.bind, 8000
@@ -81,26 +81,26 @@ class ChatServer(Component):
     def connect(self, sock, host, port):
         """Connect Event -- Triggered for new connecting clients"""
         self.clients[sock] = {
-            "host": sock,
-            "port": port,
-            "state": {
-                "nickname": None,
-                "registered": False,
+            'host': sock,
+            'port': port,
+            'state': {
+                'nickname': None,
+                'registered': False,
             },
         }
 
-        self.fire(write(sock, b"Welcome to the circuits Chat Server!\n"))
-        self.fire(write(sock, b"Please enter a desired nickname: "))
+        self.fire(write(sock, b'Welcome to the circuits Chat Server!\n'))
+        self.fire(write(sock, b'Please enter a desired nickname: '))
 
     def disconnect(self, sock):
         """Disconnect Event -- Triggered for disconnecting clients"""
         if sock not in self.clients:
             return
 
-        nickname = self.clients[sock]["state"]["nickname"]
+        nickname = self.clients[sock]['state']['nickname']
 
         self.broadcast(
-            f"!!! {nickname:s} has left !!!\n".encode(),
+            f'!!! {nickname:s} has left !!!\n'.encode(),
             exclude=[sock],
         )
 
@@ -108,22 +108,22 @@ class ChatServer(Component):
 
     def read(self, sock, data):
         """Read Event -- Triggered for when client connections have data"""
-        data = data.strip().decode("utf-8")
+        data = data.strip().decode('utf-8')
 
-        if not self.clients[sock]["state"]["registered"]:
+        if not self.clients[sock]['state']['registered']:
             nickname = data
-            self.clients[sock]["state"]["registered"] = True
-            self.clients[sock]["state"]["nickname"] = nickname
+            self.clients[sock]['state']['registered'] = True
+            self.clients[sock]['state']['nickname'] = nickname
 
             self.broadcast(
-                f"!!! {nickname:s} has joined !!!\n".encode(),
+                f'!!! {nickname:s} has joined !!!\n'.encode(),
                 exclude=[sock],
             )
         else:
-            nickname = self.clients[sock]["state"]["nickname"]
+            nickname = self.clients[sock]['state']['nickname']
 
             self.broadcast(
-                f"<{nickname:s}> {data:s}\n".encode(),
+                f'<{nickname:s}> {data:s}\n'.encode(),
                 exclude=[sock],
             )
 
@@ -135,5 +135,5 @@ def main():
     ChatServer(args, opts).run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

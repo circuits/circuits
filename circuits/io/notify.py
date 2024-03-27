@@ -12,7 +12,7 @@ try:
         WatchManager,
     )
 except ImportError:
-    raise ImportError("No pyinotify support available. Is pyinotify installed?")
+    raise ImportError('No pyinotify support available. Is pyinotify installed?')
 
 from circuits.core import BaseComponent, handler
 from circuits.core.pollers import BasePoller, Poller
@@ -43,7 +43,7 @@ EVENT_MAP = {
 
 
 class Notify(BaseComponent):
-    channel = "notify"
+    channel = 'notify'
 
     def __init__(self, channel=channel):
         super().__init__(channel=channel)
@@ -72,11 +72,11 @@ class Notify(BaseComponent):
         if wd:
             self._wm.rm_watch(wd, rec=recursive)
 
-    @handler("ready")
+    @handler('ready')
     def _on_ready(self, component):
         self._poller.addReader(self, self._notifier._fd)
 
-    @handler("registered", channel="*")
+    @handler('registered', channel='*')
     def _on_registered(self, component, manager):
         if self._poller is None:
             if isinstance(component, BasePoller):
@@ -93,14 +93,14 @@ class Notify(BaseComponent):
                     self._poller = Poller().register(self)
                     self.fire(ready(self))
 
-    @handler("started", channel="*", priority=1)
+    @handler('started', channel='*', priority=1)
     def _on_started(self, event, component):
         if self._poller is None:
             self._poller = Poller().register(self)
             self.fire(ready(self))
             event.stop()
 
-    @handler("_read", priority=1)
+    @handler('_read', priority=1)
     def __on_read(self, fd):
         self._notifier.read_events()
         self._notifier.process_events()

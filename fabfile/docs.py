@@ -4,41 +4,41 @@ from fabric.api import lcd, local, task
 
 from .utils import pip, requires
 
-PACKAGE = "circuits"
+PACKAGE = 'circuits'
 
 
 @task()
 def api():
     """Generate the API Documentation"""
     if PACKAGE is not None:
-        pip(requirements="docs/requirements.txt")
-        local(f"sphinx-apidoc -f -e -T -o docs/source/api {PACKAGE:s}")
+        pip(requirements='docs/requirements.txt')
+        local(f'sphinx-apidoc -f -e -T -o docs/source/api {PACKAGE:s}')
 
 
 @task()
-@requires("make")
+@requires('make')
 def clean():
     """Delete Generated Documentation"""
-    with lcd("docs"):
-        pip(requirements="requirements.txt")
-        local("make clean")
+    with lcd('docs'):
+        pip(requirements='requirements.txt')
+        local('make clean')
 
 
 @task(default=True)
-@requires("make")
+@requires('make')
 def build(**options):
     """Build the Documentation"""
-    pip(requirements="docs/requirements.txt")
+    pip(requirements='docs/requirements.txt')
 
-    with lcd("docs"):
-        local("make html")
+    with lcd('docs'):
+        local('make html')
 
 
 @task()
-@requires("open")
+@requires('open')
 def view(**options):
     """View the Documentation"""
-    with lcd("docs"):
+    with lcd('docs'):
         import webbrowser
 
-        webbrowser.open_new_tab("build/html/index.html")
+        webbrowser.open_new_tab('build/html/index.html')

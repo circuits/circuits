@@ -15,21 +15,21 @@ class rpc(Event):
 
 
 class XMLRPC(BaseComponent):
-    channel = "web"
+    channel = 'web'
 
-    def __init__(self, path=None, encoding="utf-8", rpc_channel="*"):
+    def __init__(self, path=None, encoding='utf-8', rpc_channel='*'):
         super().__init__()
 
         self.path = path
         self.encoding = encoding
         self.rpc_channel = rpc_channel
 
-    @handler("request", priority=0.2)
+    @handler('request', priority=0.2)
     def _on_request(self, event, req, res):
-        if self.path is not None and self.path != req.path.rstrip("/"):
+        if self.path is not None and self.path != req.path.rstrip('/'):
             return
 
-        res.headers["Content-Type"] = "text/xml"
+        res.headers['Content-Type'] = 'text/xml'
 
         try:
             data = req.body.read()
@@ -41,7 +41,7 @@ class XMLRPC(BaseComponent):
             value = yield self.call(rpc.create(method, *params), self.rpc_channel)
             yield self._response(value.value)
         except Exception as exc:
-            yield self._error(1, f"{type(exc).__name__}: {exc}")
+            yield self._error(1, f'{type(exc).__name__}: {exc}')
         finally:
             event.stop()
 

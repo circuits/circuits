@@ -75,12 +75,12 @@ class BaseComponent(Manager):
         channels and received from all channels.
     """
 
-    channel = "*"
+    channel = '*'
 
     def __new__(cls, *args, **kwargs):
         self = super().__new__(cls)
 
-        handlers = {k: v for k, v in list(cls.__dict__.items()) if getattr(v, "handler", False)}
+        handlers = {k: v for k, v in list(cls.__dict__.items()) if getattr(v, 'handler', False)}
 
         def overridden(x):
             return x in handlers and handlers[x].override
@@ -89,10 +89,10 @@ class BaseComponent(Manager):
             if issubclass(cls, base):
                 for k, v in list(base.__dict__.items()):
                     p1 = isinstance(v, Callable)
-                    p2 = getattr(v, "handler", False)
+                    p2 = getattr(v, 'handler', False)
                     p3 = overridden(k)
                     if p1 and p2 and not p3:
-                        name = f"{base.__name__}_{k}"
+                        name = f'{base.__name__}_{k}'
                         method = MethodType(v, self)
                         setattr(self, name, method)
 
@@ -102,19 +102,19 @@ class BaseComponent(Manager):
         "initializes x; see x.__class__.__doc__ for signature"
         super().__init__(*args, **kwargs)
 
-        self.channel = kwargs.get("channel", self.channel) or "*"
+        self.channel = kwargs.get('channel', self.channel) or '*'
 
         for _k, v in getmembers(self):
-            if getattr(v, "handler", False) is True:
+            if getattr(v, 'handler', False) is True:
                 self.addHandler(v)
             # TODO: Document this feature. See Issue #88
-            if v is not self and isinstance(v, BaseComponent) and v not in ("parent", "root"):
+            if v is not self and isinstance(v, BaseComponent) and v not in ('parent', 'root'):
                 v.register(self)
 
-        if hasattr(self, "init") and isinstance(self.init, Callable):
+        if hasattr(self, 'init') and isinstance(self.init, Callable):
             self.init(*args, **kwargs)
 
-        @handler("prepare_unregister_complete", channel=self)
+        @handler('prepare_unregister_complete', channel=self)
         def _on_prepare_unregister_complete(self, event, e, value):
             self._do_prepare_unregister_complete(event.parent, value)
 
@@ -176,11 +176,11 @@ class BaseComponent(Manager):
 
     @property
     def unregister_pending(self):
-        return getattr(self, "_unregister_pending", False)
+        return getattr(self, '_unregister_pending', False)
 
     def _do_prepare_unregister_complete(self, e, value):
         # Remove component from tree now
-        delattr(self, "_unregister_pending")
+        delattr(self, '_unregister_pending')
         self.fire(unregistered(self, self.parent))
 
         if self.parent is not self:
@@ -198,14 +198,14 @@ class BaseComponent(Manager):
     @classmethod
     def handlers(cls):
         """Returns a list of all event handlers for this Component"""
-        return list({getattr(cls, k) for k in dir(cls) if getattr(getattr(cls, k), "handler", False)})
+        return list({getattr(cls, k) for k in dir(cls) if getattr(getattr(cls, k), 'handler', False)})
 
     @classmethod
     def events(cls):
         """Returns a list of all events this Component listens to"""
-        handlers = (getattr(cls, k).names for k in dir(cls) if getattr(getattr(cls, k), "handler", False))
+        handlers = (getattr(cls, k).names for k in dir(cls) if getattr(getattr(cls, k), 'handler', False))
 
-        return list({name for name in chain(*handlers) if not name.startswith("_")})
+        return list({name for name in chain(*handlers) if not name.startswith('_')})
 
     @classmethod
     def handles(cls, *names):
@@ -213,7 +213,7 @@ class BaseComponent(Manager):
         return all(name in cls.events() for name in names)
 
 
-Component = HandlerMetaClass("Component", (BaseComponent,), {})
+Component = HandlerMetaClass('Component', (BaseComponent,), {})
 """
 If you use Component instead of BaseComponent as base class for your own
 component class, then all methods that are not marked as private

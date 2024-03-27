@@ -15,7 +15,7 @@ class App(Component):
 
         Fired once in 5 seconds.
         """
-        print("Hello World")
+        print('Hello World')
 
     def foo(self):
         """
@@ -23,7 +23,7 @@ class App(Component):
 
         Fired every 1 seconds.
         """
-        print("Foo")
+        print('Foo')
 
     def bar(self):
         """
@@ -31,7 +31,7 @@ class App(Component):
 
         Fired every 3 seconds.
         """
-        print("Bar")
+        print('Bar')
 
     def started(self, component):
         """
@@ -43,9 +43,9 @@ class App(Component):
         respectively.
         """
         # Timer(seconds, event, persist=False)
-        Timer(5, Event.create("hello")).register(self)
-        Timer(1, Event.create("foo"), persist=True).register(self)
-        Timer(3, Event.create("bar"), persist=True).register(self)
+        Timer(5, Event.create('hello')).register(self)
+        Timer(1, Event.create('foo'), persist=True).register(self)
+        Timer(3, Event.create('bar'), persist=True).register(self)
 
 
 App().run()

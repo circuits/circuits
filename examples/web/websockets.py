@@ -8,22 +8,22 @@ from circuits.web.dispatchers import WebSocketsDispatcher
 
 
 class Echo(Component):
-    channel = "wsserver"
+    channel = 'wsserver'
 
     def read(self, sock, data):
-        self.fireEvent(write(sock, "Received: " + data))
+        self.fireEvent(write(sock, 'Received: ' + data))
 
 
 class Root(Controller):
     def index(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Debugger().register(app)
 Static().register(app)
 Echo().register(app)
 Root().register(app)
 Logger().register(app)
-WebSocketsDispatcher("/websocket").register(app)
+WebSocketsDispatcher('/websocket').register(app)
 app.run()

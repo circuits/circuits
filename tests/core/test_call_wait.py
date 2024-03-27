@@ -65,28 +65,28 @@ class eval(Event):
 
 
 class App(Component):
-    @handler("wait")
+    @handler('wait')
     def _on_wait(self):
         x = self.fire(hello())
-        yield self.wait("hello")
+        yield self.wait('hello')
         yield x.value
 
-    @handler("call")
+    @handler('call')
     def _on_call(self):
         x = yield self.call(hello())
         yield x.value
 
     def hello(self):
-        return "Hello World!"
+        return 'Hello World!'
 
     def long_wait(self):
         x = self.fire(foo())
-        yield self.wait("foo")
+        yield self.wait('foo')
         yield x.value
 
     def wait_return(self):
         self.fire(foo())
-        yield (yield self.wait("foo"))
+        yield (yield self.wait('foo'))
 
     def long_call(self):
         x = yield self.call(foo())
@@ -110,7 +110,7 @@ class App(Component):
 @pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
-    assert watcher.wait("registered")
+    assert watcher.wait('registered')
 
     def finalizer():
         app.unregister()
@@ -122,23 +122,23 @@ def app(request, manager, watcher):
 
 def test_wait_simple(manager, watcher, app):
     x = manager.fire(wait())
-    assert watcher.wait("wait_success")
+    assert watcher.wait('wait_success')
 
     value = x.value
-    assert value == "Hello World!"
+    assert value == 'Hello World!'
 
 
 def call_simple(manager, watcher, app):
     x = manager.fire(call())
-    assert watcher.wait("call_success")
+    assert watcher.wait('call_success')
 
     value = x.value
-    assert value == "Hello World!"
+    assert value == 'Hello World!'
 
 
 def test_long_call(manager, watcher, app):
     x = manager.fire(long_call())
-    assert watcher.wait("long_call_success")
+    assert watcher.wait('long_call_success')
 
     value = x.value
     assert value == list(range(1, 10))
@@ -146,7 +146,7 @@ def test_long_call(manager, watcher, app):
 
 def test_long_wait(manager, watcher, app):
     x = manager.fire(long_wait())
-    assert watcher.wait("long_wait_success")
+    assert watcher.wait('long_wait_success')
 
     value = x.value
     assert value == list(range(1, 10))
@@ -154,7 +154,7 @@ def test_long_wait(manager, watcher, app):
 
 def test_wait_return(manager, watcher, app):
     x = manager.fire(wait_return())
-    assert watcher.wait("wait_return_success")
+    assert watcher.wait('wait_return_success')
 
     value = x.value
     assert value == list(range(1, 10))
@@ -162,18 +162,18 @@ def test_wait_return(manager, watcher, app):
 
 def test_eval(manager, watcher, app):
     x = manager.fire(eval())
-    assert watcher.wait("eval_success")
+    assert watcher.wait('eval_success')
 
     value = x.value
     assert value == 3
 
 
-@pytest.mark.xfail(reason="Issue #226")
+@pytest.mark.xfail(reason='Issue #226')
 @pytest.mark.timeout(1)
 def test_wait_too_late(manager, watcher, app):
     event = foo()
     manager.fire(event)
-    assert watcher.wait("foo_success")
+    assert watcher.wait('foo_success')
     manager.tick()
 
     x = manager.wait(event, timeout=0.1)

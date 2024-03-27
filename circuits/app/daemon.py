@@ -49,25 +49,25 @@ class Daemon(Component):
     :type  stderr:  str or unicode
     """
 
-    channel = "daemon"
+    channel = 'daemon'
 
-    def init(self, pidfile, path="/", stdin=None, stdout=None, stderr=None, channel=channel):
-        assert isabs(path), "path must be absolute"
+    def init(self, pidfile, path='/', stdin=None, stdout=None, stderr=None, channel=channel):
+        assert isabs(path), 'path must be absolute'
 
         self.pidfile = pidfile
         self.path = path
 
-        self.stdin = stdin if stdin is not None and isabs(stdin) else "/dev/null"
+        self.stdin = stdin if stdin is not None and isabs(stdin) else '/dev/null'
 
-        self.stdout = stdout if stdout is not None and isabs(stdout) else "/dev/null"
+        self.stdout = stdout if stdout is not None and isabs(stdout) else '/dev/null'
 
-        self.stderr = stderr if stderr is not None and isabs(stderr) else "/dev/null"
+        self.stderr = stderr if stderr is not None and isabs(stderr) else '/dev/null'
 
     def deletepid(self):
         remove(self.pidfile)
 
     def writepid(self):
-        with open(self.pidfile, "w") as fd:
+        with open(self.pidfile, 'w') as fd:
             fd.write(str(getpid()))
 
     def daemonize(self):
@@ -77,7 +77,7 @@ class Daemon(Component):
                 # exit first parent
                 _exit(0)
         except OSError as e:
-            stderr.write(f"fork #1 failed: {e.errno:d} ({e})\n")
+            stderr.write(f'fork #1 failed: {e.errno:d} ({e})\n')
 
             raise SystemExit(1)
 
@@ -93,7 +93,7 @@ class Daemon(Component):
                 # exit from second parent
                 _exit(0)
         except OSError as e:
-            stderr.write(f"fork #2 failed: {e.errno:d} ({e})\n")
+            stderr.write(f'fork #2 failed: {e.errno:d} ({e})\n')
 
             raise SystemExit(1)
 
@@ -108,8 +108,8 @@ class Daemon(Component):
         closerange(0, maxfd)
 
         si = open(self.stdin)
-        so = open(self.stdout, "a+")
-        se = open(self.stderr, "a+")
+        so = open(self.stdout, 'a+')
+        se = open(self.stderr, 'a+')
 
         dup2(si.fileno(), stdin.fileno())
         dup2(so.fileno(), stdout.fileno())
@@ -122,7 +122,7 @@ class Daemon(Component):
         if component == self and manager.root.running:
             self.fire(daemonize())
 
-    @handler("started", priority=100.0, channel="*")
+    @handler('started', priority=100.0, channel='*')
     def on_started(self, component):
         if component is not self:
             self.fire(daemonize())

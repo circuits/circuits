@@ -11,7 +11,7 @@ class test(Event):
 
 class App(Component):
     def test(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 def test_repr():
@@ -22,12 +22,12 @@ def test_repr():
     e = test()
 
     s = repr(e)
-    assert s == "<test[] ( )>"
+    assert s == '<test[] ( )>'
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<test[*] ( )>"
+    assert s == '<test[*] ( )>'
 
 
 def test_create():
@@ -35,15 +35,15 @@ def test_create():
     while len(app):
         app.flush()
 
-    e = Event.create("test")
+    e = Event.create('test')
 
     s = repr(e)
-    assert s == "<test[] ( )>"
+    assert s == '<test[] ( )>'
 
     app.fire(e)
 
     s = repr(e)
-    assert s == "<test[*] ( )>"
+    assert s == '<test[*] ( )>'
 
 
 def test_getitem():
@@ -51,10 +51,10 @@ def test_getitem():
     while len(app):
         app.flush()
 
-    e = test(1, 2, 3, foo="bar")
+    e = test(1, 2, 3, foo='bar')
 
     assert e[0] == 1
-    assert e["foo"] == "bar"
+    assert e['foo'] == 'bar'
 
     def f(e, k):
         return e[k]
@@ -67,13 +67,13 @@ def test_setitem():
     while len(app):
         app.flush()
 
-    e = test(1, 2, 3, foo="bar")
+    e = test(1, 2, 3, foo='bar')
 
     assert e[0] == 1
-    assert e["foo"] == "bar"
+    assert e['foo'] == 'bar'
 
     e[0] = 0
-    e["foo"] = "Hello"
+    e['foo'] = 'Hello'
 
     def f(e, k, v):
         e[k] = v
@@ -81,12 +81,12 @@ def test_setitem():
     pytest.raises(TypeError, f, e, None, None)
 
     assert e[0] == 0
-    assert e["foo"] == "Hello"
+    assert e['foo'] == 'Hello'
 
 
 def test_subclass_looses_properties():
     class hello(Event):
         success = True
 
-    e = hello().child("success")
+    e = hello().child('success')
     assert e.success is False

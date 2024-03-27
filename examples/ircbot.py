@@ -20,9 +20,9 @@ from circuits.protocols.irc import (
 
 class Bot(Component):
     # Define a separate channel so we can create many instances of ``Bot``
-    channel = "ircbot"
+    channel = 'ircbot'
 
-    def init(self, host="irc.libera.chat", port="6667", channel=channel):
+    def init(self, host='irc.libera.chat', port='6667', channel=channel):
         self.host = host
         self.port = int(port)
 
@@ -46,8 +46,8 @@ class Bot(Component):
         This event is triggered by the underlying ``TCPClient`` Component
         when a successfully connection has been made.
         """
-        self.fire(NICK("circuits"))
-        self.fire(USER("circuits", "circuits", host, "Test circuits IRC Bot"))
+        self.fire(NICK('circuits'))
+        self.fire(USER('circuits', 'circuits', host, 'Test circuits IRC Bot'))
 
     def disconnected(self):
         """
@@ -66,9 +66,9 @@ class Bot(Component):
         received an IRC Numberic Event from server we are connected to.
         """
         if numeric == ERR_NICKNAMEINUSE:
-            self.fire(NICK(f"{args[0]:s}_"))
+            self.fire(NICK(f'{args[0]:s}_'))
         elif numeric in (RPL_ENDOFMOTD, ERR_NOMOTD):
-            self.fire(JOIN("#circuits"))
+            self.fire(JOIN('#circuits'))
 
     def privmsg(self, source, target, message):
         """
@@ -77,7 +77,7 @@ class Bot(Component):
         This event is triggered by the ``IRC`` Protocol Component for each
         message we receieve from the server.
         """
-        if target.startswith("#"):
+        if target.startswith('#'):
             self.fire(PRIVMSG(target, message))
         else:
             self.fire(PRIVMSG(source[0], message))

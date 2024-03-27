@@ -28,7 +28,7 @@ class App(Component):
 
     def started(self, component):
         x = yield self.call(hello())
-        print(f"{x.value:d}")
+        print(f'{x.value:d}')
         self.stop()
 
 

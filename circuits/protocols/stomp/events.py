@@ -13,7 +13,7 @@ class stomp_event(Event):
     success = True
 
     def _repr(self):
-        return ""
+        return ''
 
     def __repr__(self):
         "x.__repr__() <==> repr(x)"
@@ -22,11 +22,11 @@ class stomp_event(Event):
         elif len(self.channels) == 1:
             channels = str(self.channels[0])
         else:
-            channels = ""
+            channels = ''
 
         data = self._repr()
 
-        return f"<{self.name}[{channels}] ({data})>"
+        return f'<{self.name}[{channels}] ({data})>'
 
 
 class disconnected(stomp_event):

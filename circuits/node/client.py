@@ -8,7 +8,7 @@ from .protocol import Protocol
 class Client(BaseComponent):
     """Node Client (peer)"""
 
-    channel = "node_client"
+    channel = 'node_client'
 
     def __init__(self, host, port, channel=channel, receive_event_firewall=None, send_event_firewall=None, **kwargs):
         """
@@ -51,7 +51,7 @@ class Client(BaseComponent):
 
         TCPClient(channel=channel, **kwargs).register(self)
 
-    @handler("ready")
+    @handler('ready')
     def _on_ready(self, component):
         self.connect()
 
@@ -75,6 +75,6 @@ class Client(BaseComponent):
         """
         return self.__protocol.send(event)
 
-    @handler("read")
+    @handler('read')
     def _on_read(self, data):
         self.__protocol.add_buffer(data)

@@ -25,10 +25,10 @@ class ResponseObject:
         self.reason = HTTP_STATUS_CODES[self.status]
 
     def __repr__(self):
-        return "<Response {:d} {} {} ({:d})>".format(
+        return '<Response {:d} {} {} ({:d})>'.format(
             self.status,
             self.reason,
-            self.headers.get("Content-Type"),
+            self.headers.get('Content-Type'),
             len(self.body.getvalue()),
         )
 
@@ -37,9 +37,9 @@ class ResponseObject:
 
 
 class HTTP(BaseComponent):
-    channel = "web"
+    channel = 'web'
 
-    def __init__(self, encoding="utf-8", channel=channel):
+    def __init__(self, encoding='utf-8', channel=channel):
         super().__init__(channel=channel)
 
         self._encoding = encoding
@@ -49,7 +49,7 @@ class HTTP(BaseComponent):
 
         self._parser = HttpParser(1, True)
 
-    @handler("read")
+    @handler('read')
     def _on_client_read(self, data):
         self._parser.execute(data, len(data))
         if self._parser.is_message_complete() or self._parser.is_upgrade() or (self._parser.is_headers_complete() and self._parser._clen == 0):

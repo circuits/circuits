@@ -34,21 +34,21 @@ class VirtualHosts(BaseComponent):
     the port number.
     """
 
-    channel = "web"
+    channel = 'web'
 
     def __init__(self, domains):
         super().__init__()
 
         self.domains = domains
 
-    @handler("request", priority=1.0)
+    @handler('request', priority=1.0)
     def _on_request(self, event, request, response):
-        path = request.path.strip("/")
+        path = request.path.strip('/')
 
         header = request.headers.get
-        domain = header("X-Forwarded-Host", header("Host", ""))
-        prefix = self.domains.get(domain, "")
+        domain = header('X-Forwarded-Host', header('Host', ''))
+        prefix = self.domains.get(domain, '')
 
         if prefix:
-            path = urljoin("/%s/" % prefix, path)
+            path = urljoin('/%s/' % prefix, path)
             request.path = path

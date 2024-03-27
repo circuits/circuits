@@ -11,7 +11,7 @@ class hello(Event):
 
 class App(Component):
     def hello(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 class Root(Controller):
@@ -24,4 +24,4 @@ def test(webapp):
 
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b"Hello World!"
+    assert s == b'Hello World!'

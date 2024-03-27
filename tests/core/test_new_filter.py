@@ -12,19 +12,19 @@ class hello(Event):
 
 class App(Component):
     def hello(self, event, *args, **kwargs):
-        if kwargs.get("stop", False):
+        if kwargs.get('stop', False):
             event.stop()
-        return "Hello World!"
+        return 'Hello World!'
 
 
 @pytest.fixture()
 def app(request, manager, watcher):
     app = (App() + App()).register(manager)
-    watcher.wait("registered")
+    watcher.wait('registered')
 
     def finalizer():
         app.unregister()
-        watcher.wait("unregistered")
+        watcher.wait('unregistered')
 
     request.addfinalizer(finalizer)
 
@@ -33,11 +33,11 @@ def app(request, manager, watcher):
 
 def test_normal(app, watcher):
     x = app.fire(hello())
-    watcher.wait("hello_success")
-    assert x.value == ["Hello World!", "Hello World!"]
+    watcher.wait('hello_success')
+    assert x.value == ['Hello World!', 'Hello World!']
 
 
 def test_filter(app, watcher):
     x = app.fire(hello(stop=True))
-    watcher.wait("hello_success")
-    assert x.value == "Hello World!"
+    watcher.wait('hello_success')
+    assert x.value == 'Hello World!'

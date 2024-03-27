@@ -27,17 +27,17 @@ def wait(pid, timeout=3):
 
 
 def test(tmpdir):
-    if os.name != "posix":
-        pytest.skip("Cannot run test on a non-POSIX platform.")
+    if os.name != 'posix':
+        pytest.skip('Cannot run test on a non-POSIX platform.')
 
-    tmpdir.ensure(".pid")
-    tmpdir.ensure(".signal")
-    pidfile = str(tmpdir.join(".pid"))
-    signalfile = str(tmpdir.join(".signal"))
+    tmpdir.ensure('.pid')
+    tmpdir.ensure('.signal')
+    pidfile = str(tmpdir.join('.pid'))
+    signalfile = str(tmpdir.join('.signal'))
 
     args = [sys.executable, signalapp.__file__, pidfile, signalfile]
-    cmd = " ".join(args)
-    p = Popen(cmd, shell=True, env={"PYTHONPATH": ":".join(sys.path)})
+    cmd = ' '.join(args)
+    p = Popen(cmd, shell=True, env={'PYTHONPATH': ':'.join(sys.path)})
     status = p.wait()
 
     assert status == 0

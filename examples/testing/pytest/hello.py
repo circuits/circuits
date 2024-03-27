@@ -11,7 +11,7 @@ class hello(Event):
 class App(Component):
     def hello(self):
         """Hello Event Handler"""
-        return "Hello World!"
+        return 'Hello World!'
 
     def started(self, component):
         """
@@ -21,7 +21,7 @@ class App(Component):
         trigger events that only occur once during startup.
         """
         x = self.fire(hello())  # Fire hello Event
-        yield self.wait("hello")  # Wait for Hello Event to fire
+        yield self.wait('hello')  # Wait for Hello Event to fire
 
         print(x.value)  # Print the value we got back from firing Hello
 
@@ -32,5 +32,5 @@ def main():
     App().run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

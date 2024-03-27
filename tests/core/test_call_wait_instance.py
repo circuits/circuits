@@ -17,7 +17,7 @@ class hello(Event):
 
 
 class App(Component):
-    @handler("wait")
+    @handler('wait')
     def _on_wait(self):
         e = hello()
         x = self.fire(e)
@@ -25,13 +25,13 @@ class App(Component):
         yield x.value
 
     def hello(self):
-        return "Hello World!"
+        return 'Hello World!'
 
 
 @pytest.fixture()
 def app(request, manager, watcher):
     app = App().register(manager)
-    assert watcher.wait("registered")
+    assert watcher.wait('registered')
 
     def finalizer():
         app.unregister()
@@ -43,7 +43,7 @@ def app(request, manager, watcher):
 
 def test_wait_instance(manager, watcher, app):
     x = manager.fire(wait())
-    assert watcher.wait("wait_success")
+    assert watcher.wait('wait_success')
 
     value = x.value
-    assert value == "Hello World!"
+    assert value == 'Hello World!'

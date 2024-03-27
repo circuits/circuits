@@ -15,13 +15,13 @@ from circuits.io import Notify
 
 
 class FileWatcher(Component):
-    channel = "notify"
+    channel = 'notify'
 
     def opened(self, filename, path, fullpath, isdir):
-        print(f"File {filename:s} opened")
+        print(f'File {filename:s} opened')
 
     def closed(self, filename, path, fullpath, isdir):
-        print(f"File {filename:s} closed")
+        print(f'File {filename:s} closed')
 
 
 # Configure the system

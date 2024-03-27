@@ -8,25 +8,25 @@ from .helpers import CookieJar, HTTPCookieProcessor, build_opener, urlopen
 
 class Root(JSONController):
     def index(self):
-        return {"success": True, "message": "Hello World!"}
+        return {'success': True, 'message': 'Hello World!'}
 
     def test_sessions(self, name=None):
         if name:
             with self.session as data:
-                data["name"] = name
+                data['name'] = name
         else:
-            name = self.session.get("name", "World!")
+            name = self.session.get('name', 'World!')
 
-        return {"success": True, "message": "Hello %s" % name}
+        return {'success': True, 'message': 'Hello %s' % name}
 
 
 def test(webapp):
     f = urlopen(webapp.server.http.base)
     data = f.read()
-    data = data.decode("utf-8")
+    data = data.decode('utf-8')
     d = loads(data)
-    assert d["success"]
-    assert d["message"] == "Hello World!"
+    assert d['success']
+    assert d['message'] == 'Hello World!'
 
 
 def test_sessions(webapp):
@@ -35,23 +35,23 @@ def test_sessions(webapp):
     cj = CookieJar()
     opener = build_opener(HTTPCookieProcessor(cj))
 
-    f = opener.open("%s/test_sessions" % webapp.server.http.base)
+    f = opener.open('%s/test_sessions' % webapp.server.http.base)
     data = f.read()
-    data = data.decode("utf-8")
+    data = data.decode('utf-8')
     d = loads(data)
-    assert d["success"]
-    assert d["message"] == "Hello World!"
+    assert d['success']
+    assert d['message'] == 'Hello World!'
 
-    f = opener.open("%s/test_sessions/test" % webapp.server.http.base)
+    f = opener.open('%s/test_sessions/test' % webapp.server.http.base)
     data = f.read()
-    data = data.decode("utf-8")
+    data = data.decode('utf-8')
     d = loads(data)
-    assert d["success"]
-    assert d["message"] == "Hello test"
+    assert d['success']
+    assert d['message'] == 'Hello test'
 
-    f = opener.open("%s/test_sessions" % webapp.server.http.base)
+    f = opener.open('%s/test_sessions' % webapp.server.http.base)
     data = f.read()
-    data = data.decode("utf-8")
+    data = data.decode('utf-8')
     d = loads(data)
-    assert d["success"]
-    assert d["message"] == "Hello test"
+    assert d['success']
+    assert d['message'] == 'Hello test'

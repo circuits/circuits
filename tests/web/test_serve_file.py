@@ -12,7 +12,7 @@ class Root(Controller):
         super().__init__(self, *args, **kwargs)
 
         fd, self.filename = mkstemp()
-        os.write(fd, b"Hello World!")
+        os.write(fd, b'Hello World!')
         os.close(fd)
 
     def __del__(self):
@@ -25,4 +25,4 @@ class Root(Controller):
 def test(webapp):
     f = urlopen(webapp.server.http.base)
     s = f.read()
-    assert s == b"Hello World!"
+    assert s == b'Hello World!'

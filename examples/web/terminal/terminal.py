@@ -24,7 +24,7 @@ class input(Event):
 
 
 class Command(Component):
-    channel = "cmd"
+    channel = 'cmd'
 
     def __init__(self, request, response, command, channel=channel):
         super().__init__(channel=channel)
@@ -47,26 +47,26 @@ class Command(Component):
 
         self._stdin = None
         if self._p.stdin is not None:
-            self._stdin = File(self._p.stdin, channel="%s.stdin" % channel)
+            self._stdin = File(self._p.stdin, channel='%s.stdin' % channel)
             self._stdin.register(self)
 
-        self._stdout = File(self._p.stdout, channel="%s.stdout" % channel)
+        self._stdout = File(self._p.stdout, channel='%s.stdout' % channel)
         self.addHandler(
-            handler("eof", channel="%s.stdout" % channel)(self._on_stdout_eof),
+            handler('eof', channel='%s.stdout' % channel)(self._on_stdout_eof),
         )
         self.addHandler(
-            handler("read", channel="%s.stdout" % channel)(
+            handler('read', channel='%s.stdout' % channel)(
                 self._on_stdout_read,
             ),
         )
         self._stdout.register(self)
 
-    @handler("disconnect", channel="web")
+    @handler('disconnect', channel='web')
     def disconnect(self, sock):
         if sock == self._request.sock:
             self.fire(kill(), self)
 
-    @handler("response", channel="web", priority=-1)
+    @handler('response', channel='web', priority=-1)
     def response(self, response):
         if response == self._response:
             self._state = STREAMING
@@ -84,8 +84,8 @@ class Command(Component):
         if self._buffer is not None:
             self._buffer.flush()
             data = self._buffer.getvalue()
-            self.fire(stream(self._response, data), "web")
-        self.fire(stream(self._response, None), "web")
+            self.fire(stream(self._response, data), 'web')
+        self.fire(stream(self._response, None), 'web')
         self.fire(kill())
 
     @staticmethod
@@ -100,23 +100,23 @@ class Command(Component):
                 self._buffer.flush()
                 data = self._buffer.getvalue()
                 self._buffer = None
-                self.fire(stream(self._response, data), "web")
+                self.fire(stream(self._response, data), 'web')
             else:
-                self.fire(stream(self._response, data), "web")
+                self.fire(stream(self._response, data), 'web')
 
 
 class Root(Controller):
     def GET(self, *args, **kwargs):
         self.expires(60 * 60 * 24 * 30)
-        return self.serve_file(os.path.abspath("static/index.html"))
+        return self.serve_file(os.path.abspath('static/index.html'))
 
     def POST(self, input=None):
         if not input:
-            return ""
+            return ''
 
-        self.response.headers["Content-Type"] = "text/plain"
+        self.response.headers['Content-Type'] = 'text/plain'
 
-        if input.strip() == "inspect":
+        if input.strip() == 'inspect':
             return inspect(self)
 
         self.response.stream = True
@@ -127,10 +127,10 @@ class Root(Controller):
         return self.response
 
 
-app = Server(("0.0.0.0", 8000))
+app = Server(('0.0.0.0', 8000))
 Debugger().register(app)
-Static("/js", docroot="static/js").register(app)
-Static("/css", docroot="static/css").register(app)
+Static('/js', docroot='static/js').register(app)
+Static('/css', docroot='static/css').register(app)
 Sessions().register(app)
 Logger().register(app)
 Root().register(app)
