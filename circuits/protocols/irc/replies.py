@@ -69,11 +69,7 @@ def RPL_UMODEIS(modes):
 def RPL_LUSERCLIENT(nusers, nservices, nservers):
     return _M(
         '251',
-        'There are {} users and {} services on {} servers'.format(
-            nusers,
-            nservices,
-            nservers,
-        ),
+        f'There are {nusers} users and {nservices} services on {nservers} servers',
     )
 
 

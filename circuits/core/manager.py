@@ -22,6 +22,7 @@ from .events import Event, exception, generate_events, signal, started, stopped
 from .handlers import handler
 from .values import Value
 
+
 try:
     from signal import SIGKILL
 except ImportError:
@@ -69,7 +70,7 @@ class Sleep:
 
     def __next__(self):
         if time() >= self.expiry:
-            raise StopIteration()
+            raise StopIteration
         return self
 
     @property
@@ -102,7 +103,7 @@ del Dummy
 
 
 class _State:
-    __slots__ = ('task', 'run', 'flag', 'event', 'timeout', 'parent', 'task_event', 'tick_handler')
+    __slots__ = ('event', 'flag', 'parent', 'run', 'task', 'task_event', 'tick_handler', 'timeout')
 
     def __init__(self, timeout):
         self.task = None
@@ -116,7 +117,7 @@ class _State:
 
 
 class _EventQueue:
-    __slots__ = ('_queue', '_priority_queue', '_counter', '_flush_batch')
+    __slots__ = ('_counter', '_flush_batch', '_priority_queue', '_queue')
 
     def __init__(self):
         self._queue = deque()
@@ -207,7 +208,7 @@ class Manager:
     """
 
     def __init__(self, *args, **kwargs):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         self._queue = _EventQueue()
 
         self._tasks = set()
@@ -229,13 +230,13 @@ class Manager:
         self.components = set()
 
     def __nonzero__(self):
-        "x.__nonzero__() <==> bool(x)"
+        """x.__nonzero__() <==> bool(x)"""
         return True
 
     __bool__ = __nonzero__
 
     def __repr__(self):
-        "x.__repr__() <==> repr(x)"
+        """x.__repr__() <==> repr(x)"""
         name = self.__class__.__name__
 
         channel = '/{}'.format(getattr(self, 'channel', ''))
@@ -408,7 +409,7 @@ class Manager:
     def registerChild(self, component):
         if component._executing_thread is not None:
             if self.root._executing_thread is not None:
-                raise UnregistrableError()
+                raise UnregistrableError
             self.root._executing_thread = component._executing_thread
             component._executing_thread = None
         self.components.add(component)
@@ -745,12 +746,11 @@ class Manager:
             self.__process.start()
 
             return self.__process, bridge
-        else:
-            self.__thread = Thread(target=self.run, name=self.name)
-            self.__thread.daemon = True
-            self.__thread.start()
+        self.__thread = Thread(target=self.run, name=self.name)
+        self.__thread.daemon = True
+        self.__thread.start()
 
-            return self.__thread, None
+        return self.__thread, None
 
     def join(self):
         if self.__thread is not None:

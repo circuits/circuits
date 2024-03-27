@@ -19,6 +19,7 @@ from .components import BaseComponent
 from .events import Event
 from .handlers import handler
 
+
 DEFAULT_WORKERS = 10
 
 
@@ -42,7 +43,7 @@ class task(Event):
     failure = True
 
     def __init__(self, f, *args, **kwargs):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(f, *args, **kwargs)
 
 

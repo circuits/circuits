@@ -2,6 +2,7 @@ import pytest
 
 from circuits.net.sockets import TCPServer
 
+
 try:
     from socket import SO_REUSEPORT, SOL_SOCKET
 except ImportError:

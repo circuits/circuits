@@ -5,7 +5,7 @@ This module implements Session Components that can be used to store
 and access persistent information.
 """
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from hashlib import sha1 as sha
 from uuid import uuid4 as uuid
@@ -76,7 +76,7 @@ class Session(dict):
             self.store.save(self.sid, self)
 
 
-class Store(metaclass=ABCMeta):
+class Store(ABC):
     @abstractmethod
     def delete(self, sid):
         """Delete the session data identified by sid"""

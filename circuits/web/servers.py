@@ -51,7 +51,7 @@ class BaseServer(BaseComponent):
     channel = 'web'
 
     def __init__(self, bind, encoding='utf-8', secure=False, certfile=None, channel=channel, display_banner=True, bufsize=BUFSIZE, **kwargs):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(channel=channel)
 
         self._display_banner = display_banner
@@ -105,7 +105,7 @@ class BaseServer(BaseComponent):
 
     @handler('signal')
     def _on_signal(self, *args, **kwargs):
-        """signal Event Handler"""
+        """Signal Event Handler"""
         self.fire(close())
         Timer(3, terminate()).register(self)
 
@@ -116,10 +116,7 @@ class BaseServer(BaseComponent):
     @handler('ready')
     def _on_ready(self, server, bind):
         stderr.write(
-            '{} ready! Listening on: {}\n'.format(
-                self.http.version,
-                self.http.base,
-            ),
+            f'{self.http.version} ready! Listening on: {self.http.base}\n',
         )
 
 
@@ -135,7 +132,7 @@ class Server(BaseServer):
     """
 
     def __init__(self, bind, **kwargs):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(bind, **kwargs)
 
         Dispatcher(channel=self.channel).register(self.http)

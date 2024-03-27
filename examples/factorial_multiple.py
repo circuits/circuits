@@ -33,7 +33,7 @@ class App(Component):
 
     def task_success(self, function_called, factorial_result):
         func, argument = function_called
-        print(f'factorial({str(argument)}) = {factorial_result:d}')
+        print(f'factorial({argument!s}) = {factorial_result:d}')
         # Stop after the last and longest running task
         if argument == 14:
             self.stop()

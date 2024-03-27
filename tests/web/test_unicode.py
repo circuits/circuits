@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import pytest
 from http.client import HTTPConnection
+
+import pytest
 
 from circuits.web import Controller
 from circuits.web.client import Client, request

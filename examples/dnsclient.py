@@ -18,6 +18,7 @@ To run this example::
 """
 
 import sys
+
 from dnslib import DNSQuestion, DNSRecord
 
 from circuits import Component, Debugger, Event
@@ -49,17 +50,12 @@ class Dummy(Component):
         qname = response.q.qname
 
         print(
-            'DNS Response from {:s}:{:d} id={:d} qname={:s}'.format(
-                peer[0],
-                peer[1],
-                id,
-                str(qname),
-            ),
+            f'DNS Response from {peer[0]:s}:{peer[1]:d} id={id:d} qname={qname!s:s}',
             file=sys.stderr,
         )
 
         for rr in response.rr:
-            print(f' {str(rr):s}')
+            print(f' {rr!s:s}')
 
         raise SystemExit(0)
 

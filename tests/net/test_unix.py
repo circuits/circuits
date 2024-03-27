@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import os
-import pytest
 import select
 import sys
 import tempfile
+
+import pytest
 from pytest import fixture
 
 from circuits import Manager
@@ -12,6 +13,7 @@ from circuits.net.sockets import UNIXClient, UNIXServer, close, connect, write
 
 from .client import Client
 from .server import Server
+
 
 if sys.platform in ('win32', 'cygwin'):
     pytest.skip('Test Not Applicable on Windows')

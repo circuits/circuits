@@ -13,9 +13,11 @@ import platform
 import select
 import sys
 from errno import EBADF, EINTR
-from select import error as SelectError
 from socket import (
-    AF_INET, SOCK_STREAM, create_connection, error as SocketError, socket,
+    AF_INET,
+    SOCK_STREAM,
+    create_connection,
+    socket,
 )
 from threading import Thread
 
@@ -100,8 +102,7 @@ class BasePoller(BaseComponent):
         try:
             if isinstance(self._ctrl_recv, socket):
                 return self._ctrl_recv.recv(1)
-            else:
-                return os.read(self._ctrl_recv, 1)
+            return os.read(self._ctrl_recv, 1)
         except (OSError, EOFError):
             return b'\0'
 
@@ -173,7 +174,7 @@ class Select(BasePoller):
     def _generate_events(self, event):
         try:
             if not any([self._read, self._write]):
-                return
+                return None
             timeout = event.time_left
             if timeout < 0:
                 r, w, _ = select.select(self._read, self._write, [])
@@ -186,21 +187,19 @@ class Select(BasePoller):
             # Something *totally* invalid (object w/o fileno, non-integral
             # result) was passed
             return self._preenDescriptors()
-        except (SelectError, SocketError, OSError) as e:
+        except OSError as e:
             # select(2) encountered an error
             if e.args[0] in (0, 2):
                 # windows does this if it got an empty list
                 if (not self._read) and (not self._write):
-                    return
-                else:
-                    raise
-            elif e.args[0] == EINTR:
-                return
-            elif e.args[0] == EBADF:
-                return self._preenDescriptors()
-            else:
-                # OK, I really don't know what's going on.  Blow up.
+                    return None
                 raise
+            if e.args[0] == EINTR:
+                return None
+            if e.args[0] == EBADF:
+                return self._preenDescriptors()
+            # OK, I really don't know what's going on.  Blow up.
+            raise
 
         for sock in w:
             if self.isWriting(sock):
@@ -290,8 +289,7 @@ class Poll(BasePoller):
         except OSError as e:
             if e.args[0] == EINTR:
                 return
-            else:
-                raise
+            raise
 
         for fileno, event in ll:
             self._process(fileno, event)
@@ -349,7 +347,7 @@ class EPoll(BasePoller):
         try:
             fileno = fd.fileno() if not isinstance(fd, int) else fd
             self._poller.unregister(fileno)
-        except (SocketError, OSError, ValueError) as e:
+        except (OSError, ValueError) as e:
             if e.args[0] == EBADF:
                 keys = [k for k, v in list(self._map.items()) if v == fd]
                 for key in keys:
@@ -401,8 +399,7 @@ class EPoll(BasePoller):
         except OSError as e:
             if e.args[0] == EINTR:
                 return
-            else:
-                raise
+            raise
 
         for fileno, event in ll:
             self._process(fileno, event)
@@ -490,8 +487,7 @@ class KQueue(BasePoller):
         except OSError as e:
             if e[0] == EINTR:
                 return
-            else:
-                raise
+            raise
 
         for event in ll:
             self._process(event)
@@ -521,4 +517,4 @@ class KQueue(BasePoller):
 
 Poller = Select
 
-__all__ = ('BasePoller', 'Poller', 'Select', 'Poll', 'EPoll', 'KQueue')
+__all__ = ('BasePoller', 'EPoll', 'KQueue', 'Poll', 'Poller', 'Select')

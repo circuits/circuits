@@ -2,6 +2,7 @@
 
 from re import compile as compile_regex
 
+
 PREFIX = compile_regex('([^!].*)!(.*)@(.*)')
 COLOR_CODE = compile_regex(r'(?:(\d\d?)(?:(,)(\d\d?))?)?')
 COLOR = compile_regex(r'\x03(?:(\d\d?)(?:,(\d\d?))?)?')
@@ -65,8 +66,7 @@ def parseprefix(prefix):
 
     if m is not None:
         return m.groups()
-    else:
-        return prefix or None, None, None
+    return prefix or None, None, None
 
 
 def parsemsg(s, encoding='utf-8'):

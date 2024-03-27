@@ -5,8 +5,9 @@ Macro support and dispatcher
 """
 
 import os
-from creoleparser import parse_args
 from inspect import getmembers, getmodule, isfunction
+
+from creoleparser import parse_args
 
 
 class Macro:

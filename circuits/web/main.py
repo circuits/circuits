@@ -20,6 +20,7 @@ from circuits.web import BaseServer, Controller, Logger, Server, Static
 from circuits.web.tools import check_auth, digest_auth
 from circuits.web.wsgi import Application
 
+
 try:
     import hotshot
     import hotshot.stats
@@ -30,12 +31,12 @@ except ImportError:
 try:
     from circuits.core.pollers import Poll
 except ImportError:
-    Poll = None  # NOQA
+    Poll = None
 
 try:
     from circuits.core.pollers import EPoll
 except ImportError:
-    EPoll = None  # NOQA
+    EPoll = None
 
 
 def parse_options():

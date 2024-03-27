@@ -2,6 +2,7 @@ import json
 
 from circuits.core import Event
 
+
 META_EXCLUDE = set(dir(Event()))
 META_EXCLUDE.add('node_call_id')
 META_EXCLUDE.add('node_sock')

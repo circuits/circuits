@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+
 import pytest
 
 from circuits.web import Controller
@@ -27,7 +28,7 @@ class Root(Controller):
                 'qs': self.request.qs,
                 'script_name': self.request.script_name,
                 'content_type': self.request.headers['Content-Type'],
-            }
+            },
         )
 
     def test_redirect(self):

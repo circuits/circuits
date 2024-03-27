@@ -13,6 +13,7 @@ from circuits.tools import tryimport
 
 from .events import close, closed, error, opened, read, ready
 
+
 serial = tryimport('serial')
 
 TIMEOUT = 0.2

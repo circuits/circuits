@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-import pytest
 from io import BytesIO
 from os import path
+
+import pytest
 
 from circuits.web import Controller
 

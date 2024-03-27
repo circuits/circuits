@@ -3,6 +3,7 @@ import webbrowser
 
 from circuits.web import Controller, Server
 
+
 HTML = """\
 <html>
  <head>

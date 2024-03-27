@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-import mako
 import os
+
+import mako
 from mako.lookup import TemplateLookup
 
 from circuits.web import Controller, Server, Static
+
 
 DEFAULTS = {}
 

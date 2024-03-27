@@ -7,6 +7,7 @@ A simple example showing how to access an uploaded file.
 
 from circuits.web import Controller, Server
 
+
 UPLOAD_FORM = """
 <html>
  <head>
@@ -57,8 +58,7 @@ class Root(Controller):
         """
         if file is None:
             return UPLOAD_FORM
-        else:
-            return UPLOADED_FILE % (file.filename, desc, file.value)
+        return UPLOADED_FILE % (file.filename, desc, file.value)
 
 
 app = Server(('0.0.0.0', 8000))

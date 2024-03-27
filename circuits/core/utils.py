@@ -44,8 +44,7 @@ findcmp = findtype
 def findroot(component):
     if component.parent == component:
         return component
-    else:
-        return findroot(component.parent)
+    return findroot(component.parent)
 
 
 def safeimport(name):
@@ -53,8 +52,7 @@ def safeimport(name):
     try:
         if name in sys.modules:
             return reload(sys.modules[name])
-        else:
-            return __import__(name, globals(), locals(), [''])
+        return __import__(name, globals(), locals(), [''])
     except Exception:
         for name in sys.modules.copy():
             if name not in modules:

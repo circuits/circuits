@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 import os
-import pytest
 import ssl
 import sys
 import tempfile
 from os import path
-from pytest import fixture
 from socket import gaierror
+
+import pytest
+from pytest import fixture
 
 from circuits import Component
 from circuits.web import BaseServer, Controller, Server
 
 from .helpers import URLError, urlopen
+
 
 CERTFILE = path.join(path.dirname(__file__), 'cert.pem')
 

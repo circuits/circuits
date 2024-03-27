@@ -27,6 +27,7 @@ from base64 import decodebytes as base64_decodebytes
 from hashlib import md5, sha1
 from urllib.request import parse_http_list, parse_keqv_list
 
+
 __version__ = 1, 0, 1
 __author__ = 'Tiago Cogumbreiro <cogumbreiro@users.sf.net>'
 __credits__ = """
@@ -63,7 +64,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-__all__ = ('digestAuth', 'basicAuth', 'doAuth', 'checkResponse', 'parseAuthorization', 'SUPPORTED_ALGORITHM', 'md5SessionKey', 'calculateNonce', 'SUPPORTED_QOP')
+__all__ = ('SUPPORTED_ALGORITHM', 'SUPPORTED_QOP', 'basicAuth', 'calculateNonce', 'checkResponse', 'digestAuth', 'doAuth', 'md5SessionKey', 'parseAuthorization')
 
 ###############################################################################
 
@@ -97,7 +98,7 @@ def calculateNonce(realm, algorithm=MD5):
         encoder = DIGEST_AUTH_ENCODERS[algorithm]
     except KeyError:
         raise NotImplementedError(
-            'The chosen algorithm (%s) does not have ' 'an implementation yet' % algorithm,
+            'The chosen algorithm (%s) does not have an implementation yet' % algorithm,
         )
 
     s = '%d:%s' % (time.time(), realm)
@@ -191,7 +192,7 @@ def parseAuthorization(credentials):
     params = parser(auth_params)
 
     if params is None:
-        return
+        return None
 
     assert 'auth_scheme' not in params
     params['auth_scheme'] = auth_scheme
@@ -238,7 +239,7 @@ def _A1(params, password):
         # A1 = unq(username-value) ":" unq(realm-value) ":" passwd
         return '%s:%s:%s' % (params['username'], params['realm'], password)
 
-    elif algorithm == MD5_SESS:
+    if algorithm == MD5_SESS:
         # This is A1 if qop is set
         # A1 = H( unq(username-value) ":" unq(realm-value) ":" passwd )
         #         ":" unq(nonce-value) ":" unq(cnonce-value)
@@ -254,7 +255,7 @@ def _A2(params, method, kwargs):
     qop = params.get('qop', 'auth')
     if qop == 'auth':
         return method + ':' + params['uri']
-    elif qop == 'auth-int':
+    if qop == 'auth-int':
         # If the "qop" value is "auth-int", then A2 is:
         # A2 = Method ":" digest-uri-value ":" H(entity-body)
         entity_body = kwargs.get('entity_body', '')
@@ -266,8 +267,7 @@ def _A2(params, method, kwargs):
             H(entity_body),
         )
 
-    else:
-        raise NotImplementedError("The 'qop' method is unknown: %s" % qop)
+    raise NotImplementedError("The 'qop' method is unknown: %s" % qop)
 
 
 def _computeDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):

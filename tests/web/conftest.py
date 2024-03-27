@@ -1,12 +1,14 @@
 """py.test config"""
 
 import os
+
 import pytest
 
 from circuits import Component, Debugger, handler
 from circuits.net.sockets import close
 from circuits.web import Server, Static
 from circuits.web.client import Client, request
+
 
 DOCROOT = os.path.join(os.path.dirname(__file__), 'static')
 

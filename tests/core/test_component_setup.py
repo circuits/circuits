@@ -1,6 +1,7 @@
 from circuits import Component, Manager
 from circuits.core.handlers import handler
 
+
 """Component Setup Tests
 
 Tests that event handlers of a Component are

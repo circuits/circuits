@@ -135,7 +135,7 @@ class Node(BaseComponent):
                     port,
                     client_channel,
                     client,
-                )
+                ),
             )
 
         self.addHandler(connected)
@@ -151,7 +151,7 @@ class Node(BaseComponent):
                         port,
                         client_channel,
                         client,
-                    )
+                    ),
                 )
 
             # auto reconnect

@@ -8,28 +8,29 @@ Note: This code is mostly borrowed from werkzeug and adapted for circuits.web
 
 from .constants import HTTP_STATUS_CODES
 
+
 __all__ = (
-    'HTTPException',
+    'BadGateway',
     'BadRequest',
-    'UnicodeError',
-    'Unauthorized',
     'Forbidden',
-    'NotFound',
+    'Gone',
+    'HTTPException',
+    'InternalServerError',
+    'LengthRequired',
     'MethodNotAllowed',
     'NotAcceptable',
-    'RequestTimeout',
-    'Gone',
-    'LengthRequired',
-    'PreconditionFailed',
-    'RequestEntityTooLarge',
-    'RequestURITooLarge',
-    'UnsupportedMediaType',
-    'RangeUnsatisfiable',
-    'InternalServerError',
+    'NotFound',
     'NotImplemented',
-    'BadGateway',
-    'ServiceUnavailable',
+    'PreconditionFailed',
+    'RangeUnsatisfiable',
     'Redirect',
+    'RequestEntityTooLarge',
+    'RequestTimeout',
+    'RequestURITooLarge',
+    'ServiceUnavailable',
+    'Unauthorized',
+    'UnicodeError',
+    'UnsupportedMediaType',
 )
 
 
@@ -69,7 +70,7 @@ class BadRequest(HTTPException):
     """
 
     code = 400
-    description = '<p>The browser (or proxy) sent a request that this server could ' 'not understand.</p>'
+    description = '<p>The browser (or proxy) sent a request that this server could not understand.</p>'
 
 
 class UnicodeError(HTTPException):
@@ -118,7 +119,7 @@ class NotFound(HTTPException):
     """
 
     code = 404
-    description = '<p>The requested URL was not found on the server.</p>' '<p>If you entered the URL manually please check your spelling and ' 'try again.</p>'
+    description = '<p>The requested URL was not found on the server.</p><p>If you entered the URL manually please check your spelling and try again.</p>'
 
 
 class MethodNotAllowed(HTTPException):
@@ -138,7 +139,7 @@ class MethodNotAllowed(HTTPException):
     def __init__(self, method, description=None):
         HTTPException.__init__(self, description)
         if description is None:
-            self.description = ('<p>The method %s is not allowed ' 'for the requested URL.</p>') % method
+            self.description = ('<p>The method %s is not allowed for the requested URL.</p>') % method
 
 
 class NotAcceptable(HTTPException):
@@ -194,7 +195,7 @@ class LengthRequired(HTTPException):
     """
 
     code = 411
-    description = '<p>A request with this method requires a valid <code>Content-' 'Length</code> header.</p>'
+    description = '<p>A request with this method requires a valid <code>Content-Length</code> header.</p>'
 
 
 class PreconditionFailed(HTTPException):
@@ -206,7 +207,7 @@ class PreconditionFailed(HTTPException):
     """
 
     code = 412
-    description = '<p>The precondition on the request for the URL failed positive ' 'evaluation.</p>'
+    description = '<p>The precondition on the request for the URL failed positive evaluation.</p>'
 
 
 class RequestEntityTooLarge(HTTPException):
@@ -229,7 +230,7 @@ class RequestURITooLarge(HTTPException):
     """
 
     code = 414
-    description = '<p>The length of the requested URL exceeds the capacity limit ' 'for this server.  The request cannot be processed.</p>'
+    description = '<p>The length of the requested URL exceeds the capacity limit for this server.  The request cannot be processed.</p>'
 
 
 class UnsupportedMediaType(HTTPException):
@@ -241,7 +242,7 @@ class UnsupportedMediaType(HTTPException):
     """
 
     code = 415
-    description = '<p>The server does not support the media type transmitted in ' 'the request.</p>'
+    description = '<p>The server does not support the media type transmitted in the request.</p>'
 
 
 class RangeUnsatisfiable(HTTPException):
@@ -265,7 +266,7 @@ class InternalServerError(HTTPException):
 
     code = 500
     description = (
-        '<p>The server encountered an internal error and was unable to ' 'complete your request.  Either the server is overloaded or there ' 'is an error in the application.</p>'
+        '<p>The server encountered an internal error and was unable to complete your request.  Either the server is overloaded or there is an error in the application.</p>'
     )
 
 
@@ -278,7 +279,7 @@ class NotImplemented(HTTPException):
     """
 
     code = 501
-    description = '<p>The server does not support the action requested by the ' 'browser.</p>'
+    description = '<p>The server does not support the action requested by the browser.</p>'
 
 
 class BadGateway(HTTPException):
@@ -291,7 +292,7 @@ class BadGateway(HTTPException):
     """
 
     code = 502
-    description = '<p>The proxy server received an invalid response from an upstream ' 'server.</p>'
+    description = '<p>The proxy server received an invalid response from an upstream server.</p>'
 
 
 class ServiceUnavailable(HTTPException):
@@ -302,7 +303,7 @@ class ServiceUnavailable(HTTPException):
     """
 
     code = 503
-    description = '<p>The server is temporarily unable to service your request due to ' 'maintenance downtime or capacity problems.  Please try again ' 'later.</p>'
+    description = '<p>The server is temporarily unable to service your request due to maintenance downtime or capacity problems.  Please try again later.</p>'
 
 
 class Redirect(HTTPException):

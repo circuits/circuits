@@ -23,11 +23,25 @@ from circuits.net.events import close, write
 from circuits.net.sockets import TCPServer
 from circuits.protocols.irc import IRC, Message, joinprefix, reply, response
 from circuits.protocols.irc.replies import (
-    ERR_NICKNAMEINUSE, ERR_NOMOTD, ERR_NOSUCHCHANNEL, ERR_NOSUCHNICK,
-    ERR_UNKNOWNCOMMAND, RPL_CHANNELMODEIS, RPL_ENDOFNAMES, RPL_ENDOFWHO,
-    RPL_LIST, RPL_LISTEND, RPL_LISTSTART, RPL_NAMEREPLY, RPL_NOTOPIC,
-    RPL_TOPIC, RPL_WELCOME, RPL_WHOREPLY, RPL_YOURHOST,
+    ERR_NICKNAMEINUSE,
+    ERR_NOMOTD,
+    ERR_NOSUCHCHANNEL,
+    ERR_NOSUCHNICK,
+    ERR_UNKNOWNCOMMAND,
+    RPL_CHANNELMODEIS,
+    RPL_ENDOFNAMES,
+    RPL_ENDOFWHO,
+    RPL_LIST,
+    RPL_LISTEND,
+    RPL_LISTSTART,
+    RPL_NAMEREPLY,
+    RPL_NOTOPIC,
+    RPL_TOPIC,
+    RPL_WELCOME,
+    RPL_WHOREPLY,
+    RPL_YOURHOST,
 )
+
 
 __version__ = '0.0.1'
 
@@ -151,7 +165,7 @@ class Server(Component):
         host, port = user.host, user.port
 
         self.logger.info(
-            f'I: [{host:s}:{port:d}] {repr(data):s}',
+            f'I: [{host:s}:{port:d}] {data!r:s}',
         )
 
     def write(self, sock, data):
@@ -159,7 +173,7 @@ class Server(Component):
         host, port = user.host, user.port
 
         self.logger.info(
-            f'O: [{host:s}:{port:d}] {repr(data):s}',
+            f'O: [{host:s}:{port:d}] {data!r:s}',
         )
 
     def ready(self, server, bind):

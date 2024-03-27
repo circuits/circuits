@@ -1,10 +1,11 @@
 """Timers Tests"""
 
-import pytest
 from datetime import datetime, timedelta
 from itertools import starmap
 from operator import sub
 from time import time
+
+import pytest
 
 from circuits import Component, Event, Timer, sleep
 

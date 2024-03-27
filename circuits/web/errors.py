@@ -11,7 +11,10 @@ from html import escape
 from circuits import Event
 
 from .constants import (
-    DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL,
+    DEFAULT_ERROR_MESSAGE,
+    HTTP_STATUS_CODES,
+    POWERED_BY,
+    SERVER_URL,
     SERVER_VERSION,
 )
 
@@ -160,9 +163,8 @@ class redirect(httperror):
                 code = 303
             else:
                 code = 302
-        else:
-            if code < 300 or code > 399:
-                raise ValueError('status code must be between 300 and 399.')
+        elif code < 300 or code > 399:
+            raise ValueError('status code must be between 300 and 399.')
 
         super().__init__(request, response, code)
 
@@ -177,11 +179,11 @@ class redirect(httperror):
             # new URI(s)."
             msg = {
                 300: "This resource can be found at <a href='%s'>%s</a>.",
-                301: ('This resource has permanently moved to ' '<a href="%s">%s</a>.'),
-                302: ('This resource resides temporarily at ' '<a href="%s">%s</a>.'),
-                303: ('This resource can be found at ' '<a href="%s">%s</a>.'),
-                307: ('This resource has moved temporarily to ' '<a href="%s">%s</a>.'),
-                308: ('This resource has permanently moved to ' '<a href="%s">%s</a>.'),
+                301: ('This resource has permanently moved to <a href="%s">%s</a>.'),
+                302: ('This resource resides temporarily at <a href="%s">%s</a>.'),
+                303: ('This resource can be found at <a href="%s">%s</a>.'),
+                307: ('This resource has moved temporarily to <a href="%s">%s</a>.'),
+                308: ('This resource has permanently moved to <a href="%s">%s</a>.'),
             }[code]
             response.body = '<br />\n'.join([msg % (escape(u, True), escape(u)) for u in urls])
             # Previous code may have set C-L, so we have to reset it

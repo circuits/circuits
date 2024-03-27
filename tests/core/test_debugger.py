@@ -1,8 +1,9 @@
 """Debugger Tests"""
 
-import pytest
 import sys
 from io import StringIO
+
+import pytest
 
 from circuits import Debugger
 from circuits.core import Component, Event
@@ -15,7 +16,7 @@ class test(Event):
 class App(Component):
     def test(self, raiseException=False):
         if raiseException:
-            raise Exception()
+            raise Exception
 
 
 class Logger:

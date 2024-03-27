@@ -30,7 +30,7 @@ class Debugger(BaseComponent):
     IgnoreChannels = []
 
     def __init__(self, errors=True, events=True, file=None, logger=None, prefix=None, trim=None, **kwargs):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         super().__init__()
 
         self._errors = errors
@@ -108,7 +108,7 @@ class Debugger(BaseComponent):
             s = repr(event)
 
             if self.prefix:
-                if hasattr(self.prefix, '__call__'):
+                if callable(self.prefix):
                     s = f'{self.prefix()}: {s}'
                 else:
                     s = f'{self.prefix}: {s}'

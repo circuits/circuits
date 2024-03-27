@@ -7,6 +7,7 @@ A simple example showing how to deal with data forms.
 
 from circuits.web import Controller, Server
 
+
 FORM = """
 <html>
  <head>
@@ -62,10 +63,7 @@ class Root(Controller):
         We will use the date to pretend we've saved the data and
         tell the user what was saved.
         """
-        return 'Data Saved. firstName={:s} lastName={:s}'.format(
-            firstName,
-            lastName,
-        )
+        return f'Data Saved. firstName={firstName:s} lastName={lastName:s}'
 
 
 app = Server(('0.0.0.0', 8000))

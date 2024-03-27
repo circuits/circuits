@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-import pytest
 import select
 import socket
+
+import pytest
 
 from circuits import Manager
 from circuits.core.pollers import EPoll, KQueue, Poll, Select

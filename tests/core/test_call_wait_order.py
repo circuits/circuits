@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-import pytest
 from random import random, seed
 from time import sleep, time
+
+import pytest
 
 from circuits.core import Component, Event, Worker, handler, task
 

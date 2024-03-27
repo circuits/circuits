@@ -122,4 +122,4 @@ class HandlerMetaClass(type):
                 try:
                     setattr(cls, name, handler(name)(callable))
                 except ValueError as e:
-                    raise ValueError(f'{str(e)} - {repr(cls)} {name}')
+                    raise ValueError(f'{e!s} - {cls!r} {name}')

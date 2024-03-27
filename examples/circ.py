@@ -19,16 +19,28 @@ from optparse import OptionParser
 from re import compile as compile_regex
 from select import select
 from socket import gethostname
+
 from urwid import AttrWrap, Edit, Frame, ListBox, Pile, SimpleListWalker, Text
 from urwid.raw_display import Screen
 
 from circuits import Component, __version__ as systemVersion, handler
 from circuits.net.sockets import TCPClient, connect
 from circuits.protocols.irc import (
-    ERR_NICKNAMEINUSE, ERR_NOMOTD, IRC, JOIN, NICK, PART, PRIVMSG, QUIT,
-    RPL_ENDOFMOTD, USER, Message, request,
+    ERR_NICKNAMEINUSE,
+    ERR_NOMOTD,
+    IRC,
+    JOIN,
+    NICK,
+    PART,
+    PRIVMSG,
+    QUIT,
+    RPL_ENDOFMOTD,
+    USER,
+    Message,
+    request,
 )
 from circuits.tools import getargspec
+
 
 USAGE = '%prog [options] host [port]'
 VERSION = '%prog v' + systemVersion
@@ -181,7 +193,7 @@ class Client(Component):
                 if k == 'window resize':
                     size = self.screen.get_cols_rows()
                     continue
-                elif k == 'enter':
+                if k == 'enter':
                     self.processCommand(self.input.get_edit_text())
                     self.input.set_edit_text('')
                     continue
@@ -197,7 +209,7 @@ class Client(Component):
     def syntaxError(self, command, args, expected):
         self.lines.append(
             Text(
-                'Syntax error ({:s}): {:s} Expected: {:s}'.format(command, args, expected),
+                f'Syntax error ({command:s}): {args:s} Expected: {expected:s}',
             ),
         )
 
@@ -221,34 +233,32 @@ class Client(Component):
                             f()
                         else:
                             f(*tokens)
-                    else:
-                        if len(tokens) > len(args):
-                            if vargs is None:
-                                if len(args) > 0:
-                                    factor = len(tokens) - len(args) + 1
-                                    f(*back_merge(tokens, factor))
-                                else:
-                                    self.syntaxError(
-                                        command,
-                                        ' '.join(tokens),
-                                        ' '.join(x for x in args + [vargs] if x is not None),
-                                    )
+                    elif len(tokens) > len(args):
+                        if vargs is None:
+                            if len(args) > 0:
+                                factor = len(tokens) - len(args) + 1
+                                f(*back_merge(tokens, factor))
                             else:
-                                f(*tokens)
-                        elif default is not None and len(args) == (len(tokens) + len(default)):
-                            f(*(tokens + list(default)))
+                                self.syntaxError(
+                                    command,
+                                    ' '.join(tokens),
+                                    ' '.join(x for x in args + [vargs] if x is not None),
+                                )
                         else:
-                            self.syntaxError(
-                                command,
-                                ' '.join(tokens),
-                                ' '.join(x for x in args + [vargs] if x is not None),
-                            )
+                            f(*tokens)
+                    elif default is not None and len(args) == (len(tokens) + len(default)):
+                        f(*(tokens + list(default)))
+                    else:
+                        self.syntaxError(
+                            command,
+                            ' '.join(tokens),
+                            ' '.join(x for x in args + [vargs] if x is not None),
+                        )
+        elif self.ircchannel is not None:
+            self.lines.append(Text(f'<{self.nick}> {s}'))
+            self.fire(PRIVMSG(self.ircchannel, s))
         else:
-            if self.ircchannel is not None:
-                self.lines.append(Text(f'<{self.nick}> {s}'))
-                self.fire(PRIVMSG(self.ircchannel, s))
-            else:
-                self.lines.append(Text('No channel joined. Try /join #<channel>'))
+            self.lines.append(Text('No channel joined. Try /join #<channel>'))
 
     def cmdEXIT(self, message=''):
         self.fire(QUIT(message))

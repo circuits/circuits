@@ -2,7 +2,11 @@ from circuits.web import Controller
 from circuits.web.tools import basic_auth, check_auth
 
 from .helpers import (
-    HTTPBasicAuthHandler, HTTPError, build_opener, install_opener, urlopen,
+    HTTPBasicAuthHandler,
+    HTTPError,
+    build_opener,
+    install_opener,
+    urlopen,
 )
 
 

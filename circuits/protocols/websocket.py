@@ -127,7 +127,7 @@ class WebSocketCodec(BaseComponent):
             if final:
                 if opcode < 8:
                     # if text or continuation of text, convert
-                    if opcode == 1 or opcode == 0 and self._pending_type == 1:
+                    if opcode == 1 or (opcode == 0 and self._pending_type == 1):
                         msg = msg.decode('utf-8', 'replace')
                     self._pending_type = None
                     self._pending_payload = bytearray()
@@ -143,7 +143,7 @@ class WebSocketCodec(BaseComponent):
                 # check for Ping
                 elif opcode == 9:
                     if self._close_sent:
-                        return
+                        return None
                     frame = bytearray(b'\x8a')
                     frame += self._encode_tail(msg, self._sock is None)
                     self._write(frame)

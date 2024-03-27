@@ -6,6 +6,7 @@ This module implements support for parsing and handling headers.
 
 import re
 
+
 # Regular expression that matches `special' characters in parameters, the
 # existence of which force quoting of the parameter value.
 
@@ -23,10 +24,8 @@ def _formatparam(param, value=None, quote=1):
         if quote or tspecials.search(value):
             value = value.replace('\\', '\\\\').replace('"', r'\"')
             return f'{param}="{value}"'
-        else:
-            return f'{param}={value}'
-    else:
-        return param
+        return f'{param}={value}'
+    return param
 
 
 def header_elements(fieldname, fieldvalue):
@@ -72,6 +71,7 @@ class HeaderElement:
     def __bytes__(self):
         return self.__str__().encode('ISO8859-1')
 
+    @staticmethod
     def parse(elementstr):
         """Transform 'token;key=val' to ('token', {'key': 'val'})."""
         # Split the element into a value and parameters. The 'value' may
@@ -91,8 +91,6 @@ class HeaderElement:
                 val = ''
             params[key] = val
         return initial_value, params
-
-    parse = staticmethod(parse)
 
     @classmethod
     def from_str(cls, elementstr):
@@ -143,8 +141,7 @@ class AcceptElement(HeaderElement):
     def __lt__(self, other):
         if self.qvalue == other.qvalue:
             return str(self) < str(other)
-        else:
-            return self.qvalue < other.qvalue
+        return self.qvalue < other.qvalue
 
 
 class CaseInsensitiveDict(dict):
@@ -263,11 +260,10 @@ class Headers(CaseInsensitiveDict):
                 self[key] = [value]
             else:
                 self[key] = value
+        elif isinstance(self[key], list):
+            self[key].append(value)
         else:
-            if isinstance(self[key], list):
-                self[key].append(value)
-            else:
-                self[key] = ', '.join([self[key], value])
+            self[key] = ', '.join([self[key], value])
 
     def add_header(self, _name, _value, **_params):
         """
@@ -279,12 +275,13 @@ class Headers(CaseInsensitiveDict):
         value is None, in which case only the key will be added.
 
         Example:
-
+        -------
         h.add_header('content-disposition', 'attachment', filename='bud.gif')
 
         Note that unlike the corresponding 'email.Message' method, this does
         *not* handle '(charset, language, value)' tuples: all values must be
         strings or None.
+
         """
         parts = []
         if _value is not None:

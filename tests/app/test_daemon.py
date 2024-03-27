@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import pytest
 import sys
 from errno import ESRCH
 from os import kill
@@ -7,7 +6,10 @@ from signal import SIGTERM
 from subprocess import Popen
 from time import sleep
 
+import pytest
+
 from . import app
+
 
 pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 

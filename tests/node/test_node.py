@@ -6,6 +6,7 @@ from circuits.net.events import close
 from circuits.net.sockets import UDPServer
 from circuits.node import Node, remote
 
+
 if PLATFORM == 'win32':
     skip('Broken on Windows')
 

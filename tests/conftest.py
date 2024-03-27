@@ -1,11 +1,12 @@
 """py.test config"""
 
-import pytest
 import sys
 import threading
 from collections import deque
 from collections.abc import Callable
 from time import sleep
+
+import pytest
 
 from circuits import BaseComponent, Debugger, Manager, handler
 from circuits.core.manager import TIMEOUT

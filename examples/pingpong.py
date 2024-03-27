@@ -54,10 +54,7 @@ class App(Component):
     def pong(self, ts1, ts2):
         latency = (ts2 - ts1) * 1000.0
         status(
-            '{:d} event/s @ {:0.2f}ms latency'.format(
-                int(self.events / (time() - self.stime)),
-                latency,
-            ),
+            f'{int(self.events / (time() - self.stime)):d} event/s @ {latency:0.2f}ms latency',
         )
         self.fire(ipc(ping(time())))
 

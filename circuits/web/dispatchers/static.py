@@ -13,6 +13,7 @@ from urllib.parse import quote, unquote
 from circuits import BaseComponent, handler
 from circuits.web.tools import serve_file
 
+
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -50,7 +51,7 @@ class Static(BaseComponent):
     @handler('request', priority=0.9)
     def _on_request(self, event, request, response):
         if self.path is not None and not request.path.startswith(self.path):
-            return
+            return None
 
         path = request.path
 
@@ -65,10 +66,10 @@ class Static(BaseComponent):
             location = os.path.abspath(os.path.join(self.docroot, '.'))
 
         if not os.path.exists(location):
-            return
+            return None
 
         if not location.startswith(os.path.dirname(self.docroot)):
-            return  # hacking attempt e.g. /foo/../../../../../etc/shadow
+            return None  # hacking attempt e.g. /foo/../../../../../etc/shadow
 
         # Is it a file we can serve directly?
         if os.path.isfile(location):

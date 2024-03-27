@@ -11,7 +11,7 @@ class Root(Controller):
         return 'Hello World!'
 
     def test_args(self, *args, **kwargs):
-        return f'{repr(args)}\n{repr(kwargs)}'
+        return f'{args!r}\n{kwargs!r}'
 
     def test_default_args(self, a=None, b=None):
         return f'a={a}\nb={b}'
@@ -26,7 +26,7 @@ class Root(Controller):
         return self.notfound()
 
     def test_failure(self):
-        raise Exception()
+        raise Exception
 
 
 def test_root(webapp):

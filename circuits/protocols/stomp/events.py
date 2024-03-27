@@ -4,6 +4,7 @@ import logging
 
 from circuits import Event
 
+
 LOG = logging.getLogger(__name__)
 
 
@@ -16,7 +17,7 @@ class stomp_event(Event):
         return ''
 
     def __repr__(self):
-        "x.__repr__() <==> repr(x)"
+        """x.__repr__() <==> repr(x)"""
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:

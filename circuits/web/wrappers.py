@@ -17,6 +17,7 @@ from .errors import httperror
 from .headers import Headers
 from .url import parse_url
 
+
 formatdate = partial(formatdate, usegmt=True)
 
 
@@ -90,10 +91,7 @@ class HTTPStatus:
         return f'{self._status:d} {self._reason}'
 
     def __repr__(self):
-        return '<Status (status={:d} reason={}>'.format(
-            self._status,
-            self._reason,
-        )
+        return f'<Status (status={self._status:d} reason={self._reason}>'
 
     def __format__(self, format_spec):
         return format(str(self), format_spec)
@@ -146,7 +144,7 @@ class Request:
     handled = False
 
     def __init__(self, sock, method='GET', scheme='http', path='/', protocol=(1, 1), qs='', headers=None, server=None):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         self.sock = sock
         self.method = method
         self.scheme = scheme or Request.scheme
@@ -222,8 +220,7 @@ class Body:
     def __get__(self, response, cls=None):
         if response is None:
             return self
-        else:
-            return response._body
+        return response._body
 
     def __set__(self, response, value):
         if response == value:
@@ -256,8 +253,7 @@ class Status:
     def __get__(self, response, cls=None):
         if response is None:
             return self
-        else:
-            return response._status
+        return response._status
 
     def __set__(self, response, value):
         value = HTTPStatus(value) if isinstance(value, int) else value
@@ -283,7 +279,7 @@ class Response:
     chunked = False
 
     def __init__(self, request, encoding='utf-8', status=None):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         self.request = request
         self.encoding = encoding
 
@@ -347,20 +343,18 @@ class Response:
         elif 'Content-Length' not in self.headers:
             if status < 200 or status in (204, 205, 304):
                 pass
+            elif self.protocol == 'HTTP/1.1' and self.request.method != 'HEAD' and self.request.server is not None and cLength != 0:
+                self.chunked = True
+                self.headers.add_header('Transfer-Encoding', 'chunked')
             else:
-                if self.protocol == 'HTTP/1.1' and self.request.method != 'HEAD' and self.request.server is not None and cLength != 0:
-                    self.chunked = True
-                    self.headers.add_header('Transfer-Encoding', 'chunked')
-                else:
-                    self.close = True
+                self.close = True
 
         if self.request.server is not None and 'Connection' not in self.headers:
             if self.protocol == 'HTTP/1.1':
                 if self.close:
                     self.headers.add_header('Connection', 'close')
-            else:
-                if not self.close:
-                    self.headers.add_header('Connection', 'Keep-Alive')
+            elif not self.close:
+                self.headers.add_header('Connection', 'Keep-Alive')
 
         if self.headers.get('Transfer-Encoding', '') == 'chunked':
             self.chunked = True

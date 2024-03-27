@@ -7,10 +7,11 @@ implementing a TCP/UDP Port Forwarder of network traffic. This can be used
 as a simple tool to forward traffic from one port to another.
 
 Example:
-
+-------
     ./portforward.py 0.0.0.0:2222 127.0.0.1:22
 
 This example also has support for daemonizing the process into the background.
+
 """
 
 from optparse import OptionParser
@@ -20,6 +21,7 @@ from circuits import Component, Debugger, handler
 from circuits.app import Daemon
 from circuits.net.events import close, connect, write
 from circuits.net.sockets import TCPClient, TCPServer
+
 
 __version__ = '0.2'
 

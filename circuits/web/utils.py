@@ -19,6 +19,7 @@ from circuits.net.utils import is_ssl_handshake  # noqa
 
 from .exceptions import RangeUnsatisfiable
 
+
 quoted_slash = re.compile('(?i)%2F')
 image_map_pattern = re.compile('^[0-9]+,[0-9]+$')
 
@@ -75,9 +76,8 @@ def parse_qs(query_string, keep_blank_values=True):
         # (like CGI::Request does).
         pm = query_string.split(',')
         return {'x': int(pm[0]), 'y': int(pm[1])}
-    else:
-        pm = _parse_qs(query_string, keep_blank_values)
-        return {k: v[0] for k, v in pm.items() if v}
+    pm = _parse_qs(query_string, keep_blank_values)
+    return {k: v[0] for k, v in pm.items() if v}
 
 
 def dictform(form):

@@ -14,6 +14,7 @@ from circuits import Component, Event, Timer
 from circuits.protocols.stomp.client import ACK_AUTO, StompClient
 from circuits.protocols.stomp.events import connect, send, subscribe
 
+
 LOG = logging.getLogger(__name__)
 
 

@@ -25,7 +25,7 @@ def test1():
     app = App()
 
     # Normal Order
-    [app.fire(foo(1)), app.fire(foo(2))]  # noqa: B018
+    [app.fire(foo(1)), app.fire(foo(2))]
     app.fire(done())
 
     app.run()
@@ -37,7 +37,7 @@ def test2():
     app = App()
 
     # Priority Order
-    [app.fire(foo(1), priority=2), app.fire(foo(2), priority=0)]  # noqa: B018
+    [app.fire(foo(1), priority=2), app.fire(foo(2), priority=0)]
     app.fire(done())
 
     app.run()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from io import BytesIO
 from os import path
+
 from pytest import fixture
 
 from circuits import Component, handler

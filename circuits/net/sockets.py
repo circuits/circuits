@@ -6,27 +6,65 @@ This module contains various Socket Components for use with Networking.
 
 import os
 import select
-from _socket import socket as SocketType
 from collections import defaultdict, deque
 from errno import (
-    EAGAIN, EALREADY, EBADF, ECONNABORTED, EINPROGRESS, EINTR, EINVAL, EISCONN,
-    EMFILE, ENFILE, ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EWOULDBLOCK,
+    EAGAIN,
+    EALREADY,
+    EBADF,
+    ECONNABORTED,
+    EINPROGRESS,
+    EINTR,
+    EINVAL,
+    EISCONN,
+    EMFILE,
+    ENFILE,
+    ENOBUFS,
+    ENOMEM,
+    ENOTCONN,
+    EPERM,
+    EPIPE,
+    EWOULDBLOCK,
 )
 from socket import (
-    AF_INET, AF_INET6, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR,
-    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, gaierror, getaddrinfo,
-    getfqdn, gethostbyname, gethostname, socket,
+    AF_INET,
+    AF_INET6,
+    IPPROTO_IP,
+    IPPROTO_TCP,
+    SO_BROADCAST,
+    SO_REUSEADDR,
+    SOCK_DGRAM,
+    SOCK_STREAM,
+    SOL_SOCKET,
+    TCP_NODELAY,
+    gaierror,
+    getaddrinfo,
+    getfqdn,
+    gethostbyname,
+    gethostname,
+    socket,
 )
 from time import time
+
+from _socket import socket as SocketType
 
 from circuits.core import BaseComponent, handler
 from circuits.core.pollers import BasePoller, Poller
 from circuits.core.utils import findcmp
 
 from .events import (
-    close, closed, connect, connected, disconnect, disconnected, error, read,
-    ready, unreachable, write,
+    close,
+    closed,
+    connect,
+    connected,
+    disconnect,
+    disconnected,
+    error,
+    read,
+    ready,
+    unreachable,
+    write,
 )
+
 
 try:
     from socket import AF_UNIX
@@ -40,8 +78,12 @@ except ImportError:
 
 try:
     from ssl import (
-        CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23,
-        SSLError, wrap_socket as ssl_socket,
+        CERT_NONE,
+        SSL_ERROR_WANT_READ,
+        SSL_ERROR_WANT_WRITE,
+        PROTOCOL_SSLv23,
+        SSLError,
+        wrap_socket as ssl_socket,
     )
 
     HAS_SSL = 1
@@ -206,9 +248,8 @@ class Client(BaseComponent):
         except OSError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
-            else:
-                self.fire(error(e))
-                self._close()
+            self.fire(error(e))
+            self._close()
 
     def _write(self, data):
         try:
@@ -273,7 +314,7 @@ class TCPClient(Client):
     def init(self, connect_timeout=5, *args, **kwargs):
         self.connect_timeout = connect_timeout
 
-    @handler('connect')  # noqa
+    @handler('connect')
     def connect(self, host, port, secure=False, **kwargs):
         # XXX: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
@@ -355,7 +396,7 @@ class UNIXClient(Client):
         if self._poller is not None and self._connected:
             self._poller.addReader(self, self._sock)
 
-    @handler('connect')  # noqa
+    @handler('connect')
     def connect(self, path, secure=False, **kwargs):
         # XXX: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
@@ -453,8 +494,7 @@ class Server(BaseComponent):
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
                     return sockname[0]
-                else:
-                    return sockname
+                return sockname
             except OSError:
                 return None
 
@@ -565,9 +605,8 @@ class Server(BaseComponent):
         except OSError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
-            else:
-                self.fire(error(sock, e))
-                self._close(sock)
+            self.fire(error(sock, e))
+            self._close(sock)
 
     def _write(self, sock, data):
         if sock not in self._clients:
@@ -674,8 +713,7 @@ class Server(BaseComponent):
     def _on_read(self, sock):
         if sock == self._sock:
             return self._accept()
-        else:
-            self._read(sock)
+        self._read(sock)
 
     @handler('_write', priority=1)
     def _on_write(self, sock):

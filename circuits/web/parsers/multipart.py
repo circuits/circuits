@@ -37,19 +37,16 @@ __version__ = '0.1'
 __license__ = 'MIT'
 
 import re
-from tempfile import TemporaryFile
-from wsgiref.headers import Headers
-from urllib.parse import parse_qs
-
-from io import BytesIO
-
 
 ##############################################################################
-################################ Helper & Misc ################################
+# Helper & Misc ################################
 ##############################################################################
 # Some of these were copied from bottle: http://bottle.paws.de/
-
 from collections.abc import MutableMapping
+from io import BytesIO
+from tempfile import TemporaryFile
+from urllib.parse import parse_qs
+from wsgiref.headers import Headers
 
 
 class MultiDict(MutableMapping):
@@ -118,7 +115,7 @@ def copy_file(stream, target, maxread=-1, buffer_size=2 * 16):
 
 
 ##############################################################################
-################################ Header Parser ################################
+# Header Parser ################################
 ##############################################################################
 
 _special = re.escape('()<>@,;:\\"/[]?={} \t')
@@ -158,7 +155,7 @@ def parse_options_header(header, options=None):
 
 
 ##############################################################################
-################################## Multipart ##################################
+# Multipart ##################################
 ##############################################################################
 
 
@@ -381,7 +378,7 @@ class MultipartPart:
 
 
 ##############################################################################
-#################################### WSGI ####################################
+# WSGI ####################################
 ##############################################################################
 
 

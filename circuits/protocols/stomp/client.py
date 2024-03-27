@@ -8,10 +8,17 @@ import traceback
 from circuits import BaseComponent, Timer
 from circuits.core.handlers import handler
 from circuits.protocols.stomp.events import (
-    client_heartbeat, connected, connection_failed, disconnected,
-    heartbeat_timeout, message, on_stomp_error, server_heartbeat,
+    client_heartbeat,
+    connected,
+    connection_failed,
+    disconnected,
+    heartbeat_timeout,
+    message,
+    on_stomp_error,
+    server_heartbeat,
 )
 from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
+
 
 try:
     from stompest.config import StompConfig
@@ -102,8 +109,7 @@ class StompClient(BaseComponent):
     def connected(self):
         if self._client.session:
             return self._client.session.state == StompSession.CONNECTED
-        else:
-            return False
+        return False
 
     @property
     def subscribed(self):
@@ -150,7 +156,7 @@ class StompClient(BaseComponent):
 
     @handler('connect')
     def connect(self, event, host=None, *args, **kwargs):
-        """connect to Stomp server"""
+        """Connect to Stomp server"""
         LOG.info('Connect to Stomp...')
         try:
             self._client.connect(

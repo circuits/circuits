@@ -1,8 +1,10 @@
 #!/usr/bin/python -i
-import pytest
 from os import getpid
 
+import pytest
+
 from circuits import Component, Event, ipc
+
 
 pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
 

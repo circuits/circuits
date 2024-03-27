@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 
 from ..headers import Headers
 
+
 METHOD_RE = re.compile('^[A-Z0-9$-_.]{1,20}$')
 VERSION_RE = re.compile(r'^HTTP/(\d+).(\d+)$')
 STATUS_RE = re.compile(r'^(\d{3})(?:\s+([\s\w]*))$')
@@ -96,7 +97,7 @@ class HttpParser:
         return self._headers
 
     def recv_body(self):
-        """return last chunk of the parsed body"""
+        """Return last chunk of the parsed body"""
         body = b''.join(self._body)
         self._body = []
         self._partial_body = False
@@ -129,31 +130,31 @@ class HttpParser:
         return 'upgrade' in hconn_parts
 
     def is_headers_complete(self):
-        """return True if all headers have been parsed."""
+        """Return True if all headers have been parsed."""
         return self.__on_headers_complete
 
     def is_partial_body(self):
-        """return True if a chunk of body have been parsed"""
+        """Return True if a chunk of body have been parsed"""
         return self._partial_body
 
     def is_message_begin(self):
-        """return True if the parsing start"""
+        """Return True if the parsing start"""
         return self.__on_message_begin
 
     def is_message_complete(self):
-        """return True if the parsing is done (we get EOF)"""
+        """Return True if the parsing is done (we get EOF)"""
         return self.__on_message_complete
 
     def is_chunked(self):
-        """return True if Transfer-Encoding header value is chunked"""
+        """Return True if Transfer-Encoding header value is chunked"""
         return self._chunked
 
     def should_keep_alive(self):
-        """return True if the connection should be kept alive"""
+        """Return True if the connection should be kept alive"""
         hconn = self._headers.get('connection', '').lower()
         if hconn == 'close':
             return False
-        elif hconn == 'keep-alive':
+        if hconn == 'keep-alive':
             return True
         return self._version == (1, 1)
 
@@ -172,19 +173,18 @@ class HttpParser:
                 if idx < 0:
                     self._buf.append(data)
                     return len(data)
-                else:
-                    self.__on_firstline = True
-                    self._buf.append(data[:idx])
-                    first_line = b''.join(self._buf)
-                    first_line = str(first_line, 'unicode_escape')
-                    nb_parsed = nb_parsed + idx + 2
+                self.__on_firstline = True
+                self._buf.append(data[:idx])
+                first_line = b''.join(self._buf)
+                first_line = str(first_line, 'unicode_escape')
+                nb_parsed = nb_parsed + idx + 2
 
-                    rest = data[idx + 2 :]
-                    data = b''
-                    if self._parse_firstline(first_line):
-                        self._buf = [rest]
-                    else:
-                        return nb_parsed
+                rest = data[idx + 2 :]
+                data = b''
+                if self._parse_firstline(first_line):
+                    self._buf = [rest]
+                else:
+                    return nb_parsed
             elif not self.__on_headers_complete:
                 if data:
                     self._buf.append(data)
@@ -213,13 +213,12 @@ class HttpParser:
                 if ret is None:
                     return length
 
-                elif ret < 0:
+                if ret < 0:
                     return ret
-                elif ret == 0:
+                if ret == 0:
                     self.__on_message_complete = True
                     return length
-                else:
-                    nb_parsed = max(length, ret)
+                nb_parsed = max(length, ret)
 
             else:
                 return 0
@@ -303,8 +302,7 @@ class HttpParser:
                 self._buf = []
                 self.__on_headers_complete = True
                 return 0
-            else:
-                return False
+            return False
 
         # Split lines on \r\n keeping the \r\n on each line
         lines = [str(line, 'unicode_escape') + '\r\n' for line in data[:idx].split(b'\r\n')]
@@ -372,13 +370,13 @@ class HttpParser:
     def _parse_body(self):
         if self._status_code == 204 and len(self._buf) == 0:
             self.__on_message_complete = True
-            return
-        elif not self._chunked:
+            return None
+        if not self._chunked:
             body_part = b''.join(self._buf)
             if not body_part and self._clen is None:
                 if not self._status:  # message complete only for servers
                     self.__on_message_complete = True
-                return
+                return None
             self._clen_rest -= len(body_part)
 
             # maybe decompress
@@ -399,37 +397,36 @@ class HttpParser:
 
             if self._clen_rest <= 0:
                 self.__on_message_complete = True
-            return
-        else:
-            data = b''.join(self._buf)
-            try:
-                size, rest = self._parse_chunk_size(data)
-            except InvalidChunkSize as e:
-                self.errno = INVALID_CHUNK
-                self.errstr = 'invalid chunk size [%s]' % str(e)
-                return -1
+            return None
+        data = b''.join(self._buf)
+        try:
+            size, rest = self._parse_chunk_size(data)
+        except InvalidChunkSize as e:
+            self.errno = INVALID_CHUNK
+            self.errstr = 'invalid chunk size [%s]' % str(e)
+            return -1
 
-            if size == 0:
-                return size
+        if size == 0:
+            return size
 
-            if size is None or len(rest) < size:
-                return None
+        if size is None or len(rest) < size:
+            return None
 
-            body_part, rest = rest[:size], rest[size:]
-            if len(rest) < 2:
-                self.errno = INVALID_CHUNK
-                self.errstr = 'chunk missing terminator [%s]' % data
-                return -1
+        body_part, rest = rest[:size], rest[size:]
+        if len(rest) < 2:
+            self.errno = INVALID_CHUNK
+            self.errstr = 'chunk missing terminator [%s]' % data
+            return -1
 
-            # maybe decompress
-            if self.__decompress_obj is not None:
-                body_part = self.__decompress_obj.decompress(body_part)
+        # maybe decompress
+        if self.__decompress_obj is not None:
+            body_part = self.__decompress_obj.decompress(body_part)
 
-            self._partial_body = True
-            self._body.append(body_part)
+        self._partial_body = True
+        self._body.append(body_part)
 
-            self._buf = [rest[2:]]
-            return len(rest)
+        self._buf = [rest[2:]]
+        return len(rest)
 
     def _parse_chunk_size(self, data):
         idx = data.find(b'\r\n')

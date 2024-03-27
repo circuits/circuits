@@ -4,6 +4,7 @@ import pytest
 
 from circuits import Component, Event
 
+
 pytestmark = pytest.mark.skip('XXX: This test fails intermittently')
 
 

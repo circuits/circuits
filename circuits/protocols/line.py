@@ -10,6 +10,7 @@ import re
 
 from circuits.core import BaseComponent, Event, handler
 
+
 LINESEP = re.compile(b'\r?\n')
 
 
@@ -79,7 +80,7 @@ class Line(BaseComponent):
     """
 
     def __init__(self, *args, **kwargs):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(*args, **kwargs)
 
         self.encoding = kwargs.get('encoding', 'utf-8')

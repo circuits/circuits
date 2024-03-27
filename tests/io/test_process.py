@@ -3,6 +3,7 @@ import pytest
 
 from circuits.io import Process, write
 
+
 if pytest.PLATFORM == 'win32':
     pytest.skip('Unsupported Platform')
 
@@ -23,7 +24,7 @@ def test(manager, watcher):
 def test2(manager, watcher, tmpdir):
     foo = tmpdir.ensure('foo.txt')
 
-    p = Process([f'cat - > {str(foo):s}'], shell=True).register(manager)
+    p = Process([f'cat - > {foo!s:s}'], shell=True).register(manager)
     assert watcher.wait('registered')
 
     p.start()

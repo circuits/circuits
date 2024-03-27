@@ -20,6 +20,7 @@ from circuits.net.events import connect
 from circuits.net.sockets import TCPClient
 from circuits.protocols.irc import IRC, JOIN, NICK, PRIVMSG, USER
 
+
 USAGE = '%prog [options] host [port]'
 VERSION = '%prog v' + systemVersion
 

@@ -5,9 +5,10 @@ Test Manager's representation string.
 """
 
 import os
-import pytest
 from threading import current_thread
 from time import sleep
+
+import pytest
 
 from circuits import Component, Manager
 

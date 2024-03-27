@@ -54,8 +54,7 @@ def edges(x, e=None, v=None, d=0):
 def findroot(x):
     if x.parent == x:
         return x
-    else:
-        return findroot(x.parent)
+    return findroot(x.parent)
 
 
 def kill(x):

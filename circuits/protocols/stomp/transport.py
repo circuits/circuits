@@ -4,6 +4,7 @@ import logging
 import socket
 import ssl
 
+
 try:
     from stompest.error import StompConnectionError
     from stompest.sync.transport import StompFrameTransport
@@ -37,7 +38,7 @@ class EnhancedStompFrameTransport(StompFrameTransport):
                         names.append(value)
                         if value == hostname:
                             return
-        raise RuntimeError(f'{hostname} does not match the expected value in the certificate {str(names)}')
+        raise RuntimeError(f'{hostname} does not match the expected value in the certificate {names!s}')
 
     def connect(self, timeout=None):
         """Allow older versions of ssl module, allow http proxy connections"""

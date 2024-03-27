@@ -22,6 +22,7 @@ Usage (*using dig*)::
 """
 
 import sys
+
 from dnslib import QTYPE, RR, A, DNSHeader, DNSRecord
 
 from circuits import Component, Debugger, Event
@@ -53,7 +54,7 @@ class Dummy(Component):
         qname = request.q.qname
 
         print(
-            f'DNS Request for qname({str(qname):s})',
+            f'DNS Request for qname({qname!s:s})',
             file=sys.stderr,
         )
 

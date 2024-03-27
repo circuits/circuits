@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import pytest
 from time import sleep
+
+import pytest
 
 from circuits import Component, Event
 from circuits.net.events import close
 from circuits.net.sockets import UDPServer
 from circuits.node import Node
+
 
 pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Broken on Windows')
 

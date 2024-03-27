@@ -22,6 +22,7 @@ from .parsers import BAD_FIRST_LINE, HttpParser
 from .url import parse_url
 from .utils import is_unix_socket
 
+
 HTTP_ENCODING = 'utf-8'
 
 
@@ -91,7 +92,7 @@ class HTTP(BaseComponent):
 
         self._uri = parse_url(url)
 
-    @handler('stream')  # noqa
+    @handler('stream')
     def _on_stream(self, res, data):
         sock = res.request.sock
 
@@ -130,7 +131,7 @@ class HTTP(BaseComponent):
 
             res.done = True
 
-    @handler('response')  # noqa
+    @handler('response')
     def _on_response(self, res):
         """
         ``Response`` Event Handler
@@ -153,7 +154,7 @@ class HTTP(BaseComponent):
 
         if req.method == 'HEAD':
             return
-        elif res.stream and res.body:
+        if res.stream and res.body:
             try:
                 data = next(res.body)
             except StopIteration:
@@ -196,7 +197,7 @@ class HTTP(BaseComponent):
         if sock in self._clients:
             del self._clients[sock]
 
-    @handler('read')  # noqa
+    @handler('read')
     def _on_read(self, sock, data):
         """
         Read Event Handler
@@ -241,7 +242,7 @@ class HTTP(BaseComponent):
                 res = wrappers.Response(req, encoding=self._encoding)
                 del self._buffers[sock]
                 return self.fire(httperror(req, res, 400))
-            return
+            return None
 
         if sock in self._clients:
             req, res = self._clients[sock]
@@ -279,7 +280,7 @@ class HTTP(BaseComponent):
 
         clen = int(req.headers.get('Content-Length', '0'))
         if (clen or req.headers.get('Transfer-Encoding') == 'chunked') and not parser.is_message_complete():
-            return
+            return None
 
         if hasattr(sock, 'getpeercert'):
             peer_cert = sock.getpeercert()
@@ -318,7 +319,7 @@ class HTTP(BaseComponent):
         res.body = str(event)
         self.fire(response(res))
 
-    @handler('request_success')  # noqa
+    @handler('request_success')
     def _on_request_success(self, e, value):
         """
         Handler for the ``RequestSuccess`` event that is automatically

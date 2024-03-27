@@ -3,12 +3,13 @@ from io import BytesIO
 
 from circuits.web.utils import compress, get_ranges
 
+
 try:
     from gzip import decompress
 except ImportError:
     import zlib
 
-    decompress = zlib.decompressobj(16 + zlib.MAX_WBITS).decompress  # NOQA
+    decompress = zlib.decompressobj(16 + zlib.MAX_WBITS).decompress
 
 
 def test_ranges():

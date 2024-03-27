@@ -10,7 +10,6 @@ curl -i http://root:test@localhost:8000/
 """
 
 from crypt import crypt
-
 from os import path
 from re import compile as compile_regex
 from socket import gethostname
@@ -54,7 +53,7 @@ class PasswdAuth(Component):
 
             if check_auth(username, password):
                 request.login = username
-                return
+                return None
 
         response.headers['WWW-Authenticate'] = _httpauth.basicAuth(self.realm)
 

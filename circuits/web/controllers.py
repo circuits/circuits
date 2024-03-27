@@ -30,8 +30,7 @@ def expose(*channels, **config):
                         self.session = self.request.session
                 if not getattr(f, 'event', False):
                     return f(self, *args, **kwargs)
-                else:
-                    return f(self, event, *args, **kwargs)
+                return f(self, event, *args, **kwargs)
             finally:
                 if hasattr(self, 'request'):
                     del self.request
@@ -149,8 +148,7 @@ def exposeJSON(*channels, **config):
                 result = f(self, *args, **kwargs)
                 if isinstance(result, (httperror, Response)):
                     return result
-                else:
-                    return json.dumps(result)
+                return json.dumps(result)
             finally:
                 if hasattr(self, 'request'):
                     del self.request

@@ -1,5 +1,6 @@
-import requests
 from time import sleep
+
+import requests
 
 from circuits import Component, Debugger, Event, Timer, Worker, task
 

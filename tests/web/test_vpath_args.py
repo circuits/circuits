@@ -17,8 +17,7 @@ class Leaf(Controller):
     def index(self, vpath=None):
         if vpath is None:
             return 'Hello world!'
-        else:
-            return 'Hello world! ' + vpath
+        return 'Hello world! ' + vpath
 
 
 def test(webapp):

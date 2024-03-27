@@ -93,7 +93,7 @@ class WebSocketClient(BaseComponent):
             sec_key = ''.join([chr(random.randint(0, 255)) for i in range(16)])
         headers['Sec-WebSocket-Key'] = base64.b64encode(sec_key).decode('latin1')
         headers['Sec-WebSocket-Version'] = '13'
-        UNSAFE_CHARS = re.compile('[^0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]')  # noqa: E501
+        UNSAFE_CHARS = re.compile('[^0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]')
         escaped_resource = UNSAFE_CHARS.sub('', self._resource.encode('ASCII', 'replace').decode('ASCII'))
         command = f'GET {escaped_resource} HTTP/1.1'
         message = f'{command}\r\n{headers}'

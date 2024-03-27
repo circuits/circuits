@@ -23,6 +23,7 @@ from circuits.tools import tryimport
 
 from .events import close, closed, eof, error, opened, read, ready
 
+
 fcntl = tryimport('fcntl')
 
 TIMEOUT = 0.2
@@ -155,9 +156,8 @@ class File(Component):
         except OSError as exc:
             if exc.args[0] in (EWOULDBLOCK, EINTR):
                 return
-            else:
-                self.fire(error(exc))
-                self._close()
+            self.fire(error(exc))
+            self._close()
 
     def seek(self, offset, whence=0):
         self._fd.seek(offset, whence)
@@ -174,9 +174,8 @@ class File(Component):
         except OSError as e:
             if e.args[0] in (EWOULDBLOCK, EINTR):
                 return
-            else:
-                self.fire(error(e))
-                self._close()
+            self.fire(error(e))
+            self._close()
 
     def write(self, data):
         if self._poller is not None and not self._poller.isWriting(self._fd):

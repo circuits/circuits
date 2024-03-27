@@ -12,6 +12,7 @@ import pygments.util
 from genshi import builder
 from genshi.filters import HTMLSanitizer
 
+
 sanitizer = HTMLSanitizer()
 
 

@@ -22,6 +22,7 @@ from . import _httpauth
 from .errors import httperror, notfound, redirect, unauthorized
 from .utils import compress, get_ranges
 
+
 mimetypes.init()
 mimetypes.add_type('image/x-dwg', '.dwg')
 mimetypes.add_type('image/x-icon', '.ico')
@@ -214,7 +215,7 @@ def validate_etags(request, response, autotags=False):
     """
     # Guard against being run twice.
     if hasattr(response, 'ETag'):
-        return
+        return None
 
     status = response.status
 
@@ -251,19 +252,18 @@ def validate_etags(request, response, autotags=False):
         if conditions == ['*'] or etag in conditions:
             if request.method in ('GET', 'HEAD'):
                 return redirect(request, response, [], code=304)
-            else:
-                return httperror(
-                    request,
-                    response,
-                    412,
-                    description=(
-                        'If-None-Match failed: ETag %r matched %r'
-                        % (
-                            etag,
-                            conditions,
-                        )
-                    ),
-                )
+            return httperror(
+                request,
+                response,
+                412,
+                description=(
+                    'If-None-Match failed: ETag %r matched %r'
+                    % (
+                        etag,
+                        conditions,
+                    )
+                ),
+            )
 
 
 def validate_since(request, response):
@@ -285,8 +285,7 @@ def validate_since(request, response):
         if since and since == lastmod and ((status >= 200 and status <= 299) or status == 304):
             if request.method in ('GET', 'HEAD'):
                 return redirect(request, response, [], code=304)
-            else:
-                return httperror(request, response, 412)
+            return httperror(request, response, 412)
 
 
 def check_auth(request, response, realm, users, encrypt=None):
@@ -364,7 +363,7 @@ def basic_auth(request, response, realm, users, encrypt=None):
     :type  encrypt: callable
     """
     if check_auth(request, response, realm, users, encrypt):
-        return
+        return None
 
     # inform the user-agent this path is protected
     response.headers['WWW-Authenticate'] = _httpauth.basicAuth(realm)
@@ -386,7 +385,7 @@ def digest_auth(request, response, realm, users):
     :type  users: dict or callable
     """
     if check_auth(request, response, realm, users):
-        return
+        return None
 
     # inform the user-agent this path is protected
     response.headers['WWW-Authenticate'] = _httpauth.digestAuth(realm)
@@ -471,4 +470,4 @@ class ReverseProxy(BaseComponent):
     @handler('request', priority=1)
     def _on_request(self, req, *_):
         ip = [v for v in map(req.headers.get, self.headers) if v]
-        req.remote = ip and Host(ip[0], '', ip[0]) or req.remote
+        req.remote = (ip and Host(ip[0], '', ip[0])) or req.remote

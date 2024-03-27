@@ -4,6 +4,7 @@ from optparse import OptionParser
 from circuits import Component, Debugger, Event
 from circuits.node import Node
 
+
 __version__ = '0.0.1'
 
 USAGE = '%prog [options]'

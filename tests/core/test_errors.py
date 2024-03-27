@@ -52,7 +52,7 @@ def test_main(app, watcher):
     watcher.wait('exception')
 
     assert app.etype == NameError
-    pytest.raises(NameError, lambda e: reraise(e), app.evalue)
+    pytest.raises(NameError, reraise, app.evalue)
     assert isinstance(app.etraceback, list)
     assert app.handler == app.test
     assert app.fevent == e

@@ -10,7 +10,7 @@ class Root(BaseComponent):
 
     @handler('request', priority=0.2)
     def request(self, request, response):
-        raise Exception()
+        raise Exception
 
 
 def test(webapp):

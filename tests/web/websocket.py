@@ -27,6 +27,7 @@ from hashlib import md5
 
 from .helpers import urlparse
 
+
 logger = logging.getLogger()
 
 
@@ -43,7 +44,7 @@ traceEnabled = False
 
 
 def enableTrace(tracable):
-    """turn on/off the tracability."""
+    """Turn on/off the tracability."""
     global traceEnabled
     traceEnabled = tracable
     if tracable:
@@ -106,7 +107,7 @@ def create_connection(url, timeout=None, **options):
     by getdefauttimeout() is used.
     """
     websock = WebSocket()
-    websock.settimeout(timeout is not None and timeout or default_timeout)
+    websock.settimeout((timeout is not None and timeout) or default_timeout)
     websock.connect(url, **options)
     return websock
 
@@ -294,7 +295,7 @@ class WebSocket:
                 success += 1
         if success == len(HEADERS_TO_EXIST_FOR_HYBI00):
             return True, True
-        elif success != 0:
+        if success != 0:
             return False, True
 
         success = 0
@@ -358,20 +359,18 @@ class WebSocket:
                 b = self._recv(1)
                 if b == b'\xff':
                     break
-                else:
-                    bytes.append(b)
+                bytes.append(b)
             return b''.join(bytes)
-        elif 0x80 < frame_type < 0xFF:
+        if 0x80 < frame_type < 0xFF:
             # which frame type is valid?
             length = self._read_length()
             bytes = self._recv_strict(length)
             return bytes
-        elif frame_type == 0xFF:
+        if frame_type == 0xFF:
             self._recv(1)
             self._closeInternal()
             return None
-        else:
-            raise WebSocketException('Invalid frame type')
+        raise WebSocketException('Invalid frame type')
 
     def _read_length(self):
         length = 0
@@ -411,7 +410,7 @@ class WebSocket:
         bytes = self.io_sock.recv(bufsize)
 
         if not bytes:
-            raise ConnectionClosedException()
+            raise ConnectionClosedException
         return bytes
 
     def _recv_strict(self, bufsize):
@@ -463,11 +462,11 @@ class WebSocketApp:
         self.sock = None
 
     def send(self, data):
-        """send message. data must be utf-8 string or unicode."""
+        """Send message. data must be utf-8 string or unicode."""
         self.sock.send(data)
 
     def close(self):
-        """close websocket connection."""
+        """Close websocket connection."""
         self.sock.close()
 
     def run_forever(self):

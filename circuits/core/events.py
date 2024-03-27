@@ -101,7 +101,7 @@ class Event:
         return False
 
     def __repr__(self):
-        "x.__repr__() <==> repr(x)"
+        """x.__repr__() <==> repr(x)"""
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:
@@ -111,7 +111,7 @@ class Event:
 
         data = '%s %s' % (
             ', '.join(repr(arg) for arg in self.args),
-            ', '.join(f'{k}={repr(v)}' for k, v in self.kwargs.items()),
+            ', '.join(f'{k}={v!r}' for k, v in self.kwargs.items()),
         )
 
         return f'<{self.name}[{channels}] ({data})>'
@@ -128,10 +128,9 @@ class Event:
         """
         if isinstance(x, int):
             return self.args[x]
-        elif isinstance(x, str):
+        if isinstance(x, str):
             return self.kwargs[x]
-        else:
-            raise TypeError('Expected int or str, got %r' % type(x))
+        raise TypeError('Expected int or str, got %r' % type(x))
 
     def __setitem__(self, i, y):
         """

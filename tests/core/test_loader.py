@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import pytest
 from os.path import dirname
+
+import pytest
 
 from circuits import Event, Loader, Manager
 

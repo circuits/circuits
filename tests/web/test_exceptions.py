@@ -21,16 +21,16 @@ class Root(Controller):
         raise NotFound()
 
     def test_contenttype(self):
-        raise Exception()
+        raise Exception
 
     def test_contenttype_json(self):
         self.response.headers['Content-Type'] = 'application/json'
-        raise Exception()
+        raise Exception
 
     def test_contenttype_json_no_debug(self):
         self.response.headers['Content-Type'] = 'application/json'
         self.request.print_debug = False
-        raise Exception()
+        raise Exception
 
 
 def test_redirect(webapp):
