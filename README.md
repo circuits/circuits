@@ -37,7 +37,7 @@ Supported Platforms
 ===================
 
 -   Linux, FreeBSD, Mac OS X, Windows
--   Python 3.7, 3.8, 3.9, 3.10
+-   Python 3.7, 3.8, 3.9, 3.10, 3.11, 3.12
 -   pypy (the newer the better)
 
 Installation
