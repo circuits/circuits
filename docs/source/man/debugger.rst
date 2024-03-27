@@ -28,14 +28,14 @@ Example:
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits import Component, Debugger
-    
-    
+
+
     class App(Component):
         """Your Application"""
-    
-    
+
+
     app = App()
     Debugger().register(app)
     app.run()
@@ -53,29 +53,29 @@ Example Code:
 
 .. code-block:: python
     :linenos:
-       
+
     from circuits import Event, Component, Debugger
-    
-    
+
+
     class foo(Event):
         """foo Event"""
-    
-    
+
+
     class App(Component):
-    
+
         def foo(self, x, y):
             return x + y
-    
-    
+
+
     app = App() + Debugger()
     app.start()
 
 Run with::
-    
+
     python -i app.py
 
 Logged Events::
-    
+
     <registered[*] (<Debugger/* 27098:App (queued=0) [S]>, <App/* 27098:App (queued=2) [R]> )>
     <started[*] (<App/* 27098:App (queued=1) [R]> )>
     >>> app.fire(foo(1, 2))
@@ -83,7 +83,7 @@ Logged Events::
     >>> <foo[*] (1, 2 )>
 
 Logged Exceptions::
-    
+
     >>> app.fire(foo())
     <Value () result=False; errors=False; for <foo[*] ( )>
     >>> <foo[*] ( )>

@@ -18,21 +18,21 @@ with circuits.web
 To get started, we first import the necessary components:
 
 .. code-block:: python
-   
+
    from circutis.web import Server, Controller
-   
+
 
 Next we define our first Controller with a single Request Handler
 defined as our index. We simply return "Hello World!" as the response
 for our Request Handler.
 
 .. code-block:: python
-   
+
    class Root(Controller):
-   
+
       def index(self):
          return "Hello World!"
-   
+
 
 This completes our simple web application which will respond with
 "Hello World!" when anyone accesses it.
@@ -43,9 +43,9 @@ very powerful and plays nice with other tools.*
 Now we need to run the application:
 
 .. code-block:: python
-   
+
    (Server(8000) + Root()).run()
-   
+
 
 That's it! Navigate to: http://127.0.0.1:8000/ and see the result.
 
@@ -55,13 +55,13 @@ Here's the complete code:
    :linenos:
 
    from circuits.web import Server, Controller
-   
+
    class Root(Controller):
-   
+
       def index(self):
          return "Hello World!"
-   
+
    (Server(8000) + Root()).run()
-   
+
 
 Have fun!

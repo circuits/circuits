@@ -9,15 +9,15 @@ This requires the use of:
 - `pytest <http://pytest.org>`_
 
 To install pytest:
-    
+
     $ pip install pytest
 
 
 To run this example:
-    
+
     $ ./hello.py
 
 To run the unit test:
-    
+
     $ py.test test_hello.py
 

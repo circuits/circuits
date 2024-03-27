@@ -9,7 +9,7 @@ Cyclomatic Complexity
 ---------------------
 
 - Code Complexity shall not exceed ``10``
-  
+
   See: `Limiting Cyclomatic Complexity <http://en.wikipedia.org/wiki/Cyclomatic_complexity#Limiting_complexity_during_development>`_
 
 

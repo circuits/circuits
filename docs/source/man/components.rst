@@ -5,18 +5,18 @@ Components
 ==========
 
 
-The architectural concept of circuits is to encapsulate system 
-functionality into discrete manageable and reusable units, called *Components*, 
+The architectural concept of circuits is to encapsulate system
+functionality into discrete manageable and reusable units, called *Components*,
 that interact by sending and handling events that flow throughout the system.
 
 Technically, a circuits *Component* is a Python class that inherits
-(*directly or indirectly*) from 
+(*directly or indirectly*) from
 :class:`~BaseComponent`.
 
 Components can be sub-classed like any other normal Python class, however
 components can also be composed of other components and it is natural
 to do so. These are called *Complex Components*. An example of a Complex
-Component within the circuits library is the 
+Component within the circuits library is the
 :class:`circuits.web.servers.Server` Component which is comprised of:
 
 - :class:`circuits.net.sockets.TCPServer`
@@ -25,7 +25,7 @@ Component within the circuits library is the
 - :class:`circuits.web.dispatchers.dispatcher.Dispatcher`
 
 .. note:: There is no class or other technical means to mark a component
-          as a complex component. Rather, all component instances in a circuits 
+          as a complex component. Rather, all component instances in a circuits
           based application belong to some component tree (there may be several),
           with Complex Components being a subtree within that structure.
 
@@ -35,9 +35,9 @@ detached by unregistering itself. See methods:
 - :meth:`~BaseComponent.register`
 - :meth:`~BaseComponent.unregister`
 
-The hierarchy of components facilitates addition and removal of complex components at runtime. 
+The hierarchy of components facilitates addition and removal of complex components at runtime.
 
-All registered components in the hierarchy receive all applicable events regardless of lineage.  
+All registered components in the hierarchy receive all applicable events regardless of lineage.
 
 Component Registration
 ----------------------
@@ -47,7 +47,7 @@ To register a component use the :meth:`~Component.register` method.
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits import Component
 
 
@@ -74,7 +74,7 @@ Unregistering Components
 Components are unregistered via the :meth:`~Component.unregister` method.
 
 .. code-block:: python
-    
+
    debugger.unregister()
 
 .. note:: You need a reference to the component you wish to
@@ -110,7 +110,7 @@ For example the above could have been written as:
 
 .. code-block:: python
     :linenos:
-    
+
     from circuits import Component
 
 
@@ -140,21 +140,21 @@ a class attribute of the other.
 Example:
 
 .. code-block:: python
-    
+
     >>> from circuits import Component
-    >>> 
+    >>>
     >>> class Foo(Component):
     ...     """Foo Component"""
-    ... 
+    ...
     >>> class App(Component):
     ...     """App Component"""
-    ...     
+    ...
     ...     foo = Foo()
-    ... 
+    ...
     >>> app = App()
     >>> app.components
     set([<Foo/* 28599:MainThread (queued=0) [S]>])
-    >>> 
+    >>>
 
 The `telnet Example <https://github.com/circuits/circuits/tree/master/examples/telnet.py>`_
 does this for example.

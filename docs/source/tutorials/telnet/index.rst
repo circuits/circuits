@@ -16,7 +16,7 @@ building a simple TCP client that also accepts user input.
 Be sure you have circuits installed before you start:
 
 .. code-block:: bash
-    
+
     pip install circuits
 
 
@@ -85,7 +85,7 @@ Some important things to note...
    share a very similar interface in terms of the events they listen to.
 
 .. code-block:: python
-    
+
     class Telnet(Component):
 
         channel = "telnet"
@@ -98,7 +98,7 @@ Some important things to note...
    the :class:`~.net.sockets.TCPClient` Component.
 
 .. code-block:: python
-    
+
     TCPClient(channel=self.channel).register(self)
 
 3. In addition to our :class:`~.net.sockets.TCPClient` Component being
@@ -114,11 +114,11 @@ Some important things to note...
    to events from our ``stdin`` channel.
 
 .. code-block:: python
-    
+
     File(sys.stdin, channel="stdin").register(self)
 
 .. code-block:: python
-    
+
     @handler("read", channel="stdin")
     def read_user_input(self, data):
         self.fire(write(data))
@@ -128,12 +128,12 @@ you were to register the :class:`~.Debugger`
 to the ``Telnet`` Component.
 
 .. code-block:: python
-    
+
     from circuits import Debugger
     (Telnet(host, port) + Debugger()).run()
 
 .. code-block:: bash
-    
+
     $ python telnet.py 10.0.0.2 8000
     <registered[telnet] (<TCPClient/telnet 21995:MainThread (queued=0) [S]>, <Telnet/telnet 21995:MainThread (queued=4) [R]> )>
     <registered[stdin] (<File/stdin 21995:MainThread (queued=0) [S]>, <Telnet/telnet 21995:MainThread (queued=5) [R]> )>
@@ -171,11 +171,11 @@ and copy and paste the full source code of the
 ``Telnet`` example above into a file called ``telnet.py``.
 
 In one terminal run::
-    
+
     $ python echoserver.py
 
 In a second terminal run::
-    
+
     $ python telnet.py localhost 8000
 
 Have fun!

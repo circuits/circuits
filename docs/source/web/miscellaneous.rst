@@ -18,7 +18,7 @@ Code:
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/env python
     from tidylib import tidy_document
 
@@ -34,7 +34,7 @@ Code:
     Usage:
 
     (Server(8000) + Tidy() + Root()).run()
-    
+
 **How it works:**
 
 This tool works by intercepting the Response Event on the "response" channel
@@ -79,13 +79,13 @@ VirtualHosts code:
             if prefix:
                 path = _urljoin("/%s/" % prefix, path)
                 request.path = path
-    
+
 The important thing here to note is the Event Handler listening on the
 appropriate channel and the request.path being modified appropriately.
 
 You'll also note that in [source:circuits/web/dispatchers.py] all of the
 dispatchers have a set priority. These priorities are defined as::
-    
+
     $ grin "priority" circuits/web/dispatchers/
     circuits/web/dispatchers/dispatcher.py:
        92 :     @handler("request", filter=True, priority=0.1)
@@ -99,7 +99,7 @@ dispatchers have a set priority. These priorities are defined as::
        53 :     @handler("request", filter=True, priority=0.2)
     circuits/web/dispatchers/xmlrpc.py:
        36 :     @handler("request", filter=True, priority=0.2)
-    
+
 in web applications that use multiple dispatchers these priorities set
 precedences for each "dispatcher" over another in terms of who's handling
 the Request Event before the other.

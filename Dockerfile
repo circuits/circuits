@@ -11,7 +11,7 @@
 # PyPi: https://pypi.python.org/pypi/circuits
 #
 # Usage Examples(s)::
-#     
+#
 #     $ docker run -d -v /path/to/www:/var/www prologic/circuits circuits.web /var/www
 #     $ docker run -i -t prologic/circuits circuits.bench
 #

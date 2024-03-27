@@ -24,12 +24,12 @@ any additional meta data about them.
 Example:
 
 .. code:: pycon
-    
+
     >>> from circuits import Component
     >>> class App(Component):
     ...     def foo(self):
     ...             pass
-    ... 
+    ...
     >>> app = App()
     >>> from circuits.tools import inspect
     >>> print(inspect(app))
@@ -42,7 +42,7 @@ Example:
        <handler[*][foo] (App.foo)>
       prepare_unregister_complete; 1
        <handler[<instance of App>][prepare_unregister_complete] (App._on_prepare_unregister_complete)>
-   
+
 
 Displaying a Visual Representation of your Application
 ------------------------------------------------------
@@ -61,24 +61,24 @@ packages installed:
 - `matplotlib <http://pypi.python.org/pypi/matplotlib>`_
 
 You can install the required dependencies via::
-    
+
     pip install matplotlib networkx pygraphviz
 
 Example:
 
 .. code:: pycon
-    
+
     >>> from circuits import Component, Debugger
     >>> from circuits.net.events import write
     >>> from circuits.net.sockets import TCPServer
-    >>> 
+    >>>
     >>> class EchoServer(Component):
     ...     def init(self, host="0.0.0.0", port=8000):
     ...             TCPServer((host, port)).register(self)
     ...             Debugger().register(self)
     ...     def read(self, sock, data):
     ...             self.fire(write(sock, data))
-    ... 
+    ...
     >>> server = EchoServer()
     >>>
     >>> from circuits.tools import graph
@@ -86,7 +86,7 @@ Example:
     * <EchoServer/* 784:MainThread (queued=2) [S]>
      * <TCPServer/server 784:MainThread (queued=0) [S]>
      * <Debugger/* 784:MainThread (queued=0) [S]>
-    
+
 An output image will be saved to your current working directory
 and by called ``<name>.png`` where **<name>** is the name of
 the top-level component in your application of the value you pass

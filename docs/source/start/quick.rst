@@ -9,9 +9,9 @@ The easiest way to download and install circuits is to use the
 `pip`_ command:
 
 .. code-block:: sh
-   
+
    $ pip install circuits
-   
+
 
 Now that you have successfully downloaded and installed circuits, let's
 test that circuits is properly installed and working.
@@ -19,7 +19,7 @@ test that circuits is properly installed and working.
 First, let's check the installed version:
 
 .. code-block:: python
-   
+
    >>> import circuits
    >>> print circuits.__version__
 

@@ -16,7 +16,7 @@ Basically when you fire an event ``foo()``
 such as:
 
 .. code-block:: python
-    
+
     x = self.fire(foo())
 
 ``x`` here is an instance of the
@@ -45,7 +45,7 @@ Example Code:
 
 .. code-block:: python
     :linenos:
-    
+
     #!/usr/bin/python -i
 
 
@@ -80,8 +80,8 @@ Example Session:
 
 .. code-block:: console
     :linenos:
-    
-    $ python -i ../app.py 
+
+    $ python -i ../app.py
     >>> x = app.fire(test())
     >>> x.notify = True
     >>> app.tick()
@@ -96,7 +96,7 @@ Example Session:
     <Value ('Hello World!') result=True; errors=False; for <test[*] ( )>
     >>> x.value
     'Hello World!'
-    >>> 
+    >>>
 
 The :py:attr:`Value.notify` attribute can also be
 set to the name of an event which should be used

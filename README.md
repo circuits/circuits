@@ -57,7 +57,7 @@ Alternatively, you may download the source package from the [PyPi](http://pypi.p
 
 > **note**
 >
-> You can install the [development version](https://github.com/circuits/circuits/archive/master.zip#egg=circuits-dev)  
+> You can install the [development version](https://github.com/circuits/circuits/archive/master.zip#egg=circuits-dev)
 > via `pip install circuits==dev`.
 >
 License

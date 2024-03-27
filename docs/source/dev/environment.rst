@@ -28,7 +28,7 @@ and tools `virtualenvwrapper`_ which adds a nice set of workflows
 and functions useful for both development and deployments.
 
 .. code-block:: bash
-    
+
     $ pip install -U virtualenvwrapper
     $ source $(which virtualenvwrapper.sh)
 
@@ -55,7 +55,7 @@ And you're done!
 Example:
 
 .. code-block:: bash
-    
+
     $ git clone git@github.com:prologic/circuits.git
     $ cd circuits
     $ mkvirtualenv circuits
@@ -65,7 +65,7 @@ Example:
 Alternatively if you already have `Fabric`_ installed:
 
 .. code-block:: bash
-    
+
     $ git clone git@github.com:prologic/circuits.git
     $ cd circuits
     $ mkvirtualenv circuits
