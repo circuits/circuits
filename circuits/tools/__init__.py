@@ -137,7 +137,7 @@ def graph_dot(x, name=None):
     :type  name: str
     """
     networkx = tryimport("networkx")
-    plt, g = _graph(x)
+    _plt, g = _graph(x)
     if g is not None:
         networkx.drawing.nx_agraph.write_dot(g, f"{name or x.name}.dot")
 
@@ -150,7 +150,7 @@ def graph_png(x, name=None):
     :param name: A name for the graph (defaults to x's name)
     :type  name: str
     """
-    plt, g = _graph(x)
+    plt, _g = _graph(x)
     if plt is not None:
         plt.savefig(f"{name or x.name}.png")
 

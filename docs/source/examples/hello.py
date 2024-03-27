@@ -26,4 +26,5 @@ class App(Component):
 
         raise SystemExit(0)  # Terminate the Application
 
+
 App().run()

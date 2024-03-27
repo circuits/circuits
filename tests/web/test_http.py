@@ -36,7 +36,7 @@ def test(webapp):
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.http.base)
+    host, port, _resource, _secure = parse_url(webapp.server.http.base)
     client.fire(connect(host, port))
     assert pytest.wait_for(transport, "connected")
 
@@ -58,7 +58,7 @@ def test_http_1_0(webapp):
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.http.base)
+    host, port, _resource, _secure = parse_url(webapp.server.http.base)
     client.fire(connect(host, port))
     assert pytest.wait_for(transport, "connected")
 
@@ -77,7 +77,7 @@ def test_http_1_1_no_host_headers(webapp):
     client += transport
     client.start()
 
-    host, port, resource, secure = parse_url(webapp.server.http.base)
+    host, port, _resource, _secure = parse_url(webapp.server.http.base)
     client.fire(connect(host, port))
     assert pytest.wait_for(transport, "connected")
 

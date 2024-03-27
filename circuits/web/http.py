@@ -362,7 +362,7 @@ class HTTP(BaseComponent):
                 self.fire(response(res))
             elif value.errors:
                 error = value.value
-                etype, evalue, traceback = error
+                _etype, evalue, _traceback = error
                 if isinstance(evalue, RedirectException):
                     self.fire(redirect(req, res, evalue.urls, evalue.code))
                 elif isinstance(evalue, HTTPException):
@@ -378,7 +378,7 @@ class HTTP(BaseComponent):
                 value.event = e
                 value.notify = True
         elif isinstance(value, tuple):
-            etype, evalue, traceback = error = value
+            _etype, evalue, _traceback = error = value
 
             if isinstance(evalue, RedirectException):
                 self.fire(redirect(req, res, evalue.urls, evalue.code))
@@ -431,7 +431,7 @@ class HTTP(BaseComponent):
 
         req.handled = True
 
-        etype, evalue, traceback = error
+        _etype, evalue, _traceback = error
 
         if isinstance(evalue, RedirectException):
             self.fire(redirect(req, res, evalue.urls, evalue.code))

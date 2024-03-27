@@ -135,7 +135,7 @@ class Telnet(Component):
         if len(args) == 1:
             data = args[0]
         else:
-            peer, data = args
+            _peer, data = args
 
         data = data.strip().decode("utf-8")
 

@@ -147,7 +147,7 @@ def get_ranges(headervalue, content_length):
         return None
 
     result = []
-    bytesunit, byteranges = headervalue.split("=", 1)
+    _bytesunit, byteranges = headervalue.split("=", 1)
     for brange in byteranges.split(","):
         start, stop = (x.strip() for x in brange.split("-", 1))
         if start:

@@ -54,8 +54,7 @@ class HTTP(BaseComponent):
         self._parser.execute(data, len(data))
         if self._parser.is_message_complete() or \
                 self._parser.is_upgrade() or \
-                (self._parser.is_headers_complete() and
-                 self._parser._clen == 0):
+                (self._parser.is_headers_complete() and self._parser._clen == 0):
             status = self._parser.get_status_code()
             version = self._parser.get_version()
             headers = self._parser.get_headers()

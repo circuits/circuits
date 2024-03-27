@@ -14,4 +14,5 @@ class Fred(Component):
     def started(self, *args):
         print("Hello I'm Fred!")
 
+
 (Bob() + Fred()).run()

@@ -34,7 +34,7 @@ class App(Component):
         self.fire(task(download_web_page, 'http://www.yahoo.com'))  # async
 
     def task_success(self, function_called, function_result):
-        func, url_called = function_called
+        _func, url_called = function_called
         print(f'url {url_called} gave {function_result}')
 
 

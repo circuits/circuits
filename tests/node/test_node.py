@@ -13,7 +13,7 @@ if PLATFORM == 'win32':
 
 class App(Component):
 
-    ready = False
+    _ready = False
     value = False
     disconnected = False
 
@@ -21,7 +21,7 @@ class App(Component):
         return 'Hello World!'
 
     def ready(self, *args):
-        self.ready = True
+        self._ready = True
 
     def disconnect(self, component):
         self.disconnected = True

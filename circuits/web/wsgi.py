@@ -218,7 +218,7 @@ class Gateway(BaseComponent):
                     return buffer
             else:
                 return body
-        except Exception as error:
+        except Exception:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))
             return httperror(req, res, 500, error=error)

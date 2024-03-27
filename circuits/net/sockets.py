@@ -590,7 +590,7 @@ class Server(BaseComponent):
 
     def _accept(self):
         try:
-            newsock, host = self._sock.accept()
+            newsock, _host = self._sock.accept()
         except OSError as e:
             if e.args[0] in (EWOULDBLOCK, EAGAIN):
                 return
