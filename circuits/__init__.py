@@ -42,13 +42,21 @@ try:
     __import__('pkg_resources').declare_namespace(__name__)
 except ImportError:
     import importlib.metadata
+    import sys
 
     try:
         namespace_pkg = importlib.metadata.distribution(__name__)
     except importlib.metadata.PackageNotFoundError:
         pass
     else:
-        namespace_pkg.activate()
+        namespace_pkg_files = namespace_pkg.files
+        if namespace_pkg_files:
+            for file in namespace_pkg_files:
+                if file.endswith("__init__.py"):
+                    namespace_pkg_path = file.split("__init__.py")[0]
+                    if namespace_pkg_path not in sys.path:
+                        sys.path.append(namespace_pkg_path)
+                    break
 
 # flake8: noqa
 # pylama:skip=1
