@@ -149,9 +149,9 @@ def watcher(request, manager):
 
 
 for key, value in {"WaitEvent": WaitEvent,
-    "wait_for": wait_for,
-    "call_event": call_event,
-    "PLATFORM": sys.platform,
-    "PYVER": sys.version_info[:3],
-    "call_event_from_name": call_event_from_name}.items():
+                   "wait_for": wait_for,
+                   "call_event": call_event,
+                   "PLATFORM": sys.platform,
+                   "PYVER": sys.version_info[:3],
+                   "call_event_from_name": call_event_from_name}.items():
     setattr(pytest, key, value)

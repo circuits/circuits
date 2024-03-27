@@ -256,7 +256,7 @@ class Transport:
 
     def make_connection(self, host):
         # create a HTTP connection object from a host descriptor
-        host, extra_headers, x509 = self.get_host_info(host)
+        host, _extra_headers, _x509 = self.get_host_info(host)
         return HTTPConnection(host)
 
     ##
@@ -276,7 +276,7 @@ class Transport:
     # @param host Host name.
 
     def send_host(self, connection, host):
-        host, extra_headers, x509 = self.get_host_info(host)
+        host, extra_headers, _x509 = self.get_host_info(host)
         connection.putheader("Host", host)
         if extra_headers:
             if isinstance(extra_headers, dict):
@@ -358,7 +358,7 @@ class SafeTransport(Transport):
     def make_connection(self, host):
         # create a HTTPS connection object from a host descriptor
         # host may be a string, or a (host, x509-dict) tuple
-        host, extra_headers, x509 = self.get_host_info(host)
+        host, _extra_headers, x509 = self.get_host_info(host)
         try:
             HTTPS = HTTPSConnection
         except AttributeError:

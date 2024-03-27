@@ -99,7 +99,7 @@ class Dispatcher(BaseComponent):
         if peer_cert:
             event.peer_cert = peer_cert
 
-        handlers, name, channel, vpath = find_handlers(req, self.paths)
+        _handlers, name, channel, vpath = find_handlers(req, self.paths)
 
         if name is not None and channel is not None:
             event.kwargs = parse_qs(req.qs)
@@ -120,7 +120,7 @@ class Dispatcher(BaseComponent):
         if value.handled:
             return
 
-        req, res = value.event.args[:2]
+        _req, res = value.event.args[:2]
         if value.result and not value.errors:
             res.body = value.value
             self.fire(response(res))

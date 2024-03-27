@@ -92,9 +92,9 @@ def test_failure():
 
     assert app.e == e
 
-    etype, evalue, etraceback = app.error
+    etype, evalue, _etraceback = app.error
     pytest.raises(Exception, lambda x: reraise(x), evalue)
-    assert etype == Exception
+    assert etype is Exception
 
     assert app.failure
     assert not app.success

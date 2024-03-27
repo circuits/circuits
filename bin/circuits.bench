@@ -173,7 +173,7 @@ class Monitor(Base):
 
 
 def main():
-    opts, args = parse_options()
+    opts, _args = parse_options()
 
     if opts.speed and psyco:
         psyco.full()

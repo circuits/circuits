@@ -109,11 +109,12 @@ class URL:
         _other.lower().canonical().defrag().abspath().escape().punycode()
 
         result = (
-            _self._scheme == _other._scheme and
-            _self._host == _other._host and
-            _self._path == _other._path and
-            _self._params == _other._params and
-            _self._query == _other._query)
+            _self._scheme == _other._scheme
+            and _self._host == _other._host
+            and _self._path == _other._path
+            and _self._params == _other._params
+            and _self._query == _other._query
+        )
 
         if result:
             if _self._port and not _other._port:

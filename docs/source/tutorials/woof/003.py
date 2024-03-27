@@ -8,4 +8,5 @@ class MyComponent(Component):
     def started(self, *args):
         print("Hello World!")
 
+
 MyComponent().run()

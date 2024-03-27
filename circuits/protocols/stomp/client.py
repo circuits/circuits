@@ -241,9 +241,9 @@ class StompClient(BaseComponent):
         LOG.info("Subscribe to message destination %s", destination)
         try:
             # Set ID to match destination name for easy reference later
-            frame, token = self._client.subscribe(destination,
-                                                  headers={StompSpec.ACK_HEADER: ack,
-                                                           'id': destination})
+            _frame, token = self._client.subscribe(destination,
+                                                   headers={StompSpec.ACK_HEADER: ack,
+                                                            'id': destination})
             self._subscribed[destination] = token
         except StompConnectionError:
             event.success = False

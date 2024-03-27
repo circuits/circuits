@@ -171,7 +171,7 @@ class Client(Component):
         size = self.screen.get_cols_rows()
 
         if select(self.screen.get_input_descriptors(), [], [], 0.1)[0] != []:
-            timeout, keys, raw = self.screen.get_input_nonblocking()
+            _timeout, keys, _raw = self.screen.get_input_nonblocking()
 
             for k in keys:
                 if k == "window resize":
@@ -213,7 +213,7 @@ class Client(Component):
                 f = getattr(self, fn)
                 if callable(f):
 
-                    args, vargs, kwargs, default = getargspec(f)
+                    args, vargs, _kwargs, default = getargspec(f)
                     args.remove("self")
                     if len(args) == len(tokens):
                         if len(args) == 0:
@@ -292,7 +292,7 @@ class Client(Component):
 
     @handler("notice", "privmsg")
     def _on_notice_or_privmsg(self, event, source, target, message):
-        nick, ident, host = source
+        nick, _ident, _host = source
 
         if event.name == "notice":
             self.lines.append(Text(f"-{nick}- {message}"))
