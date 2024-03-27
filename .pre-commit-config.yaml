@@ -1,0 +1,65 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    - id: check-added-large-files
+    - id: check-json
+    - id: check-xml
+    - id: check-yaml
+    - id: check-merge-conflict
+    - id: pretty-format-json
+      args:
+        - --autofix
+        - --no-ensure-ascii
+    - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+#    - id: python-check-blanket-noqa
+    - id: python-no-eval
+      exclude: "^tests/"
+    - id: rst-backticks
+      exclude: "^CHANGES.rst$"
+    - id: rst-directive-colons
+    - id: rst-inline-touching-normal
+  - repo: https://github.com/pycqa/flake8
+    rev: '7.0.0'
+    hooks:
+    - id: flake8
+      exclude: "^circuits/web/parsers/multipart.py\
+               |^.tox/\
+               |^docs/\
+               "
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.3.4'
+    hooks:
+      - id: ruff
+        exclude: "^circuits/web/parsers/multipart.py\
+                  |^.tox/\
+                  |^docs/\
+                 "
+      - id: ruff
+        alias: "ruff-fix"
+        stages: [ manual ]
+        args: ["--fix", "--unsafe-fixes"]
+      - id: ruff
+        alias: "ruff-statistics"
+        stages: [ manual ]
+        args: ["--statistics"]
+      - id: ruff-format
+        alias: "ruff-format"
+        stages: [ manual ]
+      - id: ruff-format
+        alias: "ruff-format-check"
+        stages: [ manual ]
+        args: ["--check"]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        exclude: "^circuits/web/parsers/multipart.py\
+                  |^.tox/\
+                  |^docs/\
+                 "

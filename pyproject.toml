@@ -1,0 +1,79 @@
+[tool.ruff]
+line-length = 127
+target-version = "py37"
+
+[tool.ruff.lint]
+preview = true
+ignore-init-module-imports = true
+select = ["E", "F"]
+ignore = [
+ "E501",  # line-too-long
+ "D203",  # one-blank-line-before-class
+ "D212",  # multi-line-summary-first-line
+ "T201", "T203",  # print, p-print
+]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 40
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+multiline-quotes = "double"
+inline-quotes = "single"
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+#filter-files = true
+#force-grid-wrap = false
+known-first-party = ["circuits"]
+# https://github.com/astral-sh/ruff/issues/2600 :
+#multi-line-output = 5
+#include-trailing-comma = true
+lines-after-imports = 2
+#skip = ".tox,docs,circuits/web/parsers/multipart.py"
+#skip-glob = "venv/*"
+
+[tool.isort]
+combine_as_imports = true
+extra_standard_library = ['crypt']
+include_trailing_comma = true
+known_first_party = ['circuits']
+line_length = 79
+multi_line_output = 5
+lines_after_imports = 2
+skip = ".tox,docs,circuits/web/parsers/multipart.py"

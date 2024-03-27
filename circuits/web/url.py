@@ -133,13 +133,14 @@ class URL:
         if isinstance(other, str):
             return self.__eq__(self.parse(other, 'utf-8'))
         return (
-            self._scheme == other._scheme and
-            self._host == other._host and
-            self._path == other._path and
-            self._port == other._port and
-            self._params == other._params and
-            self._query == other._query and
-            self._fragment == other._fragment)
+            self._scheme == other._scheme
+            and self._host == other._host
+            and self._path == other._path
+            and self._port == other._port
+            and self._params == other._params
+            and self._query == other._query
+            and self._fragment == other._fragment
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)
