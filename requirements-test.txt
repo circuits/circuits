@@ -3,5 +3,4 @@ pytest
 pytest-cov
 pytest-timeout
 flake8
-isort
 tox

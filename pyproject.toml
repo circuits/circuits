@@ -7,7 +7,7 @@ extend-exclude = ["circuits/web/parsers/multipart.py"]
 [tool.ruff.lint]
 preview = true
 ignore-init-module-imports = true
-select = ["E", "F"]
+select = ["E", "F", "I"]
 ignore = [
  "E501",  # line-too-long
  "E203",  # whitespace-before-punctuation
@@ -71,13 +71,4 @@ known-first-party = ["circuits"]
 lines-after-imports = 2
 #skip = ".tox,docs,circuits/web/parsers/multipart.py"
 #skip-glob = "venv/*"
-
-[tool.isort]
-combine_as_imports = true
-extra_standard_library = ['crypt']
-include_trailing_comma = true
-known_first_party = ['circuits']
-line_length = 79
-multi_line_output = 5
-lines_after_imports = 2
-skip = ".tox,docs,circuits/web/parsers/multipart.py"
+split-on-trailing-comma = false
