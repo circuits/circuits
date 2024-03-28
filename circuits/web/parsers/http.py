@@ -9,7 +9,7 @@ import zlib
 from sys import maxsize
 from urllib.parse import urlsplit
 
-from ..headers import Headers
+from circuits.web.headers import Headers
 
 
 METHOD_RE = re.compile('^[A-Z0-9$-_.]{1,20}$')
