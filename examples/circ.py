@@ -209,7 +209,7 @@ class Client(Component):
     def syntaxError(self, command, args, expected):
         self.lines.append(
             Text(
-                'Syntax error ({:s}): {:s} Expected: {:s}'.format(command, args, expected),
+                f'Syntax error ({command:s}): {args:s} Expected: {expected:s}',
             ),
         )
 

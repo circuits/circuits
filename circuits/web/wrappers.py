@@ -91,10 +91,7 @@ class HTTPStatus:
         return f'{self._status:d} {self._reason}'
 
     def __repr__(self):
-        return '<Status (status={:d} reason={}>'.format(
-            self._status,
-            self._reason,
-        )
+        return f'<Status (status={self._status:d} reason={self._reason}>'
 
     def __format__(self, format_spec):
         return format(str(self), format_spec)

@@ -126,10 +126,7 @@ class BaseServer(BaseComponent):
     @handler('ready')
     def _on_ready(self, server, bind):
         stderr.write(
-            '{} ready! Listening on: {}\n'.format(
-                self.http.version,
-                self.http.base,
-            ),
+            f'{self.http.version} ready! Listening on: {self.http.base}\n',
         )
 
 
