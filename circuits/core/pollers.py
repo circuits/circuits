@@ -13,8 +13,7 @@ import platform
 import select
 import sys
 from errno import EBADF, EINTR
-from select import error as SelectError
-from socket import AF_INET, SOCK_STREAM, create_connection, error as SocketError, socket
+from socket import AF_INET, SOCK_STREAM, create_connection, socket
 from threading import Thread
 
 from circuits.core.handlers import handler
@@ -184,7 +183,7 @@ class Select(BasePoller):
             # Something *totally* invalid (object w/o fileno, non-integral
             # result) was passed
             return self._preenDescriptors()
-        except (SelectError, SocketError, OSError) as e:
+        except OSError as e:
             # select(2) encountered an error
             if e.args[0] in (0, 2):
                 # windows does this if it got an empty list
@@ -347,7 +346,7 @@ class EPoll(BasePoller):
         try:
             fileno = fd.fileno() if not isinstance(fd, int) else fd
             self._poller.unregister(fileno)
-        except (SocketError, OSError, ValueError) as e:
+        except (OSError, ValueError) as e:
             if e.args[0] == EBADF:
                 keys = [k for k, v in list(self._map.items()) if v == fd]
                 for key in keys:
