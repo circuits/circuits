@@ -11,9 +11,7 @@ import optparse
 import sys
 from time import sleep
 
-from circuits import (
-    Component, Debugger, Event, Manager, __version__ as systemVersion, handler,
-)
+from circuits import Component, Debugger, Event, Manager, __version__ as systemVersion, handler
 
 
 if sys.platform == 'win32':

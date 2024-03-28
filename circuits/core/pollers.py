@@ -14,9 +14,7 @@ import select
 import sys
 from errno import EBADF, EINTR
 from select import error as SelectError
-from socket import (
-    AF_INET, SOCK_STREAM, create_connection, error as SocketError, socket,
-)
+from socket import AF_INET, SOCK_STREAM, create_connection, error as SocketError, socket
 from threading import Thread
 
 from circuits.core.handlers import handler

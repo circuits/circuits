@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 import os.path
 import select
-from socket import (
-    AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM, has_ipv6, socket,
-)
+from socket import AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM, has_ipv6, socket
 from ssl import wrap_socket as sslsocket
 
 import pytest

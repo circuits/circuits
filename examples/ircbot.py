@@ -12,10 +12,7 @@ import sys
 
 from circuits import Component, Debugger
 from circuits.net.sockets import TCPClient, connect
-from circuits.protocols.irc import (
-    ERR_NICKNAMEINUSE, ERR_NOMOTD, IRC, JOIN, NICK, PRIVMSG, RPL_ENDOFMOTD,
-    USER,
-)
+from circuits.protocols.irc import ERR_NICKNAMEINUSE, ERR_NOMOTD, IRC, JOIN, NICK, PRIVMSG, RPL_ENDOFMOTD, USER
 
 
 class Bot(Component):

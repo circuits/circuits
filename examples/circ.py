@@ -26,8 +26,18 @@ from urwid.raw_display import Screen
 from circuits import Component, __version__ as systemVersion, handler
 from circuits.net.sockets import TCPClient, connect
 from circuits.protocols.irc import (
-    ERR_NICKNAMEINUSE, ERR_NOMOTD, IRC, JOIN, NICK, PART, PRIVMSG, QUIT,
-    RPL_ENDOFMOTD, USER, Message, request,
+    ERR_NICKNAMEINUSE,
+    ERR_NOMOTD,
+    IRC,
+    JOIN,
+    NICK,
+    PART,
+    PRIVMSG,
+    QUIT,
+    RPL_ENDOFMOTD,
+    USER,
+    Message,
+    request,
 )
 from circuits.tools import getargspec
 

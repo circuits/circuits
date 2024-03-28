@@ -6,9 +6,7 @@ controlling PTY. Supports PID file writing, logging stdin, stdout and stderr
 and changing the current working directory.
 """
 
-from os import (
-    _exit, chdir, closerange, dup2, fork, getpid, remove, setsid, umask,
-)
+from os import _exit, chdir, closerange, dup2, fork, getpid, remove, setsid, umask
 from os.path import isabs
 from resource import RLIM_INFINITY, RLIMIT_NOFILE, getrlimit
 from sys import stderr, stdin, stdout

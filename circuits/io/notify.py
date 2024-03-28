@@ -6,9 +6,21 @@ A Component wrapping the inotify API using the pyinotify library.
 
 try:
     from pyinotify import (
-        ALL_EVENTS, IN_ACCESS, IN_ATTRIB, IN_CLOSE_NOWRITE, IN_CLOSE_WRITE,
-        IN_CREATE, IN_DELETE, IN_DELETE_SELF, IN_MODIFY, IN_MOVE_SELF,
-        IN_MOVED_FROM, IN_MOVED_TO, IN_OPEN, IN_UNMOUNT, Notifier,
+        ALL_EVENTS,
+        IN_ACCESS,
+        IN_ATTRIB,
+        IN_CLOSE_NOWRITE,
+        IN_CLOSE_WRITE,
+        IN_CREATE,
+        IN_DELETE,
+        IN_DELETE_SELF,
+        IN_MODIFY,
+        IN_MOVE_SELF,
+        IN_MOVED_FROM,
+        IN_MOVED_TO,
+        IN_OPEN,
+        IN_UNMOUNT,
+        Notifier,
         WatchManager,
     )
 except ImportError:
@@ -18,10 +30,7 @@ from circuits.core import BaseComponent, handler
 from circuits.core.pollers import BasePoller, Poller
 from circuits.core.utils import findcmp
 
-from .events import (
-    accessed, closed, created, deleted, modified, moved, opened, ready,
-    unmounted,
-)
+from .events import accessed, closed, created, deleted, modified, moved, opened, ready, unmounted
 
 
 MASK = ALL_EVENTS

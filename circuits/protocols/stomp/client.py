@@ -8,8 +8,14 @@ import traceback
 from circuits import BaseComponent, Timer
 from circuits.core.handlers import handler
 from circuits.protocols.stomp.events import (
-    client_heartbeat, connected, connection_failed, disconnected,
-    heartbeat_timeout, message, on_stomp_error, server_heartbeat,
+    client_heartbeat,
+    connected,
+    connection_failed,
+    disconnected,
+    heartbeat_timeout,
+    message,
+    on_stomp_error,
+    server_heartbeat,
 )
 from circuits.protocols.stomp.transport import EnhancedStompFrameTransport
 

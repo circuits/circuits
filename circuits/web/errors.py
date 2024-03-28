@@ -10,10 +10,7 @@ from html import escape
 
 from circuits import Event
 
-from .constants import (
-    DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL,
-    SERVER_VERSION,
-)
+from .constants import DEFAULT_ERROR_MESSAGE, HTTP_STATUS_CODES, POWERED_BY, SERVER_URL, SERVER_VERSION
 
 
 class httperror(Event):
