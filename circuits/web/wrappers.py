@@ -337,7 +337,7 @@ class Response:
         if cLength is not None:
             self.headers['Content-Length'] = str(cLength)
 
-        for _k, v in self.cookie.items():
+        for v in self.cookie.values():
             self.headers.add_header('Set-Cookie', v.OutputString())
 
         status = self.status

@@ -198,7 +198,7 @@ def inspect(x):
     from circuits import reprhandler
 
     write(' Event Handlers: %d\n' % len(x._handlers.values()))
-    for event, _handlers in x._handlers.items():
+    for event in x._handlers.keys():
         write('  %s; %d\n' % (event, len(x._handlers[event])))
         for handler in x._handlers[event]:
             write('   %s\n' % reprhandler(handler))
