@@ -127,7 +127,7 @@ class WebSocketCodec(BaseComponent):
             if final:
                 if opcode < 8:
                     # if text or continuation of text, convert
-                    if opcode == 1 or opcode == 0 and self._pending_type == 1:
+                    if opcode == 1 or (opcode == 0 and self._pending_type == 1):
                         msg = msg.decode('utf-8', 'replace')
                     self._pending_type = None
                     self._pending_payload = bytearray()
