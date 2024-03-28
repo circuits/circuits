@@ -519,4 +519,4 @@ class KQueue(BasePoller):
 
 Poller = Select
 
-__all__ = ('BasePoller', 'Poller', 'Select', 'Poll', 'EPoll', 'KQueue')
+__all__ = ('BasePoller', 'EPoll', 'KQueue', 'Poll', 'Poller', 'Select')

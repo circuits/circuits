@@ -65,15 +65,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 __all__ = (
-    'digestAuth',
-    'basicAuth',
-    'doAuth',
-    'checkResponse',
-    'parseAuthorization',
     'SUPPORTED_ALGORITHM',
-    'md5SessionKey',
-    'calculateNonce',
     'SUPPORTED_QOP',
+    'basicAuth',
+    'calculateNonce',
+    'checkResponse',
+    'digestAuth',
+    'doAuth',
+    'md5SessionKey',
+    'parseAuthorization',
 )
 
 ###############################################################################
