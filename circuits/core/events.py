@@ -111,7 +111,7 @@ class Event:
 
         data = '%s %s' % (
             ', '.join(repr(arg) for arg in self.args),
-            ', '.join(f'{k}={repr(v)}' for k, v in self.kwargs.items()),
+            ', '.join(f'{k}={v!r}' for k, v in self.kwargs.items()),
         )
 
         return f'<{self.name}[{channels}] ({data})>'
