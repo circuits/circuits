@@ -4,10 +4,7 @@ from os import getcwd
 
 import docker  # noqa
 import help  # noqa
-from fabric.api import (
-    abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings,
-    task,
-)
+from fabric.api import abort, cd, execute, hide, hosts, local, prefix, prompt, run, settings, task
 
 import docs  # noqa
 

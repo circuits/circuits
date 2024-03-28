@@ -19,8 +19,21 @@ except ImportError:
     __version__ = 'unknown'
 
 from .core import (
-    BaseComponent, Bridge, Component, Debugger, Event, Loader, Manager,
-    TimeoutError, Timer, Worker, handler, ipc, reprhandler, sleep, task,
+    BaseComponent,
+    Bridge,
+    Component,
+    Debugger,
+    Event,
+    Loader,
+    Manager,
+    TimeoutError,
+    Timer,
+    Worker,
+    handler,
+    ipc,
+    reprhandler,
+    sleep,
+    task,
 )
 
 

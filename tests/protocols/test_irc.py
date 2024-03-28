@@ -5,9 +5,28 @@ from pytest import fixture
 from circuits import Component, Event, handler
 from circuits.net.events import read, write
 from circuits.protocols.irc import (
-    AWAY, INVITE, IRC, JOIN, KICK, MODE, NAMES, NICK, NOTICE, PART, PASS, PONG,
-    PRIVMSG, QUIT, TOPIC, USER, WHOIS, irc_color_to_ansi, joinprefix, parsemsg,
-    parseprefix, strip,
+    AWAY,
+    INVITE,
+    IRC,
+    JOIN,
+    KICK,
+    MODE,
+    NAMES,
+    NICK,
+    NOTICE,
+    PART,
+    PASS,
+    PONG,
+    PRIVMSG,
+    QUIT,
+    TOPIC,
+    USER,
+    WHOIS,
+    irc_color_to_ansi,
+    joinprefix,
+    parsemsg,
+    parseprefix,
+    strip,
 )
 
 

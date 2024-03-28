@@ -8,13 +8,40 @@ import os
 import select
 from collections import defaultdict, deque
 from errno import (
-    EAGAIN, EALREADY, EBADF, ECONNABORTED, EINPROGRESS, EINTR, EINVAL, EISCONN,
-    EMFILE, ENFILE, ENOBUFS, ENOMEM, ENOTCONN, EPERM, EPIPE, EWOULDBLOCK,
+    EAGAIN,
+    EALREADY,
+    EBADF,
+    ECONNABORTED,
+    EINPROGRESS,
+    EINTR,
+    EINVAL,
+    EISCONN,
+    EMFILE,
+    ENFILE,
+    ENOBUFS,
+    ENOMEM,
+    ENOTCONN,
+    EPERM,
+    EPIPE,
+    EWOULDBLOCK,
 )
 from socket import (
-    AF_INET, AF_INET6, IPPROTO_IP, IPPROTO_TCP, SO_BROADCAST, SO_REUSEADDR,
-    SOCK_DGRAM, SOCK_STREAM, SOL_SOCKET, TCP_NODELAY, gaierror, getaddrinfo,
-    getfqdn, gethostbyname, gethostname, socket,
+    AF_INET,
+    AF_INET6,
+    IPPROTO_IP,
+    IPPROTO_TCP,
+    SO_BROADCAST,
+    SO_REUSEADDR,
+    SOCK_DGRAM,
+    SOCK_STREAM,
+    SOL_SOCKET,
+    TCP_NODELAY,
+    gaierror,
+    getaddrinfo,
+    getfqdn,
+    gethostbyname,
+    gethostname,
+    socket,
 )
 from time import time
 
@@ -24,10 +51,7 @@ from circuits.core import BaseComponent, handler
 from circuits.core.pollers import BasePoller, Poller
 from circuits.core.utils import findcmp
 
-from .events import (
-    close, closed, connect, connected, disconnect, disconnected, error, read,
-    ready, unreachable, write,
-)
+from .events import close, closed, connect, connected, disconnect, disconnected, error, read, ready, unreachable, write
 
 
 try:
@@ -41,10 +65,7 @@ except ImportError:
     socketpair = None
 
 try:
-    from ssl import (
-        CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23,
-        SSLError, wrap_socket as ssl_socket,
-    )
+    from ssl import CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23, SSLError, wrap_socket as ssl_socket
 
     HAS_SSL = 1
 except ImportError:
