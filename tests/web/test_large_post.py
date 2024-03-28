@@ -6,7 +6,7 @@ from .helpers import urlencode, urlopen
 
 class Root(Controller):
     def index(self, *args, **kwargs):
-        return f'{repr(args)}\n{repr(kwargs)}'
+        return f'{args!r}\n{kwargs!r}'
 
 
 def test(webapp):

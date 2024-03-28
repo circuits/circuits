@@ -54,7 +54,7 @@ class Dummy(Component):
         qname = request.q.qname
 
         print(
-            f'DNS Request for qname({str(qname):s})',
+            f'DNS Request for qname({qname!s:s})',
             file=sys.stderr,
         )
 

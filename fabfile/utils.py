@@ -78,7 +78,7 @@ def requires(*names, **kwargs):
                 for name in names:
                     if not test(name):
                         warn(f'{name:s} not found')
-                abort(f'requires({repr(names):s}) failed')
+                abort(f'requires({names!r:s}) failed')
 
         return wrapper
 

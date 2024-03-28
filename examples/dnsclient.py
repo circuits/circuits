@@ -60,7 +60,7 @@ class Dummy(Component):
         )
 
         for rr in response.rr:
-            print(f' {str(rr):s}')
+            print(f' {rr!s:s}')
 
         raise SystemExit(0)
 

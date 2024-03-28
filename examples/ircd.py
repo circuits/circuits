@@ -165,7 +165,7 @@ class Server(Component):
         host, port = user.host, user.port
 
         self.logger.info(
-            f'I: [{host:s}:{port:d}] {repr(data):s}',
+            f'I: [{host:s}:{port:d}] {data!r:s}',
         )
 
     def write(self, sock, data):
@@ -173,7 +173,7 @@ class Server(Component):
         host, port = user.host, user.port
 
         self.logger.info(
-            f'O: [{host:s}:{port:d}] {repr(data):s}',
+            f'O: [{host:s}:{port:d}] {data!r:s}',
         )
 
     def ready(self, server, bind):
