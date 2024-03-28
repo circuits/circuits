@@ -388,7 +388,7 @@ class ServerProxy:
         self.__allow_none = allow_none
 
     def __request(self, methodname, params):
-        """call a method on the remote server"""
+        """Call a method on the remote server"""
         request = dumps(params, methodname, encoding=self.__encoding, allow_none=self.__allow_none)
 
         response = self.__transport.request(

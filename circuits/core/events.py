@@ -101,7 +101,7 @@ class Event:
         return False
 
     def __repr__(self):
-        "x.__repr__() <==> repr(x)"
+        """x.__repr__() <==> repr(x)"""
         if len(self.channels) > 1:
             channels = repr(self.channels)
         elif len(self.channels) == 1:

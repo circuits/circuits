@@ -58,7 +58,7 @@ class Value:
         return iter(map(lambda v: v.value if isinstance(v, Value) else v, self.value))
 
     def __repr__(self):
-        "x.__repr__() <==> repr(x)"
+        """x.__repr__() <==> repr(x)"""
         value = ''
         if self.result:
             value = repr(self.value)
@@ -67,7 +67,7 @@ class Value:
         return format % (value, self.result, self.errors, self.event)
 
     def __str__(self):
-        "x.__str__() <==> str(x)"
+        """x.__str__() <==> str(x)"""
         return str(self.value)
 
     def inform(self, force=False):

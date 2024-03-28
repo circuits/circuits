@@ -280,12 +280,13 @@ class Headers(CaseInsensitiveDict):
         value is None, in which case only the key will be added.
 
         Example:
-
+        -------
         h.add_header('content-disposition', 'attachment', filename='bud.gif')
 
         Note that unlike the corresponding 'email.Message' method, this does
         *not* handle '(charset, language, value)' tuples: all values must be
         strings or None.
+
         """
         parts = []
         if _value is not None:

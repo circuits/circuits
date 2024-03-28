@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 
-"""(Tool) Bench Marking Tool
+"""
+(Tool) Bench Marking Tool
 
 THis tool does some simple benchmaking of the circuits library.
 """

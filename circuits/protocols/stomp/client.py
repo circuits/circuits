@@ -167,7 +167,7 @@ class StompClient(BaseComponent):
 
     @handler('connect')
     def connect(self, event, host=None, *args, **kwargs):
-        """connect to Stomp server"""
+        """Connect to Stomp server"""
         LOG.info('Connect to Stomp...')
         try:
             self._client.connect(

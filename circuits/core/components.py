@@ -99,7 +99,7 @@ class BaseComponent(Manager):
         return self
 
     def __init__(self, *args, **kwargs):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(*args, **kwargs)
 
         self.channel = kwargs.get('channel', self.channel) or '*'
