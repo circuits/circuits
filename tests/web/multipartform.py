@@ -29,7 +29,7 @@ class MultiPartForm(dict):
                     'Content-Disposition: form-data; name="%s"' % k,
                     'ascii',
                 ),
-                bytes(),
+                b'',
                 v if isinstance(v, bytes) else bytearray(v, 'ascii'),
             ]
             for k, v in list(self.items())
