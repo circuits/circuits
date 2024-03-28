@@ -7,13 +7,26 @@ extend-exclude = ["circuits/web/parsers/multipart.py"]
 [tool.ruff.lint]
 preview = true
 ignore-init-module-imports = true
-select = ["E", "F", "I"]
+select = ["E", "F", "I", "D"]
 ignore = [
  "E501",  # line-too-long
  "E203",  # whitespace-before-punctuation
  "COM812",  # missing-trailing-comma
  "D203",  # one-blank-line-before-class
  "D212",  # multi-line-summary-first-line
+ "D400",  # ends-in-period
+ "D415",  # ends-in-punctuation
+ "D102",  # Missing docstring in public method
+ "D103",  # Missing docstring in public function
+ "D101",  # Missing docstring in public class
+ "D100",  # Missing docstring in public module
+ "D107",  # Missing docstring in `__init__`
+ "D205",  # 1 blank line required between summary line and description
+ "D105",  # Missing docstring in magic method
+ "D401",  # First line of docstring should be in imperative mood: "A shortcut to abspath, escape and lowercase."
+ "D402",  # First line should not be the function's signature
+ "D404",  # First word of the docstring should not be "This"
+ "D104",  # Missing docstring in public package
  "T201", "T203",  # print, p-print
 ]
 

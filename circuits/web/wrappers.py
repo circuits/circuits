@@ -144,7 +144,7 @@ class Request:
     handled = False
 
     def __init__(self, sock, method='GET', scheme='http', path='/', protocol=(1, 1), qs='', headers=None, server=None):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         self.sock = sock
         self.method = method
         self.scheme = scheme or Request.scheme
@@ -281,7 +281,7 @@ class Response:
     chunked = False
 
     def __init__(self, request, encoding='utf-8', status=None):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         self.request = request
         self.encoding = encoding
 

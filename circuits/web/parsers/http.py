@@ -97,7 +97,7 @@ class HttpParser:
         return self._headers
 
     def recv_body(self):
-        """return last chunk of the parsed body"""
+        """Return last chunk of the parsed body"""
         body = b''.join(self._body)
         self._body = []
         self._partial_body = False
@@ -130,27 +130,27 @@ class HttpParser:
         return 'upgrade' in hconn_parts
 
     def is_headers_complete(self):
-        """return True if all headers have been parsed."""
+        """Return True if all headers have been parsed."""
         return self.__on_headers_complete
 
     def is_partial_body(self):
-        """return True if a chunk of body have been parsed"""
+        """Return True if a chunk of body have been parsed"""
         return self._partial_body
 
     def is_message_begin(self):
-        """return True if the parsing start"""
+        """Return True if the parsing start"""
         return self.__on_message_begin
 
     def is_message_complete(self):
-        """return True if the parsing is done (we get EOF)"""
+        """Return True if the parsing is done (we get EOF)"""
         return self.__on_message_complete
 
     def is_chunked(self):
-        """return True if Transfer-Encoding header value is chunked"""
+        """Return True if Transfer-Encoding header value is chunked"""
         return self._chunked
 
     def should_keep_alive(self):
-        """return True if the connection should be kept alive"""
+        """Return True if the connection should be kept alive"""
         hconn = self._headers.get('connection', '').lower()
         if hconn == 'close':
             return False

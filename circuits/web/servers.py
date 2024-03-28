@@ -61,7 +61,7 @@ class BaseServer(BaseComponent):
         bufsize=BUFSIZE,
         **kwargs,
     ):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(channel=channel)
 
         self._display_banner = display_banner
@@ -115,7 +115,7 @@ class BaseServer(BaseComponent):
 
     @handler('signal')
     def _on_signal(self, *args, **kwargs):
-        """signal Event Handler"""
+        """Signal Event Handler"""
         self.fire(close())
         Timer(3, terminate()).register(self)
 
@@ -142,7 +142,7 @@ class Server(BaseServer):
     """
 
     def __init__(self, bind, **kwargs):
-        "x.__init__(...) initializes x; see x.__class__.__doc__ for signature"
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(bind, **kwargs)
 
         Dispatcher(channel=self.channel).register(self.http)

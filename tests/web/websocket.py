@@ -44,7 +44,7 @@ traceEnabled = False
 
 
 def enableTrace(tracable):
-    """turn on/off the tracability."""
+    """Turn on/off the tracability."""
     global traceEnabled
     traceEnabled = tracable
     if tracable:
@@ -464,11 +464,11 @@ class WebSocketApp:
         self.sock = None
 
     def send(self, data):
-        """send message. data must be utf-8 string or unicode."""
+        """Send message. data must be utf-8 string or unicode."""
         self.sock.send(data)
 
     def close(self):
-        """close websocket connection."""
+        """Close websocket connection."""
         self.sock.close()
 
     def run_forever(self):

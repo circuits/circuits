@@ -208,7 +208,7 @@ class Manager:
     """
 
     def __init__(self, *args, **kwargs):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         self._queue = _EventQueue()
 
         self._tasks = set()
@@ -230,13 +230,13 @@ class Manager:
         self.components = set()
 
     def __nonzero__(self):
-        "x.__nonzero__() <==> bool(x)"
+        """x.__nonzero__() <==> bool(x)"""
         return True
 
     __bool__ = __nonzero__
 
     def __repr__(self):
-        "x.__repr__() <==> repr(x)"
+        """x.__repr__() <==> repr(x)"""
         name = self.__class__.__name__
 
         channel = '/{}'.format(getattr(self, 'channel', ''))

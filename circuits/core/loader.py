@@ -23,7 +23,7 @@ class Loader(BaseComponent):
     channel = 'loader'
 
     def __init__(self, auto_register=True, init_args=None, init_kwargs=None, paths=None, channel=channel):
-        "initializes x; see x.__class__.__doc__ for signature"
+        """Initializes x; see x.__class__.__doc__ for signature"""
         super().__init__(channel=channel)
 
         self._auto_register = auto_register
