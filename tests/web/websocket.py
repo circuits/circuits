@@ -107,7 +107,7 @@ def create_connection(url, timeout=None, **options):
     by getdefauttimeout() is used.
     """
     websock = WebSocket()
-    websock.settimeout(timeout is not None and timeout or default_timeout)
+    websock.settimeout((timeout is not None and timeout) or default_timeout)
     websock.connect(url, **options)
     return websock
 
