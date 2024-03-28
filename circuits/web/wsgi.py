@@ -149,6 +149,8 @@ class Application(BaseComponent):
 
 
 class _Empty(str):
+    __slots__ = ()
+
     def __bool__(self):
         return True
 
