@@ -351,7 +351,7 @@ class Manager:
         for _handler in _handlers:
             handler_channel = _handler.channel
             if handler_channel is None:
-                # XXX: Why do we care about the event handler's channel?
+                # TODO: Why do we care about the event handler's channel?
                 #      This probably costs us performance for what?
                 #      I've not ever had to rely on this in practice...
                 handler_channel = getattr(
@@ -486,7 +486,7 @@ class Manager:
             self.root._tasks.remove(g)
 
     def waitEvent(self, event, *channels, **kwargs):  # noqa
-        # XXX: C901: This has a high McCabe complexity score of 16.
+        # TODO: C901: This has a high McCabe complexity score of 16.
         # TODO: Refactor this method.
 
         if isinstance(event, Event):
@@ -582,7 +582,7 @@ class Manager:
     flush = flushEvents
 
     def _dispatcher(self, event, channels, remaining):  # noqa
-        # XXX: C901: This has a high McCabe complexity score of 22.
+        # TODO: C901: This has a high McCabe complexity score of 22.
         # TODO: Refactor this method.
 
         if event.cancelled:
@@ -787,7 +787,7 @@ class Manager:
             raise SystemExit(code)
 
     def processTask(self, event, task, parent=None):  # noqa
-        # XXX: C901: This has a high McCabe complexity score of 16.
+        # TODO: C901: This has a high McCabe complexity score of 16.
         # TODO: Refactor this method.
 
         value = None
@@ -825,7 +825,7 @@ class Manager:
                 # The below code is delegated to handlers
                 # in the waitEvent generator
                 # self.registerTask((event, value, task))
-                # XXX: ^^^ Why is this commented out anyway?
+                # TODO: ^^^ Why is this commented out anyway?
             elif isinstance(value, ExceptionWrapper):
                 self.unregisterTask((event, task, parent))
                 if parent:
@@ -849,7 +849,7 @@ class Manager:
             if parent:
                 self.registerTask((event, parent, None))
             elif hasattr(task, 'task'):
-                # XXX: The subtask is considered a "waiting handler"
+                # TODO: The subtask is considered a "waiting handler"
                 event.waitingHandlers += 1
                 self.registerTask(task.task)
             elif event.waitingHandlers == 0:

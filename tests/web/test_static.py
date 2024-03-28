@@ -83,7 +83,7 @@ def test_ranges(webapp):
     response = connection.getresponse()
     assert response.status == 206
 
-    # XXX Complete this test.
+    # TODO: Complete this test.
     # ``response.read()`` is a multipart/bytes-range
     # See: Issue #59
     # s = response.read()

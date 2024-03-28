@@ -170,8 +170,8 @@ def test_tcps_basic(manager, watcher, client, Poller, ipv6):
 
 
 def test_tcp_reconnect(Poller, ipv6):
-    # XXX: Apparently this doesn't work on Windows either?
-    # XXX: UPDATE: Apparently Broken on Windows + Python 3.2
+    # TODO: Apparently this doesn't work on Windows either?
+    # TODO: UPDATE: Apparently Broken on Windows + Python 3.2
     # TODO: Need to look into this. Find out why...
 
     if pytest.PLATFORM == 'win32' and pytest.PYVER[:2] >= (3, 2):
