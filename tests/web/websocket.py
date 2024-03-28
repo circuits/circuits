@@ -500,7 +500,7 @@ class WebSocketApp:
                 callback(self, *args)
             except Exception as e:
                 if logger.isEnabledFor(logging.DEBUG):
-                    logger.error(e)
+                    logger.exception(e)
 
 
 if __name__ == '__main__':
