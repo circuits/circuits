@@ -57,7 +57,7 @@ def test(manager, watcher, webapp, chunksize):
     WebSocketsDispatcher('/websocket').register(webapp)
     assert watcher.wait('registered', channel='web')
 
-    uri = 'ws://{:s}:{:d}/websocket'.format(webapp.server.host, webapp.server.port)
+    uri = f'ws://{webapp.server.host:s}:{webapp.server.port:d}/websocket'
 
     WebSocketClient(uri).register(manager)
     client = Client().register(manager)

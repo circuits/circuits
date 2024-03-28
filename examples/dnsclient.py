@@ -50,12 +50,7 @@ class Dummy(Component):
         qname = response.q.qname
 
         print(
-            'DNS Response from {:s}:{:d} id={:d} qname={:s}'.format(
-                peer[0],
-                peer[1],
-                id,
-                str(qname),
-            ),
+            f'DNS Response from {peer[0]:s}:{peer[1]:d} id={id:d} qname={str(qname):s}',
             file=sys.stderr,
         )
 
