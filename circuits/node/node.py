@@ -187,7 +187,7 @@ class Node(BaseComponent):
         :return: The Client object
         :rtype: :class:`circuits.node.client.Client`
         """
-        return self.__peers[connection_name] if connection_name in self.__peers else None
+        return self.__peers.get(connection_name, None)
 
     @handler('remote', channel='*')
     def __on_remote(self, event, remote_event, connection_name, channel=None):

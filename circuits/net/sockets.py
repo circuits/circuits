@@ -4,6 +4,7 @@ Socket Components
 This module contains various Socket Components for use with Networking.
 """
 
+import contextlib
 import os
 import select
 from collections import defaultdict, deque
@@ -192,14 +193,10 @@ class Client(BaseComponent):
         self._closeflag = False
         self._connected = False
 
-        try:
+        with contextlib.suppress(OSError):
             self._sock.shutdown(2)
-        except OSError:
-            pass
-        try:
+        with contextlib.suppress(OSError):
             self._sock.close()
-        except OSError:
-            pass
 
         self.fire(disconnected())
 
@@ -213,10 +210,7 @@ class Client(BaseComponent):
     def _read(self):
         try:
             try:
-                if self.secure and self._ssock:
-                    data = self._ssock.read(self._bufsize)
-                else:
-                    data = self._sock.recv(self._bufsize)
+                data = self._ssock.read(self._bufsize) if self.secure and self._ssock else self._sock.recv(self._bufsize)
             except SSLError as exc:
                 if exc.errno in (SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE):
                     return
@@ -235,10 +229,7 @@ class Client(BaseComponent):
 
     def _write(self, data):
         try:
-            if self.secure and self._ssock:
-                nbytes = self._ssock.write(data)
-            else:
-                nbytes = self._sock.send(data)
+            nbytes = self._ssock.write(data) if self.secure and self._ssock else self._sock.send(data)
 
             if nbytes < len(data):
                 self._buffer.appendleft(data[nbytes:])
@@ -545,14 +536,10 @@ class Server(BaseComponent):
         if sock in self.__starttls:
             self.__starttls.remove(sock)
 
-        try:
+        with contextlib.suppress(OSError):
             sock.shutdown(2)
-        except OSError:
-            pass
-        try:
+        with contextlib.suppress(OSError):
             sock.close()
-        except OSError:
-            pass
 
         self.fire(disconnect(sock))
 
@@ -808,14 +795,10 @@ class UDPServer(Server):
         if sock in self._buffers:
             del self._buffers[sock]
 
-        try:
+        with contextlib.suppress(OSError):
             sock.shutdown(2)
-        except OSError:
-            pass
-        try:
+        with contextlib.suppress(OSError):
             sock.close()
-        except OSError:
-            pass
 
         self.fire(disconnect(sock))
 

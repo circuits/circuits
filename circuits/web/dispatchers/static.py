@@ -103,10 +103,7 @@ class Static(BaseComponent):
                 if not path:
                     url_up = ''
                 else:
-                    if self.path is None:
-                        url_up = os.path.join('/', os.path.split(path)[0])
-                    else:
-                        url_up = os.path.join(cur_dir, '..')
+                    url_up = os.path.join('/', os.path.split(path)[0]) if self.path is None else os.path.join(cur_dir, '..')
                     url_up = '<li><a href="%s">%s</a></li>' % (escape(url_up, True), '..')
 
                 listing = []

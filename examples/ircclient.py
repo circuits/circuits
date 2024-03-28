@@ -193,10 +193,7 @@ def main():
     opts, args = parse_options()
 
     host = args[0]
-    if len(args) > 1:
-        port = int(args[1])
-    else:
-        port = 6667
+    port = int(args[1]) if len(args) > 1 else 6667
 
     # Configure and run the system.
     client = Client(host, port, opts=opts)

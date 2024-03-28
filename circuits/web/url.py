@@ -56,10 +56,7 @@ class URL:
     @classmethod
     def parse(cls, url, encoding):
         """Parse the provided url, and return a URL instance"""
-        if isinstance(url, str):
-            parsed = urlparse(url.encode('utf-8'))
-        else:
-            parsed = urlparse(url.decode(encoding).encode('utf-8'))
+        parsed = urlparse(url.encode('utf-8')) if isinstance(url, str) else urlparse(url.decode(encoding).encode('utf-8'))
 
         if isinstance(parsed.port, int):
             port = str(parsed.port).encode('utf-8') if parsed.port not in (80, 443) else None
@@ -102,10 +99,7 @@ class URL:
 
     def equiv(self, other):
         """Return true if this url is equivalent to another"""
-        if isinstance(other, str):
-            _other = self.parse(other, 'utf-8')
-        else:
-            _other = self.parse(other.utf8(), 'utf-8')
+        _other = self.parse(other, 'utf-8') if isinstance(other, str) else self.parse(other.utf8(), 'utf-8')
 
         _self = self.parse(self.utf8(), 'utf-8')
         _self.lower().canonical().defrag().abspath().escape().punycode()

@@ -8,6 +8,7 @@ descriptors for read/write events. Pollers:
 - EPoll
 """
 
+import contextlib
 import os
 import platform
 import select
@@ -235,10 +236,8 @@ class Poll(BasePoller):
     def _updateRegistration(self, fd):
         fileno = fd.fileno() if not isinstance(fd, int) else fd
 
-        try:
+        with contextlib.suppress(KeyError, ValueError):
             self._poller.unregister(fileno)
-        except (KeyError, ValueError):
-            pass
 
         mask = 0
 
@@ -252,10 +251,8 @@ class Poll(BasePoller):
             self._map[fileno] = fd
         else:
             super().discard(fd)
-            try:
+            with contextlib.suppress(KeyError):
                 del self._map[fileno]
-            except KeyError:
-                pass
 
     def addReader(self, source, fd):
         super().addReader(source, fd)
@@ -280,10 +277,7 @@ class Poll(BasePoller):
     def _generate_events(self, event):
         try:
             timeout = event.time_left
-            if timeout < 0:
-                ll = self._poller.poll()
-            else:
-                ll = self._poller.poll(1000 * timeout)
+            ll = self._poller.poll() if timeout < 0 else self._poller.poll(1000 * timeout)
         except OSError as e:
             if e.args[0] == EINTR:
                 return
@@ -388,10 +382,7 @@ class EPoll(BasePoller):
     def _generate_events(self, event):
         try:
             timeout = event.time_left
-            if timeout < 0:
-                ll = self._poller.poll()
-            else:
-                ll = self._poller.poll(timeout)
+            ll = self._poller.poll() if timeout < 0 else self._poller.poll(timeout)
         except OSError as e:
             if e.args[0] == EINTR:
                 return
@@ -480,10 +471,7 @@ class KQueue(BasePoller):
     def _generate_events(self, event):
         try:
             timeout = event.time_left
-            if timeout < 0:
-                ll = self._poller.control(None, 1000)
-            else:
-                ll = self._poller.control(None, 1000, timeout)
+            ll = self._poller.control(None, 1000) if timeout < 0 else self._poller.control(None, 1000, timeout)
         except OSError as e:
             if e[0] == EINTR:
                 return

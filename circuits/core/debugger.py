@@ -62,10 +62,7 @@ class Debugger(BaseComponent):
 
         s = []
 
-        if handler is None:
-            handler = ''
-        else:
-            handler = reprhandler(handler)
+        handler = '' if handler is None else reprhandler(handler)
 
         msg = f'ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n'
 
@@ -108,10 +105,7 @@ class Debugger(BaseComponent):
             s = repr(event)
 
             if self.prefix:
-                if hasattr(self.prefix, '__call__'):
-                    s = f'{self.prefix()}: {s}'
-                else:
-                    s = f'{self.prefix}: {s}'
+                s = f'{self.prefix()}: {s}' if hasattr(self.prefix, '__call__') else f'{self.prefix}: {s}'
 
             if self.trim:
                 s = '%s ...>' % s[: self.trim]

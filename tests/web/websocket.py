@@ -89,10 +89,7 @@ def _parse_url(url):
     else:
         raise ValueError('scheme %s is invalid' % parsed.scheme)
 
-    if parsed.path:
-        resource = parsed.path
-    else:
-        resource = '/'
+    resource = parsed.path if parsed.path else '/'
 
     return (hostname, port, resource, is_secure)
 
@@ -221,10 +218,7 @@ class WebSocket:
         headers.append('GET %s HTTP/1.1' % resource)
         headers.append('Upgrade: WebSocket')
         headers.append('Connection: Upgrade')
-        if port == 80:
-            hostport = host
-        else:
-            hostport = '%s:%d' % (host, port)
+        hostport = host if port == 80 else '%s:%d' % (host, port)
         headers.append('Host: %s' % hostport)
         headers.append('Origin: %s' % hostport)
 

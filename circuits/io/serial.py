@@ -4,6 +4,7 @@ Serial I/O
 This module implements basic Serial (RS232) I/O.
 """
 
+import contextlib
 from collections import deque
 
 from circuits.core import Component, Event, handler
@@ -99,10 +100,8 @@ class Serial(Component):
         self._closeflag = False
         self._connected = False
 
-        try:
+        with contextlib.suppress(OSError):
             self._serial.close()
-        except OSError:
-            pass
 
         self.fire(closed())
 
@@ -114,10 +113,7 @@ class Serial(Component):
 
     def _read(self):
         try:
-            if self._readline:
-                data = self._serial.readline(self._bufsize)
-            else:
-                data = self._serial.read(self._bufsize)
+            data = self._serial.readline(self._bufsize) if self._readline else self._serial.read(self._bufsize)
             if not isinstance(data, bytes):
                 data = data.encode(self._encoding)
 

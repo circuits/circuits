@@ -228,15 +228,9 @@ class Body:
             return
 
         if isinstance(value, bytes):
-            if value:
-                value = [value]
-            else:
-                value = []
+            value = [value] if value else []
         elif isinstance(value, str):
-            if value:
-                value = [value.encode(response.encoding, self.encode_errors)]
-            else:
-                value = []
+            value = [value.encode(response.encoding, self.encode_errors)] if value else []
         elif hasattr(value, 'read'):
             response.stream = True
             value = file_generator(value)

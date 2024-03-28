@@ -1,4 +1,5 @@
 import base64
+import contextlib
 import hashlib
 
 from circuits import BaseComponent, handler
@@ -87,10 +88,8 @@ class WebSocketsDispatcher(BaseComponent):
             # Successful completion
             response.status = 101
             response.close = False
-            try:
+            with contextlib.suppress(KeyError):
                 del response.headers['Content-Type']
-            except KeyError:
-                pass
             response.headers['Upgrade'] = 'WebSocket'
             response.headers['Connection'] = 'Upgrade'
             response.headers['Sec-WebSocket-Accept'] = accept.decode('ASCII')

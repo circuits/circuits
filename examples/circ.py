@@ -217,10 +217,7 @@ class Client(Component):
         match = CMD_REGEX.match(s)
         if match is not None:
             command = match.groupdict()['command']
-            if match.groupdict()['args'] != '':
-                tokens = match.groupdict()['args'].split(' ')
-            else:
-                tokens = []
+            tokens = match.groupdict()['args'].split(' ') if match.groupdict()['args'] != '' else []
 
             fn = 'cmd' + command.upper()
             if hasattr(self, fn):
@@ -309,10 +306,7 @@ def main():
     opts, args = parse_options()
 
     host = args[0]
-    if len(args) > 1:
-        port = int(args[1])
-    else:
-        port = 6667
+    port = int(args[1]) if len(args) > 1 else 6667
 
     # Configure and run the system.
 

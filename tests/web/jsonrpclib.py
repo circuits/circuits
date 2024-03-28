@@ -328,10 +328,7 @@ class Transport:
         p, u = self.getparser(encoding)
 
         while 1:
-            if sock:
-                response = sock.recv(1024)
-            else:
-                response = file.read(1024)
+            response = sock.recv(1024) if sock else file.read(1024)
             if not response:
                 break
             if self.verbose:
@@ -377,10 +374,7 @@ class ServerProxy:
             self.__handler = '/RPC2'
 
         if transport is None:
-            if utype == 'https':
-                transport = SafeTransport()
-            else:
-                transport = Transport()
+            transport = SafeTransport() if utype == 'https' else Transport()
         self.__transport = transport
 
         self.__encoding = encoding

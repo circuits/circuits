@@ -76,10 +76,7 @@ class FallBackExceptionHandler(BaseComponent):
     def _on_exception(self, error_type, value, traceback, handler=None, fevent=None):
         s = []
 
-        if handler is None:
-            handler = ''
-        else:
-            handler = reprhandler(handler)
+        handler = '' if handler is None else reprhandler(handler)
 
         msg = f'ERROR {handler} ({fevent!r}) ({error_type!r}): {value!r}\n'
 

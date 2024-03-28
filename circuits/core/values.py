@@ -77,10 +77,7 @@ class Value:
         notify = getattr(self.event, 'notify', False) or self.notify
 
         if self.manager is not None and notify:
-            if isinstance(notify, str):
-                e = Event.create(notify, self)
-            else:
-                e = self.event.child('value_changed', self)
+            e = Event.create(notify, self) if isinstance(notify, str) else self.event.child('value_changed', self)
 
             self.manager.fire(e, self.manager)
 
