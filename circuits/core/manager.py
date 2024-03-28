@@ -103,7 +103,7 @@ del Dummy
 
 
 class _State:
-    __slots__ = ('task', 'run', 'flag', 'event', 'timeout', 'parent', 'task_event', 'tick_handler')
+    __slots__ = ('event', 'flag', 'parent', 'run', 'task', 'task_event', 'tick_handler', 'timeout')
 
     def __init__(self, timeout):
         self.task = None
@@ -117,7 +117,7 @@ class _State:
 
 
 class _EventQueue:
-    __slots__ = ('_queue', '_priority_queue', '_counter', '_flush_batch')
+    __slots__ = ('_counter', '_flush_batch', '_priority_queue', '_queue')
 
     def __init__(self):
         self._queue = deque()
