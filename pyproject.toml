@@ -2,12 +2,16 @@
 line-length = 127
 target-version = "py37"
 
+extend-exclude = ["circuits/web/parsers/multipart.py"]
+
 [tool.ruff.lint]
 preview = true
 ignore-init-module-imports = true
 select = ["E", "F"]
 ignore = [
  "E501",  # line-too-long
+ "E203",  # whitespace-before-punctuation
+ "COM812",  # missing-trailing-comma
  "D203",  # one-blank-line-before-class
  "D212",  # multi-line-summary-first-line
  "T201", "T203",  # print, p-print
