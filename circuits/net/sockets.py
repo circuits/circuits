@@ -66,7 +66,10 @@ except ImportError:
     socketpair = None
 
 try:
-    from ssl import CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23, SSLError, wrap_socket as ssl_socket
+    from ssl import (
+        CERT_NONE, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE, PROTOCOL_SSLv23,
+        Purpose, SSLError, create_default_context,
+    )
 
     HAS_SSL = 1
 except ImportError:
@@ -338,13 +341,10 @@ class TCPClient(Client):
                 self.fire(error(sock, err))
                 self._close()
 
-            self._sock = ssl_socket(
-                self._sock,
-                self.keyfile,
-                self.certfile,
-                ca_certs=self.ca_certs,
-                do_handshake_on_connect=False,
-            )
+            context = create_default_context(Purpose.CLIENT_AUTH)
+            context.load_cert_chain(certfile=self.certfile, keyfile=self.keyfile)
+            context.load_verify_locations(cafile=self.ca_certs)
+            self._sock = context.wrap_socket(self._sock, do_handshake_on_connect=False)
             for _ in do_handshake(self._sock, on_done, on_error):
                 yield
         else:
@@ -405,13 +405,10 @@ class UNIXClient(Client):
             def on_error(sock, err):
                 self.fire(error(err))
 
-            self._ssock = ssl_socket(
-                self._sock,
-                self.keyfile,
-                self.certfile,
-                ca_certs=self.ca_certs,
-                do_handshake_on_connect=False,
-            )
+            context = create_default_context(Purpose.CLIENT_AUTH)
+            context.load_cert_chain(certfile=self.certfile, keyfile=self.keyfile)
+            context.load_verify_locations(cafile=self.ca_certs)
+            self._ssock = context.wrap_socket(self._sock, do_handshake_on_connect=False)
             for _ in do_handshake(self._ssock, on_done, on_error):
                 yield
         else:
@@ -635,14 +632,14 @@ class Server(BaseComponent):
             self._on_accept_done(newsock)
 
     def _do_handshake(self, sock, fire_connect_event=True):
-        sslsock = ssl_socket(
+        context = create_default_context()
+        context.load_cert_chain(certfile=self.certfile, keyfile=self.keyfile)
+        context.load_verify_locations(cafile=self.ca_certs)
+        context.verify_mode = self.cert_reqs
+        context.minimum_version = self.ssl_version
+        sslsock = context.wrap_socket(
             sock,
             server_side=True,
-            keyfile=self.keyfile,
-            ca_certs=self.ca_certs,
-            certfile=self.certfile,
-            cert_reqs=self.cert_reqs,
-            ssl_version=self.ssl_version,
             do_handshake_on_connect=False,
         )
 
