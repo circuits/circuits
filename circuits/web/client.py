@@ -94,7 +94,7 @@ class Client(BaseComponent):
             self.fire(connect(host, port, secure))
             yield self.wait('connected', self._transport.channel)
 
-        headers = Headers([(k, v) for k, v in (headers or {}).items()])
+        headers = Headers(list((headers or {}).items()))
 
         # Clients MUST include Host header in HTTP/1.1 requests (RFC 2616)
         if 'Host' not in headers:
