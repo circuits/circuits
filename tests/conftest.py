@@ -103,6 +103,7 @@ def wait_for(obj, attr, value=True, timeout=30.0):
         elif getattr(obj, attr) == value:
             return True
         sleep(TIMEOUT)
+    return None
 
 
 class SimpleManager(Manager):

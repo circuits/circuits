@@ -26,6 +26,7 @@ def findchannel(root, channel, all=False):
 
     if components:
         return components[0]
+    return None
 
 
 def findtype(root, component, all=False):
@@ -36,6 +37,7 @@ def findtype(root, component, all=False):
 
     if components:
         return components[0]
+    return None
 
 
 findcmp = findtype
@@ -44,8 +46,7 @@ findcmp = findtype
 def findroot(component):
     if component.parent == component:
         return component
-    else:
-        return findroot(component.parent)
+    return findroot(component.parent)
 
 
 def safeimport(name):
@@ -53,8 +54,7 @@ def safeimport(name):
     try:
         if name in sys.modules:
             return reload(sys.modules[name])
-        else:
-            return __import__(name, globals(), locals(), [''])
+        return __import__(name, globals(), locals(), [''])
     except Exception:
         for name in sys.modules.copy():
             if name not in modules:

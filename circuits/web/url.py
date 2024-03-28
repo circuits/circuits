@@ -117,13 +117,11 @@ class URL:
             if _self._port and not _other._port:
                 # Make sure _self._port is the default for the scheme
                 return _self._port == PORTS.get(_self._scheme, None)
-            elif _other._port and not _self._port:
+            if _other._port and not _self._port:
                 # Make sure _other._port is the default for the scheme
                 return _other._port == PORTS.get(_other._scheme, None)
-            else:
-                return _self._port == _other._port
-        else:
-            return False
+            return _self._port == _other._port
+        return False
 
     def __eq__(self, other):
         """Return true if this url is /exactly/ equal to another"""

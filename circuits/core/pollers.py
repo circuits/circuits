@@ -98,8 +98,7 @@ class BasePoller(BaseComponent):
         try:
             if isinstance(self._ctrl_recv, socket):
                 return self._ctrl_recv.recv(1)
-            else:
-                return os.read(self._ctrl_recv, 1)
+            return os.read(self._ctrl_recv, 1)
         except (OSError, EOFError):
             return b'\0'
 
@@ -171,7 +170,7 @@ class Select(BasePoller):
     def _generate_events(self, event):
         try:
             if not any([self._read, self._write]):
-                return
+                return None
             timeout = event.time_left
             if timeout < 0:
                 r, w, _ = select.select(self._read, self._write, [])
@@ -189,16 +188,14 @@ class Select(BasePoller):
             if e.args[0] in (0, 2):
                 # windows does this if it got an empty list
                 if (not self._read) and (not self._write):
-                    return
-                else:
-                    raise
-            elif e.args[0] == EINTR:
-                return
-            elif e.args[0] == EBADF:
-                return self._preenDescriptors()
-            else:
-                # OK, I really don't know what's going on.  Blow up.
+                    return None
                 raise
+            if e.args[0] == EINTR:
+                return None
+            if e.args[0] == EBADF:
+                return self._preenDescriptors()
+            # OK, I really don't know what's going on.  Blow up.
+            raise
 
         for sock in w:
             if self.isWriting(sock):
@@ -210,6 +207,7 @@ class Select(BasePoller):
                 continue
             if self.isReading(sock):
                 self.fire(_read(sock), self.getTarget(sock))
+        return None
 
 
 class Poll(BasePoller):
@@ -281,8 +279,7 @@ class Poll(BasePoller):
         except OSError as e:
             if e.args[0] == EINTR:
                 return
-            else:
-                raise
+            raise
 
         for fileno, event in ll:
             self._process(fileno, event)
@@ -389,8 +386,7 @@ class EPoll(BasePoller):
         except OSError as e:
             if e.args[0] == EINTR:
                 return
-            else:
-                raise
+            raise
 
         for fileno, event in ll:
             self._process(fileno, event)
@@ -475,8 +471,7 @@ class KQueue(BasePoller):
         except OSError as e:
             if e[0] == EINTR:
                 return
-            else:
-                raise
+            raise
 
         for event in ll:
             self._process(event)

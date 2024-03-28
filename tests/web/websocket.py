@@ -289,7 +289,7 @@ class WebSocket:
                 success += 1
         if success == len(HEADERS_TO_EXIST_FOR_HYBI00):
             return True, True
-        elif success != 0:
+        if success != 0:
             return False, True
 
         success = 0
@@ -353,20 +353,17 @@ class WebSocket:
                 b = self._recv(1)
                 if b == b'\xff':
                     break
-                else:
-                    bytes.append(b)
+                bytes.append(b)
             return b''.join(bytes)
-        elif 0x80 < frame_type < 0xFF:
+        if 0x80 < frame_type < 0xFF:
             # which frame type is valid?
             length = self._read_length()
-            bytes = self._recv_strict(length)
-            return bytes
-        elif frame_type == 0xFF:
+            return self._recv_strict(length)
+        if frame_type == 0xFF:
             self._recv(1)
             self._closeInternal()
             return None
-        else:
-            raise WebSocketException('Invalid frame type')
+        raise WebSocketException('Invalid frame type')
 
     def _read_length(self):
         length = 0

@@ -132,6 +132,7 @@ class Process(BaseComponent):
     def status(self):
         if getattr(self, 'p', None) is not None:
             return self.p.poll()
+        return None
 
     @handler('generate_events')
     def _on_generate_events(self, event):

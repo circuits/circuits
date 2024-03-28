@@ -51,7 +51,7 @@ class Static(BaseComponent):
     @handler('request', priority=0.9)
     def _on_request(self, event, request, response):
         if self.path is not None and not request.path.startswith(self.path):
-            return
+            return None
 
         path = request.path
 
@@ -66,10 +66,10 @@ class Static(BaseComponent):
             location = os.path.abspath(os.path.join(self.docroot, '.'))
 
         if not os.path.exists(location):
-            return
+            return None
 
         if not location.startswith(os.path.dirname(self.docroot)):
-            return  # hacking attempt e.g. /foo/../../../../../etc/shadow
+            return None  # hacking attempt e.g. /foo/../../../../../etc/shadow
 
         # Is it a file we can serve directly?
         if os.path.isfile(location):
@@ -133,3 +133,5 @@ class Static(BaseComponent):
                     return _dirlisting_template.safe_substitute(ctx)
                 finally:
                     event.stop()
+            return None
+        return None

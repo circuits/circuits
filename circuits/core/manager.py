@@ -738,12 +738,11 @@ class Manager:
             self.__process.start()
 
             return self.__process, bridge
-        else:
-            self.__thread = Thread(target=self.run, name=self.name)
-            self.__thread.daemon = True
-            self.__thread.start()
+        self.__thread = Thread(target=self.run, name=self.name)
+        self.__thread.daemon = True
+        self.__thread.start()
 
-            return self.__thread, None
+        return self.__thread, None
 
     def join(self):
         if self.__thread is not None:
@@ -751,6 +750,7 @@ class Manager:
 
         if self.__process is not None:
             return self.__process.join()
+        return None
 
     def stop(self, code=None):
         """

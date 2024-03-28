@@ -172,7 +172,7 @@ class Gateway(BaseComponent):
     @handler('request', priority=0.2)
     def _on_request(self, event, req, res):
         if not self.apps:
-            return
+            return None
 
         parts = req.path.split('/')
 
@@ -184,7 +184,7 @@ class Gateway(BaseComponent):
         candidates = sorted(candidates, key=itemgetter(0), reverse=True)
 
         if not candidates:
-            return
+            return None
 
         path, app = candidates[0]
 
@@ -213,11 +213,9 @@ class Gateway(BaseComponent):
             if not body:
                 if not buffer.tell():
                     return empty
-                else:
-                    buffer.seek(0)
-                    return buffer
-            else:
-                return body
+                buffer.seek(0)
+                return buffer
+            return body
         except Exception:
             etype, evalue, etraceback = _exc_info()
             error = (etype, evalue, format_tb(etraceback))

@@ -107,11 +107,13 @@ class Server(BaseComponent):
     def host(self):
         if hasattr(self, 'server'):
             return self.server.host
+        return None
 
     @property
     def port(self):
         if hasattr(self, 'server'):
             return self.server.port
+        return None
 
     def get_socks(self):
         """

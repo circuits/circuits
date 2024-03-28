@@ -20,6 +20,7 @@ class ACL(Component):
         if request.remote.ip not in self.allowed:
             event.stop()
             return forbidden(request, response)
+        return None
 
 
 class Root(Controller):

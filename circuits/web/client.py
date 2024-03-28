@@ -125,6 +125,7 @@ class Client(BaseComponent):
     def connected(self):
         if hasattr(self, '_transport'):
             return self._transport.connected
+        return None
 
     @property
     def response(self):

@@ -223,9 +223,8 @@ class Client(BaseComponent):
         except OSError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
-            else:
-                self.fire(error(e))
-                self._close()
+            self.fire(error(e))
+            self._close()
 
     def _write(self, data):
         try:
@@ -467,10 +466,10 @@ class Server(BaseComponent):
                 sockname = self._sock.getsockname()
                 if isinstance(sockname, tuple):
                     return sockname[0]
-                else:
-                    return sockname
+                return sockname
             except OSError:
                 return None
+        return None
 
     @property
     def port(self):
@@ -481,6 +480,7 @@ class Server(BaseComponent):
                     return sockname[1]
             except OSError:
                 return None
+        return None
 
     @handler('registered', 'started', channel='*')
     def _on_registered_or_started(self, component, manager=None):
@@ -575,9 +575,8 @@ class Server(BaseComponent):
         except OSError as e:
             if e.args[0] == EWOULDBLOCK:
                 return
-            else:
-                self.fire(error(sock, e))
-                self._close(sock)
+            self.fire(error(sock, e))
+            self._close(sock)
 
     def _write(self, sock, data):
         if sock not in self._clients:
@@ -684,8 +683,8 @@ class Server(BaseComponent):
     def _on_read(self, sock):
         if sock == self._sock:
             return self._accept()
-        else:
-            self._read(sock)
+        self._read(sock)
+        return None
 
     @handler('_write', priority=1)
     def _on_write(self, sock):

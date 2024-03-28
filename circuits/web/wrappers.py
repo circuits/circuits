@@ -220,8 +220,7 @@ class Body:
     def __get__(self, response, cls=None):
         if response is None:
             return self
-        else:
-            return response._body
+        return response._body
 
     def __set__(self, response, value):
         if response == value:
@@ -248,8 +247,7 @@ class Status:
     def __get__(self, response, cls=None):
         if response is None:
             return self
-        else:
-            return response._status
+        return response._status
 
     def __set__(self, response, value):
         value = HTTPStatus(value) if isinstance(value, int) else value

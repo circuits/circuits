@@ -57,7 +57,7 @@ class WebSocketsDispatcher(BaseComponent):
     @handler('request', priority=0.2)
     def _on_request(self, event, request, response):
         if self._path is not None and not request.path.startswith(self._path):
-            return
+            return None
 
         self._protocol_version = 13
         headers = request.headers

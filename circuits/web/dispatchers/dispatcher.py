@@ -60,12 +60,11 @@ def find_handlers(req, paths):
             if handlers and (not vpath or accepts_vpath(handlers, vpath)):
                 req.index = method == 'index'
                 return handlers, method, path, vpath
-            else:
-                method, vpath = 'index', [method] + vpath
-                handlers = get_handlers(path, method)
-                if handlers and (not vpath or accepts_vpath(handlers, vpath)):
-                    req.index = True
-                    return handlers, method, path, vpath
+            method, vpath = 'index', [method] + vpath
+            handlers = get_handlers(path, method)
+            if handlers and (not vpath or accepts_vpath(handlers, vpath)):
+                req.index = True
+                return handlers, method, path, vpath
 
     return [], None, None, None
 
@@ -110,6 +109,7 @@ class Dispatcher(BaseComponent):
                 ),
                 channel,
             )
+        return None
 
     @handler('request_value_changed')
     def _on_request_value_changed(self, value):

@@ -154,7 +154,7 @@ class HTTP(BaseComponent):
 
         if req.method == 'HEAD':
             return
-        elif res.stream and res.body:
+        if res.stream and res.body:
             try:
                 data = next(res.body)
             except StopIteration:
@@ -242,7 +242,7 @@ class HTTP(BaseComponent):
                 res = wrappers.Response(req, encoding=self._encoding)
                 del self._buffers[sock]
                 return self.fire(httperror(req, res, 400))
-            return
+            return None
 
         if sock in self._clients:
             req, res = self._clients[sock]
@@ -280,7 +280,7 @@ class HTTP(BaseComponent):
 
         clen = int(req.headers.get('Content-Length', '0'))
         if (clen or req.headers.get('Transfer-Encoding') == 'chunked') and not parser.is_message_complete():
-            return
+            return None
 
         if hasattr(sock, 'getpeercert'):
             peer_cert = sock.getpeercert()
@@ -302,6 +302,7 @@ class HTTP(BaseComponent):
         del self._buffers[sock]
 
         self.fire(e)
+        return None
 
     @handler('httperror')
     def _on_httperror(self, event, req, res, code, **kwargs):

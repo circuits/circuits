@@ -99,6 +99,7 @@ def dumps(params, methodname=None, methodresponse=None, encoding=None, allow_non
         request['params'] = params
         request['id'] = _gen_id()
         return json.dumps(request)
+    return None
 
 
 class Unmarshaller:

@@ -22,6 +22,8 @@ def tryimport(modules, obj=None, message=None):
 
     if message is not None:
         warn(message)
+        return None
+    return None
 
 
 def getargspec(func):
@@ -54,8 +56,7 @@ def edges(x, e=None, v=None, d=0):
 def findroot(x):
     if x.parent == x:
         return x
-    else:
-        return findroot(x.parent)
+    return findroot(x.parent)
 
 
 def kill(x):
