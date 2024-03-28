@@ -4,6 +4,7 @@
 #
 # This module is liberally borrowed (with modifications) from:
 # https://raw.githubusercontent.com/benoitc/http-parser/master/http_parser/pyparser.py
+import contextlib
 import re
 import zlib
 from sys import maxsize
@@ -355,10 +356,8 @@ class HttpParser:
         te = self._headers.get('transfer-encoding', '').lower()
 
         if clen is not None:
-            try:
+            with contextlib.suppress(ValueError):
                 self._clen_rest = self._clen = int(clen)
-            except ValueError:
-                pass
         else:
             self._chunked = te == 'chunked'
             if not self._chunked:

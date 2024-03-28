@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import contextlib
 import os.path
 import select
 from socket import AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM, has_ipv6, socket
@@ -45,15 +46,11 @@ class _TestClient:
         return self.ssock.recv(buflen)
 
     def disconnect(self):
-        try:
+        with contextlib.suppress(OSError):
             self.ssock.shutdown(2)
-        except OSError:
-            pass
 
-        try:
+        with contextlib.suppress(OSError):
             self.ssock.close()
-        except OSError:
-            pass
 
 
 @pytest.fixture()
@@ -321,10 +318,7 @@ def test_tcp_bind(Poller, ipv6):
 def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
     poller = Poller().register(manager)
 
-    if ipv6:
-        tcp_client = TCP6Client()
-    else:
-        tcp_client = TCPClient()
+    tcp_client = TCP6Client() if ipv6 else TCPClient()
 
     client = Client() + tcp_client
     client.register(manager)

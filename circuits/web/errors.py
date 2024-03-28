@@ -158,10 +158,7 @@ class redirect(httperror):
         # browser support for 301 is quite messy. Do 302/303 instead. See
         # http://ppewww.ph.gla.ac.uk/~flavell/www/post-redirect.html
         if code is None:
-            if request.protocol >= (1, 1):
-                code = 303
-            else:
-                code = 302
+            code = 303 if request.protocol >= (1, 1) else 302
         else:
             if code < 300 or code > 399:
                 raise ValueError('status code must be between 300 and 399.')

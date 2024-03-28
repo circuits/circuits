@@ -2,6 +2,7 @@
 
 import _thread
 import atexit
+import contextlib
 import types
 from collections import deque
 from heapq import heappop, heappush
@@ -246,10 +247,7 @@ class Manager:
 
         pid = current_process().pid
 
-        if pid:
-            id = f'{pid}:{current_thread().name}'
-        else:
-            id = current_thread().name
+        id = f'{pid}:{current_thread().name}' if pid else current_thread().name
 
         format = '<%s%s %s (queued=%d) [%s]>'
         return format % (name, channel, id, q, state)
@@ -389,10 +387,7 @@ class Manager:
         return method
 
     def removeHandler(self, method, event=None):
-        if event is None:
-            names = method.names
-        else:
-            names = [event]
+        names = method.names if event is None else [event]
 
         for name in names:
             self._handlers[name].remove(method)
@@ -467,7 +462,7 @@ class Manager:
            channels ("*").
         """
         if not channels:
-            channels = event.channels or (getattr(self, 'channel', '*'),) or ('*',)
+            channels = event.channels or (getattr(self, 'channel', '*'),)
 
         event.channels = channels
 
@@ -645,10 +640,7 @@ class Manager:
         for event_handler in event_handlers:
             event.handler = event_handler
             try:
-                if event_handler.event:
-                    value = event_handler(event, *eargs, **ekwargs)
-                else:
-                    value = event_handler(*eargs, **ekwargs)
+                value = event_handler(event, *eargs, **ekwargs) if event_handler.event else event_handler(*eargs, **ekwargs)
             except KeyboardInterrupt:
                 self.stop()
             except SystemExit as e:
@@ -944,10 +936,8 @@ class Manager:
             stderr.write(f'Unhandled ERROR: {exc}\n')
             stderr.write(format_exc())
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 self.tick()
-            except Exception:
-                pass
 
         self.root._executing_thread = None
         self.__thread = None

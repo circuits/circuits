@@ -92,10 +92,7 @@ def div(macro, environ, cls=None, float=None, id=None, style=None, *args, **kwar
     if style:
         style = ';'.join(sanitizer.sanitize_css(style))
 
-    if macro.isblock:
-        context = 'block'
-    else:
-        context = 'inline'
+    context = 'block' if macro.isblock else 'inline'
 
     contents = environ['parser'].generate(
         macro.body,

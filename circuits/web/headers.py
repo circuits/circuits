@@ -78,18 +78,12 @@ class HeaderElement:
         # Split the element into a value and parameters. The 'value' may
         # be of the form, "token=token", but we don't split that here.
         atoms = [x.strip() for x in elementstr.split(';') if x.strip()]
-        if not atoms:
-            initial_value = ''
-        else:
-            initial_value = atoms.pop(0).strip()
+        initial_value = '' if not atoms else atoms.pop(0).strip()
         params = {}
         for atom in atoms:
             atom = [x.strip() for x in atom.split('=', 1) if x.strip()]
             key = atom.pop(0)
-            if atom:
-                val = atom[0]
-            else:
-                val = ''
+            val = atom[0] if atom else ''
             params[key] = val
         return initial_value, params
 

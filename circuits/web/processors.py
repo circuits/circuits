@@ -9,10 +9,7 @@ def process_multipart(request, params):
     headers = request.headers
 
     ctype = headers.elements('Content-Type')
-    if ctype:
-        ctype = ctype[0]
-    else:
-        ctype = HeaderElement.from_str('application/x-www-form-urlencoded')
+    ctype = ctype[0] if ctype else HeaderElement.from_str('application/x-www-form-urlencoded')
 
     ib = ''
     if 'boundary' in ctype.params:

@@ -284,10 +284,7 @@ class HTTP(BaseComponent):
 
         if hasattr(sock, 'getpeercert'):
             peer_cert = sock.getpeercert()
-            if peer_cert:
-                e = request(req, res, peer_cert)
-            else:
-                e = request(req, res)
+            e = request(req, res, peer_cert) if peer_cert else request(req, res)
         else:
             e = request(req, res)
 
@@ -415,10 +412,7 @@ class HTTP(BaseComponent):
         else:
             return
 
-        if isinstance(evalue, HTTPException):
-            code = evalue.code
-        else:
-            code = None
+        code = evalue.code if isinstance(evalue, HTTPException) else None
 
         self.fire(httperror(req, res, code=code, error=(etype, evalue, etraceback)))
 

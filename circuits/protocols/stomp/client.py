@@ -86,10 +86,7 @@ class StompClient(BaseComponent):
             LOG.info('Request to use old-style socket wrapper: %s', ssl_params)
             ssl_context = ssl_params
 
-        if use_ssl:
-            uri = f'ssl://{host}:{port}'
-        else:
-            uri = f'tcp://{host}:{port}'
+        uri = f'ssl://{host}:{port}' if use_ssl else f'tcp://{host}:{port}'
 
         # Configure failover options so it only tries to connect once
         self._stomp_server = 'failover:(%s)?maxReconnectAttempts=1,startupMaxReconnectAttempts=1' % uri
@@ -195,10 +192,7 @@ class StompClient(BaseComponent):
         """Confirm that heartbeat from server hasn't timed out"""
         now = time.time()
         last = self._client.lastReceived or 0
-        if last:
-            elapsed = now - last
-        else:
-            elapsed = -1
+        elapsed = now - last if last else -1
         LOG.debug('Last received data %d seconds ago', elapsed)
         if ((self._client.serverHeartBeat / 1000.0) * self.ALLOWANCE + last) < now:
             LOG.error('Server heartbeat timeout. %d seconds since last heartbeat.  Disconnecting.', elapsed)

@@ -1,3 +1,5 @@
+import contextlib
+
 from circuits import BaseComponent, handler
 from circuits.net.sockets import TCPServer
 
@@ -71,10 +73,8 @@ class Server(BaseComponent):
         iterator = self.__protocols[sock].send(event)
         if no_result:
             event.node_without_result = True
-            try:
+            with contextlib.suppress(StopIteration):
                 next(iterator)
-            except StopIteration:
-                pass
         return iterator
 
     def send_to(self, event, socks):

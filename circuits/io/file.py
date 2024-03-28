@@ -11,6 +11,7 @@ except ImportError:
     # will fail anyway.
     pass
 
+import contextlib
 from collections import deque
 from errno import EINTR, EWOULDBLOCK
 from os import read as fd_read, write as fd_write
@@ -126,10 +127,8 @@ class File(Component):
         self._closeflag = False
         self._connected = False
 
-        try:
+        with contextlib.suppress(OSError):
             self._fd.close()
-        except OSError:
-            pass
 
         self.fire(closed())
 
