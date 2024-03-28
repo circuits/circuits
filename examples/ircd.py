@@ -240,6 +240,7 @@ class Server(Component):
 
         user.nick = nick
         self.nicks[nick] = user
+        return None
 
     def user(self, sock, source, nick, user, host, name):
         _user = self.users[sock]
@@ -322,16 +323,17 @@ class Server(Component):
                 Message('PRIVMSG', target, message, prefix=user.prefix),
                 user,
             )
-        else:
-            if target not in self.nicks:
-                return self.fire(reply(sock, ERR_NOSUCHNICK(target)))
+            return None
+        if target not in self.nicks:
+            return self.fire(reply(sock, ERR_NOSUCHNICK(target)))
 
-            self.fire(
-                reply(
-                    self.nicks[target].sock,
-                    Message('PRIVMSG', target, message, prefix=user.prefix),
-                ),
-            )
+        self.fire(
+            reply(
+                self.nicks[target].sock,
+                Message('PRIVMSG', target, message, prefix=user.prefix),
+            ),
+        )
+        return None
 
     def who(self, sock, source, mask):
         if mask.startswith('#'):
@@ -343,14 +345,15 @@ class Server(Component):
             for user in channel.users:
                 self.fire(reply(sock, RPL_WHOREPLY(user, mask, self.host)))
             self.fire(reply(sock, RPL_ENDOFWHO(mask)))
-        else:
-            if mask not in self.nicks:
-                return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
+            return None
+        if mask not in self.nicks:
+            return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
 
-            user = self.nicks[mask]
+        user = self.nicks[mask]
 
-            self.fire(reply(sock, RPL_WHOREPLY(user, mask, self.host)))
-            self.fire(reply(sock, RPL_ENDOFWHO(mask)))
+        self.fire(reply(sock, RPL_WHOREPLY(user, mask, self.host)))
+        self.fire(reply(sock, RPL_ENDOFWHO(mask)))
+        return None
 
     def ping(self, event, sock, source, server):
         event.stop()
@@ -374,8 +377,10 @@ class Server(Component):
             channel = self.channels[mask]
             if not params:
                 self.fire(reply(sock, RPL_CHANNELMODEIS(channel.name, channel.mode)))
+                return None
         elif mask not in self.users:
             return self.fire(reply(sock, ERR_NOSUCHNICK(mask)))
+        return None
 
     def list(self, sock, source):
         self.fire(reply(sock, RPL_LISTSTART()))

@@ -87,11 +87,13 @@ class BaseServer(BaseComponent):
     def host(self):
         if hasattr(self, 'server'):
             return self.server.host
+        return None
 
     @property
     def port(self):
         if hasattr(self, 'server'):
             return self.server.port
+        return None
 
     @property
     def display_banner(self):
@@ -101,6 +103,7 @@ class BaseServer(BaseComponent):
     def secure(self):
         if hasattr(self, 'server'):
             return self.server.secure
+        return None
 
     @handler('connect')
     def _on_connect(self, *args, **kwargs):

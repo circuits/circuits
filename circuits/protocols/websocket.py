@@ -143,7 +143,7 @@ class WebSocketCodec(BaseComponent):
                 # check for Ping
                 elif opcode == 9:
                     if self._close_sent:
-                        return
+                        return None
                     frame = bytearray(b'\x8a')
                     frame += self._encode_tail(msg, self._sock is None)
                     self._write(frame)

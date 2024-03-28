@@ -53,7 +53,7 @@ class PasswdAuth(Component):
 
             if check_auth(username, password):
                 request.login = username
-                return
+                return None
 
         response.headers['WWW-Authenticate'] = _httpauth.basicAuth(self.realm)
 

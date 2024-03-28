@@ -53,3 +53,5 @@ class Loader(BaseComponent):
                     component.register(self)
 
                 return component
+            return None
+        return None

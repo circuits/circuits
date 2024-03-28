@@ -22,9 +22,7 @@ if sys.platform in ('win32', 'cygwin'):
 @fixture()
 def tmpfile(request):
     tmpdir = tempfile.mkdtemp()
-    filename = os.path.join(tmpdir, 'test.sock')
-
-    return filename
+    return os.path.join(tmpdir, 'test.sock')
 
 
 def pytest_generate_tests(metafunc):

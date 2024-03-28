@@ -74,11 +74,11 @@ def requires(*names, **kwargs):
         def wrapper(*args, **kwds):
             if all(test(name) for name in names):
                 return f(*args, **kwds)
-            else:
-                for name in names:
-                    if not test(name):
-                        warn(f'{name:s} not found')
-                abort(f'requires({names!r:s}) failed')
+            for name in names:
+                if not test(name):
+                    warn(f'{name:s} not found')
+            abort(f'requires({names!r:s}) failed')
+            return None
 
         return wrapper
 

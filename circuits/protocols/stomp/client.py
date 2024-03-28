@@ -114,8 +114,7 @@ class StompClient(BaseComponent):
     def connected(self):
         if self._client.session:
             return self._client.session.state == StompSession.CONNECTED
-        else:
-            return False
+        return False
 
     @property
     def subscribed(self):

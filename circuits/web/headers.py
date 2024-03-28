@@ -24,10 +24,8 @@ def _formatparam(param, value=None, quote=1):
         if quote or tspecials.search(value):
             value = value.replace('\\', '\\\\').replace('"', r'\"')
             return f'{param}="{value}"'
-        else:
-            return f'{param}={value}'
-    else:
-        return param
+        return f'{param}={value}'
+    return param
 
 
 def header_elements(fieldname, fieldvalue):
@@ -138,8 +136,7 @@ class AcceptElement(HeaderElement):
     def __lt__(self, other):
         if self.qvalue == other.qvalue:
             return str(self) < str(other)
-        else:
-            return self.qvalue < other.qvalue
+        return self.qvalue < other.qvalue
 
 
 class CaseInsensitiveDict(dict):

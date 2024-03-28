@@ -35,6 +35,7 @@ class Watcher(BaseComponent):
                             return True
 
             sleep(TIMEOUT)
+        return None
 
 
 class Flag:

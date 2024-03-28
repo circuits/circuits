@@ -51,8 +51,7 @@ class Value:
         v = self.value[y]
         if isinstance(v, Value):
             return v.value
-        else:
-            return v
+        return v
 
     def __iter__(self):
         return iter((v.value if isinstance(v, Value) else v for v in self.value))

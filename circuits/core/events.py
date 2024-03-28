@@ -128,10 +128,9 @@ class Event:
         """
         if isinstance(x, int):
             return self.args[x]
-        elif isinstance(x, str):
+        if isinstance(x, str):
             return self.kwargs[x]
-        else:
-            raise TypeError('Expected int or str, got %r' % type(x))
+        raise TypeError('Expected int or str, got %r' % type(x))
 
     def __setitem__(self, i, y):
         """

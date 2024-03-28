@@ -22,6 +22,7 @@ class Auth(Component):
         if not check_auth(request, response, self.realm, self.users):
             event.stop()
             return basic_auth(request, response, self.realm, self.users)
+        return None
 
 
 class Root(Controller):

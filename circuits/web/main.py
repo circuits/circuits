@@ -139,6 +139,7 @@ class Authentication(Component):
         if not check_auth(request, response, self.realm, self.users):
             event.stop()
             return digest_auth(request, response, self.realm, self.users)
+        return None
 
 
 class HelloWorld(Component):

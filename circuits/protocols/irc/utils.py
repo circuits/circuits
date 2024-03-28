@@ -66,8 +66,7 @@ def parseprefix(prefix):
 
     if m is not None:
         return m.groups()
-    else:
-        return prefix or None, None, None
+    return prefix or None, None, None
 
 
 def parsemsg(s, encoding='utf-8'):

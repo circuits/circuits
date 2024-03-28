@@ -193,7 +193,7 @@ class Client(Component):
                 if k == 'window resize':
                     size = self.screen.get_cols_rows()
                     continue
-                elif k == 'enter':
+                if k == 'enter':
                     self.processCommand(self.input.get_edit_text())
                     self.input.set_edit_text('')
                     continue

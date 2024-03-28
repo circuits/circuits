@@ -19,6 +19,7 @@ def include(macro, environ, pagename=None, *args, **kwargs):
         environ['page.name'] = pagename
 
         return environ['parser'].generate(page, environ=environ)
+    return None
 
 
 def include_raw(macro, environ, pagename=None, *args, **kwargs):
@@ -34,6 +35,7 @@ def include_raw(macro, environ, pagename=None, *args, **kwargs):
 
     if page is not None:
         return builder.tag.pre(page, class_='plain')
+    return None
 
 
 def include_source(macro, environ, pagename=None, *args, **kwargs):
@@ -53,3 +55,4 @@ def include_source(macro, environ, pagename=None, *args, **kwargs):
         return builder.tag.pre(
             environ['parser'].render(page, environ=environ).decode('utf-8'),
         )
+    return None

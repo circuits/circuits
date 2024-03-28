@@ -202,7 +202,7 @@ def parseAuthorization(credentials):
     params = parser(auth_params)
 
     if params is None:
-        return
+        return None
 
     assert 'auth_scheme' not in params
     params['auth_scheme'] = auth_scheme
@@ -249,13 +249,14 @@ def _A1(params, password):
         # A1 = unq(username-value) ":" unq(realm-value) ":" passwd
         return '%s:%s:%s' % (params['username'], params['realm'], password)
 
-    elif algorithm == MD5_SESS:
+    if algorithm == MD5_SESS:
         # This is A1 if qop is set
         # A1 = H( unq(username-value) ":" unq(realm-value) ":" passwd )
         #         ":" unq(nonce-value) ":" unq(cnonce-value)
         s = '%s:%s:%s' % (params['username'], params['realm'], password)
         h_a1 = H(s.encode('utf-8'))
         return '%s:%s:%s' % (h_a1, params['nonce'], params['cnonce'])
+    return None
 
 
 def _A2(params, method, kwargs):
@@ -265,7 +266,7 @@ def _A2(params, method, kwargs):
     qop = params.get('qop', 'auth')
     if qop == 'auth':
         return method + ':' + params['uri']
-    elif qop == 'auth-int':
+    if qop == 'auth-int':
         # If the "qop" value is "auth-int", then A2 is:
         # A2 = Method ":" digest-uri-value ":" H(entity-body)
         entity_body = kwargs.get('entity_body', '')
@@ -277,8 +278,7 @@ def _A2(params, method, kwargs):
             H(entity_body),
         )
 
-    else:
-        raise NotImplementedError("The 'qop' method is unknown: %s" % qop)
+    raise NotImplementedError("The 'qop' method is unknown: %s" % qop)
 
 
 def _computeDigestResponse(auth_map, password, method='GET', A1=None, **kwargs):

@@ -12,3 +12,4 @@ def is_ssl_handshake(buf):
     v = list(iter(buf[:2])) + [0x00, 0x00]
     if (v[0] & 0x80 == 0x80) and ((v[0] & 0x7F) << 8 | v[1]) > 9:
         return True
+    return None

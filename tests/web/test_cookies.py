@@ -9,9 +9,8 @@ class Root(Controller):
         visited = self.cookie.get('visited')
         if visited and visited.value:
             return 'Hello again!'
-        else:
-            self.cookie['visited'] = True
-            return 'Hello World!'
+        self.cookie['visited'] = True
+        return 'Hello World!'
 
 
 def test(webapp):

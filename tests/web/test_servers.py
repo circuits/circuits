@@ -27,9 +27,7 @@ if pytest.PYVER >= (2, 7, 9):
 @fixture()
 def tmpfile(request):
     tmpdir = tempfile.mkdtemp()
-    filename = os.path.join(tmpdir, 'test.sock')
-
-    return filename
+    return os.path.join(tmpdir, 'test.sock')
 
 
 class BaseRoot(Component):
