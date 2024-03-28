@@ -19,7 +19,7 @@ class ResponseObject:
 
         self.body = BytesIO()
 
-        # XXX: This sucks :/ Avoiding the circuit import here :/
+        # TODO: This sucks :/ Avoiding the circuit import here :/
         from circuits.web.constants import HTTP_STATUS_CODES
 
         self.reason = HTTP_STATUS_CODES[self.status]
@@ -44,7 +44,7 @@ class HTTP(BaseComponent):
 
         self._encoding = encoding
 
-        # XXX: This sucks :/ Avoiding the circuit import here :/
+        # TODO: This sucks :/ Avoiding the circuit import here :/
         from circuits.web.parsers import HttpParser
 
         self._parser = HttpParser(1, True)
@@ -66,7 +66,7 @@ class HTTP(BaseComponent):
             res.body.seek(0)
             self.fire(response(res))
 
-            # XXX: This sucks :/ Avoiding the circuit import here :/
+            # TODO: This sucks :/ Avoiding the circuit import here :/
             from circuits.web.parsers import HttpParser
 
             self._parser = HttpParser(1, True)

@@ -7,7 +7,7 @@ extend-exclude = ["circuits/web/parsers/multipart.py"]
 [tool.ruff.lint]
 preview = true
 ignore-init-module-imports = true
-select = ["E", "W", "F", "I", "D"]
+select = ["E", "W", "F", "I", "D", "TD"]
 ignore = [
  "E501",  # line-too-long
  "E203",  # whitespace-before-punctuation
@@ -28,6 +28,9 @@ ignore = [
  "D404",  # First word of the docstring should not be "This"
  "D104",  # Missing docstring in public package
  "T201", "T203",  # print, p-print
+ "TD001",  # invalid-todo-tag
+ "TD002",  # missing-todo-author
+ "TD003",  # missing-todo-link
 ]
 
 # Exclude a variety of commonly ignored directories.
@@ -55,6 +58,8 @@ exclude = [
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+task-tags = ["TODO", "FIXME"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 40

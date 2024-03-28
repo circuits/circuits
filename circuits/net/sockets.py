@@ -298,7 +298,7 @@ class TCPClient(Client):
 
     @handler('connect')  # noqa
     def connect(self, host, port, secure=False, **kwargs):
-        # XXX: C901: This has a high McCacbe complexity score of 10.
+        # TODO: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
 
         self.host = host
@@ -380,7 +380,7 @@ class UNIXClient(Client):
 
     @handler('connect')  # noqa
     def connect(self, path, secure=False, **kwargs):
-        # XXX: C901: This has a high McCacbe complexity score of 10.
+        # TODO: C901: This has a high McCacbe complexity score of 10.
         # TODO: Refactor this!
 
         self.path = path
