@@ -1,0 +1,21 @@
+* circuits.web.client pass Request object to parser of httoop. in circuits.protocol.http
+
+httoop.URI wants also have emthods like circuits.web.urlfoobar
+
+
+http auth
+
+compress gzip
+
+
+error handling?!
+
+don't set cookies always
+
+
+streaming / chunked
+
+headers['Content-Length'] = 57 as int causes 57 null bytes to be send :-/
+
+wsgi test intensivley and look at the diff
+/p/querystring.py  w/exceptions.py  w/errors.py  w/d/static.py  w/w/client.py  w/wrappers.py  w/url.py  w/utils.py  2 w/tools.py  w/d/jsonrpc.py  w/http.py
