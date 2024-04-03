@@ -22,7 +22,6 @@ repos:
     - id: python-no-eval
       exclude: "^tests/"
     - id: rst-backticks
-      exclude: "^CHANGES.rst$"
     - id: rst-directive-colons
     - id: rst-inline-touching-normal
   - repo: https://github.com/pycqa/flake8
