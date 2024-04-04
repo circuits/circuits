@@ -1,0 +1,18 @@
+name: sast
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  bandit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bandit
+        run: |
+          pip install -U bandit[sarif,baseline]
+      - name: Run bandit
+        run: |
+          bandit -r .
