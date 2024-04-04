@@ -32,7 +32,7 @@
 import base64
 import json
 from http.client import HTTPConnection, HTTPSConnection
-from urllib.parse import urlparse, unquote
+from urllib.parse import unquote, urlparse
 
 
 __version__ = '0.0.1'
@@ -234,7 +234,7 @@ class Transport:
             host, x509 = host
 
         parsed_url = urlparse(host)
-        auth = f"{parsed_url.username}:{parsed_url.password}"
+        auth = f'{parsed_url.username}:{parsed_url.password}'
         host = parsed_url.hostname
 
         if auth:
