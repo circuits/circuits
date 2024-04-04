@@ -32,7 +32,7 @@
 import base64
 import json
 from http.client import HTTPConnection, HTTPSConnection
-from urllib.parse import splithost, splittype, splituser, unquote
+from urllib.parse import unquote, urlparse
 
 
 __version__ = '0.0.1'
@@ -233,7 +233,9 @@ class Transport:
         if isinstance(host, tuple):
             host, x509 = host
 
-        auth, host = splituser(host)
+        parsed_url = urlparse(host)
+        auth = f'{parsed_url.username}:{parsed_url.password}'
+        host = parsed_url.hostname
 
         if auth:
             auth = base64.encodestring(unquote(auth))
@@ -367,10 +369,12 @@ class SafeTransport(Transport):
 
 class ServerProxy:
     def __init__(self, uri, transport=None, encoding=None, verbose=None, allow_none=0):
-        utype, uri = splittype(uri)
+        parsed_url = urlparse(uri)
+        utype = parsed_url.scheme
         if utype not in ('http', 'https'):
             raise OSError('Unsupported JSONRPC protocol')
-        self.__host, self.__handler = splithost(uri)
+        self.__host = parsed_url.hostname
+        self.__handler = parsed_url.path
         if not self.__handler:
             self.__handler = '/RPC2'
 
