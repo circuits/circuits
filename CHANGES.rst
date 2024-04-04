@@ -5,71 +5,74 @@
 Change Log
 ==========
 
-- :release:`3.3.0 <TBD>`
+- :release:`3.2.3 <2024-04-04>`
 - :support:`281` Dropped support for Python 2.7, 3.5, 3.6
-- :support:`281` Added support for Python 3.11
+- :support:`327` Added support for Python 3.11, 3.12
+- :bug:`-`` namespacing is now done with ``importlib`` instead of ``pkgutil.extend_path()``
+- :bug:`-`` the code has been autoformatted and refactored with ``ruff`` via pre-commit
+- :bug:`-`` unused ``parse_body()``, ``dictform()``, ``is_ssl_handshake()`` and ``quoted_slash`` have been removed from ``circuits.web.utils``
 
-- :release:`3.2.2 <2021-10-19>`
+- :release:`3.2.2 <2021-10-19>``
 - :support:`298` Added support for Python 3.10
-- :feature:`132` The initial `request` containing the `session` has been added to the websocket dispatcher events in `circuits.web.websockets`
-- :feature:`96` `circuits.tools.graph()` has been split into smaller functions (for creating `dot`, `ascii`, `png` separately)
-- :bug:`197` Exceptions during initialization of `Poller`s is now handlded via an `error` Event
-- :bug:`197` Exceptions during `socket.accept()` are now re-raised in the main thread
+- :feature:`132` The initial ``request`` containing the ``session`` has been added to the websocket dispatcher events in ``circuits.web.websockets``
+- :feature:`96` ``circuits.tools.graph()`` has been split into smaller functions (for creating ``dot``, ``ascii``, ``png`` separately)
+- :bug:`197` Exceptions during initialization of ``Poller`` is now handlded via an ``error`` Event
+- :bug:`197` Exceptions during ``socket.accept()`` are now re-raised in the main thread
 - :bug:`261` A workaroung for websocket clients has been added, which prevents that the first websocket is not lost
 - :bug:`307` Various format string syntaxes have been relaxed so that they don't cause exceptions on non string input
-- :bug:`-` typos in docstrings/comments have been fixed
+- :bug:`-`` typos in docstrings/comments have been fixed
 - :bug:`293` (security) HTML escaping of error responses, 3XX redirects and Powered-by texts has been fixed
-- :bug:`251` (security) A HTTP header injection vulnerability in `circuits.web.websockets.client` has been fixed
-- :bug:`289` (security) potential XSS attacks via crafted files in directory listing is now prevented via HTML escaping in the `circuits.web.dispatchers.static` component.
-- :bug:`291` HTTP `Connection` header values are now correctly evaluated case insensitive in `websocket` components
-- :bug:`292` HTTP `Connection` header values are now correctly evaluated case insensitive in `web.client` components
-- :bug:`-` Fixed Python 3 compatibility for `circuits.web.tools.validate_etag()` with `MD5` hashes
-- :bug:`238` Reverted changes fixed by upstream `http-parser` library
-- :bug:`285` `circuits.web.parsers.http` has been upgraded to latest upstream `http-parser` version
+- :bug:`251` (security) A HTTP header injection vulnerability in ``circuits.web.websockets.client`` has been fixed
+- :bug:`289` (security) potential XSS attacks via crafted files in directory listing is now prevented via HTML escaping in the ``circuits.web.dispatchers.static`` component.
+- :bug:`291` HTTP ``Connection`` header values are now correctly evaluated case insensitive in ``websocket`` components
+- :bug:`292` HTTP ``Connection`` header values are now correctly evaluated case insensitive in ``web.client`` components
+- :bug:`-`` Fixed Python 3 compatibility for ``circuits.web.tools.validate_etag()`` with ``MD5` hashes
+- :bug:`238` Reverted changes fixed by upstream ``http-parser`` library
+- :bug:`285` ``circuits.web.parsers.http`` has been upgraded to latest upstream ``http-parser`` version
 - :bug:`285` requests with chunked transfer encoding are not dispatched if the message body is not yet received completely
-- :bug:`253` `circuits.io.serial`: add readline argument to only fire read events for full lines
-- :bug:`252` `circuits.io.serial`: missing encoding parameter has been added
+- :bug:`253` ``circuits.io.serial``: add readline argument to only fire read events for full lines
+- :bug:`252` ``circuits.io.serial``: missing encoding parameter has been added
 
 - :release:`3.2.1 <2020-10-30>`
 - :support:`-` Added support for Python 3.6, 3.7, 3.8, 3.9-dev
 - :support:`152` Dropped the support for Python 2.6 and 3.x < 3.4
 - :bug:`176` Generator expressions don't raise StopIteration anymore
 - :feature:`-` The exception handling has been improoved
-- :feature:`273` Added a `bufsize` argument to the `__init__` of BaseServer
+- :feature:`273` Added a ``bufsize`` argument to the ``__init__`` of BaseServer
 - :bug:`270` fix TLS support for websockets (unhandled SSLWantReadError)
 - :bug:`263` Improove error handling during TLS handshake
 - :bug:`269` Fix error handling when TLS handshake fails
-- :bug:`266` Fix python2 `str(circuits.core.values.Value())`
+- :bug:`266` Fix python2 ``str(circuits.core.values.Value())``
 - :bug:`264` Improoved robustness of IRC messages
 - :bug:`257` Fix WSGI component for Python 2.7 and Python 3
 - :bug:`254` Fix CRLF injection in IRC protocol
 - :feature:`245` IRC: enhance stripping of colors
-- :feature:`249` Add `irc.utils.irc_color_to_ansi()`
-- :bug:`241` Adjust `circuits.tools.graph()` to API change in `networkx`
-- :feature:`240` Added `auto_add` to `circuits.io.notify`
-- :feature:`231` Add support for `STOMP` protocol
+- :feature:`249` Add ``irc.utils.irc_color_to_ansi()``
+- :bug:`241` Adjust ``circuits.tools.graph()`` to API change in ``networkx``
+- :feature:`240` Added ``auto_add`` to ``circuits.io.notify``
+- :feature:`231` Add support for ``STOMP`` protocol
 - :bug:`238` Fix parsing HTTP request without headers
-- :bug:`235` the `prefix` in the `Debugger` might be a `callable` now
-- :feature:`233` `circuits.core.values.Value` is now `__str__` compatible with Python 2
+- :bug:`235` the ``prefix`` in the ``Debugger`` might be a ``callable`` now
+- :feature:`233` ``circuits.core.values.Value`` is now ``__str__`` compatible with Python 2
 - :feature:`212` Improves the API for session management and adds expire support
-- :feature:`224` Add new HTTP status code `308 moved permanently` (:rfc:`7538`)
-- :feature:`214` Implement `STARTTLS` for sockets as `event`
+- :feature:`224` Add new HTTP status code ``308 moved permanently`` (:rfc:`7538`)
+- :feature:`214` Implement ``STARTTLS`` for sockets as ``event``
 - :feature:`-` Add support to set additional socket options
-- :bug:`198` Made pushing onto the event queue via `fire` threadsafe.
-- :feature:`202` Removed `EventType` metaclass
-- :bug:`-` Fixed `manager.join()`
-- :bug:`202` Removed the (unused) internal cache from `EventType`.
+- :bug:`198` Made pushing onto the event queue via ``fire`` threadsafe.
+- :feature:`202` Removed ``EventType`` metaclass
+- :bug:`-` Fixed ``manager.join()``
+- :bug:`202` Removed the (unused) internal cache from ``EventType``.
 - :feature:`168`  Add interface for selecting the websocket subprotocol
-- :bug:`54` Fix a memory leak due to `on_done` handlers
-- :bug:`-` Fix python3 compatibility when parsing `HTTP` request body
+- :bug:`54` Fix a memory leak due to ``on_done`` handlers
+- :bug:`-` Fix python3 compatibility when parsing ``HTTP`` request body
 - :bug:`-` Fix error handling if error contains traceback instance
-- :bug:`187` Fix parsing and decoding of `application/x-www-urlencoded` payloads
+- :bug:`187` Fix parsing and decoding of ``application/x-www-urlencoded`` payloads
 - :bug:`185` Fix Denial of Service socket/memory leak for not connected clients
 - :bug:`184` Fix websocket data parsing if content is larger than BUFSIZE
 - :bug:`170` Fix crash from deleting undefined variables
 - :bug:`173` Fix the type difference between _current_thread and _flushing_thread
-- :bug:`123` Fixes bug in the `complete` event
-- :bug:`165` Fix `Host` HTTP header parsing when `circuits.web.Server` is bound to a `UNIX` Socket
+- :bug:`123` Fixes bug in the ``complete`` event
+- :bug:`165` Fix ``Host`` HTTP header parsing when ``circuits.web.Server`` is bound to a ``UNIX`` Socket
 
 - :release:`3.2 <2016-06-02>`
 - :bug:`119` Fixed bug in ``circuits.web.url.parse_url()`` that caused a

@@ -2,10 +2,10 @@
 
 ## Team members
 
-- James Mills [@prologic](https://github.com/prologic) (*Project Author and Maintainer*)
+- [@spaceone](https://github.com/spaceone) (*Project Maintainer*)
+- James Mills [@prologic](https://github.com/prologic) (*Project Author*)
 - [@Osso](https://github.com/Osso)
 - [@treemo](https://github.com/treemo)
-- [@spaceone](https://github.com/spaceone)
 - [@y0no](https://github.com/y0no)
 
 ## Learn & listen
