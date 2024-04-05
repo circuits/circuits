@@ -5,9 +5,13 @@ This module implements the server side Hyper Text Transfer Protocol
 or commonly known as HTTP.
 """
 
-from io import BytesIO
+import collections
 from socket import socket
 from urllib.parse import quote
+
+from httoop import StatusException
+from httoop.semantic.response import ComposedResponse
+from httoop.server import ServerStateMachine
 
 from circuits.core import BaseComponent, Value, handler
 from circuits.net.events import close, write
@@ -18,12 +22,25 @@ from .constants import SERVER_PROTOCOL, SERVER_VERSION
 from .errors import httperror, notfound, redirect
 from .events import request, response, stream
 from .exceptions import HTTPException, Redirect as RedirectException
-from .parsers import BAD_FIRST_LINE, HttpParser
+from .headers import Headers
 from .url import parse_url
 from .utils import is_unix_socket
 
 
 HTTP_ENCODING = 'utf-8'
+
+
+class State:
+    __slots__ = ('parser', 'requests', 'responses', 'response_started', 'composed', 'timeout', 'tunnel')
+
+    def __init__(self, server):
+        self.parser = ServerStateMachine(server.scheme, server.host, server.port)
+        self.requests = []
+        self.responses = set()
+        self.response_started = set()
+        self.composed = {}
+        self.timeout = None
+        self.tunnel = None
 
 
 class HTTP(BaseComponent):
@@ -97,33 +114,17 @@ class HTTP(BaseComponent):
         sock = res.request.sock
 
         if data is not None:
-            if isinstance(data, str):
-                data = data.encode(self._encoding)
-
-            if res.chunked:
-                buf = [
-                    hex(len(data))[2:].encode(self._encoding),
-                    b'\r\n',
-                    data,
-                    b'\r\n',
-                ]
-                data = b''.join(buf)
-
             self.fire(write(sock, data))
 
-            if res.body and not res.done:
+            if not res.done:
                 try:
                     data = next(res.body)
-                    while not data:  # Skip over any null byte sequences
-                        data = next(res.body)
                 except StopIteration:
                     data = None
                 self.fire(stream(res, data))
         else:
             if res.body:
                 res.body.close()
-            if res.chunked:
-                self.fire(write(sock, b'0\r\n\r\n'))
             if res.close:
                 self.fire(close(sock))
             if sock in self._clients:
@@ -144,53 +145,40 @@ class HTTP(BaseComponent):
         the information contained in the *response* object and
         sends it to the client (firing ``write`` events).
         """
-        req = res.request
-        headers = res.headers
-        sock = req.sock
+        sock = res.request.sock
 
         # send HTTP response status line and headers
         res.prepare()
-        self.fire(write(sock, b'%s%s' % (bytes(res), bytes(headers))))
+        response = res.to_httoop()
+        body = response.body
+        self.fire(write(sock, b'%s%s' % (bytes(response), bytes(response.headers))))
 
-        if req.method == 'HEAD':
+        if res.request.method == 'HEAD':
             return
+
         if res.stream and res.body:
+            res._body = body
             try:
-                data = next(res.body)
+                data = next(body)
             except StopIteration:
                 data = None
             self.fire(stream(res, data))
-        else:
-            if isinstance(res.body, bytes):
-                body = res.body
-            elif isinstance(res.body, str):
-                body = res.body.encode(self._encoding)
-            else:
-                parts = (s if isinstance(s, bytes) else s.encode(self._encoding) for s in res.body if s is not None)
-                body = b''.join(parts)
+            return
 
-            if body:
-                if res.chunked:
-                    buf = [
-                        hex(len(body))[2:].encode(self._encoding),
-                        b'\r\n',
-                        body,
-                        b'\r\n',
-                    ]
-                    body = b''.join(buf)
+        while True:
+            try:
+                chunk = next(body)
+            except StopIteration:
+                break
+            self.fire(write(sock, chunk))
 
-                self.fire(write(sock, body))
-
-                if res.chunked:
-                    self.fire(write(sock, b'0\r\n\r\n'))
-
-            if not res.stream:
-                if res.close:
-                    self.fire(close(sock))
-                # Delete the request/response objects if present
-                if sock in self._clients:
-                    del self._clients[sock]
-                res.done = True
+        if not res.stream:
+            if res.close:
+                self.fire(close(sock))
+            # Delete the request/response objects if present
+            if sock in self._clients:
+                del self._clients[sock]
+            res.done = True
 
     @handler('disconnect')
     def _on_disconnect(self, sock):
@@ -209,7 +197,7 @@ class HTTP(BaseComponent):
         if sock in self._buffers:
             parser = self._buffers[sock]
         else:
-            self._buffers[sock] = parser = HttpParser(0, True)
+            self._buffers[sock] = parser = State(self._server)
 
             # If we receive an SSL handshake at the start of a request
             # and we're not a secure server, then immediately close the
@@ -222,87 +210,68 @@ class HTTP(BaseComponent):
                     del self._clients[sock]
                 return self.fire(close(sock))
 
-        _scheme = 'https' if self._server.secure else 'http'
-        parser.execute(data, len(data))
-        if not parser.is_headers_complete():
-            if parser.errno is not None:
-                if parser.errno == BAD_FIRST_LINE:
-                    req = wrappers.Request(sock, server=self._server)
-                else:
-                    req = wrappers.Request(
-                        sock,
-                        parser.get_method(),
-                        parser.get_scheme() or _scheme,
-                        parser.get_path(),
-                        parser.get_version(),
-                        parser.get_query_string(),
-                        server=self._server,
-                    )
-                req.server = self._server
-                res = wrappers.Response(req, encoding=self._encoding)
-                del self._buffers[sock]
-                return self.fire(httperror(req, res, 400))
-            return None
-
-        if sock in self._clients:
-            req, res = self._clients[sock]
-        else:
-            method = parser.get_method()
-            scheme = parser.get_scheme() or _scheme
-            path = parser.get_path()
-            version = parser.get_version()
-            query_string = parser.get_query_string()
-
+        http = parser.parser
+        try:
+            requests = tuple(http.parse(data))
+        except StatusException as httperrorstatus:
+            # req = wrappers.Request.from_httoop(http.request, sock, server=self._server)
             req = wrappers.Request(
                 sock,
-                method,
-                scheme,
-                path,
-                version,
-                query_string,
-                headers=parser.get_headers(),
+                str(http.request.method),
+                http.request.uri.scheme,
+                http.request.uri.path,
+                tuple(http.request.protocol),
+                http.request.uri.query_string,
+                # headers=Headers(http.request.headers),
+                headers=Headers((k, http.request.headers[k]) for k in http.request.headers),
                 server=self._server,
             )
-
             res = wrappers.Response(req, encoding=self._encoding)
-
-            self._clients[sock] = (req, res)
-
-            rp = req.protocol
-            sp = self.protocol
-
-            if rp[0] != sp[0]:
-                # the major HTTP version differs
-                return self.fire(httperror(req, res, 505))
-
-            res.protocol = 'HTTP/{:d}.{:d}'.format(*min(rp, sp))
-            res.close = not parser.should_keep_alive()
-
-        clen = int(req.headers.get('Content-Length', '0'))
-        if (clen or req.headers.get('Transfer-Encoding') == 'chunked') and not parser.is_message_complete():
-            return None
-
-        if hasattr(sock, 'getpeercert'):
-            peer_cert = sock.getpeercert()
-            e = request(req, res, peer_cert) if peer_cert else request(req, res)
-        else:
-            e = request(req, res)
-
-        if req.protocol != (1, 0) and not req.headers.get('Host'):
+            res.headers.update(httperrorstatus.headers)
+            # TODO: set response attributes from http.response
             del self._buffers[sock]
-            return self.fire(httperror(req, res, 400, description='No host header defined'))
+            return self.fire(httperror(req, res, httperrorstatus.code))
 
-        # Guard against unwanted request paths (SECURITY).
-        path = req.path
-        _path = req.uri._path
-        if (path.encode(self._encoding) != _path) and (quote(path).encode(self._encoding) != _path):
-            return self.fire(redirect(req, res, [req.uri.utf8()], 301))
+        for client in requests:
+            client = collections.namedtuple('Client', 'request,response')(*client)
+            # req = wrappers.Request.from_httoop(client.request, sock, server=self._server)
+            req = wrappers.Request(
+                sock,
+                str(client.request.method),
+                client.request.uri.scheme,
+                client.request.uri.path,
+                tuple(client.request.protocol),
+                client.request.uri.query_string,
+                # headers=Headers(http.request.headers),
+                headers=Headers((k, client.request.headers[k]) for k in client.request.headers),
+                server=self._server,
+            )
+            req.body = client.request.body.fd
+            res = wrappers.Response(req, encoding=self._encoding)
+            res.protocol = str(client.response.protocol)
+            self._clients[sock] = client
 
-        req.body = BytesIO(parser.recv_body())
-        del self._buffers[sock]
+            # TODO: can we move that to a later point? missing .prepare()
+            res.close = ComposedResponse(client.response, client.request).close
 
-        self.fire(e)
-        return None
+            peer_cert = None
+            if hasattr(sock, 'getpeercert'):
+                peer_cert = sock.getpeercert()
+            if peer_cert:
+                e = request(req, res, peer_cert)
+            else:
+                e = request(req, res)
+
+            # TODO: this is already done by httoop. remove?!
+            # Guard against unwanted request paths (SECURITY).
+            path = req.path
+            _path = req.uri._path
+            if (path.encode(self._encoding) != _path) and (quote(path).encode(self._encoding) != _path):
+                return self.fire(redirect(req, res, [req.uri.utf8()], 301))
+
+            del self._buffers[sock]
+
+            self.fire(e)
 
     @handler('httperror')
     def _on_httperror(self, event, req, res, code, **kwargs):
@@ -413,7 +382,10 @@ class HTTP(BaseComponent):
         else:
             return
 
-        code = evalue.code if isinstance(evalue, HTTPException) else None
+        if isinstance(evalue, HTTPException):
+            code = evalue.code
+        else:
+            code = None
 
         self.fire(httperror(req, res, code=code, error=(etype, evalue, etraceback)))
 

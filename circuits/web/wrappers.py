@@ -4,15 +4,19 @@ Request/Response Wrappers
 This module implements the Request and Response objects.
 """
 
+import urllib.parse
 from email.utils import formatdate
 from functools import partial
 from http.cookies import SimpleCookie
 from io import BytesIO
 from time import time
 
+import httoop
+from httoop.status import Status as HTTPStatus
+
 from circuits.net.sockets import BUFSIZE
 
-from .constants import HTTP_STATUS_CODES, SERVER_VERSION
+from .constants import SERVER_VERSION
 from .errors import httperror
 from .headers import Headers
 from .url import parse_url
@@ -50,59 +54,6 @@ class Host:
 
     def __repr__(self):
         return f'Host({self.ip!r}, {self.port!r}, {self.name!r})'
-
-
-class HTTPStatus:
-    __slots__ = ('_reason', '_status')
-
-    def __init__(self, status=200, reason=None):
-        self._status = status
-        self._reason = reason or HTTP_STATUS_CODES.get(status, '')
-
-    def __int__(self):
-        return self._status
-
-    def __lt__(self, other):
-        if isinstance(other, int):
-            return self._status < other
-        return super().__lt__(other)
-
-    def __gt__(self, other):
-        if isinstance(other, int):
-            return self._status > other
-        return super().__gt__(other)
-
-    def __le__(self, other):
-        if isinstance(other, int):
-            return self._status <= other
-        return super().__le__(other)
-
-    def __ge__(self, other):
-        if isinstance(other, int):
-            return self._status >= other
-        return super().__ge__(other)
-
-    def __eq__(self, other):
-        if isinstance(other, int):
-            return self._status == other
-        return super().__eq__(other)
-
-    def __str__(self):
-        return f'{self._status:d} {self._reason}'
-
-    def __repr__(self):
-        return f'<Status (status={self._status:d} reason={self._reason}>'
-
-    def __format__(self, format_spec):
-        return format(str(self), format_spec)
-
-    @property
-    def status(self):
-        return self._status
-
-    @property
-    def reason(self):
-        return self._reason
 
 
 class Request:
@@ -176,36 +127,48 @@ class Request:
         if self.server is not None:
             self.local = Host(self.server.host, self.server.port)
 
+        port = 443 if self.scheme == 'https' else 80
         try:
             host = self.headers['Host']
             if ':' in host:
                 parts = host.split(':', 1)
                 host = parts[0]
                 port = int(parts[1])
-            else:
-                port = 443 if self.scheme == 'https' else 80
         except KeyError:
             host = self.local.name or self.local.ip
-            port = self.server.port
+            port = getattr(self.server, 'port', port)
 
         self.host = host
         self.port = port
 
-        base = '{}://{}{}/'.format(
-            self.scheme,
-            self.host,
-            f':{self.port:d}' if self.port not in (80, 443) else '',
-        )
+        base = '{}://{}{}/'.format(self.scheme, self.host, f':{self.port:d}' if self.port not in (80, 443) else '')
 
         self.base = parse_url(base)
 
-        url = '{}{}{}'.format(
-            base,
-            self.path,
-            f'?{self.qs}' if self.qs else '',
-        )
+        url = '{}{}{}'.format(base, urllib.parse.quote(self.path), f'?{self.qs}' if self.qs else '')
         self.uri = parse_url(url)
         self.uri.sanitize()
+
+    @classmethod
+    def from_httoop(cls, request, *args, **kwargs):
+        self = cls(*args, **kwargs)
+        self.method = str(request.method)
+        self.scheme = request.uri.scheme
+        self.path = request.uri.path
+        self.qs = request.uri.query_string
+        self.host = request.uri.host
+        self.port = request.uri.port
+        self.base = parse_url(str(request.uri.join(path='/')))
+        self.uri = parse_url(str(request.uri))
+        self.uri.sanitize()
+        self.body = BytesIO(bytes(request.body))
+        self.headers.clear()
+        self.headers.update(request.headers)
+        self.protocol = tuple(request.protocol)
+        return self
+
+    def to_httoop(self):
+        return httoop.Request(self.method, self.uri.unicode(), self.headers, self.body, self.protocol)
 
     def __repr__(self):
         protocol = 'HTTP/%d.%d' % self.protocol
@@ -220,16 +183,25 @@ class Body:
     def __get__(self, response, cls=None):
         if response is None:
             return self
-        return response._body
+        else:
+            return response._body
 
     def __set__(self, response, value):
         if response == value:
             return
 
         if isinstance(value, bytes):
-            value = [value] if value else []
+            if value:
+                value = [value]
+            else:
+                value = []
         elif isinstance(value, str):
-            value = [value.encode(response.encoding, self.encode_errors)] if value else []
+            if value:
+                value = [value.encode(response.encoding, self.encode_errors)]
+            else:
+                value = []
+        elif isinstance(value, httoop.Body):
+            pass
         elif hasattr(value, 'read'):
             response.stream = True
             value = file_generator(value)
@@ -247,12 +219,11 @@ class Status:
     def __get__(self, response, cls=None):
         if response is None:
             return self
-        return response._status
+        else:
+            return response._status
 
     def __set__(self, response, value):
-        value = HTTPStatus(value) if isinstance(value, int) else value
-
-        response._status = value
+        response._status.set(value)
 
 
 class Response:
@@ -287,13 +258,34 @@ class Response:
 
         if getattr(self.request.server, 'display_banner', False):
             if self.request.server is not None:
-                self.headers.add_header('Server', request.server.http.version)
+                self.headers['Server'] = request.server.http.version
             else:
-                self.headers.add_header('X-Powered-By', SERVER_VERSION)
+                self.headers['X-Powered-By'] = SERVER_VERSION
 
         self.cookie = self.request.cookie
 
         self.protocol = 'HTTP/%d.%d' % self.request.protocol
+
+    @classmethod
+    def from_httoop(cls, response, *args, **kwargs):
+        self = cls(*args, **kwargs)
+        date = self.headers['Date']
+        self.body = response.body
+        self.encoding = response.body.encoding
+        self.chunked = response.body.chunked
+        self.stream = response.body.fileable
+        self.status = response.status
+        self.headers.clear()
+        self.headers.update(response.headers)
+        self.headers.setdefault('Date', date)
+        self.protocol = str(response.protocol)
+        return self
+
+    def to_httoop(self):
+        response = httoop.Response(int(self.status), self.headers, self._body, self.protocol)
+        response.body.encoding = self.encoding
+        response.body.chunked = self.chunked
+        return response
 
     def __repr__(self):
         return '<Response %s %s (%d)>' % (
@@ -310,10 +302,7 @@ class Response:
 
     def prepare(self):
         # Set a default content-Type if we don't have one.
-        self.headers.setdefault(
-            'Content-Type',
-            f'text/html; charset={self.encoding}',
-        )
+        self.headers.setdefault('Content-Type', f'text/html; charset={self.encoding}')
 
         cLength = None
         if self.body is not None:
@@ -325,11 +314,14 @@ class Response:
                 cLength = sum(
                     len(s.encode(self.encoding)) if not isinstance(s, bytes) else len(s) for s in self.body if s is not None
                 )
+            elif isinstance(self.body, httoop.Body):
+                if not self.body.generator and not self.chunked:
+                    cLength = len(self.body)
 
         if cLength is not None:
             self.headers['Content-Length'] = str(cLength)
 
-        for v in self.cookie.values():
+        for k, v in self.cookie.items():
             self.headers.add_header('Set-Cookie', v.OutputString())
 
         status = self.status
@@ -344,20 +336,20 @@ class Response:
                     self.protocol == 'HTTP/1.1'
                     and self.request.method != 'HEAD'
                     and self.request.server is not None
-                    and cLength != 0
+                    and not cLength == 0
                 ):
                     self.chunked = True
-                    self.headers.add_header('Transfer-Encoding', 'chunked')
+                    self.headers['Transfer-Encoding'] = 'chunked'
                 else:
                     self.close = True
 
         if self.request.server is not None and 'Connection' not in self.headers:
             if self.protocol == 'HTTP/1.1':
                 if self.close:
-                    self.headers.add_header('Connection', 'close')
+                    self.headers['Connection'] = 'close'
             else:
                 if not self.close:
-                    self.headers.add_header('Connection', 'Keep-Alive')
+                    self.headers['Connection'] = 'Keep-Alive'
 
         if self.headers.get('Transfer-Encoding', '') == 'chunked':
             self.chunked = True

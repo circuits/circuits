@@ -1,64 +1,87 @@
-import re
-from cgi import parse_header
+from .parsers import QueryStringParser
 
-from .headers import HeaderElement
-from .parsers import MultipartParser, QueryStringParser
+
+class _MultipartPart(object):
+    def __init__(self, body):
+        self._body = body
+        self.file = body.fd
+        self.headers = body.headers
+        self.headerlist = list(self.headers.items())
+        self.size = len(body)
+        cd = body.headers.element('Content-Disposition')
+        self.disposition = cd.value
+        self.name = cd.params['name']
+        self.filename = cd.filename
+        self.content_type = body.mimetype.value
+        self.charset = body.mimetype.charset
+
+    def is_buffered(self):
+        return True
+
+    @property
+    def value(self):
+        return str(self._body)
+
+    def save_as(self, path):
+        with open(path, 'wb') as fp:
+            pos = self.file.tell()
+            try:
+                self.file.seek(0)
+                size = _copy_file(self.file, fp)
+            finally:
+                self.file.seek(pos)
+        return size
+
+
+def _copy_file(stream, target, maxread=-1, buffer_size=2 * 16):
+    """Read from :stream and write to :target until :maxread or EOF."""
+    size, read = 0, stream.read
+    while 1:
+        to_read = buffer_size if maxread < 0 else min(buffer_size, maxread - size)
+        part = read(to_read)
+        if not part:
+            return size
+        target.write(part)
+        size += len(part)
 
 
 def process_multipart(request, params):
-    headers = request.headers
+    return _process_multipart(request.to_httoop(), params)
 
-    ctype = headers.elements('Content-Type')
-    ctype = ctype[0] if ctype else HeaderElement.from_str('application/x-www-form-urlencoded')
 
-    ib = ''
-    if 'boundary' in ctype.params:
-        # http://tools.ietf.org/html/rfc2046#section-5.1.1
-        # "The grammar for parameters on the Content-type field is such that it
-        # is often necessary to enclose the boundary parameter values in quotes
-        # on the Content-type line"
-        ib = ctype.params['boundary'].strip('"')
-
-    if not re.match('^[ -~]{0,200}[!-~]$', ib):
-        raise ValueError(f'Invalid boundary in multipart form: {ib!r}')
-
-    parser = MultipartParser(request.body, ib)
-    for part in parser:
-        if part.filename or not part.is_buffered():
-            params[part.name] = part
+def _process_multipart(request, params):
+    data = request.body.decode()
+    for part in data or []:
+        cd = part.headers.element('Content-Disposition')
+        name = cd.params['name']
+        if cd.filename:  # or not _MultipartPart(part).is_buffered():
+            params[name] = _MultipartPart(part)
         else:
-            params[part.name] = part.value
+            params[name] = str(part)
 
 
 def process_urlencoded(request, params, encoding='utf-8'):
-    params.update(QueryStringParser(request.qs).result)
-    body = request.body.getvalue().decode(encoding)
-    result = QueryStringParser(body).result
-    for key, value in result.items():
-        params[_decode_value(key, encoding)] = _decode_value(value, encoding)
+    return _process_urlencoded(request.to_httoop(), params, encoding='utf-8')
 
 
-def _decode_value(value, encoding):
-    if isinstance(value, bytes):
-        value = value.decode(encoding)
-    elif isinstance(value, list):
-        value = [_decode_value(val, encoding) for val in value]
-    elif isinstance(value, dict):
-        value = {key.decode(encoding): _decode_value(val, encoding) for key, val in value.iteritems()}
-    return value
+def _process_urlencoded(request, params, encoding='utf-8'):
+    p = {}
+    p.update(dict(request.uri.query))
+    p.update(dict(request.body.decode()))
+    qs = QueryStringParser('')
+    for i in p.items():
+        qs.process(i)
+    params.update(qs.result)
 
 
 def process(request, params):
-    ctype = request.headers.get('Content-Type')
-    if not ctype:
+    request = request.to_httoop()
+    request.body.headers = request.headers
+    content_type = request.body.mimetype
+    if not content_type:
         return
 
-    mtype, mencoding = ctype.split('/', 1) if '/' in ctype else (ctype, None)
-    mencoding, extra = parse_header(mencoding)
-
-    charset = extra.get('charset', 'utf-8')
-
-    if mtype == 'multipart':
-        process_multipart(request, params)
-    elif mtype == 'application' and mencoding == 'x-www-form-urlencoded':
-        process_urlencoded(request, params, encoding=charset)
+    if content_type.type == 'multipart':
+        _process_multipart(request, params)
+    if content_type.mimetype == 'application/x-www-form-urlencoded':
+        _process_urlencoded(request, params, encoding=content_type.charset or 'utf-8')

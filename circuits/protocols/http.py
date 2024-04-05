@@ -1,5 +1,8 @@
 from io import BytesIO
 
+import httoop
+import httoop.client
+
 from circuits.core import BaseComponent, Event, handler
 
 
@@ -16,20 +19,12 @@ class ResponseObject:
         self.headers = headers
         self.status = status
         self.version = version
-
         self.body = BytesIO()
-
-        # TODO: This sucks :/ Avoiding the circuit import here :/
-        from circuits.web.constants import HTTP_STATUS_CODES
-
-        self.reason = HTTP_STATUS_CODES[self.status]
+        self.reason = ''
 
     def __repr__(self):
         return '<Response {:d} {} {} ({:d})>'.format(
-            self.status,
-            self.reason,
-            self.headers.get('Content-Type'),
-            len(self.body.getvalue()),
+            self.status, self.reason, self.headers.get('Content-Type'), len(self.body.getvalue())
         )
 
     def read(self):
@@ -37,36 +32,20 @@ class ResponseObject:
 
 
 class HTTP(BaseComponent):
+    """A HTTP Client"""
+
     channel = 'web'
 
     def __init__(self, encoding='utf-8', channel=channel):
         super().__init__(channel=channel)
-
         self._encoding = encoding
-
-        # TODO: This sucks :/ Avoiding the circuit import here :/
-        from circuits.web.parsers import HttpParser
-
-        self._parser = HttpParser(1, True)
+        self._parser = httoop.client.ClientStateMachine()
 
     @handler('read')
     def _on_client_read(self, data):
-        self._parser.execute(data, len(data))
-        if (
-            self._parser.is_message_complete()
-            or self._parser.is_upgrade()
-            or (self._parser.is_headers_complete() and self._parser._clen == 0)
-        ):
-            status = self._parser.get_status_code()
-            version = self._parser.get_version()
-            headers = self._parser.get_headers()
-
-            res = ResponseObject(headers, status, version)
-            res.body.write(self._parser.recv_body())
-            res.body.seek(0)
+        self._parser.request = httoop.Request()
+        for resp in self._parser.parse(data):
+            res = ResponseObject(resp.headers, int(resp.status), tuple(resp.protocol))
+            res.reason = resp.status.reason
+            res.body = resp.body.fd
             self.fire(response(res))
-
-            # TODO: This sucks :/ Avoiding the circuit import here :/
-            from circuits.web.parsers import HttpParser
-
-            self._parser = HttpParser(1, True)

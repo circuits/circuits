@@ -6,8 +6,6 @@ Submodules
 
 .. toctree::
 
-   circuits.web.parsers.http
-   circuits.web.parsers.multipart
    circuits.web.parsers.querystring
 
 Module contents
