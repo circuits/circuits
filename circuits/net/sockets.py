@@ -7,6 +7,7 @@ This module contains various Socket Components for use with Networking.
 import contextlib
 import os
 import select
+from _socket import socket as SocketType
 from collections import defaultdict, deque
 from errno import (
     EAGAIN,
@@ -45,8 +46,6 @@ from socket import (
     socket,
 )
 from time import time
-
-from _socket import socket as SocketType
 
 from circuits.core import BaseComponent, handler
 from circuits.core.pollers import BasePoller, Poller
