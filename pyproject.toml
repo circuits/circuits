@@ -25,6 +25,7 @@ ignore = [
  "D105",  # Missing docstring in magic method
  "D401",  # First line of docstring should be in imperative mood: "A shortcut to abspath, escape and lowercase."
  "D402",  # First line should not be the function's signature
+ "D403",  # first-word-uncapitalized
  "D404",  # First word of the docstring should not be "This"
  "D104",  # Missing docstring in public package
  "T201", "T203",  # print, p-print
