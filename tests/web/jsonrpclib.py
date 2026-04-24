@@ -236,7 +236,7 @@ class Transport:
         auth, host = splituser(host)
 
         if auth:
-            auth = base64.encodestring(unquote(auth))
+            auth = base64.b64encode(unquote(auth).encode('ASCII')).decode('ASCII')
             auth = ''.join(auth.split())  # get rid of whitespace
             extra_headers = [
                 ('Authorization', 'Basic ' + auth),
