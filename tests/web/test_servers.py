@@ -21,6 +21,7 @@ CERTFILE = path.join(path.dirname(__file__), 'cert.pem')
 # self signed cert
 if pytest.PYVER >= (2, 7, 9):
     SSL_CONTEXT = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    SSL_CONTEXT.check_hostname = False
     SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 
