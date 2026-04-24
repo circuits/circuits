@@ -241,8 +241,7 @@ class RequestURITooLarge(HTTPException):
 
     code = 414
     description = (
-        '<p>The length of the requested URL exceeds the capacity limit '
-        'for this server.  The request cannot be processed.</p>'
+        '<p>The length of the requested URL exceeds the capacity limit for this server.  The request cannot be processed.</p>'
     )
 
 
