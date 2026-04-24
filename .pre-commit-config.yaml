@@ -3,7 +3,7 @@
 exclude: "^circuits/web/parsers/multipart.py$"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
     - id: check-added-large-files
     - id: check-json
@@ -25,12 +25,12 @@ repos:
     - id: rst-directive-colons
     - id: rst-inline-touching-normal
   - repo: https://github.com/pycqa/flake8
-    rev: '7.0.0'
+    rev: 7.3.0
     hooks:
     - id: flake8
       exclude: "^docs/"
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.3.4'
+    rev: v0.15.12
     hooks:
       - id: ruff
       - id: ruff
