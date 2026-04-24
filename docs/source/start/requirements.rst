@@ -10,7 +10,7 @@ Requirements and Dependencies
 
 :Supported Platforms: Linux, FreeBSD, Mac OS X, Windows
 
-:Supported Python Versions: 2.7, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10
+:Supported Python Versions: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
 
 :Supported pypy Versions: 2.0
 
