@@ -1,5 +1,5 @@
 import re
-from cgi import parse_header
+from email.message import Message
 
 from .headers import HeaderElement
 from .parsers import MultipartParser, QueryStringParser
@@ -53,12 +53,11 @@ def process(request, params):
     if not ctype:
         return
 
-    mtype, mencoding = ctype.split('/', 1) if '/' in ctype else (ctype, None)
-    mencoding, extra = parse_header(mencoding)
-
-    charset = extra.get('charset', 'utf-8')
+    msg = Message()
+    msg['content-type'] = ctype
+    mtype = msg.get_content_maintype()
 
     if mtype == 'multipart':
         process_multipart(request, params)
-    elif mtype == 'application' and mencoding == 'x-www-form-urlencoded':
-        process_urlencoded(request, params, encoding=charset)
+    elif mtype == 'application' and msg.get_content_subtype() == 'x-www-form-urlencoded':
+        process_urlencoded(request, params, encoding=msg.get_content_charset('utf-8'))
