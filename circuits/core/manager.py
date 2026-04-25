@@ -7,7 +7,7 @@ import types
 from collections import deque
 from heapq import heappop, heappush
 from inspect import isfunction
-from itertools import chain, count
+from itertools import chain
 from multiprocessing import Process, current_process
 from operator import attrgetter
 from os import getpid, kill
@@ -123,7 +123,7 @@ class _EventQueue:
     def __init__(self):
         self._queue = deque()
         self._priority_queue = []
-        self._counter = count()
+        self._counter = -1
         self._flush_batch = 0
 
     def __len__(self):
@@ -136,7 +136,8 @@ class _EventQueue:
         assert not len(other_queue._priority_queue)
 
     def append(self, event, channel, priority):
-        self._queue.append((priority, next(self._counter), (event, channel)))
+        self._counter += 1
+        self._queue.append((priority, self._counter, (event, channel)))
 
     def dispatchEvents(self, dispatcher):
         if self._flush_batch == 0:
