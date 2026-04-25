@@ -5,6 +5,12 @@
 Change Log
 ==========
 
+- :release:`3.2.4 <2026-04-25>`
+- :support:`-` Dropped support for Python 3.7
+- :support:`-` Added support for Python 3.13
+- :support:`-` Replace ``cgi`` module usage with ``email.message``
+- :support:`-` Replace ``setup.py`` with ``pyproject.toml``
+
 - :release:`3.2.3 <2024-04-04>`
 - :support:`281` Dropped support for Python 2.7, 3.5, 3.6
 - :support:`327` Added support for Python 3.11, 3.12
