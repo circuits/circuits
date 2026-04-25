@@ -1,14 +1,15 @@
+---
 name: Manual PyPI Release
 
-on:
+'on':
   workflow_dispatch:
     inputs:
       version:
         description: "Version tag (e.g. v1.2.0)"
         required: true
-  # push:
-  #   branches:
-  #     - master
+#  push:
+#    branches:
+#      - master
 
 # permissions:
 #   id-token: write
@@ -36,20 +37,21 @@ jobs:
       - name: Install build dependencies
         run: pip install build
 
-      - |
-        python - <<'EOF'
-        from pathlib import Path
+      - name: Generate README
+        run: |
+          python - <<'EOF'
+          from pathlib import Path
 
-        readme = Path("README.rst").read_text()
-        examples = Path("examples/index.rst").read_text()
+          readme = Path("README.rst").read_text()
+          examples = Path("examples/index.rst").read_text()
 
-        combined = readme.replace(
-            ".. include:: examples/index.rst",
-            examples
-        )
+          combined = readme.replace(
+              ".. include:: examples/index.rst",
+              examples
+          )
 
-        Path("README_full.rst").write_text(combined)
-        EOF
+          Path("README_full.rst").write_text(combined)
+          EOF
 
       - name: Build distribution
         run: python -m build
