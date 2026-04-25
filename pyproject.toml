@@ -1,3 +1,103 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "circuits"
+description = "Asynchronous Component based Event Application Framework"
+readme = "README_full.rst"
+license = { text = "MIT" }
+dynamic = ["version"]
+
+authors = [
+  { name = "James Mills", email = "prologic@shortcircuit.net.au" }
+]
+
+requires-python = ">=3.8"
+
+keywords = [
+  "event", "framework", "distributed", "concurrent", "component", "asynchronous"
+]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Environment :: No Input/Output (Daemon)",
+  "Environment :: Other Environment",
+  "Environment :: Plugins",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: System Administrators",
+  "Intended Audience :: Telecommunications Industry",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: POSIX :: BSD",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Adaptive Technologies",
+  "Topic :: Communications :: Chat :: Internet Relay Chat",
+  "Topic :: Communications :: Email :: Mail Transport Agents",
+  "Topic :: Database",
+  "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+  "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+  "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
+  "Topic :: Internet :: WWW/HTTP :: WSGI :: Server",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: System :: Clustering",
+  "Topic :: System :: Distributed Computing",
+]
+
+[project.urls]
+Homepage = "https://circuitsframework.com/"
+Download = "https://github.com/circuits/circuits/releases"
+
+[tool.setuptools]
+include-package-data = false
+script-files = [
+  "bin/circuits.bench",
+  "bin/htpasswd"
+]
+
+[tool.setuptools_scm]
+write_to = "circuits/version.py"
+
+[tool.setuptools.packages.find]
+exclude = [
+  "*.tests",
+  "*.tests.*",
+  "tests",
+  "tests.*",
+  "*.fabfile",
+  "*.fabfile.*",
+  "fabfile",
+  "fabfile.*",
+]
+
+[project.scripts]
+"circuits.web" = "circuits.web.main:main"
+
+[project.optional-dependencies]
+stomp = [
+  "stompest>=2.3.0",
+  "pysocks>=1.6.7"
+]
+
+[tool.sphinx]
+source-dir = "docs/source"
+build-dir = "docs/build"
+
 [tool.ruff]
 line-length = 127
 target-version = "py37"
