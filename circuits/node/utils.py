@@ -35,6 +35,8 @@ def load_event(s):
     e.channels = tuple(data['channels'])
 
     for k, v in dict(data['meta']).items():
+        if k.startswith('__') or k in META_EXCLUDE:
+            continue
         setattr(e, k, v)
 
     return e, data['id']
@@ -65,7 +67,8 @@ def dump_value(v):
     e = v.event
     if e:
         for name in list(set(dir(e)) - META_EXCLUDE):
-            meta[name] = getattr(e, name)
+            if not name.startswith('__'):
+                meta[name] = getattr(e, name)
 
     data = {
         'id': v.node_call_id,
@@ -78,4 +81,5 @@ def dump_value(v):
 
 def load_value(v):
     data = json.loads(v)
-    return data['value'], data['id'], data['errors'], data['meta']
+    meta = {k: v for k, v in data['meta'].items() if not k.startswith('__') and k not in META_EXCLUDE}
+    return data['value'], data['id'], data['errors'], meta

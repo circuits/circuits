@@ -5,7 +5,7 @@ from circuits.net.events import write
 from .utils import dump_event, dump_value, load_event, load_value
 
 
-DELIMITER = b'~~~'
+DELIMITER = b'~~~'  # FIXME: delimiter could be part of regular message
 
 
 class Protocol(Component):
@@ -74,14 +74,20 @@ class Protocol(Component):
     def __process_packet(self, packet):
         packet = packet.decode('utf-8')
 
-        if '"value":' in packet:
+        # FIXME: the encoding of values is hardcoded to UTF-8.
+        # at least protect against DoS attempts causing UnicodeDecodeError
+
+        if '"value":' in packet:  # FIXME: this can also be part of a call-value
             self.__process_packet_value(packet)
 
         else:
             self.__process_packet_call(packet)
 
     def __process_packet_call(self, packet):
-        event, id = load_event(packet)
+        try:
+            event, id = load_event(packet)
+        except (TypeError, ValueError, LookupError):
+            return
 
         if self.__receive_event_firewall and not self.__receive_event_firewall(event, self.__sock):
             self.send_result(id, Value(event, self))
@@ -105,7 +111,10 @@ class Protocol(Component):
             self.fire(event, *event.channels)
 
     def __process_packet_value(self, packet):
-        value, id, error, meta = load_value(packet)
+        try:
+            value, id, error, meta = load_value(packet)
+        except (TypeError, ValueError, LookupError):
+            return
 
         if id in self.__events:
             # convert byte to str
@@ -120,5 +129,5 @@ class Protocol(Component):
             self.__events[id].errors = error
             self.__events[id].remote_finish = True
 
-            for k, v in dict(meta).items():
+            for k, v in meta.items():
                 setattr(self.__events[id], k, v)
