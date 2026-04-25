@@ -14,19 +14,8 @@ def load_event(s):
     data = json.loads(s)
 
     name = data['name']
-
-    args = []
-    for arg in data['args']:
-        if isinstance(arg, str):
-            arg = arg.encode('utf-8')
-        args.append(arg)
-
-    kwargs = {}
-    for k, v in data['kwargs'].items():
-        if isinstance(v, str):
-            v = v.encode('utf-8')
-        kwargs[str(k)] = v
-
+    args = data['args']
+    kwargs = data['kwargs']
     e = Event.create(name, *args, **kwargs)
 
     e.success = bool(data['success'])

@@ -12,6 +12,7 @@ Change Log
 - :security:`343` The VirtualHost dispatcher now evaluates a list of trusted gateway IPs before evaluating ``X-Forwarded-Host`` headers.
 - :support:`-` Replace ``cgi`` module usage with ``email.message``
 - :support:`-` Replace ``setup.py`` with ``pyproject.toml``
+- :refactor:`344` Remove redundant encoding and decoding of node protocoll message data.
 
 - :release:`3.2.3 <2024-04-04>`
 - :support:`281` Dropped support for Python 2.7, 3.5, 3.6

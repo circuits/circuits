@@ -97,17 +97,6 @@ class Protocol(Component):
             event.node_call_id = id
             event.node_sock = self.__sock
 
-            # convert byte to str
-            event.args = [arg.decode('utf-8') if isinstance(arg, bytes) else arg for arg in event.args]
-
-            for i in event.kwargs:
-                v = event.kwargs[i]
-                index = i.decode('utf-8') if isinstance(i, bytes) else i
-                value = v.decode('utf-8') if isinstance(v, bytes) else v
-
-                del event.kwargs[i]
-                event.kwargs[index] = value
-
             self.fire(event, *event.channels)
 
     def __process_packet_value(self, packet):
@@ -116,18 +105,15 @@ class Protocol(Component):
         except (TypeError, ValueError, LookupError):
             return
 
-        if id in self.__events:
-            # convert byte to str
-            value = value.decode('utf-8') if isinstance(value, bytes) else value
-            error = error.decode('utf-8') if isinstance(error, bytes) else error
-
-            if not hasattr(self.__events[id], 'value') or not self.__events[id].value:
-                self.__events[id].value = Value(self.__events[id], self)
+        ev = self.__events.get(id)
+        if ev is not None:
+            if not hasattr(ev, 'value') or not ev.value:
+                ev.value = Value(ev, self)
 
             # save result
-            self.__events[id].value.setValue(value)
-            self.__events[id].errors = error
-            self.__events[id].remote_finish = True
+            ev.value.setValue(value)
+            ev.errors = error
+            ev.remote_finish = True
 
             for k, v in meta.items():
-                setattr(self.__events[id], k, v)
+                setattr(ev, k, v)
