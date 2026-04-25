@@ -1,5 +1,4 @@
 recursive-include man *
-recursive-include tests *
 
 include LICENSE README.rst CHANGES.rst
 
@@ -7,6 +6,19 @@ prune docs
 prune fabfile
 prune examples
 prune setup.cfg
+prune pyproject.toml
+prune .github
+prune .ruff_cache
 
 global-exclude __pycache__
 global-exclude *.py[co]
+global-exclude .ruff_cache
+
+exclude .gitignore
+exclude .dockerignore
+exclude .pre-commit-config.yaml
+exclude Dockerfile
+exclude requirements*.txt
+exclude tox.ini
+exclude MANIFEST.in
+exclude .coveragerc

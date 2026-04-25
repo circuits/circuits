@@ -1,0 +1,10 @@
+[flake8]
+exclude =
+    build
+    .git
+    .tox
+    docs
+    circuits/web/parsers/multipart.py
+
+ignore = E501,W503,E203
+max-line-length = 119
