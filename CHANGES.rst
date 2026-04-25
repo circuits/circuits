@@ -8,6 +8,7 @@ Change Log
 - :release:`3.2.4 <2026-04-25>`
 - :support:`-` Dropped support for Python 3.7
 - :support:`-` Added support for Python 3.13
+- :security:`342` Disallow arbitrary attribute injection in event metadata deserialization of node servers.
 - :support:`-` Replace ``cgi`` module usage with ``email.message``
 - :support:`-` Replace ``setup.py`` with ``pyproject.toml``
 
