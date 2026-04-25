@@ -122,7 +122,7 @@ def test_secure_server(manager, watcher):
 
 
 def test_unixserver(manager, watcher, tmpfile):
-    if pytest.PLATFORM == 'win32':
+    if sys.platform == 'win32':
         pytest.skip('Unsupported Platform')
 
     server = Server(tmpfile).register(manager)

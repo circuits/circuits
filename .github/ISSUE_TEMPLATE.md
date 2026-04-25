@@ -13,7 +13,7 @@ the problem ourselves.
 ### Environment and Platform
 
 - OS: Linux, Windows or BSD / OS X
-- Python: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, PyPy
+- Python: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, PyPy
 - circuits: 3.2? Something older?
 
 ----

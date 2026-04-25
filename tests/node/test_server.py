@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from time import sleep
 
 import pytest
@@ -10,7 +11,7 @@ from circuits.net.sockets import UDPServer
 from circuits.node import Node
 
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Broken on Windows')
+pytestmark = pytest.mark.skipif(sys.platform == 'win32', reason='Broken on Windows')
 
 
 class return_value(Event):

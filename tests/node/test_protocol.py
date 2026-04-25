@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import sys
+
 import pytest
 
 from circuits import Component, Event
@@ -7,7 +9,7 @@ from circuits.node.protocol import Protocol
 from circuits.node.utils import dump_event, dump_value
 
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Broken on Windows')
+pytestmark = pytest.mark.skipif(sys.platform == 'win32', reason='Broken on Windows')
 
 
 class return_value(Event):
