@@ -324,6 +324,11 @@ class Manager:
             y.unregister()
         return self
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state.pop('_lock', None)
+        return state
+
     @property
     def name(self):
         """Return the name of this Component/Manager"""
