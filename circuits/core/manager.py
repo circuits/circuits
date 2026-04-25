@@ -226,7 +226,7 @@ class Manager:
         self._running = False
         self.__thread = None
         self.__process = None
-        self._lock = RLock()
+        self._lock = None
 
         self.root = self.parent = self
         self.components = set()
@@ -431,6 +431,8 @@ class Manager:
 
         # the event comes from another thread
         else:
+            if self._lock is None:
+                self._lock = RLock()
             # Another thread has provided us with something to do.
             # If the component is running, we must make sure that
             # any pending generate event waits no longer, as there
@@ -915,6 +917,8 @@ class Manager:
                 # Ignore if we can't install signal handlers
                 pass
 
+        if self._lock is None:
+            self._lock = RLock()
         self._running = True
         self.root._executing_thread = current_thread()
 
