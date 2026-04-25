@@ -2,6 +2,7 @@
 import contextlib
 import os.path
 import select
+import sys
 from socket import AF_INET, AF_INET6, EAI_NODATA, EAI_NONAME, SOCK_STREAM, has_ipv6, socket
 from ssl import CERT_NONE, PROTOCOL_TLS_CLIENT, SSLContext
 
@@ -174,7 +175,7 @@ def test_tcp_reconnect(Poller, ipv6):
     # TODO: UPDATE: Apparently Broken on Windows + Python 3.2
     # TODO: Need to look into this. Find out why...
 
-    if pytest.PLATFORM == 'win32' and pytest.PYVER[:2] >= (3, 2):
+    if sys.platform == 'win32' and pytest.PYVER[:2] >= (3, 2):
         pytest.skip('Broken on Windows on Python 3.2')
 
     m = Manager() + Poller()
@@ -231,7 +232,7 @@ def test_tcp_reconnect(Poller, ipv6):
 
 
 def test_tcp_connect_closed_port(Poller, ipv6):
-    if pytest.PLATFORM == 'win32':
+    if sys.platform == 'win32':
         pytest.skip('Broken on Windows')
 
     m = Manager() + Poller() + Debugger()
@@ -332,7 +333,7 @@ def test_tcp_lookup_failure(manager, watcher, Poller, ipv6):
         client.fire(connect('foo.bar.baz', 1234))
         assert watcher.wait('error', 'client')
 
-        if pytest.PLATFORM == 'win32':
+        if sys.platform == 'win32':
             assert client.error.errno == 11004
         else:
             assert client.error.errno in (EAI_NODATA, EAI_NONAME)

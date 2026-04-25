@@ -11,7 +11,7 @@ import pytest
 from . import app
 
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
+pytestmark = pytest.mark.skipif(sys.platform == 'win32', reason='Unsupported Platform')
 
 
 def is_running(pid):

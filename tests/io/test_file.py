@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 from io import BytesIO
 
 import pytest
@@ -8,7 +9,7 @@ from circuits.io import File
 from circuits.io.events import close, write
 
 
-pytestmark = pytest.mark.skipif(pytest.PLATFORM == 'win32', reason='Unsupported Platform')
+pytestmark = pytest.mark.skipif(sys.platform == 'win32', reason='Unsupported Platform')
 
 
 class FileApp(Component):

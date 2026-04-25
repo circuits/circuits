@@ -1,10 +1,12 @@
 #!/usr/bin/env python
+import sys
+
 import pytest
 
 from circuits.io import Process, write
 
 
-if pytest.PLATFORM == 'win32':
+if sys.platform == 'win32':
     pytest.skip('Unsupported Platform')
 
 
