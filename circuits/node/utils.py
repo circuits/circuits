@@ -9,6 +9,8 @@ META_EXCLUDE.add('node_sock')
 META_EXCLUDE.add('node_without_result')
 META_EXCLUDE.add('success_channels')
 
+META_ALLOWLIST = frozenset()
+
 
 def load_event(s):
     data = json.loads(s)
@@ -34,7 +36,17 @@ def load_event(s):
     e.notify = bool(data['notify'])
     e.channels = tuple(data['channels'])
 
-    for k, v in dict(data['meta']).items():
+    meta = data.get('meta', {})
+    if not isinstance(meta, dict):
+        raise ValueError('Invalid event meta')
+
+    for k, v in meta.items():
+        if not isinstance(k, str):
+            raise ValueError('Invalid event meta key')
+        if k not in META_ALLOWLIST or k.startswith('_') or k in META_EXCLUDE:
+            raise ValueError('Unsafe event meta key: %s' % k)
+        if not isinstance(v, (type(None), bool, int, float, str, list, dict)):
+            raise ValueError('Invalid event meta value: %s' % k)
         setattr(e, k, v)
 
     return e, data['id']
@@ -42,7 +54,7 @@ def load_event(s):
 
 def dump_event(e, id):
     meta = {}
-    for name in list(set(dir(e)) - META_EXCLUDE):
+    for name in list((set(dir(e)) - META_EXCLUDE) & META_ALLOWLIST):
         meta[name] = getattr(e, name)
 
     data = {
@@ -64,7 +76,7 @@ def dump_value(v):
     meta = {}
     e = v.event
     if e:
-        for name in list(set(dir(e)) - META_EXCLUDE):
+        for name in list((set(dir(e)) - META_EXCLUDE) & META_ALLOWLIST):
             meta[name] = getattr(e, name)
 
     data = {
