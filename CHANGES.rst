@@ -9,6 +9,7 @@ Change Log
 - :support:`-` Dropped support for Python 3.7
 - :support:`-` Added support for Python 3.13
 - :security:`342` Disallow arbitrary attribute injection in event metadata deserialization of node servers.
+- :security:`343` The VirtualHost dispatcher now evaluates a list of trusted gateway IPs before evaluating ``X-Forwarded-Host`` headers.
 - :support:`-` Replace ``cgi`` module usage with ``email.message``
 - :support:`-` Replace ``setup.py`` with ``pyproject.toml``
 

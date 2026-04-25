@@ -12,7 +12,7 @@ from circuits import BaseComponent, handler
 
 class VirtualHosts(BaseComponent):
     """
-    Forward to anotehr Dispatcher based on the Host header.
+    Forward to another Dispatcher based on the Host header.
 
     This can be useful when running multiple sites within one server.
     It allows several domains to point to different parts of a single
@@ -21,8 +21,12 @@ class VirtualHosts(BaseComponent):
     - http://www.domain2.example     -> /domain2
     - http://www.domain2.example:443 -> /secure
 
-    :param domains: a dict of {host header value: virtual prefix} pairs.
+    :param domains: a dict of {lowercase host header value: virtual prefix} pairs.
     :type  domains: dict
+
+    :param trusted_gateways: For security reasons a list of trusted
+      gateways should be given, which allows to look up the first entry in ``X-Forwarded-Host``.
+    :type trusted_gateways: list | tuple | set
 
     The incoming "Host" request header is looked up in this dict,
     and, if a match is found, the corresponding "virtual prefix"
@@ -36,17 +40,23 @@ class VirtualHosts(BaseComponent):
 
     channel = 'web'
 
-    def __init__(self, domains):
+    def __init__(self, domains, trusted_gateways=None):
         super().__init__()
 
         self.domains = domains
+        self.trusted_gateways = None
 
     @handler('request', priority=1.0)
     def _on_request(self, event, request, response):
         path = request.path.strip('/')
 
         header = request.headers.get
-        domain = header('X-Forwarded-Host', header('Host', ''))
+        domain = header('Host', '')
+        if self.trusted_gateways is None or request.remote.ip in self.trusted_gateways:
+            forwarded = header('X-Forwarded-Host', '').split(',')[0].strip().lower()
+            if forwarded:
+                domain = forwarded
+
         prefix = self.domains.get(domain, '')
 
         if prefix:
