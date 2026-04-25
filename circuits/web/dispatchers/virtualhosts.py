@@ -36,17 +36,30 @@ class VirtualHosts(BaseComponent):
 
     channel = 'web'
 
-    def __init__(self, domains):
+    def __init__(self, domains, trusted_proxies=None):
         super().__init__()
 
         self.domains = domains
+        self.trusted_proxies = set(trusted_proxies or ())
 
     @handler('request', priority=1.0)
     def _on_request(self, event, request, response):
         path = request.path.strip('/')
 
         header = request.headers.get
-        domain = header('X-Forwarded-Host', header('Host', ''))
+        domain = header('Host', '').strip()
+
+        if self.trusted_proxies:
+            remote = getattr(request, 'remote', None)
+            remote_ip = getattr(remote, 'ip', None)
+            if remote_ip is None and isinstance(remote, (list, tuple)) and remote:
+                remote_ip = remote[0]
+
+            if remote_ip in self.trusted_proxies:
+                forwarded = header('X-Forwarded-Host', '')
+                if forwarded:
+                    domain = forwarded.split(',', 1)[0].strip()
+
         prefix = self.domains.get(domain, '')
 
         if prefix:
