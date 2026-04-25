@@ -22,8 +22,8 @@ setup(
     ),
     author='James Mills',
     author_email='prologic@shortcircuit.net.au',
-    url='http://circuitsframework.com/',
-    download_url='http://bitbucket.org/circuits/circuits/downloads/',
+    url='https://circuitsframework.com/',
+    download_url='https://github.com/circuits/circuits/releases',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
