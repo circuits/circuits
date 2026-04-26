@@ -11,16 +11,13 @@ import os
 import stat
 from collections.abc import Callable
 from datetime import datetime, timedelta
-from email.generator import _make_boundary
-from email.utils import formatdate
-from time import mktime
+
+import httoop
 
 from circuits import BaseComponent, handler
 from circuits.web.wrappers import Host
 
-from . import _httpauth
 from .errors import httperror, notfound, redirect, unauthorized
-from .utils import compress, get_ranges
 
 
 mimetypes.init()
@@ -64,19 +61,17 @@ def expires(request, response, secs=0, force=False):
         if secs == 0:
             if force or 'Pragma' not in headers:
                 headers['Pragma'] = 'no-cache'
-            if request.protocol >= (1, 1) and (force or 'Cache-Control' not in headers):
-                headers['Cache-Control'] = 'no-cache, must-revalidate'
+            if request.protocol >= (1, 1):
+                if force or 'Cache-Control' not in headers:
+                    headers['Cache-Control'] = 'no-cache, must-revalidate'
             # Set an explicit Expires date in the past.
-            now = datetime.now()
+            now = datetime.utcnow()
             lastyear = now.replace(year=now.year - 1)
-            expiry = formatdate(
-                mktime(lastyear.timetuple()),
-                usegmt=True,
-            )
+            expiry = httoop.Date(lastyear)
         else:
-            expiry = formatdate(response.time + secs, usegmt=True)
+            expiry = httoop.Date(response.time + secs)
         if force or 'Expires' not in headers:
-            headers['Expires'] = expiry
+            headers['Expires'] = str(expiry)
 
 
 def serve_file(request, response, path, type=None, disposition=None, name=None):
@@ -107,10 +102,7 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
 
     # Set the Last-Modified response header, so that
     # modified-since validation code can work.
-    response.headers['Last-Modified'] = formatdate(
-        st.st_mtime,
-        usegmt=True,
-    )
+    response.headers['Last-Modified'] = str(httoop.Date(st.st_mtime))
 
     result = validate_since(request, response)
     if result is not None:
@@ -133,58 +125,29 @@ def serve_file(request, response, path, type=None, disposition=None, name=None):
     c_len = st.st_size
     bodyfile = open(path, 'rb')
 
-    # HTTP/1.0 didn't have Range/Accept-Ranges headers, or the 206 code
-    if request.protocol >= (1, 1):
-        response.headers['Accept-Ranges'] = 'bytes'
-        r = get_ranges(request.headers.get('Range'), c_len)
-        if r == []:
-            response.headers['Content-Range'] = 'bytes */%s' % c_len
+    response.headers['Accept-Ranges'] = 'bytes'
+
+    req = request.to_httoop()
+    res = response.to_httoop()
+    res.body = bodyfile
+    from httoop.semantic.response import ComposedResponse
+
+    c = ComposedResponse(res, req)
+    if not c.prepare_ranges():
+        if res.status == 416:
             return httperror(request, response, 416)
-        if r:
-            if len(r) == 1:
-                # Return a single-part response.
-                start, stop = r[0]
-                r_len = stop - start
-                response.status = 206
-                response.headers['Content-Range'] = f'bytes {start}-{stop - 1}/{c_len}'
-                response.headers['Content-Length'] = r_len
-                bodyfile.seek(start)
-                response.body = bodyfile.read(r_len)
-            else:
-                # Return a multipart/byteranges response.
-                response.status = 206
-                boundary = _make_boundary()
-                ct = 'multipart/byteranges; boundary=%s' % boundary
-                response.headers['Content-Type'] = ct
-                if 'Content-Length' in response.headers:
-                    # Delete Content-Length header so finalize() recalcs it.
-                    del response.headers['Content-Length']
-
-                def file_ranges():
-                    # Apache compatibility:
-                    yield '\r\n'
-
-                    for start, stop in r:
-                        yield '--' + boundary
-                        yield '\r\nContent-type: %s' % type
-                        yield ('\r\nContent-range: bytes %s-%s/%s\r\n\r\n' % (start, stop - 1, c_len))
-                        bodyfile.seek(start)
-                        yield bodyfile.read(stop - start)
-                        yield '\r\n'
-                    # Final boundary
-                    yield '--' + boundary + '--'
-
-                    # Apache compatibility:
-                    yield '\r\n'
-
-                response.body = file_ranges()
-        else:
-            response.headers['Content-Length'] = c_len
-            response.body = bodyfile
-    else:
-        response.headers['Content-Length'] = c_len
+        response.headers['Content-Length'] = str(c_len)
         response.body = bodyfile
+        return response
 
+    response.status = res.status
+    if 'Content-Range' in res.headers:
+        response.headers['Content-Range'] = res.headers['Content-Range']
+    if 'Content-Type' in res.headers:
+        response.headers['Content-Type'] = res.headers['Content-Type']
+    if 'Content-Length' in res.headers:
+        response.headers['Content-Length'] = res.headers['Content-Length']
+    response.body = res.body.fd
     return response
 
 
@@ -215,57 +178,47 @@ def validate_etags(request, response, autotags=False):
     """
     # Guard against being run twice.
     if hasattr(response, 'ETag'):
-        return None
+        return
 
-    status = response.status
+    res = response.to_httoop()
+    req = response.request.to_httoop()
+    status = res.status
 
     etag = response.headers.get('ETag')
 
     # Automatic ETag generation. See warning in docstring.
-    if (not etag) and autotags and status == 200:
-        etag = response.collapse_body()
-        etag = '"%s"' % hashlib.new('md5', etag).hexdigest()
-        response.headers['ETag'] = etag
+    if not etag and autotags:
+        if status == 200:
+            etag = bytes(response)
+            etag = '"%s"' % hashlib.new('md5', etag).hexdigest()
+            response.headers['ETag'] = etag
 
     response.ETag = etag
 
     # "If the request would, without the If-Match header field, result in
     # anything other than a 2xx or 412 status, then the If-Match header
     # MUST be ignored."
-    if status >= 200 and status <= 299:
-        conditions = request.headers.elements('If-Match') or []
-        conditions = [str(x) for x in conditions]
-        if conditions and not (conditions == ['*'] or etag in conditions):
+    if status.successful:
+        if 'If-Match' in req.headers and not any(condition.matches(etag) for condition in req.headers.elements('If-Match')):
             return httperror(
                 request,
                 response,
                 412,
-                description='If-Match failed: ETag %r did not match %r'
-                % (
-                    etag,
-                    conditions,
-                ),
+                description='If-Match failed: ETag %r did not match %r' % (etag, req.headers['If-Match']),
             )
 
-        conditions = request.headers.elements('If-None-Match') or []
-        conditions = [str(x) for x in conditions]
-        if conditions == ['*'] or etag in conditions:
+        if 'If-None-Match' in req.headers and any(
+            condition.matches(etag) for condition in req.headers.elements('If-None-Match')
+        ):
             if request.method in ('GET', 'HEAD'):
                 return redirect(request, response, [], code=304)
-            return httperror(
-                request,
-                response,
-                412,
-                description=(
-                    'If-None-Match failed: ETag %r matched %r'
-                    % (
-                        etag,
-                        conditions,
-                    )
-                ),
-            )
-        return None
-    return None
+            else:
+                return httperror(
+                    request,
+                    response,
+                    412,
+                    description=('If-None-Match failed: ETag %r matched %r' % (etag, req.headers['If-None-Match'])),
+                )
 
 
 def validate_since(request, response):
@@ -275,21 +228,24 @@ def validate_since(request, response):
     If no code has set the Last-Modified response header, then no validation
     will be performed.
     """
-    lastmod = response.headers.get('Last-Modified')
+    res = response.to_httoop()
+    req = request.to_httoop()
+    lastmod = res.headers.element('Last-Modified')
     if lastmod:
-        status = response.status
+        status = res.status
 
-        since = request.headers.get('If-Unmodified-Since')
-        if since and since != lastmod and ((status >= 200 and status <= 299) or status == 412):
-            return httperror(request, response, 412)
+        since = req.headers.element('If-Unmodified-Since')
+        if since and since != lastmod:
+            if status.successful or status == 412:
+                return httperror(request, response, 412)
 
         since = request.headers.get('If-Modified-Since')
-        if since and since == lastmod and ((status >= 200 and status <= 299) or status == 304):
-            if request.method in ('GET', 'HEAD'):
-                return redirect(request, response, [], code=304)
-            return httperror(request, response, 412)
-        return None
-    return None
+        if since and since == lastmod:
+            if status.successful or status == 304:
+                if req.method.safe:
+                    return redirect(request, response, [], code=304)
+                else:
+                    return httperror(request, response, 412)
 
 
 def check_auth(request, response, realm, users, encrypt=None):
@@ -310,13 +266,12 @@ def check_auth(request, response, realm, users, encrypt=None):
     :type  encrypt: callable
     """
     if 'Authorization' in request.headers:
-        # make sure the provided credentials are correctly set
-        ah = _httpauth.parseAuthorization(request.headers.get('Authorization'))
-        if ah is None:
-            return httperror(request, response, 400)
-
+        req = request.to_httoop()
+        ah = req.headers.element('Authorization')
         if not encrypt:
-            encrypt = _httpauth.DIGEST_AUTH_ENCODERS[_httpauth.MD5]
+
+            def encrypt(val):
+                return hashlib.md5(val).hexdigest()
 
         if isinstance(users, Callable):
             try:
@@ -327,22 +282,46 @@ def check_auth(request, response, realm, users, encrypt=None):
                     raise ValueError('Authentication users must be a dict')
 
                 # fetch the user password
-                password = users.get(ah['username'], None)
+                password = users.get(ah.username, None)
             except TypeError:
                 # returns a password (encrypted or clear text)
-                password = users(ah['username'])
+                password = users(ah.username)
         else:
             if not isinstance(users, dict):
                 raise ValueError('Authentication users must be a dict')
 
             # fetch the user password
-            password = users.get(ah['username'], None)
+            password = users.get(ah.username, None)
 
         # validate the Authorization by re-computing it here
         # and compare it with what the user-agent provided
-        if _httpauth.checkResponse(ah, password, method=request.method, encrypt=encrypt, realm=realm):
-            request.login = ah['username']
-            return True
+        if ah.scheme == 'basic':
+            try:
+                login = encrypt(ah.password.encode('UTF-8'), ah.username.encode('UTF-8')) == password
+            except TypeError:
+                login = encrypt(ah.password.encode('UTF-8')) == password
+            if login:
+                request.login = ah.username
+                return True
+        elif ah.scheme == 'digest':
+            ah.params['method'] = bytes(req.method)
+            authinfo = {
+                'realm': realm.encode(),
+                'username': ah.username.encode(),
+                'password': password.encode(),
+                'algorithm': b'MD5',
+                # 'nonce': ah.schemes['digest'].generate_nonce({'realm': realm.encode(), 'algorithm': b'MD5'}),
+                'qop': b'auth',
+                'method': bytes(req.method),
+                # 'uri': bytes(req.uri),
+                'uri': ah.params['uri'],
+                'nc': ah.params['nc'],
+                'cnonce': ah.params['cnonce'],
+                'nonce': ah.params['nonce'],
+            }
+            if ah.schemes['digest'].check(authinfo, ah.params):
+                request.login = ah.username
+                return True
 
         request.login = False
     return False
@@ -367,10 +346,10 @@ def basic_auth(request, response, realm, users, encrypt=None):
     :type  encrypt: callable
     """
     if check_auth(request, response, realm, users, encrypt):
-        return None
+        return
 
     # inform the user-agent this path is protected
-    response.headers['WWW-Authenticate'] = _httpauth.basicAuth(realm)
+    response.headers['WWW-Authenticate'] = str(httoop.header.WWWAuthenticate('Basic', {'realm': realm}))
 
     return unauthorized(request, response)
 
@@ -389,15 +368,38 @@ def digest_auth(request, response, realm, users):
     :type  users: dict or callable
     """
     if check_auth(request, response, realm, users):
-        return None
+        return
 
     # inform the user-agent this path is protected
-    response.headers['WWW-Authenticate'] = _httpauth.digestAuth(realm)
+    response.headers['WWW-Authenticate'] = str(
+        httoop.header.WWWAuthenticate(
+            'Digest',
+            {
+                'realm': realm.encode(),
+                'algorithm': b'MD5',
+                # 'domain': None,
+                'nonce': httoop.authentication.digest.DigestAuthScheme.generate_nonce(
+                    {'realm': realm.encode(), 'algorithm': b'MD5'}
+                ),
+                # 'opaque': None,
+                # 'stale': None,
+                'qop': b'auth',
+            },
+        )
+    )
+    print(str(response.headers['WWW-Authenticate']))
 
     return unauthorized(request, response)
 
 
-def gzip(response, level=4, mime_types=('text/html', 'text/plain')):
+def gzip(
+    response,
+    level=4,
+    mime_types=(
+        'text/html',
+        'text/plain',
+    ),
+):
     """
     Try to gzip the response body if Content-Type in mime_types.
 
@@ -419,7 +421,7 @@ def gzip(response, level=4, mime_types=('text/html', 'text/plain')):
     if getattr(response.request, 'cached', False):
         return response
 
-    acceptable = response.request.headers.elements('Accept-Encoding')
+    acceptable = response.request.to_httoop().headers.elements('Accept-Encoding')
     if not acceptable:
         # If no Accept-Encoding field is present in a request,
         # the server MAY assume that the client will accept any
@@ -430,33 +432,30 @@ def gzip(response, level=4, mime_types=('text/html', 'text/plain')):
         # to the client.
         return response
 
-    ct = response.headers.get('Content-Type', 'text/html').split(';')[0]
+    res = response.to_httoop()
+    ct = res.headers.element('Content-Type')
+    ct = ct.value if ct else 'text/html'
+    if ct not in mime_types:
+        return response
+
     for coding in acceptable:
-        if coding.value == 'identity' and coding.qvalue != 0:
+        if not coding.quality:
+            continue
+        if coding.value == 'identity':
             return response
         if coding.value in ('gzip', 'x-gzip'):
-            if coding.qvalue == 0:
-                return response
-            if ct in mime_types:
-                # Return a generator that compresses the page
-                varies = response.headers.get('Vary', '')
-                varies = [x.strip() for x in varies.split(',') if x.strip()]
-                if 'Accept-Encoding' not in varies:
-                    varies.append('Accept-Encoding')
-                response.headers['Vary'] = ', '.join(varies)
+            # Return a generator that compresses the page
+            if 'Accept-Encoding' not in res.headers.elements('Vary'):
+                res.headers.append_element('Vary', 'Accept-Encoding')
+                response.headers['Vary'] = res.headers['Vary']
 
-                response.headers['Content-Encoding'] = 'gzip'
-                response.body = compress(response.body, level)
-                if 'Content-Length' in response.headers:
-                    # Delete Content-Length header so finalize() recalcs it.
-                    del response.headers['Content-Length']
+            response.headers['Content-Encoding'] = coding.value
+            res.body.content_encoding = 'gzip; level=%d' % (level,)
+            response.body = res.body.__iter__()
+            # Delete Content-Length header so finalize() recalcs it.
+            response.headers.pop('Content-Length', None)
             return response
-    return httperror(
-        response.request,
-        response,
-        406,
-        description='identity, gzip',
-    )
+    return httperror(response.request, response, 406, description='identity, gzip')
 
 
 class ReverseProxy(BaseComponent):
@@ -474,4 +473,4 @@ class ReverseProxy(BaseComponent):
     @handler('request', priority=1)
     def _on_request(self, req, *_):
         ip = [v for v in map(req.headers.get, self.headers) if v]
-        req.remote = (ip and Host(ip[0], '', ip[0])) or req.remote
+        req.remote = ip and Host(ip[0], '', ip[0]) or req.remote

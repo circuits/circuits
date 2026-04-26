@@ -6,7 +6,7 @@ This module implements a set of standard HTTP Errors as Python Exceptions.
 Note: This code is mostly borrowed from werkzeug and adapted for circuits.web
 """
 
-from .constants import HTTP_STATUS_CODES
+import httoop
 
 
 __all__ = (
@@ -55,7 +55,7 @@ class HTTPException(Exception):
     @property
     def name(self):
         """The status name."""
-        return HTTP_STATUS_CODES.get(self.code, '')
+        return httoop.Status(self.code).reason
 
     def __repr__(self):
         return f'<{self.__class__.__name__} {str(self)!r}>'
