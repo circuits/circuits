@@ -32,20 +32,25 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.12
     hooks:
-      - id: ruff
-      - id: ruff
+      - id: ruff-check
+        alias: "ruff"
+      - id: ruff-check
         alias: "ruff-fix"
         stages: [ manual ]
         args: ["--fix", "--unsafe-fixes"]
-      - id: ruff
+      - id: ruff-check
+        alias: "ruff-fix-preview"
+        stages: [ manual ]
+        args: ["--fix", "--unsafe-fixes", "--preview"]
+      - id: ruff-check
         alias: "ruff-statistics"
         stages: [ manual ]
-        args: ["--statistics"]
-      - id: ruff
+        args: ["--statistics", "--unsafe-fixes", "--preview"]
+      - id: ruff-check
         alias: "ruff-isort"
         args: ["--select", "I", "--fix"]
       - id: ruff-format
       - id: ruff-format
         alias: "ruff-format-check"
         stages: [ manual ]
-        args: ["--check"]
+        args: ["--check", "--diff"]
