@@ -71,9 +71,9 @@ class Sleep:
     def __repr__(self):
         return f'sleep({self.expiry - time()!r})'
 
-    def __anext__(self):
+    async def __anext__(self):
         if time() >= self.expiry:
-            raise StopIteration()
+            raise StopAsyncIteration()
         return self
 
     def __next__(self):
@@ -546,13 +546,9 @@ class Manager:
         if state.event is not None:
             yield CallValue(state.event.value)
 
-    async def waita(self, event, *channels, **kwargs):
-        for x in self.wait(event, *channels, **kwargs):
-            yield x
-
     wait = waitEvent
 
-    async def callEvent(self, event, *channels, **kwargs):
+    def callEvent(self, event, *channels, **kwargs):
         """
         Fire the given event to the specified channels and suspend
         execution until it has been dispatched. This method may only
@@ -561,17 +557,18 @@ class Manager:
         It effectively creates and returns a generator
         that will be invoked by the main loop until the event has
         been dispatched (see :func:`circuits.core.handlers.handler`).
-        """
-        value = self.fire(event, *channels)
-        async for r in self.waitEvent(event, *event.channels, **kwargs):
-            await r  # pass ?
-        return CallValue(value)
 
-    async def calla(self, event, *channels, **kwargs):
-        value = self.fire(event, *channels)
-        async for r in self.waitEvent(event, *event.channels, **kwargs):
-            yield r
-        yield CallValue(value)
+        Fire the given event to the specified channels and return the
+        waitEvent async generator so the manager's task loop can suspend
+        execution until the event has been dispatched.
+
+        Usage in an async generator handler::
+
+            x = yield self.call(my_event())
+            # x is the CallValue; x.value is the event's return value
+        """
+        self.fire(event, *channels)
+        return self.waitEvent(event, *event.channels, **kwargs)
 
     call = callEvent
 
@@ -804,16 +801,39 @@ class Manager:
         value = None
         try:
             if isinstance(task, AsyncGeneratorType):
-                value = task.asend(None)
+                # asend() returns a coroutine; run it synchronously to extract
+                # the yielded value from the StopIteration it raises.
+                # StopAsyncIteration (generator exhausted) propagates to outer except.
+                asend_coro = task.asend(None)
+                try:
+                    asend_coro.send(None)
+                except StopIteration as si:
+                    value = si.value
             elif hasattr(task, 'send'):
+                # CoroutineType: send(None) raises StopIteration(return_value) when done.
                 value = task.send(None)
             else:
                 value = next(task)
+
             if isinstance(value, CallValue):
-                # Done here, next() will StopIteration anyway
+                # The waitEvent sub-generator delivered its result; resume the parent handler.
                 self.unregisterTask((event, task, parent))
-                # We are in a callEvent
-                value = parent.send(value.value)
+                if isinstance(parent, AsyncGeneratorType):
+                    asend_coro = parent.asend(value.value)
+                    try:
+                        asend_coro.send(None)
+                    except StopIteration as si:
+                        value = si.value
+                    except StopAsyncIteration:
+                        # Parent handler finished right after receiving the value.
+                        event.waitingHandlers -= 1
+                        if event.waitingHandlers == 0:
+                            event.value.inform(True)
+                            self._eventDone(event)
+                        return
+                else:
+                    value = parent.send(value.value)
+
                 if isinstance(value, (GeneratorType, CoroutineType, AsyncGeneratorType)):
                     # We loose a yield but we gain one,
                     # we don't need to change
@@ -821,8 +841,13 @@ class Manager:
                     # The below code is delegated to handlers
                     # in the waitEvent generator
                     # self.registerTask((event, value, parent))
+                    # We lose a yield but gain one; waitingHandlers count stays the same.
                     if isinstance(value, AsyncGeneratorType):
-                        task_state = value.asend(None).send(None)
+                        asend_coro = value.asend(None)
+                        try:
+                            asend_coro.send(None)
+                        except StopIteration as si:
+                            task_state = si.value
                     else:
                         task_state = value.send(None)
                     task_state.task_event = event
@@ -833,12 +858,23 @@ class Manager:
                     if value is not None:
                         event.value.value = value
                     self.registerTask((event, parent, None))
+
             elif isinstance(value, (GeneratorType, CoroutineType, AsyncGeneratorType)):
                 event.waitingHandlers += 1
                 self.unregisterTask((event, task, None))
-                # First yielded value is always the task state
+                # Advance the sub-task once to obtain its initial _State object,
+                # which is then used by _on_done to re-register the task later.
                 if isinstance(value, AsyncGeneratorType):
-                    task_state = value.asend(None).send(None)
+                    asend_coro = value.asend(None)
+                    try:
+                        asend_coro.send(None)
+                    except StopIteration as si:
+                        task_state = si.value
+                elif isinstance(value, CoroutineType):
+                    try:
+                        task_state = value.send(None)
+                    except StopIteration as si:
+                        task_state = si.value
                 else:
                     task_state = value.send(None)
                 task_state.task_event = event
@@ -849,28 +885,44 @@ class Manager:
                 # self.registerTask((event, value, task))
                 # TODO: ^^^ Why is this commented out anyway?
             elif isinstance(value, ExceptionWrapper):
+                exc = value.extract()
                 self.unregisterTask((event, task, parent))
                 if parent:
-                    value = parent.throw(value.extract())
+                    if isinstance(parent, AsyncGeneratorType):
+                        throw_coro = parent.athrow(type(exc), exc, exc.__traceback__)
+                        try:
+                            throw_coro.send(None)
+                        except StopIteration as si:
+                            value = si.value
+                        except StopAsyncIteration:
+                            value = None
+                    else:
+                        value = parent.throw(exc)
                     if value is not None:
 
                         async def value_generator():
-                            return value  # yield?
+                            yield value
 
-                        # value_generator = (val for val in (value,))
-                        self.registerTask((event, value_generator, parent))
+                        self.registerTask((event, value_generator(), parent))
                 else:
-                    raise value.extract()
+                    raise exc
+
             elif isinstance(value, Sleep):
                 if value is not task:
                     value.task = (event, task, parent)
                     self.registerTask((event, value, parent))
                     self.unregisterTask((event, task, parent))
+
             elif value is not None:
                 event.value.value = value
-        except (StopAsyncIteration, StopIteration):
+
+        except (StopAsyncIteration, StopIteration) as si:
             event.waitingHandlers -= 1
             self.unregisterTask((event, task, parent))
+
+            # Capture return values from simple coroutines (async def … return value).
+            if isinstance(si, StopIteration) and si.value is not None:
+                event.value.value = si.value
 
             if parent:
                 self.registerTask((event, parent, None))

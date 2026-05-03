@@ -64,7 +64,10 @@ def handler(*names, **kwargs):
     """
 
     def wrapper(f):
-        assert f.__name__ == 'init' or inspect.iscoroutinefunction(f) or inspect.isasyncgenfunction(f), f
+        if inspect.isgeneratorfunction(f) and not inspect.isasyncgenfunction(f):
+            raise AssertionError(
+                f"Handler {f!r} is a regular generator function. Use 'async def' with 'yield' (async generator) instead."
+            )
         if names and isinstance(names[0], bool) and not names[0]:
             f.handler = False
             return f
