@@ -39,7 +39,7 @@ from .core import (
 
 # See http://peak.telecommunity.com/DevCenter/setuptools#namespace-packages
 try:
-    __import__('pkg_resources').declare_namespace(__name__)
+    from pkg_resources import declare_namespace
 except ImportError:
     import importlib.metadata
     import sys
@@ -57,6 +57,9 @@ except ImportError:
                     if namespace_pkg_path not in sys.path:
                         sys.path.append(namespace_pkg_path)
                     break
+else:
+    declare_namespace(__name__)
+    del declare_namespace
 
 # flake8: noqa
 # pylama:skip=1
