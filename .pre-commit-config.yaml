@@ -25,12 +25,12 @@ repos:
     - id: rst-directive-colons
     - id: rst-inline-touching-normal
   - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
+    rev: 7.4.1
     hooks:
     - id: flake8
       exclude: "^docs/"
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: v0.16.10
     hooks:
       - id: ruff-check
         alias: "ruff"

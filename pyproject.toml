@@ -126,6 +126,7 @@ ignore = [
  "D402",  # First line should not be the function's signature
  "D403",  # first-word-uncapitalized
  "D404",  # First word of the docstring should not be "This"
+ "D421",  # property-docstring-starts-with-verb
  "D104",  # Missing docstring in public package
  "T201", "T203",  # print, p-print
  "TD001",  # invalid-todo-tag
